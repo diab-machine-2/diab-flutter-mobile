@@ -6,6 +6,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/crea
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
+import 'widget/BloodPressure/add_bloodpressure_result.dart';
 import 'widget/BloodPressure/intro/bloodpressure_intro_1st_page.dart';
 import 'widget/BloodPressure/intro/bloodpressure_intro_2nd_page.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
@@ -97,12 +98,13 @@ class AppRoutes {
       case NavigatorName.blood_pressure_intro_2nd_page:
         page = BloodPressureIntro2ndPage();
         break;
+      case NavigatorName.add_bloodpressure_result:
+        page = PageAddBloodPressureResult(data: settings.arguments as BloodPressureResultDto);
+        break;
       // ~ END: Huyet Ap (mới) ~
       default:
         break;
     }
-    return page != null
-        ? MaterialPageRoute(settings: settings, builder: (_) => page!)
-        : null;
+    return page != null ? MaterialPageRoute(settings: settings, builder: (_) => page!) : null;
   }
 }

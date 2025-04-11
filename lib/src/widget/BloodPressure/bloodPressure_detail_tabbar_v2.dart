@@ -7,17 +7,15 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
-import 'package:medical/src/app_setting/firebase_tracking/kpi_blood_pressure_tracking.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_listing.dart';
 import 'package:medical/src/widget/BloodPressure/overview.dart';
+import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
-import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
-import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import 'bloodpressure_result.dto.dart';
@@ -49,7 +47,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   final GlobalKey<BloodPressureOverviewControllerState> _overViewKey = GlobalKey();
   final GlobalKey<BloodPressureDetailListingControllerState> _detailKey = GlobalKey();
 
-  int _periodFilterType = 1;
+  int _periodFilterType = 3;
 
   @override
   void initState() {
@@ -122,44 +120,22 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
         arguments: {'type': 'input', 'id': null});
   }
 
-  void _showActionFilter(BuildContext context) {
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      backgroundColor: R.color.white,
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => FillterBloodPanel(
-        selectedIndex: _periodFilterType,
-        callback: (value, index) async {
-          await AppSettings.setHomeFilters(ScreenList.BLOOD_PRESSURE.index, value);
-          if (index != null) {
-            setState(() {
-              _periodFilterType = index + 1;
-            });
-          }
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
       appBar: AppBar(
-        // backgroundColor: R.color.glucose_bg_color,
+        backgroundColor: R.color.greenGradientBottom,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
         ),
         title: Text(
           R.string.huyet_ap.tr(),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: R.color.textDark,
+            color: R.color.white,
           ),
         ),
         actions: [
@@ -171,8 +147,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
               },
               child: Text(
                 R.string.huong_dan.tr(),
-                style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.white),
               ),
             ),
           ),
@@ -192,12 +167,16 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
                   const SizedBox(height: 12),
                   _sectionAIHelp(null, null),
                   const SizedBox(height: 12),
-                  _buildFrequencyChart(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: _buildFrequencyChart(),
+                  ),
                   const SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: _buildSuggestLessons(),
                   ),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -248,51 +227,27 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   }
 
   Widget _buildFilter() {
-    return Container(
-      height: 36,
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(width: 42),
-          SizedBox(
-            width: 165,
-            child: InkWell(
-              onTap: () => _showActionFilter(context),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: R.color.color0xffE5E5E5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '30 ngày',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.textDark,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: R.color.textDark,
-                        size: 16,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    final List<String> labels = [
+      R.string.filter_day.tr(args: ['7']),
+      R.string.filter_day.tr(args: ['14']),
+      R.string.filter_day.tr(args: ['30']),
+      R.string.filter_day.tr(args: ['90']),
+    ];
+    final List<int> values = [0, 1, 2, 3];
+    final int selectedIndex = _periodFilterType - 1;
+    return HorizontalSelector(
+      onSelected: (value) {
+        setState(() {
+          _periodFilterType = value + 1;
+        });
+        _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType);
+        _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
+        _overViewKey.currentState?.reloadData(_periodFilterType);
+        _detailKey.currentState?.reloadData(_periodFilterType);
+      },
+      initialValue: selectedIndex,
+      values: values,
+      labels: labels,
     );
   }
 
@@ -313,23 +268,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   }
 
   Widget _buildSuggestLessons() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Gợi ý khoá học',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: R.color.color0xff111515,
-          ),
-        ),
-        const SizedBox(height: 12),
-        BloodPressureLessonSection(
-          onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
-        ),
-      ],
+    return BloodPressureLessonSection(
+      onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
     );
   }
 
@@ -477,79 +417,5 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
         ),
       );
     }
-  }
-}
-
-typedef ActionFilterCallback = Function(int);
-
-class ActionFilter extends StatefulWidget {
-  final ActionFilterCallback? callback;
-
-  ActionFilter({this.callback});
-
-  @override
-  _ActionFilterState createState() => _ActionFilterState();
-}
-
-class _ActionFilterState extends State<ActionFilter> {
-  String name = R.string.filter_day.tr(args: ['30']);
-  int selectedIndex = 2;
-  @override
-  void initState() {
-    loadFilter();
-    super.initState();
-  }
-
-  void loadFilter() async {
-    List<String> filters = await AppSettings.getHomeFilters();
-    name = filters[ScreenList.BLOOD_PRESSURE.index];
-    selectedIndex = valueOfSelectedFilter[name]!;
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        showActionFilter(context);
-      },
-      child: Container(
-        color: R.color.transparent,
-        padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 16),
-        child: Row(
-          children: [
-            Image.asset(R.drawable.ic_filter, width: 24, height: 24),
-            SizedBox(width: 6),
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Text(name,
-                  style: TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w500, color: R.color.textDark)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  showActionFilter(BuildContext context) {
-    showModalBottomSheet(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: R.color.white,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => FillterBloodPanel(
-            selectedIndex: selectedIndex,
-            callback: (value, index) async {
-              await AppSettings.setHomeFilters(ScreenList.BLOOD_PRESSURE.index, value);
-              if (index != null) {
-                setState(() {
-                  name = value;
-                  selectedIndex = index;
-                });
-                widget.callback!(index + 1);
-              }
-            }));
   }
 }

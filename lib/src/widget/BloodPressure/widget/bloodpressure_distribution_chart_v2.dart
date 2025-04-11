@@ -61,9 +61,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
     widget.onViewMore();
   }
 
-  void _viewDetailId(String? id) {
-
-  }
+  void _viewDetailId(String? id) {}
 
   @override
   Widget build(BuildContext context) {
@@ -129,9 +127,9 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                             child: Text(
                               R.string.show_more.tr(),
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: R.color.mainColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF95682E),
                               ),
                             ),
                           ),
@@ -162,15 +160,15 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                       )
                     : _buildChart(model),
 
-                const SizedBox(height: 16),
-                Divider(
-                  color: R.color.gray_btn,
-                  thickness: 1,
-                  height: 1,
-                  indent: 16,
-                  endIndent: 16,
-                ),
-                const SizedBox(height: 16),
+                // const SizedBox(height: 16),
+                // Divider(
+                //   color: R.color.gray_btn,
+                //   thickness: 1,
+                //   height: 1,
+                //   indent: 16,
+                //   endIndent: 16,
+                // ),
+                // const SizedBox(height: 16),
 
                 // Thấp nhất / Trung bình / Cao nhất
                 // Row(
@@ -181,7 +179,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                 //     Expanded(
                 //       child: GestureDetector(
                 //         onTap: () async {
-                //           // TODO: 
+                //           // TODO:
                 //           // _viewDetailId(model.highestId);
                 //           // BloodSugarDetailTabbarController.of(context)
                 //           //     ?.loadInputWithId(1, model.highestId);
@@ -312,9 +310,9 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
         model.increaseLevelOne! +
         model.preIncrease! +
         model.normal! +
-        model.low!; 
+        model.low!;
 
-    const double radius = 80;
+    double fontsize = 12;
 
     return Container(
       padding: EdgeInsets.only(left: 8, right: 8),
@@ -325,55 +323,50 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
           const SizedBox(height: 12),
           // Chart "tần suất phân bổ"
           Expanded(
-            child: Center(
-              child: SizedBox(
-                width: radius * 2,
-                height: radius * 2,
-                child: PieChart(
-                  PieChartData(
-                    startDegreeOffset: 270,
-                    borderData: FlBorderData(show: false),
-                    sectionsSpace: 2,
-                    centerSpaceRadius: double.infinity,
-                    centerSpaceColor: Colors.transparent,
-                    pieTouchData: PieTouchData(
-                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                        print(pieTouchResponse);
-                      },
-                    ),
-                    sections: List.generate(
-                      5,
-                      (i) {
-                        const bool showTitle = false;
-                        late final double value;
-                        late final Color color;
-                        if (i == 0) {
-                          color = toColor(model.increaseLevelThreeColor);
-                          value = model.increaseLevelThree! / total * 100;
-                        } else if (i == 1) {
-                          color = toColor(model.increaseLevelTwoColor);
-                          value = model.increaseLevelTwo! / total * 100;
-                        } else if (i == 2) {
-                          color = toColor(model.increaseLevelOneColor);
-                          value = model.increaseLevelOne! / total * 100;
-                        } else if (i == 3) {
-                          color = toColor(model.preIncreaseColor);
-                          value = model.preIncrease! / total * 100;
-                        } else if (i == 4) {
-                          color = toColor(model.normalColor);
-                          value = model.normal! / total * 100;
-                        } else {
-                          color = toColor(model.lowColor);
-                          value = model.low! / total * 100;
-                        }
-                        return PieChartSectionData(
-                          color: color,
-                          value: value,
-                          showTitle: showTitle,
-                          radius: radius,
-                        );
-                      },
-                    ),
+            child: SizedBox(
+              height: 140,
+              child: PieChart(
+                PieChartData(
+                  startDegreeOffset: 270,
+                  borderData: FlBorderData(show: false),
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 30,
+                  centerSpaceColor: Colors.transparent,
+                  pieTouchData: PieTouchData(
+                    touchCallback: (FlTouchEvent event, pieTouchResponse) {},
+                  ),
+                  sections: List.generate(
+                    5,
+                    (i) {
+                      const bool showTitle = false;
+                      late final double value;
+                      late final Color color;
+                      if (i == 0) {
+                        color = toColor(model.increaseLevelThreeColor);
+                        value = model.increaseLevelThree! / total * 100;
+                      } else if (i == 1) {
+                        color = toColor(model.increaseLevelTwoColor);
+                        value = model.increaseLevelTwo! / total * 100;
+                      } else if (i == 2) {
+                        color = toColor(model.increaseLevelOneColor);
+                        value = model.increaseLevelOne! / total * 100;
+                      } else if (i == 3) {
+                        color = toColor(model.preIncreaseColor);
+                        value = model.preIncrease! / total * 100;
+                      } else if (i == 4) {
+                        color = toColor(model.normalColor);
+                        value = model.normal! / total * 100;
+                      } else {
+                        color = toColor(model.lowColor);
+                        value = model.low! / total * 100;
+                      }
+                      return PieChartSectionData(
+                        color: color,
+                        value: value,
+                        showTitle: showTitle,
+                        radius: 45,
+                      );
+                    },
                   ),
                 ),
               ),
@@ -381,86 +374,94 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
           ),
           const SizedBox(width: 12),
           // Guide
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              InkWell(
-                onTap: () => widget.onViewDetail(BloodPressureRangeType.very_high),
-                child: Padding(
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                InkWell(
+                  onTap: () => widget.onViewDetail(BloodPressureRangeType.very_high),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: CircleIndicator(
+                      color: toColor(model.increaseLevelThreeColor),
+                      number: (model.increaseLevelThree! / total * 100).round().toString(),
+                      text: R.string.grade_3_hypertension.tr(),
+                      fontsize: fontsize,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 4),
+                InkWell(
+                  onTap: () => widget.onViewDetail(BloodPressureRangeType.high2),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: CircleIndicator(
+                      color: toColor(model.increaseLevelTwoColor),
+                      number: (model.increaseLevelTwo! / total * 100).round().toString(),
+                      text: R.string.grade_2_hypertension.tr(),
+                      fontsize: fontsize,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 4),
+                InkWell(
+                  onTap: () => widget.onViewDetail(BloodPressureRangeType.high1),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: CircleIndicator(
+                      color: toColor(model.increaseLevelOneColor),
+                      number: (model.increaseLevelOne! / total * 100).round().toString(),
+                      text: R.string.grade_1_hypertension.tr(),
+                      fontsize: fontsize,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 4),
+                InkWell(
+                  onTap: () => widget.onViewDetail(BloodPressureRangeType.normal_high),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: CircleIndicator(
+                      color: toColor(model.preIncreaseColor),
+                      number: (model.preIncrease! / total * 100).round().toString(),
+                      text: R.string.normal_high.tr(),
+                      fontsize: fontsize,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 4),
+                Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: CircleIndicator(
-                    color: toColor(model.increaseLevelThreeColor),
-                    number: (model.increaseLevelThree! / total * 100).round().toString(),
-                    text: R.string.grade_3_hypertension.tr(),
+                  child: InkWell(
+                    onTap: () => widget.onViewDetail(BloodPressureRangeType.normal),
+                    child: CircleIndicator(
+                      color: toColor(model.normalColor),
+                      number: (model.normal! / total * 100).round().toString(),
+                      text: R.string.normal.tr(),
+                      fontsize: fontsize,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 4),
-              InkWell(
-                onTap: () => widget.onViewDetail(BloodPressureRangeType.high2),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: CircleIndicator(
-                    color: toColor(model.increaseLevelTwoColor),
-                    number: (model.increaseLevelTwo! / total * 100).round().toString(),
-                    text: R.string.grade_2_hypertension.tr(),
+                SizedBox(height: 4),
+                InkWell(
+                  onTap: () => widget.onViewDetail(BloodPressureRangeType.low),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: CircleIndicator(
+                      color: toColor(model.lowColor),
+                      number: (model.low! / total * 100).round().toString(),
+                      text: R.string.low.tr(),
+                      fontsize: fontsize,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 4),
-              InkWell(
-                onTap: () => widget.onViewDetail(BloodPressureRangeType.high1),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: CircleIndicator(
-                    color: toColor(model.increaseLevelOneColor),
-                    number: (model.increaseLevelOne! / total * 100).round().toString(),
-                    text: R.string.grade_1_hypertension.tr(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 4),
-              InkWell(
-                onTap: () => widget.onViewDetail(BloodPressureRangeType.normal_high),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: CircleIndicator(
-                    color: toColor(model.preIncreaseColor),
-                    number: (model.preIncrease! / total * 100).round().toString(),
-                    text: R.string.normal_high.tr(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 3),
-                child: InkWell(
-                  onTap: () => widget.onViewDetail(BloodPressureRangeType.normal),
-                  child: CircleIndicator(
-                    color: toColor(model.normalColor),
-                    number: (model.normal! / total * 100).round().toString(),
-                    text: R.string.normal.tr(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 4),
-              InkWell(
-                onTap: () => widget.onViewDetail(BloodPressureRangeType.low),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: CircleIndicator(
-                    color: toColor(model.lowColor),
-                    number: (model.low! / total * 100).round().toString(),
-                    text: R.string.low.tr(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 18),
-            ],
+                SizedBox(height: 18),
+              ],
+            ),
           ),
-          const SizedBox(width: 28),
+          const SizedBox(width: 12),
         ],
       ),
     );

@@ -49,6 +49,14 @@ enum BloodPressureRangeType {
 
   final int value;
   const BloodPressureRangeType(this.value);
+
+  // init from int
+  static BloodPressureRangeType fromInt(int value) {
+    return BloodPressureRangeType.values.firstWhere(
+      (e) => e.value == value,
+      orElse: () => BloodPressureRangeType.normal,
+    );
+  }
 }
 
 extension BloodPressureRangeTypeExtension on BloodPressureRangeType {

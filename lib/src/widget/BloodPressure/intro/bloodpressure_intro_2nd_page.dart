@@ -195,7 +195,7 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
                       )),
                       height: 64,
                     ),
-                    flex: i == 0 ? 3 : 1,
+                    flex: i == 0 ? 2 : 1,
                   ),
               ],
             ),
@@ -205,7 +205,7 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
               children: [
                 for (var j = 0; j < rangeTable[i].length; j++)
                   Expanded(
-                    flex: j == 0 ? 3 : 1,
+                    flex: j == 0 ? 2 : 1,
                     child: Container(
                       color: j == 0
                           ? _colorMap[rangeTable[i][0]]

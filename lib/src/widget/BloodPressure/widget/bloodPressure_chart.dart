@@ -9,7 +9,6 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -22,6 +21,7 @@ class BloodPressureChart extends StatefulWidget {
 
 class BloodPressureChartState extends State<BloodPressureChart>
     with AutomaticKeepAliveClientMixin<BloodPressureChart> {
+  final ScrollController _scrollController = ScrollController();
   @override
   bool get wantKeepAlive => true;
 
@@ -42,6 +42,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
     _refresh();
@@ -56,6 +62,19 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   void _viewHistory() {}
+
+  void _scrollToFocusIndex() {
+    // TODO: enhance
+    // final mediaWidth = MediaQuery.of(context).size.width;
+    // final width = (mediaWidth-200) / 5;
+    // final itemWidth = width + 20; // same as used in chart
+    // final offset = (_focusIndex * itemWidth) - (mediaWidth / 2) + (itemWidth / 2);
+    // _scrollController.animateTo(
+    //   offset.clamp(0.0, _scrollController.position.maxScrollExtent),
+    //   duration: const Duration(milliseconds: 300),
+    //   curve: Curves.easeInOut,
+    // );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +96,18 @@ class BloodPressureChartState extends State<BloodPressureChart>
             Message.showToastMessage(context, state.message);
           }
 
+          List<SubTrendItemModel> trends = [];
           if (state is BloodPressureTrendLoaded) {
             model = state.model;
+            trends.clear();
+
+            model.trendItems.items.forEach((element) {
+              trends.addAll(element.subTrendItems);
+            });
+
+            if (_focusIndex == -1) {
+              _focusIndex = (trends.length - 1) ~/ 2;
+            }
           }
 
           if (model == null) {
@@ -102,19 +131,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
               color: R.color.transparent,
               padding: EdgeInsets.only(left: 18, right: 18),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(R.string.blood_pressure_trend.tr(),
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                        ],
-                      ),
-                    ],
-                  ),
                   SizedBox(height: 14),
                   if (model.trendItems.items.length == 0)
                     EmptyDataBox(
@@ -125,11 +143,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       },
                     )
                   else ...[
-                    _buildNavigatorIndex([]),
+                    _buildNavigatorIndex(trends),
                     SizedBox(height: 24),
-                    _buildChart(model),
+                    _buildChart(model, trends),
                   ],
-                  SizedBox(height: 26),
                 ],
               ),
             ),
@@ -153,9 +170,6 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   Widget _buildNavigatorIndex(List<SubTrendItemModel> trends) {
-    if (_focusIndex == -1) {
-      _focusIndex = (trends.length - 1) ~/ 2;
-    }
     String selectedDate = '21/08';
     String selectedDateTime = '07:00';
     String selectedType = 'Tăng huyết áp độ 2';
@@ -224,6 +238,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
                 InkWell(
                   onTap: _viewHistory,
                   child: SizedBox(
@@ -245,13 +260,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 InkWell(
                   onTap: _focusIndex > 0
                       ? () {
                           setState(() {
                             _focusIndex = max(0, _focusIndex - 1);
                           });
+                          if (_focusIndex > 0) {
+                            _scrollToFocusIndex();
+                          }
                         }
                       : null,
                   child: Container(
@@ -293,6 +311,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           setState(() {
                             _focusIndex = min(trends.length - 1, _focusIndex + 1);
                           });
+                          if (_focusIndex < trends.length - 1) {
+                            _scrollToFocusIndex();
+                          }
                         }
                       : null,
                   child: Container(
@@ -315,7 +336,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
               ],
             ),
             Row(
@@ -353,16 +374,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
     );
   }
 
-  Widget _buildChart(BloodPressureTrendModel model) {
+  Widget _buildChart(BloodPressureTrendModel model, List<SubTrendItemModel> trends) {
     final width = (MediaQuery.of(context).size.width - 200) / 5;
-
-    List<int?> dates = [];
-    List<SubTrendItemModel> trends = [];
-    model.trendItems.items.forEach((element) {
-      dates.add(element.date);
-      trends.addAll(element.subTrendItems);
-      List.generate(element.subTrendItems.length - 1, (index) => dates.add(null));
-    });
 
     // double minY = trends
     //     .map<double>((e) => (e.diastolic! < e.systolic! ? e.diastolic! : e.systolic!))
@@ -390,18 +403,21 @@ class BloodPressureChartState extends State<BloodPressureChart>
               child: Column(
                 children: [
                   Spacer(flex: 1),
-                  Text(_mediumHigh.toString(),
+                  Text(_mediumHigh.round().toString(),
                       style: TextStyle(color: R.color.black, fontSize: 14)),
                   Spacer(flex: 1),
-                  Text(_mediumLow.toString(), style: TextStyle(color: R.color.black, fontSize: 14)),
+                  Text(_mediumLow.round().toString(),
+                      style: TextStyle(color: R.color.black, fontSize: 14)),
                   Spacer(flex: 2),
-                  Icon(Icons.heat_pump_rounded, size: 20),
+                  // Icon(Icons.heat_pump_rounded, size: 20),
+                  Image.asset(R.drawable.ic_bloodpressure_pulse, width: 20, height: 20),
                 ],
               ),
             ),
             SizedBox(width: 10),
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 reverse: trends.length > 1,
                 scrollDirection: Axis.horizontal,
                 child: Container(
@@ -463,6 +479,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 //  setState(() {
                                 touchIndex = value.toInt();
                                 //  });
+                                setState(() {
+                                  _focusIndex = touchIndex;
+                                });
                               }
                             } else {
                               touchIndex = -1;
@@ -490,7 +509,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             if (index < 0 ||
                                 index >= trends.length ||
                                 trends[index].pulseRate == null) {
-                              return '0';
+                              return '--';
                             }
                             // return heart rate value
                             return trends[index].pulseRate!.round().toString();
@@ -596,15 +615,13 @@ class BloodPressureChartState extends State<BloodPressureChart>
         isStrokeCapRound: true,
         dotData: FlDotData(
             show: true,
-            // checkToShowDot: (spot, barData) {
-            //   return spot.x == trends.length - 1;
-            // },
+            checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
               return FlDotCirclePainter(
-                radius: trends.length - 1 == index ? 6.5 : 4,
+                radius: 4,
                 color: toColor(model.colors!.first),
-                strokeWidth: trends.length - 1 == index ? 18 : 0,
-                strokeColor: toColor(model.colors!.first).withOpacity(0.2),
+                strokeWidth: index == _focusIndex ? 12 : 0,
+                strokeColor: index == _focusIndex ? Colors.red.withOpacity(0.5) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),
@@ -619,15 +636,13 @@ class BloodPressureChartState extends State<BloodPressureChart>
         isStrokeCapRound: true,
         dotData: FlDotData(
             show: true,
-            // checkToShowDot: (spot, barData) {
-            //   return spot.x == trends.length - 1;
-            // },
+            checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
               return FlDotCirclePainter(
-                radius: trends.length - 1 == index ? 6.5 : 4,
+                radius: 4,
                 color: toColor(model.colors!.last),
-                strokeWidth: trends.length - 1 == index ? 18 : 0,
-                strokeColor: toColor(model.colors!.last).withOpacity(0.2),
+                strokeWidth: index == _focusIndex ? 12 : 0,
+                strokeColor: index == _focusIndex ? Colors.red.withOpacity(0.5) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),

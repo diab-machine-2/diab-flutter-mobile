@@ -480,6 +480,8 @@ class Drawables {
       "lib/res/drawables/bloodpressure/im_bloodpressure_intro.png";
   String get im_bloodpressure_input_manual =>
       "lib/res/drawables/bloodpressure/im_bloodpressure_input_manual.png";
+  String get ic_bloodpressure_pulse =>
+      "lib/res/drawables/bloodpressure/ic_bloodpressure_pulse.png";
 
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";

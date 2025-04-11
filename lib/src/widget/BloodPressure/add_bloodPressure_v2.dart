@@ -255,7 +255,15 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _navigateAfterSuccess(String id, List<ImagesModel> images, [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
-    int indexRange = 0;
+    double _valueOfSystolic = double.tryParse(_controllerSystolic.text.replaceAll(",", ".") != ""
+          ? _controllerSystolic.text.replaceAll(",", ".")
+          : "0")!;
+    double _valueOfDiastolic = double.tryParse(_controllerDiastolic.text.replaceAll(",", ".") != ""
+          ? _controllerDiastolic.text.replaceAll(",", ".")
+          : "0")!;
+    int indexRange = _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
+    BloodPressureRangeType rangeType =
+        BloodPressureRangeType.fromInt(indexRange + 1);
     final data = BloodPressureResultDto(
       id: id,
       dateTime: selectedDate,
@@ -265,14 +273,16 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       indexRange: indexRange,
       diastolic: double.tryParse(_controllerDiastolic.text) ?? 0,
       systolic: double.tryParse(_controllerSystolic.text) ?? 0,
+      pulse:  double.tryParse(_controllerHeart.text) ?? 0,
+      pulseResultText: null,
       note: _controllerNote.text,
       files: images,
-      rangeType: BloodPressureRangeType.high1,
+      rangeType: rangeType,
       isFetchAnalysis: isDataChange,
       healthRecommendation: null,
     );
     Navigator.of(context)
-        .pushReplacementNamed(NavigatorName.add_blood_sugar_result, arguments: data);
+        .pushReplacementNamed(NavigatorName.add_bloodpressure_result, arguments: data);
   }
 
   @override
