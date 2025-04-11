@@ -17,8 +17,17 @@ class WelcomePackageScreenPage extends StatefulWidget {
   final String? subTitle;
   final VoidCallback? onSkip;
   final VoidCallback? onNavigateToMyPlan;
+  final String? zaloGroup;
 
-  WelcomePackageScreenPage({Key? key, required this.icon, required this.title, required this.subTitle, required this.onSkip, required this.onNavigateToMyPlan}) : super(key: key);
+  WelcomePackageScreenPage({
+    Key? key,
+    required this.icon,
+    required this.title,
+    required this.subTitle,
+    required this.onSkip,
+    required this.onNavigateToMyPlan,
+    this.zaloGroup,
+  }) : super(key: key);
 
   @override
   _WelcomePackageScreenPageState createState() =>
@@ -162,7 +171,8 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
   }
 
   Future<void> _handleButtonPress() async {
-    final zaloGroup = await AppSettings.getZaloGroup() ?? '';
+    final zaloGroup = widget.zaloGroup ?? '';
+    print('[ONBOARDING] handle button press zaloGroup: $zaloGroup');
 
     if (zaloGroup.isEmpty) {
       _navigateToMyPlan();
@@ -192,34 +202,31 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
   }
 
   Widget _buildActionButton() {
-    return Container(
-        height: 48,
-        width: 180,
-        margin: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-            color: R.color.mainColor,
-            borderRadius: BorderRadius.circular(200),
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  R.color.greenGradientTop,
-                  R.color.greenGradientBottom
-                ])),
-        child: Center(
-            child: FutureBuilder<String?>(
-                future: AppSettings.getZaloGroup(),
-                builder: (context, snapshot) {
-                  final buttonText = (snapshot.data?.isNotEmpty ?? false)
-                      ? R.string.join_zalo_group.tr()
-                      : R.string.my_plan.tr();
+    final String? zaloGroup = widget.zaloGroup;
+    final bool hasZaloGroup = zaloGroup != null && zaloGroup.isNotEmpty;
 
-                  return Text(buttonText,
-                      style: TextStyle(
-                          color: R.color.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600));
-                },)));
+    print(
+        '[ONBOARDING] _buildActionButton zaloGroup: $zaloGroup, hasZaloGroup: $hasZaloGroup');
+
+    return Container(
+      height: 48,
+      width: 180,
+      margin: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+          color: R.color.mainColor,
+          borderRadius: BorderRadius.circular(200),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.centerRight,
+              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+      child: Center(
+        child: Text(
+          hasZaloGroup ? R.string.join_zalo_group.tr() : R.string.my_plan.tr(),
+          style: TextStyle(
+              color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
   }
 
   Future<bool> _backPressed() async {

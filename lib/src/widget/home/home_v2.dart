@@ -399,6 +399,30 @@ class _HomeControllerState extends State<HomeController>
     return true;
   }
 
+  Future<String> _fetchCustomerReceivesUser() async {
+    try {
+      // Create cubit instance with repository
+      final repository = AppRepository();
+      final welcomeCubit = WelcomePackageScreenCubit(repository);
+
+      // Call the API and get zaloGroup
+      String? zaloGroup = await welcomeCubit.getCustomerReceivesUser();
+
+      // Save to AppPreference if not null
+      if (zaloGroup != null) {
+        await AppSettings.saveZaloGroup(zaloGroup);
+      }
+
+      print(
+          '[ONBOARDING] fetchCustomerReceivesUserAndWait completed: $zaloGroup');
+      return zaloGroup ?? '';
+    } catch (e, s) {
+      // Log error but don't disrupt the UI flow
+      TrackingManager.recordError(e, s);
+    }
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -420,14 +444,15 @@ class _HomeControllerState extends State<HomeController>
             if (false == model?.packageAccount?.isDisplayedWelcome &&
                 !_isDisplayedWelcome) {
               _isDisplayedWelcome = true;
-              // if (AppSettings.isDisplayedWelcome == false) {
-              //   Future.delayed(Duration.zero, () async {
-              //     _showWelcomeDialog(model?.packageAccount);
-              //   });
-              // } else {}
+              // Important: Changed to handle zaloGroup retrieval properly
               Future.delayed(Duration.zero, () async {
-                  _showWelcomeDialog(model?.packageAccount);
-                });
+                // Now get the latest zaloGroup
+                String? zaloGroup = await _fetchCustomerReceivesUser();
+                print(
+                    '[ONBOARDING] before showWelcomeDialog zaloGroup: $zaloGroup');
+
+                _showWelcomeDialog(model?.packageAccount, zaloGroup);
+              });
             }
             //
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
@@ -941,8 +966,12 @@ class _HomeControllerState extends State<HomeController>
         }));
   }
 
-  void _showWelcomeDialog(PackageAccountHomeModel? packageAccount) async {
+  void _showWelcomeDialog(
+      PackageAccountHomeModel? packageAccount, String? zaloGroup) async {
     bool isRoadmap = packageAccount?.package?.isRoadmap ?? false;
+
+    print('[ONBOARDING] _showWelcomeDialog with zaloGroup: $zaloGroup');
+
     final _ = await NavigationUtil.navigatePage(
       context,
       WelcomePackageScreenPage(
@@ -957,6 +986,7 @@ class _HomeControllerState extends State<HomeController>
             : R.string.package_experience_subtitle.tr(),
         onSkip: () async {},
         onNavigateToMyPlan: () async {},
+        zaloGroup: zaloGroup,
       ),
     );
   }

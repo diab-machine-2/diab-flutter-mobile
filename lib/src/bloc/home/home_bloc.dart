@@ -62,8 +62,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _fetchNews();
     } else if (event is HomeFetchBannersEvent) {
       yield* _fetchBanners();
-    } else if (event is HomeFetchCustomerReceivesUser) {
-      yield* _fetchCustomerReceivesUser();
     } else if (event is FetchHome) {
       // Fetch all data
       yield* _fetchHomes();
@@ -144,6 +142,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           print(e);
           return true;
         });
+
+        // // load customer receives user
+        // yield* _fetchCustomerReceivesUser();
 
         // load banners
         yield* _fetchBanners();
@@ -347,27 +348,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     yield currentState.copyWith(lessons: lessonsResponse);
   }
 
-  Stream<HomeState> _fetchCustomerReceivesUser() async* {
-    String? zaloGroup;
-    try {
-      // Create cubit instance with repository
-      final repository = AppRepository();
-      final welcomeCubit = WelcomePackageScreenCubit(repository);
-
-      // Call the API and get zaloGroup
-      zaloGroup = await welcomeCubit.getCustomerReceivesUser();
-
-      // Save to AppPreference if not null
-      if (zaloGroup != null) {
-        await AppSettings.saveZaloGroup(zaloGroup);
-      }
-    } catch (e, s) {
-      // Log error but don't disrupt the UI flow
-      TrackingManager.recordError(e, s);
-    }
-    final currentState = state as HomeLoaded;
-    yield currentState.copyWith(zaloGroup: zaloGroup);
-  }
 
   Future<void> shareLesson(String lessonId, BuildContext context) async {
     try {

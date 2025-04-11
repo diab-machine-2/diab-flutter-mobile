@@ -416,6 +416,7 @@ class AppSettings {
 
    static Future<void> saveZaloGroup(String? zaloGroup) async {
     if (zaloGroup != null && zaloGroup.isNotEmpty) {
+      print('[ONBOARDING] saveZaloGroup: $zaloGroup');
       appPreference.setData("zaloGroup", zaloGroup);
     }
   }
