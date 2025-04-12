@@ -187,7 +187,11 @@ class _BloodPressureDetailTabbarControllerState
             Expanded(
               child: TabBarView(controller: _tabController, children: [
                 BloodPressureOverviewController(key: overViewKey),
-                BloodPressureDetailListingController(key: detailKey)
+                BloodPressureDetailListingController(
+                  key: detailKey,
+                  initBloodPressureID: null,
+                  initPeriodFilterType: periodFilterType,
+                ),
               ]),
             ),
           ]),

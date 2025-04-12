@@ -7,6 +7,7 @@ import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
 import 'widget/BloodPressure/add_bloodpressure_result.dart';
+import 'widget/BloodPressure/bloodPressure_detail_listing.dart';
 import 'widget/BloodPressure/intro/bloodpressure_intro_1st_page.dart';
 import 'widget/BloodPressure/intro/bloodpressure_intro_2nd_page.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
@@ -100,6 +101,14 @@ class AppRoutes {
         break;
       case NavigatorName.add_bloodpressure_result:
         page = PageAddBloodPressureResult(data: settings.arguments as BloodPressureResultDto);
+        break;
+      case NavigatorName.detail_bloodpressure_listing:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BloodPressureDetailListingController(
+          initBloodPressureID: data?['initBloodPressureID'],
+          initPeriodFilterType: data?['initPeriodFilterType'],
+          initBloodPressureRangeType: data?['initBloodPressureRangeType'],
+        );
         break;
       // ~ END: Huyet Ap (mới) ~
       default:

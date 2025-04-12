@@ -96,6 +96,19 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     }
   }
 
+  void _viewListing() {
+    Navigator.pushNamed(context, NavigatorName.detail_bloodpressure_listing,
+        arguments: {'initPeriodFilterType': _periodFilterType});
+  }
+
+  void _viewFilteredListing(BloodPressureRangeType rangeType, String? bloodPressureID) {
+    Navigator.pushNamed(context, NavigatorName.detail_bloodpressure_listing, arguments: {
+      'initBloodPressureID': bloodPressureID,
+      'initBloodPressureRangeType': rangeType.value,
+      'initPeriodFilterType': _periodFilterType,
+    });
+  }
+
   Future<void> _loadAITrend() async {
     final bloodPressureInputAIAnalysis =
         await BloodPressureClient().fetchBloodPressureAlltimeAnalysis(_periodFilterType);
@@ -275,8 +288,13 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     return BloodPressureDistributionChart(
       key: _bloodPressureDistributionChartKey,
       periodFilterType: _periodFilterType,
-      onViewMore: () {},
-      onViewDetail: (p0) => {},
+      onViewMore: _viewListing,
+      onViewDetail: (rangeType) => {
+        _viewFilteredListing(
+          rangeType,
+          null,
+        ),
+      },
     );
   }
 
