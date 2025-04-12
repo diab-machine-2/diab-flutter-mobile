@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -7,7 +5,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
-import 'package:medical/src/utils/app_storages.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_listing.dart';
@@ -15,8 +13,6 @@ import 'package:medical/src/widget/BloodPressure/overview.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 
 import 'bloodpressure_result.dto.dart';
 import 'intro/widgets/bloodpresure_lesson_section.dart';
@@ -48,12 +44,14 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   final GlobalKey<BloodPressureDetailListingControllerState> _detailKey = GlobalKey();
 
   int _periodFilterType = 3;
+  String? _aiSuggestion;
 
   @override
   void initState() {
     super.initState();
     // _tabController = new TabController(vsync: this, length: 2);
     Observable.instance.addObserver(this);
+    _reload();
     // DartNotificationCenter.subscribe(
     //     channel: 'BloodPressure_change_data',
     //     observer: this,
@@ -95,6 +93,25 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     } finally {
       _isDisposing = false;
       super.dispose();
+    }
+  }
+
+  Future<void> _loadAITrend() async {
+    final bloodPressureInputAIAnalysis =
+        await BloodPressureClient().fetchBloodPressureAlltimeAnalysis(_periodFilterType);
+    if (bloodPressureInputAIAnalysis != null) {
+      _aiSuggestion = bloodPressureInputAIAnalysis;
+    }
+  }
+
+  void _reload() async {
+    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType);
+    _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
+    _overViewKey.currentState?.reloadData(_periodFilterType);
+    _detailKey.currentState?.reloadData(_periodFilterType);
+    await _loadAITrend();
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -165,7 +182,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
                   const SizedBox(height: 12),
                   _buildTrendingChart(),
                   const SizedBox(height: 12),
-                  _sectionAIHelp(null, null),
+                  // TODO: Find range type
+                  _sectionAIHelp(_aiSuggestion, BloodPressureRangeType.normal),
                   const SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -237,13 +255,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     final int selectedIndex = _periodFilterType - 1;
     return HorizontalSelector(
       onSelected: (value) {
-        setState(() {
-          _periodFilterType = value + 1;
-        });
-        _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType);
-        _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
-        _overViewKey.currentState?.reloadData(_periodFilterType);
-        _detailKey.currentState?.reloadData(_periodFilterType);
+        _periodFilterType = value + 1;
+        _reload();
       },
       initialValue: selectedIndex,
       values: values,
@@ -338,84 +351,5 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
         ],
       ),
     );
-  }
-
-  void _showMaterialDialog() async {
-    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-    if (hasHealthConnection == true) {
-      Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
-          arguments: {'type': 'input', 'id': null});
-    } else {
-      String healthIcon =
-          Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_healthConnect;
-      String healthTitle = Platform.isIOS
-          ? R.string.connect_from_Apple_Health.tr()
-          : R.string.connect_from_Health_Connect.tr();
-      showModalBottomSheet(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        backgroundColor: R.color.transparent,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => Container(
-          height: 280,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          margin: EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(20),
-                alignment: Alignment.center,
-                decoration:
-                    BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
-                child: Text(
-                  R.string.choose_how_to_enter.tr(),
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: R.color.textDark,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  children: [
-                    ButtonWidget(
-                      isIconSvg: false,
-                      icon: healthIcon,
-                      backgroundColor: Color(0xFFE4FCF3),
-                      textColor: Color(0xff249B92),
-                      title: healthTitle,
-                      onPressed: () => RequestHealthConnect.showModal(context,
-                          callback: () => Navigator.pop(context)),
-                    ),
-                    SizedBox(height: 15),
-                    ButtonWidget(
-                      icon: R.icons.ic_tap,
-                      backgroundColor: Color(0xFFE4FCF3),
-                      textColor: Color(0xff249B92),
-                      title: 'Nhập thủ công',
-                      onPressed: () => Navigator.pushNamed(
-                          context, NavigatorName.add_blood_pressure,
-                          arguments: {'type': 'input', 'id': null}),
-                    ),
-                    SizedBox(height: 15),
-                    ButtonWidget(
-                      backgroundColor: Color(0xFFF4F4F4),
-                      textColor: Color(0xff172823),
-                      title: 'Đóng',
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      );
-    }
   }
 }

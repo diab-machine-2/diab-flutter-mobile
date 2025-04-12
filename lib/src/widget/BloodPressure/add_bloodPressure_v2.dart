@@ -18,7 +18,6 @@ import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/model/response/config/blood_pressure_color_config.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -28,13 +27,13 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widgets/toggle_buttons.dart';
 
-import '../../repo/home/home_client.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../../widgets/spacing_row.dart';
-import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'bloodpressure_result.dto.dart';
+import 'widget/bloodpressure_warning_popup.dart';
 
 class AddBloodPressureController extends StatefulWidget {
   final String? type;
@@ -96,8 +95,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   int _lastTimeFrameIndex = 0;
   final List<TimeFrameModel> _times = [
     // After filter from api will look like this
-    TimeFrameModel(id: "Prd01", code: "Prd01", name: "Thức dậy"),
-    TimeFrameModel(id: "Prd02", code: "Prd02", name: "Bất kì"),
+    TimeFrameModel(id: "Prd01", code: "Prd01", name: "Thức giấc"),
+    TimeFrameModel(id: "Prd19", code: "Prd19", name: "Bất kì"),
   ];
   bool _isInputHeartRate = false;
 
@@ -105,7 +104,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   void initState() {
     super.initState();
     if (widget.type == 'update') {
-      _loadDataDetail();
+      _loadConfig().then((value) {
+        _loadDataDetail();
+      });
     } else {
       _loadConfig();
     }
@@ -194,28 +195,42 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
       _controllerHeart.text = model!.pulseRate?.toInt().toString() ?? '';
-      // TODO: BLOOD PRESSURE
-      // _controllerNote.text = model?.note ?? '';
-      // _controllerReason.text = model!.reason ?? '';
+      _controllerNote.text = model?.note ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
-      selectedTimeFrame =
-          TimeFrameModel(id: model!.timeFrameId ?? '', code: '', name: model!.timeFrame ?? '');
+      if (_times.isNotEmpty) {
+        if (model!.timeFrameId == null) {
+          _lastTimeFrameIndex = 0;
+          selectedTimeFrame = _times.first;
+        } else {
+          _lastTimeFrameIndex = _times.indexWhere((element) => element.id == model!.timeFrameId);
+          if (_lastTimeFrameIndex == -1) {
+            _lastTimeFrameIndex = 0;
+            selectedTimeFrame = _times.first;
+          }
+        }
+      }
       files.addAll(model!.images);
     }
     _checkValidateInput();
     setState(() {});
   }
 
-  void _loadConfig() async {
+  Future<void> _loadConfig() async {
     BotToast.showLoading();
     final result = await Future.wait([
-      GlucoseClient().fetchFlucoseTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
+      BloodPressureClient().fetchBloodPressureTimeFrame(),
       BloodPressureClient().fetchColorConfig(),
+      BloodPressureClient().fetchBloodPressureTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
     ]);
-    if (result.length > 1) {
+    if (result.length > 2) {
       final timeFrames = result[0] as List<TimeFrameModel>;
       final colors = result[1] as List<BloodPressureColorConfig>?;
-      selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+      final timeFramesSelected = result[2] as List<TimeFrameModel>?;
+      if (timeFramesSelected?.isNotEmpty == true && timeFrames.any((e) => timeFrames.first.id == e.id)) {
+        selectedTimeFrame = timeFramesSelected?.first;
+      } else {
+        selectedTimeFrame = timeFrames.first;
+      }
 
       if (colors != null) {
         _colorList = colors.map(((e) {
@@ -250,20 +265,71 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   void _doHealthConnect() async {
-    // TODO: BLOOD PRESSURE
+    RequestHealthConnect.showModal(context,
+      callback: () => Navigator.pop(context));
+  }
+
+  bool _isDataChange() {
+    // If no original model exists, consider it as new data
+    if (model == null) {
+      return true;
+    }
+
+    // Check if number/index has changed
+    final currentSystolicInputStr = _controllerSystolic.text;
+    final originalSystolicValueStr = roundNumber(model!.systolic!);
+
+    if (currentSystolicInputStr != originalSystolicValueStr) {
+      return true;
+    }
+
+    // Check if diastolic input has changed
+    final currentDiastolicInputStr = _controllerDiastolic.text;
+    final originalDiastolicValueStr = roundNumber(model!.diastolic!);
+    if (currentDiastolicInputStr != originalDiastolicValueStr) {
+      return true;
+    }
+
+    // Check if heart rate input has changed
+    final currentHeartRateInputStr = _controllerHeart.text;
+    final originalHeartRateValueStr = roundNumber(model!.pulseRate ?? 0);
+    if (currentHeartRateInputStr != originalHeartRateValueStr) {
+      return true;
+    }
+
+    // Check if note has changed
+    final currentNote = _controllerNote.text;
+    if (currentNote != (model!.note ?? '')) {
+      return true;
+    }
+
+    // Check if date has changed
+    // final originalDate =
+    //     DateTime.fromMillisecondsSinceEpoch(model!.createDate! * 1000);
+    // if (selectedDate.millisecondsSinceEpoch !=
+    //     originalDate.millisecondsSinceEpoch) {
+    //   return true;
+    // }
+
+    // Check if images have changed (either count or removals)
+    if (files.length != model!.images.length || removeIDs.isNotEmpty) {
+      return true;
+    }
+
+    // No changes detected
+    return false;
   }
 
   void _navigateAfterSuccess(String id, List<ImagesModel> images, [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     double _valueOfSystolic = double.tryParse(_controllerSystolic.text.replaceAll(",", ".") != ""
-          ? _controllerSystolic.text.replaceAll(",", ".")
-          : "0")!;
+        ? _controllerSystolic.text.replaceAll(",", ".")
+        : "0")!;
     double _valueOfDiastolic = double.tryParse(_controllerDiastolic.text.replaceAll(",", ".") != ""
-          ? _controllerDiastolic.text.replaceAll(",", ".")
-          : "0")!;
+        ? _controllerDiastolic.text.replaceAll(",", ".")
+        : "0")!;
     int indexRange = _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
-    BloodPressureRangeType rangeType =
-        BloodPressureRangeType.fromInt(indexRange + 1);
+    BloodPressureRangeType rangeType = BloodPressureRangeType.fromInt(indexRange + 1);
     final data = BloodPressureResultDto(
       id: id,
       dateTime: selectedDate,
@@ -273,13 +339,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       indexRange: indexRange,
       diastolic: double.tryParse(_controllerDiastolic.text) ?? 0,
       systolic: double.tryParse(_controllerSystolic.text) ?? 0,
-      pulse:  double.tryParse(_controllerHeart.text) ?? 0,
+      pulse: double.tryParse(_controllerHeart.text) ?? 0,
       pulseResultText: null,
       note: _controllerNote.text,
       files: images,
       rangeType: rangeType,
       isFetchAnalysis: isDataChange,
-      healthRecommendation: null,
+      healthRecommendation: null, // TODO: fill healthRecommendation
     );
     Navigator.of(context)
         .pushReplacementNamed(NavigatorName.add_bloodpressure_result, arguments: data);
@@ -320,7 +386,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: _bloodPressureRange(),
                             ),
-                            const SizedBox(height: 48),
+                            const SizedBox(height: 20),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: _dateTimeFrameV2(),
@@ -605,7 +671,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
     int indexRange = _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
     return SpacingColumn(
-      spacing: 50,
+      spacing: 16,
       children: [
         if (_valueOfSystolic != 0 && _valueOfDiastolic != 0)
           RichText(
@@ -1242,24 +1308,22 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
     final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
-    // TODO: BLOOD PRESSURE
-    // final note = _controllerNote.text;
-    // final reason = _controllerReason.text;
-    final note = '';
+    final note = _controllerNote.text;
     final reason = '';
 
     if (systolic.isEmpty) {
       Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
       return;
     }
-    if (textValidate!.isNotEmpty && reason.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
-      return;
-    }
     if (diastolic.isEmpty) {
       Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
       return;
     }
+    // Skip validate reason
+    // if (textValidate!.isNotEmpty && reason.isEmpty) {
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
+    //   return;
+    // }
     if (_isInputHeartRate && pulseRate.isEmpty) {
       Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
       return;
@@ -1292,8 +1356,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           reason,
           removeIDs,
           paths);
-      if (result == true) {
-        Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
+      if (result != null) {
+        await _showReasonsDialog(result.id, systolic, diastolic);
+        _navigateAfterSuccess(result.id, result.images, _isDataChange());
       }
 
       BotToast.closeAllLoading();
@@ -1312,24 +1377,22 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
     final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
-    // TODO: BLOOD PRESSURE
-    // final note = _controllerNote.text;
-    // final reason = _controllerReason.text;
-    final note = '';
+    final note = _controllerNote.text;
     final reason = '';
 
     if (systolic.isEmpty) {
       Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
       return;
     }
-    if (textValidate!.isNotEmpty && reason.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
-      return;
-    }
     if (diastolic.isEmpty) {
       Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
       return;
     }
+    // Skip validate reason
+    // if (textValidate!.isNotEmpty && reason.isEmpty) {
+    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
+    //   return;
+    // }
     if (_isInputHeartRate && pulseRate.isEmpty) {
       Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
       return;
@@ -1358,7 +1421,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           note,
           reason,
           paths);
-      if (result == true) {
+      if (result != null) {
         // await TrackingManager.analytics.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
@@ -1368,10 +1431,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         //   },
         // );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
-        await HomeClient().completeSmartGoal(
-            selectedDate, widget.goalId ?? '', 1, ScheduleType.blood_pressure.typeIndex);
         // }
-        Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
+        await _showReasonsDialog(result.id, systolic, diastolic);
+        _navigateAfterSuccess(result.id, result.images);
       }
 
       BotToast.closeAllLoading();
@@ -1381,6 +1443,33 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         Message.showToastMessage(context, e.message);
       } else {
         Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
+  Future<void> _showReasonsDialog(String id, String systolic, String diastolic) async {
+    double systolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
+    double diastolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
+    int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
+    if (indexRange >= BloodPressureRangeType.normal_high.value) {
+      BotToast.showLoading();
+      final reasons = await BloodPressureClient().fetchReasons();
+      if (reasons.isEmpty) {
+        BotToast.closeAllLoading();
+        return;
+      }
+      BotToast.closeAllLoading();
+      // show input reason dialog
+      final selectedReasons = await showDialog(context: context, builder: (context) {
+        return BloodPressureWarningPopupWidget(
+          reasons: reasons,
+        );
+      });
+      if (selectedReasons != null && selectedReasons.isNotEmpty) {
+        BotToast.showLoading();
+        final List<String> reasonKeys = selectedReasons.map((e) => e.key).toList();
+        await BloodPressureClient().updateReasons(id, reasonKeys);
+        BotToast.closeAllLoading();
       }
     }
   }
@@ -1482,10 +1571,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
     final pulseRate = _controllerHeart.text;
-    // TODO: BLOOD PRESSURE
-    // final note = _controllerNote.text;
-    // final reason = _controllerReason.text;
-    final note = '';
+    final note = _controllerNote.text;
     final reason = '';
     if (model != null) {
       final noteText = model!.note ?? '';

@@ -1,18 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/base/keyvalue.dart';
 
 class BloodPressureWarningPopupWidget extends StatefulWidget {
-  BloodPressureWarningPopupWidget({super.key});
+  BloodPressureWarningPopupWidget({super.key, required this.reasons});
 
-  final List<String> reasons = [
-    'Thiếu ngủ',
-    'Tức giận',
-    'Buồn',
-    'Đói',
-    'Vận động quá sức',
-    'Không rõ lý do',
-  ];
+  final List<KeyValue> reasons;
 
   @override
   State<BloodPressureWarningPopupWidget> createState() => _BloodPressureWarningPopupWidgetState();
@@ -21,7 +15,7 @@ class BloodPressureWarningPopupWidget extends StatefulWidget {
 class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPopupWidget> {
   BloodPressureWarningPopupStep _step = BloodPressureWarningPopupStep.warning;
 
-  final List<String> _selectedReasons = [];
+  final List<KeyValue> _selectedReasons = [];
 
   void _inputtedReason() {
     setState(() {
@@ -36,8 +30,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
   }
 
   void _confirm() {
-    // TODO: call api
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(_selectedReasons);
   }
 
   @override
@@ -67,9 +60,8 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                   ),
                 ),
               ),
-              // TODO: replace icon
               Image.asset(
-                R.drawable.ic_warning,
+                R.drawable.ic_bloodpressure_warning,
                 width: 43,
                 height: 43,
               ),
@@ -116,7 +108,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                         elevation: 0,
                         pressElevation: 0.1,
                         label: Text(
-                          reason,
+                          reason.value,
                           style: TextStyle(
                             color: selected ? R.color.white : Color(0xFF636A6B),
                             fontWeight: selected ? FontWeight.bold : FontWeight.normal,

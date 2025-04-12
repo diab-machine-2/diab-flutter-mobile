@@ -55,6 +55,7 @@ import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../service/rating_service.dart';
+import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
@@ -86,6 +87,7 @@ class _HomeControllerState extends State<HomeController>
   HomeModel? model;
   String _urlPopup = '';
   bool _haveInputGlucoseAlready = false;
+  bool _haveInputBloodpressureAlready = false;
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
@@ -427,6 +429,14 @@ class _HomeControllerState extends State<HomeController>
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty == true
               && state.model.measurements?.first.value1?.isNotEmpty == true
               && state.model.measurements?.first.value1 != "--";
+            //
+            if (state.model.measurements?.isNotEmpty == true) {
+              List<HomeMeasurementData> huyetAps =
+                  state.model.measurements!.where((e) => e.title == "Huyết áp").toList();
+              _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
+                  huyetAps.first.value1?.isNotEmpty == true &&
+                  huyetAps.first.value1 != "--";
+            }
           }
 
           Widget activitiesW = HomeActivity(
@@ -1067,6 +1077,11 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.blood_pressure:
       case ScheduleType.blood_pressure_recommend:
+        // check first time open blood pressure intro
+        if (!_haveInputBloodpressureAlready) {
+          Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+          return;
+        }
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);

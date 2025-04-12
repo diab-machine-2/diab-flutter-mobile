@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/base/keyvalue.dart';
 import 'package:medical/src/modal/blood_pressure/bloodPressure_Input_data_model.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_distribution.dart';
@@ -7,12 +11,14 @@ import 'package:medical/src/modal/blood_pressure/blood_pressure_heart_rate.dart'
 import 'package:medical/src/modal/blood_pressure/blood_pressure_statistic.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
+import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/model/response/config/blood_pressure_color_config.dart';
 import 'package:medical/src/utils/api_methods.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 
 class BloodPressureClient extends FetchClient {
 // lấy nhịp yim và huyết áp
@@ -48,6 +54,38 @@ class BloodPressureClient extends FetchClient {
       return listResponse.data;
     }
     return null;
+  }
+
+  Future<List<KeyValue>> fetchReasons() async {
+    try {
+      final Response response =
+          await super.fetchData(url: '/App/BloodPressure/Input/Reasons', params: {});
+
+      if (response.statusCode == 200) {
+        final listData = response.data as List<dynamic>;
+        return KeyValue.toList(listData);
+      }
+    } catch (e, stack) {
+      TrackingManager.recordError(e, stack);
+    }
+    return [];
+  }
+
+  Future<bool> updateReasons(String id, List<String> reasons) async {
+    try {
+      final Map<String, dynamic> params = {
+        'reasons': reasons,
+      };
+      final response = await super.putData(
+        url: '/App/BloodPressure/Input/Reason/$id',
+        params: params,
+      );
+      return response.statusCode == 200;
+    } catch (e, stack) {
+      TrackingManager.recordError(e, stack);
+    }
+    return false;
+    
   }
 
   // lấy danh sách huyết áp
@@ -164,9 +202,22 @@ class BloodPressureClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+  
+  Future<List<TimeFrameModel>> fetchBloodPressureTimeFrame({int? time}) async {
+    final Response response = await super.fetchData(
+        url: '/app/timeframe/kpi/blood-pressure',
+        params: time == null ? {} : {'time': time.toString()});
+
+    if (response.statusCode == 200) {
+      return TimeFrameModel.toList(response.data['data']);
+    } else {
+      final error = Error.fromJson(response);
+      throw error;
+    }
+  }
 
   // nhập chỉ số huyết áp
-  Future<bool> postBloodPressureInput(
+  Future<BloodPressureInputResult?> postBloodPressureInput(
       String systolic,
       String diastolic,
       String pulseRate,
@@ -175,7 +226,6 @@ class BloodPressureClient extends FetchClient {
       String note,
       String reason,
       List<String> files) async {
-    // try {
     final Map<String, String> params = {
       'systolic': systolic,
       'diastolic': diastolic,
@@ -190,13 +240,24 @@ class BloodPressureClient extends FetchClient {
         path: '/App/BloodPressure/Input', params: params, files: files);
 
     if (response.statusCode == 200) {
-      return true;
+      final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        String? id = jsonData['data']?['id'];
+        if (id != null) {
+          try {
+            final detailResponse = await fetchBloodPressureDetail(id);
+            return BloodPressureInputResult(
+              id: detailResponse.id ?? id,
+              images: detailResponse.images,
+            );
+          } catch (e) {
+            print(e);
+          }
+        }
+      return null;
     } else {
       throw response.reasonPhrase!;
     }
-    // } catch (e) {
-    //   throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
-    // }
   }
 
   Future<bool> postBloodPressureInputs(
@@ -215,7 +276,7 @@ class BloodPressureClient extends FetchClient {
   }
 
   /// cập nhỉ chỉ số huyết áp
-  Future<bool> updateBloodPressureInput(
+  Future<BloodPressureInputResult?> updateBloodPressureInput(
       String? id,
       String systolic,
       String diastolic,
@@ -242,14 +303,68 @@ class BloodPressureClient extends FetchClient {
           path: '/App/BloodPressure/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
-        // print(await response.stream.bytesToString());
-        return true;
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        String? id = jsonData['data']?['id'];
+        if (id != null) {
+          try {
+            final detailResponse = await fetchBloodPressureDetail(id);
+            return BloodPressureInputResult(
+              id: detailResponse.id ?? id,
+              images: detailResponse.images,
+            );
+          } catch (e) {
+            print(e);
+          }
+        }
+        return null;
       } else {
-        throw response.reasonPhrase!;
+        throw response.reasonPhrase ?? '';
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<String?> fetchBloodPressureInputAnalysis(
+    String id,
+  ) async {
+    Map<String, String> params = {
+      'id': id,
+    };
+    // Fetch blood pressure analysis data
+    final Response response = await super.fetchData(
+      url: '/App/BloodPressure/Analysis/Index',
+      params: params,
+    );
+
+    if (response.statusCode == 200) {
+      final singleResponse = SingleResponse.fromJsonTypeString(
+        response.data as Map<String, dynamic>,
+      );
+      return singleResponse.data;
+    }
+    return null;
+  }
+
+  Future<String?> fetchBloodPressureAlltimeAnalysis(int periodFilterType) async {
+    final Response response = await super.fetchData(
+      url: '/App/BloodPressure/Analysis/HealthTrend',
+      params: {
+        'periodFilterType': periodFilterType.toString(),
+        'currentDateTime': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        'page': '1',
+        'size': '100',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final singleResponse = SingleResponse.fromJsonTypeString(
+        response.data as Map<String, dynamic>,
+      );
+      return singleResponse.data;
+    }
+    return null;
   }
 
   // lấy chi tiết huyết áp
@@ -359,4 +474,14 @@ class BloodPressureClient extends FetchClient {
     }
     return null;
   }
+}
+
+class BloodPressureInputResult {
+  final String id;
+  final List<ImagesModel> images;
+
+  BloodPressureInputResult({
+    required this.id,
+    required this.images,
+  });
 }

@@ -48,6 +48,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
 
   void _navigateToInputSelection() async {
     bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    // Grant access to HealthKit already
     if (hasHealthConnection == true) {
       Navigator.pushNamed(
         context, NavigatorName.add_blood_pressure,
@@ -55,6 +56,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
       );
       return;
     }
+    // Show the modal to choose methods
     BloodPressureFunctions.showModalAddData(context, popPrevious: true);
   }
 

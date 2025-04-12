@@ -7,14 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -48,14 +49,12 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   void _loadData() async {
     final data = widget.data;
     _files = data.files ?? [];
-    final unit = AppSettings.userInfo?.glucoseUnit ?? 1;
 
     bool shouldFetchNewData =
         (data.isFetchAnalysis ?? false) || ((data.healthRecommendation?.isEmpty) ?? true);
 
-    // TODO: BLOOD PRESSURE
     final aiResult = shouldFetchNewData
-        ? await GlucoseClient().fetchGlucoseInputAnalysis(widget.data.id, unit).catchError((e, s) {
+        ? await BloodPressureClient().fetchBloodPressureInputAnalysis(widget.data.id).catchError((e, s) {
             TrackingManager.recordError(e, s);
             return null;
           })
@@ -77,25 +76,23 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             paths.add(file.path);
           }
         }
-        // TODO: BLOOD PRESSURE
-        // final result = await GlucoseClient().putIndexGlucose(
-        //     widget.data.id,
-        //     null,
-        //     (widget.data.dateTime.millisecondsSinceEpoch ~/ 1000).toInt(),
-        //     widget.data.glucose.toString(),
-        //     null,
-        //     _note,
-        //     // TODO: check fromNipro
-        //     false,
-        //     _removeIDs,
-        //     paths);
-        // if (result == true) {
-        //   BotToast.closeAllLoading();
-        //   Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
-        //   return;
-        // }
+        final _ = await BloodPressureClient().updateBloodPressureInput(
+          widget.data.id,
+          widget.data.systolic.toString(),
+          widget.data.diastolic.toString(),
+          widget.data.pulse.toString(),
+          widget.data.dateTime.millisecondsSinceEpoch ~/ 1000,
+          widget.data.timeFrame,
+          _note,
+          '',
+          _removeIDs,
+          paths);
       }
-      Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+      BotToast.closeAllLoading();
+      // TODO: which is goldId?
+      await HomeClient().completeSmartGoal(
+            widget.data.dateTime, '', 1, ScheduleType.blood_pressure.typeIndex);
+      Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     } finally {
@@ -112,11 +109,11 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   }
 
   void _doGuide() async {
-    Navigator.of(context).pushNamed(NavigatorName.glucose_intro_2nd_page);
+    Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
   }
 
   void _doBack() {
-    Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+    Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
   }
 
   void _doEditNote() async {
@@ -152,7 +149,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                     child: SingleChildScrollView(
                       padding: EdgeInsets.only(bottom: 100),
                       physics: const ClampingScrollPhysics(),
-                      child: _glucoseResultSection(),
+                      child: _bloodpressureResultSection(),
                     ),
                   ),
                 ),
@@ -206,7 +203,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     );
   }
 
-  Widget _glucoseResultSection() {
+  Widget _bloodpressureResultSection() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
