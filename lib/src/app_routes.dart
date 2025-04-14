@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
@@ -41,6 +42,36 @@ class AppRoutes {
             sharedCode: sharedCode,
             isRedirectFromNotification: isRedirectFromNotification,
           );
+          // page = PageAddBloodPressureResult(
+          //   data: BloodPressureResultDto(
+          //     id: 'null',
+          //     systolic: 100,
+          //     diastolic: 70,
+          //     pulse: 80,
+          //     dateTime: DateTime.now(),
+          //     timeFrame: 'Bất kì',
+          //     rangeValue: [0, 90, 130, 140, 160, 180],
+          //     rangeColors: [
+          //       // "Thấp"
+          //       Color(0xFFF99D1A),
+          //       // "Bình thường"
+          //       Color(0xFF21A567),
+          //       // "Bình thường cao"
+          //       Color(0xFF008479),
+          //       // "Tăng huyết áp độ 1"
+          //       Color(0xFFFF3C3C),
+          //       // "Tăng huyết áp độ 2"
+          //       Color(0xFFC82221),
+          //       // "Tăng huyết áp độ 3"
+          //       Color(0xFF880808),
+          //     ],
+          //     rangeType: BloodPressureRangeType.normal,
+          //     indexRange: 2,
+          //     note: null,
+          //     files: [],
+          //     aiResult: null,
+          //   ),
+          // );
           break;
         }
       case NavigatorName.food_menu:

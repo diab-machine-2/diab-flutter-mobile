@@ -220,13 +220,17 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final result = await Future.wait([
       BloodPressureClient().fetchBloodPressureTimeFrame(),
       BloodPressureClient().fetchColorConfig(),
-      BloodPressureClient().fetchBloodPressureTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
+      BloodPressureClient()
+          .fetchBloodPressureTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
     ]);
     if (result.length > 2) {
       final timeFrames = result[0] as List<TimeFrameModel>;
+      _times.clear();
+      _times.addAll(timeFrames);
       final colors = result[1] as List<BloodPressureColorConfig>?;
       final timeFramesSelected = result[2] as List<TimeFrameModel>?;
-      if (timeFramesSelected?.isNotEmpty == true && timeFrames.any((e) => timeFrames.first.id == e.id)) {
+      if (timeFramesSelected?.isNotEmpty == true &&
+          timeFrames.any((e) => timeFrames.first.id == e.id)) {
         selectedTimeFrame = timeFramesSelected?.first;
       } else {
         selectedTimeFrame = timeFrames.first;
@@ -265,8 +269,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   void _doHealthConnect() async {
-    RequestHealthConnect.showModal(context,
-      callback: () => Navigator.pop(context));
+    RequestHealthConnect.showModal(context, callback: () => Navigator.pop(context));
   }
 
   bool _isDataChange() {
@@ -1460,11 +1463,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       }
       BotToast.closeAllLoading();
       // show input reason dialog
-      final selectedReasons = await showDialog(context: context, builder: (context) {
-        return BloodPressureWarningPopupWidget(
-          reasons: reasons,
-        );
-      });
+      final selectedReasons = await showDialog(
+          context: context,
+          builder: (context) {
+            return BloodPressureWarningPopupWidget(
+              reasons: reasons,
+            );
+          });
       if (selectedReasons != null && selectedReasons.isNotEmpty) {
         BotToast.showLoading();
         final List<String> reasonKeys = selectedReasons.map((e) => e.key).toList();

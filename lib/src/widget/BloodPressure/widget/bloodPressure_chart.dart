@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -170,24 +171,26 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   Widget _buildNavigatorIndex(List<SubTrendItemModel> trends) {
-    String selectedDate = '21/08';
-    String selectedDateTime = '07:00';
-    String selectedType = 'Tăng huyết áp độ 2';
+    String selectedDate = '';
+    String selectedDateTime = '';
+    String selectedType = '';
     String selectedTimeFrame = 'Thức dậy';
     String selectedDiastolic = '166';
     String selectedSystolic = '110';
     String selectedColor = '';
 
-    //  if (_focusIndex != -1 && _focusIndex < trends.length) {
-    //   final selectedTrend = trends[_focusIndex];
-    //   selectedDate = DateFormat('HH:mm - dd/MM/yyyy').format(
-    //       DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000,
-    //           isUtc: true));
-    //   selectedType = selectedTrend.type!;
-    //   selectedTimeFrame = selectedTrend.timeFrameName!;
-    //   selectedGlucose = roundNumber(selectedTrend.glucose!);
-    //   selectedColor = selectedTrend.color!;
-    // }
+    if (_focusIndex != -1 && _focusIndex < trends.length) {
+      final selectedTrend = trends[_focusIndex];
+      final date =
+          DateTime.fromMillisecondsSinceEpoch((selectedTrend.date ?? 0) * 1000, isUtc: true);
+      selectedDate = DateFormat('dd/MM').format(date);
+      selectedDateTime = DateFormat('HH:mm').format(date);
+      selectedType = selectedTrend.type ?? '';
+      selectedTimeFrame = selectedTrend.timeFrameName ?? '';
+      selectedDiastolic = selectedTrend.diastolic?.toString() ?? '';
+      selectedSystolic = selectedTrend.systolic?.toString() ?? '';
+      selectedColor = selectedTrend.color ?? '';
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -339,6 +342,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 const SizedBox(width: 12),
               ],
             ),
+            const SizedBox(height: 2),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -464,8 +468,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                         '/' +
                                         trend.diastolic!.round().toString(),
                                     TextStyle(
-                                        color: toColor(model.colors!.first),
-                                        fontWeight: FontWeight.bold),
+                                        color: toColor(trend.color), fontWeight: FontWeight.bold),
                                   );
                                 }
                               }).toList();
@@ -536,7 +539,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       maxX: trends.length.toDouble(),
                       maxY: maxY,
                       minY: minY,
-                      lineBarsData: linesBarData(model),
+                      lineBarsData: _linesBarData(trends),
                       extraLinesData: ExtraLinesData(
                         horizontalLines: [
                           HorizontalLine(
@@ -594,12 +597,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
     );
   }
 
-  List<LineChartBarData> linesBarData(BloodPressureTrendModel model) {
-    List<SubTrendItemModel> trends = [];
-    model.trendItems.items.forEach((item) {
-      trends.addAll(item.subTrendItems);
-    });
-
+  List<LineChartBarData> _linesBarData(List<SubTrendItemModel> trends) {
     if (trends.length == 0) {
       return [];
     }
@@ -617,11 +615,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
             show: true,
             checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
+              final color = toColor(trends[index].color);
               return FlDotCirclePainter(
                 radius: 4,
-                color: toColor(model.colors!.first),
+                color: color,
                 strokeWidth: index == _focusIndex ? 12 : 0,
-                strokeColor: index == _focusIndex ? Colors.red.withOpacity(0.5) : null,
+                strokeColor: index == _focusIndex ? color.withOpacity(0.5) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),
@@ -638,15 +637,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
             show: true,
             checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
+              final color = toColor(trends[index].color);
               return FlDotCirclePainter(
                 radius: 4,
-                color: toColor(model.colors!.last),
+                color: color,
                 strokeWidth: index == _focusIndex ? 12 : 0,
-                strokeColor: index == _focusIndex ? Colors.red.withOpacity(0.5) : null,
+                strokeColor: index == _focusIndex ? color.withOpacity(0.5) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),
-      )
+      ),
     ];
   }
 }
