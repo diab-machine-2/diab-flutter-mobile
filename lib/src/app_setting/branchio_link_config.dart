@@ -159,68 +159,67 @@ class BranchioLinkConfig {
         '[ROUTE] Executing deeplink navigation - mode: $_pendingMode, id: $_pendingClinicId, type: $_pendingType');
     _navigationTimer?.cancel();
 
+    // Store the current pending data for navigation
+    final String? pendingType = _pendingType;
+    final int? pendingMode = _pendingMode;
+    final int? pendingClinicId = _pendingClinicId;
+
+    // Clear pending data IMMEDIATELY to prevent deeplink re-execution
+    _clearPendingData();
+
     try {
       // Case 1: Only 'type' parameter is provided
-      if (_pendingType != null &&
-          _pendingMode == null &&
-          _pendingClinicId == null) {
-        if (_pendingType == 'dsmes') {
+      if (pendingType != null &&
+          pendingMode == null &&
+          pendingClinicId == null) {
+        if (pendingType == 'dsmes') {
           await navigatorKey.currentState
               ?.pushNamed(NavigatorName.dsmes_booking);
-        } else if (_pendingType == 'clinic' || _pendingType == 'doctor') {
+        } else if (pendingType == 'clinic' || pendingType == 'doctor') {
           // These types will be implemented later
-          print('[ROUTE] Type "$_pendingType" is not yet implemented');
+          print('[ROUTE] Type "$pendingType" is not yet implemented');
         }
-
-        // Clear pending data
-        _clearPendingData();
         return;
       }
 
       // Case 2: 'type' and 'mode' parameters are provided
-      if (_pendingType != null &&
-          _pendingMode != null &&
-          _pendingClinicId == null) {
-        if (_pendingType == 'dsmes') {
+      if (pendingType != null &&
+          pendingMode != null &&
+          pendingClinicId == null) {
+        if (pendingType == 'dsmes') {
           await navigatorKey.currentState
               ?.pushNamed(NavigatorName.dsmes_booking, arguments: {
             'pendingOnlineDeeplink': true,
-            'pendingMode': _pendingMode
+            'pendingMode': pendingMode
           });
         } else {
           // Other types will be implemented later
           print(
-              '[ROUTE] Type "$_pendingType" with mode $_pendingMode is not yet implemented');
+              '[ROUTE] Type "$pendingType" with mode $pendingMode is not yet implemented');
         }
-
-        // Clear pending data
-        _clearPendingData();
         return;
       }
 
       // Case 3: Only 'id' parameter is provided (clinic ID)
-      if (_pendingClinicId != null &&
-          _pendingType == null &&
-          _pendingMode == null) {
+      if (pendingClinicId != null &&
+          pendingType == null &&
+          pendingMode == null) {
         // Navigate to dsmes_booking with clinic ID in arguments
         await navigatorKey.currentState?.pushNamed(NavigatorName.dsmes_booking,
-            arguments: {'pendingClinicId': _pendingClinicId});
-
-        // Clear pending data
-        _clearPendingData();
+            arguments: {'pendingClinicId': pendingClinicId});
         return;
       }
 
       // Case 4: Both 'type', 'mode', and 'id' parameters are provided
-      if (_pendingType != null &&
-          _pendingMode != null &&
-          _pendingClinicId != null) {
-        if (_pendingType == 'dsmes') {
-          if (_pendingMode == 0) {
+      if (pendingType != null &&
+          pendingMode != null &&
+          pendingClinicId != null) {
+        if (pendingType == 'dsmes') {
+          if (pendingMode == 0) {
             // Online mode with specific clinic ID
             await navigatorKey.currentState
                 ?.pushNamed(NavigatorName.dsmes_booking, arguments: {
-              'pendingClinicId': _pendingClinicId,
+              'pendingClinicId': pendingClinicId,
               'pendingMode': 'online'
             });
           } else {
@@ -228,26 +227,18 @@ class BranchioLinkConfig {
             await navigatorKey.currentState
                 ?.pushNamed(NavigatorName.dsmes_booking_offline, arguments: {
               'serviceType': 'atClinic',
-              'pendingClinicId': _pendingClinicId
+              'pendingClinicId': pendingClinicId
             });
           }
         } else {
           // Other types will be implemented later
           print(
-              '[ROUTE] Type "$_pendingType" with mode $_pendingMode and id $_pendingClinicId is not yet implemented');
+              '[ROUTE] Type "$pendingType" with mode $pendingMode and id $pendingClinicId is not yet implemented');
         }
-
-        // Clear pending data
-        _clearPendingData();
         return;
       }
-
-      // Default case - just clear pending data
-      _clearPendingData();
     } catch (e) {
       print('[ROUTE] Error executing deeplink navigation: $e');
-      // Clear pending data on error
-      _clearPendingData();
     }
   }
 
