@@ -11,6 +11,7 @@ class BloodPressureResultDto {
   final double? pulse;
   final String? pulseResultText;
   final String? note;
+  final List<String> reasons;
   final List<dynamic>? files;
   final String? aiResult;
   final List<Color> rangeColors;
@@ -26,6 +27,7 @@ class BloodPressureResultDto {
     required this.indexRange,
     required this.diastolic,
     required this.systolic,
+    required this.reasons,
     this.pulse,
     this.pulseResultText,
     required this.rangeColors,

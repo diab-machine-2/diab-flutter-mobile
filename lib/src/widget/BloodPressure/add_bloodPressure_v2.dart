@@ -12,6 +12,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/base/keyvalue.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -323,7 +324,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     return false;
   }
 
-  void _navigateAfterSuccess(String id, List<ImagesModel> images, [bool? isDataChange = false]) {
+  void _navigateAfterSuccess(String id, List<ImagesModel> images, List<String> reasons, [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     double _valueOfSystolic = double.tryParse(_controllerSystolic.text.replaceAll(",", ".") != ""
         ? _controllerSystolic.text.replaceAll(",", ".")
@@ -344,6 +345,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       systolic: double.tryParse(_controllerSystolic.text) ?? 0,
       pulse: double.tryParse(_controllerHeart.text) ?? 0,
       pulseResultText: null,
+      reasons: reasons,
       note: _controllerNote.text,
       files: images,
       rangeType: rangeType,
@@ -1360,8 +1362,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           removeIDs,
           paths);
       if (result != null) {
-        await _showReasonsDialog(result.id, systolic, diastolic);
-        _navigateAfterSuccess(result.id, result.images, _isDataChange());
+        final reasons = await _showReasonsDialog(result.id, systolic, diastolic);
+        _navigateAfterSuccess(result.id, result.images, reasons, _isDataChange());
       }
 
       BotToast.closeAllLoading();
@@ -1435,8 +1437,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         // );
         // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
         // }
-        await _showReasonsDialog(result.id, systolic, diastolic);
-        _navigateAfterSuccess(result.id, result.images);
+        final reasons = await _showReasonsDialog(result.id, systolic, diastolic);
+        _navigateAfterSuccess(result.id, result.images, reasons);
       }
 
       BotToast.closeAllLoading();
@@ -1450,7 +1452,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
   }
 
-  Future<void> _showReasonsDialog(String id, String systolic, String diastolic) async {
+  Future<List<String>> _showReasonsDialog(String id, String systolic, String diastolic) async {
     double systolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     double diastolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
@@ -1459,7 +1461,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       final reasons = await BloodPressureClient().fetchReasons();
       if (reasons.isEmpty) {
         BotToast.closeAllLoading();
-        return;
+        return [];
       }
       BotToast.closeAllLoading();
       // show input reason dialog
@@ -1475,8 +1477,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         final List<String> reasonKeys = selectedReasons.map((e) => e.key).toList();
         await BloodPressureClient().updateReasons(id, reasonKeys);
         BotToast.closeAllLoading();
+        return selectedReasons is List<KeyValue>
+            ? selectedReasons.map((e) => e.key).toList()
+            : [];
       }
     }
+    return [];
   }
 
   void _showDialogDelete(BuildContext context) {

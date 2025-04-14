@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:math';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -9,17 +7,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
+import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import 'add_bloodpressure_result_note.dart';
 import 'bloodpressure_result.dto.dart';
 import 'widget/aihelp_button.dart';
 
@@ -32,17 +28,17 @@ class PageAddBloodPressureResult extends StatefulWidget {
 }
 
 class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult> {
-  bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
+  // bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
   String? _aiResult;
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
 
-  bool _haveEditNote = false;
-  late String _note = widget.data.note ?? '';
-  List<String?> _removeIDs = [];
   List<dynamic> _files = [];
+  late TextEditingController _controllerNote;
 
   @override
   void initState() {
     _loadData();
+    _controllerNote = TextEditingController(text: widget.data.note);
     super.initState();
   }
 
@@ -54,7 +50,9 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
         (data.isFetchAnalysis ?? false) || ((data.healthRecommendation?.isEmpty) ?? true);
 
     final aiResult = shouldFetchNewData
-        ? await BloodPressureClient().fetchBloodPressureInputAnalysis(widget.data.id).catchError((e, s) {
+        ? await BloodPressureClient()
+            .fetchBloodPressureInputAnalysis(widget.data.id)
+            .catchError((e, s) {
             TrackingManager.recordError(e, s);
             return null;
           })
@@ -69,29 +67,28 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   void _doComplete() async {
     try {
       BotToast.showLoading();
-      if (_haveEditNote) {
-        List<String> paths = [];
-        for (var file in _files) {
-          if (file is PickedFile) {
-            paths.add(file.path);
-          }
+      List<String> paths = [];
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in data.files) {
+        if (file is PickedFile) {
+          paths.add(file.path);
         }
-        final _ = await BloodPressureClient().updateBloodPressureInput(
+      }
+      final _ = await BloodPressureClient().updateBloodPressureInput(
           widget.data.id,
           widget.data.systolic.toString(),
           widget.data.diastolic.toString(),
           widget.data.pulse.toString(),
           widget.data.dateTime.millisecondsSinceEpoch ~/ 1000,
           widget.data.timeFrame,
-          _note,
+          data.note,
           '',
-          _removeIDs,
+          data.removeIDs,
           paths);
-      }
       BotToast.closeAllLoading();
       // TODO: which is goldId?
-      await HomeClient().completeSmartGoal(
-            widget.data.dateTime, '', 1, ScheduleType.blood_pressure.typeIndex);
+      await HomeClient()
+          .completeSmartGoal(widget.data.dateTime, '', 1, ScheduleType.blood_pressure.typeIndex);
       Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
     } catch (e, s) {
       TrackingManager.recordError(e, s);
@@ -114,22 +111,6 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
 
   void _doBack() {
     Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
-  }
-
-  void _doEditNote() async {
-    final noteResult = await NavigationUtil.navigatePage(
-        context,
-        PageAddBloodPressureResultNote(
-          note: _note,
-          files: _files,
-        ));
-    if (noteResult != null) {
-      _haveEditNote = true;
-      _note = noteResult['note'];
-      _files = noteResult['files'];
-      _removeIDs = noteResult['removeIDs'];
-      setState(() {});
-    }
   }
 
   @override
@@ -179,24 +160,34 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   Widget _appBarSection() {
     String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
-      backgroundColor: R.color.transparent,
+      backgroundColor: R.color.greenGradientBottom,
       centerTitle: true,
       title: Text(
         formattedDateTime,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.white),
       ),
       leadingIcon: IconButton(
         splashColor: R.color.transparent,
         highlightColor: R.color.transparent,
-        icon: Icon(Icons.arrow_back, color: R.color.textDark),
+        icon: Icon(Icons.arrow_back, color: R.color.white),
         onPressed: _doBack,
       ),
       actions: [
-        GestureDetector(
-          onTap: _doGuide,
+        Center(
           child: Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                _doGuide();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -204,82 +195,105 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   }
 
   Widget _bloodpressureResultSection() {
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width - 80,
+                child: _SegmentedCircularGauge(
+                  rangeValue: widget.data.rangeValue,
+                  diastolic: widget.data.diastolic,
+                  systolic: widget.data.systolic,
+                  pulse: widget.data.pulse,
+                  pulseResultText: widget.data.pulseResultText,
+                  timeFrame: widget.data.timeFrame,
+                  rangeLabel: widget.data.rangeType.title,
+                  indexRange: widget.data.indexRange,
+                  rangeColor: widget.data.rangeType.color,
+                ),
+              ),
+              if (widget.data.pulse != null) ...[
+                Divider(
+                  height: 1,
+                  color: Color(0xFFDFE4E4),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 16),
+                    Image.asset(R.drawable.ic_pulse, width: 20, height: 20),
+                    const SizedBox(width: 8),
+                    Text.rich(
+                      TextSpan(
+                        text: '${widget.data.pulse!.round()}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: R.color.textDark,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: ' nhịp/phút',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              color: R.color.primaryGreyColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    // text
+                    Text(
+                      'Cao',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF636A6B),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+        // result
+        _buildAIResult(),
+
+        if (widget.data.reasons.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          _buildReasons(),
+        ],
+
+        const SizedBox(height: 16),
+        // button add note
+        _noteSection(),
+      ],
+    );
+  }
+
+  Widget _buildAIResult() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       child: Column(
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width - 80,
-            child: _SegmentedCircularGauge(
-              rangeValue: widget.data.rangeValue,
-              diastolic: widget.data.diastolic,
-              systolic: widget.data.systolic,
-              pulse: widget.data.pulse,
-              pulseResultText: widget.data.pulseResultText,
-              timeFrame: widget.data.timeFrame,
-              rangeLabel: widget.data.rangeType.title,
-              indexRange: widget.data.indexRange,
-              rangeColor: widget.data.rangeType.color,
-            ),
-          ),
-
-          if (widget.data.pulse != null) ...[
-            Divider(
-              height: 1,
-              color: Color(0xFFDFE4E4),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(width: 16),
-                Image.asset(R.drawable.ic_pulse, width: 20, height: 20),
-                const SizedBox(width: 8),
-                Text.rich(
-                  TextSpan(
-                    text: '${widget.data.pulse!.round()}',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.textDark,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: ' nhịp/phút',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.primaryGreyColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                // text
-                Text(
-                  'Cao',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF636A6B),
-                  ),
-                ),
-                SizedBox(width: 16),
-              ],
-            ),
-          ],
-          const SizedBox(height: 16),
-
-          // const SizedBox(height: 24),
-          // button add note
-          _buildNoteOrAddNoteSection(),
-
-          const SizedBox(height: 24),
           // result
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -335,102 +349,49 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     );
   }
 
-  Widget _buildNoteOrAddNoteSection() {
-    if (_haveNote) {
-      // Section show note
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: R.color.color0xffF2F6F9,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  R.string.ghi_chu.tr(),
-                  style:
-                      TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: R.color.textDark),
-                ),
-                Spacer(),
-                GestureDetector(
-                  onTap: _doEditNote,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
-                    child: Image.asset(R.drawable.ic_pencil_create, width: 20, height: 20),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _note,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
-                height: 16 / 12,
-              ),
-            ),
-            // images
-            if (_files.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: _files.map((e) {
-                  final index = _files.indexOf(e);
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/photo_view',
-                          arguments: {'files': _files, 'index': index});
-                    },
-                    child: SizedBox(
-                      width: 56,
-                      height: 56,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        width: 56,
-                        height: 56,
-                        clipBehavior: Clip.hardEdge,
-                        child: _files[index] is PickedFile
-                            ? Image.file(
-                                File(_files[index].path),
-                                fit: BoxFit.cover,
-                              )
-                            : NetWorkImageWidget(imageUrl: _files[index].url, fit: BoxFit.cover),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ],
-        ),
-      );
-    }
-    return ElevatedButton(
-      onPressed: _doEditNote,
-      child: Center(
-        child: Text(
-          R.string.them_ghi_chu.tr(),
-          style: TextStyle(color: R.color.dark, fontSize: 13, fontWeight: FontWeight.bold),
-        ),
+  Widget _buildReasons() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
       ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: R.color.color0xffF2F6F9,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        fixedSize: const Size(146, 32),
-        elevation: 0,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Lý do',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: R.color.textDark,
+              height: 21 / 15,
+            ),
+          ),
+          const SizedBox(height: 8, width: double.infinity),
+          Text(
+            widget.data.reasons.join(' | '),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: R.color.color0xff111515,
+              height: 16 / 12,
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _noteSection() {
+    return SectionAddNote(
+      // focusNode: _focusNode,
+      controllerNote: _controllerNote,
+      maxMedia: 5,
+      key: _sectionAddNoteKey,
+      initialFiles: _files,
+      noteTitle: 'Ghi chú',
+      horizontalPadding: 12,
     );
   }
 
@@ -533,7 +494,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
 
     return SizedBox(
       width: MediaQuery.of(context).size.width - 80,
-      height:( MediaQuery.of(context).size.width - 80) * 0.8,
+      height: (MediaQuery.of(context).size.width - 80) * 0.8,
       child: SfRadialGauge(
         backgroundColor: Colors.white,
         axes: <RadialAxis>[
