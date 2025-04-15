@@ -1465,7 +1465,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       }
       BotToast.closeAllLoading();
       // show input reason dialog
-      final selectedReasons = await showDialog(
+      final List<KeyValue> selectedReasons = await showDialog(
           context: context,
           builder: (context) {
             return BloodPressureWarningPopupWidget(
@@ -1477,9 +1477,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         final List<String> reasonKeys = selectedReasons.map((e) => e.key).toList();
         await BloodPressureClient().updateReasons(id, reasonKeys);
         BotToast.closeAllLoading();
-        return selectedReasons is List<KeyValue>
-            ? selectedReasons.map((e) => e.key).toList()
-            : [];
+        return selectedReasons.map((e) => e.key).toList();
+           
       }
     }
     return [];

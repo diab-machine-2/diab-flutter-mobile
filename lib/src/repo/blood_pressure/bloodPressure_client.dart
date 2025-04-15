@@ -242,7 +242,7 @@ class BloodPressureClient extends FetchClient {
     if (response.statusCode == 200) {
       final data = await response.stream.bytesToString();
         final jsonData = jsonDecode(data);
-        String? id = jsonData['data']?['id'];
+        String? id = jsonData['data'];
         if (id != null) {
           try {
             final detailResponse = await fetchBloodPressureDetail(id);
