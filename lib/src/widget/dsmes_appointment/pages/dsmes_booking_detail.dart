@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -78,7 +79,10 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     return WillPopScope(
       onWillPop: () async {
         FocusScope.of(context).unfocus();
-        DsmesNavigationMixin.navigationKey.currentState
+        // Reset page tracking when returning to root
+        BranchioLinkConfig.instance.resetPageTracking();
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.popUntil((route) => route.isFirst);
         Observable.instance
             .notifyObservers([], notifyName: "refresh_dsmes_appointment");
@@ -177,11 +181,14 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
                   if (previousRoute == NavigatorName.dsmes_booking_history ||
                       previousRoute == NavigatorName.dsmes_clinic_detail) {
-                    DsmesNavigationMixin.navigationKey.currentState?.pop();
+                    DsmesNavigationMixin.getNavigationKey().currentState?.pop();
                     return;
                   }
 
-                  DsmesNavigationMixin.navigationKey.currentState
+                  // Reset page tracking when returning to root
+                  BranchioLinkConfig.instance.resetPageTracking();
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.popUntil((route) => route.isFirst);
                   Observable.instance.notifyObservers([],
                       notifyName: "refresh_dsmes_appointment");
@@ -252,7 +259,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   }
 
   _handleJoinRoom() async {
-    await DsmesNavigationMixin.navigationKey.currentState
+    await DsmesNavigationMixin.getNavigationKey()
+        .currentState
         ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
       'telemedicineId': widget.appointment.teleMedicine?.id,
     });
@@ -727,7 +735,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
                   // Navigator.of(context).pop();
 
-                  DsmesNavigationMixin.navigationKey.currentState
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.popUntil((route) => route.isFirst);
 
                   Observable.instance.notifyObservers([],
@@ -805,7 +814,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                           id: widget.appointment.clinicId);
 
                       final navigator =
-                          DsmesNavigationMixin.navigationKey.currentState;
+                          DsmesNavigationMixin.getNavigationKey().currentState;
 
                       navigator?.pushNamed(
                           NavigatorName.dsmes_booking_select_date,
@@ -914,22 +923,25 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     request: rebookingRequest);
 
                 // Pop until dsmes_booking
-                DsmesNavigationMixin.navigationKey.currentState
+                DsmesNavigationMixin.getNavigationKey()
+                    .currentState
                     ?.popUntil((route) => route.isFirst);
 
                 // Then push to select date
                 if (widget.appointment.mode ==
                     DsmesAppointmentMode.atClinic.toString()) {
-                  await DsmesNavigationMixin.navigationKey.currentState
+                  await DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                           arguments: {
                         'serviceType': widget.appointment.mode,
                         'action': 'create',
                       });
                 } else {
-                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                      NavigatorName.dsmes_select_service,
-                      arguments: {
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushNamed(NavigatorName.dsmes_select_service,
+                          arguments: {
                         'action': 'create',
                         'clinic': _cubit.selectedClinic,
                         'serviceType': widget.appointment.mode,

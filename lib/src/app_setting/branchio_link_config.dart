@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
@@ -50,6 +51,13 @@ class BranchioLinkConfig {
   int? get pendingClinicId => _pendingClinicId;
   int? get pendingMode => _pendingMode;
   String? get pendingType => _pendingType;
+
+  // Ttracking map for booking feature pages is already open
+  Map<String, bool> _openBookingPages = {
+    'dsmes': false,
+    'clinic': false,
+    'doctor': false
+  };
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
@@ -164,81 +172,123 @@ class BranchioLinkConfig {
     final int? pendingMode = _pendingMode;
     final int? pendingClinicId = _pendingClinicId;
 
-    // Clear pending data IMMEDIATELY to prevent deeplink re-execution
+    // Clear pending data to prevent re-execution
     _clearPendingData();
 
     try {
-      // Case 1: Only 'type' parameter is provided
-      if (pendingType != null &&
-          pendingMode == null &&
-          pendingClinicId == null) {
-        if (pendingType == 'dsmes') {
-          await navigatorKey.currentState
-              ?.pushNamed(NavigatorName.dsmes_booking);
-        } else if (pendingType == 'clinic' || pendingType == 'doctor') {
-          // These types will be implemented later
-          print('[ROUTE] Type "$pendingType" is not yet implemented');
+      // If no type specified, default to dsmes
+      final String navigationType = pendingType ?? 'dsmes';
+
+      // Check if we need to close any other open pages before navigating
+      bool hasConflictingPageOpen = false;
+      String? openPageType;
+
+      // Find if any page other than the target type is open
+      _openBookingPages.forEach((type, isOpen) {
+        if (isOpen && type != navigationType) {
+          hasConflictingPageOpen = true;
+          openPageType = type;
         }
+      });
+
+      // If a conflicting page is open, close it before opening new one
+      if (hasConflictingPageOpen && openPageType != null) {
+        print(
+            '[ROUTE] Conflicting page open: $openPageType, closing before opening $navigationType');
+
+        // Pop the current page to return to TabBar before navigating to new page
+        navigatorKey.currentState?.popUntil((route) {
+          return route.settings.name == NavigatorName.tabbar;
+        });
+
+        // Mark all pages as closed
+        _openBookingPages.updateAll((key, value) => false);
+
+        // Short delay to ensure navigation completes
+        await Future.delayed(Duration(milliseconds: 100));
+      }
+
+      // Handle update if the page of current type is already open
+      if (_openBookingPages[navigationType] == true) {
+        print(
+            '[ROUTE] $navigationType page already open, updating parameters only');
+
+        // Post a notification to update the current page with new parameters
+        Observable.instance.notifyObservers([], map: {
+          'pendingMode': pendingMode,
+          'pendingClinicId': pendingClinicId,
+          'pendingOnlineDeeplink': pendingMode != null 
+        }, notifyName: "update_${navigationType}_parameters");
+
         return;
       }
 
-      // Case 2: 'type' and 'mode' parameters are provided
-      if (pendingType != null &&
-          pendingMode != null &&
-          pendingClinicId == null) {
-        if (pendingType == 'dsmes') {
-          await navigatorKey.currentState
-              ?.pushNamed(NavigatorName.dsmes_booking, arguments: {
-            'pendingOnlineDeeplink': true,
-            'pendingMode': pendingMode
-          });
-        } else {
-          // Other types will be implemented later
-          print(
-              '[ROUTE] Type "$pendingType" with mode $pendingMode is not yet implemented');
-        }
-        return;
-      }
-
-      // Case 3: Only 'id' parameter is provided (clinic ID)
-      if (pendingClinicId != null &&
-          pendingType == null &&
-          pendingMode == null) {
-        // Navigate to dsmes_booking with clinic ID in arguments
-        await navigatorKey.currentState?.pushNamed(NavigatorName.dsmes_booking,
-            arguments: {'pendingClinicId': pendingClinicId});
-        return;
-      }
-
-      // Case 4: Both 'type', 'mode', and 'id' parameters are provided
-      if (pendingType != null &&
-          pendingMode != null &&
-          pendingClinicId != null) {
-        if (pendingType == 'dsmes') {
-          if (pendingMode == 0) {
-            // Online mode with specific clinic ID
-            await navigatorKey.currentState
-                ?.pushNamed(NavigatorName.dsmes_booking, arguments: {
-              'pendingClinicId': pendingClinicId,
-              'pendingMode': 'online'
-            });
-          } else {
-            // Offline mode with specific clinic ID
-            await navigatorKey.currentState
-                ?.pushNamed(NavigatorName.dsmes_booking_offline, arguments: {
-              'serviceType': 'atClinic',
-              'pendingClinicId': pendingClinicId
-            });
-          }
-        } else {
-          // Other types will be implemented later
-          print(
-              '[ROUTE] Type "$pendingType" with mode $pendingMode and id $pendingClinicId is not yet implemented');
-        }
-        return;
+      // Now handle navigation based on type
+      switch (navigationType) {
+        case 'dsmes':
+          await _navigateToDsmesPage(pendingMode, pendingClinicId);
+          break;
+        case 'clinic':
+          await _navigateToClinicPage(pendingMode, pendingClinicId);
+          break;
+        case 'doctor':
+          // Add handling for doctor page when implemented
+          print('[ROUTE] Doctor navigation not yet implemented');
+          break;
+        default:
+          print('[ROUTE] Unknown navigation type: $navigationType');
       }
     } catch (e) {
       print('[ROUTE] Error executing deeplink navigation: $e');
+    }
+  }
+
+// Navigate to DSMES page with appropriate parameters
+  Future<void> _navigateToDsmesPage(int? mode, int? clinicId) async {
+    // Mark page as open
+    _openBookingPages['dsmes'] = true;
+
+    Map<String, dynamic> args = {};
+      args['pendingOnlineDeeplink'] = true;
+
+    if (mode != null) {
+      args['pendingMode'] = mode;
+    }
+
+    if (clinicId != null) {
+      args['pendingClinicId'] = clinicId;
+    }
+
+    await navigatorKey.currentState
+        ?.pushNamed(NavigatorName.dsmes_booking, arguments: args);
+  }
+
+// Navigate to Clinic page with appropriate parameters
+  Future<void> _navigateToClinicPage(int? mode, int? clinicId) async {
+    // Mark page as open
+    _openBookingPages['clinic'] = true;
+
+    Map<String, dynamic> args = {};
+
+    if (mode != null) {
+      args['pendingMode'] = mode;
+    }
+
+    if (clinicId != null) {
+      args['pendingClinicId'] = clinicId;
+    }
+
+    /// TODO: Attached navigator of booking clinic page
+    // await navigatorKey.currentState?.pushNamed(
+    //     NavigatorName.booking_clinic,
+    //     arguments: args);
+  }
+
+// Notify that a page is closed - to be called from page's dispose method
+  void notifyPageClosed(String pageType) {
+    if (_openBookingPages.containsKey(pageType)) {
+      _openBookingPages[pageType] = false;
+      print('[ROUTE] $pageType page marked as closed');
     }
   }
 
@@ -248,6 +298,11 @@ class BranchioLinkConfig {
     _pendingMode = null;
     _pendingType = null;
     _hasPendingDeeplink = false;
+  }
+
+  void resetPageTracking() {
+    print('[ROUTE] Resetting all page tracking - user is at home screen');
+    _openBookingPages.updateAll((key, value) => false);
   }
 
   // Schedule delayed navigation for TabbarController to use after initialization

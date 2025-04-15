@@ -55,7 +55,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
         return;
       }
       await _cubit.getClinicRate(id: widget.pendingClinicId!);
-      DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+      DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
           NavigatorName.dsmes_clinic_detail,
           arguments: {'clinicId': widget.pendingClinicId});
     } catch (e) {
@@ -68,7 +68,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
     return WillPopScope(
       onWillPop: () async {
         print('[POP] offline clinics pop');
-        DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
         return false;
       },
       child: Scaffold(
@@ -107,7 +107,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
             actions: [
               // GestureDetector(
               //   onTap: () async {
-              //     DsmesNavigationMixin.navigationKey.currentState
+              //     DsmesNavigationMixin.getNavigationKey().currentState
               //         ?.pushNamed(NavigatorName.dsmes_booking_history);
               //   },
               //   child: Container(
@@ -156,7 +156,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
               },
             ),
           ),
@@ -204,7 +204,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
             return;
           }
           await _cubit.getClinicRate(id: data.id);
-          DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+          DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
               NavigatorName.dsmes_clinic_detail,
               arguments: {'clinicId': data.id});
         } finally {
@@ -324,7 +324,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                         locale: context.locale.languageCode);
 
                                     DsmesNavigationMixin
-                                        .navigationKey.currentState
+                                        .getNavigationKey().currentState
                                         ?.pushNamed(
                                             NavigatorName.dsmes_select_service,
                                             arguments: {
@@ -399,7 +399,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                     _cubit.initCreateDsmesBookingRequest(
                                         locale: context.locale.languageCode);
                                     await DsmesNavigationMixin
-                                        .navigationKey.currentState
+                                        .getNavigationKey().currentState
                                         ?.pushNamed(
                                             NavigatorName
                                                 .dsmes_booking_select_date,
