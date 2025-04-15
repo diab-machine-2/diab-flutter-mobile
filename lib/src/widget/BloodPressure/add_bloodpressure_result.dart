@@ -80,7 +80,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
           widget.data.diastolic.toString(),
           widget.data.pulse.toString(),
           widget.data.dateTime.millisecondsSinceEpoch ~/ 1000,
-          widget.data.timeFrame,
+          widget.data.timeFrameId,
           data.note,
           '',
           data.removeIDs,
@@ -209,14 +209,15 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                 width: MediaQuery.of(context).size.width - 80,
                 child: _SegmentedCircularGauge(
                   rangeValue: widget.data.rangeValue,
+                  indexRange: widget.data.indexRange,
                   diastolic: widget.data.diastolic,
                   systolic: widget.data.systolic,
                   pulse: widget.data.pulse,
                   pulseResultText: widget.data.pulseResultText,
                   timeFrame: widget.data.timeFrame,
                   rangeLabel: widget.data.rangeType.title,
-                  indexRange: widget.data.indexRange,
                   rangeColor: widget.data.rangeType.color,
+                  rangeType: widget.data.rangeType,
                 ),
               ),
               if (widget.data.pulse != null) ...[
@@ -229,7 +230,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(width: 16),
-                    Image.asset(R.drawable.ic_pulse, width: 20, height: 20),
+                    Image.asset(R.drawable.ic_bloodpressure_pulse, width: 20, height: 20),
                     const SizedBox(width: 8),
                     Text.rich(
                       TextSpan(
@@ -439,7 +440,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
 }
 
 class _SegmentedCircularGauge extends StatelessWidget {
-  final List<int> rangeValue;
+  final List<double> rangeValue;
   final double diastolic;
   final double systolic;
   final String timeFrame;
@@ -448,6 +449,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
   final Color rangeColor;
   final double? pulse;
   final String? pulseResultText;
+  final BloodPressureRangeType rangeType;
   const _SegmentedCircularGauge({
     required this.rangeValue,
     required this.diastolic,
@@ -458,6 +460,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
     required this.rangeColor,
     this.pulse,
     this.pulseResultText,
+    required this.rangeType,
   });
 
   @override
@@ -535,12 +538,18 @@ class _SegmentedCircularGauge extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 8),
-                    Text(
-                      rangeLabel,
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: rangeColor,
-                        fontWeight: FontWeight.bold,
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 175,
+                      ),
+                      child: Text(
+                        rangeLabel,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: rangeColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     SizedBox(height: 16),

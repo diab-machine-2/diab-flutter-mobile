@@ -3,8 +3,9 @@ import 'package:flutter/widgets.dart';
 class BloodPressureResultDto {
   final String id;
   final DateTime dateTime;
+  final String timeFrameId;
   final String timeFrame;
-  final List<int> rangeValue;
+  final List<double> rangeValue;
   final int indexRange;
   final double diastolic;
   final double systolic;
@@ -22,6 +23,7 @@ class BloodPressureResultDto {
   BloodPressureResultDto({
     required this.id,
     required this.dateTime,
+    required this.timeFrameId,
     required this.timeFrame,
     required this.rangeValue,
     required this.indexRange,

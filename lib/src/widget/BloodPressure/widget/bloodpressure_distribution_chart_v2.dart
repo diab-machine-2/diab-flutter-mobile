@@ -160,143 +160,102 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                       )
                     : _buildChart(model),
 
-                // const SizedBox(height: 16),
-                // Divider(
-                //   color: R.color.gray_btn,
-                //   thickness: 1,
-                //   height: 1,
-                //   indent: 16,
-                //   endIndent: 16,
-                // ),
-                // const SizedBox(height: 16),
+                const SizedBox(height: 16),
+                Divider(
+                  color: R.color.gray_btn,
+                  thickness: 1,
+                  height: 1,
+                  indent: 16,
+                  endIndent: 16,
+                ),
+                const SizedBox(height: 16),
 
-                // Thấp nhất / Trung bình / Cao nhất
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   crossAxisAlignment: CrossAxisAlignment.start,
-                //   children: [
-                //     const SizedBox(width: 16),
-                //     Expanded(
-                //       child: GestureDetector(
-                //         onTap: () async {
-                //           // TODO:
-                //           // _viewDetailId(model.highestId);
-                //           // BloodSugarDetailTabbarController.of(context)
-                //           //     ?.loadInputWithId(1, model.highestId);
-                //         },
-                //         child: Center(
-                //           child: Column(
-                //             mainAxisSize: MainAxisSize.min,
-                //             crossAxisAlignment: CrossAxisAlignment.center,
-                //             children: [
-                //               Text(
-                //                 R.string.highest.tr(),
-                //                 style: TextStyle(
-                //                   color: R.color.textDark,
-                //                   fontSize: 14,
-                //                   height: 20 / 14,
-                //                   fontWeight: FontWeight.w400,
-                //                 ),
-                //               ),
-                //               const SizedBox(height: 3),
-                //               Text(
-                //                 model.highest == 0 ? '--' : roundNumber(model.highest!),
-                //                 style: TextStyle(
-                //                   fontSize: 20,
-                //                   height: 24 / 20,
-                //                   fontWeight: FontWeight.bold,
-                //                   color: model.highest == 0
-                //                       ? R.color.textDark
-                //                       : Color(int.parse(
-                //                           '0xff${model.highestColor!.split('#').join()}')),
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //     SizedBox(width: 8),
-                //     Expanded(
-                //       child: GestureDetector(
-                //         onTap: () async {
-                //           BloodSugarDetailTabbarController.of(context)
-                //               ?.loadInputWithId(1, model.lowestId);
-                //         },
-                //         child: Center(
-                //           child: Column(
-                //             mainAxisSize: MainAxisSize.min,
-                //             crossAxisAlignment: CrossAxisAlignment.center,
-                //             children: [
-                //               Text(
-                //                 R.string.medium.tr(),
-                //                 style: TextStyle(
-                //                   color: R.color.textDark,
-                //                   fontSize: 14,
-                //                   height: 20 / 14,
-                //                   fontWeight: FontWeight.w400,
-                //                 ),
-                //               ),
-                //               const SizedBox(height: 3),
-                //               Text(
-                //                 model.average == 0 ? '--' : roundNumber(model.average!),
-                //                 style: TextStyle(
-                //                   fontSize: 20,
-                //                   height: 24 / 20,
-                //                   fontWeight: FontWeight.bold,
-                //                   color: model.average == 0
-                //                       ? R.color.textDark
-                //                       : Color(int.parse(
-                //                           '0xff${model.averageColor!.split('#').join()}')),
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //     SizedBox(width: 9),
-                //     Expanded(
-                //       child: GestureDetector(
-                //         onTap: () async {
-                //           BloodSugarDetailTabbarController.of(context)
-                //               ?.loadInputWithId(1, model.lowestId);
-                //         },
-                //         child: Center(
-                //           child: Column(
-                //             mainAxisSize: MainAxisSize.min,
-                //             crossAxisAlignment: CrossAxisAlignment.center,
-                //             children: [
-                //               Text(
-                //                 R.string.lowest.tr(),
-                //                 style: TextStyle(
-                //                   color: R.color.textDark,
-                //                   fontSize: 14,
-                //                   height: 20 / 14,
-                //                   fontWeight: FontWeight.w400,
-                //                 ),
-                //               ),
-                //               const SizedBox(height: 3),
-                //               Text(
-                //                 model.lowest == 0 ? '--' : roundNumber(model.lowest!),
-                //                 style: TextStyle(
-                //                   fontSize: 20,
-                //                   height: 24 / 20,
-                //                   fontWeight: FontWeight.bold,
-                //                   color: model.lowest == 0
-                //                       ? R.color.textDark
-                //                       : Color(int.parse(
-                //                           '0xff${model.lowestColor!.split('#').join()}')),
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //     const SizedBox(width: 16),
-                //   ],
-                // ),
+                // Thấp nhất / Cao nhất
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          if (model?.lowestId != null) {
+                            _viewDetailId(model!.lowestId);
+                          }
+                        },
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                R.string.lowest.tr(),
+                                style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 14,
+                                  height: 20 / 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                (model.lowestId == null)
+                                    ? '--'
+                                    : '${model.lowestDiastolic?.toInt() ?? 0}/${model.lowestSystolic?.toInt() ?? 0}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  height: 24 / 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: R.color.textDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          if (model?.highestId != null) {
+                            _viewDetailId(model!.highestId);
+                          }
+                        },
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                R.string.highest.tr(),
+                                style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 14,
+                                  height: 20 / 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                (model.highestId == null)
+                                    ? '--'
+                                    : '${model.highestDiastolic?.toInt() ?? 0}/${model.highestSystolic?.toInt() ?? 0}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  height: 24 / 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: R.color.textDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                  ],
+                ),
                 const SizedBox(height: 16),
               ],
             ),

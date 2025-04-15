@@ -124,8 +124,16 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
           await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index);
       final client = BloodPressureClient();
       yield BloodPressureLoading();
-      var model = await client.fetchBloodDistribution(
+      final model = await client.fetchBloodDistribution(
           currentDateTime, periodFilterType);
+      final lowHigh = await client.fetchBloodPressureHeartRate(
+          currentDateTime, periodFilterType);
+      model.lowestId = lowHigh.diastolicLowestId;
+      model.lowestSystolic = lowHigh.systolicLowest;
+      model.lowestDiastolic = lowHigh.diastolicLowest;
+      model.highestId = lowHigh.diastolicHighestId;
+      model.highestSystolic = lowHigh.systolicHighest;
+      model.highestDiastolic = lowHigh.diastolicHighest;
       yield BloodPressureDistributionLoaded(listDistribution: model);
     } catch (e, _) {
       if (e is Error) {

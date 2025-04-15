@@ -337,10 +337,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final data = BloodPressureResultDto(
       id: id,
       dateTime: selectedDate,
+      timeFrameId: selectedTimeFrame?.id ?? '',
       timeFrame: selectedTimeFrame?.name?.tr() ?? '',
-      rangeColors: _colorList,
-      rangeValue: [0],
+      rangeValue: _rangeValueSystolic.map((e) => e.toDouble()).toList(),
       indexRange: indexRange,
+      rangeColors: _colorList,
       diastolic: double.tryParse(_controllerDiastolic.text) ?? 0,
       systolic: double.tryParse(_controllerSystolic.text) ?? 0,
       pulse: double.tryParse(_controllerHeart.text) ?? 0,
@@ -1313,7 +1314,6 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
     final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
-    final note = _controllerNote.text;
     final reason = '';
 
     if (systolic.isEmpty) {
@@ -1345,7 +1345,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
     try {
       List<String> paths = [];
-      for (var file in files) {
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in (data.files)) {
         if (file is PickedFile) {
           paths.add(file.path);
         }
@@ -1357,9 +1358,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           pulseRate,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,
-          note,
+          data.note, // updated to use data.note
           reason,
-          removeIDs,
+          data.removeIDs,
           paths);
       if (result != null) {
         final reasons = await _showReasonsDialog(result.id, systolic, diastolic);
@@ -1382,7 +1383,6 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
     final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
-    final note = _controllerNote.text;
     final reason = '';
 
     if (systolic.isEmpty) {
@@ -1414,7 +1414,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
     try {
       List<String> paths = [];
-      for (var file in files) {
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in (data.files)) {
+        // newly add from system
         paths.add(file.path);
       }
       final result = await BloodPressureClient().postBloodPressureInput(
@@ -1423,7 +1425,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           pulseRate,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,
-          note,
+          data.note,
           reason,
           paths);
       if (result != null) {
@@ -1465,7 +1467,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       }
       BotToast.closeAllLoading();
       // show input reason dialog
-      final List<KeyValue> selectedReasons = await showDialog(
+      final List<KeyValue>? selectedReasons = await showDialog(
           context: context,
           builder: (context) {
             return BloodPressureWarningPopupWidget(
@@ -1477,8 +1479,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         final List<String> reasonKeys = selectedReasons.map((e) => e.key).toList();
         await BloodPressureClient().updateReasons(id, reasonKeys);
         BotToast.closeAllLoading();
-        return selectedReasons.map((e) => e.key).toList();
-           
+        return selectedReasons.map((e) => e.value).toList();
       }
     }
     return [];

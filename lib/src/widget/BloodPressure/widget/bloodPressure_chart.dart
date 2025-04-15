@@ -62,7 +62,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
     return true;
   }
 
-  void _viewHistory() {}
+  void _viewHistory() {
+    Navigator.pushNamed(currentContext, NavigatorName.detail_bloodpressure_listing, arguments: {
+      'initPeriodFilterType': periodFilterType,
+    });
+  }
 
   void _scrollToFocusIndex() {
     // TODO: enhance
@@ -187,8 +191,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
       selectedDateTime = DateFormat('HH:mm').format(date);
       selectedType = selectedTrend.type ?? '';
       selectedTimeFrame = selectedTrend.timeFrameName ?? '';
-      selectedDiastolic = selectedTrend.diastolic?.toString() ?? '';
-      selectedSystolic = selectedTrend.systolic?.toString() ?? '';
+      selectedDiastolic = selectedTrend.diastolic?.toInt().toString() ?? '';
+      selectedSystolic = selectedTrend.systolic?.toInt().toString() ?? '';
       selectedColor = selectedTrend.color ?? '';
     }
 
@@ -225,6 +229,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       Container(
                         width: 4,
                         height: 4,
+                        margin: EdgeInsets.only(left: 4, right: 4),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Color(0xFFBFC6C6),
@@ -357,13 +362,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 Container(
                   width: 4,
                   height: 4,
+                  margin: EdgeInsets.only(left: 4, right: 4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xFFBFC6C6),
                   ),
                 ),
                 Text(
-                  '$selectedDiastolic/$selectedSystolic mmHg',
+                  '$selectedSystolic/$selectedDiastolic mmHg',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
@@ -605,7 +611,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
     return [
       LineChartBarData(
         spots: List.generate(trends.length, (index) {
-          return FlSpot((index).toDouble(), _customYTransform(trends[index].systolic!));
+          double value = trends[index].systolic! > 180 ? 180 : trends[index].systolic!;
+          return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
         colors: [Color(0xFF008479)],
@@ -627,7 +634,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
       ),
       LineChartBarData(
         spots: List.generate(trends.length, (index) {
-          return FlSpot((index).toDouble(), _customYTransform(trends[index].diastolic!));
+          double value = trends[index].diastolic! > 180 ? 180 : trends[index].diastolic!;
+          return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
         colors: [Color(0xFF95682E)],
