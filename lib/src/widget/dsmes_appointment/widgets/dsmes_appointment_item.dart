@@ -364,19 +364,19 @@ class DsmesAppointmentItem extends StatelessWidget {
     cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
 
     if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey().currentState
           ?.popUntil((route) => route.isFirst);
 
-      await DsmesNavigationMixin.navigationKey.currentState
+      await DsmesNavigationMixin.getNavigationKey().currentState
           ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
         'serviceType': appointment.mode,
         'action': 'create',
       });
     } else {
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey().currentState
           ?.popUntil((route) => route.isFirst);
 
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey().currentState
           ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
         'action': 'create',
         'clinic': cubit.selectedClinic,
@@ -439,7 +439,7 @@ class DsmesAppointmentItem extends StatelessWidget {
   }
 
   _handleJoinRoom() async {
-    await DsmesNavigationMixin.navigationKey.currentState
+    await DsmesNavigationMixin.getNavigationKey().currentState
         ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
       'telemedicineId': data.teleMedicine?.id,
     });

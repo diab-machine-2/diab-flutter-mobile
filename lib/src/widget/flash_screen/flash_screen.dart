@@ -40,14 +40,20 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     super.initState();
     _initStateAsync();
     _getCountryCode();
+    print('[ROUTE] _FlashScreenControllerState initState');
   }
 
   void _initStateAsync() async {
+    // Setup deeplink handlers
     BranchioLinkConfig.instance.setUpHandleDeepLink();
     await DynamicLinkConfig.instance.setUpHandleDeepLink();
+    
+    // Initialize app configurations
     await getSecuredModel();
     await getVersion();
     BlocProvider.of<NiproBloc>(context).add(NiproEventFetchSavedDevice());
+    
+    // Continue with normal app initialization
     await getData(context);
   }
 
@@ -92,7 +98,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       );
     }
 
-    // if(appVersion == null){
     appVersion = AppVersionResponse(
       id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
       code: "123",
@@ -100,7 +105,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       enviroment: Const.ENVIRONMENT_DEFAULT,
       version: "1.1.6",
     );
-    // }
 
     await AppSettings.saveEnvironment(appVersion.enviroment);
     AppSettings.environment = appVersion.enviroment ?? "";
@@ -116,20 +120,18 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     }
+    
     try {
       final token = await AppSettings.getToken();
       final clickedBranchLink = await AppSettings.getClickedBranchLink();
       print('flashScreen clickedBranchLink: $clickedBranchLink');
       AppSettings.environment = await AppSettings.getEnvironment();
+      
+      // Mark splash screen initialization as complete
+      AppSettings.setSplashScreenInitDone(true);
+      
+      // Normal flow - navigate to tabbar or login screen
       if (token.isNotEmpty) {
-        // final refreshToken = await AppSettings.getRefreshToken();
-
-        // await LoginClient().login({
-        //   "client_id": Const.CLIENT_ID,
-        //   "client_secret": Const.CLIENT_SECRET,
-        //   "grant_type": "refresh_token",
-        //   "refresh_token": refreshToken
-        // });
         var user = await UserClient().getUserPreferences();
         AppSettings.userInfo = user;
         if (user == null) {
@@ -148,6 +150,8 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           await AppSettings.loadPrecachedHome().catchError((e) {
             TrackingManager.recordError(e, null);
           });
+          
+          // Navigate to tabbar (TabbarController will handle any pending deeplinks)
           await Navigator.pushReplacementNamed(
             context,
             NavigatorName.tabbar,
