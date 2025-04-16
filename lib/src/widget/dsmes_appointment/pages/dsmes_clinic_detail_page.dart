@@ -75,7 +75,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   color: R.color.textDark,
                 ),
                 onPressed: () {
-                  DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                  DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
                 },
               ),
             ),
@@ -329,7 +329,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                       final recentAppointment = await _cubit
                           .getDsmesAppointmentDetail(appointmentId: recentBooking.id);
 
-                      DsmesNavigationMixin.navigationKey.currentState
+                      DsmesNavigationMixin.getNavigationKey().currentState
                           ?.pushNamed(
                         NavigatorName.dsmes_booking_detail,
                         arguments: {
@@ -553,7 +553,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                     await _cubit.initCreateDsmesBookingRequest(
                         locale: context.locale.languageCode);
 
-                    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
                         NavigatorName.dsmes_select_service,
                         arguments: {
                           'clinic': _cubit.selectedClinic,
@@ -605,7 +605,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                     if (_cubit.selectedClinic == null) return;
                     _cubit.initCreateDsmesBookingRequest(
                         locale: context.locale.languageCode);
-                    await DsmesNavigationMixin.navigationKey.currentState
+                    await DsmesNavigationMixin.getNavigationKey().currentState
                         ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                             arguments: {
                           'serviceType':

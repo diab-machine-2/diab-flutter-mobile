@@ -99,7 +99,8 @@ class _DsmesAppointmentHistoryPageState
                       color: R.color.white,
                     ),
                     onPressed: () {
-                      DsmesNavigationMixin.navigationKey.currentState
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
                           ?.pop(context);
                     },
                   ),
@@ -253,7 +254,8 @@ class _DsmesAppointmentHistoryPageState
                                                         appointmentId: data.id);
 
                                                 DsmesNavigationMixin
-                                                    .navigationKey.currentState
+                                                        .getNavigationKey()
+                                                    .currentState
                                                     ?.pushNamed(
                                                   NavigatorName
                                                       .dsmes_booking_detail,
