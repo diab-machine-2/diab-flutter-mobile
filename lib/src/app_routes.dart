@@ -68,7 +68,12 @@ class AppRoutes {
         }
       case NavigatorName.dsmes_booking:
         {
-          page = DsmesAppointmentPage();
+          final data = settings.arguments as Map<String, dynamic>?;
+          page = DsmesAppointmentPage(
+            pendingOnlineDeeplink: data?['pendingOnlineDeeplink'],
+            pendingClinicId: data?['pendingClinicId'],
+            pendingMode: data?['pendingMode'],
+          );
           break;
         }
       case NavigatorName.add_blood_sugar_result:
