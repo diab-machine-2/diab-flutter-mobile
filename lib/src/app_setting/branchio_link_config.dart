@@ -115,6 +115,12 @@ class BranchioLinkConfig {
 
         print('[ROUTE] Deeplink params - mode: $mode, id: $id, type: $type');
 
+        if (id != null && type == null) {
+          type = 'dsmes';
+          print(
+              '[ROUTE] Setting default type to "dsmes" for clinicId-only deeplink');
+        }
+
         // If we have at least one of the parameters, consider it a valid deeplink
         if (mode != null || id != null || type != null) {
           _hasPendingDeeplink = true;
@@ -217,7 +223,8 @@ class BranchioLinkConfig {
         Observable.instance.notifyObservers([], map: {
           'pendingMode': pendingMode,
           'pendingClinicId': pendingClinicId,
-          'pendingOnlineDeeplink': pendingMode != null 
+          // Set this flag for ALL parameter updates, not just ones with mode
+          'pendingOnlineDeeplink': true
         }, notifyName: "update_${navigationType}_parameters");
 
         return;
@@ -226,7 +233,13 @@ class BranchioLinkConfig {
       // Now handle navigation based on type
       switch (navigationType) {
         case 'dsmes':
-          await _navigateToDsmesPage(pendingMode, pendingClinicId);
+          if (pendingClinicId != null && pendingMode == null) {
+            print(
+                '[ROUTE] Executing clinic detail navigation for clinicId: $pendingClinicId');
+            await _navigateToClinicDetailPage(pendingClinicId);
+          } else {
+            await _navigateToDsmesPage(pendingMode, pendingClinicId);
+          }
           break;
         case 'clinic':
           await _navigateToClinicPage(pendingMode, pendingClinicId);
@@ -249,7 +262,7 @@ class BranchioLinkConfig {
     _openBookingPages['dsmes'] = true;
 
     Map<String, dynamic> args = {};
-      args['pendingOnlineDeeplink'] = true;
+    args['pendingOnlineDeeplink'] = true;
 
     if (mode != null) {
       args['pendingMode'] = mode;
@@ -261,6 +274,32 @@ class BranchioLinkConfig {
 
     await navigatorKey.currentState
         ?.pushNamed(NavigatorName.dsmes_booking, arguments: args);
+  }
+
+  Future<void> _navigateToClinicDetailPage(int clinicId) async {
+    print('[ROUTE] Navigating to clinic detail page with clinicId: $clinicId');
+
+    // Mark dsmes page as open since clinic detail is within the dsmes flow
+    _openBookingPages['dsmes'] = true;
+
+    // First, navigate to the dsmes booking page
+    Map<String, dynamic> args = {
+      'pendingClinicId': clinicId,
+      'pendingOnlineDeeplink': true,
+    };
+
+    // Navigate to dsmes booking first
+    await navigatorKey.currentState
+        ?.pushNamed(NavigatorName.dsmes_booking, arguments: args);
+
+    // Schedule a small delay to ensure the dsmes page is fully loaded before
+    // sending the notification to navigate to clinic detail
+    Future.delayed(Duration(milliseconds: 300), () {
+      // Use Observable to notify dsmes page to navigate to clinic detail
+      Observable.instance.notifyObservers([],
+          map: {'pendingClinicId': clinicId, 'pendingOnlineDeeplink': true},
+          notifyName: "update_dsmes_parameters");
+    });
   }
 
 // Navigate to Clinic page with appropriate parameters

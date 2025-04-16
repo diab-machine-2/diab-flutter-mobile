@@ -25,7 +25,6 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_confirm_create_
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_select_service_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
-import 'package:medical/src/widget/helper/photo_view.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -138,6 +137,8 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
         _activeDeeplinkType = newDeeplinkType;
       }
 
+      _isInitialized = true;
+
       // If initialization is complete, handle the update immediately
       // Otherwise it will be handled after current load completes
       if (_isInitialized) {
@@ -243,11 +244,6 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     return currentRoute;
   }
 
-  // Check if route is confirm information page
-  bool _isRouteConfirmInformation(String routeName) {
-    return routeName == NavigatorName.dsmes_confirm_information;
-  }
-
   void _refresh() async {
     await _cubit.getDsmesAppointmentList(isRefresh: true, page: 1);
   }
@@ -261,15 +257,17 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     isProcessing['deeplink'] = true;
 
     try {
-      // Case 1: Handle online mode deeplink (0: online, 1: offline)
-      if (widget.pendingOnlineDeeplink == true) {
+      _isInitialized = true;
+
+      // Case 1: Handle mode-specific deeplinks first (most specific)
+      if (widget.pendingMode != null) {
         if (widget.pendingMode == 0) {
           await _handleOnlineDeeplink();
         } else if (widget.pendingMode == 1) {
           await _handleOfflineDeeplink();
         }
       }
-      // Case 2: Handle clinic detail deeplink
+      // Case 2: Handle clinic ID deeplinks next
       else if (widget.pendingClinicId != null) {
         await _handleClinicDetailDeeplink();
       }
@@ -344,23 +342,33 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
       _activeDeeplinkType = 'clinic_detail';
 
       if (widget.pendingClinicId != null) {
+        print(
+            '[ROUTE] _handleClinicDetailDeeplink with clinicId: ${widget.pendingClinicId}');
+
+        // Mark this as processing to prevent re-entry
+        isProcessing['deeplink'] = true;
+
         final detailSuccess =
             await _cubit.getClinicDetail(id: widget.pendingClinicId!);
-
         if (!detailSuccess || _cubit.selectedClinic == null) {
+          print(
+              '[ROUTE] Failed to get clinic detail for ID: ${widget.pendingClinicId}');
+          isProcessing['deeplink'] = false;
           return;
         }
 
         await _cubit.getClinicRate(id: widget.pendingClinicId!);
 
-        // Otherwise, just navigate to clinic detail
+        // Navigate to clinic detail within DSMES navigator
         _navigatorKey.currentState?.pushNamed(NavigatorName.dsmes_clinic_detail,
             arguments: {'clinicId': widget.pendingClinicId});
 
         // Update current route
         _currentRoute = NavigatorName.dsmes_clinic_detail;
+        isProcessing['deeplink'] = false;
       }
     } catch (e) {
+      isProcessing['deeplink'] = false;
       print('[ROUTE] Error handling clinic detail deeplink: $e');
     }
   }
@@ -628,15 +636,14 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
 
           // If we just loaded and need to handle deeplinks, do it after a short delay
           // to ensure the UI is fully built
-          if (_needToHandleDeeplinks && !_isInitialized) {
-            _isInitialized = true;
+          if (_needToHandleDeeplinks) {
             // Short delay to ensure the UI is fully built and BlocProvider has updated
             Future.delayed(const Duration(milliseconds: 500), () {
               _handlePendingDeeplinks();
             });
           }
           // If there's a parameter update pending, handle it after load completes
-          else if (_hasUpdatePending && _isInitialized) {
+          else if (_hasUpdatePending) {
             Future.delayed(const Duration(milliseconds: 300), () {
               _handleParameterUpdate();
             });
