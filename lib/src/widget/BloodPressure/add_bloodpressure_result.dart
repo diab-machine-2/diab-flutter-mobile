@@ -85,9 +85,14 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
           '',
           data.removeIDs,
           paths);
-      // TODO: which is goalId?
-      await HomeClient()
-          .completeSmartGoal(widget.data.dateTime, '', 1, ScheduleType.blood_pressure.typeIndex);
+      if (widget.data.goalId != null) {
+        await HomeClient().completeSmartGoal(
+          widget.data.dateTime,
+          widget.data.goalId,
+          1,
+          ScheduleType.blood_pressure.typeIndex,
+        );
+      }
       BotToast.closeAllLoading();
       Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
     } catch (e, s) {

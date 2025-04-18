@@ -357,6 +357,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       rangeType: rangeType,
       isFetchAnalysis: isDataChange,
       healthRecommendation: null, // TODO: fill healthRecommendation
+      goalId: widget.goalId,
     );
     Navigator.of(context)
         .pushReplacementNamed(NavigatorName.add_bloodpressure_result, arguments: data);

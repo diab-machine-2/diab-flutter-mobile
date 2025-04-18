@@ -20,6 +20,9 @@ class BloodPressureResultDto {
   final bool? isFetchAnalysis;
   final String? healthRecommendation;
 
+  // Old logic
+  final String? goalId;
+
   BloodPressureResultDto({
     required this.id,
     required this.dateTime,
@@ -39,6 +42,7 @@ class BloodPressureResultDto {
     this.aiResult,
     this.isFetchAnalysis,
     this.healthRecommendation,
+    this.goalId,
   });
 }
 
