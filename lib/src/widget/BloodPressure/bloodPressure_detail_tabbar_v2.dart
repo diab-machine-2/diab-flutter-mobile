@@ -8,8 +8,6 @@ import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_listing.dart';
-import 'package:medical/src/widget/BloodPressure/overview.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -39,9 +37,6 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   final GlobalKey<BloodPressureDistributionChartState> _bloodPressureDistributionChartKey =
       GlobalKey();
   final GlobalKey<BloodPressureChartState> _bloodPressureTrendKey = GlobalKey();
-
-  final GlobalKey<BloodPressureOverviewControllerState> _overViewKey = GlobalKey();
-  final GlobalKey<BloodPressureDetailListingControllerState> _detailKey = GlobalKey();
 
   int _periodFilterType = 3;
   String? _aiSuggestion;
@@ -73,8 +68,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'BloodPressure_change_data') {
-      _overViewKey.currentState?.reloadData(_periodFilterType);
-      _detailKey.currentState?.reloadData(_periodFilterType);
+      _reload();
     }
   }
 
@@ -120,8 +114,6 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   void _reload() async {
     _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType);
     _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
-    _overViewKey.currentState?.reloadData(_periodFilterType);
-    _detailKey.currentState?.reloadData(_periodFilterType);
     await _loadAITrend();
     if (mounted) {
       setState(() {});
