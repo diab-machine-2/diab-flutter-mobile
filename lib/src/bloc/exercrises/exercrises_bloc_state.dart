@@ -58,3 +58,34 @@ class RankLoaded extends ExercrisesState {
   final ExerciseRankModel model;
   RankLoaded({required this.model});
 }
+
+class ExercriseTrendTimeLoaded extends ExercrisesState {
+  final ExercriseTrendTimeModel trend;
+
+  ExercriseTrendTimeLoaded({
+    required this.trend,
+  });
+
+  ExercriseTrendTimeLoaded copyWith({
+    ExercriseTrendTimeModel? trend,
+  }) {
+    return ExercriseTrendTimeLoaded(
+      trend: trend ?? this.trend,
+    );
+  }
+}
+class ExercriseLessonsLoaded extends ExercrisesState {
+  final List<LessonModel>? lessons;
+
+  ExercriseLessonsLoaded({
+    required this.lessons,
+  });
+
+  ExercriseLessonsLoaded copyWith({
+    List<LessonModel>? lessons,
+  }) {
+    return ExercriseLessonsLoaded(
+      lessons: lessons ?? this.lessons,
+    );
+  }
+}

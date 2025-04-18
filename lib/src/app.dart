@@ -27,9 +27,16 @@ import 'package:medical/src/widget/Emotion/widget/add_symbo.dart';
 import 'package:medical/src/widget/Emotion/widget/add_work.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_table.dart';
 import 'package:medical/src/widget/Exercrises/add_exercrises.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_add_v2.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_dashboard.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_detail_v2.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_result.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
+import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
+import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Food/add_food.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
@@ -685,6 +692,29 @@ class App extends StatelessWidget {
                         ConversationSetting(
                           conversation: conversation,
                         ));
+                  case NavigatorName.exercrise_onboarding:
+                    return _buildRoute(settings, ExercriseOnboarding());
+                  case NavigatorName.exercrise_dashboard:
+                    return _buildRoute(settings, ExercriseDashboard());
+                  case NavigatorName.exercrise_step_detail_v2:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings,
+                        ExercrisesDetailV2(
+                          periodFilterType: args['periodFilterType'],
+                        ));
+                  case NavigatorName.exercrise_add_v2:
+                    return _buildRoute(settings, ExercrisesAddV2());
+                  case NavigatorName.exercrise_select_category:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings,
+                        ExercisesSelectCategory(
+                            key: args['key'],
+                            onChanged: (args['onChanged']),
+                            selected: args['selected']));
+                  case NavigatorName.exercrise_result:
+                    return _buildRoute(settings, ExercisesResult());
                   default:
                     return null;
                 }

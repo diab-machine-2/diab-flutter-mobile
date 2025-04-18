@@ -58,3 +58,7 @@ class FetchRank extends ExercrisesEvent {
 
   FetchRank({this.currentDateTime, this.periodFilterType});
 }
+
+class FetchLessons extends ExercrisesEvent {
+  FetchLessons();
+}

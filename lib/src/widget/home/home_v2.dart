@@ -598,8 +598,10 @@ class _HomeControllerState extends State<HomeController>
                               }
                               // others
                               if (routeName != null) {
+                                // CHEAT CODE : Vận Động -> Vận Động Bước 1
                                 if (title == "Vận Động") {
-                                  BotToast.showText(text: 'hello world');
+                                  Navigator.pushNamed(context,
+                                      NavigatorName.exercrise_onboarding);
                                 } else {
                                   Navigator.pushNamed(context, routeName,
                                       arguments: args);
@@ -986,8 +988,9 @@ class _HomeControllerState extends State<HomeController>
           return;
         }
         // others
+        // CHEAT CODE : Vận Động -> Vận Động Bước 1
         if (item.title == "Vận động") {
-          BotToast.showText(text: 'hello world');
+          Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
         } else {
           Navigator.pushNamed(context, item.navigatorName,
               arguments: item.args);
@@ -1110,7 +1113,6 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.exercise:
       case ScheduleType.exercise_recommend:
-        BotToast.showText(text: 'hello world');
         await Navigator.pushNamed(context, NavigatorName.add_exercrises,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         break;

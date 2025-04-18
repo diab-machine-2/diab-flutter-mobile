@@ -6,12 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_calo.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
@@ -25,7 +27,11 @@ import 'package:medical/src/widgets/empty_data_box.dart';
 import '../../../widgets/network_image_widget.dart';
 
 class ExercrisesTrendCaloChart extends StatefulWidget {
-  ExercrisesTrendCaloChart({Key? key}) : super(key: key);
+  ExercrisesTrendCaloChart(
+      {Key? key, this.showAddButton = true, this.gutterGhost = false})
+      : super(key: key);
+  final bool showAddButton;
+  final bool gutterGhost;
 
   @override
   ExercrisesTrendCaloChartState createState() =>
@@ -41,10 +47,19 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
 
   int? touchIndex;
 
+  late bool showAddButton;
+  late bool gutterGhost;
+
   @override
   void initState() {
-    periodFilterType =
-        ExercrisesDetailTabbarController.of(context)!.periodFilterType;
+    final controller = ExercrisesDetailTabbarController.of(context);
+    if (controller != null) {
+      periodFilterType = controller.periodFilterType;
+    } else {
+      Console.log('ExercrisesDetailTabbarController is null');
+    }
+    showAddButton = !!widget.showAddButton;
+    gutterGhost = !!widget.gutterGhost;
     super.initState();
   }
 
@@ -102,44 +117,47 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                             Text(R.string.xu_huong_dot_calo.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                    barrierColor: R.color.color0xff003F38
-                                        .withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => InputCalo(
-                                        title: periodFilterType == 1 ||
-                                                periodFilterType == 2
-                                            ? R.string
-                                                .nang_luong_dot_chay_tren_ngay
-                                                .tr()
-                                            : R.string
-                                                .nang_luong_dot_chay_tren_tuan
-                                                .tr(),
-                                        callback: (number) {
-                                          submitTarget(double.parse(number));
-                                        }));
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      R.drawable.ic_circle_plus_exe,
-                                      width: 24,
-                                      height: 24,
+                            showAddButton
+                                ? GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                          barrierColor: R.color.color0xff003F38
+                                              .withOpacity(0.5),
+                                          context: context,
+                                          builder: (_) => InputCalo(
+                                              title: periodFilterType == 1 ||
+                                                      periodFilterType == 2
+                                                  ? R.string
+                                                      .nang_luong_dot_chay_tren_ngay
+                                                      .tr()
+                                                  : R.string
+                                                      .nang_luong_dot_chay_tren_tuan
+                                                      .tr(),
+                                              callback: (number) {
+                                                submitTarget(
+                                                    double.parse(number));
+                                              }));
+                                    },
+                                    child: Container(
+                                      color: R.color.transparent,
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            R.drawable.ic_circle_plus_exe,
+                                            width: 24,
+                                            height: 24,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(R.string.muc_tieu_moi.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.mainColor,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700)),
+                                        ],
+                                      ),
                                     ),
-                                    SizedBox(width: 4),
-                                    Text(R.string.muc_tieu_moi.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ],
-                                ),
-                              ),
-                            ),
+                                  )
+                                : SizedBox(),
                           ],
                         ),
                         SizedBox(height: 20),
@@ -300,7 +318,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                       ])
                               ],
                             )),
-                        SizedBox(height: 16),
+                        gutterGhost ? SizedBox() : SizedBox(height: 16)
                       ]),
                 );
         }));

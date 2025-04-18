@@ -785,6 +785,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);
         break;
+      default:
+        break;
     }
   }
 

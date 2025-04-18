@@ -621,4 +621,18 @@ class Drawables {
       "lib/res/drawables/chat/avatar_chatbot_ai_3.webp";
   String get chat_avatar_bagged_star =>
       "lib/res/drawables/chat/avatar_bagged_star.png";
+  //exercrise-step
+  String get exercrise_step_onboarding_banner =>
+      "lib/res/drawables/exercrise-step/exercrise-step-onboarding-banner.png";
+  //ic-health-connect-input.png
+  String get ic_health_connect_input =>
+      "lib/res/drawables/exercrise-step/ic-health-connect-input.png";
+  //ic-manual-input.png
+  String get ic_manual_input =>
+      "lib/res/drawables/exercrise-step/ic-manual-input.png";
+  //ic-health-connect-input.png
+  String get ic_health_connect_input_btn =>
+      "lib/res/drawables/exercrise-step/ic-health-connect-input-btn.png";
+  String get ic_manual_input_btn =>
+      "lib/res/drawables/exercrise-step/ic-manual-input-btn.png";
 }

@@ -1259,4 +1259,23 @@ class Strings {
       'conversation_setting_delete_failed';
   String get conversation_message_placeholder =>
       'conversation_message_placeholder';
+  String get exercrise_step_onboarding_title =>
+      'exercrise_step_onboarding_title';
+  String get exercrise_step_onboarding_action_btn =>
+      'exercrise_step_onboarding_action_btn';
+  String get exercrise_step_onboarding_input_step_btn =>
+      'exercrise_step_onboarding_input_step_btn';
+  String get exercrise_step_guide_title => 'exercrise_step_guide_title';
+  //exercrise_step_guide_add
+  String get exercrise_step_guide_add => 'exercrise_step_guide_add';
+  //exercrise_step_dashboard_title
+  String get exercrise_step_dashboard_title => 'exercrise_step_dashboard_title';
+  String get exercrise_dashboard_title => 'exercrise_dashboard_title';
+  //exercrise_step_detail_title
+  String get exercrise_step_detail_title => 'exercrise_step_detail_title';
+  String get exercrise_detail_v2_title => 'exercrise_detail_v2_title';
+  String get exercrise_add_v2_title => 'exercrise_add_v2_title';
+  String get exercrise_select_category_title =>
+      'exercrise_select_category_title';
+  String get exercrise_result_title => 'exercrise_result_title';
 }

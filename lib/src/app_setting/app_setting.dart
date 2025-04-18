@@ -395,12 +395,15 @@ class AppSettings {
 
   // Check to show 1st page
   static Future<String?> getLastOpenedGlucoseInputType() async {
-    String? lastOpenedGlucoseInputType = appPreference.getData("lastOpenedGlucoseInputType");
+    String? lastOpenedGlucoseInputType =
+        appPreference.getData("lastOpenedGlucoseInputType");
     return lastOpenedGlucoseInputType;
   }
+
   static void setLastOpenedGlucoseInputType(String inputType) {
     appPreference.setData("lastOpenedGlucoseInputType", inputType);
   }
+
   static void clearLastOpenedGlucoseInputType() {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }
