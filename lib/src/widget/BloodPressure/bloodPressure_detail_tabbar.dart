@@ -81,7 +81,7 @@ class _BloodPressureDetailTabbarControllerState
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'BloodPressure_change_data') {
       overViewKey.currentState?.reloadData(periodFilterType);
-      detailKey.currentState?.reloadData(periodFilterType);
+      detailKey.currentState?.reloadAllByChangeFilter(periodFilterType);
     }
   }
 
@@ -181,7 +181,7 @@ class _BloodPressureDetailTabbarControllerState
                   periodFilterType = periodFilter;
                   overViewKey.currentState!.reloadData(periodFilterType);
                   if (detailKey.currentState != null) {
-                    detailKey.currentState!.reloadData(periodFilterType);
+                    detailKey.currentState!.reloadAllByChangeFilter(periodFilterType);
                   }
                 }),
             Expanded(

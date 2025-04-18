@@ -95,7 +95,7 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
     super.dispose();
   }
 
-  void reloadData(int periodFilter) {
+  void reloadAllByChangeFilter(int periodFilter) {
     _itemScrollController.jumpTo(index: 0);
     _periodFilterType = periodFilter;
     _refresh();
@@ -387,7 +387,7 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
     return HorizontalSelector(
       onSelected: (value) {
         _periodFilterType = value + 1;
-        _refresh();
+        reloadAllByChangeFilter(_periodFilterType);
       },
       initialValue: selectedIndex,
       values: values,
