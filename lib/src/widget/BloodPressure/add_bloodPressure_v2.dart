@@ -273,6 +273,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     RequestHealthConnect.showModal(context, callback: () => Navigator.pop(context));
   }
 
+  BloodPressureRangeType _fromIndexDetected(int index) {
+    return BloodPressureRangeType.fromInt(index + 1);
+  }
+
   bool _isDataChange() {
     // If no original model exists, consider it as new data
     if (model == null) {
@@ -324,7 +328,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     return false;
   }
 
-  void _navigateAfterSuccess(String id, List<ImagesModel> images, List<String> reasons, [bool? isDataChange = false]) {
+  void _navigateAfterSuccess(String id, List<ImagesModel> images, List<String> reasons,
+      [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     double _valueOfSystolic = double.tryParse(_controllerSystolic.text.replaceAll(",", ".") != ""
         ? _controllerSystolic.text.replaceAll(",", ".")
@@ -333,7 +338,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         ? _controllerDiastolic.text.replaceAll(",", ".")
         : "0")!;
     int indexRange = _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
-    BloodPressureRangeType rangeType = BloodPressureRangeType.fromInt(indexRange + 1);
+    BloodPressureRangeType rangeType = _fromIndexDetected(indexRange);
     final data = BloodPressureResultDto(
       id: id,
       dateTime: selectedDate,
@@ -1458,7 +1463,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     double systolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     double diastolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
-    if (indexRange >= BloodPressureRangeType.normal_high.value) {
+    BloodPressureRangeType detectedType = _fromIndexDetected(indexRange);
+    if (detectedType.value >= BloodPressureRangeType.normal_high.value) {
       BotToast.showLoading();
       final reasons = await BloodPressureClient().fetchReasons();
       if (reasons.isEmpty) {
