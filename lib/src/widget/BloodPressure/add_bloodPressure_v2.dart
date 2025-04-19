@@ -383,6 +383,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         canPop: false,
         child: Scaffold(
           backgroundColor: R.color.glucose_bg_color,
+          resizeToAvoidBottomInset: true,
           body: Column(
             children: [
               _appBarSection(),
@@ -566,13 +567,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
                   decoration: InputDecoration(
-                      hintText: '-',
+                      hintText: '0',
                       counterText: '',
                       contentPadding: EdgeInsets.only(bottom: 8),
                       border: InputBorder.none,
                       hintStyle: TextStyle(
                           color: R.color.captionColorGray,
-                          fontSize: 34,
+                          fontSize: 48,
                           fontWeight: FontWeight.w500)),
                 ),
               ),
@@ -607,12 +608,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
                   decoration: InputDecoration(
-                      hintText: '-',
+                      hintText: '0',
                       contentPadding: EdgeInsets.only(bottom: 8),
                       border: InputBorder.none,
                       hintStyle: TextStyle(
                           color: R.color.captionColorGray,
-                          fontSize: 34,
+                          fontSize: 48,
                           fontWeight: FontWeight.w500)),
                 ),
               ),
@@ -984,7 +985,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         style: TextStyle(
                             color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
                         decoration: InputDecoration(
-                          hintText: '-',
+                          hintText: '0',
                           counterText: '',
                           contentPadding: EdgeInsets.only(bottom: 8),
                           border: InputBorder.none,
