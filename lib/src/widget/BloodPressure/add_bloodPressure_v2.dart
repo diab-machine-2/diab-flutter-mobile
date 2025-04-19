@@ -101,6 +101,16 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   ];
   bool _isInputHeartRate = false;
 
+  // UI affect
+  bool get _isInputEnough {
+    bool activating = _controllerSystolic.text.isNotEmpty &&
+        _controllerDiastolic.text.isNotEmpty;
+    if (_isInputHeartRate) {
+      activating = activating && _controllerHeart.text.isNotEmpty;
+    }
+    return activating;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -804,7 +814,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                                             : -8,
                                     child: e == 0
                                         ? Text(
-                                            'Tâm Thu',
+                                            'Tâm thu',
                                             style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
@@ -963,6 +973,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                       width: 120,
                       child: TextField(
                         focusNode: heartFocus,
+                        onChanged: (value) {
+                          // _checkValidateInput();
+                          setState(() {});
+                        },
                         controller: _controllerHeart,
                         textAlign: TextAlign.right,
                         maxLength: 3,
@@ -1097,9 +1111,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   Widget _buildButton() {
     return widget.type == 'input'
         ? GestureDetector(
-            onTap: () async {
+            onTap: _isInputEnough ? () async {
               _submitData();
-            },
+            } : null,
             child: SafeArea(
               top: false,
               child: Container(
@@ -1141,9 +1155,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         )),
                   ),
                   GestureDetector(
-                    onTap: () {
+                    onTap: _isInputEnough ? () {
                       _editData();
-                    },
+                    } : null,
                     child: Container(
                       height: 48,
                       width: 164,
