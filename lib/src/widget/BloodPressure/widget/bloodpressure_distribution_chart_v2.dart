@@ -295,7 +295,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                     touchCallback: (FlTouchEvent event, pieTouchResponse) {},
                   ),
                   sections: List.generate(
-                    5,
+                    6,
                     (i) {
                       const bool showTitle = false;
                       late final double value;

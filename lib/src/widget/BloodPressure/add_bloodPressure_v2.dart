@@ -55,7 +55,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   FocusNode diastolicFocus = FocusNode();
   FocusNode heartFocus = FocusNode();
-  List<dynamic> files = [];
+  final List<dynamic> _files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
   DateTime time = DateTime.now();
@@ -103,8 +103,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   // UI affect
   bool get _isInputEnough {
-    bool activating = _controllerSystolic.text.isNotEmpty &&
-        _controllerDiastolic.text.isNotEmpty;
+    if (!mounted) return false;
+    bool activating = _controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty;
     if (_isInputHeartRate) {
       activating = activating && _controllerHeart.text.isNotEmpty;
     }
@@ -184,22 +184,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _loadDataDetail() async {
     BotToast.showLoading();
-    final result = await Future.wait([
-      BloodPressureClient().fetchBloodPressureDetail(widget.id),
-      BloodPressureClient().fetchColorConfig(),
-    ]);
-    if (result.length < 2) {
-      BotToast.closeAllLoading();
-      return;
-    }
-    model = result[0] as BloodPressureModel;
-    final colors = result[1] as List<BloodPressureColorConfig>?;
-    if (colors != null) {
-      _colorList = colors.map(((e) {
-        return Color(int.parse("0xFF" + e.background.substring(1)));
-      })).toList();
-      _rangeLabel = colors.map(((e) => e.name)).toList();
-    }
+    model = await BloodPressureClient().fetchBloodPressureDetail(widget.id);
     BotToast.closeAllLoading();
 
     if (model != null) {
@@ -208,19 +193,22 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       _controllerHeart.text = model!.pulseRate?.toInt().toString() ?? '';
       _controllerNote.text = model?.note ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+      _files.addAll(model!.images);
+      if (_sectionAddNoteKey.currentState != null) {
+        _sectionAddNoteKey.currentState!.updateFilesAndNote(_files, model?.note ?? '');
+      }
       if (_times.isNotEmpty) {
         if (model!.timeFrameId == null) {
           _lastTimeFrameIndex = 0;
           selectedTimeFrame = _times.first;
         } else {
-          _lastTimeFrameIndex = _times.indexWhere((element) => element.id == model!.timeFrameId);
+          _lastTimeFrameIndex = _times.indexWhere((e) => e.id == model!.timeFrameId);
           if (_lastTimeFrameIndex == -1) {
             _lastTimeFrameIndex = 0;
             selectedTimeFrame = _times.first;
           }
         }
       }
-      files.addAll(model!.images);
     }
     _checkValidateInput();
     setState(() {});
@@ -330,7 +318,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     // }
 
     // Check if images have changed (either count or removals)
-    if (files.length != model!.images.length || removeIDs.isNotEmpty) {
+    if (_files.length != model!.images.length || removeIDs.isNotEmpty) {
       return true;
     }
 
@@ -1022,7 +1010,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         controllerNote: _controllerNote,
         maxMedia: 5,
         key: _sectionAddNoteKey,
-        initialFiles: files,
+        initialFiles: _files,
       ),
     );
   }
@@ -1112,9 +1100,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   Widget _buildButton() {
     return widget.type == 'input'
         ? GestureDetector(
-            onTap: _isInputEnough ? () async {
-              _submitData();
-            } : null,
+            onTap: _isInputEnough
+                ? () async {
+                    _submitData();
+                  }
+                : null,
             child: SafeArea(
               top: false,
               child: Container(
@@ -1156,9 +1146,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         )),
                   ),
                   GestureDetector(
-                    onTap: _isInputEnough ? () {
-                      _editData();
-                    } : null,
+                    onTap: _isInputEnough
+                        ? () {
+                            _editData();
+                          }
+                        : null,
                     child: Container(
                       height: 48,
                       width: 164,
@@ -1615,7 +1607,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           pulseRate == model!.pulseRate!.toInt().toString() &&
           note == noteText &&
           reasonText == reason &&
-          files.length == model!.images.length &&
+          _files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch &&
           selectedTimeFrame!.id == model!.timeFrameId) {
@@ -1626,7 +1618,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         diastolic.isEmpty &&
         pulseRate.isEmpty &&
         note.isEmpty &&
-        files.length == 0) {
+        _files.length == 0) {
       Navigator.pop(context);
       return;
     }
