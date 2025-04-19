@@ -16,10 +16,8 @@ import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widget/Exercrises/widget/filter_segment_button.dart';
-import 'package:medical/src/widget/base/base_state.dart';
 import '../../../../../res/R.dart';
 
 class ExercriseDashboard extends StatefulWidget {

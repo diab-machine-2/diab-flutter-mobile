@@ -13,14 +13,11 @@ import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/widget/BloodSugar/overview.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_note_with_media.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker2.dart';
-import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import 'widget/date_multi_picker.dart';
