@@ -99,6 +99,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     TimeFrameModel(id: "Prd01", code: "Prd01", name: "Thức giấc"),
     TimeFrameModel(id: "Prd19", code: "Prd19", name: "Bất kì"),
   ];
+  List<KeyValue>? _reasons = [];
   bool _isInputHeartRate = false;
 
   // UI affect
@@ -222,6 +223,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       BloodPressureClient()
           .fetchBloodPressureTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
     ]);
+    BloodPressureClient().fetchReasons().then((value) {
+      _reasons = value;
+    });
     if (result.length > 2) {
       final timeFrames = result[0] as List<TimeFrameModel>;
       _times.clear();
@@ -272,7 +276,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   BloodPressureRangeType _fromIndexDetected(int index) {
-    return BloodPressureRangeType.fromInt(index + 1);
+    print('type=${index - 1}');
+    return BloodPressureRangeType.fromInt(index - 1);
   }
 
   bool _isDataChange() {
@@ -571,7 +576,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
             padding: const EdgeInsets.only(bottom: 8.0, left: 3, right: 3),
             child: Text('/',
                 style: TextStyle(
-                  fontSize: 34,
+                  fontSize: 42,
                   color: Color(0xFF636A6B),
                 )),
           ),
@@ -952,7 +957,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
             SizedBox(height: 24),
             Container(
               width: double.infinity,
-              height: 42,
+              height: 48,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -1354,7 +1359,6 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
-    BotToast.showLoading();
 
     try {
       List<String> paths = [];
@@ -1364,6 +1368,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           paths.add(file.path);
         }
       }
+      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic);
+      if (reasonsOrNull == false) {
+        return;
+      }
+      BotToast.showLoading();
       final result = await BloodPressureClient().updateBloodPressureInput(
           widget.id,
           systolic,
@@ -1376,7 +1385,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           data.removeIDs,
           paths);
       if (result != null) {
-        final reasons = await _showReasonsDialog(result.id, systolic, diastolic);
+        List<String> reasons = [];
+        if (reasonsOrNull is List<KeyValue>) {
+          final List<String> reasonKeys = reasonsOrNull.map((e) => e.key).toList();
+          await BloodPressureClient().updateReasons(result.id, reasonKeys);
+          reasons = reasonsOrNull.map((e) => e.value).toList();
+        }
         _navigateAfterSuccess(result.id, result.images, reasons, _isDataChange());
       }
 
@@ -1423,7 +1437,6 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return;
     }
-    BotToast.showLoading();
 
     try {
       List<String> paths = [];
@@ -1432,6 +1445,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         // newly add from system
         paths.add(file.path);
       }
+      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic);
+      if (reasonsOrNull == false) {
+        return;
+      }
+      BotToast.showLoading();
       final result = await BloodPressureClient().postBloodPressureInput(
           systolic,
           diastolic,
@@ -1450,9 +1468,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         //     'object_title': 'Chỉ số huyết áp'
         //   },
         // );
-        // if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
-        // }
-        final reasons = await _showReasonsDialog(result.id, systolic, diastolic);
+        List<String> reasons = [];
+        if (reasonsOrNull is List<KeyValue>) {
+          final List<String> reasonKeys = reasonsOrNull.map((e) => e.key).toList();
+          await BloodPressureClient().updateReasons(result.id, reasonKeys);
+          reasons = reasonsOrNull.map((e) => e.value).toList();
+        }
         _navigateAfterSuccess(result.id, result.images, reasons);
       }
 
@@ -1467,36 +1488,27 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
   }
 
-  Future<List<String>> _showReasonsDialog(String id, String systolic, String diastolic) async {
+  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic) async {
     double systolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     double diastolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
     BloodPressureRangeType detectedType = _fromIndexDetected(indexRange);
+    print('type=detectedType: $detectedType');
     if (detectedType.value >= BloodPressureRangeType.normal_high.value) {
-      BotToast.showLoading();
-      final reasons = await BloodPressureClient().fetchReasons();
+      final reasons = _reasons ?? await BloodPressureClient().fetchReasons();
       if (reasons.isEmpty) {
-        BotToast.closeAllLoading();
         return [];
       }
-      BotToast.closeAllLoading();
       // show input reason dialog
-      final List<KeyValue>? selectedReasons = await showDialog(
+      return showDialog(
           context: context,
           builder: (context) {
             return BloodPressureWarningPopupWidget(
               reasons: reasons,
             );
           });
-      if (selectedReasons != null && selectedReasons.isNotEmpty) {
-        BotToast.showLoading();
-        final List<String> reasonKeys = selectedReasons.map((e) => e.key).toList();
-        await BloodPressureClient().updateReasons(id, reasonKeys);
-        BotToast.closeAllLoading();
-        return selectedReasons.map((e) => e.value).toList();
-      }
     }
-    return [];
+    return null;
   }
 
   void _showDialogDelete(BuildContext context) {

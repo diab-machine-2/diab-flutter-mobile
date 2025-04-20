@@ -55,7 +55,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                 child: Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.of(context).pop(false),
                     icon: const Icon(Icons.close),
                   ),
                 ),
