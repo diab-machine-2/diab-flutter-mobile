@@ -116,6 +116,7 @@ class VNPayService {
           "[VNPAY] start invokeMethod openSdk: ${DateTime.now().millisecondsSinceEpoch}");
       // Open VNPay SDK
       await platform.invokeMethod('openSDK', {
+        "isSandbox": true,
         'url': paymentUrl,
         'tmnCode': tmnCode,
         'scheme': 'diabvnpay',
