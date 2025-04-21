@@ -7,6 +7,9 @@ import ZaloSDK
 import BranchSDK
 // import MobileRTC
 
+private let kPaymentGatewayChannel = "paymentGateway"
+private let kSDKCompletedNotification = "SDK_COMPLETED"
+
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
@@ -21,8 +24,6 @@ import BranchSDK
     // private var zoomAuthResult: FlutterResult?
     private var vnPayEventChannel: FlutterMethodChannel!
     private let kVNPayScheme: String = "diabvnpay"
-    private let kPaymentGatewayChannel = "paymentGateway"
-    private let kSDKCompletedNotification = "SDK_COMPLETED"
     
     override func application(
         _ application: UIApplication,
@@ -103,7 +104,7 @@ import BranchSDK
                 
                 if let queryItems = components?.queryItems {
                     for item in queryItems {
-                        extras["vnp_\(item.name)"] = item.value ?? ""
+                        extras[item.name] = item.value ?? ""
                     }
                 }
                 
@@ -111,16 +112,17 @@ import BranchSDK
                 let responseCode = extras["vnp_ResponseCode"] as? String ?? "99"
                 let resultCode = responseCode == "00" ? 0 : 99
                 
+                print("ReturnFromVNPay - resultCode: \(resultCode), extras: \(extras)")
                 sendPaymentResult(action: "ReturnFromVNPay", resultCode: resultCode, extras: extras)
                 
                 return true
             } catch {
                 print("Error parsing VNPay return URL: \(error.localizedDescription)")
-                sendPaymentResult(
-                    action: "ReturnFromVNPay", 
-                    resultCode: 99, 
-                    extras: ["error": error.localizedDescription]
-                )
+                 sendPaymentResult(
+                     action: "ReturnFromVNPay", 
+                     resultCode: 99, 
+                     extras: ["error": error.localizedDescription]
+                 )
                 return true
             }
         }
@@ -266,10 +268,10 @@ import BranchSDK
         }
         CallAppInterface.setSchemes(scheme)
         CallAppInterface.setIsSandbox(isSandBox)
-        CallAppInterface.setEnableBackAction(true)
+        CallAppInterface.setEnableBackAction(false)
        
         // Optional parameters with defaults
-        let title = data["title"] as? String ?? ""
+        let title = data["title"] as? String ?? "Thanh toán"
         let iconBackName = data["iconBackName"] as? String ?? ""
         let beginColor = data["beginColor"] as? String ?? "#FFFFFF"
         let endColor = data["endColor"] as? String ?? "#FFFFFF"
