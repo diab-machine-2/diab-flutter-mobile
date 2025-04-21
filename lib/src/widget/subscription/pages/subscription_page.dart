@@ -9,6 +9,7 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
@@ -352,6 +353,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
       carouselItems = _fallbackCarouselItems;
     }
 
+    final isMobile = MediaQuery.sizeOf(context).width < Const.TABLET_BREAKPOINT;
+
     return SafeArea(
       child: Column(
         children: [
@@ -362,7 +365,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  GapH(32),
+                  GapH(isMobile ? 8 : 32),
                   // First title line
                   Text(
                     R.string.subscription_title_1.tr(),
@@ -383,7 +386,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                       color: Color(0xFFB4802D), // #B4802D
                     ),
                   ),
-                  GapH(16),
+                  GapH(isMobile ? 8 : 16),
                   // Subtitle with increased line spacing
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -398,7 +401,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                       ),
                     ),
                   ),
-                  GapH(16),
+                  GapH(isMobile ? 8 : 16),
                   // Carousel Container
                   Expanded(
                     flex:
@@ -574,7 +577,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                             ),
                           ),
                         ),
-                  GapH(16), // Ensure padding at bottom
+                  GapH(8), // Ensure padding at bottom
                 ],
               ),
             ),
