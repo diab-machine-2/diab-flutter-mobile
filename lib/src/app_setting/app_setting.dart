@@ -18,6 +18,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
+import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 
 import '../modal/user/secure.dart';
 
@@ -442,6 +443,7 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
+      await RevenueCatService.logout();
       return true;
     } catch (_) {
       return false;

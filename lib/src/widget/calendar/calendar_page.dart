@@ -11,6 +11,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/navigator_name.dart';
@@ -97,13 +98,15 @@ class _CalendarControllerState extends State<CalendarController> {
                       actions: [
                         InkWell(
                           onTap: () async {
-                            final launchUri =
-                                Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                            if (await canLaunchUrl(launchUri)) {
-                              await launchUrl(launchUri);
-                            } else {
-                              throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                            }
+                            // final launchUri =
+                            //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                            // if (await canLaunchUrl(launchUri)) {
+                            //   await launchUrl(launchUri);
+                            // } else {
+                            //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                            // }
+
+                            HomeSupportFunctions.showModalAddData(context);
                           },
                           child: Container(
                             width: 85,
