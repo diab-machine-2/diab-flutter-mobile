@@ -7,7 +7,7 @@
         "price": "4.100.000đ",
         "duration": "3 tháng",
         "backgroundImagePath": "assets/images/bg_dong_hanh.png",
-        "isRecommended": false,
+        "isRecommended": true,
         "features": [
           {
             "text": "6 buổi tư vấn bởi chuyên gia đầu ngành",

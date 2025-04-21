@@ -337,13 +337,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
   }
 
   Widget _buildPage(BuildContext context, SubscriptionState state) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
-    // Get the safe area insets
-    final EdgeInsets padding = MediaQuery.of(context).padding;
-    double availableHeight = screenHeight - padding.top - padding.bottom;
-
     // Get the banners from the state or use fallback
     List<dynamic> carouselItems = [];
 
@@ -353,236 +346,240 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
       carouselItems = _fallbackCarouselItems;
     }
 
-    final isMobile = MediaQuery.sizeOf(context).width < Const.TABLET_BREAKPOINT;
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen =
+        screenSize.height < 650; // Adjust for Galaxy A5 and similar
+    final isMobile = screenSize.width < Const.TABLET_BREAKPOINT;
 
     return SafeArea(
-      child: Column(
-        children: [
-          // Main Content
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GapH(isMobile ? 8 : 32),
-                  // First title line
-                  Text(
-                    R.string.subscription_title_1.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF01645A), // #01645A
-                    ),
-                  ),
-                  // Second title line
-                  Text(
-                    R.string.subscription_title_2.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFFB4802D), // #B4802D
-                    ),
-                  ),
-                  GapH(isMobile ? 8 : 16),
-                  // Subtitle with increased line spacing
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      R.string.subscription_subtitle.tr(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        height: 1.5, // Increased line height for better spacing
-                        fontWeight: FontWeight.w400,
-                        color: R.color.color0xff111515,
-                      ),
-                    ),
-                  ),
-                  GapH(isMobile ? 8 : 16),
-                  // Carousel Container
-                  Expanded(
-                    flex:
-                        6, // Give more space to the container relative to button
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        // Calculate image size to maintain square ratio
-                        // Use the smaller of width or available height to ensure it fits
-                        double imageSize =
-                            constraints.maxWidth > availableHeight * 0.5
-                                ? availableHeight * 0.5
-                                : constraints.maxWidth;
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Responsive spacing
+          final double topSpacing = isSmallScreen ? 16 : 32;
+          final double contentSpacing = isSmallScreen ? 8 : 16;
 
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
+          // Calculate available height for content after accounting for titles and button
+          final double titleSpace =
+              90; // Approximate space for titles and subtitle
+          final double buttonSpace = 64; // Approximate space for button
+          final bottomNavigationBarHeight = 24;
+          final double carouselMaxHeight = constraints.maxHeight -
+              titleSpace -
+              buttonSpace -
+              (topSpacing * 2) -
+              (contentSpacing * 3) -
+              bottomNavigationBarHeight;
+
+          final double imagePercent = isSmallScreen ? 0.65 : 0.65;
+
+          // Calculate image size with a maximum percentage of available height
+          final double imageHeight =
+              carouselMaxHeight * imagePercent; // Adjust percentage as needed
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GapH(topSpacing),
+                // Title block
+                Text(
+                  R.string.subscription_title_1.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF01645A),
+                  ),
+                ),
+                Text(
+                  R.string.subscription_title_2.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFFB4802D),
+                  ),
+                ),
+                GapH(contentSpacing),
+
+                // Subtitle
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    R.string.subscription_subtitle.tr(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                ),
+                GapH(contentSpacing),
+
+                // Carousel Container with fixed aspect ratio
+                Container(
+                  constraints: BoxConstraints(
+                    maxHeight: carouselMaxHeight,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      GapH(8),
+                      // Image carousel
+                      SizedBox(
+                        height: imageHeight,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                          child: CarouselSlider(
+                            carouselController: _carouselController,
+                            options: CarouselOptions(
+                              height: imageHeight,
+                              viewportFraction: 1.0,
+                              enlargeCenterPage: false,
+                              autoPlay: true,
+                              autoPlayInterval: Duration(seconds: 5),
+                              autoPlayAnimationDuration:
+                                  Duration(milliseconds: 800),
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _currentCarouselIndex = index;
+                                });
+                              },
+                            ),
+                            items: carouselItems.map((item) {
+                              return Builder(
+                                builder: (BuildContext context) {
+                                  return _buildBannerImage(item);
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+
+                      // Title, subtitle, and indicators in remaining space
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: isSmallScreen ? 4.0 : 8.0,
                           ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              // Container for the carousel with fixed height
-                              SizedBox(
-                                height: imageSize,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
-                                  ),
-                                  child: CarouselSlider(
-                                    carouselController: _carouselController,
-                                    options: CarouselOptions(
-                                      height: imageSize,
-                                      viewportFraction: 1.0,
-                                      aspectRatio: 1.0, // Square aspect ratio
-                                      enlargeCenterPage: false,
-                                      autoPlay: true,
-                                      autoPlayInterval: Duration(seconds: 5),
-                                      autoPlayAnimationDuration:
-                                          Duration(milliseconds: 800),
-                                      onPageChanged: (index, reason) {
-                                        setState(() {
-                                          _currentCarouselIndex = index;
-                                        });
-                                      },
-                                    ),
-                                    items: carouselItems.map((item) {
-                                      return Builder(
-                                        builder: (BuildContext context) {
-                                          return _buildBannerImage(item);
-                                        },
-                                      );
-                                    }).toList(),
-                                  ),
+                              // Title text with adjusted size based on screen
+                              Text(
+                                _getItemTitle(
+                                    carouselItems[_currentCarouselIndex]),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF111515),
                                 ),
                               ),
-
-                              // Title, subtitle and indicator in remaining space
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 8.0),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      // Title text
-                                      Text(
-                                        _getItemTitle(carouselItems[
-                                            _currentCarouselIndex]),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF111515),
-                                        ),
-                                      ),
-                                      // Subtitle text
-                                      Text(
-                                        _getItemSubtitle(carouselItems[
-                                            _currentCarouselIndex]),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xFF111515),
-                                        ),
-                                      ),
-                                      // Page indicator
-                                      SmoothPageIndicator(
-                                        controller: PageController(
-                                            initialPage: _currentCarouselIndex),
-                                        count: carouselItems.length,
-                                        effect: ExpandingDotsEffect(
-                                          dotHeight: 8,
-                                          dotWidth: 8,
-                                          spacing: 4,
-                                          expansionFactor: 2,
-                                          activeDotColor: Color(0xFF01645A),
-                                          dotColor: Color(0xFFDFE4E4),
-                                        ),
-                                        onDotClicked: (index) {
-                                          _carouselController
-                                              .animateToPage(index);
-                                        },
-                                      ),
-                                    ],
-                                  ),
+                              // Subtitle text with adjusted size
+                              Text(
+                                _getItemSubtitle(
+                                    carouselItems[_currentCarouselIndex]),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF111515),
                                 ),
+                              ),
+                              // Page indicator
+                              SmoothPageIndicator(
+                                controller: PageController(
+                                    initialPage: _currentCarouselIndex),
+                                count: carouselItems.length,
+                                effect: ExpandingDotsEffect(
+                                  dotHeight: isSmallScreen ? 6 : 8,
+                                  dotWidth: isSmallScreen ? 6 : 8,
+                                  spacing: 4,
+                                  expansionFactor: 2,
+                                  activeDotColor: Color(0xFF01645A),
+                                  dotColor: Color(0xFFDFE4E4),
+                                ),
+                                onDotClicked: (index) {
+                                  _carouselController.animateToPage(index);
+                                },
                               ),
                             ],
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
-                  GapH(8),
+                ),
+                GapH(contentSpacing),
 
-                  // Subscription status or Learn More button
-                  subscriptionState != null && subscriptionState!.isActive
-                      ? _buildSubscriptionStatusWidget()
-                      : Expanded(
-                          flex: 1,
+                // Subscription status or Learn More button
+                subscriptionState != null && subscriptionState!.isActive
+                    ? _buildSubscriptionStatusWidget()
+                    : GestureDetector(
+                        onTap: () {
+                          SubscriptionTracking.programExplore(
+                              _currentCarouselIndex + 1);
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                              builder: (context) => PaywallScreen(),
+                              fullscreenDialog: true,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.symmetric(
+                              vertical: isSmallScreen ? 12 : 24),
+                          height: 48,
+                          width: 170,
+                          decoration: BoxDecoration(
+                            color: R.color.mainColor,
+                            borderRadius: BorderRadius.circular(200),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                R.color.greenGradientTop,
+                                R.color.greenGradientBottom,
+                                R.color.greenGradientBottom,
+                              ],
+                            ),
+                          ),
                           child: Center(
-                            child: GestureDetector(
-                              onTap: () {
-                                SubscriptionTracking.programExplore(
-                                    _currentCarouselIndex + 1);
-                                // Navigate to PaywallScreen with full-screen dialog
-                                Navigator.of(context, rootNavigator: true).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => PaywallScreen(),
-                                    fullscreenDialog: true,
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(bottom: 24),
-                                child: Container(
-                                  height: 48,
-                                  width: 170,
-                                  decoration: BoxDecoration(
-                                    color: R.color.mainColor,
-                                    borderRadius: BorderRadius.circular(200),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom,
-                                        R.color.greenGradientBottom,
-                                      ],
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      R.string.tim_hieu_them.tr(),
-                                      style: TextStyle(
-                                        color: R.color.white,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                            child: Text(
+                              R.string.tim_hieu_them.tr(),
+                              style: TextStyle(
+                                color: R.color.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
                               ),
                             ),
                           ),
                         ),
-                  GapH(8), // Ensure padding at bottom
-                ],
-              ),
+                      ),
+              ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
