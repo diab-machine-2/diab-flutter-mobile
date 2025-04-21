@@ -25,9 +25,8 @@ class PaywallScreen extends StatefulWidget {
 }
 
 class _PaywallScreenState extends State<PaywallScreen> {
-  List<Package> _revenueCatPackages = [];
   List<SubscriptionPackage> _localPackages = [];
-  Map<String, SubscriptionPackage> _packageMap = {};
+  List<Package> _revenueCatPackages = [];
   bool _isLoading = true;
   int _selectedPackageIndex = 0;
   String _currentRoute = '/';
@@ -52,25 +51,23 @@ class _PaywallScreenState extends State<PaywallScreen> {
     });
 
     try {
-      // Load local package data
+      // Always load local package data first
       final localPackages = await SubscriptionService.getLocalPackages();
 
-      // Load RevenueCat packages
-      final revenueCatPackages = await RevenueCatService.getOfferings();
-
-      // Map RevenueCat packages to local packages
-      final packageMap = await SubscriptionService.mapLocalPackagesToRevenueCat(
-          localPackages, revenueCatPackages);
+      _revenueCatPackages = await RevenueCatService.getOfferings();
 
       setState(() {
         _localPackages = localPackages;
-        _revenueCatPackages = revenueCatPackages;
-        _packageMap = packageMap;
+      });
+
+      setState(() {
         _isLoading = false;
       });
 
-      SubscriptionTracking.programServiceSelect(
-          objectTitle: localPackages.first.title);
+      if (_localPackages.isNotEmpty) {
+        SubscriptionTracking.programServiceSelect(
+            objectTitle: _localPackages.first.title);
+      }
     } catch (e) {
       print('Error loading packages: $e');
       setState(() {
@@ -79,8 +76,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
   }
 
-  void _showPackageDetails(
-      SubscriptionPackage package, Package revenueCatPackage) {
+  void _showPackageDetails(SubscriptionPackage package) {
+    // Find matching RevenueCat package if available and it's the "cơ bản" package
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -88,22 +86,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
       builder: (context) => PackageDetailBottomSheet(
         package: package,
         onPurchase: () async {
-          log('[SUBSCRIPTION] onPurchase revenueCatPackage: $revenueCatPackage');
-
           _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
 
           Navigator.pop(context);
           SubscriptionNavigationMixin.navigationKey.currentState
               ?.pushNamed(NavigatorName.package_program_list);
-          // final purchased =
-          //     await RevenueCatService.purchasePackage(revenueCatPackage);
-          // if (purchased) {
-          //   Observable.instance.notifyObservers([], notifyName: "refresh_home");
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     SnackBar(content: Text('Purchase successful!')),
-          //   );
-          // Navigator.pop(context);
-          // }
         },
       ),
     );
@@ -230,14 +217,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       child: Column(
                         children: [
                           _buildPackageCard(
-                            _localPackages[_selectedPackageIndex],
-                            _revenueCatPackages.firstWhere(
-                              (p) =>
-                                  p.storeProduct.identifier ==
-                                  _localPackages[_selectedPackageIndex].id,
-                              orElse: () => _revenueCatPackages.first,
-                            ),
-                          ),
+                              _localPackages[_selectedPackageIndex]),
                         ],
                       ),
                     ),
@@ -246,8 +226,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               );
   }
 
-  Widget _buildPackageCard(
-      SubscriptionPackage package, Package revenueCatPackage) {
+  Widget _buildPackageCard(SubscriptionPackage package) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -320,7 +299,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   onPressed: () {
                     SubscriptionTracking.serviceView(
                         objectTitle: package.title);
-                    _showPackageDetails(package, revenueCatPackage);
+                    _showPackageDetails(package);
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -470,9 +449,18 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 screenName: 'program_service',
                 objectTitle: _localPackages[_selectedPackageIndex].title);
 
-            // Navigate to package program list using the SubscriptionNavigationMixin
-            SubscriptionNavigationMixin.navigationKey.currentState
-                ?.pushNamed(NavigatorName.package_program_list);
+            if (_localPackages[_selectedPackageIndex].id == 'co_ban' &&
+                _revenueCatPackages.isNotEmpty) {
+              // Show subscription options sheet only for "cơ bản" package
+              SubscriptionService.showSubscriptionOptionsSheet(
+                  context, package);
+
+              return;
+            } else {
+              // Navigate to package program list using the SubscriptionNavigationMixin for other packages
+              SubscriptionNavigationMixin.navigationKey.currentState
+                  ?.pushNamed(NavigatorName.package_program_list);
+            }
           },
           child: Container(
             margin: EdgeInsets.fromLTRB(16, 0, 16, 24),

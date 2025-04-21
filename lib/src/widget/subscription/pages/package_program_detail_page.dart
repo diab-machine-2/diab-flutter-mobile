@@ -11,11 +11,11 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ProgramDetailPage extends StatefulWidget {
   final PackageProgram program;
@@ -30,6 +30,14 @@ class ProgramDetailPage extends StatefulWidget {
 }
 
 class _ProgramDetailPageState extends State<ProgramDetailPage> {
+  late SubscriptionCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = context.read<SubscriptionCubit>();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,8 +71,28 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                       boxShadow: [Utils.getBoxShadowDropButton()],
                     ),
                     child: _buildButton(
-                      title: R.string.consult_request.tr(),
+                      title: SubscriptionService.isBasicPackage(
+                              _cubit.selectedPackage)
+                          ? R.string.join_now.tr()
+                          : R.string.consult_request.tr(),
                       onTap: () async {
+                        if (SubscriptionService.isBasicPackage(
+                            _cubit.selectedPackage)) {
+                          ProgramService.showPopupConfirmBasicSubscription(
+                              title: widget.program.title,
+                              subtitle: R.string.basic_program_confirm.tr(),
+                              onConfirm: () {
+                                // Navigator.of(context, rootNavigator: true)
+                                //     .pushNamedAndRemoveUntil(
+                                //   NavigatorName.tabbar,
+                                //   (route) =>
+                                //       false, // This removes all routes from stack
+                                // );
+                              },
+                              context: context);
+                          return;
+                        }
+
                         SubscriptionTracking.programRequest(
                             screenName: 'program_detail',
                             objectTitle: widget.program.title);

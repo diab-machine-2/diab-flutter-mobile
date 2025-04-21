@@ -12,11 +12,11 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ProgramsListPage extends StatefulWidget {
   const ProgramsListPage({Key? key}) : super(key: key);
@@ -160,7 +160,11 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                     itemCount: programs.length,
                     padding: const EdgeInsets.only(top: 8, bottom: 16),
                     itemBuilder: (context, index) {
-                      return ProgramCard(program: programs[index]);
+                      return ProgramCard(
+                        program: programs[index],
+                        isBasicPackage: SubscriptionService.isBasicPackage(
+                            _cubit.selectedPackage),
+                      );
                     },
                   ),
                 ),
@@ -175,8 +179,11 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
 
 class ProgramCard extends StatelessWidget {
   final PackageProgram program;
+  final bool isBasicPackage;
 
-  const ProgramCard({Key? key, required this.program}) : super(key: key);
+  const ProgramCard(
+      {Key? key, required this.program, required this.isBasicPackage})
+      : super(key: key);
 
   // Helper function to determine if we're on a mobile device
   double getShortestSide(BuildContext context) {
@@ -223,8 +230,8 @@ class ProgramCard extends StatelessWidget {
               ],
             ),
             child: isMobile
-                ? _buildMobileLayout(context)
-                : _buildTabletLayout(context),
+                ? _buildMobileLayout(context, isBasicPackage)
+                : _buildTabletLayout(context, isBasicPackage),
           ),
         ),
         if (program.isRecommended)
@@ -263,7 +270,7 @@ class ProgramCard extends StatelessWidget {
   }
 
 // Mobile layout with calculated image height accounting for multi-line text
-  Widget _buildMobileLayout(BuildContext context) {
+  Widget _buildMobileLayout(BuildContext context, bool isBasicPackage) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -379,6 +386,22 @@ class ProgramCard extends StatelessWidget {
                       screenName: 'program_listing',
                       objectTitle: program.title);
 
+                  if (isBasicPackage) {
+                    ProgramService.showPopupConfirmBasicSubscription(
+                        title: program.title,
+                        subtitle: R.string.basic_program_confirm.tr(),
+                        onConfirm: () {
+                          // Navigator.of(context, rootNavigator: true)
+                          //     .pushNamedAndRemoveUntil(
+                          //   NavigatorName.tabbar,
+                          //   (route) =>
+                          //       false, // This removes all routes from stack
+                          // );
+                        },
+                        context: context);
+                    return;
+                  }
+
                   await notifySubscriptionSuccess(context);
                   ProgramService.showPopupRequestConsultSubscription(
                     context: context,
@@ -429,7 +452,9 @@ class ProgramCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      R.string.consult_request.tr(),
+                      isBasicPackage
+                          ? R.string.join_now.tr()
+                          : R.string.consult_request.tr(),
                       style: TextStyle(
                         color: R.color.white,
                         fontSize: 15,
@@ -446,7 +471,7 @@ class ProgramCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTabletLayout(BuildContext context) {
+  Widget _buildTabletLayout(BuildContext context, bool isBasicPackage) {
     // If no image, just return the content column
     if (ProgramService.getProgramImage(program.id).isEmpty) {
       return Column(
@@ -609,6 +634,22 @@ class ProgramCard extends StatelessWidget {
                         screenName: 'program_listing',
                         objectTitle: program.title);
 
+                    if (isBasicPackage) {
+                      ProgramService.showPopupConfirmBasicSubscription(
+                          title: program.title,
+                          subtitle: R.string.basic_program_confirm.tr(),
+                          onConfirm: () {
+                            // Navigator.of(context, rootNavigator: true)
+                            //     .pushNamedAndRemoveUntil(
+                            //   NavigatorName.tabbar,
+                            //   (route) =>
+                            //       false, // This removes all routes from stack
+                            // );
+                          },
+                          context: context);
+                      return;
+                    }
+
                     await notifySubscriptionSuccess(context);
                     ProgramService.showPopupRequestConsultSubscription(
                       context: context,
@@ -659,7 +700,9 @@ class ProgramCard extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        R.string.consult_request.tr(),
+                        isBasicPackage
+                            ? R.string.join_now.tr()
+                            : R.string.consult_request.tr(),
                         style: TextStyle(
                           color: R.color.white,
                           fontSize: 15,

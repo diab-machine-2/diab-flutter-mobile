@@ -736,4 +736,7 @@ class Drawables {
       "lib/res/drawables/chat/avatar_chatbot_ai_3.webp";
   String get chat_avatar_bagged_star =>
       "lib/res/drawables/chat/avatar_bagged_star.png";
+  String get co_ban_bg => "lib/res/drawables/co_ban_bg.png";
+  String get co_ban_badge => "lib/res/drawables/co_ban_badge.png";
+  String get ic_dialog_failed => "lib/res/drawables/ic_dialog_failed.png";
 }

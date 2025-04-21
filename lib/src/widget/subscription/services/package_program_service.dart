@@ -421,4 +421,126 @@ class ProgramService {
       },
     );
   }
+
+  static showPopupConfirmBasicSubscription({
+    required Function onConfirm,
+    String? title,
+    String? subtitle,
+    String primaryButtonTitle = 'Xác nhận',
+    required BuildContext context,
+  }) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async {
+            Navigator.pop(context);
+
+            return false;
+          },
+          child: Container(
+            child: Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              insetPadding: EdgeInsets.symmetric(horizontal: 12),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.all(12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(
+                            Icons.close,
+                            color: R.color.color0xff111515,
+                            size: 24,
+                          ),
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        title ?? "",
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: R.color.color0xff111515,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        subtitle ?? "",
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: R.color.color0xff636A6B,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    GapH(16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            onConfirm.call();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                            ),
+                            child: Container(
+                              height: 43,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 0),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    R.color.greenGradientTop02,
+                                    R.color.greenGradientBottom,
+                                    R.color.greenGradientBottom,
+                                  ],
+                                ),
+                              ),
+                              child: Text(
+                                primaryButtonTitle,
+                                style: TextStyle(
+                                    color: R.color.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    GapH(16),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

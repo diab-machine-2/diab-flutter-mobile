@@ -1235,4 +1235,11 @@ chuong_trinh_dong_hanh,"Chương trình đồng hành","Companion program",
 chuong_trinh_thau_cam,"Chương trình thấu cảm","Emotional program",
 subscription_title_1,"Ngăn ngừa và sống khoẻ","Prevent and live healthfully",
 subscription_title_2,"cùng đái tháo đường","with diabetes",
-subscription_subtitle,"Chương trình Giáo dục, Hỗ trợ tự quản lý, và\n Ngăn ngừa bệnh mãn tính uy tín từ Hoa Kỳ","The Diabetes Education, Support Self-Management, and\n Preventive Care Program from the United States"
+subscription_subtitle,"Chương trình Giáo dục, Hỗ trợ tự quản lý, và\n Ngăn ngừa bệnh mãn tính uy tín từ Hoa Kỳ","The Diabetes Education, Support Self-Management, and\n Preventive Care Program from the United States",
+tiet_kiem_nhat,"Tiết kiệm nhất","Best saving",
+begin_program,"Bắt đầu chương trình","Start program",
+payment_success,"Thanh toán thành công","Payment successful",
+payment_failed,"Thanh toán thất bại","Payment failed",
+repayment,"Thanh toán lại","Repayment",
+loading_subscription_packages,"Đang tải các gói đăng ký","Loading subscription packages",
+basic_program_confirm,"Bạn có muốn xác nhận chọn mục tiêu sức khoẻ này không?","Are you sure you want to confirm this health goal?"

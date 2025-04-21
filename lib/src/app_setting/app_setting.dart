@@ -437,7 +437,7 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
-      // await RevenueCatService.logout();
+      await RevenueCatService.logout();
       return true;
     } catch (_) {
       return false;

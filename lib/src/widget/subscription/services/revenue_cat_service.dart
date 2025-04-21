@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class RevenueCatService {
@@ -13,10 +14,9 @@ class RevenueCatService {
     // Configure with your API keys
     PurchasesConfiguration configuration;
     if (Platform.isAndroid) {
-      configuration =
-          PurchasesConfiguration("goog_tZprrmvJhhXUhfZQptsKamngqIQ");
+      configuration = PurchasesConfiguration(Const.REVENUE_CAT_GOOGLE_API_KEY);
     } else if (Platform.isIOS) {
-      configuration = PurchasesConfiguration("YOUR_APPLE_API_KEY");
+      configuration = PurchasesConfiguration(Const.REVENUE_CAT_APPLE_API_KEY);
     } else {
       throw PlatformException(
         code: 'UNSUPPORTED_PLATFORM',
@@ -33,11 +33,12 @@ class RevenueCatService {
       final offerings = await Purchases.getOfferings();
       if (offerings.current != null &&
           offerings.current!.availablePackages.isNotEmpty) {
+        log('[SUBSCRIPTION] RevenueCat offerings: ${offerings.current!.availablePackages}');
         return offerings.current!.availablePackages;
       }
       return [];
     } on PlatformException catch (e) {
-      debugPrint('[SUBSCRIPTION] Error fetching offerings: ${e.message}');
+      log('[SUBSCRIPTION] Error RevenueCat offerings: ${e.message}');
       return [];
     }
   }
@@ -115,7 +116,7 @@ class RevenueCatService {
     try {
       // Force sync with the store
       await Purchases.syncPurchases();
-      
+
       final customerInfo = await Purchases.getCustomerInfo();
       return customerInfo;
     } on PlatformException catch (e) {

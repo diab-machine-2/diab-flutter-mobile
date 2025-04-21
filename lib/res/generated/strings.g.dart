@@ -1274,4 +1274,11 @@ class Strings {
   String get subscription_title_1 => 'subscription_title_1';
   String get subscription_title_2 => 'subscription_title_2';
   String get subscription_subtitle => 'subscription_subtitle';
+  String get tiet_kiem_nhat => 'tiet_kiem_nhat';
+  String get begin_program => 'begin_program';
+  String get payment_success => 'payment_success';
+  String get payment_failed => 'payment_failed';
+  String get repayment => 'repayment';
+  String get loading_subscription_packages => 'loading_subscription_packages';
+  String get basic_program_confirm => 'basic_program_confirm';
 }
