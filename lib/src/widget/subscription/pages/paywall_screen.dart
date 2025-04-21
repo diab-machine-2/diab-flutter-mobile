@@ -13,6 +13,7 @@ import 'package:medical/src/widget/subscription/model/subscription_package_model
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widget/subscription/widgets/package_detail_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_list_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -24,9 +25,8 @@ class PaywallScreen extends StatefulWidget {
 }
 
 class _PaywallScreenState extends State<PaywallScreen> {
-  List<Package> _revenueCatPackages = [];
   List<SubscriptionPackage> _localPackages = [];
-  Map<String, SubscriptionPackage> _packageMap = {};
+  List<Package> _revenueCatPackages = [];
   bool _isLoading = true;
   int _selectedPackageIndex = 0;
   String _currentRoute = '/';
@@ -51,22 +51,23 @@ class _PaywallScreenState extends State<PaywallScreen> {
     });
 
     try {
-      // Load local package data
+      // Always load local package data first
       final localPackages = await SubscriptionService.getLocalPackages();
 
-      // Load RevenueCat packages
-      final revenueCatPackages = await RevenueCatService.getOfferings();
-
-      // Map RevenueCat packages to local packages
-      final packageMap = await SubscriptionService.mapLocalPackagesToRevenueCat(
-          localPackages, revenueCatPackages);
+      _revenueCatPackages = await RevenueCatService.getOfferings();
 
       setState(() {
         _localPackages = localPackages;
-        _revenueCatPackages = revenueCatPackages;
-        _packageMap = packageMap;
+      });
+
+      setState(() {
         _isLoading = false;
       });
+
+      if (_localPackages.isNotEmpty) {
+        SubscriptionTracking.programServiceSelect(
+            objectTitle: _localPackages.first.title);
+      }
     } catch (e) {
       print('Error loading packages: $e');
       setState(() {
@@ -75,8 +76,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
     }
   }
 
-  void _showPackageDetails(
-      SubscriptionPackage package, Package revenueCatPackage) {
+  void _showPackageDetails(SubscriptionPackage package) {
+    // Find matching RevenueCat package if available and it's the "cơ bản" package
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -84,22 +86,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
       builder: (context) => PackageDetailBottomSheet(
         package: package,
         onPurchase: () async {
-          log('[SUBSCRIPTION] onPurchase revenueCatPackage: $revenueCatPackage');
-
           _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
 
           Navigator.pop(context);
           SubscriptionNavigationMixin.navigationKey.currentState
               ?.pushNamed(NavigatorName.package_program_list);
-          // final purchased =
-          //     await RevenueCatService.purchasePackage(revenueCatPackage);
-          // if (purchased) {
-          //   Observable.instance.notifyObservers([], notifyName: "refresh_home");
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     SnackBar(content: Text('Purchase successful!')),
-          //   );
-          // Navigator.pop(context);
-          // }
         },
       ),
     );
@@ -111,6 +102,17 @@ class _PaywallScreenState extends State<PaywallScreen> {
       create: (context) => _cubit,
       child: WillPopScope(
         onWillPop: () async {
+          print('[ROUTE] onWillPop _currentRoute: $_currentRoute');
+          // Check if the inner navigator can handle the back button press
+          final NavigatorState? navigator =
+              SubscriptionNavigationMixin.navigationKey.currentState;
+
+          if (navigator != null && navigator.canPop()) {
+            navigator.pop();
+            return false;
+          }
+
+          // Otherwise, handle the back button normally (return to subscription page)
           return true;
         },
         child: Scaffold(
@@ -215,14 +217,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       child: Column(
                         children: [
                           _buildPackageCard(
-                            _localPackages[_selectedPackageIndex],
-                            _revenueCatPackages.firstWhere(
-                              (p) =>
-                                  p.storeProduct.identifier ==
-                                  _localPackages[_selectedPackageIndex].id,
-                              orElse: () => _revenueCatPackages.first,
-                            ),
-                          ),
+                              _localPackages[_selectedPackageIndex]),
                         ],
                       ),
                     ),
@@ -231,8 +226,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               );
   }
 
-  Widget _buildPackageCard(
-      SubscriptionPackage package, Package revenueCatPackage) {
+  Widget _buildPackageCard(SubscriptionPackage package) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -303,7 +297,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     padding: EdgeInsets.zero,
                   ),
                   onPressed: () {
-                    _showPackageDetails(package, revenueCatPackage);
+                    SubscriptionTracking.serviceView(
+                        objectTitle: package.title);
+                    _showPackageDetails(package);
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -343,6 +339,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     if (index >= 0) {
                       setState(() {
                         _selectedPackageIndex = index;
+                        SubscriptionTracking.programServiceSelect(
+                            objectTitle: p.title);
                       });
                     }
                   },
@@ -447,9 +445,22 @@ class _PaywallScreenState extends State<PaywallScreen> {
           onTap: () {
             _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
 
-            // Navigate to package program list using the SubscriptionNavigationMixin
-            SubscriptionNavigationMixin.navigationKey.currentState
-                ?.pushNamed(NavigatorName.package_program_list);
+            SubscriptionTracking.programServiceRegister(
+                screenName: 'program_service',
+                objectTitle: _localPackages[_selectedPackageIndex].title);
+
+            if (_localPackages[_selectedPackageIndex].id == 'co_ban' &&
+                _revenueCatPackages.isNotEmpty) {
+              // Show subscription options sheet only for "cơ bản" package
+              SubscriptionService.showSubscriptionOptionsSheet(
+                  context, package);
+
+              return;
+            } else {
+              // Navigate to package program list using the SubscriptionNavigationMixin for other packages
+              SubscriptionNavigationMixin.navigationKey.currentState
+                  ?.pushNamed(NavigatorName.package_program_list);
+            }
           },
           child: Container(
             margin: EdgeInsets.fromLTRB(16, 0, 16, 24),

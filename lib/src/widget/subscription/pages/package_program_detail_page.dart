@@ -8,12 +8,14 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ProgramDetailPage extends StatefulWidget {
   final PackageProgram program;
@@ -28,6 +30,14 @@ class ProgramDetailPage extends StatefulWidget {
 }
 
 class _ProgramDetailPageState extends State<ProgramDetailPage> {
+  late SubscriptionCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = context.read<SubscriptionCubit>();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,8 +71,32 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                       boxShadow: [Utils.getBoxShadowDropButton()],
                     ),
                     child: _buildButton(
-                      title: R.string.consult_request.tr(),
+                      title: SubscriptionService.isBasicPackage(
+                              _cubit.selectedPackage)
+                          ? R.string.join_now.tr()
+                          : R.string.consult_request.tr(),
                       onTap: () async {
+                        if (SubscriptionService.isBasicPackage(
+                            _cubit.selectedPackage)) {
+                          ProgramService.showPopupConfirmBasicSubscription(
+                              title: widget.program.title,
+                              subtitle: R.string.basic_program_confirm.tr(),
+                              onConfirm: () {
+                                // Navigator.of(context, rootNavigator: true)
+                                //     .pushNamedAndRemoveUntil(
+                                //   NavigatorName.tabbar,
+                                //   (route) =>
+                                //       false, // This removes all routes from stack
+                                // );
+                              },
+                              context: context);
+                          return;
+                        }
+
+                        SubscriptionTracking.programRequest(
+                            screenName: 'program_detail',
+                            objectTitle: widget.program.title);
+
                         final subscriptionCubit =
                             BlocProvider.of<SubscriptionCubit>(context);
 
@@ -72,7 +106,8 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                             servicePackage:
                                 subscriptionCubit.selectedPackage!.title,
                             programName: widget.program.title);
-                        await subscriptionCubit.notifySubscriptionSuccess(request);
+                        await subscriptionCubit
+                            .notifySubscriptionSuccess(request);
 
                         ProgramService.showPopupRequestConsultSubscription(
                           context: context,
@@ -83,6 +118,9 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           primaryButtonTitle: R.string.back_home_page.tr(),
                           secondaryButtonTitle: R.string.support.tr(),
                           onNavigateHome: () {
+                            SubscriptionTracking.homeReturn(
+                                screenName: 'program_detail');
+
                             Navigator.of(context, rootNavigator: true)
                                 .pushNamedAndRemoveUntil(
                               NavigatorName.tabbar,
@@ -91,13 +129,16 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                             );
                           },
                           onContact: () async {
-                            final launchUri =
-                                Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                            if (await canLaunchUrl(launchUri)) {
-                              await launchUrl(launchUri);
-                            } else {
-                              throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                            }
+                            SubscriptionTracking.supportClick(
+                                screenName: 'program_detail');
+                            // final launchUri =
+                            //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                            // if (await canLaunchUrl(launchUri)) {
+                            //   await launchUrl(launchUri);
+                            // } else {
+                            //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                            // }
+                            HomeSupportFunctions.showModalAddData(context);
                           },
                         );
                       },
@@ -264,7 +305,7 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  childAspectRatio: 1.7 / 1, // Adjust height as needed
+                  childAspectRatio: 1.5 / 1, // Adjust height as needed
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
@@ -339,7 +380,7 @@ class AudienceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate image height to maintain 4:3 aspect ratio
-    final imageHeight = (cardWidth * 3) / 4;
+    final imageHeight = (cardWidth * 2.9) / 4;
 
     return Container(
       width: cardWidth,
@@ -352,7 +393,7 @@ class AudienceCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // Only take up necessary space
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Image container with ClipRRect to respect border radius
           ClipRRect(
@@ -372,16 +413,22 @@ class AudienceCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               alignment: Alignment.center,
-              child: Text(
-                audience.title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                  color: R.color.color0xff111515,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(
+                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                child: Text(
+                  audience.title,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: R.color.color0xff111515,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ),

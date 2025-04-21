@@ -9,12 +9,14 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ProgramsListPage extends StatefulWidget {
   const ProgramsListPage({Key? key}) : super(key: key);
@@ -80,7 +82,7 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                   child: CustomAppBar(
                     backgroundColor: Colors.transparent,
                     title: Text(
-                      R.string.basic_program.tr(),
+                      _cubit.getTitlePackage(),
                       style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -90,17 +92,19 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                     actions: [
                       InkWell(
                         onTap: () async {
-                          final launchUri =
-                              Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                          if (await canLaunchUrl(launchUri)) {
-                            await launchUrl(launchUri);
-                          } else {
-                            throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                          }
+                          SubscriptionTracking.supportClick(
+                              screenName: 'program_listing');
+                          // final launchUri =
+                          //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                          // if (await canLaunchUrl(launchUri)) {
+                          //   await launchUrl(launchUri);
+                          // } else {
+                          //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                          // }
+                          HomeSupportFunctions.showModalAddData(context);
                         },
                         child: Container(
-                          width: 85,
-                          height: 33,
+                          height: 36,
                           padding:
                               EdgeInsets.symmetric(vertical: 4, horizontal: 6),
                           margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
@@ -156,7 +160,11 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                     itemCount: programs.length,
                     padding: const EdgeInsets.only(top: 8, bottom: 16),
                     itemBuilder: (context, index) {
-                      return ProgramCard(program: programs[index]);
+                      return ProgramCard(
+                        program: programs[index],
+                        isBasicPackage: SubscriptionService.isBasicPackage(
+                            _cubit.selectedPackage),
+                      );
                     },
                   ),
                 ),
@@ -171,8 +179,11 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
 
 class ProgramCard extends StatelessWidget {
   final PackageProgram program;
+  final bool isBasicPackage;
 
-  const ProgramCard({Key? key, required this.program}) : super(key: key);
+  const ProgramCard(
+      {Key? key, required this.program, required this.isBasicPackage})
+      : super(key: key);
 
   // Helper function to determine if we're on a mobile device
   double getShortestSide(BuildContext context) {
@@ -198,20 +209,30 @@ class ProgramCard extends StatelessWidget {
 
     return Stack(
       children: [
-        Container(
-          margin:
-              EdgeInsets.fromLTRB(12, program.isRecommended ? 24 : 12, 12, 12),
-          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          decoration: BoxDecoration(
-            color: R.color.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              Utils.getBoxShadowDropCard(),
-            ],
+        GestureDetector(
+          onTap: () {
+            SubscriptionTracking.programView(
+                objectTitle: program.title, objectAction: 'Card');
+
+            SubscriptionNavigationMixin.navigationKey.currentState?.pushNamed(
+                NavigatorName.package_program_detail,
+                arguments: {'program': program});
+          },
+          child: Container(
+            margin: EdgeInsets.fromLTRB(
+                12, program.isRecommended ? 24 : 12, 12, 12),
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                Utils.getBoxShadowDropCard(),
+              ],
+            ),
+            child: isMobile
+                ? _buildMobileLayout(context, isBasicPackage)
+                : _buildTabletLayout(context, isBasicPackage),
           ),
-          child: isMobile
-              ? _buildMobileLayout(context)
-              : _buildTabletLayout(context),
         ),
         if (program.isRecommended)
           Positioned(
@@ -249,7 +270,7 @@ class ProgramCard extends StatelessWidget {
   }
 
 // Mobile layout with calculated image height accounting for multi-line text
-  Widget _buildMobileLayout(BuildContext context) {
+  Widget _buildMobileLayout(BuildContext context, bool isBasicPackage) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -329,6 +350,9 @@ class ProgramCard extends StatelessWidget {
             Expanded(
                 child: GestureDetector(
               onTap: () {
+                SubscriptionTracking.programView(
+                    objectTitle: program.title, objectAction: 'Xem thêm');
+
                 SubscriptionNavigationMixin.navigationKey.currentState
                     ?.pushNamed(NavigatorName.package_program_detail,
                         arguments: {'program': program});
@@ -358,6 +382,26 @@ class ProgramCard extends StatelessWidget {
             Expanded(
               child: GestureDetector(
                 onTap: () async {
+                  SubscriptionTracking.programRequest(
+                      screenName: 'program_listing',
+                      objectTitle: program.title);
+
+                  if (isBasicPackage) {
+                    ProgramService.showPopupConfirmBasicSubscription(
+                        title: program.title,
+                        subtitle: R.string.basic_program_confirm.tr(),
+                        onConfirm: () {
+                          // Navigator.of(context, rootNavigator: true)
+                          //     .pushNamedAndRemoveUntil(
+                          //   NavigatorName.tabbar,
+                          //   (route) =>
+                          //       false, // This removes all routes from stack
+                          // );
+                        },
+                        context: context);
+                    return;
+                  }
+
                   await notifySubscriptionSuccess(context);
                   ProgramService.showPopupRequestConsultSubscription(
                     context: context,
@@ -367,6 +411,9 @@ class ProgramCard extends StatelessWidget {
                     primaryButtonTitle: R.string.back_home_page.tr(),
                     secondaryButtonTitle: R.string.support.tr(),
                     onNavigateHome: () {
+                      SubscriptionTracking.homeReturn(
+                          screenName: 'program_listing');
+
                       Navigator.of(context, rootNavigator: true)
                           .pushNamedAndRemoveUntil(
                         NavigatorName.tabbar,
@@ -374,13 +421,17 @@ class ProgramCard extends StatelessWidget {
                       );
                     },
                     onContact: () async {
-                      final launchUri =
-                          Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                      if (await canLaunchUrl(launchUri)) {
-                        await launchUrl(launchUri);
-                      } else {
-                        throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                      }
+                      SubscriptionTracking.supportClick(
+                          screenName: 'program_listing');
+
+                      // final launchUri =
+                      //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                      // if (await canLaunchUrl(launchUri)) {
+                      //   await launchUrl(launchUri);
+                      // } else {
+                      //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                      // }
+                      HomeSupportFunctions.showModalAddData(context);
                     },
                   );
                 },
@@ -401,7 +452,9 @@ class ProgramCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      R.string.consult_request.tr(),
+                      isBasicPackage
+                          ? R.string.join_now.tr()
+                          : R.string.consult_request.tr(),
                       style: TextStyle(
                         color: R.color.white,
                         fontSize: 15,
@@ -418,7 +471,7 @@ class ProgramCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTabletLayout(BuildContext context) {
+  Widget _buildTabletLayout(BuildContext context, bool isBasicPackage) {
     // If no image, just return the content column
     if (ProgramService.getProgramImage(program.id).isEmpty) {
       return Column(
@@ -544,6 +597,8 @@ class ProgramCard extends StatelessWidget {
                 flex: 1,
                 child: GestureDetector(
                   onTap: () {
+                    SubscriptionTracking.programView(
+                        objectTitle: program.title, objectAction: 'Xem thêm');
                     SubscriptionNavigationMixin.navigationKey.currentState
                         ?.pushNamed(NavigatorName.package_program_detail,
                             arguments: {'program': program});
@@ -575,6 +630,26 @@ class ProgramCard extends StatelessWidget {
                 flex: 1,
                 child: GestureDetector(
                   onTap: () async {
+                    SubscriptionTracking.programRequest(
+                        screenName: 'program_listing',
+                        objectTitle: program.title);
+
+                    if (isBasicPackage) {
+                      ProgramService.showPopupConfirmBasicSubscription(
+                          title: program.title,
+                          subtitle: R.string.basic_program_confirm.tr(),
+                          onConfirm: () {
+                            // Navigator.of(context, rootNavigator: true)
+                            //     .pushNamedAndRemoveUntil(
+                            //   NavigatorName.tabbar,
+                            //   (route) =>
+                            //       false, // This removes all routes from stack
+                            // );
+                          },
+                          context: context);
+                      return;
+                    }
+
                     await notifySubscriptionSuccess(context);
                     ProgramService.showPopupRequestConsultSubscription(
                       context: context,
@@ -584,6 +659,9 @@ class ProgramCard extends StatelessWidget {
                       primaryButtonTitle: R.string.back_home_page.tr(),
                       secondaryButtonTitle: R.string.support.tr(),
                       onNavigateHome: () {
+                        SubscriptionTracking.homeReturn(
+                            screenName: 'program_listing');
+
                         Navigator.of(context, rootNavigator: true)
                             .pushNamedAndRemoveUntil(
                           NavigatorName.tabbar,
@@ -592,13 +670,17 @@ class ProgramCard extends StatelessWidget {
                         );
                       },
                       onContact: () async {
-                        final launchUri =
-                            Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                        if (await canLaunchUrl(launchUri)) {
-                          await launchUrl(launchUri);
-                        } else {
-                          throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                        }
+                        SubscriptionTracking.supportClick(
+                            screenName: 'program_listing');
+
+                        // final launchUri =
+                        //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                        // if (await canLaunchUrl(launchUri)) {
+                        //   await launchUrl(launchUri);
+                        // } else {
+                        //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                        // }
+                        HomeSupportFunctions.showModalAddData(context);
                       },
                     );
                   },
@@ -618,7 +700,9 @@ class ProgramCard extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        R.string.consult_request.tr(),
+                        isBasicPackage
+                            ? R.string.join_now.tr()
+                            : R.string.consult_request.tr(),
                         style: TextStyle(
                           color: R.color.white,
                           fontSize: 15,

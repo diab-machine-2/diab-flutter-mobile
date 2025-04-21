@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -24,6 +26,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
 
 class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   final AppRepository appRepository;
@@ -150,17 +153,19 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return clinics;
   }
 
-  Future<void> getClinicDetail({required int id, bool isLoading = true}) async {
+  Future<bool> getClinicDetail({required int id, bool isLoading = true}) async {
     if (isLoading) {
       emit(DsmesAppointmentLoading());
     }
     ApiResult<DsmesClinicDetailResponse> apiResult =
         await appRepository.getClinicDetail(id: id);
-    apiResult.when(success: (DsmesClinicDetailResponse response) {
+    return apiResult.when(success: (DsmesClinicDetailResponse response) {
       setSelectedClinic(response.data);
       emit(DsmesAppointmentLoaded());
+      return true;
     }, failure: (NetworkExceptions error) {
       emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      return false;
     });
   }
 
@@ -284,6 +289,28 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return dsmesAppointment;
   }
 
+  Future<String?> uploadSymptomImage(
+      {required Uint8List bytes, required String fileName}) async {
+    try {
+      final response = await FetchClient().postHttp3(
+        path: 'api/appointment/upload-symptom',
+        params: {},
+        bytes: bytes,
+        fileName: fileName,
+      );
+
+      if (response.statusCode == 200) {
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        return jsonData['data'];
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
   _getFilteredData() {
     List<DsmesAppointment> filteredData = myAppointments.where((data) {
       DateTime startTime =
@@ -373,6 +400,59 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return myAppointments.isEmpty ? [] : [myAppointments.first];
   }
 
+  List<DsmesAppointment> getSortedAppointments() {
+    final now = DateTime.now();
+    List<DsmesAppointment> sortedList = [];
+
+    // Priority 1: Approved appointments not after now, closest to current time
+    List<DsmesAppointment> approvedNotAfterNow =
+        myAppointments.where((appointment) {
+      final endTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
+      return now.isBefore(endTime) &&
+          appointment.status == DSMES_STATUS_APPROVE;
+    }).toList();
+
+    approvedNotAfterNow.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return (aTime.difference(now).abs())
+          .compareTo(bTime.difference(now).abs());
+    });
+    sortedList.addAll(approvedNotAfterNow);
+
+    // Priority 2: Requested appointments closest to current time
+    List<DsmesAppointment> requestedAppointments = myAppointments
+        .where((appointment) => appointment.status == DSMES_STATUS_REQUEST)
+        .toList();
+
+    requestedAppointments.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return (aTime.difference(now).abs())
+          .compareTo(bTime.difference(now).abs());
+    });
+    sortedList.addAll(requestedAppointments);
+
+    // Priority 3: Approved appointments after now
+    List<DsmesAppointment> approvedAfterNow =
+        myAppointments.where((appointment) {
+      final endTime =
+          DateFormat('yyyy-MM-dd HH:mm:ss').parse(appointment.endTime);
+      return endTime.isBefore(now) &&
+          appointment.status == DSMES_STATUS_APPROVE;
+    }).toList();
+
+    approvedAfterNow.sort((a, b) {
+      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
+      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
+      return aTime.compareTo(bTime);
+    });
+    sortedList.addAll(approvedAfterNow);
+
+    return sortedList;
+  }
+
   initCreateDsmesBookingRequest({String locale = 'vi'}) {
     createDsmesBookingRequest = CreateDsmesBookingRequest(
       startTime: '',
@@ -425,6 +505,13 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     );
   }
 
+  updateCreateDsmesBookingRequestSymptomAttachments(
+      {required List<String> symptomAttachments}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+      symptomAttachment: symptomAttachments,
+    );
+  }
+
   updateCreateDsmesBookingRequestServiceList(
       {required List<ServiceItem> selectedServices}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
@@ -454,9 +541,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   String getItemTitle(DsmesAppointmentMode mode) {
     switch (mode) {
       case DsmesAppointmentMode.atClinic:
-        return R.string.consult_at_clinic.tr();
+        return R.string.at_clinic.tr();
       case DsmesAppointmentMode.telemedicine:
-        return R.string.consult_online.tr();
+        return R.string.kham_tu_xa.tr();
       default:
         return '';
     }

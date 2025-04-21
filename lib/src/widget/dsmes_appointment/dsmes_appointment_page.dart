@@ -395,7 +395,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                             if (isProcessing['chooseService']!) return;
                             isProcessing['chooseService'] = true;
                             try {
-                              await _cubit.getClinicDetail(id: data.clinicId);
+                              final detailSuccess =
+                                  await _cubit.getClinicDetail(id: data.id);
+
+                              if (!detailSuccess ||
+                                  _cubit.selectedClinic == null) {
+                                return;
+                              }
                               final appointment =
                                   await _cubit.getDsmesAppointmentDetail(
                                       appointmentId: data.id);
@@ -425,7 +431,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                           final clinics = await _cubit.getClinicList(type: 'online');
                           if (clinics.isNotEmpty) {
                             final priorityClinic = clinics.first;
-                            await _cubit.getClinicDetail(id: priorityClinic.id);
+                            final detailSuccess = await _cubit.getClinicDetail(
+                                id: priorityClinic.id);
+
+                            if (!detailSuccess ||
+                                _cubit.selectedClinic == null) {
+                              return;
+                            }
                             await _cubit.initCreateDsmesBookingRequest(
                                 locale: context.locale.languageCode);
 

@@ -10,6 +10,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesAppointmentItem extends StatelessWidget {
@@ -57,16 +58,20 @@ class DsmesAppointmentItem extends StatelessWidget {
         child: Column(
           children: [
             _buildHeader(mode, icon, isPast: isPast),
-            SizedBox(height: 14),
+            GapH(12),
+            _buildClinicInfo(data),
+            GapH(12),
             _buildDateTime(startDateTime, formattedDate, startTime, endTime),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Divider(color: R.color.color0xffEFEFEF),
-            ),
-            _buildDescription(),
-            if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
             if (displayActionButtons)
-              _buildActionButtons(locale: context.locale.languageCode),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Divider(color: R.color.color0xffEFEFEF),
+              ),
+            // _buildDescription(),
+            // if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
+            if (displayActionButtons)
+              _buildActionButtons(
+                  locale: context.locale.languageCode, context: context),
           ],
         ),
       ),
@@ -81,7 +86,7 @@ class DsmesAppointmentItem extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(icon, width: 38, height: 38),
+            Image.asset(icon, width: 20, height: 20),
             SizedBox(width: 10),
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -89,22 +94,11 @@ class DsmesAppointmentItem extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    R.string.health_consulting.tr(),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.color0xff111515,
-                    ),
-                  ),
-                ),
-                GapH(4),
-                Flexible(
-                  child: Text(
                     cubit.getItemTitle(mode),
                     style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: R.color.color0xff636A6B,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff111515,
                     ),
                   ),
                 ),
@@ -131,16 +125,46 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
+  Widget _buildClinicInfo(DsmesAppointment data) {
+    return Row(
+      children: [
+        SizedBox(
+            width: 40,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Image.network(
+                "${Utils.getHostDocosanUrl()}${data.clinic.avatar}",
+                fit: BoxFit.cover,
+              ),
+            )),
+        GapW(8),
+        Flexible(
+          child: Text(
+            data.clinic.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: R.color.color0xff111515,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDateTime(DateTime startDateTime, String formattedDate,
       String startTime, String endTime) {
     return Row(
       children: [
+        GapW(48),
         Text(
           "${DateUtil.weekDayToString(startDateTime, isDisplayfull: true)}, $formattedDate",
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: R.color.textDark,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: R.color.color0xff111515,
           ),
         ),
         Padding(
@@ -150,9 +174,9 @@ class DsmesAppointmentItem extends StatelessWidget {
         Text(
           '$startTime-$endTime',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w400,
-            color: R.color.textDark,
+            color: R.color.color0xff111515,
           ),
         ),
       ],
@@ -238,7 +262,8 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons({String locale = 'vi'}) {
+  Widget _buildActionButtons(
+      {String locale = 'vi', required BuildContext context}) {
     final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
     if (data.status == DSMES_STATUS_APPROVE && isPast) {
@@ -250,6 +275,7 @@ class DsmesAppointmentItem extends StatelessWidget {
             child: GestureDetector(
               onTap: () {
                 // TODO: Handle support
+                HomeSupportFunctions.showModalAddData(context);
               },
               child: Container(
                 height: 43,
@@ -288,11 +314,11 @@ class DsmesAppointmentItem extends StatelessWidget {
 
     final mode = DsmesAppointmentMode.fromString(data.mode);
     return mode == DsmesAppointmentMode.atClinic
-        ? _buildButtonAtClinic()
+        ? _buildButtonAtClinic(context)
         : _buildButtonOnline();
   }
 
-  _buildButtonAtClinic() {
+  _buildButtonAtClinic(BuildContext context) {
     return Row(
       children: [
         Flexible(
@@ -300,7 +326,7 @@ class DsmesAppointmentItem extends StatelessWidget {
           child: _buildPrimaryButton(
             R.string.support.tr(),
             () => () {
-              //TODO: Handle support
+              HomeSupportFunctions.showModalAddData(context);
             },
           ),
         ),
@@ -309,7 +335,11 @@ class DsmesAppointmentItem extends StatelessWidget {
   }
 
   _handleRebooking({String locale = 'vi'}) async {
-    await cubit.getClinicDetail(id: data.clinicId);
+    final detailSuccess = await cubit.getClinicDetail(id: data.clinicId);
+
+    if (!detailSuccess || cubit.selectedClinic == null) {
+      return;
+    }
     final appointment =
         await cubit.getDsmesAppointmentDetail(appointmentId: data.id);
     if (appointment == null) {

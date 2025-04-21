@@ -74,7 +74,7 @@
         "id": "program2",
         "title": "Phòng ngừa bệnh mạn tính",
         "isRecommended": false,
-        "color": "#F8A084",
+        "color": "#E49D6E",
         "items": [
           {
             "id": "weight_loss",
@@ -148,7 +148,7 @@
           },
           {
             "id": "monitor_regimen",
-            "title": "Theo dõi \nchế độ"
+            "title": "Theo dõi \nchỉ số"
           },
           {
             "id": "medical_knowledge",
@@ -160,7 +160,7 @@
         "id": "program3",
         "title": "Ổn định đường huyết thai kì",
         "isRecommended": false,
-        "color": "#E49D6E",
+        "color": "#F8A084",
         "items": [
           {
             "id": "postpartum",

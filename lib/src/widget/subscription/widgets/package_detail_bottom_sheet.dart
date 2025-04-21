@@ -1,10 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
-import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
+import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widget/subscription/widgets/feature_item_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
@@ -43,27 +42,34 @@ class PackageDetailBottomSheet extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      package.title.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.greenGradientTop02,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        package.title.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.greenGradientTop02,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '${package.price}',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w700,
-                        color: R.color.color0xff111515,
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '${package.price}',
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.w700,
+                            color: R.color.color0xff111515,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                GapW(4),
                 Image.asset(
                   SubscriptionService.getBadgeImageFromId(package.id),
                   width: 78,
@@ -83,7 +89,12 @@ class PackageDetailBottomSheet extends StatelessWidget {
             ),
             GapH(16),
             GestureDetector(
-              onTap: () => onPurchase(),
+              onTap: () {
+                SubscriptionTracking.programServiceRegister(
+                    screenName: 'program_service_detail',
+                    objectTitle: package.title);
+                onPurchase();
+              },
               child: Container(
                 height: 48,
                 decoration: BoxDecoration(

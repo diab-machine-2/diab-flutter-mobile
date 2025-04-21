@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -35,11 +36,26 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       // Load banners if not already loaded
       if (!isBannersLoaded) {
         await getSubscriptionBanners();
+        // await fetchBanners();
       }
 
       emit(SubscriptionSuccess(banners: banners));
     } catch (e) {
       emit(SubscriptionFailure(error: e.toString()));
+    }
+  }
+
+  String getTitlePackage() {
+    if (selectedPackage == null) {
+      return R.string.basic_program.tr();
+    }
+
+    if (selectedPackage?.id == 'dong_hanh') {
+      return R.string.chuong_trinh_dong_hanh.tr();
+    } else if (selectedPackage?.id == 'thau_cam') {
+      return R.string.chuong_trinh_thau_cam.tr();
+    } else {
+      return R.string.basic_program.tr();
     }
   }
 
@@ -55,24 +71,24 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   //       'success': true,
   //       'data': [
   //         {
-  //           'id': '1',
-  //           'image_url':
-  //               'https://res.cloudinary.com/ddcgjzunn/image/upload/v1742441889/img/fcavyltz5g1ud91jp8zv.png',
-  //           'title': 'Giảm HbA1c,\nngừa biến chứng',
+  //           'value':
+  //               'https://res.cloudinary.com/ddcgjzunn/image/upload/v1744168214/img/slkjblk70nukttd7xonb.png',
+  //           'title': 'Giảm HbA1c, ổn định đường huyết',
+  //           'subtitle': 'Đã được chứng minh lâm sàng',
   //           'order': 1
   //         },
   //         {
-  //           'id': '2',
-  //           'image_url':
-  //               'https://res.cloudinary.com/ddcgjzunn/image/upload/v1742441889/img/on4igf1bndvphozbdyog.png',
-  //           'title': 'Giảm 5% cân nặng\nphòng ngừa bệnh',
+  //           'value':
+  //               'https://res.cloudinary.com/ddcgjzunn/image/upload/v1744168215/img/szzmzwy6yjorkjnbseei.png',
+  //           'title': 'Ngăn ngừa bệnh và biến chứng',
+  //           'subtitle': '',
   //           'order': 2
   //         },
   //         {
-  //           'id': '3',
-  //           'image_url':
-  //               'https://res.cloudinary.com/ddcgjzunn/image/upload/v1742441888/img/ox61ixkraw609yellkbf.png',
-  //           'title': 'Đạt thành tựu\nkhoa học',
+  //           'value':
+  //               'https://res.cloudinary.com/ddcgjzunn/image/upload/v1744168215/img/ygv0eblyejhgyomsigtb.png',
+  //           'title': 'Cải thiện chất lượng cuộc sống',
+  //           'subtitle': '',
   //           'order': 3
   //         }
   //       ]
@@ -129,17 +145,20 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     banners = [
       BannerModel(
         value: R.drawable.subscription_program_1,
-        title: 'Giảm HbA1c,\nngừa biến chứng',
+        title: 'Giảm HbA1c, ổn định đường huyết',
+        subtitle: 'Đã được chứng minh lâm sàng',
         order: 1,
       ),
       BannerModel(
         value: R.drawable.subscription_program_2,
-        title: 'Giảm 5% cân nặng\nphòng ngừa bệnh',
+        title: 'Ngăn ngừa bệnh và biến chứng',
+        subtitle: '',
         order: 2,
       ),
       BannerModel(
         value: R.drawable.subscription_program_3,
-        title: 'Đạt thành tựu\nkhoa học',
+        title: 'Cải thiện chất lượng cuộc sống',
+        subtitle: '',
         order: 3,
       ),
     ];

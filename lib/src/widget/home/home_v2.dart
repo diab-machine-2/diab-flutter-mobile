@@ -118,7 +118,7 @@ class _HomeControllerState extends State<HomeController>
     }
     _firebaseSetup();
     _initHealthApp();
-    // initRevenueCat();
+    initRevenueCat();
   }
 
   @override

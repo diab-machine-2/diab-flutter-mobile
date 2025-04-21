@@ -11,6 +11,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 class DsmesAppointmentHistoryPage extends StatefulWidget {
   @override
@@ -26,6 +27,7 @@ class _DsmesAppointmentHistoryPageState
     'chooseService': false,
   };
   bool isLoading = false;
+  List<DsmesAppointment> sortedMyAppointments = [];
 
   @override
   void initState() {
@@ -49,6 +51,7 @@ class _DsmesAppointmentHistoryPageState
     } else {
       await _cubit.getDsmesAppointmentList(
           page: 1, isRefresh: true, showLoading: true);
+      sortedMyAppointments = _cubit.getSortedAppointments();
       setState(() {
         isLoading = false;
       });
@@ -57,12 +60,6 @@ class _DsmesAppointmentHistoryPageState
 
   @override
   Widget build(BuildContext context) {
-    final sortedMyAppointments = _cubit.myAppointments;
-    sortedMyAppointments.sort((a, b) {
-      final aTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(a.startTime);
-      final bTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(b.startTime);
-      return bTime.compareTo(aTime);
-    });
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -141,42 +138,144 @@ class _DsmesAppointmentHistoryPageState
                               _refreshController.loadComplete();
                               setState(() {});
                             },
-                            child: ListView.separated(
-                              padding: EdgeInsets.all(16),
-                              itemCount: sortedMyAppointments.length,
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(height: 16),
-                              itemBuilder: (context, index) {
-                                DsmesAppointment data =
-                                    sortedMyAppointments[index];
-                                return DsmesAppointmentItem(
-                                  data: data,
-                                  onChooseService: () async {
-                                    if (isProcessing['chooseService']!) return;
-                                    isProcessing['chooseService'] = true;
-                                    try {
-                                      await _cubit.getClinicDetail(
-                                          id: data.clinicId);
-                                      final appointment = await _cubit
-                                          .getDsmesAppointmentDetail(
-                                              appointmentId: data.id);
+                            child: ListView.builder(
+                              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                              itemCount: 2, // 2 sections: Incoming and Done
+                              itemBuilder: (context, sectionIndex) {
+                                // Split appointments into incoming and done
+                                final incomingAppointments =
+                                    sortedMyAppointments.where((appointment) {
+                                  final endDateTime =
+                                      DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(appointment.endTime);
+                                  final isPast =
+                                      endDateTime.isBefore(DateTime.now());
+                                  return appointment.status ==
+                                          DSMES_STATUS_REQUEST ||
+                                      (appointment.status ==
+                                              DSMES_STATUS_APPROVE &&
+                                          !isPast);
+                                }).toList();
 
-                                      DsmesNavigationMixin
-                                          .navigationKey.currentState
-                                          ?.pushNamed(
-                                        NavigatorName.dsmes_booking_detail,
-                                        arguments: {
-                                          'serviceType': appointment?.mode,
-                                          'appointment': appointment,
-                                          'previousRoute': NavigatorName
-                                              .dsmes_booking_history,
+                                final doneAppointments =
+                                    sortedMyAppointments.where((appointment) {
+                                  final endDateTime =
+                                      DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(appointment.endTime);
+                                  final isPast =
+                                      endDateTime.isBefore(DateTime.now());
+                                  return appointment.status ==
+                                          DSMES_STATUS_REJECT ||
+                                      (appointment.status ==
+                                              DSMES_STATUS_APPROVE &&
+                                          isPast);
+                                }).toList();
+
+                                // Manage expansion state
+                                final isExpanded = ValueNotifier<bool>(true);
+
+                                return StickyHeader(
+                                  header: GestureDetector(
+                                    onTap: () =>
+                                        isExpanded.value = !isExpanded.value,
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 12),
+                                      color: R.color.backgroundColorNew,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            sectionIndex == 0
+                                                ? 'Sắp diễn ra'
+                                                : 'Lịch trước đó',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable: isExpanded,
+                                            builder:
+                                                (context, expanded, child) {
+                                              return Icon(
+                                                expanded
+                                                    ? Icons.keyboard_arrow_up
+                                                    : Icons.keyboard_arrow_down,
+                                                color: R.color.color0xff636A6B,
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  content: ValueListenableBuilder<bool>(
+                                    valueListenable: isExpanded,
+                                    builder: (context, expanded, child) {
+                                      if (!expanded) return SizedBox.shrink();
+
+                                      final appointments = sectionIndex == 0
+                                          ? incomingAppointments
+                                          : doneAppointments;
+
+                                      return ListView.separated(
+                                        padding: EdgeInsets.zero,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: appointments.length,
+                                        separatorBuilder: (context, index) =>
+                                            SizedBox(height: 16),
+                                        itemBuilder: (context, index) {
+                                          DsmesAppointment data =
+                                              appointments[index];
+                                          return DsmesAppointmentItem(
+                                            data: data,
+                                            displayActionButtons: false,
+                                            onChooseService: () async {
+                                              if (isProcessing[
+                                                  'chooseService']!) return;
+                                              isProcessing['chooseService'] =
+                                                  true;
+                                              try {
+                                                final detailSuccess =
+                                                    await _cubit
+                                                        .getClinicDetail(
+                                                            id: data.id);
+
+                                                if (!detailSuccess ||
+                                                    _cubit.selectedClinic ==
+                                                        null) {
+                                                  return;
+                                                }
+                                                final appointment = await _cubit
+                                                    .getDsmesAppointmentDetail(
+                                                        appointmentId: data.id);
+
+                                                DsmesNavigationMixin
+                                                    .navigationKey.currentState
+                                                    ?.pushNamed(
+                                                  NavigatorName
+                                                      .dsmes_booking_detail,
+                                                  arguments: {
+                                                    'serviceType':
+                                                        appointment?.mode,
+                                                    'appointment': appointment,
+                                                    'previousRoute': NavigatorName
+                                                        .dsmes_booking_history,
+                                                  },
+                                                );
+                                              } finally {
+                                                isProcessing['chooseService'] =
+                                                    false;
+                                              }
+                                            },
+                                            cubit: _cubit,
+                                          );
                                         },
                                       );
-                                    } finally {
-                                      isProcessing['chooseService'] = false;
-                                    }
-                                  },
-                                  cubit: _cubit,
+                                    },
+                                  ),
                                 );
                               },
                             ),
