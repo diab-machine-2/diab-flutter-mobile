@@ -3,6 +3,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
+import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
@@ -93,6 +94,11 @@ class AppRoutes {
           glucoseDistributionType: data?['glucoseDistributionType'],
         );
         break;
+      case NavigatorName.paywall_screen:
+        {
+          page = PaywallScreen();
+          break;
+        }
       default:
         break;
     }

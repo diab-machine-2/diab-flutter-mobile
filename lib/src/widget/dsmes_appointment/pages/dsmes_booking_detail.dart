@@ -17,6 +17,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -118,13 +119,15 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               actions: [
                 InkWell(
                   onTap: () async {
-                    final launchUri =
-                        Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                    if (await canLaunchUrl(launchUri)) {
-                      await launchUrl(launchUri);
-                    } else {
-                      throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                    }
+                    // final launchUri =
+                    //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                    // if (await canLaunchUrl(launchUri)) {
+                    //   await launchUrl(launchUri);
+                    // } else {
+                    //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                    // }
+
+                    HomeSupportFunctions.showModalAddData(context);
                   },
                   child: Container(
                     width: 85,
