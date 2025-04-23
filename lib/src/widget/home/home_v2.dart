@@ -33,6 +33,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
+import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -86,6 +87,7 @@ class _HomeControllerState extends State<HomeController>
   HomeModel? model;
   String _urlPopup = '';
   bool _haveInputGlucoseAlready = false;
+  bool _haveInputExerciseAlready = false;
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
@@ -428,6 +430,8 @@ class _HomeControllerState extends State<HomeController>
                     true &&
                 state.model.measurements?.first.value1?.isNotEmpty == true &&
                 state.model.measurements?.first.value1 != "--";
+            _haveInputExerciseAlready =
+                state.model.activities?.isNotEmpty == true;
           }
 
           Widget activitiesW = HomeActivity(
@@ -596,16 +600,16 @@ class _HomeControllerState extends State<HomeController>
                                   false) {
                                 return;
                               }
+                              // case input exercise
+                              if (await _showExercriseAddBottomSheet(
+                                      routeName) ==
+                                  false) {
+                                return;
+                              }
                               // others
                               if (routeName != null) {
-                                // CHEAT CODE : Vận Động -> Vận Động Bước 1
-                                if (title == "Vận Động") {
-                                  Navigator.pushNamed(context,
-                                      NavigatorName.exercrise_onboarding);
-                                } else {
-                                  Navigator.pushNamed(context, routeName,
-                                      arguments: args);
-                                }
+                                Navigator.pushNamed(context, routeName,
+                                    arguments: args);
                               }
                             },
                             loading: stateLoaded?.measurementLoading ?? true,
@@ -1048,6 +1052,17 @@ class _HomeControllerState extends State<HomeController>
             arguments: {'type': 'input'});
         // or can return "true" to next page
       }
+      return false;
+    }
+    return true;
+  }
+
+  // show _showMaterialDialog
+  Future<bool> _showExercriseAddBottomSheet(String? routeName) async {
+    if (routeName == NavigatorName.exercrise_add_v2 ||
+        routeName == NavigatorName.detail_exercrises ||
+        routeName == NavigatorName.add_exercrises) {
+      showActivityInputMethodSelection();
       return false;
     }
     return true;

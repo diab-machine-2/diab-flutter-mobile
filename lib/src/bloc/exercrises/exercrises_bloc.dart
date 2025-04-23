@@ -12,6 +12,7 @@ import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/model/response/exercise_lesson_response.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -64,6 +65,9 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     if (event is FetchLessons) {
       yield* _fetchLessons();
     }
+    if (event is FetchSupportExercises) {
+      yield* _fetchSupportExercises();
+    }
   }
 
   Stream<ExercrisesState> fetchCategory(
@@ -103,9 +107,6 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       } else {
         final index = selectedCategories.lastIndexWhere(
             (element) => selectedModel.categoryId == element.categoryId);
-        // selectedCategories = selectedCategories.where((element) =>
-        //         selectedModel.categoryModel.id != element.categoryModel.id) ??
-        //     [];
         selectedCategories.removeAt(index);
         selectedCategories.add(selectedModel);
       }
@@ -168,7 +169,6 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
 
   Stream<ExercrisesState> fetchInputExercrises(
       String? currentDateTime, String? periodFilterType, int? page) async* {
-    // try {
     periodFilterType =
         await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
     final client = ExercrisesClient();
@@ -183,15 +183,6 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     }
     yield ExercrisesDataLoaded(
         inputExercrisesModel: model.inputs, hasMore: model.hasMore);
-    // } catch (e, _) {
-    //   if (e is Error) {
-    //     yield ExercrisesError(message: e.message);
-    //   } else {
-    //     yield ExercrisesError(
-    //         message:
-    //             R.string.error_can_not_connect_to_server.tr());
-    //   }
-    // }
   }
 
   Stream<ExercrisesState> fetchDataDaily(
@@ -290,7 +281,29 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       TrackingManager.recordError(e, s);
       return <LessonModel>[];
     }, test: (error) => true);
-    final currentState = state as ExercriseLessonsLoaded;
-    yield currentState.copyWith(lessons: lessonsResponse);
+
+    if (state is ExercriseLessonsLoaded) {
+      final currentState = state as ExercriseLessonsLoaded;
+      yield currentState.copyWith(lessons: lessonsResponse);
+    } else {
+      yield ExercriseLessonsLoaded(lessons: lessonsResponse);
+    }
+  }
+
+  Stream<ExercrisesState> _fetchSupportExercises() async* {
+    try {
+      yield ExercrisesLoading();
+
+      final learningClient = LearningClient();
+      final exerciseLessonResponse =
+          await learningClient.fetchExerciseLessons();
+
+      yield ExerciseSupportLessonsLoaded(
+          exercises: exerciseLessonResponse.data);
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+      yield ExercrisesError(
+          message: R.string.error_can_not_connect_to_server.tr());
+    }
   }
 }

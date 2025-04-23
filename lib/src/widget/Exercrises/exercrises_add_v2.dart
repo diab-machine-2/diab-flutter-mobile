@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -9,10 +10,12 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
-import 'package:medical/src/repo/exercrises/exercrises_client.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/add_exercise_request.dart';
+import 'package:medical/src/model/response/exercise_intensity_response.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_note_with_media.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
@@ -35,13 +38,15 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   TextEditingController _controllerDuration = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   String note = '';
-  List<XFile> files = [];
+  List<dynamic> files = [];
+  List<String> removeFileIds = [];
+  final int maxMedia = 5;
   final _formKey = GlobalKey<FormState>();
 
   bool isLoading = false;
   DateTime? selectedDate;
   List<ExercrisesCategoryModel> selectedCategory = [];
-  String intensity = 'medium';
+  ExerciseIntensity? intensity;
 
   @override
   void initState() {
@@ -146,14 +151,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         locale: LocaleType.vi);
   }
 
-  loadTimeFrame() async {
-    BotToast.showLoading();
-    final timeFrames = await GlucoseClient().fetchFlucoseTimeFrame(
-        time: (selectedDate?.millisecondsSinceEpoch ?? 0) ~/ 1000);
-    // selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
-    // loadExercriseRegularly();
-  }
-
   Widget _buildContainer() {
     return Form(
         key: _formKey,
@@ -190,7 +187,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                                     setState(() {
                                       selectedDate = date ?? DateTime.now();
                                     });
-                                    loadTimeFrame();
                                   },
                                 ),
                               );
@@ -275,100 +271,14 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                             },
                           ),
                           const SizedBox(height: 16),
-                          Theme(
-                              data: Theme.of(context).copyWith(
-                                // set color for segmented button
-                                segmentedButtonTheme: SegmentedButtonThemeData(
-                                  style: ButtonStyle(
-                                      shape: MaterialStateProperty.all(
-                                          RoundedRectangleBorder(
-                                    side: BorderSide(
-                                      color: R.color
-                                          .color0xffDFE4E4, // Border color when not selected
-                                      width: 1,
-                                      strokeAlign: BorderSide.strokeAlignInside,
-                                    ),
-                                  ))),
-                                ),
-                              ),
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 8),
-                                child: SegmentedButton<String>(
-                                  segments: [
-                                    ButtonSegment(
-                                      value: 'low',
-                                      label: Text(R.string.low.tr(),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16)),
-                                    ),
-                                    ButtonSegment(
-                                      value: 'medium',
-                                      label: Text(R.string.medium.tr(),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16)),
-                                    ),
-                                    ButtonSegment(
-                                      value: 'high',
-                                      label: Text(R.string.high.tr(),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16)),
-                                    ),
-                                  ],
-                                  selected: {
-                                    'medium'
-                                  }, // Default selected value
-                                  onSelectionChanged:
-                                      (Set<String> newSelection) {
-                                    final selectedValue = newSelection.first;
-                                    print('Selected intensity: $selectedValue');
-                                    setState(() {
-                                      intensity = selectedValue;
-                                    });
-                                  },
-                                  // set active color
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty
-                                        .resolveWith<Color?>(
-                                      (Set<MaterialState> states) {
-                                        if (states
-                                            .contains(MaterialState.selected)) {
-                                          return R.color
-                                              .greenGradientBottom; // Active background color
-                                        }
-                                        return R.color
-                                            .color0xffF7F8F8; // Default background color
-                                      },
-                                    ),
-                                    foregroundColor: MaterialStateProperty
-                                        .resolveWith<Color?>(
-                                      (Set<MaterialState> states) {
-                                        if (states
-                                            .contains(MaterialState.selected)) {
-                                          return R
-                                              .color.white; // Active text color
-                                        }
-                                        return R.color
-                                            .color0xff003F38; // Default text color
-                                      },
-                                    ),
-                                    padding: MaterialStateProperty.all(
-                                      const EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 16),
-                                    ),
-                                    shape: MaterialStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                  ),
-                                  showSelectedIcon: false,
-                                ),
-                              )),
+                          ExerxisesIntensity(
+                            selectedIntensity: intensity,
+                            onIntensityChanged: (newIntensity) {
+                              setState(() {
+                                intensity = newIntensity;
+                              });
+                            },
+                          )
                         ])),
                     const SizedBox(height: 16),
                     ExercisesCategories(
@@ -381,16 +291,24 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                     ),
                     const SizedBox(height: 16),
                     ExercisesNoteWithMedia(
-                      mediaUrls: [],
+                      mediaUrls: files,
+                      maxMedia: maxMedia,
                       onChangedNote: (String note) {
                         setState(() {
                           this.note = note;
                         });
                       },
-                      onChangedMediaUrls: (mediaUrls) => {
+                      onChangedMediaUrls: (mediaUrls) {
                         setState(() {
                           files = mediaUrls;
-                        }),
+                        });
+                      },
+                      onFileRemoved: (fileId) {
+                        if (fileId is String && fileId.isNotEmpty) {
+                          setState(() {
+                            removeFileIds.add(fileId);
+                          });
+                        }
                       },
                     ),
                     const SizedBox(height: 16),
@@ -475,30 +393,230 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         ));
   }
 
+  double calculateBurnedCalories(double duration, ExerciseIntensity intensity) {
+    // Get MET value based on intensity
+    double met;
+    switch (intensity.name.toLowerCase()) {
+      case 'light':
+        met = 3.0;
+        break;
+      case 'moderate':
+        met = 5.0;
+        break;
+      case 'vigorous':
+        met = 8.0;
+        break;
+      default:
+        met = 4.0;
+    }
+
+    // Lấy trọng lượng người dùng từ AppSettings.userInfo
+    double userWeightKg = AppSettings.userInfo?.weight ??
+        70.0; // 70.0 là giá trị mặc định nếu không có dữ liệu
+
+    // Calculate calories
+    return (duration * met * userWeightKg / 200).roundToDouble();
+  }
+
   _submitData() async {
-    log('selectedDate: ${selectedDate?.millisecondsSinceEpoch}');
-    log('intensity: $intensity');
-    log('selectedCategory: ${selectedCategory.length}');
-    log('note: $note');
-    log('files: ${files.length}');
     if (_formKey.currentState!.validate()) {
-      // Perform the submission logic here
-      // For example, send the data to an API or save it locally
-      final result = await ExercrisesClient().postIndexExercrises(
-          (selectedDate!.millisecondsSinceEpoch ~/ 1000).toInt(),
-          '',
-          note,
-          selectedCategory, []);
-      Console.log('duration: ${_controllerDuration.text}');
-      Console.log('intensity: $intensity');
-      Console.log('selectedDate: ${selectedDate?.millisecondsSinceEpoch}');
-      Console.log('selectedCategory: ${selectedCategory.length}');
-      Console.log('note: $note');
-      Console.log('files: ${files.length}');
-      if (result == true) {
-        Observable.instance
-            .notifyObservers([], notifyName: "active_change_data");
+      try {
+        // Hiển thị loading
+        BotToast.showLoading();
+
+        // Process files for upload
+        List<File> filesToUpload = [];
+        List<String> existingFileIds = [];
+
+        for (var item in files) {
+          if (item is XFile) {
+            filesToUpload.add(File(item.path));
+          } else if (item is Map<String, dynamic> && item.containsKey('id')) {
+            existingFileIds.add(item['id'].toString());
+          }
+        }
+
+        // Chuẩn bị dữ liệu
+        final addExerciseRequest = AddExerciseRequest(
+          date: selectedDate != null
+              ? '${(selectedDate!.millisecondsSinceEpoch ~/ 1000)}'
+              : '${DateTime.now().millisecondsSinceEpoch ~/ 1000}',
+          note: note,
+          exercises: selectedCategory.map((category) {
+            return ExerciseDetail(
+              exerciseId: category.exerciseId.toString(),
+              seq: '1',
+              description: intensity!.name,
+              duration: double.tryParse(_controllerDuration.text) ?? 0.0,
+              burnedCalorie: calculateBurnedCalories(
+                double.tryParse(_controllerDuration.text) ?? 0.0,
+                intensity!,
+              ),
+              intensityId: intensity!.intensityId,
+            );
+          }).toList(),
+          // fileIds: existingFileIds,
+          // removeFileIds: removeFileIds,
+        );
+
+        // Use repository to handle both API call and file upload
+        final response = await AppRepository().addExercise(addExerciseRequest);
+        // .addExercise(addExerciseRequest, filesToUpload);
+
+        response.when(success: (data) {
+          // Xử lý thành công
+          BotToast.showText(text: 'Thêm bài tập thành công!');
+          Observable.instance
+              .notifyObservers([], notifyName: "active_change_data");
+          Navigator.pop(context); // Quay
+        }, failure: (error) {
+          // Xử lý lỗi
+          BotToast.showText(text: 'Thêm bài tập thất bại: ${error.toString()}');
+        });
+      } catch (e) {
+        // Xử lý lỗi
+        BotToast.showText(text: 'Đã xảy ra lỗi: $e');
+      } finally {
+        BotToast.closeAllLoading();
       }
     }
+  }
+}
+
+class ExerxisesIntensity extends StatefulWidget {
+  final ExerciseIntensity? selectedIntensity;
+  final ValueChanged<ExerciseIntensity> onIntensityChanged;
+
+  const ExerxisesIntensity({
+    Key? key,
+    required this.selectedIntensity,
+    required this.onIntensityChanged,
+  }) : super(key: key);
+
+  @override
+  _ExerxisesIntensityState createState() => _ExerxisesIntensityState();
+}
+
+class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
+  List<ExerciseIntensity> intensities = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchIntensities();
+  }
+
+  Future<void> _fetchIntensities() async {
+    final token = await AppSettings.getToken();
+    print('Token: $token');
+    try {
+      final result = await AppRepository().getExerciseIntensities();
+
+      result.when(
+        success: (data) {
+          setState(() {
+            intensities = data;
+            isLoading = false;
+          });
+        },
+        failure: (error) {
+          setState(() {
+            isLoading = false;
+          });
+          BotToast.showText(text: 'Failed to load intensities: $error');
+        },
+      );
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      BotToast.showText(text: 'Error: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (intensities.isEmpty) {
+      return Center(child: Text('No intensities available'));
+    }
+
+    return Theme(
+      data: Theme.of(context).copyWith(
+        segmentedButtonTheme: SegmentedButtonThemeData(
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                side: BorderSide(
+                  color: R.color.color0xffDFE4E4,
+                  width: 1,
+                  strokeAlign: BorderSide.strokeAlignInside,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+        child: SegmentedButton<String>(
+          segments: intensities.map((intensity) {
+            return ButtonSegment(
+              value: intensity.intensityId,
+              label: Text(
+                intensity.name,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+              ),
+            );
+          }).toList(),
+          selected: {widget.selectedIntensity?.intensityId ?? ''},
+          onSelectionChanged: (Set<String> newSelectionId) {
+            widget.onIntensityChanged(intensities.firstWhere(
+              (intensity) => newSelectionId.contains(intensity.intensityId),
+            ));
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+                if (states.contains(MaterialState.selected)) {
+                  return R.color.greenGradientBottom;
+                }
+                return R.color.color0xffF7F8F8;
+              },
+            ),
+            foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+                if (states.contains(MaterialState.selected)) {
+                  return R.color.white;
+                }
+                return R.color.color0xff003F38;
+              },
+            ),
+            padding: MaterialStateProperty.all(
+              const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            ),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            side: MaterialStateProperty.all(
+              BorderSide(
+                color: R.color.color0xffDFE4E4,
+                width: 1,
+                strokeAlign: BorderSide.strokeAlignInside,
+              ),
+            ),
+          ),
+          showSelectedIcon: false,
+        ),
+      ),
+    );
   }
 }

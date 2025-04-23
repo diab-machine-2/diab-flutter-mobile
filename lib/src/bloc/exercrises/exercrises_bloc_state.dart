@@ -74,6 +74,7 @@ class ExercriseTrendTimeLoaded extends ExercrisesState {
     );
   }
 }
+
 class ExercriseLessonsLoaded extends ExercrisesState {
   final List<LessonModel>? lessons;
 
@@ -86,6 +87,22 @@ class ExercriseLessonsLoaded extends ExercrisesState {
   }) {
     return ExercriseLessonsLoaded(
       lessons: lessons ?? this.lessons,
+    );
+  }
+}
+
+class ExerciseSupportLessonsLoaded extends ExercrisesState {
+  final List<ExerciseLesson>? exercises;
+
+  ExerciseSupportLessonsLoaded({
+    required this.exercises,
+  });
+
+  ExerciseSupportLessonsLoaded copyWith({
+    List<ExerciseLesson>? exercises,
+  }) {
+    return ExerciseSupportLessonsLoaded(
+      exercises: exercises ?? this.exercises,
     );
   }
 }

@@ -23,26 +23,36 @@ class FilterSegmentButton extends StatefulWidget {
 
 class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
   late int _selectedFilterType;
+  // Keep all items in dataFilter including the first one we want to hide
   List<String> dataFilter = [
+    R.string.filter_day.tr(args: ['1']),
     R.string.filter_day.tr(args: ['7']),
     R.string.filter_day.tr(args: ['14']),
     R.string.filter_day.tr(args: ['30']),
     R.string.filter_day.tr(args: ['90']),
   ];
 
+  // Starting index for visible items (skip first item)
+  final int _visibleStartIndex = 1;
+
   @override
   void initState() {
     super.initState();
     // Initialize with the initialFilterType
-    _selectedFilterType = widget.initialFilterType;
+    if (widget.initialFilterType < 0 ||
+        widget.initialFilterType >= dataFilter.length) {
+      _selectedFilterType =
+          _visibleStartIndex; // Default to the first visible filter type
+    } else {
+      _selectedFilterType = widget.initialFilterType;
+    }
     _initPeriodFilterType();
   }
 
   _initPeriodFilterType() async {
     final periodFilterTypeStr =
         await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
-    final newFilterType = (int.tryParse(periodFilterTypeStr) ?? 0) -
-        1; // because in getPeriodByScreen has +1
+    final newFilterType = (int.tryParse(periodFilterTypeStr) ?? 0);
 
     // Update the state after the async operation
     setState(() {
@@ -64,8 +74,7 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
     // Khi quay lại màn hình này
     print("Screen is refocused via navigation (didPopNext)");
     AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index).then((value) {
-      final newFilterType =
-          (int.tryParse(value) ?? 0) - 1; // because in getPeriodByScreen has +1
+      final newFilterType = (int.tryParse(value) ?? 0);
       _onValueChanged(newFilterType);
     });
   }
@@ -78,16 +87,19 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the number of visible items (excluding the hidden item)
+    int visibleItemCount = dataFilter.length - _visibleStartIndex;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: CustomSlidingSegmentedControl<int>(
-        fixedWidth:
-            (MediaQuery.of(context).size.width - 38) / dataFilter.length,
-        children: dataFilter.asMap().map((index, value) => MapEntry(
-              index,
-              _buildSegmentButtonItem(
-                  value, index, _selectedFilterType == index),
-            )),
+        fixedWidth: (MediaQuery.of(context).size.width - 38) / visibleItemCount,
+        children: {
+          // Create map only for visible items (skip first item)
+          for (int i = _visibleStartIndex; i < dataFilter.length; i++)
+            i: _buildSegmentButtonItem(
+                dataFilter[i], i, _selectedFilterType == i),
+        },
         decoration: BoxDecoration(
           color: CupertinoColors.white,
           borderRadius: BorderRadius.circular(200),
@@ -102,7 +114,9 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
         ),
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInToLinear,
-        initialValue: _selectedFilterType,
+        initialValue: _selectedFilterType < _visibleStartIndex
+            ? _visibleStartIndex
+            : _selectedFilterType,
         onValueChanged: _onValueChanged,
       ),
     );

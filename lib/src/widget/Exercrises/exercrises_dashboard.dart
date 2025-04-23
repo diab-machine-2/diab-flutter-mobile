@@ -7,15 +7,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_lesson.dart';
+import 'package:medical/src/widget/Exercrises/widget/exercrises_lesson_section.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_calo_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_trend_time_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widget/Exercrises/widget/filter_segment_button.dart';
 import '../../../../../res/R.dart';
@@ -35,7 +40,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
   GlobalKey<ExercrisesTrendCaloChartState> caloChartKey = GlobalKey();
   GlobalKey<ExercrisesTrendTimeChartState> exercrisesTrendTimeChartKey =
       GlobalKey();
-  GlobalKey<ExercisesLessonState> exercrisesLessonKey = GlobalKey();
+  GlobalKey<ExercrisesLessonSectionState> exercrisesLessonKey = GlobalKey();
   bool _isLoading = true;
   int periodFilterType = 0;
 
@@ -44,6 +49,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     firebaseSetup();
+    _initPeriodFilterType();
   }
 
   Future firebaseSetup() async {
@@ -81,6 +87,18 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
         textStyle: TextStyle(color: R.color.white),
       );
     }
+  }
+
+  _initPeriodFilterType() async {
+    final periodFilterTypeStr =
+        await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
+    final newFilterType = (int.tryParse(periodFilterTypeStr) ?? 0) > 0
+        ? (int.tryParse(periodFilterTypeStr) ?? 0)
+        : 0;
+    // Update the state after the async operation
+    setState(() {
+      periodFilterType = newFilterType;
+    });
   }
 
   reloadData(int periodFilterType) {
@@ -153,6 +171,23 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
     );
   }
 
+  void _navigateToLessonDetail(String? id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
+
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id ?? '',
+        onComplete: (_, __) {},
+      ),
+    );
+  }
+
   Widget _buildContainer() {
     return Stack(
       children: [
@@ -170,23 +205,30 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
                 });
               },
             ),
-            ExercrisesTrendTimeChart(
-              key: exercrisesTrendTimeChartKey,
-              periodFilterType: periodFilterType,
-              filterName: 'filter_name',
-              onFilterChanged: () {
-                Message.showToastMessage(context, 'Filter changed');
-              },
-              onViewListing: _viewListing,
-            ),
+            periodFilterType > 0
+                ? ExercrisesTrendTimeChart(
+                    key: exercrisesTrendTimeChartKey,
+                    periodFilterType: periodFilterType,
+                    filterName: 'filter_name',
+                    onFilterChanged: () {
+                      Message.showToastMessage(context, 'Filter changed');
+                    },
+                    onViewListing: _viewListing,
+                  )
+                : const SizedBox(),
             const SizedBox(height: 16),
             ExercrisesTrendCaloChart(
               key: caloChartKey,
               showAddButton: false,
               gutterGhost: true,
             ),
-            ExercisesLesson(
-              key: exercrisesLessonKey,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ExercrisesLessonSection(
+                key: exercrisesLessonKey,
+                onLessonTap: (lesson) => _navigateToLessonDetail(
+                    lesson.id, lesson.name == 'exercise' ? 1 : 2),
+              ),
             ),
             HealthConnectButton(
               callback: () {

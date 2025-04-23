@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/request/SelectRoadmapRequest.dart';
+import 'package:medical/src/model/request/add_exercise_request.dart';
 import 'package:medical/src/model/request/booking_success_request.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
@@ -7,11 +8,18 @@ import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
+import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/model/response/exercise_analysis_response.dart';
+import 'package:medical/src/model/response/exercise_category_response.dart';
+import 'package:medical/src/model/response/exercise_health_trend_response.dart';
+import 'package:medical/src/model/response/exercise_intensity_response.dart';
+import 'package:medical/src/model/response/exercise_lesson_response.dart';
+import 'package:medical/src/model/response/exercise_summary_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
@@ -455,4 +463,35 @@ abstract class AppApi {
   //GET {{url}}/app/chat/conversations/me
   @GET('/App/Chat/conversations/me')
   Future<ConversationListResponse> getMyConversation();
+
+  // Exercise Endpoints
+  @POST("App/Exercise/Input")
+  Future<CommonResponse> addExercise(@Body() AddExerciseRequest request);
+
+  @PUT("App/Exercise/Input/{id}")
+  Future<CommonResponse> updateExercise(
+      @Body() UpdateExerciseRequest request, @Path("id") String id);
+
+  @GET("App/Exercise/Intensity")
+  Future<ExerciseIntensityResponse> getExerciseIntensities();
+
+  @GET("App/Exercise/Category")
+  Future<ExerciseCategoryResponse> getExerciseCategories();
+
+  @GET("App/Exercise/Analysis/Index")
+  Future<ExerciseAnalysisResponse> getExerciseAnalysis(
+      @Query("id") String exerciseId);
+
+  @GET("App/Exercise/Summary")
+  Future<ExerciseSummaryResponse> getExerciseSummary(
+      @Query("currentDateTime") String currentDateTime);
+
+  @GET('/App/Lesson/Support/Exercise')
+  Future<ExerciseLessonResponse> getSupportExercises();
+
+  @GET('/App/Exercise/Analysis/HealthTrend')
+  Future<ExerciseHealthTrendResponse> getExerciseHealthTrend(
+    @Query('CurrentDateTime') String currentDateTime,
+    @Query('PeriodFilterType') int periodFilterType,
+  );
 }

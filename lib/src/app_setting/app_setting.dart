@@ -408,6 +408,21 @@ class AppSettings {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }
 
+  // Store exercise input method
+  static Future<String?> getLastOpenedExerciseInputType() async {
+    String? lastOpenedExerciseInputType =
+        appPreference.getData("lastOpenedExerciseInputType");
+    return lastOpenedExerciseInputType;
+  }
+
+  static void setLastOpenedExerciseInputType(String inputType) {
+    appPreference.setData("lastOpenedExerciseInputType", inputType);
+  }
+
+  static void clearLastOpenedExerciseInputType() {
+    appPreference.removeData("lastOpenedExerciseInputType");
+  }
+
   static Future<bool> logout(
       {bool isNavigateToStepListScreen = true, bool isSync = false}) async {
     try {

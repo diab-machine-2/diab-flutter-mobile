@@ -62,3 +62,7 @@ class FetchRank extends ExercrisesEvent {
 class FetchLessons extends ExercrisesEvent {
   FetchLessons();
 }
+
+class FetchSupportExercises extends ExercrisesEvent {
+  FetchSupportExercises();
+}

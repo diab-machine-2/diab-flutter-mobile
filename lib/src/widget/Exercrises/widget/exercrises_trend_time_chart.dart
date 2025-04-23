@@ -141,6 +141,8 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
             });
           }
 
+          final selectedTrend = trends[_focusIndex];
+
           return VisibilityDetector(
             key: Key('exercrises-trend-time-chart'),
             onVisibilityChanged: (visibilityInfo) {
@@ -167,8 +169,11 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                   _sectionTrending(model, '', ''),
                   const SizedBox(height: 16),
                   ExercrisesAISuggestion(
-                    aiSuggestion: trends[_focusIndex].targetDescription,
-                    rangeType: BloodSugarRangeType.very_high,
+                    periodFilterType: periodFilterType,
+                    date: selectedTrend.date != null
+                        ? DateTime.fromMillisecondsSinceEpoch(
+                            selectedTrend.date ?? 0)
+                        : DateTime.now(),
                   ),
                 ],
               ),

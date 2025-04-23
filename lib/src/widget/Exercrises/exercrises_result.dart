@@ -18,7 +18,12 @@ import 'dart:math' as math;
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 class ExercisesResult extends StatefulWidget {
-  const ExercisesResult({Key? key}) : super(key: key);
+  final int periodFilterType;
+
+  const ExercisesResult({
+    Key? key,
+    this.periodFilterType = 0,
+  }) : super(key: key);
 
   @override
   _ExercisesResultState createState() => _ExercisesResultState();
@@ -27,6 +32,7 @@ class ExercisesResult extends StatefulWidget {
 class _ExercisesResultState extends State<ExercisesResult>
     with WidgetsBindingObserver, Observer {
   late BuildContext currentContext;
+  late int periodFilterType;
 
   @override
   void update(
@@ -39,6 +45,7 @@ class _ExercisesResultState extends State<ExercisesResult>
   @override
   void initState() {
     super.initState();
+    periodFilterType = widget.periodFilterType;
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -385,9 +392,8 @@ class _ExercisesResultState extends State<ExercisesResult>
       padding: EdgeInsets.all(16.w),
       color: R.color.backgroundColorNew,
       child: ExercrisesAISuggestion(
-        aiSuggestion:
-            'Thật tuyệt vời, bạn đã hoàn thành mục tiêu vận động của ngày hôm nay! Hãy nghỉ ngơi và tiếp tục vào ngày hôm sau nhé!',
-        rangeType: BloodSugarRangeType.very_high,
+        periodFilterType: periodFilterType,
+        date: DateTime.now().subtract(Duration(days: 1)),
       ),
     );
   }

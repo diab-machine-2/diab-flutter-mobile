@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,16 +14,20 @@ import '../helper/show_message.dart';
 
 class ExercisesNoteWithMedia extends StatefulWidget {
   final String? note;
-  final List<String> mediaUrls;
+  final List<dynamic> mediaUrls;
+  final int maxMedia;
   final Function(String note) onChangedNote;
-  final Function(List<XFile> mediaUrls) onChangedMediaUrls;
+  final Function(List<dynamic> mediaUrls) onChangedMediaUrls;
+  final Function(String fileId)? onFileRemoved;
 
   const ExercisesNoteWithMedia({
     Key? key,
     this.note,
     required this.mediaUrls,
+    this.maxMedia = 5,
     required this.onChangedNote,
     required this.onChangedMediaUrls,
+    this.onFileRemoved,
   }) : super(key: key);
 
   @override
@@ -29,12 +35,12 @@ class ExercisesNoteWithMedia extends StatefulWidget {
 }
 
 class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
-  final int maxMedia = 5;
-  List<XFile> files = [];
+  List<dynamic> files = [];
+
   @override
   void initState() {
     super.initState();
-    files = widget.mediaUrls.map((url) => XFile(url)).toList();
+    files = List.from(widget.mediaUrls);
   }
 
   @override
@@ -99,7 +105,7 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                     ),
                   )),
               const SizedBox(height: 10),
-              files.length == 0
+              files.isEmpty
                   ? Container()
                   : Container(
                       height: 56,
@@ -110,15 +116,11 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                           return Stack(
                             children: [
                               Container(
-                                  width: 56,
-                                  height: 56,
-                                  margin: EdgeInsets.only(right: 8, top: 4),
-                                  child: NetWorkImageWidget(
-                                    imageUrl: files[index].path,
-                                    height: 56,
-                                    width: 56,
-                                    fit: BoxFit.cover,
-                                  )),
+                                width: 56,
+                                height: 56,
+                                margin: EdgeInsets.only(right: 8, top: 4),
+                                child: _buildImageWidget(files[index]),
+                              ),
                               // IconButton Positioned top right corner to remove image background red
                               Positioned(
                                   top: 0,
@@ -126,6 +128,14 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                                   child: InkWell(
                                     onTap: () {
                                       setState(() {
+                                        // Call onFileRemoved if it's a server file
+                                        if (files[index]
+                                                is Map<String, dynamic> &&
+                                            files[index].containsKey('id') &&
+                                            widget.onFileRemoved != null) {
+                                          widget.onFileRemoved!(
+                                              files[index]['id'].toString());
+                                        }
                                         files.removeAt(index);
                                         widget.onChangedMediaUrls(files);
                                       });
@@ -154,9 +164,53 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
             ]));
   }
 
+  Widget _buildImageWidget(dynamic file) {
+    if (file is XFile) {
+      // Local file
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: Image.file(
+          File(file.path),
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (file is Map<String, dynamic> && file.containsKey('url')) {
+      // Server file with URL
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: NetWorkImageWidget(
+          imageUrl: file['url'],
+          height: 56,
+          width: 56,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (file is String) {
+      // Simple URL string
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: NetWorkImageWidget(
+          imageUrl: file,
+          height: 56,
+          width: 56,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    // Fallback
+    return Container(
+      color: R.color.primaryGreyColor.withOpacity(0.3),
+      child: Icon(
+        Icons.broken_image,
+        color: R.color.primaryGreyColor,
+      ),
+    );
+  }
+
   showActionSheet(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (files.length < maxMedia) {
+    if (files.length < widget.maxMedia) {
       final action = CupertinoActionSheet(
         actions: <Widget>[
           CupertinoActionSheetAction(
@@ -220,7 +274,7 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
           source: ImageSource.camera,
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
-        if (files.length < maxMedia) {
+        if (files.length < widget.maxMedia) {
           setState(() {
             files.add(pickedFile);
           });
@@ -240,7 +294,7 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
       final pickedFile = await picker.pickImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
-        if (files.length < maxMedia) {
+        if (files.length < widget.maxMedia) {
           setState(() {
             files.add(pickedFile);
           });

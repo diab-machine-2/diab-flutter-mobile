@@ -4,8 +4,11 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -13,6 +16,7 @@ import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_detail_page.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -233,7 +237,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
           // Button
           ButtonWidget(
               title: R.string.exercrise_step_onboarding_input_step_btn.tr(),
-              onPressed: (() => {_showMaterialDialog()}))
+              onPressed: (() => {showActivityInputMethodSelection()}))
         ]),
       )
     ]);
@@ -247,144 +251,158 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
             fontFamily: 'sfpro',
             color: R.color.black));
   }
+}
 
-  _showMaterialDialog() async {
-    if (AppSettings.userInfo!.weight == null ||
-        AppSettings.userInfo!.weight == 0) {
-      showPopupWeight();
+showActivityInputMethodSelection() async {
+  if (AppSettings.userInfo!.weight == null ||
+      AppSettings.userInfo!.weight == 0) {
+    showPopupWeight();
+  } else {
+    // Logic navigate to glucose input page (saved before)
+    String? lastOpenedGlucoseInputType =
+        await AppSettings.getLastOpenedExerciseInputType();
+    if (lastOpenedGlucoseInputType == 'manual' ||
+        lastOpenedGlucoseInputType == 'auto') {
+      // disable diablog if user has already input exercise
+      Navigator.pushNamed(
+          navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
+      return;
+    }
+
+    // Check if the user has granted permission to access the health app
+    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    if (hasHealthConnection == true) {
+      Navigator.pushNamed(
+          navigatorKey.currentContext!, NavigatorName.exercrise_add_v2);
     } else {
-      bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-      if (hasHealthConnection == true) {
-        Navigator.pushNamed(context, NavigatorName.add_exercrises,
-            arguments: {'type': 'input'});
-      } else {
-        String healthIcon = Platform.isIOS
-            ? R.drawable.logo_healthkit
-            : R.drawable.ic_health_connect_input_btn;
-        String healthTitle = Platform.isIOS
-            ? R.string.connect_from_Apple_Health.tr()
-            : R.string.connect_from_Health_Connect.tr();
+      String healthIcon = Platform.isIOS
+          ? R.drawable.logo_healthkit
+          : R.drawable.ic_health_connect_input_btn;
+      String healthTitle = Platform.isIOS
+          ? R.string.connect_from_Apple_Health.tr()
+          : R.string.connect_from_Health_Connect.tr();
 
-        Widget _buildItemMaterialDialog(
-          String title,
-          String subTitle,
-          String icon,
-          Function onTap,
-        ) {
-          return GestureDetector(
-            onTap: () {
-              onTap();
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.0),
-                color: R.color.color0xffF2F6F9,
-              ),
-              child: ListTile(
-                leading: Image.asset(
-                  icon,
-                  width: 70,
-                  fit: BoxFit.cover,
-                ),
-                // margin beween title and subtitle
-                titleAlignment: ListTileTitleAlignment.titleHeight,
-                title: Text(
-                  title,
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'sfpro',
-                      color: R.color.textDark),
-                ),
-                subtitle: Text(subTitle,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'sfpro',
-                        color: R.color.primaryGreyColor)),
-                trailing: Icon(Icons.arrow_forward_ios,
-                    color: R.color.primaryGreyColor),
-                onTap: () => onTap(),
-              ),
-            ),
-          );
-        }
-
-        showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-          backgroundColor: R.color.transparent,
-          context: context,
-          isScrollControlled: true,
-          builder: (context) => Container(
+      Widget _buildItemMaterialDialog(
+        String title,
+        String subTitle,
+        String icon,
+        Function onTap,
+      ) {
+        return GestureDetector(
+          onTap: () {
+            onTap();
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 4),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(12.0),
+              color: R.color.color0xffF2F6F9,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // Adjust height to fit content
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border:
-                          Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(width: 30),
-                      Center(
-                        child: Text(
-                          R.string.choose_how_to_enter.tr(),
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: R.color.textDark),
-                        ),
-                      ),
-                      IconButton(
-                          onPressed: (() {
-                            Navigator.pop(context);
-                          }),
-                          icon: Icon(Icons.close, color: R.color.textDark)),
-                    ],
-                  ),
-                ),
-                ListView(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(15),
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [
-                    _buildItemMaterialDialog(
-                      healthTitle,
-                      'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
-                      healthIcon,
-                      () {
-                        Navigator.pop(context);
-                        RequestHealthConnect.showModal(context, callback: () {
-                          Navigator.pop(context);
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _buildItemMaterialDialog(
-                      R.string.enter_manually.tr(),
-                      'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn.',
-                      R.drawable.ic_manual_input_btn,
-                      () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(
-                            context, NavigatorName.exercrise_add_v2);
-                      },
-                    ),
-                  ],
-                ),
-              ],
+            child: ListTile(
+              leading: Image.asset(
+                icon,
+                width: 70,
+                fit: BoxFit.cover,
+              ),
+              // margin beween title and subtitle
+              titleAlignment: ListTileTitleAlignment.titleHeight,
+              title: Text(
+                title,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'sfpro',
+                    color: R.color.textDark),
+              ),
+              subtitle: Text(subTitle,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'sfpro',
+                      color: R.color.primaryGreyColor)),
+              trailing: Icon(Icons.arrow_forward_ios,
+                  color: R.color.primaryGreyColor),
+              onTap: () => onTap(),
             ),
           ),
         );
       }
+
+      showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+        backgroundColor: R.color.transparent,
+        context: navigatorKey.currentContext!,
+        isScrollControlled: true,
+        builder: (context) => Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Adjust height to fit content
+            children: [
+              Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border:
+                        Border(bottom: BorderSide(color: Color(0xffF2F2F2)))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(width: 30),
+                    Center(
+                      child: Text(
+                        R.string.choose_how_to_enter.tr(),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: R.color.textDark),
+                      ),
+                    ),
+                    IconButton(
+                        onPressed: (() {
+                          Navigator.pop(context);
+                        }),
+                        icon: Icon(Icons.close, color: R.color.textDark)),
+                  ],
+                ),
+              ),
+              ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(15),
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  _buildItemMaterialDialog(
+                    healthTitle,
+                    'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
+                    healthIcon,
+                    () {
+                      AppSettings.setLastOpenedExerciseInputType('auto');
+                      Navigator.pop(context);
+                      RequestHealthConnect.showModal(context, callback: () {
+                        Navigator.pop(context);
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _buildItemMaterialDialog(
+                    R.string.enter_manually.tr(),
+                    'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn.',
+                    R.drawable.ic_manual_input_btn,
+                    () {
+                      AppSettings.setLastOpenedExerciseInputType('manual');
+                      Navigator.pop(context);
+                      Navigator.pushNamed(
+                          context, NavigatorName.exercrise_add_v2);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
     }
   }
 }

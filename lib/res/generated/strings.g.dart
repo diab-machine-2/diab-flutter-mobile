@@ -1278,4 +1278,5 @@ class Strings {
   String get exercrise_select_category_title =>
       'exercrise_select_category_title';
   String get exercrise_result_title => 'exercrise_result_title';
+  String get exercise_help_title => 'exercise_help_title';
 }
