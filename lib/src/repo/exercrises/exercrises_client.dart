@@ -172,7 +172,7 @@ class ExercrisesClient extends FetchClient {
       int date,
       String? timeFrameId,
       String note,
-      List<ExercrisesCategoryModel> exercises,
+      List<ExercrisesCategoryModel> categories,
       List<String> files,
       String? intensityId) async {
     try {
@@ -182,13 +182,16 @@ class ExercrisesClient extends FetchClient {
         'note': note,
         'intensityId': intensityId ?? '',
       };
-      for (int i = 0; i < exercises.length; i++) {
-        params['exercises[$i].exerciseId'] = exercises[i].exerciseId ?? '';
-        params['exercises[$i].seq'] = exercises[i].order.toString();
-        params['exercises[$i].description'] = exercises[i].description ?? '';
-        params['exercises[$i].duration'] = exercises[i].duration.toString();
-        params['exercises[$i].burnedCalorie'] =
-            exercises[i].burnedCalorie.toString();
+      for (int i = 0; i < categories.length; i++) {
+        for (int j = 0; j < categories[i].exercises.length; j++) {
+          params['exercises[$i].exerciseId'] =
+              categories[i].exercises[j].exerciseId;
+          params['exercises[$i].seq'] = i.toString();
+          params['exercises[$i].duration'] =
+              categories[i].exercises[j].duration.toString();
+          params['exercises[$i].burnedCalorie'] =
+              categories[i].exercises[j].burnedCalorie.toString();
+        }
       }
       final response = await super
           .postHttp(path: '/App/Exercise/Input', params: params, files: files);

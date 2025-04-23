@@ -55,6 +55,23 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _controllerDuration.addListener(_onDurationChanged);
+    selectedDate = DateTime.now();
+    selectedCategory = [];
+  }
+
+  void _onDurationChanged() {
+    if (_shouldCalculateCalo()) {
+      calculatorCalo();
+    }
+  }
+
+  bool _shouldCalculateCalo() {
+    return selectedDate != null &&
+        selectedCategory.isNotEmpty &&
+        intensity != null &&
+        _controllerDuration.text.isNotEmpty &&
+        double.tryParse(_controllerDuration.text) != null;
   }
 
   @override
@@ -67,6 +84,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
   @override
   void dispose() {
+    _controllerDuration.removeListener(_onDurationChanged);
+    _controllerDuration.dispose();
     Observable.instance.removeObserver(this); // Hủy đăng ký observer
     scrollController.dispose(); // Hủy ScrollController nếu có
     super.dispose(); // Gọi super.dispose() để giải phóng tài nguyên
@@ -146,6 +165,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       // FirebaseTracking.onSelectBirthDay(date);
       setState(() {
         selectedDate = date;
+        if (_shouldCalculateCalo()) {
+          calculatorCalo();
+        }
       });
     },
         currentTime: selectedDate == null
@@ -188,7 +210,10 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                                   initDate: selectedDate,
                                   callback: (date) {
                                     setState(() {
-                                      selectedDate = date ?? DateTime.now();
+                                      selectedDate = date;
+                                      if (_shouldCalculateCalo()) {
+                                        calculatorCalo();
+                                      }
                                     });
                                   },
                                 ),
@@ -279,6 +304,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                             onIntensityChanged: (newIntensity) {
                               setState(() {
                                 intensity = newIntensity;
+                                if (_shouldCalculateCalo()) {
+                                  calculatorCalo();
+                                }
                               });
                             },
                           )
@@ -289,6 +317,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                       onChanged: (List<ExercrisesCategoryModel> list) {
                         setState(() {
                           selectedCategory = list;
+                          if (_shouldCalculateCalo()) {
+                            calculatorCalo();
+                          }
                         });
                       },
                     ),
@@ -394,6 +425,50 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                 ))
           ],
         ));
+  }
+
+  calculatorCalo() async {
+    // Only proceed if we have all required values
+    if (!_shouldCalculateCalo()) {
+      return;
+    }
+
+    final responses = selectedCategory
+        .map((e) => ExercrisesClient().fetchCalories(
+            e.categoryId,
+            e.exerciseIntensityId,
+            e.exerciseId,
+            int.tryParse(_controllerDuration.text) ?? 0))
+        .toList();
+    final results = await Future.wait(responses);
+    results.forEach((response) {
+      final calorisesNumber = response['calories'];
+      final unit = response['unit'];
+      final description = response['description'];
+
+      setState(() {
+        selectedCategory = selectedCategory.map((e) {
+          if (e.categoryId == response['categoryId'] &&
+              e.exerciseIntensityId == response['exerciseIntensityId'] &&
+              e.exerciseId == response['exerciseId']) {
+            return ExercrisesCategoryModel(
+                categoryId: e.categoryId,
+                category: e.category,
+                exerciseId: e.exerciseId,
+                code: e.code,
+                duration: (int.parse(_controllerDuration.text)).toDouble(),
+                burnedCalorie: calorisesNumber,
+                exerciseIntensityId: e.exerciseIntensityId,
+                unit: unit,
+                description: description ?? e.description,
+                order: e.order,
+                cover: e.cover,
+                exercises: e.exercises);
+          }
+          return e;
+        }).toList();
+      });
+    });
   }
 
   double calculateBurnedCalories(double duration, ExerciseIntensity intensity) {
@@ -573,9 +648,11 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
           }).toList(),
           selected: {widget.selectedIntensity?.intensityId ?? ''},
           onSelectionChanged: (Set<String> newSelectionId) {
-            widget.onIntensityChanged(intensities.firstWhere(
+            final selectedIntensity = intensities.firstWhere(
               (intensity) => newSelectionId.contains(intensity.intensityId),
-            ));
+            );
+            widget.onIntensityChanged(selectedIntensity);
+            // The parent will handle calling calculatorCalo when intensity changes
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.resolveWith<Color?>(
