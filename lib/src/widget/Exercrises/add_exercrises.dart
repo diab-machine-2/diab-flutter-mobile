@@ -1217,7 +1217,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
           selectedTimeFrame!.id,
           note,
           selectedCategory,
-          paths);
+          paths,'');
       if (result == true) {
         // await TrackingManager.analytics.logEvent(
         //   name: 'kpi_add_success',

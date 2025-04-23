@@ -714,7 +714,12 @@ class App extends StatelessWidget {
                             onChanged: (args['onChanged']),
                             selected: args['selected']));
                   case NavigatorName.exercrise_result:
-                    return _buildRoute(settings, ExercisesResult());
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings,
+                        ExercisesResult(
+                          date: args['date'],
+                        ));
                   default:
                     return null;
                 }

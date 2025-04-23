@@ -15,11 +15,14 @@ import 'package:medical/src/modal/exercrises/exercrises_Category.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/add_exercise_request.dart';
 import 'package:medical/src/model/response/exercise_intensity_response.dart';
+import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_note_with_media.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -425,54 +428,47 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         BotToast.showLoading();
 
         // Process files for upload
-        List<File> filesToUpload = [];
-        List<String> existingFileIds = [];
+        // List<File> filesToUpload = [];
+        // List<String> existingFileIds = [];
 
-        for (var item in files) {
-          if (item is XFile) {
-            filesToUpload.add(File(item.path));
-          } else if (item is Map<String, dynamic> && item.containsKey('id')) {
-            existingFileIds.add(item['id'].toString());
-          }
-        }
+        // for (var item in files) {
+        //   if (item is XFile) {
+        //     filesToUpload.add(File(item.path));
+        //   } else if (item is Map<String, dynamic> && item.containsKey('id')) {
+        //     existingFileIds.add(item['id'].toString());
+        //   }
+        // }
 
         // Chuẩn bị dữ liệu
-        final addExerciseRequest = AddExerciseRequest(
-          date: selectedDate != null
-              ? '${(selectedDate!.millisecondsSinceEpoch ~/ 1000)}'
-              : '${DateTime.now().millisecondsSinceEpoch ~/ 1000}',
-          note: note,
-          exercises: selectedCategory.map((category) {
-            return ExerciseDetail(
-              exerciseId: category.exerciseId.toString(),
-              seq: '1',
-              description: intensity!.name,
-              duration: double.tryParse(_controllerDuration.text) ?? 0.0,
-              burnedCalorie: calculateBurnedCalories(
-                double.tryParse(_controllerDuration.text) ?? 0.0,
-                intensity!,
-              ),
-              intensityId: intensity!.intensityId,
-            );
-          }).toList(),
-          // fileIds: existingFileIds,
-          // removeFileIds: removeFileIds,
-        );
+        List<String> paths = [];
+        for (var file in files) {
+          paths.add(file.path);
+        }
 
         // Use repository to handle both API call and file upload
-        final response = await AppRepository().addExercise(addExerciseRequest);
-        // .addExercise(addExerciseRequest, filesToUpload);
 
-        response.when(success: (data) {
+        final result = await ExercrisesClient().postIndexExercrises(
+            ((selectedDate?.millisecondsSinceEpoch ?? 0) ~/ 1000).toInt(),
+            '',
+            note,
+            selectedCategory,
+            paths,
+            intensity?.intensityId);
+        if (result) {
           // Xử lý thành công
           BotToast.showText(text: 'Thêm bài tập thành công!');
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data");
-          Navigator.pop(context); // Quay
-        }, failure: (error) {
+          Navigator.pushNamed(context, NavigatorName.exercrise_result,
+              arguments: {
+                'date': selectedDate,
+                'periodFilterType':
+                    AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index),
+              });
+        } else {
           // Xử lý lỗi
-          BotToast.showText(text: 'Thêm bài tập thất bại: ${error.toString()}');
-        });
+          BotToast.showText(text: 'Thêm bài tập thất bại');
+        }
       } catch (e) {
         // Xử lý lỗi
         BotToast.showText(text: 'Đã xảy ra lỗi: $e');

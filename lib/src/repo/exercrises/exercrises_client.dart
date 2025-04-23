@@ -168,13 +168,19 @@ class ExercrisesClient extends FetchClient {
   }
 
   //nhập chỉ số vận động
-  Future<bool> postIndexExercrises(int date, String? timeFrameId, String note,
-      List<ExercrisesCategoryModel> exercises, List<String> files) async {
+  Future<bool> postIndexExercrises(
+      int date,
+      String? timeFrameId,
+      String note,
+      List<ExercrisesCategoryModel> exercises,
+      List<String> files,
+      String? intensityId) async {
     try {
       Map<String, String> params = {
         'date': date.toString(),
         'timeFrameId': timeFrameId ?? '',
         'note': note,
+        'intensityId': intensityId ?? '',
       };
       for (int i = 0; i < exercises.length; i++) {
         params['exercises[$i].exerciseId'] = exercises[i].exerciseId ?? '';

@@ -19,10 +19,12 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 
 class ExercisesResult extends StatefulWidget {
   final int periodFilterType;
+  final DateTime date;
 
   const ExercisesResult({
     Key? key,
     this.periodFilterType = 0,
+    required this.date,
   }) : super(key: key);
 
   @override
@@ -33,6 +35,7 @@ class _ExercisesResultState extends State<ExercisesResult>
     with WidgetsBindingObserver, Observer {
   late BuildContext currentContext;
   late int periodFilterType;
+  late DateTime date;
 
   @override
   void update(
@@ -46,6 +49,8 @@ class _ExercisesResultState extends State<ExercisesResult>
   void initState() {
     super.initState();
     periodFilterType = widget.periodFilterType;
+    date = widget.date;
+    Observable.instance.addObserver(this); // Đăng ký observer
     WidgetsBinding.instance.addObserver(this);
   }
 

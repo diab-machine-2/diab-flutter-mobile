@@ -25,6 +25,12 @@ class ExerciseDetail {
   final double duration;
   final double burnedCalorie;
   final String intensityId;
+  final String? exerciseCategoryId;
+  final String? code;
+  final String? name;
+  final String? intensityName;
+  final double? defaultMets;
+  final double? mets;
 
   ExerciseDetail({
     required this.exerciseId,
@@ -33,6 +39,12 @@ class ExerciseDetail {
     required this.duration,
     required this.burnedCalorie,
     required this.intensityId,
+    this.exerciseCategoryId,
+    this.code,
+    this.name,
+    this.intensityName,
+    this.defaultMets,
+    this.mets,
   });
 
   Map<String, dynamic> toJson() {
@@ -43,6 +55,12 @@ class ExerciseDetail {
       'duration': duration,
       'burnedCalorie': burnedCalorie,
       'intensityId': intensityId,
+      'exerciseCategoryId': exerciseCategoryId,
+      'code': code,
+      'name': name,
+      'intensityName': intensityName,
+      'defaultMets': defaultMets,
+      'mets': mets,
     };
   }
 
@@ -52,12 +70,18 @@ class ExerciseDetail {
 
   factory ExerciseDetail.fromJson(Map<String, dynamic> json) {
     return ExerciseDetail(
-      exerciseId: json['exerciseId'] as String,
-      seq: json['seq'] as String,
-      description: json['description'] as String,
-      duration: (json['duration'] as num).toDouble(),
-      burnedCalorie: (json['burnedCalorie'] as num).toDouble(),
-      intensityId: json['intensityId'] as String,
+      exerciseId: json['exerciseId'] != null ? json['exerciseId'] : json['id'],
+      seq: json['seq']?.toString() ?? '', // Chuyển đổi seq thành String
+      description: json['description'] ?? '',
+      duration: json['duration']?.toDouble() ?? 0.0,
+      burnedCalorie: json['burnedCalorie']?.toDouble() ?? 0.0,
+      intensityId: json['intensityId'] ?? '',
+      exerciseCategoryId: json['exerciseCategoryId']?.toString() ?? '',
+      code: json['code']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      intensityName: json['intensityName']?.toString() ?? '',
+      defaultMets: json['defaultMets']?.toDouble() ?? 0.0,
+      mets: json['mets']?.toDouble() ?? 0.0,
     );
   }
 }
