@@ -1874,11 +1874,11 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   FixedExtentScrollController? minuteController;
   int? selectedHour = 1;
   int? selectedMinute = 1;
+  DateTime now = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
     selectedHour = now.hour;
     selectedMinute = now.minute;
     if (widget.selectedHour != null) {
@@ -1889,6 +1889,12 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
     minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+  }
+
+  // Check if a time is in the future
+  bool _isTimeInFuture(int hour, int minute) {
+    final now = DateTime.now();
+    return now.hour < hour || (now.hour == hour && now.minute < minute);
   }
 
   @override
@@ -1904,8 +1910,17 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 selectionOverlay: null,
                 onSelectedItemChanged: (value) {
                   setState(() {
-                    selectedHour = value;
-                    widget.callback!(selectedHour, selectedMinute);
+                    // Prevent selecting future hours on current date
+                    if (_isTimeInFuture(value, selectedMinute ?? 0)) {
+                      // Reset to current hour and minute
+                      selectedHour = now.hour;
+                      selectedMinute = now.minute;
+                      hourController!.jumpToItem(selectedHour!);
+                      minuteController!.jumpToItem(selectedMinute!);
+                    } else {
+                      selectedHour = value;
+                      widget.callback!(selectedHour, selectedMinute);
+                    }
                   });
                 },
                 itemExtent: 47.0,
@@ -1929,8 +1944,15 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 selectionOverlay: null,
                 onSelectedItemChanged: (value) {
                   setState(() {
-                    selectedMinute = value;
-                    widget.callback!(selectedHour, selectedMinute);
+                    // Prevent selecting future minutes in the current hour
+                    if (_isTimeInFuture(selectedHour ?? 0, value)) {
+                      // Reset to current minute
+                      selectedMinute = now.minute;
+                      minuteController!.jumpToItem(selectedMinute!);
+                    } else {
+                      selectedMinute = value;
+                      widget.callback!(selectedHour, selectedMinute);
+                    }
                   });
                 },
                 itemExtent: 47.0,

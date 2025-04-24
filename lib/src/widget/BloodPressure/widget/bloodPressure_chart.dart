@@ -70,7 +70,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   void _scrollToFocusIndex() {
     final mediaWidth = MediaQuery.of(context).size.width;
-    final width = (mediaWidth - 200) / 5;
+    final width = (mediaWidth - 200) / 18;
     final itemWidth = width + 20; // same as used in chart
 
     // Get the trends list from the current state
@@ -419,7 +419,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   Widget _buildChart(BloodPressureTrendModel model, List<SubTrendItemModel> trends) {
-    final width = (MediaQuery.of(context).size.width - 200) / 5;
+    // Calculate width to show 11 points on the page
+    final width = (MediaQuery.of(context).size.width - 200) / 18;
 
     // double minY = trends
     //     .map<double>((e) => (e.diastolic! < e.systolic! ? e.diastolic! : e.systolic!))
@@ -553,7 +554,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             int index = value.toInt();
                             if (index < 0 ||
                                 index >= trends.length ||
-                                trends[index].pulseRate == null) {
+                                trends[index].pulseRate == null ||
+                                trends[index].pulseRate == 0) {
                               return '--';
                             }
                             // return heart rate value
