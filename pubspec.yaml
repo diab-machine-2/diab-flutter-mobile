@@ -162,8 +162,8 @@ dependencies:
 
   flutter_zoom_meeting:
     git:
-      url: https://github.com/ngocphuc1612/flutter_zoom_meeting_sdk.git
-      ref: 1.0.3
+      url: https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git
+      ref: 1.0.4
   mixpanel_flutter: ^2.3.3
   animated_text_kit: ^4.2.2
   flutter_chat_ui:

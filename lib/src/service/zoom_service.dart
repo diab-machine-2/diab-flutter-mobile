@@ -67,12 +67,13 @@ class ZoomService {
         disableTitlebar: "false",
         viewOptions: "true",
         autoConnectInternetAudio: "true",
-        muteAudioWhenJoinMeeting: "true",
+        // muteAudioWhenJoinMeeting: "true",
         meetingInviteHidden: "true",
         meetingInviteUrlHidden: "true",
         meetingShareHidden: "true",
         recordButtonHidden: "true",
         meetingPasswordHidden: "true",
+        enableMinimizeMeeting: "true",
       );
 
       final zoom = ZoomView();
@@ -92,7 +93,8 @@ class ZoomService {
         if (kDebugMode) {
           print("listen on event channel");
         }
-        zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {});
+
+        await zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {});
       } else {
         if (kDebugMode) {
           print("[Error] : $results");
@@ -106,6 +108,22 @@ class ZoomService {
       BotToast.closeAllLoading();
     }
   }
+  
+  Future<bool> returnToMeeting() async {
+  try {
+    final zoom = ZoomView();
+    final result = await zoom.returnToMeeting();
+    if (kDebugMode) {
+      print("[Return To Meeting]: $result");
+    }
+    return result;
+  } catch (e, s) {
+    print("Error returning to meeting: $e, $s");
+    TrackingManager.recordError(e, s);
+    return false;
+  }
+}
+
 
   String _generateToken(String username) {
     const Map configs = {
@@ -149,10 +167,25 @@ class ZoomService {
     return result;
   }
 
+  Future<List<dynamic>> getMeetingStatus() async {
+    try {
+      final zoom = ZoomView();
+      final status = await zoom.meetingStatus();
+      if (kDebugMode) {
+        print("[Meeting Status]: $status");
+      }
+      return status;
+    } catch (e, s) {
+      print("Error getting meeting status: $e, $s");
+      TrackingManager.recordError(e, s);
+      return ["MEETING_STATUS_UNKNOWN", "No status available"];
+    }
+  }
+
   void _unInitialize() async {
     final zoom = ZoomView();
     await zoom.unInitialize();
-     BranchioLinkConfig.instance.lastMeetingEndTime = DateTime.now();
+    BranchioLinkConfig.instance.lastMeetingEndTime = DateTime.now();
     BranchioLinkConfig.instance.removeMeetingId();
   }
 

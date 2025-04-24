@@ -1148,11 +1148,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1.0.3"
-      resolved-ref: "998ce9a03fb337b544dacca0cf1758e9a55859d6"
-      url: "https://github.com/ngocphuc1612/flutter_zoom_meeting_sdk.git"
+      ref: "1.0.4"
+      resolved-ref: "5c08b2760aa92c7f8865421d94054e89dbc6c5c1"
+      url: "https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git"
     source: git
-    version: "1.0.3"
+    version: "1.0.4"
   fluttertoast:
     dependency: "direct main"
     description:

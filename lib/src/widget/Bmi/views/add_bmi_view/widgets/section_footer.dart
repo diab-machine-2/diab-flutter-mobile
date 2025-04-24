@@ -74,11 +74,11 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
                           context, R.string.mes_height_empty.tr());
                       return;
                     }
-                    if (cubit.selectedHip == 0) {
-                      Message.showToastMessage(
-                          context, R.string.mes_waist_empty.tr());
-                      return;
-                    }
+                    // if (cubit.selectedHip == 0) {
+                    //   Message.showToastMessage(
+                    //       context, R.string.mes_waist_empty.tr());
+                    //   return;
+                    // }
                     int indexRange = findIndexInRanges(cubit: cubit);
                     if (indexRange == 0 ||
                         indexRange == cubit.rangeValue.length - 1) {

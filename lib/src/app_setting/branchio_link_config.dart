@@ -64,6 +64,14 @@ class BranchioLinkConfig {
       print('listenDynamicLinks - Branchio DeepLink Data: $data');
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
 
+      final zoomStatus = await ZoomService().getMeetingStatus();
+      print('[Meeting Status] Zoom Status: ${zoomStatus[0]}');
+
+      if (zoomStatus[0] == 'MEETING_STATUS_INMEETING') {
+        await ZoomService().returnToMeeting();
+        return;
+      }
+
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
         _processBookingCourseLink(
