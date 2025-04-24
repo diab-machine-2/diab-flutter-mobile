@@ -202,14 +202,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         if (model!.timeFrameId == null) {
           _lastTimeFrameIndex = 0;
           selectedTimeFrame = _times.first;
-        } else {
-          _lastTimeFrameIndex = _times.indexWhere((e) => e.id == model!.timeFrameId);
-          if (_lastTimeFrameIndex == -1) {
-            _lastTimeFrameIndex = 0;
-            selectedTimeFrame = _times.first;
-          }
         }
       }
+    }
+    if ((selectedTimeFrame == null || _lastTimeFrameIndex == -1) && _times.isNotEmpty) {
+      _lastTimeFrameIndex = 0;
+      selectedTimeFrame = _times.first;
     }
     _checkValidateInput();
     setState(() {});
