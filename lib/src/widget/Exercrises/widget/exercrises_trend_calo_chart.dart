@@ -28,10 +28,14 @@ import '../../../widgets/network_image_widget.dart';
 
 class ExercrisesTrendCaloChart extends StatefulWidget {
   ExercrisesTrendCaloChart(
-      {Key? key, this.showAddButton = true, this.gutterGhost = false})
+      {Key? key,
+      this.showAddButton = true,
+      this.gutterGhost = false,
+      this.periodFilterType = 1})
       : super(key: key);
   final bool showAddButton;
   final bool gutterGhost;
+  final int periodFilterType;
 
   @override
   ExercrisesTrendCaloChartState createState() =>
@@ -43,7 +47,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
-  int periodFilterType = 1;
+  late int periodFilterType;
 
   int? touchIndex;
 
@@ -52,28 +56,48 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
 
   @override
   void initState() {
+    periodFilterType = widget.periodFilterType;
+    showAddButton = widget.showAddButton;
+    gutterGhost = widget.gutterGhost;
+
     final controller = ExercrisesDetailTabbarController.of(context);
     if (controller != null) {
-      periodFilterType = controller.periodFilterType;
+      if (controller.periodFilterType != periodFilterType) {
+        periodFilterType = controller.periodFilterType;
+      }
     } else {
       Console.log('ExercrisesDetailTabbarController is null');
     }
-    showAddButton = !!widget.showAddButton;
-    gutterGhost = !!widget.gutterGhost;
+
     super.initState();
   }
 
+  @override
+  void didUpdateWidget(ExercrisesTrendCaloChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.periodFilterType != widget.periodFilterType) {
+      periodFilterType = widget.periodFilterType;
+      _refresh();
+    }
+  }
+
   reloadData(int periodFilter) {
-    periodFilterType = periodFilter;
-    _refresh();
+    if (periodFilterType != periodFilter) {
+      setState(() {
+        periodFilterType = periodFilter;
+        _refresh();
+      });
+    }
   }
 
   Future<bool> _refresh() async {
-    BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchCaloTrend(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-      periodFilterType: periodFilterType.toString(),
-    ));
+    if (currentContext != null) {
+      BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchCaloTrend(
+        currentDateTime:
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        periodFilterType: periodFilterType.toString(),
+      ));
+    }
 
     return true;
   }

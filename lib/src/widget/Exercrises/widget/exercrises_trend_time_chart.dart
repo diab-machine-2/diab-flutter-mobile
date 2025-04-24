@@ -403,7 +403,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
           height: 88,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _buildChart(padding: 16 * 2, target: target),
+            child: _buildChart(padding: 16 * 2, target: target ?? 0),
           ),
         ),
       ],
@@ -498,7 +498,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     );
   }
 
-  Widget _buildChart({double padding = 0, double? target = 0}) {
+  Widget _buildChart({double padding = 0, double target = 0}) {
     double minY = trends.map<double>((e) => e.duration ?? 0).reduce(min);
     minY = (minY * (trends.length == 1 ? 0.53 : 0.8)).roundToDouble();
     double maxY = trends.map<double>((e) => e.duration ?? 0).reduce(max);
@@ -512,17 +512,20 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     // chiều rộng = min of [screen width, pointSpacing * trends.length]
     double screenWidth = MediaQuery.of(context).size.width - padding * 2;
     // chiều rộng của biểu đồ tối đa là screen width
-    double chartWidth = max(screenWidth, pointSpacing * trends.length);
+    double chartWidth = pointSpacing * trends.length;
+
+    double chartHeight = 140;
 
     return Stack(
       alignment: Alignment.center,
+      fit: StackFit.expand,
       children: [
         SingleChildScrollView(
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
             child: Container(
                 width: chartWidth,
-                height: 140,
+                height: chartHeight,
                 padding: EdgeInsets.only(top: 8, bottom: 8),
                 alignment: Alignment.center,
                 child: LineChart(
@@ -627,27 +630,31 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                       ),
                     ),
                     swapAnimationDuration: Duration(milliseconds: 250)))),
-        // Dòng kẻ ngang để chỉ ra giá trị mục tiêu
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('${target?.toInt()} ${R.string.minute.tr()}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black,
-                )),
-            const SizedBox(width: 8), // Khoảng cách giữa nhãn và dòng kẻ
-            Expanded(
-              child: DashLine(
-                color: R.color.primaryGreyColor,
-                dashWidth: 8.0,
-                dashSpace: 4.0,
-                height: 1.0,
-              ),
-            ),
-          ],
-        )
+        // Dòng kẻ ngang để chỉ ra giá trị mục tiêu = avgY
+        Positioned(
+            left: 0,
+            right: 0,
+            bottom: avgY / chartHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('${target?.toInt()} ${R.string.minute.tr()}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    )),
+                const SizedBox(width: 8), // Khoảng cách giữa nhãn và dòng kẻ
+                Expanded(
+                  child: DashLine(
+                    color: R.color.primaryGreyColor,
+                    dashWidth: 8.0,
+                    dashSpace: 4.0,
+                    height: 1.0,
+                  ),
+                ),
+              ],
+            ))
       ],
     );
   }

@@ -34,8 +34,6 @@ class ExercriseDashboard extends StatefulWidget {
 
 class _ExercriseDashboardState extends State<ExercriseDashboard>
     with WidgetsBindingObserver, Observer {
-  // final GlobalKey<_ExercriseDashboardState> _Key = GlobalKey();
-  // GlobalKey<State<LineChartSample12>> overViewKey = GlobalKey();
   GlobalKey<FoodChartState> foodChartKey = GlobalKey();
   GlobalKey<ExercrisesTrendCaloChartState> caloChartKey = GlobalKey();
   GlobalKey<ExercrisesTrendTimeChartState> exercrisesTrendTimeChartKey =
@@ -98,6 +96,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
     // Update the state after the async operation
     setState(() {
       periodFilterType = newFilterType;
+      reloadData(newFilterType);
     });
   }
 
@@ -221,6 +220,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
               key: caloChartKey,
               showAddButton: false,
               gutterGhost: true,
+              periodFilterType: periodFilterType,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
