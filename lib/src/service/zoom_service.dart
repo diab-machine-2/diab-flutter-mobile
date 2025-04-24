@@ -73,7 +73,7 @@ class ZoomService {
         meetingShareHidden: "true",
         recordButtonHidden: "true",
         meetingPasswordHidden: "true",
-        enableMinimizeMeeting: "true",
+        enableMinimizeMeeting: "false",
       );
 
       final zoom = ZoomView();
