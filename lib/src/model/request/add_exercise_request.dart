@@ -84,4 +84,34 @@ class ExerciseDetail {
       mets: json['mets']?.toDouble() ?? 0.0,
     );
   }
+
+  ExerciseDetail copyWith({
+    String? exerciseId,
+    String? seq,
+    String? description,
+    double? duration,
+    double? burnedCalorie,
+    String? intensityId,
+    String? exerciseCategoryId,
+    String? code,
+    String? name,
+    String? intensityName,
+    double? defaultMets,
+    double? mets,
+  }) {
+    return ExerciseDetail(
+      exerciseId: exerciseId ?? this.exerciseId,
+      seq: seq ?? this.seq,
+      description: description ?? this.description,
+      duration: duration ?? this.duration,
+      burnedCalorie: burnedCalorie ?? this.burnedCalorie,
+      intensityId: intensityId ?? this.intensityId,
+      exerciseCategoryId: exerciseCategoryId ?? this.exerciseCategoryId,
+      code: code ?? this.code,
+      name: name ?? this.name,
+      intensityName: intensityName ?? this.intensityName,
+      defaultMets: defaultMets ?? this.defaultMets,
+      mets: mets ?? this.mets,
+    );
+  }
 }

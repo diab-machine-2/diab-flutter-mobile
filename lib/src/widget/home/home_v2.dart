@@ -328,6 +328,10 @@ class _HomeControllerState extends State<HomeController>
       _refresh();
       _checkScreen(NavigatorName.detail_exercrises);
     }
+    if (notifyName == 'active_change_data_v2') {
+      _refresh();
+      // _checkScreen(NavigatorName.exercrise_result);
+    }
     if (notifyName == 'food_change_data') {
       _refresh();
       // checkScreen(NavigatorName.detail_food);

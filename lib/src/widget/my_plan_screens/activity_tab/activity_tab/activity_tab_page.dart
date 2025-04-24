@@ -127,7 +127,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'Emotion_change_data' ||
         notifyName == 'food_change_data' ||
         notifyName == 'hba1c_change_data' ||
-        notifyName == 'goal_calo_changed') {
+        notifyName == 'goal_calo_changed' ||
+        notifyName == 'active_change_data_v2') {
       _controller.requestRefresh();
     }
   }

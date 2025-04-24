@@ -61,9 +61,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   }
 
   void _onDurationChanged() {
-    if (_shouldCalculateCalo()) {
-      calculatorCalo();
-    }
+    calculatorCalo();
   }
 
   bool _shouldCalculateCalo() {
@@ -77,7 +75,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'active_change_data') {
+    if (notifyName == 'active_change_data_v2') {
       // overViewKey.currentState!.reloadData(periodFilterType);
     }
   }
@@ -165,9 +163,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       // FirebaseTracking.onSelectBirthDay(date);
       setState(() {
         selectedDate = date;
-        if (_shouldCalculateCalo()) {
-          calculatorCalo();
-        }
+        calculatorCalo();
       });
     },
         currentTime: selectedDate == null
@@ -211,9 +207,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                                   callback: (date) {
                                     setState(() {
                                       selectedDate = date;
-                                      if (_shouldCalculateCalo()) {
-                                        calculatorCalo();
-                                      }
+                                      calculatorCalo();
                                     });
                                   },
                                 ),
@@ -304,9 +298,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                             onIntensityChanged: (newIntensity) {
                               setState(() {
                                 intensity = newIntensity;
-                                if (_shouldCalculateCalo()) {
-                                  calculatorCalo();
-                                }
+                                calculatorCalo();
                               });
                             },
                           )
@@ -317,9 +309,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                       onChanged: (List<ExercrisesCategoryModel> list) {
                         setState(() {
                           selectedCategory = list;
-                          if (_shouldCalculateCalo()) {
-                            calculatorCalo();
-                          }
+                          calculatorCalo();
                         });
                       },
                     ),
@@ -338,7 +328,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                         });
                       },
                       onFileRemoved: (fileId) {
-                        if (fileId is String && fileId.isNotEmpty) {
+                        if (fileId.isNotEmpty) {
                           setState(() {
                             removeFileIds.add(fileId);
                           });
@@ -433,67 +423,83 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       return;
     }
 
-    final responses = selectedCategory
-        .map((e) => ExercrisesClient().fetchCalories(
-            e.categoryId,
-            e.exerciseIntensityId,
-            e.exerciseId,
-            int.tryParse(_controllerDuration.text) ?? 0))
-        .toList();
-    final results = await Future.wait(responses);
-    results.forEach((response) {
-      final calorisesNumber = response['calories'];
-      final unit = response['unit'];
-      final description = response['description'];
-
-      setState(() {
-        selectedCategory = selectedCategory.map((e) {
-          if (e.categoryId == response['categoryId'] &&
-              e.exerciseIntensityId == response['exerciseIntensityId'] &&
-              e.exerciseId == response['exerciseId']) {
-            return ExercrisesCategoryModel(
-                categoryId: e.categoryId,
-                category: e.category,
-                exerciseId: e.exerciseId,
-                code: e.code,
-                duration: (int.parse(_controllerDuration.text)).toDouble(),
-                burnedCalorie: calorisesNumber,
-                exerciseIntensityId: e.exerciseIntensityId,
-                unit: unit,
-                description: description ?? e.description,
-                order: e.order,
-                cover: e.cover,
-                exercises: e.exercises);
-          }
-          return e;
-        }).toList();
-      });
+    // Show loading indicator or disable inputs during calculation
+    setState(() {
+      isLoading = true;
     });
-  }
 
-  double calculateBurnedCalories(double duration, ExerciseIntensity intensity) {
-    // Get MET value based on intensity
-    double met;
-    switch (intensity.name.toLowerCase()) {
-      case 'light':
-        met = 3.0;
-        break;
-      case 'moderate':
-        met = 5.0;
-        break;
-      case 'vigorous':
-        met = 8.0;
-        break;
-      default:
-        met = 4.0;
+    try {
+      // Create a list to store updated categories
+      final List<ExercrisesCategoryModel> updatedCategories =
+          List.from(selectedCategory);
+      final int duration = int.tryParse(_controllerDuration.text) ?? 0;
+
+      // Process each category and its exercises
+      for (int i = 0; i < updatedCategories.length; i++) {
+        final category = updatedCategories[i];
+
+        // Create a list of Future requests for all exercises in this category
+        final List<Future> exerciseRequests = [];
+
+        for (final exercise in category.exercises) {
+          final request = ExercrisesClient().fetchCalories(
+              exercise.exerciseCategoryId,
+              exercise.exerciseId,
+              exercise.intensityId,
+              duration);
+          exerciseRequests.add(request);
+        }
+
+        // Wait for all exercise requests to complete
+        final results = await Future.wait(exerciseRequests);
+
+        // Process the results and update exercises
+        double totalCalories = 0;
+        for (int j = 0; j < results.length; j++) {
+          final response = results[j];
+          final calories = response['calories'] ?? 0;
+          totalCalories += calories;
+
+          // Update individual exercise if needed
+          // This depends on your data structure
+        }
+
+        // Update the category with the total calories
+        updatedCategories[i] = ExercrisesCategoryModel(
+          categoryId: category.categoryId,
+          category: category.category,
+          exerciseId: category.exerciseId,
+          code: category.code,
+          duration: duration.toDouble(),
+          burnedCalorie: totalCalories,
+          exerciseIntensityId: category.exerciseIntensityId,
+          unit: category.unit,
+          description: category.description,
+          order: category.order,
+          cover: category.cover,
+          exercises: category.exercises
+              .map((e) => e.copyWith(
+                    burnedCalorie: e.burnedCalorie,
+                    duration: duration.toDouble(),
+                  ))
+              .toList(),
+        );
+      }
+
+      // Update state once with all changes
+      setState(() {
+        selectedCategory = updatedCategories;
+      });
+    } catch (e) {
+      // Handle errors
+      BotToast.showText(text: 'Error calculating calories: $e');
+      print('Calculator error: $e');
+    } finally {
+      // Always reset loading state
+      setState(() {
+        isLoading = false;
+      });
     }
-
-    // Lấy trọng lượng người dùng từ AppSettings.userInfo
-    double userWeightKg = AppSettings.userInfo?.weight ??
-        70.0; // 70.0 là giá trị mặc định nếu không có dữ liệu
-
-    // Calculate calories
-    return (duration * met * userWeightKg / 200).roundToDouble();
   }
 
   _submitData() async {
@@ -524,7 +530,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
         final result = await ExercrisesClient().postIndexExercrises(
             ((selectedDate?.millisecondsSinceEpoch ?? 0) ~/ 1000).toInt(),
-            '',
+            null,
             note,
             selectedCategory,
             paths,
@@ -533,7 +539,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           // Xử lý thành công
           BotToast.showText(text: 'Thêm bài tập thành công!');
           Observable.instance
-              .notifyObservers([], notifyName: "active_change_data");
+              .notifyObservers([], notifyName: "active_change_data_v2");
           Navigator.pushNamed(context, NavigatorName.exercrise_result,
               arguments: {
                 'date': selectedDate,

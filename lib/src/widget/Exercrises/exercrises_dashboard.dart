@@ -61,7 +61,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'active_change_data') {
+    if (notifyName == 'active_change_data_v2') {
       // overViewKey.currentState!.reloadData(periodFilterType);
     }
   }

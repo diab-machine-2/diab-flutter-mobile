@@ -178,17 +178,26 @@ class ExercrisesClient extends FetchClient {
     try {
       Map<String, String> params = {
         'date': date.toString(),
-        'timeFrameId': timeFrameId ?? '',
+        // 'timeFrameId': timeFrameId ?? '',
         'note': note,
         'intensityId': intensityId ?? '',
       };
+      if (timeFrameId != null && timeFrameId.isNotEmpty) {
+        params['timeFrameId'] = timeFrameId;
+      }
       for (int i = 0; i < categories.length; i++) {
         for (int j = 0; j < categories[i].exercises.length; j++) {
-          params['exercises[$i].exerciseId'] =
-              categories[i].exercises[j].exerciseId;
-          params['exercises[$i].seq'] = i.toString();
-          params['exercises[$i].duration'] =
-              categories[i].exercises[j].duration.toString();
+          if (categories[i].exercises[j].exerciseId.isNotEmpty)
+            params['exercises[$i].exerciseId'] =
+                categories[i].exercises[j].exerciseId;
+          if (categories[i].exercises[j].seq.isNotEmpty)
+            params['exercises[$i].seq'] =
+                categories[i].exercises[j].seq.toString();
+
+          if (categories[i].duration != null)
+            params['exercises[$i].exerciseCategoryId'] =
+                categories[i].categoryId ?? '';
+          params['exercises[$i].duration'] = categories[i].duration.toString();
           params['exercises[$i].burnedCalorie'] =
               categories[i].exercises[j].burnedCalorie.toString();
         }

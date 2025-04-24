@@ -33,7 +33,7 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'active_change_data') {
+    if (notifyName == 'active_change_data_v2') {
       // overViewKey.currentState!.reloadData(periodFilterType);
     }
   }
@@ -283,7 +283,7 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'active_change_data') {
+    if (notifyName == 'active_change_data_v2') {
       // overViewKey.currentState!.reloadData(periodFilterType);
     }
   }

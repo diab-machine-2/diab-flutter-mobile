@@ -1,6 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -8,12 +7,10 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/Exercrises/widget/circular_arch_progress_bar.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ai_suggestion.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
-import 'dart:math' as math;
 
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -40,7 +37,7 @@ class _ExercisesResultState extends State<ExercisesResult>
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'active_change_data') {
+    if (notifyName == 'active_change_data_v2') {
       // overViewKey.currentState!.reloadData(periodFilterType);
     }
   }
