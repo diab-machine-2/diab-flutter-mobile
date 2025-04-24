@@ -283,8 +283,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   BloodPressureRangeType _fromIndexDetected(int index) {
-    print('type=${index - 1}');
-    return BloodPressureRangeType.fromInt(index - 1);
+    return BloodPressureRangeType.fromInt(index + 1);
   }
 
   bool _isDataChange() {
@@ -1476,12 +1475,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic) async {
-    double systolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
-    double diastolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
+    double systolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
+    double diastolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
     BloodPressureRangeType detectedType = _fromIndexDetected(indexRange);
-    print('type=detectedType: $detectedType');
-    if (detectedType.value >= BloodPressureRangeType.normal_high.value) {
+    if (detectedType.value > BloodPressureRangeType.normal_high.value) {
       final reasons = _reasons ?? await BloodPressureClient().fetchReasons();
       if (reasons.isEmpty) {
         return [];
