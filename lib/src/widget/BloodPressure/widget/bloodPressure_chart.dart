@@ -69,16 +69,50 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   void _scrollToFocusIndex() {
-    // TODO: enhance
-    // final mediaWidth = MediaQuery.of(context).size.width;
-    // final width = (mediaWidth-200) / 5;
-    // final itemWidth = width + 20; // same as used in chart
-    // final offset = (_focusIndex * itemWidth) - (mediaWidth / 2) + (itemWidth / 2);
-    // _scrollController.animateTo(
-    //   offset.clamp(0.0, _scrollController.position.maxScrollExtent),
-    //   duration: const Duration(milliseconds: 300),
-    //   curve: Curves.easeInOut,
-    // );
+    final mediaWidth = MediaQuery.of(context).size.width;
+    final width = (mediaWidth - 200) / 5;
+    final itemWidth = width + 20; // same as used in chart
+
+    // Get the trends list from the current state
+    final BloodPressureState state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
+    List<SubTrendItemModel> trends = [];
+    if (state is BloodPressureTrendLoaded) {
+      state.model.trendItems.items.forEach((element) {
+        trends.addAll(element.subTrendItems);
+      });
+    }
+
+    // Handle different scrolling behavior based on whether the list is reversed
+    if (trends.length > 1) {
+      // Chart is reversed when trends.length > 1
+      // When reversed, we need to calculate from the right edge
+      final totalWidth = ((trends.length < 5 ? 5 : trends.length) * itemWidth);
+      final rightEdgeOffset = totalWidth - (_focusIndex + 1) * itemWidth;
+      final targetOffset = rightEdgeOffset + (itemWidth / 2) - (mediaWidth / 2) + 23; // 23 is magic number
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    } else {
+      // Normal left-to-right scrolling
+      final targetOffset = (_focusIndex * itemWidth) - (mediaWidth / 2) + (itemWidth / 2);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -514,6 +548,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 fontWeight: FontWeight.normal);
                           },
                           getTitles: (double value) {
+                            // padding left
+                            if (value <= -0.5 || value >= (trends.length - 0.5)) return '';
                             int index = value.toInt();
                             if (index < 0 ||
                                 index >= trends.length ||
@@ -541,8 +577,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         ),
                       ),
                       borderData: FlBorderData(show: false),
-                      minX: 0,
-                      maxX: trends.length.toDouble(),
+                      minX: -0.5,
+                      maxX: trends.length.toDouble() - 0.5,
                       maxY: maxY,
                       minY: minY,
                       lineBarsData: _linesBarData(trends),

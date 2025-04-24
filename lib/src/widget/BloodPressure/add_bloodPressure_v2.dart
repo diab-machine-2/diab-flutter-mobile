@@ -53,8 +53,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   final TextEditingController _controllerHeart = TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
-  FocusNode diastolicFocus = FocusNode();
-  FocusNode heartFocus = FocusNode();
+  FocusNode _systolicFocus = FocusNode();
+  FocusNode _diastolicFocus = FocusNode();
+  FocusNode _heartFocus = FocusNode();
   final List<dynamic> _files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
@@ -543,10 +544,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                 width: 80,
                 child: TextField(
                   autofocus: widget.type != 'update',
+                  focusNode: _systolicFocus,
                   onChanged: (value) {
                     _checkValidateInput();
                     if (value.length == 3) {
-                      diastolicFocus.requestFocus();
+                      _diastolicFocus.requestFocus();
                     }
                     setState(() {});
                   },
@@ -583,11 +585,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
               Container(
                 width: 80,
                 child: TextField(
-                  focusNode: diastolicFocus,
+                  focusNode: _diastolicFocus,
                   onChanged: (value) {
                     _checkValidateInput();
                     if (value.length == 3) {
-                      heartFocus.requestFocus();
+                      _heartFocus.requestFocus();
                     }
                     setState(() {});
                   },
@@ -964,7 +966,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                     child: SizedBox(
                       width: 120,
                       child: TextField(
-                        focusNode: heartFocus,
+                        focusNode: _heartFocus,
                         onChanged: (value) {
                           // _checkValidateInput();
                           setState(() {});
@@ -1368,6 +1370,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       }
       final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic);
       if (reasonsOrNull == false) {
+        // request focus on systolic input
+        _systolicFocus.requestFocus();
         return;
       }
       BotToast.showLoading();

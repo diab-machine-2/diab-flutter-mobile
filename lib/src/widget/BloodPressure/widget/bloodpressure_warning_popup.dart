@@ -16,6 +16,9 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
   BloodPressureWarningPopupStep _step = BloodPressureWarningPopupStep.warning;
 
   final List<KeyValue> _selectedReasons = [];
+  bool get _isConfirmEnable {
+    return _selectedReasons.isNotEmpty;
+  }
 
   void _inputtedReason() {
     setState(() {
@@ -23,10 +26,9 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
     });
   }
 
-  void _clearSelections() {
-    setState(() {
-      _selectedReasons.clear();
-    });
+  void _reInput() {
+    _selectedReasons.clear();
+    Navigator.of(context).pop(false);
   }
 
   void _confirm() {
@@ -55,7 +57,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                 child: Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
-                    onPressed: () => Navigator.of(context).pop(false),
+                    onPressed: _reInput,
                     icon: const Icon(Icons.close),
                   ),
                 ),
@@ -122,13 +124,12 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                         ),
                         onSelected: (bool selected) {
                           // Handle selection
-                          setState(() {
-                            if (selected) {
-                              _selectedReasons.add(reason);
-                            } else {
-                              _selectedReasons.remove(reason);
-                            }
-                          });
+                          if (selected) {
+                            _selectedReasons.add(reason);
+                          } else {
+                            _selectedReasons.remove(reason);
+                          }
+                          setState(() {});
                         },
                       );
                     },
@@ -142,7 +143,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                         style: OutlinedButton.styleFrom(
                           shape: const StadiumBorder(),
                         ),
-                        onPressed: _clearSelections,
+                        onPressed: _reInput,
                         child: Text(R.string.re_type.tr()),
                       ),
                     ),
@@ -152,7 +153,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                         style: ElevatedButton.styleFrom(
                           shape: const StadiumBorder(),
                         ),
-                        onPressed: _inputtedReason,
+                        onPressed: _isConfirmEnable ? _inputtedReason : null,
                         child: Text(R.string.confirm.tr()),
                       ),
                     ),
