@@ -207,23 +207,16 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
             return RefreshIndicator(
               onRefresh: _refresh,
               child: Scaffold(
-                backgroundColor: R.color.backgroundColor,
+                backgroundColor: Colors.transparent,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
-                    : Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image: AssetImage(R.drawable.bg_detail),
-                          fit: BoxFit.cover,
-                        )),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 12),
-                            _buildFilter(),
-                            const SizedBox(height: 12),
-                            Expanded(child: _buildListing(model)),
-                          ],
-                        ),
+                    : Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          _buildFilter(),
+                          const SizedBox(height: 12),
+                          Expanded(child: _buildListing(model)),
+                        ],
                       ),
               ),
             );
@@ -318,19 +311,20 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
                           ),
                           SizedBox(height: 8),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Text(element.timeFrame!,
+                                  style: TextStyle(
+                                      color: Color(0xFF5E6566),
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400)),
                               Text(
                                 convertToUTC(element.date!, 'HH:mm'),
                                 style: TextStyle(
-                                    color: R.color.black,
-                                    fontSize: 16,
+                                    color: Color(0xFF5E6566),
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w400),
                               ),
-                              Text(', ' + element.timeFrame!,
-                                  style: TextStyle(
-                                      color: R.color.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400)),
                             ],
                           ),
                           element.reason != '' && element.reason != null
