@@ -639,6 +639,8 @@ class ProgramCard extends StatelessWidget {
                           title: program.title,
                           subtitle: R.string.basic_program_confirm.tr(),
                           onConfirm: () {
+                            // TODO: Handle call API upgrade subscription and update UI program with tooltip
+                            
                             // Navigator.of(context, rootNavigator: true)
                             //     .pushNamedAndRemoveUntil(
                             //   NavigatorName.tabbar,

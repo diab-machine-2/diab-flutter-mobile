@@ -54,8 +54,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       // Always load local package data first
       final localPackages = await SubscriptionService.getLocalPackages();
 
-      // TODO: Uncomment this line when Basic Package flow is ready
-      // _revenueCatPackages = await RevenueCatService.getOfferings();
+      _revenueCatPackages = await RevenueCatService.getOfferings();
 
       setState(() {
         _localPackages = localPackages;

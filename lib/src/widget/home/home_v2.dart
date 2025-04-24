@@ -118,8 +118,7 @@ class _HomeControllerState extends State<HomeController>
     }
     _firebaseSetup();
     _initHealthApp();
-    // TODO: Uncomment this line when Basic Package flow is ready
-    // initRevenueCat();
+    initRevenueCat();
   }
 
   @override

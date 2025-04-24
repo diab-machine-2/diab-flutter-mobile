@@ -131,8 +131,8 @@ class _SubscriptionOptionsBottomSheetState
         log('[SUBSCRIPTION] Package price: ${packageToPurchase.storeProduct.priceString}');
 
         // Attempt to purchase the package
-        final purchased = true;
-        // await RevenueCatService.purchasePackage(packageToPurchase);
+        final purchased =
+            await RevenueCatService.purchasePackage(packageToPurchase);
 
         setState(() {
           _isLoading = false;
