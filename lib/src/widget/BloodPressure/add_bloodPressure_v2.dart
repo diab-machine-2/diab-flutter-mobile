@@ -75,6 +75,14 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     "Tăng huyết áp độ 2",
     "Tăng huyết áp độ 3",
   ];
+  bool get _isNotValidInput {
+    if (_controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty) {
+      if ((double.tryParse(_controllerSystolic.text) ?? 0) == 0 || (double.tryParse(_controllerDiastolic.text) ?? 0) == 0) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   List<Color> _colorList = [
     // "Thấp"
@@ -689,7 +697,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     return SpacingColumn(
       spacing: 16,
       children: [
-        if (_valueOfSystolic != 0 && _valueOfDiastolic != 0)
+        if (_isNotValidInput)
+          Text(
+            'Chỉ số không hợp lệ!',
+            style: TextStyle(color: Color(0xFFFF3C3C), fontSize: 16, fontWeight: FontWeight.w400),
+          )
+        else if (_valueOfSystolic != 0 && _valueOfDiastolic != 0)
           RichText(
             text: TextSpan(
               text: 'Huyết áp đang ở mức ',
@@ -1327,38 +1340,35 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
   }
 
+  bool _validateInput(String systolic, String diastolic, String pulseRate) {
+    if (systolic.isEmpty) {
+      Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
+      return false;
+    }
+    if (diastolic.isEmpty) {
+      Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
+      return false;
+    }
+    if (_isInputHeartRate &&
+        (int.parse(pulseRate.replaceAll(',', '.')) > 200 ||
+            (int.tryParse(pulseRate.replaceAll(',', '.')) ?? 0) == 0)) {
+      Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
+      return false;
+    }
+    if (selectedTimeFrame == null) {
+      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
+      return false;
+    }
+    return true;
+  }
+
   void _editData() async {
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
     final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
-    final reason = '';
 
-    if (systolic.isEmpty) {
-      Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
-      return;
-    }
-    if (diastolic.isEmpty) {
-      Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
-      return;
-    }
-    // Skip validate reason
-    // if (textValidate!.isNotEmpty && reason.isEmpty) {
-    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
-    //   return;
-    // }
-    if (_isInputHeartRate && pulseRate.isEmpty) {
-      Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
-      return;
-    }
-    if (_isInputHeartRate && int.parse(pulseRate.splitMapJoin(',')) > 200) {
-      Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
-      return;
-    }
-    if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
-      return;
-    }
+    if (!_validateInput(systolic, diastolic, pulseRate)) return;
 
     try {
       List<String> paths = [];
@@ -1383,7 +1393,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,
           data.note, // updated to use data.note
-          reason,
+          '', // reason
           data.removeIDs,
           paths);
       if (result != null) {
@@ -1412,33 +1422,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
     final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
-    final reason = '';
 
-    if (systolic.isEmpty) {
-      Message.showToastMessage(context, R.string.mes_systolic_empty.tr());
-      return;
-    }
-    if (diastolic.isEmpty) {
-      Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
-      return;
-    }
-    // Skip validate reason
-    // if (textValidate!.isNotEmpty && reason.isEmpty) {
-    //   Message.showToastMessage(context, R.string.ban_chua_nhap_ly_do.tr());
-    //   return;
-    // }
-    if (_isInputHeartRate && pulseRate.isEmpty) {
-      Message.showToastMessage(context, R.string.mes_heart_rate_empty.tr());
-      return;
-    }
-    if (_isInputHeartRate && int.parse(pulseRate.splitMapJoin(',')) > 200) {
-      Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
-      return;
-    }
-    if (selectedTimeFrame == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
-      return;
-    }
+    if (!_validateInput(systolic, diastolic, pulseRate)) return;
 
     try {
       List<String> paths = [];
@@ -1459,7 +1444,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,
           data.note,
-          reason,
+          '', // reason
           paths);
       if (result != null) {
         // await TrackingManager.analytics.logEvent(
