@@ -81,13 +81,20 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                   ),
                   child: CustomAppBar(
                     backgroundColor: Colors.transparent,
-                    title: Text(
-                      _cubit.getTitlePackage(),
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          // fontFamily: 'sfpro',
-                          color: R.color.white),
+                    title: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: TextScaler.linear(MediaQuery.of(context)
+                            .textScaleFactor
+                            .clamp(1.0, 1.3)),
+                      ),
+                      child: Text(
+                        _cubit.getTitlePackage(),
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            // fontFamily: 'sfpro',
+                            color: R.color.white),
+                      ),
                     ),
                     actions: [
                       InkWell(
@@ -127,13 +134,21 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                                 fit: BoxFit.scaleDown,
                               ),
                               GapW(4),
-                              Text(
-                                R.string.contact.tr(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: 'sfpro',
-                                  fontWeight: FontWeight.w700,
-                                  color: R.color.greenGradientBottom,
+                              MediaQuery(
+                                data: MediaQuery.of(context).copyWith(
+                                  textScaler: TextScaler.linear(
+                                      MediaQuery.of(context)
+                                          .textScaleFactor
+                                          .clamp(1.0, 1.3)),
+                                ),
+                                child: Text(
+                                  R.string.contact.tr(),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: 'sfpro',
+                                    fontWeight: FontWeight.w700,
+                                    color: R.color.greenGradientBottom,
+                                  ),
                                 ),
                               ),
                             ],
@@ -278,13 +293,19 @@ class ProgramCard extends StatelessWidget {
         Row(
           children: [
             Flexible(
-              child: Text(
-                program.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(
+                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
                 ),
-                overflow: TextOverflow.ellipsis,
+                child: Text(
+                  program.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ],
@@ -367,12 +388,19 @@ class ProgramCard extends StatelessWidget {
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    R.string.more.tr(),
-                    style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: TextScaler.linear(MediaQuery.of(context)
+                          .textScaleFactor
+                          .clamp(1.0, 1.3)),
+                    ),
+                    child: Text(
+                      R.string.more.tr(),
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -451,14 +479,21 @@ class ProgramCard extends StatelessWidget {
                     ),
                   ),
                   child: Center(
-                    child: Text(
-                      isBasicPackage
-                          ? R.string.join_now.tr()
-                          : R.string.consult_request.tr(),
-                      style: TextStyle(
-                        color: R.color.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: TextScaler.linear(MediaQuery.of(context)
+                            .textScaleFactor
+                            .clamp(1.0, 1.3)),
+                      ),
+                      child: Text(
+                        isBasicPackage
+                            ? R.string.join_now.tr()
+                            : R.string.consult_request.tr(),
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
@@ -569,13 +604,19 @@ class ProgramCard extends StatelessWidget {
           Row(
             children: [
               Flexible(
-                child: Text(
-                  program.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: TextScaler.linear(
+                        MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  child: Text(
+                    program.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
             ],
@@ -699,14 +740,21 @@ class ProgramCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(200),
                     ),
                     child: Center(
-                      child: Text(
-                        isBasicPackage
-                            ? R.string.join_now.tr()
-                            : R.string.consult_request.tr(),
-                        style: TextStyle(
-                          color: R.color.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: TextScaler.linear(MediaQuery.of(context)
+                              .textScaleFactor
+                              .clamp(1.0, 1.3)),
+                        ),
+                        child: Text(
+                          isBasicPackage
+                              ? R.string.join_now.tr()
+                              : R.string.consult_request.tr(),
+                          style: TextStyle(
+                            color: R.color.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
@@ -743,12 +791,18 @@ class ProgramItemWidget extends StatelessWidget {
           ),
           GapW(8),
           Expanded(
-            child: Text(
-              item.description,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: R.color.color0xff111515,
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(
+                    MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+              ),
+              child: Text(
+                item.description,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: R.color.color0xff111515,
+                ),
               ),
             ),
           ),
