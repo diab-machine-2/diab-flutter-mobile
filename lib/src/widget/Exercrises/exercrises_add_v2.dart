@@ -55,13 +55,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _controllerDuration.addListener(_onDurationChanged);
     selectedDate = DateTime.now();
     selectedCategory = [];
-  }
-
-  void _onDurationChanged() {
-    calculatorCalo();
   }
 
   bool _shouldCalculateCalo() {
@@ -82,7 +77,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
   @override
   void dispose() {
-    _controllerDuration.removeListener(_onDurationChanged);
     _controllerDuration.dispose();
     Observable.instance.removeObserver(this); // Hủy đăng ký observer
     scrollController.dispose(); // Hủy ScrollController nếu có
@@ -154,24 +148,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
     );
   }
 
-  void _showDatePicker(BuildContext context) {
-    CustomCalendarDatePicker2.showDatePicker(context,
-        maxTime: DateTime.now(),
-        minTime: DateTime.parse('1900-01-01 00:00:00.000Z'),
-        showTitleActions: true,
-        onChanged: (date) {}, onConfirm: (date) async {
-      // FirebaseTracking.onSelectBirthDay(date);
-      setState(() {
-        selectedDate = date;
-        calculatorCalo();
-      });
-    },
-        currentTime: selectedDate == null
-            ? DateTime.parse('1970-01-01 00:00:00.000Z')
-            : selectedDate,
-        locale: LocaleType.vi);
-  }
-
   Widget _buildContainer() {
     return Form(
         key: _formKey,
@@ -207,7 +183,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                                   callback: (date) {
                                     setState(() {
                                       selectedDate = date;
-                                      calculatorCalo();
                                     });
                                   },
                                 ),
@@ -278,9 +253,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                                   color: R.color.primaryGreyColor,
                                   fontWeight: FontWeight.w500),
                             ),
-                            onChanged: (value) {
-                              // Handle input change
-                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return R.string.nhap_chi_so_van_dong.tr();
@@ -298,7 +270,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                             onIntensityChanged: (newIntensity) {
                               setState(() {
                                 intensity = newIntensity;
-                                calculatorCalo();
                               });
                             },
                           )
@@ -309,7 +280,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                       onChanged: (List<ExercrisesCategoryModel> list) {
                         setState(() {
                           selectedCategory = list;
-                          calculatorCalo();
                         });
                       },
                     ),
@@ -423,79 +393,83 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       return;
     }
 
-    // Show loading indicator or disable inputs during calculation
+    // Show loading indicator
     setState(() {
       isLoading = true;
     });
 
     try {
-      // Create a list to store updated categories
+      BotToast.showLoading();
       final List<ExercrisesCategoryModel> updatedCategories =
           List.from(selectedCategory);
       final int duration = int.tryParse(_controllerDuration.text) ?? 0;
 
-      // Process each category and its exercises
       for (int i = 0; i < updatedCategories.length; i++) {
         final category = updatedCategories[i];
 
-        // Create a list of Future requests for all exercises in this category
-        final List<Future> exerciseRequests = [];
-
+        // Đảm bảo tham số được truyền đúng thứ tự như API cũ
         for (final exercise in category.exercises) {
-          final request = ExercrisesClient().fetchCalories(
-              exercise.exerciseCategoryId,
+          final response = await ExercrisesClient().fetchCalories(
+              category.categoryId,
+              intensity?.intensityId, // Sử dụng intensity từ state
               exercise.exerciseId,
-              exercise.intensityId,
               duration);
-          exerciseRequests.add(request);
+          // Debug kiểm tra
+          print('API Response: $response');
+
+          // Trích xuất thông tin từ response
+          final caloriesNumber = response['calories'] ?? 0.0;
+          final unit = response['unit'] ?? 'kcal';
+
+          // Cập nhật calories cho từng bài tập
+          final updatedExercise = ExerciseDetail(
+            exerciseId: exercise.exerciseId,
+            seq: exercise.seq,
+            description: exercise.description,
+            duration: duration.toDouble(),
+            burnedCalorie: caloriesNumber,
+            intensityId: intensity?.intensityId ?? '',
+            exerciseCategoryId: category.categoryId,
+            code: exercise.code,
+            name: exercise.name,
+            intensityName: intensity?.name ?? '',
+            defaultMets: exercise.defaultMets,
+            mets: exercise.mets,
+          );
+          // Cập nhật danh sách bài tập trong category
+          updatedCategories[i] = ExercrisesCategoryModel(
+            categoryId: updatedCategories[i].categoryId,
+            category: updatedCategories[i].category,
+            exerciseId: exercise.exerciseId,
+            code: exercise.code,
+            duration:
+                (updatedCategories[i].duration ?? 0) + duration.toDouble(),
+            burnedCalorie: caloriesNumber,
+            exerciseIntensityId: intensity?.intensityId,
+            unit: unit,
+            exercises: [
+              ...updatedCategories[i].exercises.where(
+                  (element) => element.exerciseId != exercise.exerciseId),
+              updatedExercise
+            ],
+            // Copy other fields from the original category
+            description: updatedCategories[i].description,
+            order: updatedCategories[i].order,
+            cover: updatedCategories[i].cover,
+          );
         }
-
-        // Wait for all exercise requests to complete
-        final results = await Future.wait(exerciseRequests);
-
-        // Process the results and update exercises
-        double totalCalories = 0;
-        for (int j = 0; j < results.length; j++) {
-          final response = results[j];
-          final calories = response['calories'] ?? 0;
-          totalCalories += calories;
-
-          // Update individual exercise if needed
-          // This depends on your data structure
-        }
-
-        // Update the category with the total calories
-        updatedCategories[i] = ExercrisesCategoryModel(
-          categoryId: category.categoryId,
-          category: category.category,
-          exerciseId: category.exerciseId,
-          code: category.code,
-          duration: duration.toDouble(),
-          burnedCalorie: totalCalories,
-          exerciseIntensityId: category.exerciseIntensityId,
-          unit: category.unit,
-          description: category.description,
-          order: category.order,
-          cover: category.cover,
-          exercises: category.exercises
-              .map((e) => e.copyWith(
-                    burnedCalorie: e.burnedCalorie,
-                    duration: duration.toDouble(),
-                  ))
-              .toList(),
-        );
       }
 
-      // Update state once with all changes
+      // Cập nhật state một lần duy nhất
       setState(() {
         selectedCategory = updatedCategories;
       });
+
+      BotToast.closeAllLoading();
     } catch (e) {
-      // Handle errors
-      BotToast.showText(text: 'Error calculating calories: $e');
       print('Calculator error: $e');
+      BotToast.showText(text: 'Error calculating calories: $e');
     } finally {
-      // Always reset loading state
       setState(() {
         isLoading = false;
       });
@@ -503,10 +477,12 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   }
 
   _submitData() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       try {
         // Hiển thị loading
         BotToast.showLoading();
+
+        await calculatorCalo();
 
         // Process files for upload
         // List<File> filesToUpload = [];
@@ -520,6 +496,18 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         //   }
         // }
 
+        // nếu tổng exercises
+        final exercises =
+            selectedCategory.expand((category) => category.exercises).toList();
+        if (exercises.isEmpty) {
+          BotToast.showText(
+            text: 'Please select at least one exercise',
+            duration: Duration(seconds: 2),
+            backgroundColor: R.color.black,
+            textStyle: TextStyle(color: R.color.white),
+          );
+          return;
+        }
         // Chuẩn bị dữ liệu
         List<String> paths = [];
         for (var file in files) {
@@ -543,8 +531,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           Navigator.pushNamed(context, NavigatorName.exercrise_result,
               arguments: {
                 'date': selectedDate,
-                'periodFilterType':
-                    AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index),
+                'periodFilterType': 1,
               });
         } else {
           // Xử lý lỗi

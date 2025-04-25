@@ -6,6 +6,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
 import 'package:medical/src/modal/exercrises/exercrise_input.dart';
 import 'package:medical/src/modal/exercrises/exercrise_summary.dart';
+import 'package:medical/src/modal/exercrises/exercrise_result_summary.dart'; // Add this new import
 import 'package:medical/src/modal/exercrises/exercrise_trend_calo.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
 import 'package:medical/src/modal/exercrises/exercrise_walk_summary.dart';

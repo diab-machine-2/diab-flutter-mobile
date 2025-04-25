@@ -718,7 +718,8 @@ class App extends StatelessWidget {
                     return _buildRoute(
                         settings,
                         ExercisesResult(
-                          date: args['date'],
+                          date: args['date'] ?? DateTime.now(),
+                          periodFilterType: args['periodFilterType'] ?? 1,
                         ));
                   default:
                     return null;
