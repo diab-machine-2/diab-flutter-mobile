@@ -122,6 +122,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Positioned.fill(
@@ -286,6 +287,8 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
         const SizedBox(height: 16),
         // button add note
         _noteSection(),
+
+        const SizedBox(height: 16),
       ],
     );
   }

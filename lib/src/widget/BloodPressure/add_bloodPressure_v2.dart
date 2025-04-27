@@ -1364,6 +1364,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   void _editData() async {
+    // prevent submit button
+    if (_isNotValidInput) return;
+
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
@@ -1419,6 +1422,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   void _submitData() async {
+    // prevent submit button
+    if (_isNotValidInput) return;
+
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
@@ -1435,6 +1441,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       }
       final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic);
       if (reasonsOrNull == false) {
+        // request focus on systolic input
+        _systolicFocus.requestFocus();
         return;
       }
       BotToast.showLoading();
