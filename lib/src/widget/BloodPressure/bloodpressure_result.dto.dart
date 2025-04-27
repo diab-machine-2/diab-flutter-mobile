@@ -10,7 +10,7 @@ class BloodPressureResultDto {
   final double diastolic;
   final double systolic;
   final double? pulse;
-  final String? pulseResultText;
+  final String? pulseRateStatus;
   final String? note;
   final List<String> reasons;
   final List<dynamic>? files;
@@ -34,7 +34,7 @@ class BloodPressureResultDto {
     required this.systolic,
     required this.reasons,
     this.pulse,
-    this.pulseResultText,
+    this.pulseRateStatus,
     required this.rangeColors,
     required this.rangeType,
     this.note,

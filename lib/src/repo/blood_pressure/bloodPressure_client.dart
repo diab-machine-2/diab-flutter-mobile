@@ -249,6 +249,8 @@ class BloodPressureClient extends FetchClient {
             return BloodPressureInputResult(
               id: detailResponse.id ?? id,
               images: detailResponse.images,
+              pulseRateStatus: detailResponse.pulseRateStatus ?? '-',
+              bloodPressureStatus: detailResponse.bloodPressureType ?? '-',
             );
           } catch (e) {
             print(e);
@@ -312,6 +314,8 @@ class BloodPressureClient extends FetchClient {
             return BloodPressureInputResult(
               id: detailResponse.id ?? id,
               images: detailResponse.images,
+              pulseRateStatus: detailResponse.pulseRateStatus ?? '-',
+              bloodPressureStatus: detailResponse.bloodPressureType ?? '-',
             );
           } catch (e) {
             print(e);
@@ -368,7 +372,7 @@ class BloodPressureClient extends FetchClient {
   }
 
   // lấy chi tiết huyết áp
-  Future fetchBloodPressureDetail(String? id) async {
+  Future<BloodPressureModel> fetchBloodPressureDetail(String? id) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/BloodPressure/Input/$id');
@@ -479,9 +483,13 @@ class BloodPressureClient extends FetchClient {
 class BloodPressureInputResult {
   final String id;
   final List<ImagesModel> images;
+  final String pulseRateStatus;
+  final String bloodPressureStatus;
 
   BloodPressureInputResult({
     required this.id,
     required this.images,
+    required this.pulseRateStatus,
+    required this.bloodPressureStatus,
   });
 }

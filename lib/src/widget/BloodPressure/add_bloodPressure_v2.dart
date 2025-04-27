@@ -77,7 +77,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   ];
   bool get _isNotValidInput {
     if (_controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty) {
-      if ((double.tryParse(_controllerSystolic.text) ?? 0) == 0 || (double.tryParse(_controllerDiastolic.text) ?? 0) == 0) {
+      if ((double.tryParse(_controllerSystolic.text) ?? 0) == 0 ||
+          (double.tryParse(_controllerDiastolic.text) ?? 0) == 0) {
         return true;
       }
     }
@@ -337,7 +338,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     return false;
   }
 
-  void _navigateAfterSuccess(String id, List<ImagesModel> images, List<String> reasons,
+  void _navigateAfterSuccess(
+      String id, List<ImagesModel> images, List<String> reasons, String pulseRateStatus,
       [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
     double _valueOfSystolic = double.tryParse(_controllerSystolic.text.replaceAll(",", ".") != ""
@@ -359,7 +361,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       diastolic: double.tryParse(_controllerDiastolic.text) ?? 0,
       systolic: double.tryParse(_controllerSystolic.text) ?? 0,
       pulse: double.tryParse(_controllerHeart.text) ?? 0,
-      pulseResultText: null,
+      pulseRateStatus: pulseRateStatus,
       reasons: reasons,
       note: _controllerNote.text,
       files: images,
@@ -1402,7 +1404,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           await BloodPressureClient().updateReasons(result.id, reasonKeys);
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
-        _navigateAfterSuccess(result.id, result.images, reasons, _isDataChange());
+        _navigateAfterSuccess(result.id, result.images, reasons, result.pulseRateStatus, _isDataChange());
       }
 
       BotToast.closeAllLoading();
@@ -1460,7 +1462,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           await BloodPressureClient().updateReasons(result.id, reasonKeys);
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
-        _navigateAfterSuccess(result.id, result.images, reasons);
+        _navigateAfterSuccess(result.id, result.images, reasons, result.pulseRateStatus);
       }
 
       BotToast.closeAllLoading();

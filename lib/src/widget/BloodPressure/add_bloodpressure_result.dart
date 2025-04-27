@@ -218,14 +218,13 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                   diastolic: widget.data.diastolic,
                   systolic: widget.data.systolic,
                   pulse: widget.data.pulse,
-                  pulseResultText: widget.data.pulseResultText,
                   timeFrame: widget.data.timeFrame,
                   rangeLabel: widget.data.rangeType.title,
                   rangeColor: widget.data.rangeType.color,
                   rangeType: widget.data.rangeType,
                 ),
               ),
-              if (widget.data.pulse != null) ...[
+              if (widget.data.pulse != null && widget.data.pulseRateStatus?.isNotEmpty == true) ...[
                 Divider(
                   height: 1,
                   color: Color(0xFFDFE4E4),
@@ -260,7 +259,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                     const Spacer(),
                     // text
                     Text(
-                      'Cao',
+                      widget.data.pulseRateStatus!,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -453,7 +452,6 @@ class _SegmentedCircularGauge extends StatelessWidget {
   final int indexRange;
   final Color rangeColor;
   final double? pulse;
-  final String? pulseResultText;
   final BloodPressureRangeType rangeType;
   const _SegmentedCircularGauge({
     required this.rangeValue,
@@ -464,7 +462,6 @@ class _SegmentedCircularGauge extends StatelessWidget {
     required this.indexRange,
     required this.rangeColor,
     this.pulse,
-    this.pulseResultText,
     required this.rangeType,
   });
 
