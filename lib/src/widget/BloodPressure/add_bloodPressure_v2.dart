@@ -61,7 +61,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   bool isClicked = false;
   DateTime time = DateTime.now();
   BloodPressureModel? model;
-  TimeFrameModel? selectedTimeFrame;
+  TimeFrameModel? _selectedTimeFrame;
   List<String?> removeIDs = [];
   String? textValidate = '';
   ShortGuiModel? des;
@@ -126,7 +126,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   void initState() {
     super.initState();
     if (widget.type == 'update') {
-      _loadConfig().then((value) {
+      _loadConfig(false).then((value) {
         _loadDataDetail();
       });
     } else {
@@ -211,19 +211,25 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       if (_times.isNotEmpty) {
         if (model!.timeFrameId == null) {
           _lastTimeFrameIndex = 0;
-          selectedTimeFrame = _times.first;
+          _selectedTimeFrame = _times.first;
+        } else {
+          _lastTimeFrameIndex =
+              _times.indexWhere((timeFrame) => timeFrame.id == model!.timeFrameId);
+          if (_lastTimeFrameIndex != -1) {
+            _selectedTimeFrame = _times[_lastTimeFrameIndex];
+          }
         }
       }
     }
-    if ((selectedTimeFrame == null || _lastTimeFrameIndex == -1) && _times.isNotEmpty) {
+    if ((_selectedTimeFrame == null || _lastTimeFrameIndex == -1) && _times.isNotEmpty) {
       _lastTimeFrameIndex = 0;
-      selectedTimeFrame = _times.first;
+      _selectedTimeFrame = _times.first;
     }
     _checkValidateInput();
     setState(() {});
   }
 
-  Future<void> _loadConfig() async {
+  Future<void> _loadConfig([bool needSelectTimeFrame = true]) async {
     BotToast.showLoading();
     final result = await Future.wait([
       BloodPressureClient().fetchBloodPressureTimeFrame(),
@@ -239,12 +245,17 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       _times.clear();
       _times.addAll(timeFrames);
       final colors = result[1] as List<BloodPressureColorConfig>?;
-      final timeFramesSelected = result[2] as List<TimeFrameModel>?;
-      if (timeFramesSelected?.isNotEmpty == true &&
-          timeFrames.any((e) => timeFrames.first.id == e.id)) {
-        selectedTimeFrame = timeFramesSelected?.first;
-      } else {
-        selectedTimeFrame = timeFrames.first;
+      if (needSelectTimeFrame) {
+        final timeFramesSelected = result[2] as List<TimeFrameModel>?;
+        if (timeFramesSelected?.isNotEmpty == true &&
+            timeFrames.any((e) => timeFramesSelected!.first.id == e.id)) {
+          final firstTimeframeId = timeFramesSelected!.first.id;
+          _selectedTimeFrame = timeFrames.where((e) => firstTimeframeId == e.id).first;
+          _lastTimeFrameIndex = _times.indexWhere((timeFrame) => timeFrame.id == firstTimeframeId);
+        } else {
+          _selectedTimeFrame = timeFrames.first;
+          _lastTimeFrameIndex = 0;
+        }
       }
 
       if (colors != null) {
@@ -353,8 +364,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final data = BloodPressureResultDto(
       id: id,
       dateTime: selectedDate,
-      timeFrameId: selectedTimeFrame?.id ?? '',
-      timeFrame: selectedTimeFrame?.name?.tr() ?? '',
+      timeFrameId: _selectedTimeFrame?.id ?? '',
+      timeFrame: _selectedTimeFrame?.name?.tr() ?? '',
       rangeValue: _rangeValueSystolic.map((e) => e.toDouble()).toList(),
       indexRange: indexRange,
       rangeColors: _colorList,
@@ -917,7 +928,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         selectedIndex: _lastTimeFrameIndex,
         onChange: (index) async {
           _lastTimeFrameIndex = index;
-          selectedTimeFrame = _times[index];
+          _selectedTimeFrame = _times[index];
           try {
             BotToast.showLoading();
             // TODO: BLOOD PRESSURE
@@ -1356,7 +1367,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
       return false;
     }
-    if (selectedTimeFrame == null) {
+    if (_selectedTimeFrame == null) {
       Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
       return false;
     }
@@ -1395,7 +1406,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           diastolic,
           pulseRate,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame!.id,
+          _selectedTimeFrame!.id,
           data.note, // updated to use data.note
           '', // reason
           data.removeIDs,
@@ -1407,7 +1418,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           await BloodPressureClient().updateReasons(result.id, reasonKeys);
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
-        _navigateAfterSuccess(result.id, result.images, reasons, result.pulseRateStatus, _isDataChange());
+        _navigateAfterSuccess(
+            result.id, result.images, reasons, result.pulseRateStatus, _isDataChange());
       }
 
       BotToast.closeAllLoading();
@@ -1451,7 +1463,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           diastolic,
           pulseRate,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame!.id,
+          _selectedTimeFrame!.id,
           data.note,
           '', // reason
           paths);
@@ -1617,7 +1629,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           _files.length == model!.images.length &&
           removeIDs.length == 0 &&
           date.millisecondsSinceEpoch == selectedDate.millisecondsSinceEpoch &&
-          selectedTimeFrame!.id == model!.timeFrameId) {
+          _selectedTimeFrame!.id == model!.timeFrameId) {
         Navigator.pop(context);
         return;
       }
