@@ -88,7 +88,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
       // When reversed, we need to calculate from the right edge
       final totalWidth = ((trends.length < 5 ? 5 : trends.length) * itemWidth);
       final rightEdgeOffset = totalWidth - (_focusIndex + 1) * itemWidth;
-      final targetOffset = rightEdgeOffset + (itemWidth / 2) - (mediaWidth / 2) + 23; // 23 is magic number
+      final targetOffset =
+          rightEdgeOffset + (itemWidth / 2) - (mediaWidth / 2) + 23; // 23 is magic number
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
@@ -144,7 +145,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
               trends.addAll(element.subTrendItems);
             });
 
-            if (_focusIndex == -1) {
+            if (_focusIndex == -1 || _focusIndex >= trends.length) {
               _focusIndex = (trends.length - 1) ~/ 2;
             }
           }
@@ -422,6 +423,13 @@ class BloodPressureChartState extends State<BloodPressureChart>
     // Calculate width to show 11 points on the page
     final width = (MediaQuery.of(context).size.width - 200) / 18;
 
+    // less no.trends need to scale width to fill screen
+    final minWidth = MediaQuery.of(context).size.width - 50 - 74;
+    double calculatedWidth = ((trends.length < 5 ? 5 : trends.length) * (width + 20)).toDouble();
+    if (calculatedWidth < minWidth) {
+      calculatedWidth = minWidth;
+    }
+
     // double minY = trends
     //     .map<double>((e) => (e.diastolic! < e.systolic! ? e.diastolic! : e.systolic!))
     //     .reduce(min);
@@ -466,7 +474,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 reverse: trends.length > 1,
                 scrollDirection: Axis.horizontal,
                 child: Container(
-                  width: ((trends.length < 5 ? 5 : trends.length) * (width + 20)).toDouble(),
+                  width: calculatedWidth,
                   height: 120,
                   padding: EdgeInsets.only(top: 8, bottom: 8),
                   child: LineChart(
