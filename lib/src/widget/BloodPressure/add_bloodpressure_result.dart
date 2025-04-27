@@ -560,7 +560,7 @@ class _SegmentedCircularGauge extends StatelessWidget {
                     SizedBox(height: 16),
                     Text.rich(
                       TextSpan(
-                        text: '${roundNumber(diastolic)}/${roundNumber(systolic)}',
+                        text: '${roundNumber(systolic)}/${roundNumber(diastolic)}',
                         style: TextStyle(
                           fontSize: 15,
                           color: Color(0xFF111515),
