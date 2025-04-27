@@ -1415,7 +1415,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         List<String> reasons = [];
         if (reasonsOrNull is List<KeyValue>) {
           final List<String> reasonKeys = reasonsOrNull.map((e) => e.key).toList();
-          await BloodPressureClient().updateReasons(result.id, reasonKeys);
+          if (reasonKeys.isNotEmpty) {
+            await BloodPressureClient().updateReasons(result.id, reasonKeys);
+          }
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
         _navigateAfterSuccess(
@@ -1479,7 +1481,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         List<String> reasons = [];
         if (reasonsOrNull is List<KeyValue>) {
           final List<String> reasonKeys = reasonsOrNull.map((e) => e.key).toList();
-          await BloodPressureClient().updateReasons(result.id, reasonKeys);
+          if (reasonKeys.isNotEmpty) {
+            await BloodPressureClient().updateReasons(result.id, reasonKeys);
+          }
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
         _navigateAfterSuccess(result.id, result.images, reasons, result.pulseRateStatus);
