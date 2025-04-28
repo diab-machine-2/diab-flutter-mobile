@@ -120,19 +120,21 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     _checkUserReferralCode();
     _checkExistZoomId();
     BranchioLinkConfig.instance.tryNavigateBooking(initial: true);
-    
+
     // Mark initialization as complete
     _initComplete = true;
     print('[ROUTE] TabbarController initialization complete');
-    
+
     // Check if we have any pending deeplinks to navigate to
     _checkPendingDeeplinks();
+    BranchioLinkConfig.instance.checkPendingMeasurementScreen();
   }
-  
+
   // Check for pending deeplinks after initialization
   void _checkPendingDeeplinks() {
     if (BranchioLinkConfig.instance.hasPendingDeeplink) {
-      print("[ROUTE] TabbarController found pending deeplink, scheduling navigation");
+      print(
+          "[ROUTE] TabbarController found pending deeplink, scheduling navigation");
       BranchioLinkConfig.instance.scheduleDeeplinkNavigation();
     }
   }
