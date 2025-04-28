@@ -11,12 +11,10 @@ import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/service/zoom_service.dart';
-import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -44,6 +42,8 @@ class BranchioLinkConfig {
   String? _pendingType; // dsmes, clinic, doctor
   Timer? _navigationTimer;
 
+  String? _pendingMeasurementScreen;
+
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
 
@@ -52,7 +52,7 @@ class BranchioLinkConfig {
   int? get pendingMode => _pendingMode;
   String? get pendingType => _pendingType;
 
-  // Ttracking map for booking feature pages is already open
+  // Tracking map for booking feature pages is already open
   Map<String, bool> _openBookingPages = {
     'dsmes': false,
     'clinic': false,
@@ -153,6 +153,14 @@ class BranchioLinkConfig {
         return;
       }
 
+      // Handle input index deep link
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$screen_value")) {
+        final inputIndexScreen = data['\$screen_value'] as String;
+        _processMeasurementDeepLink(inputIndexScreen);
+        return;
+      }
+
       //Handle old dynamic link referral code
       if (data['+non_branch_link'] != null) {
         final urlString = data['+non_branch_link'] as String;
@@ -173,6 +181,71 @@ class BranchioLinkConfig {
       }
       TrackingManager.recordError(error, null);
     });
+  }
+
+  void _processMeasurementDeepLink(String screenValue) async {
+    // Wait for the app to be fully initialized
+    if (!AppSettings.splashScreenInitDone || AppSettings.userInfo == null) {
+      _pendingMeasurementScreen = screenValue;
+      return;
+    }
+
+    navigatorKey.currentState?.popUntil((route) {
+      return route.settings.name == NavigatorName.tabbar;
+    });
+
+    // Map of measurement types to their corresponding routes and arguments
+    Map<String, Map<String, dynamic>> measurementRoutes = {
+      'duong-huyet': {
+        'route': NavigatorName.add_blood_sugar_new,
+        'args': {'type': 'input'}
+      },
+      'huyet-ap': {
+        'route': NavigatorName.add_blood_pressure,
+        'args': {'type': 'input', 'id': null}
+      },
+      'van-dong': {
+        'route': NavigatorName.add_exercrises,
+        'args': {'type': 'input'}
+      },
+      'dinh-duong': {
+        'route': NavigatorName.add_food,
+        'args': {'type': 'input'}
+      },
+      'hba1c': {
+        'route': NavigatorName.add_hba1c,
+        'args': {'type': 'input', 'id': null}
+      },
+      'can-nang': {
+        'route': NavigatorName.add_bmi,
+        'args': {'type': 'input'}
+      }
+    };
+
+    // If the screen value is in our map, navigate to it
+    if (measurementRoutes.containsKey(screenValue)) {
+      final routeInfo = measurementRoutes[screenValue]!;
+
+      // For all other measurements, navigate directly
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          routeInfo['route'] as String,
+          (route) => route.settings.name == NavigatorName.tabbar,
+          arguments: routeInfo['args']);
+    } else {
+      print('Unknown measurement screen value: $screenValue');
+    }
+  }
+
+  void checkPendingMeasurementScreen() {
+    if (_pendingMeasurementScreen != null) {
+      final screenValue = _pendingMeasurementScreen ?? '';
+      _pendingMeasurementScreen = null;
+
+      if (screenValue.isEmpty) return;
+
+      // This shouldn't happen, but just in case
+      _processMeasurementDeepLink(screenValue);
+    }
   }
 
   // Execute pending deeplink navigation based on parameters
@@ -348,7 +421,6 @@ class BranchioLinkConfig {
   }
 
   void resetPageTracking() {
-    print('[ROUTE] Resetting all page tracking - user is at home screen');
     _openBookingPages.updateAll((key, value) => false);
   }
 
