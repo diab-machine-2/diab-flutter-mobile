@@ -473,8 +473,7 @@ abstract class AppApi {
       @Body() UpdateExerciseRequest request, @Path("id") String id);
 
   @GET("App/Exercise/Intensity")
-  Future<ExerciseIntensityResponse> getExerciseIntensities();
-
+  Future<ExerciseIntensityResponse> getExerciseIntensities({@Query("shortname") int shortname = 1});
   @GET("App/Exercise/Category")
   Future<ExerciseCategoryResponse> getExerciseCategories();
 

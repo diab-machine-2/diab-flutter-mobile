@@ -1989,9 +1989,10 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<ExerciseIntensityResponse> getExerciseIntensities() async {
+  Future<ExerciseIntensityResponse> getExerciseIntensities(
+      {shortname = 1}) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'shortname': shortname};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
