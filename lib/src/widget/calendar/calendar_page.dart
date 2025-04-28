@@ -62,13 +62,18 @@ class _CalendarControllerState extends State<CalendarController> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await Navigator.pushNamed(context, NavigatorName.calendar_booking,
-            arguments: {
-              "updateSlot": widget.pickSlot,
-              'courseId': widget.courseId,
-              'endTime': widget.endTime
-            });
-        return false;
+        print('[ONBOARDING] on pop scope calendar page');
+        if (Navigator.of(context).canPop()) {
+          print('[ONBOARDING] pop scope calendar page');
+          Navigator.of(context).pop();
+        }
+        // await Navigator.pushNamed(context, NavigatorName.calendar_booking,
+        //     arguments: {
+        //       "updateSlot": widget.pickSlot,
+        //       'courseId': widget.courseId,
+        //       'endTime': widget.endTime
+        //     });
+        return true;
       },
       child: GestureDetector(
         onTap: () {
@@ -153,9 +158,12 @@ class _CalendarControllerState extends State<CalendarController> {
                           color: R.color.textDark,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, NavigatorName.tabbar);
                           CalendarBookingCubit.myCalendar = null;
                           CalendarBookingCubit.updateCount = 0;
+
+                          if (Navigator.of(context).canPop()) {
+                            Navigator.of(context).pop();
+                          }
                         },
                       ),
                     ),

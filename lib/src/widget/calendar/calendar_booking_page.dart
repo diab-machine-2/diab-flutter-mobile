@@ -113,49 +113,60 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
+    return WillPopScope(
+      onWillPop: () async {
+        print('[ONBOARDING] on pop scope calendar booking page');
+        if (Navigator.of(context).canPop()) {
+          print('[ONBOARDING] pop scope calendar booking page');
+          Navigator.of(context).pop();
+        }
+        return true;
       },
-      child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(color: R.color.backgroundColorNew),
-          child: BlocProvider(
-              create: (context) => _cubit,
-              child: BlocConsumer<CalendarBookingCubit, CalendarBookingState>(
-                  listener: (context, state) => {
-                        if (state is CalendarBookingFailure)
-                          {
-                            Message.showToastMessage(context, state.error),
-                            BotToast.closeAllLoading()
-                          }
-                        else if (state is CreateCalendarSuccess)
-                          {
-                            if (myCalendar != null)
-                              CalendarBookingCubit.updateCount += 1,
-                            Navigator.pushNamed(context, NavigatorName.calendar,
-                                arguments: {
-                                  "pickSlot": state.response,
-                                  "courseId": widget.courseId,
-                                  "endTime": widget.endTime,
-                                  "bookingQuantity":
-                                      CalendarBookingCubit.updateCount,
-                                })
-                          }
-                      },
-                  builder: ((context, state) {
-                    try {
-                      if (state is CalendarBookingLoading) {
-                        BotToast.showLoading();
-                      } else if (state is CalendarBookingCloseLoading) {
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          body: Container(
+            decoration: BoxDecoration(color: R.color.backgroundColorNew),
+            child: BlocProvider(
+                create: (context) => _cubit,
+                child: BlocConsumer<CalendarBookingCubit, CalendarBookingState>(
+                    listener: (context, state) => {
+                          if (state is CalendarBookingFailure)
+                            {
+                              Message.showToastMessage(context, state.error),
+                              BotToast.closeAllLoading()
+                            }
+                          else if (state is CreateCalendarSuccess)
+                            {
+                              if (myCalendar != null)
+                                CalendarBookingCubit.updateCount += 1,
+                              Navigator.pushReplacementNamed(
+                                  context, NavigatorName.calendar,
+                                  arguments: {
+                                    "pickSlot": state.response,
+                                    "courseId": widget.courseId,
+                                    "endTime": widget.endTime,
+                                    "bookingQuantity":
+                                        CalendarBookingCubit.updateCount,
+                                  })
+                            }
+                        },
+                    builder: ((context, state) {
+                      try {
+                        if (state is CalendarBookingLoading) {
+                          BotToast.showLoading();
+                        } else if (state is CalendarBookingCloseLoading) {
+                          BotToast.closeAllLoading();
+                        }
+                        return _buildPage();
+                      } catch (e) {
                         BotToast.closeAllLoading();
+                        return _buildPage();
                       }
-                      return _buildPage();
-                    } catch (e) {
-                      BotToast.closeAllLoading();
-                      return _buildPage();
-                    }
-                  }))),
+                    }))),
+          ),
         ),
       ),
     );

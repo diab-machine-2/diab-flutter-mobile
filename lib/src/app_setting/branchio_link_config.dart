@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -56,7 +57,7 @@ class BranchioLinkConfig {
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
-      print('listenDynamicLinks - Branchio DeepLink Data: $data');
+      log('listenDynamicLinks - Branchio DeepLink Data: $data');
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
 
       // Handle login deeplink
