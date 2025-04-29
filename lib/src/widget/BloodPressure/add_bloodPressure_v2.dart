@@ -1361,11 +1361,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       Message.showToastMessage(context, R.string.mes_diastolic_empty.tr());
       return false;
     }
-    if (_isInputHeartRate &&
-        (int.parse(pulseRate.replaceAll(',', '.')) > 200 ||
-            (int.tryParse(pulseRate.replaceAll(',', '.')) ?? 0) == 0)) {
-      Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
-      return false;
+    if (_isInputHeartRate) {
+      int pulseRateValue = int.tryParse(pulseRate.replaceAll(',', '.')) ?? 0;
+      if (pulseRateValue < 40 || pulseRateValue > 300) {
+        Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
+        return false;
+      }
     }
     if (_selectedTimeFrame == null) {
       Message.showToastMessage(context, R.string.ban_chua_chon_khung_gio.tr());
