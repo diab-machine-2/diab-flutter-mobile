@@ -561,7 +561,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           Column(
             children: [
               Container(
-                width: 80,
+                width: 90,
                 child: TextField(
                   autofocus: widget.type != 'update',
                   focusNode: _systolicFocus,
@@ -603,7 +603,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           Column(
             children: [
               Container(
-                width: 80,
+                width: 90,
                 child: TextField(
                   focusNode: _diastolicFocus,
                   onChanged: (value) {

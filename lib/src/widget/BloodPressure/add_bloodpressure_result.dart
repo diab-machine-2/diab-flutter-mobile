@@ -27,19 +27,38 @@ class PageAddBloodPressureResult extends StatefulWidget {
   State<PageAddBloodPressureResult> createState() => _PageAddBloodPressureResultState();
 }
 
-class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult> {
+class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult> with WidgetsBindingObserver {
   // bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
   String? _aiResult;
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
 
   List<dynamic> _files = [];
   late TextEditingController _controllerNote;
+  bool _isKeyboardVisible = false;
 
   @override
   void initState() {
     _loadData();
     _controllerNote = TextEditingController(text: widget.data.note);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+  
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+  
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
+    final newValue = bottomInset > 0.0;
+    if (newValue != _isKeyboardVisible) {
+      setState(() {
+        _isKeyboardVisible = newValue;
+      });
+    }
   }
 
   void _loadData() async {
@@ -123,42 +142,48 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
       resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Column(
-              children: [
-                _appBarSection(),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.only(bottom: 100),
-                      physics: const ClampingScrollPhysics(),
-                      child: _bloodpressureResultSection(),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Column(
+                children: [
+                  _appBarSection(),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16).copyWith(
+                        bottom: _isKeyboardVisible ? 68 : 0,
+                      ),
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.only(bottom: _isKeyboardVisible ? 30 : 80),
+                        child: _bloodpressureResultSection(),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: EdgeInsets.only(
-                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
-                left: 16,
-                right: 16,
-                top: 12,
+                ],
               ),
-              child: _bottomSection(),
-              color: Colors.white,
             ),
-          ),
-        ],
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.only(
+                  bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                  left: 16,
+                  right: 16,
+                  top: 12,
+                ),
+                child: _bottomSection(),
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
