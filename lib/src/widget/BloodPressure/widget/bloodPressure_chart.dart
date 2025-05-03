@@ -26,11 +26,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
   @override
   bool get wantKeepAlive => true;
 
-  int touchIndex = -1;
+  int _touchIndex = -1;
 
   int _focusIndex = -1;
 
-  int periodFilterType = 1;
+  int _periodFilterType = 1;
   late BuildContext currentContext;
   int? previousDate = 0;
 
@@ -39,7 +39,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   @override
   void initState() {
-    periodFilterType = widget.initPeriodFilterType;
+    _periodFilterType = widget.initPeriodFilterType;
     super.initState();
   }
 
@@ -50,21 +50,21 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   void reloadData(int periodFilter) {
-    periodFilterType = periodFilter;
+    _periodFilterType = periodFilter;
     _refresh();
   }
 
   Future<bool> _refresh() async {
     BlocProvider.of<BloodPressureBloc>(currentContext).add(FetchBloodPressureTrend(
       currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000),
-      periodFilterType: periodFilterType,
+      periodFilterType: _periodFilterType,
     ));
     return true;
   }
 
   void _viewHistory() {
     Navigator.pushNamed(currentContext, NavigatorName.detail_bloodpressure_listing, arguments: {
-      'initPeriodFilterType': periodFilterType,
+      'initPeriodFilterType': _periodFilterType,
     });
   }
 
@@ -129,7 +129,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           if (state is BloodPressureInitial) {
             BlocProvider.of<BloodPressureBloc>(context).add(FetchBloodPressureTrend(
               currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000),
-              periodFilterType: periodFilterType,
+              periodFilterType: _periodFilterType,
             ));
           }
           if (state is BloodPressureError) {
@@ -529,14 +529,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
                               final value = lineTouch?.lineBarSpots?[0].x;
                               if (value != null) {
                                 //  setState(() {
-                                touchIndex = value.toInt();
+                                _touchIndex = value.toInt();
                                 //  });
                                 setState(() {
-                                  _focusIndex = touchIndex;
+                                  _focusIndex = _touchIndex;
                                 });
                               }
                             } else {
-                              touchIndex = -1;
+                              _touchIndex = -1;
                             }
                           }),
                       gridData: FlGridData(show: false),
@@ -550,7 +550,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           interval: 1,
                           getTextStyles: (context, value) {
                             return TextStyle(
-                                color: touchIndex == value.toInt()
+                                color: _touchIndex == value.toInt()
                                     ? R.color.black
                                     : R.color.color0xffC0C2C5,
                                 fontSize: 14,

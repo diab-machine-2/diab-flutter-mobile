@@ -27,7 +27,8 @@ class PageAddBloodPressureResult extends StatefulWidget {
   State<PageAddBloodPressureResult> createState() => _PageAddBloodPressureResultState();
 }
 
-class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult> with WidgetsBindingObserver {
+class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
+    with WidgetsBindingObserver {
   // bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
   String? _aiResult;
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
@@ -43,13 +44,13 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     WidgetsBinding.instance.addObserver(this);
     super.initState();
   }
-  
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-  
+
   @override
   void didChangeMetrics() {
     final bottomInset = WidgetsBinding.instance.window.viewInsets.bottom;
@@ -250,7 +251,9 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                   rangeType: widget.data.rangeType,
                 ),
               ),
-              if (widget.data.pulse != null && widget.data.pulseRateStatus?.isNotEmpty == true) ...[
+              if (widget.data.pulse != null &&
+                  widget.data.pulse! > 0 &&
+                  widget.data.pulseRateStatus?.isNotEmpty == true) ...[
                 Divider(
                   height: 1,
                   color: Color(0xFFDFE4E4),
