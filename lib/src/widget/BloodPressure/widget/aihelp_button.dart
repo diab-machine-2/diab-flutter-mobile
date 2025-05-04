@@ -5,7 +5,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,7 +24,7 @@ class AIHelpButton extends StatelessWidget {
       } else {
         throw 'Could not launch $url';
       }
-    } else if (rangeType == BloodSugarRangeType.very_low) {
+    } else if (rangeType == BloodPressureRangeType.low) {
       // TODO: Replace to definition instead
       Navigator.of(context).pushNamed('/dsmes_booking');
     } else {
@@ -62,11 +61,12 @@ class AIHelpButton extends StatelessWidget {
         onPressed: () => _actionByRangeType(rangeType!, context),
         child: Center(
           child: Text(
-            rangeType == BloodSugarRangeType.very_high
-                ? 'Chuyên gia hỗ trợ'
-                : rangeType == BloodSugarRangeType.very_low
-                    ? 'Tư vấn chuyên gia'
-                    : 'Bí quyết ổn định đường huyết',
+            'Bí quyết ổn định đường huyết',
+            // rangeType == BloodSugarRangeType.very_high
+            //     ? 'Chuyên gia hỗ trợ'
+            //     : rangeType == BloodSugarRangeType.very_low
+            //         ? 'Tư vấn chuyên gia'
+            //         : 'Bí quyết ổn định đường huyết',
             style: TextStyle(
               color: R.color.mainColor,
               fontSize: 13,

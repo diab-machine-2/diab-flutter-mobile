@@ -201,7 +201,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                               Text(
                                 (model.lowestId == null)
                                     ? '--'
-                                    : '${model.lowestDiastolic?.toInt() ?? 0}/${model.lowestSystolic?.toInt() ?? 0}',
+                                    : '${model.lowestSystolic?.toInt() ?? 0}/${model.lowestDiastolic?.toInt() ?? 0}',
                                 style: TextStyle(
                                   fontSize: 20,
                                   height: 24 / 20,
@@ -240,7 +240,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                               Text(
                                 (model.highestId == null)
                                     ? '--'
-                                    : '${model.highestDiastolic?.toInt() ?? 0}/${model.highestSystolic?.toInt() ?? 0}',
+                                    : '${model.highestSystolic?.toInt() ?? 0}/${model.highestDiastolic?.toInt() ?? 0}',
                                 style: TextStyle(
                                   fontSize: 20,
                                   height: 24 / 20,

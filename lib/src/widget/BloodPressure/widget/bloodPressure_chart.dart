@@ -26,8 +26,6 @@ class BloodPressureChartState extends State<BloodPressureChart>
   @override
   bool get wantKeepAlive => true;
 
-  int _touchIndex = -1;
-
   int _focusIndex = -1;
 
   int _periodFilterType = 1;
@@ -529,14 +527,13 @@ class BloodPressureChartState extends State<BloodPressureChart>
                               final value = lineTouch?.lineBarSpots?[0].x;
                               if (value != null) {
                                 //  setState(() {
-                                _touchIndex = value.toInt();
+                                _focusIndex = value.toInt();
                                 //  });
                                 setState(() {
-                                  _focusIndex = _touchIndex;
                                 });
                               }
                             } else {
-                              _touchIndex = -1;
+                              _focusIndex = -1;
                             }
                           }),
                       gridData: FlGridData(show: false),
@@ -550,7 +547,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           interval: 1,
                           getTextStyles: (context, value) {
                             return TextStyle(
-                                color: _touchIndex == value.toInt()
+                                color: _focusIndex == value.toInt()
                                     ? R.color.black
                                     : R.color.color0xffC0C2C5,
                                 fontSize: 14,
