@@ -169,7 +169,9 @@ class BloodPressureClient extends FetchClient {
           url: '/App/BloodPressure/Trend',
           params: {
             'currentDateTime': '$currentDateTime',
-            'periodFilterType': '$periodFilterType'
+            'periodFilterType': '$periodFilterType',
+            'page': '1',
+            'size': '100',
           });
       if (response.statusCode == 200) {
         return BloodPressureTrendModel.fromJson(response.data['data']);
@@ -190,7 +192,9 @@ class BloodPressureClient extends FetchClient {
           url: '/App/BloodPressure/Trend/PulseRate',
           params: {
             'currentDateTime': '$currentDateTime',
-            'periodFilterType': '$periodFilterType'
+            'periodFilterType': '$periodFilterType',
+            'page': '1',
+            'size': '100',
           });
       if (response.statusCode == 200) {
         return BloodPressureTrendModel.fromJson(response.data['data']);

@@ -66,6 +66,22 @@ class BloodPressureChartState extends State<BloodPressureChart>
     });
   }
 
+  List<SubTrendItemModel> _getTrends(BloodPressureTrendModel model) {
+    // Get the trends list from the current state
+    List<SubTrendItemModel> trends = [];
+    model.trendItems.items.forEach((element) {
+      trends.addAll(element.subTrendItems);
+    });
+
+    // sort the trends by date
+    trends.sort((a, b) {
+      if (a.date == null || b.date == null) return 0;
+      return a.date!.compareTo(b.date!);
+    });
+
+    return trends;
+  }
+
   void _scrollToFocusIndex() {
     final mediaWidth = MediaQuery.of(context).size.width;
     final width = (mediaWidth - 200) / 18;
@@ -75,9 +91,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
     final BloodPressureState state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
     List<SubTrendItemModel> trends = [];
     if (state is BloodPressureTrendLoaded) {
-      state.model.trendItems.items.forEach((element) {
-        trends.addAll(element.subTrendItems);
-      });
+      trends = _getTrends(state.model);
     }
 
     // Handle different scrolling behavior based on whether the list is reversed
@@ -137,11 +151,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
           List<SubTrendItemModel> trends = [];
           if (state is BloodPressureTrendLoaded) {
             model = state.model;
-            trends.clear();
 
-            model.trendItems.items.forEach((element) {
-              trends.addAll(element.subTrendItems);
-            });
+            if (model.trendItems.items.isNotEmpty) {
+              trends = _getTrends(model);
+            }
 
             if (_focusIndex == -1 || _focusIndex >= trends.length) {
               _focusIndex = (trends.length - 1) ~/ 2;
