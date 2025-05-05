@@ -351,6 +351,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         screenSize.height < 650; // Adjust for Galaxy A5 and similar
     final isMobile = screenSize.width < Const.TABLET_BREAKPOINT;
 
+    // Bottom button height + padding + bottom navigation padding
+    final bottomButtonAreaHeight =
+        48 + 16 + 24; // button height + margins + bottom nav spacing
+
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -358,226 +362,261 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
           final double topSpacing = isSmallScreen ? 16 : 32;
           final double contentSpacing = isSmallScreen ? 8 : 16;
 
-          // Calculate available height for content after accounting for titles and button
+          // Calculate available height for content
+          final availableHeight =
+              constraints.maxHeight - bottomButtonAreaHeight;
+
+          // Calculate space for the titles and subtitle
           final double titleSpace =
               90; // Approximate space for titles and subtitle
-          final double buttonSpace = 64; // Approximate space for button
-          final bottomNavigationBarHeight = 24;
-          final double carouselMaxHeight = constraints.maxHeight -
+
+          // Calculate carousel max height
+          final double carouselMaxHeight = availableHeight -
               titleSpace -
-              buttonSpace -
               (topSpacing * 2) -
-              (contentSpacing * 3) -
-              bottomNavigationBarHeight;
+              (contentSpacing * 3);
 
           final double imagePercent = isSmallScreen ? 0.65 : 0.65;
 
           // Calculate image size with a maximum percentage of available height
-          final double imageHeight =
-              carouselMaxHeight * imagePercent; // Adjust percentage as needed
+          final double imageHeight = carouselMaxHeight * imagePercent;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GapH(topSpacing),
-                // Title block
-                Text(
-                  R.string.subscription_title_1.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF01645A),
-                  ),
+          return Stack(
+            children: [
+              // Main content - scrollable if needed
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GapH(topSpacing),
+                    // Title block
+                    MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: TextScaler.linear(MediaQuery.of(context)
+                            .textScaleFactor
+                            .clamp(1.0, 1.3)),
+                      ),
+                      child: Text(
+                        R.string.subscription_title_1.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF01645A),
+                        ),
+                      ),
+                    ),
+                    MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: TextScaler.linear(MediaQuery.of(context)
+                            .textScaleFactor
+                            .clamp(1.0, 1.3)),
+                      ),
+                      child: Text(
+                        R.string.subscription_title_2.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFFB4802D),
+                        ),
+                      ),
+                    ),
+                    GapH(contentSpacing),
+              
+                    // Subtitle
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        R.string.subscription_subtitle.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          height: 1.5,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff111515,
+                        ),
+                      ),
+                    ),
+                    GapH(contentSpacing),
+              
+                    // Carousel Container with fixed aspect ratio
+                    Container(
+                      constraints: BoxConstraints(
+                        maxHeight: carouselMaxHeight,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          GapH(8),
+                          // Image carousel
+                          SizedBox(
+                            height: imageHeight,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
+                              child: CarouselSlider(
+                                carouselController: _carouselController,
+                                options: CarouselOptions(
+                                  height: imageHeight,
+                                  viewportFraction: 1.0,
+                                  enlargeCenterPage: false,
+                                  autoPlay: true,
+                                  autoPlayInterval: Duration(seconds: 5),
+                                  autoPlayAnimationDuration:
+                                      Duration(milliseconds: 800),
+                                  onPageChanged: (index, reason) {
+                                    setState(() {
+                                      _currentCarouselIndex = index;
+                                    });
+                                  },
+                                ),
+                                items: carouselItems.map((item) {
+                                  return Builder(
+                                    builder: (BuildContext context) {
+                                      return _buildBannerImage(item);
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+              
+                          // Title, subtitle, and indicators in remaining space
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: isSmallScreen ? 4.0 : 8.0,
+                              ),
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  // Title text with adjusted size based on screen
+                                  Text(
+                                    _getItemTitle(
+                                        carouselItems[_currentCarouselIndex]),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF111515),
+                                    ),
+                                  ),
+                                  // Subtitle text with adjusted size
+                                  Text(
+                                    _getItemSubtitle(
+                                        carouselItems[_currentCarouselIndex]),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF111515),
+                                    ),
+                                  ),
+                                  // Page indicator
+                                  SmoothPageIndicator(
+                                    controller: PageController(
+                                        initialPage: _currentCarouselIndex),
+                                    count: carouselItems.length,
+                                    effect: ExpandingDotsEffect(
+                                      dotHeight: isSmallScreen ? 6 : 8,
+                                      dotWidth: isSmallScreen ? 6 : 8,
+                                      spacing: 4,
+                                      expansionFactor: 2,
+                                      activeDotColor: Color(0xFF01645A),
+                                      dotColor: Color(0xFFDFE4E4),
+                                    ),
+                                    onDotClicked: (index) {
+                                      _carouselController
+                                          .animateToPage(index);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Add extra space at bottom to ensure content doesn't get hidden behind the fixed button
+                    GapH(bottomButtonAreaHeight.toDouble()),
+                  ],
                 ),
-                Text(
-                  R.string.subscription_title_2.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFFB4802D),
-                  ),
-                ),
-                GapH(contentSpacing),
+              ),
 
-                // Subtitle
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    R.string.subscription_subtitle.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.5,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff111515,
+              // Fixed button at the bottom
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 24,
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      SubscriptionTracking.programExplore(
+                          _currentCarouselIndex + 1);
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder: (context) => PaywallScreen(),
+                          fullscreenDialog: true,
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin:
+                          EdgeInsets.symmetric(vertical: isSmallScreen ? 8 : 8),
+                      height: 48,
+                      width: 170,
+                      decoration: BoxDecoration(
+                        color: R.color.mainColor,
+                        borderRadius: BorderRadius.circular(200),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            R.color.greenGradientTop,
+                            R.color.greenGradientBottom,
+                            R.color.greenGradientBottom,
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: TextScaler.linear(MediaQuery.of(context)
+                                .textScaleFactor
+                                .clamp(1.0, 1.3)),
+                          ),
+                          child: Text(
+                            R.string.tim_hieu_them.tr(),
+                            style: TextStyle(
+                              color: R.color.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                GapH(contentSpacing),
-
-                // Carousel Container with fixed aspect ratio
-                Container(
-                  constraints: BoxConstraints(
-                    maxHeight: carouselMaxHeight,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      GapH(8),
-                      // Image carousel
-                      SizedBox(
-                        height: imageHeight,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                          ),
-                          child: CarouselSlider(
-                            carouselController: _carouselController,
-                            options: CarouselOptions(
-                              height: imageHeight,
-                              viewportFraction: 1.0,
-                              enlargeCenterPage: false,
-                              autoPlay: true,
-                              autoPlayInterval: Duration(seconds: 5),
-                              autoPlayAnimationDuration:
-                                  Duration(milliseconds: 800),
-                              onPageChanged: (index, reason) {
-                                setState(() {
-                                  _currentCarouselIndex = index;
-                                });
-                              },
-                            ),
-                            items: carouselItems.map((item) {
-                              return Builder(
-                                builder: (BuildContext context) {
-                                  return _buildBannerImage(item);
-                                },
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-
-                      // Title, subtitle, and indicators in remaining space
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: isSmallScreen ? 4.0 : 8.0,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              // Title text with adjusted size based on screen
-                              Text(
-                                _getItemTitle(
-                                    carouselItems[_currentCarouselIndex]),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF111515),
-                                ),
-                              ),
-                              // Subtitle text with adjusted size
-                              Text(
-                                _getItemSubtitle(
-                                    carouselItems[_currentCarouselIndex]),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF111515),
-                                ),
-                              ),
-                              // Page indicator
-                              SmoothPageIndicator(
-                                controller: PageController(
-                                    initialPage: _currentCarouselIndex),
-                                count: carouselItems.length,
-                                effect: ExpandingDotsEffect(
-                                  dotHeight: isSmallScreen ? 6 : 8,
-                                  dotWidth: isSmallScreen ? 6 : 8,
-                                  spacing: 4,
-                                  expansionFactor: 2,
-                                  activeDotColor: Color(0xFF01645A),
-                                  dotColor: Color(0xFFDFE4E4),
-                                ),
-                                onDotClicked: (index) {
-                                  _carouselController.animateToPage(index);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                GapH(contentSpacing),
-
-                // Subscription status or Learn More button
-                subscriptionState != null && subscriptionState!.isActive
-                    ? _buildSubscriptionStatusWidget()
-                    : GestureDetector(
-                        onTap: () {
-                          SubscriptionTracking.programExplore(
-                              _currentCarouselIndex + 1);
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(
-                              builder: (context) => PaywallScreen(),
-                              fullscreenDialog: true,
-                            ),
-                          );
-                        },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                              vertical: isSmallScreen ? 12 : 24),
-                          height: 48,
-                          width: 170,
-                          decoration: BoxDecoration(
-                            color: R.color.mainColor,
-                            borderRadius: BorderRadius.circular(200),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                R.color.greenGradientTop,
-                                R.color.greenGradientBottom,
-                                R.color.greenGradientBottom,
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              R.string.tim_hieu_them.tr(),
-                              style: TextStyle(
-                                color: R.color.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-              ],
-            ),
+              ),
+            ],
           );
         },
       ),
