@@ -194,9 +194,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState?.pop(
+                        DsmesNavigationMixin.getNavigationKey().currentState?.pop(
                             DsmesNavigationMixin
-                                .navigationKey.currentState?.context);
+                                .getNavigationKey().currentState?.context);
                       },
                     ),
                   ),
@@ -280,13 +280,13 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                             if (widget.serviceType ==
                                 DsmesAppointmentMode.telemedicine.toString()) {
                               // Pop until select_service to rebuild stack with new state
-                              DsmesNavigationMixin.navigationKey.currentState
+                              DsmesNavigationMixin.getNavigationKey().currentState
                                   ?.popUntil((route) =>
                                       route.settings.name ==
                                       NavigatorName.dsmes_select_service);
 
                               // Replace select_service
-                              DsmesNavigationMixin.navigationKey.currentState
+                              DsmesNavigationMixin.getNavigationKey().currentState
                                   ?.pushReplacementNamed(
                                       NavigatorName.dsmes_select_service,
                                       arguments: {
@@ -296,7 +296,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                                   });
 
                               // Push new select_date with updated state
-                              DsmesNavigationMixin.navigationKey.currentState
+                              DsmesNavigationMixin.getNavigationKey().currentState
                                   ?.pushNamed(
                                       NavigatorName.dsmes_booking_select_date,
                                       arguments: {
@@ -305,14 +305,14 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                                   });
                             } else {
                               // First pop the current select_date page
-                              DsmesNavigationMixin.navigationKey.currentState
+                              DsmesNavigationMixin.getNavigationKey().currentState
                                   ?.pop();
-                              DsmesNavigationMixin.navigationKey.currentState
+                              DsmesNavigationMixin.getNavigationKey().currentState
                                   ?.popUntil((route) =>
                                       route.settings.name ==
                                       NavigatorName.dsmes_booking_select_date);
 
-                              DsmesNavigationMixin.navigationKey.currentState
+                              DsmesNavigationMixin.getNavigationKey().currentState
                                   ?.pushReplacementNamed(
                                       NavigatorName.dsmes_booking_select_date,
                                       arguments: {
@@ -322,7 +322,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                             }
 
                             // Push confirm info
-                            DsmesNavigationMixin.navigationKey.currentState
+                            DsmesNavigationMixin.getNavigationKey().currentState
                                 ?.pushNamed(
                                     NavigatorName.dsmes_confirm_information,
                                     arguments: {
@@ -333,7 +333,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                                 });
                           } else {
                             // Normal flow
-                            DsmesNavigationMixin.navigationKey.currentState
+                            DsmesNavigationMixin.getNavigationKey().currentState
                                 ?.pushNamed(
                                     NavigatorName.dsmes_confirm_information,
                                     arguments: {

@@ -5,6 +5,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -16,6 +17,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -78,7 +80,10 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     return WillPopScope(
       onWillPop: () async {
         FocusScope.of(context).unfocus();
-        DsmesNavigationMixin.navigationKey.currentState
+        // Reset page tracking when returning to root
+        BranchioLinkConfig.instance.resetPageTracking();
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.popUntil((route) => route.isFirst);
         Observable.instance
             .notifyObservers([], notifyName: "refresh_dsmes_appointment");
@@ -114,13 +119,15 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               actions: [
                 InkWell(
                   onTap: () async {
-                    final launchUri =
-                        Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                    if (await canLaunchUrl(launchUri)) {
-                      await launchUrl(launchUri);
-                    } else {
-                      throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                    }
+                    // final launchUri =
+                    //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                    // if (await canLaunchUrl(launchUri)) {
+                    //   await launchUrl(launchUri);
+                    // } else {
+                    //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                    // }
+
+                    HomeSupportFunctions.showModalAddData(context);
                   },
                   child: Container(
                     width: 85,
@@ -177,11 +184,14 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
                   if (previousRoute == NavigatorName.dsmes_booking_history ||
                       previousRoute == NavigatorName.dsmes_clinic_detail) {
-                    DsmesNavigationMixin.navigationKey.currentState?.pop();
+                    DsmesNavigationMixin.getNavigationKey().currentState?.pop();
                     return;
                   }
 
-                  DsmesNavigationMixin.navigationKey.currentState
+                  // Reset page tracking when returning to root
+                  BranchioLinkConfig.instance.resetPageTracking();
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.popUntil((route) => route.isFirst);
                   Observable.instance.notifyObservers([],
                       notifyName: "refresh_dsmes_appointment");
@@ -252,7 +262,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   }
 
   _handleJoinRoom() async {
-    await DsmesNavigationMixin.navigationKey.currentState
+    await DsmesNavigationMixin.getNavigationKey()
+        .currentState
         ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
       'telemedicineId': widget.appointment.teleMedicine?.id,
     });
@@ -727,7 +738,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
 
                   // Navigator.of(context).pop();
 
-                  DsmesNavigationMixin.navigationKey.currentState
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.popUntil((route) => route.isFirst);
 
                   Observable.instance.notifyObservers([],
@@ -805,7 +817,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                           id: widget.appointment.clinicId);
 
                       final navigator =
-                          DsmesNavigationMixin.navigationKey.currentState;
+                          DsmesNavigationMixin.getNavigationKey().currentState;
 
                       navigator?.pushNamed(
                           NavigatorName.dsmes_booking_select_date,
@@ -914,22 +926,25 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     request: rebookingRequest);
 
                 // Pop until dsmes_booking
-                DsmesNavigationMixin.navigationKey.currentState
+                DsmesNavigationMixin.getNavigationKey()
+                    .currentState
                     ?.popUntil((route) => route.isFirst);
 
                 // Then push to select date
                 if (widget.appointment.mode ==
                     DsmesAppointmentMode.atClinic.toString()) {
-                  await DsmesNavigationMixin.navigationKey.currentState
+                  await DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                           arguments: {
                         'serviceType': widget.appointment.mode,
                         'action': 'create',
                       });
                 } else {
-                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                      NavigatorName.dsmes_select_service,
-                      arguments: {
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushNamed(NavigatorName.dsmes_select_service,
+                          arguments: {
                         'action': 'create',
                         'clinic': _cubit.selectedClinic,
                         'serviceType': widget.appointment.mode,

@@ -1,5 +1,5 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT = "product"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -215,4 +215,7 @@ class Const {
   static const String ORGANIZATION_API_KEY_VALUE =
       'diab-heath-center-9a3cefac-136caaef';
   static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 30; // In minutes
+  static const TABLET_BREAKPOINT = 540;
+  static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
+  static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
 }

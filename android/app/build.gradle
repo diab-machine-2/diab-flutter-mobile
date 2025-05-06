@@ -88,6 +88,12 @@ android {
            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
            storePassword keystoreProperties['storePassword']
         }
+        debug {
+           keyAlias keystoreProperties['keyAlias']
+           keyPassword keystoreProperties['keyPassword']
+           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+           storePassword keystoreProperties['storePassword']
+        }
     }
 
     buildTypes {
@@ -98,6 +104,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // shrinkResources false
         }
+    }
+
+    configurations {
+        implementation.exclude group: 'com.amazon.device', module: 'amazon-appstore-sdk'
     }
 }
 

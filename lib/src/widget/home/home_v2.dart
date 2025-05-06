@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -384,6 +383,7 @@ class _HomeControllerState extends State<HomeController>
   Future<bool> _refresh() async {
     page = 1;
     _homeBloc.add(FetchHome());
+
     return true;
   }
 

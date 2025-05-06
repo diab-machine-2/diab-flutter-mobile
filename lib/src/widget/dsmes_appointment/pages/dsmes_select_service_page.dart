@@ -92,7 +92,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState
+                        DsmesNavigationMixin.getNavigationKey().currentState
                             ?.pop(context);
                       },
                     ),
@@ -298,14 +298,14 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
 
       if (isEditing) {
         // First pop the current select_service page
-        DsmesNavigationMixin.navigationKey.currentState?.pop();
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
 
         // Now pop until the original select_service
-        DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
+        DsmesNavigationMixin.getNavigationKey().currentState?.popUntil((route) =>
             route.settings.name == NavigatorName.dsmes_select_service);
 
         // Replace with new select_service state
-        DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
+        DsmesNavigationMixin.getNavigationKey().currentState?.pushReplacementNamed(
             NavigatorName.dsmes_select_service,
             arguments: {
               'serviceType': widget.serviceType,
@@ -314,7 +314,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
             });
 
         // Push new select_date
-        DsmesNavigationMixin.navigationKey.currentState
+        DsmesNavigationMixin.getNavigationKey().currentState
             ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
@@ -322,13 +322,13 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
         });
 
         // Push confirm info
-        DsmesNavigationMixin.navigationKey.currentState
+        DsmesNavigationMixin.getNavigationKey().currentState
             ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
         });
       } else {
-        await DsmesNavigationMixin.navigationKey.currentState
+        await DsmesNavigationMixin.getNavigationKey().currentState
             ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
           'serviceType': widget.serviceType,
           'action': 'create',
@@ -336,7 +336,7 @@ class _DsmesSelectServicePageState extends State<DsmesSelectServicePage> {
         });
       }
 
-      // await DsmesNavigationMixin.navigationKey.currentState
+      // await DsmesNavigationMixin.getNavigationKey().currentState
       //     ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
       //   'serviceType': widget.serviceType,
       //   'action': 'create',
