@@ -503,7 +503,6 @@ class GlucoseClient extends FetchClient {
       if (reason != null) {
         params['reason'] = reason;
       }
-      print('params: $params');
       final response = await super
           .putHttp(path: '/App/Glucose/Input', params: params, files: files);
 

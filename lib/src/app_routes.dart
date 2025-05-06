@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
@@ -7,6 +8,10 @@ import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 
 import 'utils/navigator_name.dart';
+import 'widget/BloodPressure/add_bloodpressure_result.dart';
+import 'widget/BloodPressure/bloodPressure_detail_listing.dart';
+import 'widget/BloodPressure/intro/bloodpressure_intro_1st_page.dart';
+import 'widget/BloodPressure/intro/bloodpressure_intro_2nd_page.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
 import 'widget/BloodSugar/bloodSugar_detail.dart';
 import 'widget/BloodSugar/bloodSugar_result.dto.dart';
@@ -99,11 +104,28 @@ class AppRoutes {
           page = PaywallScreen();
           break;
         }
+      // ~ Huyet Ap (mới) ~
+      case NavigatorName.blood_pressure_intro_1st_page:
+        page = BloodPressureIntro1stPage();
+        break;
+      case NavigatorName.blood_pressure_intro_2nd_page:
+        page = BloodPressureIntro2ndPage();
+        break;
+      case NavigatorName.add_bloodpressure_result:
+        page = PageAddBloodPressureResult(data: settings.arguments as BloodPressureResultDto);
+        break;
+      case NavigatorName.detail_bloodpressure_listing:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BloodPressureDetailListingController(
+          initBloodPressureID: data?['initBloodPressureID'],
+          initPeriodFilterType: data?['initPeriodFilterType'],
+          initBloodPressureRangeType: data?['initBloodPressureRangeType'],
+        );
+        break;
+      // ~ END: Huyet Ap (mới) ~
       default:
         break;
     }
-    return page != null
-        ? MaterialPageRoute(settings: settings, builder: (_) => page!)
-        : null;
+    return page != null ? MaterialPageRoute(settings: settings, builder: (_) => page!) : null;
   }
 }

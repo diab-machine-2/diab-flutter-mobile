@@ -89,7 +89,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             false,
             _removeIDs,
             paths);
-        if (result == true) {
+        if (result != null) {
           BotToast.closeAllLoading();
           Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
           return;

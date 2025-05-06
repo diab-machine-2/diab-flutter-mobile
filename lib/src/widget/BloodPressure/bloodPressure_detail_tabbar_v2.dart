@@ -1,0 +1,365 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
+import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+
+import 'bloodpressure_result.dto.dart';
+import 'intro/widgets/bloodpresure_lesson_section.dart';
+import 'widget/aihelp_button.dart';
+import 'widget/bloodPressure_chart.dart';
+import 'widget/bloodpressure_distribution_chart_v2.dart';
+
+class BloodPressureDetailTabbarController extends StatefulWidget {
+  @override
+  _BloodPressureDetailTabbarControllerState createState() =>
+      _BloodPressureDetailTabbarControllerState();
+
+  static _BloodPressureDetailTabbarControllerState? of(BuildContext context) {
+    final _BloodPressureDetailTabbarControllerState? navigator =
+        context.findAncestorStateOfType<_BloodPressureDetailTabbarControllerState>();
+    return navigator;
+  }
+}
+
+class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetailTabbarController>
+    with SingleTickerProviderStateMixin, Observer {
+  // TabController? _tabController;
+
+  final GlobalKey<BloodPressureDistributionChartState> _bloodPressureDistributionChartKey =
+      GlobalKey();
+  final GlobalKey<BloodPressureChartState> _bloodPressureTrendKey = GlobalKey();
+
+  int _periodFilterType = 3;
+  String? _aiSuggestion;
+
+  @override
+  void initState() {
+    super.initState();
+    // _tabController = new TabController(vsync: this, length: 2);
+    Observable.instance.addObserver(this);
+    _reload();
+    // DartNotificationCenter.subscribe(
+    //     channel: 'BloodPressure_change_data',
+    //     observer: this,
+    //     onNotification: (_) {
+    //       overViewKey.currentState!.reloadData(periodFilterType);
+    //       detailKey.currentState!.reloadData(periodFilterType);
+    //     });
+
+    // _tabController!.addListener(() {
+    //   if (_tabController!.indexIsChanging) {
+    //     if (_tabController!.index == 1) {
+    //       KpiBloodPressureTracking.clickDetailTab();
+    //       print("tracking KpiBloodPressureTracking.clickDetailTab()");
+    //     }
+    //   }
+    // });
+  }
+
+  @override
+  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'BloodPressure_change_data') {
+      _reload();
+    }
+  }
+
+  static bool _isDisposing = false;
+
+  @override
+  void dispose() async {
+    if (_isDisposing) {
+      return; // Already disposing, do nothing
+    }
+    _isDisposing = true;
+    try {
+      Observable.instance.removeObserver(this);
+      // Add your await statement, it won't be executed concurrently
+      await AppSettings.syncDataFromHealthApp();
+    } finally {
+      _isDisposing = false;
+      super.dispose();
+    }
+  }
+
+  void _viewListing() {
+    Navigator.pushNamed(context, NavigatorName.detail_bloodpressure_listing,
+        arguments: {'initPeriodFilterType': _periodFilterType});
+  }
+
+  void _viewFilteredListing(BloodPressureRangeType rangeType, String? bloodPressureID) {
+    Navigator.pushNamed(context, NavigatorName.detail_bloodpressure_listing, arguments: {
+      'initBloodPressureID': bloodPressureID,
+      'initBloodPressureRangeType': rangeType.value,
+      'initPeriodFilterType': _periodFilterType,
+    });
+  }
+
+  Future<void> _loadAITrend() async {
+    final bloodPressureInputAIAnalysis =
+        await BloodPressureClient().fetchBloodPressureAlltimeAnalysis(_periodFilterType);
+    if (bloodPressureInputAIAnalysis != null) {
+      _aiSuggestion = bloodPressureInputAIAnalysis;
+    }
+  }
+
+  void _reload() async {
+    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType);
+    _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
+    await _loadAITrend();
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _navigateToLessonDetail(String id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
+
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id,
+        onComplete: (_, __) {},
+      ),
+    );
+  }
+
+  void _doInputBloodPressure() {
+    Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+        arguments: {'type': 'input', 'id': null});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: R.color.glucose_bg_color,
+      appBar: AppBar(
+        backgroundColor: R.color.greenGradientBottom,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+        ),
+        title: Text(
+          R.string.huyet_ap.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: R.color.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+              },
+              child: Text(
+                R.string.huong_dan.tr(),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          // Main Content
+          Positioned.fill(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+                  _buildFilter(),
+                  const SizedBox(height: 12),
+                  _buildTrendingChart(),
+                  const SizedBox(height: 12),
+                  // TODO: Find range type
+                  _sectionAIHelp(_aiSuggestion, BloodPressureRangeType.normal),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: _buildFrequencyChart(),
+                  ),
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: _buildSuggestLessons(),
+                  ),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+
+          // Sticky bottom button
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.only(
+                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                left: 16,
+                right: 16,
+                top: 12,
+              ),
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: InkWell(
+                  onTap: _doInputBloodPressure,
+                  child: Container(
+                    height: 48,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: R.color.accentColor,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Center(
+                      child: Text(
+                        R.string.enter_blood_pressure.tr(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilter() {
+    final List<String> labels = [
+      R.string.filter_day.tr(args: ['7']),
+      R.string.filter_day.tr(args: ['14']),
+      R.string.filter_day.tr(args: ['30']),
+      R.string.filter_day.tr(args: ['90']),
+    ];
+    final List<int> values = [0, 1, 2, 3];
+    final int selectedIndex = _periodFilterType - 1;
+    return HorizontalSelector(
+      onSelected: (value) {
+        _periodFilterType = value + 1;
+        _reload();
+      },
+      initialValue: selectedIndex,
+      values: values,
+      labels: labels,
+    );
+  }
+
+  Widget _buildTrendingChart() {
+    return BloodPressureChart(
+      key: _bloodPressureTrendKey,
+      initPeriodFilterType: _periodFilterType,
+    );
+  }
+
+  Widget _buildFrequencyChart() {
+    return BloodPressureDistributionChart(
+      key: _bloodPressureDistributionChartKey,
+      periodFilterType: _periodFilterType,
+      onViewMore: _viewListing,
+      onViewDetail: (rangeType) => {
+        _viewFilteredListing(
+          rangeType,
+          null,
+        ),
+      },
+    );
+  }
+
+  Widget _buildSuggestLessons() {
+    return BloodPressureLessonSection(
+      onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+    );
+  }
+
+  Widget _sectionAIHelp(String? aiSuggestion, BloodPressureRangeType? rangeType) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(16),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // AI result
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                R.string.ai_suggestion_glucose.tr(),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: R.color.textDark,
+                  height: 21 / 15,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Image.asset(R.drawable.ic_info, width: 18, height: 18),
+              // InkWell(
+              //   onTap: () {},
+              //   child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
+              // ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (aiSuggestion == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: const AILoadingTextWidget(),
+            )
+          else if (aiSuggestion.isEmpty)
+            Text(
+              'Có lỗi xảy ra',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFFC82221),
+              ),
+            )
+          else ...[
+            Text(
+              aiSuggestion,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.primaryGreyColor,
+                height: 16 / 12,
+              ),
+            ),
+            const SizedBox(height: 16),
+            AIHelpButton(rangeType: rangeType),
+          ],
+        ],
+      ),
+    );
+  }
+}

@@ -107,10 +107,14 @@ class NavigatorName {
   // New Glucose
   static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
   static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
-
   // SUBSCRIPTION
   static const String subscription_page = '/subscription_page';
   static const String paywall_screen = '/paywall_screen';
   static const String package_program_list = '/package_program_list';
   static const String package_program_detail = '/package_program_detail';
+  // New Blood Pressure
+  static const String blood_pressure_intro_1st_page = '/blood_pressure_intro_1st_page';
+  static const String blood_pressure_intro_2nd_page = '/blood_pressure_intro_2nd_page';
+  static const String add_bloodpressure_result = '/add_bloodpressure_result';
+  static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
 }
