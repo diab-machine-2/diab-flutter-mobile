@@ -263,7 +263,7 @@ class Utils {
     if (amount is String) {
       amount = double.parse(amount);
     }
-    return NumberFormat("#,##0₫").format(amount);
+    return NumberFormat("#,##0đ").format(amount);
   }
 
   static void showToast(String text) {

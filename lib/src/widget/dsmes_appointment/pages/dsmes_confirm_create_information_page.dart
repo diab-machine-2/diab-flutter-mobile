@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -169,7 +170,8 @@ class _DsmesConfirmCreateInformationState
                         color: R.color.white,
                       ),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState
+                        DsmesNavigationMixin.getNavigationKey()
+                            .currentState
                             ?.pop(context);
                       },
                     ),
@@ -256,7 +258,8 @@ class _DsmesConfirmCreateInformationState
                       int totalPrice = _calculateTotalPrice();
 
                       // Navigate to payment
-                      DsmesNavigationMixin.navigationKey.currentState
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
                           ?.pushNamed(
                         NavigatorName.clinic_payment,
                         arguments: {
@@ -348,6 +351,7 @@ class _DsmesConfirmCreateInformationState
       primaryButtonTitle: R.string.back_home_page.tr(),
       secondaryButtonTitle: R.string.recheck_information.tr(),
       onNavigateHome: () {
+        BranchioLinkConfig.instance.resetPageTracking();
         // Back to homepage
         Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
           NavigatorName.tabbar,
@@ -361,7 +365,7 @@ class _DsmesConfirmCreateInformationState
 
         if (myAppointment == null) return;
 
-        DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+        DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
           NavigatorName.dsmes_booking_detail,
           arguments: {
             'serviceType': widget.serviceType,
@@ -387,7 +391,7 @@ class _DsmesConfirmCreateInformationState
 
     if (myAppointment == null) return;
 
-    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
       NavigatorName.dsmes_booking_detail,
       arguments: {
         'serviceType': widget.serviceType,
@@ -565,7 +569,8 @@ class _DsmesConfirmCreateInformationState
                         final args = route?.arguments as Map<String, dynamic>?;
                         final isMergedSchedule =
                             args?['isMergedSchedule'] ?? false;
-                        await DsmesNavigationMixin.navigationKey.currentState
+                        await DsmesNavigationMixin.getNavigationKey()
+                            .currentState
                             ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                                 arguments: {
                               'serviceType': widget.serviceType,
@@ -754,7 +759,8 @@ class _DsmesConfirmCreateInformationState
                       _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
                           symptomAttachments: data?.fileNetworkName ?? []);
 
-                      await DsmesNavigationMixin.navigationKey.currentState
+                      await DsmesNavigationMixin.getNavigationKey()
+                          .currentState
                           ?.pushNamed(NavigatorName.dsmes_select_service,
                               arguments: {
                             'serviceType': widget.serviceType,
@@ -876,7 +882,8 @@ class _DsmesConfirmCreateInformationState
                       _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
                           symptomAttachments: data?.fileNetworkName ?? []);
 
-                      await DsmesNavigationMixin.navigationKey.currentState
+                      await DsmesNavigationMixin.getNavigationKey()
+                          .currentState
                           ?.pushNamed(NavigatorName.clinic_select_service,
                               arguments: {
                             'serviceType': widget.serviceType,

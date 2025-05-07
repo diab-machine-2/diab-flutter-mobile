@@ -97,7 +97,8 @@ class _BookingCLinicSelectServicePageState
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState
+                        DsmesNavigationMixin.getNavigationKey()
+                            .currentState
                             ?.pop(context);
                       },
                     ),
@@ -320,7 +321,8 @@ class _BookingCLinicSelectServicePageState
                   ))
           .toList();
       _cubit.updateCreateDsmesBookingRequestServiceList(
-          selectedServices: serviceItems);
+        selectedServices: serviceItems,
+      );
 
       final route = ModalRoute.of(context)?.settings;
       final args = route?.arguments as Map<String, dynamic>?;
@@ -329,23 +331,26 @@ class _BookingCLinicSelectServicePageState
 
       if (isEditing) {
         // First pop the current select_service page
-        DsmesNavigationMixin.navigationKey.currentState?.pop();
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
 
         // Now pop until the original select_service
-        DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
-            route.settings.name == NavigatorName.dsmes_select_service);
+        DsmesNavigationMixin.getNavigationKey().currentState?.popUntil(
+            (route) =>
+                route.settings.name == NavigatorName.dsmes_select_service);
 
         // Replace with new select_service state
-        DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
-            NavigatorName.dsmes_select_service,
-            arguments: {
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushReplacementNamed(NavigatorName.dsmes_select_service,
+                arguments: {
               'serviceType': widget.serviceType,
               'action': widget.action,
               'clinic': _cubit.selectedClinic,
             });
 
         // Push new select_date
-        DsmesNavigationMixin.navigationKey.currentState
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
@@ -353,13 +358,15 @@ class _BookingCLinicSelectServicePageState
         });
 
         // Push confirm info
-        DsmesNavigationMixin.navigationKey.currentState
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
         });
       } else {
-        await DsmesNavigationMixin.navigationKey.currentState
+        await DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
           'serviceType': widget.serviceType,
           'action': 'create',
@@ -367,7 +374,7 @@ class _BookingCLinicSelectServicePageState
         });
       }
 
-      // await DsmesNavigationMixin.navigationKey.currentState
+      // await DsmesNavigationMixin.getNavigationKey().currentState
       //     ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
       //   'serviceType': widget.serviceType,
       //   'action': 'create',
@@ -384,7 +391,8 @@ class _BookingCLinicSelectServicePageState
                   ))
           .toList();
       _cubit.updateCreateDsmesBookingRequestServiceList(
-          selectedServices: serviceItems);
+        selectedServices: serviceItems,
+      );
 
       final route = ModalRoute.of(context)?.settings;
       final args = route?.arguments as Map<String, dynamic>?;
@@ -392,16 +400,18 @@ class _BookingCLinicSelectServicePageState
 
       if (isEditing) {
         // First pop the current select_service page
-        DsmesNavigationMixin.navigationKey.currentState?.pop();
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
 
         // Now pop until the original select_service
-        DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
-            route.settings.name == NavigatorName.clinic_select_service);
+        DsmesNavigationMixin.getNavigationKey().currentState?.popUntil(
+            (route) =>
+                route.settings.name == NavigatorName.clinic_select_service);
 
         // Replace with new select_service state
-        DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
-            NavigatorName.clinic_select_service,
-            arguments: {
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushReplacementNamed(NavigatorName.clinic_select_service,
+                arguments: {
               'clinic': _cubit.selectedClinic,
               'serviceType': DsmesAppointmentMode.telemedicine.toString(),
               'action': widget.action,
@@ -409,14 +419,16 @@ class _BookingCLinicSelectServicePageState
             });
 
         // Push confirm info
-        await DsmesNavigationMixin.navigationKey.currentState
+        await DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
           'bookingType': widget.bookingType,
         });
       } else {
-        await DsmesNavigationMixin.navigationKey.currentState
+        await DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
@@ -424,7 +436,7 @@ class _BookingCLinicSelectServicePageState
         });
       }
 
-      // await DsmesNavigationMixin.navigationKey.currentState
+      // await DsmesNavigationMixin.getNavigationKey().currentState
       //     ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
       //   'serviceType': widget.serviceType,
       //   'action': 'create',

@@ -135,12 +135,17 @@ class DsmesClinicModel {
 
     schedule.forEach((date, slots) {
       slots.forEach((time, status) {
-        final startDateTime = DateFormat('yyyy-MM-dd HH:mm')
-            .parse("$date ${time.split('.')[0]}:${time.split('.')[1]}0")
-            .toString()
-            .substring(0, 16);
-        final endDateTime = DateFormat('yyyy-MM-dd HH:mm')
-            .parse(startDateTime)
+        final timeParts = time.split('.');
+        final hour = int.parse(timeParts[0]);
+        // For the minutes part, we need to handle correctly - no need to add "0"
+        final minutes = timeParts.length > 1 ? timeParts[1] : "0";
+
+        final startDateTime =
+            "$date ${hour.toString().padLeft(2, '0')}:${minutes.padLeft(2, '0')}";
+
+        final parsedStartDateTime =
+            DateFormat('yyyy-MM-dd HH:mm').parse(startDateTime);
+        final endDateTime = parsedStartDateTime
             .add(Duration(minutes: int.parse(aptInterval)))
             .toString()
             .substring(0, 16);

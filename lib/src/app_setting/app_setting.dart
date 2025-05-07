@@ -19,6 +19,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
+import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 
 import '../modal/user/secure.dart';
 
@@ -53,6 +54,12 @@ class AppSettings {
   static String get countryCode => _countryCode;
   static void setCountryCode(String code) {
     _countryCode = code;
+  }
+
+  static bool _splashScreenInitDone = false;
+  static bool get splashScreenInitDone => _splashScreenInitDone;
+  static void setSplashScreenInitDone(bool value) {
+    _splashScreenInitDone = value;
   }
 
   static Future<void> setZaloId(String id) async {
@@ -395,7 +402,7 @@ class AppSettings {
     return numberOfOpenHome;
   }
 
-  // Check to show 1st page
+  // Check to show 1st page -> Glucose
   static Future<String?> getLastOpenedGlucoseInputType() async {
     String? lastOpenedGlucoseInputType =
         appPreference.getData("lastOpenedGlucoseInputType");
@@ -408,6 +415,31 @@ class AppSettings {
 
   static void clearLastOpenedGlucoseInputType() {
     appPreference.removeData("lastOpenedGlucoseInputType");
+  }
+
+  // Check to show 1st page -> Blood Pressure
+  static Future<String?> getLastOpenedBloodPressureInputType() async {
+    String? lastOpenedBloodPressureInputType = appPreference.getData("lastOpenedBloodPressureInputType");
+    return lastOpenedBloodPressureInputType;
+  }
+  static void setLastOpenedBloodPressureInputType(String inputType) {
+    appPreference.setData("lastOpenedBloodPressureInputType", inputType);
+  }
+  static void clearLastOpenedBloodPressureInputType() {
+    appPreference.removeData("lastOpenedBloodPressureInputType");
+  }
+
+  // Check to show heart rate input with blood pressure
+  static Future<bool?> getInputHeartRateWithBloodPressure() async {
+    String? inputHeartRateWithBloodPressure = appPreference.getData("inputHeartRateWithBloodPressure");
+    return inputHeartRateWithBloodPressure != null ?
+        inputHeartRateWithBloodPressure == "true" : null;
+  }
+  static void setInputHeartRateWithBloodPressure(bool input) {
+    appPreference.setData("inputHeartRateWithBloodPressure", input.toString());
+  }
+  static void clearInputHeartRateWithBloodPressure() {
+    appPreference.removeData("inputHeartRateWithBloodPressure");
   }
 
   static Future<bool> logout(
@@ -438,6 +470,7 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
+      await RevenueCatService.logout();
       return true;
     } catch (_) {
       return false;

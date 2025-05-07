@@ -201,9 +201,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState?.pop(
-                            DsmesNavigationMixin
-                                .navigationKey.currentState?.context);
+                        DsmesNavigationMixin.getNavigationKey()
+                            .currentState
+                            ?.pop(DsmesNavigationMixin.getNavigationKey()
+                                .currentState
+                                ?.context);
                       },
                     ),
                   ),
@@ -411,7 +413,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
           endTime: selectedBookingSchedule!.endTime);
 
       // Normal flow
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
         'serviceType': DsmesAppointmentMode.atClinic.toString(),
         'action': widget.action,
@@ -446,7 +449,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
           endTime: selectedBookingSchedule!.endTime);
 
       // Normal flow
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.clinic_select_service, arguments: {
         'clinic': _cubit.selectedClinic,
         'serviceType': DsmesAppointmentMode.telemedicine.toString(),
@@ -502,13 +506,15 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
       if (isEditing) {
         // First pop the current select_date page
-        DsmesNavigationMixin.navigationKey.currentState?.pop();
-        DsmesNavigationMixin.navigationKey.currentState?.popUntil((route) =>
-            route.settings.name == NavigatorName.dsmes_booking_select_date);
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+        DsmesNavigationMixin.getNavigationKey().currentState?.popUntil(
+            (route) =>
+                route.settings.name == NavigatorName.dsmes_booking_select_date);
 
-        DsmesNavigationMixin.navigationKey.currentState?.pushReplacementNamed(
-            NavigatorName.dsmes_booking_select_date,
-            arguments: {
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushReplacementNamed(NavigatorName.dsmes_booking_select_date,
+                arguments: {
               'serviceType': widget.serviceType,
               'action': widget.action,
               'previousRoute': previousRoute,
@@ -517,7 +523,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             });
 
         // Push confirm info
-        DsmesNavigationMixin.navigationKey.currentState
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
@@ -527,7 +534,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
         });
       } else {
         // Normal flow
-        DsmesNavigationMixin.navigationKey.currentState
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
             ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
           'serviceType': widget.serviceType,
           'action': widget.action,
@@ -593,13 +601,15 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                 if (widget.serviceType ==
                     DsmesAppointmentMode.telemedicine.toString()) {
                   // Pop until select_service to rebuild stack with new state
-                  DsmesNavigationMixin.navigationKey.currentState?.popUntil(
-                      (route) =>
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.popUntil((route) =>
                           route.settings.name ==
                           NavigatorName.dsmes_select_service);
 
                   // Replace select_service
-                  DsmesNavigationMixin.navigationKey.currentState
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.pushReplacementNamed(NavigatorName.dsmes_select_service,
                           arguments: {
                         'serviceType': widget.serviceType,
@@ -608,21 +618,24 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       });
 
                   // Push new select_date with updated state
-                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                      NavigatorName.dsmes_booking_select_date,
-                      arguments: {
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                          arguments: {
                         'serviceType': widget.serviceType,
                         'action': widget.action,
                       });
                 } else {
                   // First pop the current select_date page
-                  DsmesNavigationMixin.navigationKey.currentState?.pop();
-                  DsmesNavigationMixin.navigationKey.currentState?.popUntil(
-                      (route) =>
+                  DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.popUntil((route) =>
                           route.settings.name ==
                           NavigatorName.dsmes_booking_select_date);
 
-                  DsmesNavigationMixin.navigationKey.currentState
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.pushReplacementNamed(
                           NavigatorName.dsmes_booking_select_date,
                           arguments: {
@@ -632,7 +645,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                 }
 
                 // Push confirm info
-                DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
                     NavigatorName.dsmes_confirm_information,
                     arguments: {
                       'serviceType': widget.serviceType,
@@ -642,7 +655,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                     });
               } else {
                 // Normal flow
-                DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
                     NavigatorName.dsmes_confirm_information,
                     arguments: {
                       'serviceType': widget.serviceType,

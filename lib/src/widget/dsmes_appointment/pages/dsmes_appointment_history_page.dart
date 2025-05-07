@@ -106,7 +106,8 @@ class _DsmesAppointmentHistoryPageState
                       color: R.color.white,
                     ),
                     onPressed: () {
-                      DsmesNavigationMixin.navigationKey.currentState
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
                           ?.pop(context);
                     },
                   ),
@@ -259,7 +260,7 @@ class _DsmesAppointmentHistoryPageState
                                                 final detailSuccess =
                                                     await _cubit
                                                         .getClinicDetail(
-                                                            id: data.id);
+                                                            id: data.clinicId);
 
                                                 if (!detailSuccess ||
                                                     _cubit.selectedClinic ==
@@ -271,7 +272,8 @@ class _DsmesAppointmentHistoryPageState
                                                         appointmentId: data.id);
 
                                                 DsmesNavigationMixin
-                                                    .navigationKey.currentState
+                                                        .getNavigationKey()
+                                                    .currentState
                                                     ?.pushNamed(
                                                   NavigatorName
                                                       .dsmes_booking_detail,

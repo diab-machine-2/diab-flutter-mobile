@@ -10,6 +10,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -69,7 +70,8 @@ class DsmesAppointmentItem extends StatelessWidget {
             // _buildDescription(),
             // if (data.mode == DsmesAppointmentMode.atClinic.toString()) GapH(12),
             if (displayActionButtons)
-              _buildActionButtons(locale: context.locale.languageCode),
+              _buildActionButtons(
+                  locale: context.locale.languageCode, context: context),
           ],
         ),
       ),
@@ -261,7 +263,8 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons({String locale = 'vi'}) {
+  Widget _buildActionButtons(
+      {String locale = 'vi', required BuildContext context}) {
     final endDateTime = DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
     if (data.status == DSMES_STATUS_APPROVE && isPast) {
@@ -271,14 +274,8 @@ class DsmesAppointmentItem extends StatelessWidget {
           Flexible(
             flex: 1,
             child: GestureDetector(
-              onTap: () async {
-                final launchUri =
-                    Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                if (await canLaunchUrl(launchUri)) {
-                  await launchUrl(launchUri);
-                } else {
-                  throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                }
+              onTap: () {
+                HomeSupportFunctions.showModalAddData(context);
               },
               child: Container(
                 height: 43,
@@ -317,24 +314,19 @@ class DsmesAppointmentItem extends StatelessWidget {
 
     final mode = DsmesAppointmentMode.fromString(data.mode);
     return mode == DsmesAppointmentMode.atClinic
-        ? _buildButtonAtClinic()
+        ? _buildButtonAtClinic(context)
         : _buildButtonOnline();
   }
 
-  _buildButtonAtClinic() {
+  _buildButtonAtClinic(BuildContext context) {
     return Row(
       children: [
         Flexible(
           flex: 1,
           child: _buildPrimaryButton(
             R.string.support.tr(),
-            () => () async {
-              final launchUri = Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-              if (await canLaunchUrl(launchUri)) {
-                await launchUrl(launchUri);
-              } else {
-                throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-              }
+            () => () {
+              HomeSupportFunctions.showModalAddData(context);
             },
           ),
         ),
@@ -376,19 +368,23 @@ class DsmesAppointmentItem extends StatelessWidget {
     cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
 
     if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.popUntil((route) => route.isFirst);
 
-      await DsmesNavigationMixin.navigationKey.currentState
+      await DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
         'serviceType': appointment.mode,
         'action': 'create',
       });
     } else {
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.popUntil((route) => route.isFirst);
 
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
         'action': 'create',
         'clinic': cubit.selectedClinic,
@@ -451,7 +447,8 @@ class DsmesAppointmentItem extends StatelessWidget {
   }
 
   _handleJoinRoom() async {
-    await DsmesNavigationMixin.navigationKey.currentState
+    await DsmesNavigationMixin.getNavigationKey()
+        .currentState
         ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
       'telemedicineId': data.teleMedicine?.id,
     });

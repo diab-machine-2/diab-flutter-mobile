@@ -141,7 +141,7 @@ class _BookingClinicProvidersPageState
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
         return false;
       },
       child: Scaffold(
@@ -196,7 +196,7 @@ class _BookingClinicProvidersPageState
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
               },
             ),
           ),
@@ -333,7 +333,7 @@ class _BookingClinicProvidersPageState
     final detailSuccess = await _cubit.getClinicDetail(id: data.id);
     final rateSuccess = await _cubit.getClinicRate(id: data.id);
     if (detailSuccess && rateSuccess) {
-      DsmesNavigationMixin.navigationKey.currentState
+      DsmesNavigationMixin.getNavigationKey().currentState
           ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
         'clinicId': data.id,
         'bookingType': Const.BOOKING_TYPE_CLINIC
@@ -504,7 +504,7 @@ class _BookingClinicProvidersPageState
                                   _cubit.initCreateDsmesBookingRequest(
                                       locale: context.locale.languageCode);
                                   await DsmesNavigationMixin
-                                      .navigationKey.currentState
+                                      .getNavigationKey().currentState
                                       ?.pushNamed(
                                           NavigatorName
                                               .dsmes_booking_select_date,
