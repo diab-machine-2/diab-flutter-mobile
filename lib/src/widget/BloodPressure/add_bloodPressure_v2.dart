@@ -87,17 +87,17 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   List<Color> _colorList = [
     // "Thấp"
-    Color(0xFFF99D1A),
+    Color(0xFFF9BA1A),
     // "Bình thường"
-    Color(0xFF21A567),
+    Color(0xFF16AA47),
     // "Bình thường cao"
-    Color(0xFF008479),
+    Color(0xFFA1F0BC),
     // "Tăng huyết áp độ 1"
-    Color(0xFFFF3C3C),
+    Color(0xFFFFCDD2),
     // "Tăng huyết áp độ 2"
-    Color(0xFFC82221),
+    Color(0xFFF86F6F),
     // "Tăng huyết áp độ 3"
-    Color(0xFF880808),
+    Color(0xFFAF0000),
   ];
   bool isLoading = true;
   late AnimationController _controller;
@@ -926,6 +926,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         flexes: List.generate(_times.length, (index) => 1),
         backgroundColor: Color(0xFFF2F6F9),
         selectedIndex: _lastTimeFrameIndex,
+        selectionTextStyle: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
         onChange: (index) async {
           _lastTimeFrameIndex = index;
           _selectedTimeFrame = _times[index];
@@ -963,7 +967,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   R.string.heart_rate.tr(),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
               CupertinoSwitch(
@@ -974,7 +978,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   });
                   AppSettings.setInputHeartRateWithBloodPressure(value);
                 },
-                activeColor: R.color.mainColor,
+                activeColor: R.color.greenGradientBottom,
               ),
             ],
           ),
@@ -1001,7 +1005,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         maxLength: 3,
                         keyboardType: TextInputType.number,
                         style: TextStyle(
-                            color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
+                            color: R.color.black, fontSize: 48, fontWeight: FontWeight.bold),
                         decoration: InputDecoration(
                           hintText: '0',
                           counterText: '',
@@ -1041,6 +1045,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         maxMedia: 5,
         key: _sectionAddNoteKey,
         initialFiles: _files,
+        noteTitle: R.string.ghi_chu.tr(),
+        horizontalPadding: 12,
       ),
     );
   }

@@ -50,6 +50,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // close button at top right
               Transform.translate(
@@ -79,6 +80,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
               const SizedBox(height: 4),
               const Text(
                 'Không an toàn',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 34,
                   fontWeight: FontWeight.bold,

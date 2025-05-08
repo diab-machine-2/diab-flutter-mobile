@@ -146,6 +146,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: R.color.greenGradientBottom,
         leading: IconButton(
@@ -175,19 +176,19 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
           ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
+          const SizedBox(height: 12),
+          _buildFilter(),
           // Main Content
-          Positioned.fill(
+          Expanded(
             child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
               child: Column(
                 children: [
                   const SizedBox(height: 12),
-                  _buildFilter(),
-                  const SizedBox(height: 12),
                   _buildTrendingChart(),
                   const SizedBox(height: 12),
-                  // TODO: Find range type
                   _sectionAIHelp(_aiSuggestion, BloodPressureRangeType.normal),
                   const SizedBox(height: 12),
                   Padding(
@@ -199,44 +200,40 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: _buildSuggestLessons(),
                   ),
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
           ),
 
+          const SizedBox(height: 12),
           // Sticky bottom button
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: EdgeInsets.only(
-                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
-                left: 16,
-                right: 16,
-                top: 12,
-              ),
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: _doInputBloodPressure,
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: R.color.accentColor,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Center(
-                      child: Text(
-                        R.string.enter_blood_pressure.tr(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+          Container(
+            padding: EdgeInsets.only(
+              bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+              left: 16,
+              right: 16,
+              top: 12,
+            ),
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: InkWell(
+                onTap: _doInputBloodPressure,
+                child: Container(
+                  height: 48,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: R.color.accentColor,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Center(
+                    child: Text(
+                      R.string.enter_blood_pressure.tr(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

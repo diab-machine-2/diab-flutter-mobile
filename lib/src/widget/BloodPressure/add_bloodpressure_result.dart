@@ -426,7 +426,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
       maxMedia: 5,
       key: _sectionAddNoteKey,
       initialFiles: _files,
-      noteTitle: 'Ghi chú',
+      noteTitle: R.string.ghi_chu.tr(),
       horizontalPadding: 12,
     );
   }

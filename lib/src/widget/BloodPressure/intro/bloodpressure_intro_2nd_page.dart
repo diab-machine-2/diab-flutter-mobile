@@ -7,9 +7,9 @@ import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking
 import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -61,10 +61,40 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CommonPage(
-        background: R.drawable.bg_glucose,
-        title: R.string.huong_dan.tr(),
-        child: _composeLayout(),
+      backgroundColor: R.color.glucose_bg_color,
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          _appBarSection(),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: _composeLayout(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _appBarSection() {
+    return CustomAppBar(
+      backgroundColor: R.color.greenGradientBottom,
+      title: Text(
+        R.string.huong_dan.tr(),
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: R.color.white,
+        ),
+      ),
+      leadingIcon: IconButton(
+        splashColor: R.color.white,
+        highlightColor: R.color.white,
+        icon: Icon(Icons.arrow_back, color: R.color.white),
+        onPressed: () {
+          NavigationUtil.pop(context);
+        },
       ),
     );
   }
@@ -247,13 +277,14 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Nguồn tham khảo:\nAbout High Blood Pressure | High Blood Pressure.  (2025, January 28). CDC. Tham khảo ngày 12, tháng 3, 2025, từ ',
+                    text:
+                        'Nguồn tham khảo:\nAbout High Blood Pressure | High Blood Pressure.  (2025, January 28). CDC. Tham khảo ngày 12, tháng 3, 2025, từ ',
                   ),
                   TextSpan(
                     text: 'https://www.cdc.gov/high-blood-pressure/about/index.html',
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () =>
-                          launchUrl(Uri.parse('https://www.cdc.gov/high-blood-pressure/about/index.html')),
+                      ..onTap = () => launchUrl(
+                          Uri.parse('https://www.cdc.gov/high-blood-pressure/about/index.html')),
                   ),
                 ],
               ),
