@@ -380,6 +380,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       isFetchAnalysis: isDataChange,
       healthRecommendation: null, // TODO: fill healthRecommendation
       goalId: widget.goalId,
+      isNew: widget.type == 'update' ? false : true,
     );
     Navigator.of(context)
         .pushReplacementNamed(NavigatorName.add_bloodpressure_result, arguments: data);

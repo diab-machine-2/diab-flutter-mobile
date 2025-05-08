@@ -19,6 +19,7 @@ class BloodPressureResultDto {
   final BloodPressureRangeType rangeType;
   final bool? isFetchAnalysis;
   final String? healthRecommendation;
+  final bool isNew;
 
   // Old logic
   final String? goalId;
@@ -43,6 +44,7 @@ class BloodPressureResultDto {
     this.isFetchAnalysis,
     this.healthRecommendation,
     this.goalId,
+    this.isNew = false,
   });
 }
 

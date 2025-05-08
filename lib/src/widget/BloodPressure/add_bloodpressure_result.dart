@@ -114,7 +114,11 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
         );
       }
       BotToast.closeAllLoading();
-      Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
+      Observable.instance.notifyObservers(
+        [],
+        notifyName: "BloodPressure_change_data",
+        map: {'isNew': widget.data.isNew},
+      );
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     } finally {
@@ -135,7 +139,11 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   }
 
   void _doBack() {
-    Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
+    Observable.instance.notifyObservers(
+      [],
+      notifyName: "BloodPressure_change_data",
+      map: {'isNew': widget.data.isNew},
+    );
   }
 
   @override

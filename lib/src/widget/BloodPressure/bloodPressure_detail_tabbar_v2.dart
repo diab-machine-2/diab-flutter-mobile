@@ -68,7 +68,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'BloodPressure_change_data') {
-      _reload();
+      bool isForce = map?['isNew'] ?? false;
+      _reload(isForce);
     }
   }
 
@@ -111,8 +112,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     }
   }
 
-  void _reload() async {
-    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType);
+  void _reload([bool isNew = false]) async {
+    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType, isNew);
     _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
     await _loadAITrend();
     if (mounted) {

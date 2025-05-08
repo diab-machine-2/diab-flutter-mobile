@@ -52,6 +52,7 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
                 color: isSelected ? const Color(0xFF00867D) : Colors.transparent,
                 borderRadius: BorderRadius.circular(30),
               ),
+              alignment: Alignment.center,
               child: Text(
                 entry.value,
                 style: TextStyle(
