@@ -257,15 +257,73 @@ class _DsmesConfirmCreateInformationState
                       // Calculate total price
                       int totalPrice = _calculateTotalPrice();
 
-                      // Navigate to payment
-                      DsmesNavigationMixin.getNavigationKey()
-                          .currentState
-                          ?.pushNamed(
-                        NavigatorName.clinic_payment,
-                        arguments: {
-                          'totalPrice': totalPrice,
-                          'serviceType': widget.serviceType,
-                          'bookingType': widget.bookingType,
+                      // // Navigate to payment
+                      // DsmesNavigationMixin.getNavigationKey()
+                      //     .currentState
+                      //     ?.pushNamed(
+                      //   NavigatorName.clinic_payment,
+                      //   arguments: {
+                      //     'totalPrice': totalPrice,
+                      //     'serviceType': widget.serviceType,
+                      //     'bookingType': widget.bookingType,
+                      //   },
+                      // );
+
+                      // TODO: TEMPORARY LOGIC AFTER PROCESS DONE WITH VNPAY
+                      DsmesAppointment? resp;
+
+                      if (widget.serviceType ==
+                          DsmesAppointmentMode.atClinic.toString()) {
+                        resp = await _cubit.createDsmesBooking();
+                      } else {
+                        resp = await _cubit.createDsmesBookingOnline();
+                      }
+
+                      if (resp == null) return;
+
+                      final startTime = DateFormat('HH:mm').format(
+                          DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
+                      final startDate = DateFormat('dd/MM/yyyy').format(
+                          DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
+
+                      _showPopupBookingSuccess(
+                        title: R.string.booking_success_dialog_title.tr(),
+                        subtitle:
+                            R.string.confirm_booking_subtitle.tr(namedArgs: {
+                          'time': startTime,
+                          'date': startDate,
+                        }),
+                        isShowImg: true,
+                        primaryButtonTitle: R.string.back_home_page.tr(),
+                        secondaryButtonTitle: R.string.recheck_information.tr(),
+                        onNavigateHome: () {
+                          BranchioLinkConfig.instance.resetPageTracking();
+                          // Back to homepage
+                          Navigator.of(context, rootNavigator: true)
+                              .pushNamedAndRemoveUntil(
+                            NavigatorName.tabbar,
+                            (route) =>
+                                false, // This removes all routes from stack
+                          );
+                        },
+                        onShowInfo: () async {
+                          // Navigate to booking detail
+                          final myAppointment =
+                              await _cubit.getDsmesAppointmentDetail(
+                                  appointmentId: resp!.id);
+
+                          if (myAppointment == null) return;
+
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pushNamed(
+                            NavigatorName.dsmes_booking_detail,
+                            arguments: {
+                              'serviceType': widget.serviceType,
+                              'appointment': myAppointment,
+                              'bookingType': widget.bookingType,
+                            },
+                          );
                         },
                       );
                       return;

@@ -61,7 +61,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       : super(InitialDsmesAppointmentState());
 
   Future<void> initDsmesBooking() async {
-    emit(DsmesAppointmentLoading());
+    // emit(DsmesAppointmentLoading());
     final isExist = await isExistDocosanUser();
     if (isExist) {
       final phoneNumber = AppSettings.userInfo?.phoneNumber;
@@ -73,7 +73,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
       await _initDeviceLocation();
 
-      await getDsmesAppointmentList();
+      await getDsmesAppointmentList(showLoading: false);
     }
     emit(DsmesAppointmentLoaded());
   }
