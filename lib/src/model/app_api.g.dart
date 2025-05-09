@@ -1037,6 +1037,30 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<GetCustomerReceivesUserResponse> getCustomerReceivesUser(
+      phoneNumber) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'PhoneNumber': phoneNumber};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<GetCustomerReceivesUserResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'App/CustomerReceives/user',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = GetCustomerReceivesUserResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<ReportListResponse> getReports() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
