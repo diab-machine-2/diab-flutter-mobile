@@ -6,6 +6,7 @@ class BloodPressureModel {
   final double? systolic;
   final double? diastolic;
   final double? pulseRate;
+  final String? pulseRateStatus;
   final String? bloodPressureType;
   final int? date;
   final String? timeFrame;
@@ -23,6 +24,7 @@ class BloodPressureModel {
     required this.systolic,
     required this.diastolic,
     required this.pulseRate,
+    this.pulseRateStatus,
     required this.bloodPressureType,
     required this.date,
     required this.timeFrame,
@@ -42,6 +44,7 @@ class BloodPressureModel {
         systolic: json['systolic'],
         diastolic: json['diastolic'],
         pulseRate: json['pulseRate'],
+        pulseRateStatus: json['pulseRateStatus'],
         bloodPressureType: json['bloodPressureType'],
         date: json['date'],
         timeFrame: json['timeFrame'],

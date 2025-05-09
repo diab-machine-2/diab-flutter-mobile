@@ -41,7 +41,7 @@ class _OtherDiseasesPageState extends State<OtherDiseasesPage> {
     return WillPopScope(
       onWillPop: () async {
         print('[POP] offline clinics pop');
-        DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
         return false;
       },
       child: Scaffold(
@@ -80,7 +80,7 @@ class _OtherDiseasesPageState extends State<OtherDiseasesPage> {
             actions: [
               // GestureDetector(
               //   onTap: () async {
-              //     DsmesNavigationMixin.navigationKey.currentState
+              //     DsmesNavigationMixin.getNavigationKey().currentState
               //         ?.pushNamed(NavigatorName.dsmes_booking_history);
               //   },
               //   child: Container(
@@ -129,7 +129,7 @@ class _OtherDiseasesPageState extends State<OtherDiseasesPage> {
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
               },
             ),
           ),
@@ -154,7 +154,7 @@ class _OtherDiseasesPageState extends State<OtherDiseasesPage> {
                 return GestureDetector(
                   onTap: () {
                     _cubit.clearClinicProviders();
-                    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+                    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
                         NavigatorName.clinic_providers,
                         arguments: {'specialtyId': specialty.id});
                   },

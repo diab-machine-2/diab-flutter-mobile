@@ -596,7 +596,7 @@ class VNPayService {
 
     if (myAppointment == null) return;
 
-    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
       NavigatorName.dsmes_booking_detail,
       arguments: {
         'serviceType': serviceType,

@@ -51,12 +51,15 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     'offlineConsulting': false,
   };
 
+  final _navigatorKey = DsmesNavigationMixin.createNavigatorKey();
+
   @override
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
+    DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
     // _cubit.getDsmesAppointmentList();
     _cubit.initDsmesBooking();
   }
@@ -95,11 +98,11 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
               print('[POP] root pop scope');
               if (_currentRoute == NavigatorName.dsmes_booking_detail) {
                 FocusScope.of(
-                        DsmesNavigationMixin.navigationKey.currentContext!)
+                        DsmesNavigationMixin.getNavigationKey().currentContext!)
                     .unfocus();
 
                 // final route = ModalRoute.of(
-                //         DsmesNavigationMixin.navigationKey.currentContext!)
+                //         DsmesNavigationMixin.getNavigationKey().currentContext!)
                 //     ?.settings;
                 // print('[POP] route: $route');
                 // final args = route?.arguments as Map<String, dynamic>?;
@@ -108,10 +111,11 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
 
                 // if (previousRoute == NavigatorName.dsmes_booking_history ||
                 //     previousRoute == NavigatorName.dsmes_clinic_detail) {
-                //   DsmesNavigationMixin.navigationKey.currentState?.pop();
+                //   DsmesNavigationMixin.getNavigationKey().currentState?.pop();
                 //   return false;
                 // }
-                DsmesNavigationMixin.navigationKey.currentState
+                DsmesNavigationMixin.getNavigationKey()
+                    .currentState
                     ?.popUntil((route) => route.isFirst);
                 Observable.instance
                     .notifyObservers([], notifyName: "refresh_booking_clinic");
@@ -119,14 +123,15 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
               }
 
               final route = ModalRoute.of(
-                      DsmesNavigationMixin.navigationKey.currentContext!)
+                      DsmesNavigationMixin.getNavigationKey().currentContext!)
                   ?.settings;
               final args = route?.arguments as Map<String, dynamic>?;
               final isEditing = args?['isEditing'] ?? false;
               final previousRoute = args?['previousRoute'];
 
               if (isEditing && previousRoute != null) {
-                DsmesNavigationMixin.navigationKey.currentState
+                DsmesNavigationMixin.getNavigationKey()
+                    .currentState
                     ?.pushReplacementNamed(previousRoute, arguments: {
                   'serviceType': args?['serviceType'],
                   'action': args?['action'],
@@ -134,9 +139,11 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                 return false;
               }
 
-              if (DsmesNavigationMixin.navigationKey.currentState?.canPop() ??
+              if (DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.canPop() ??
                   false) {
-                DsmesNavigationMixin.navigationKey.currentState?.pop();
+                DsmesNavigationMixin.getNavigationKey().currentState?.pop();
                 return false;
               } else {
                 BotToast.closeAllLoading();
@@ -145,14 +152,14 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
               return true;
             },
             child: Navigator(
-              key: DsmesNavigationMixin.navigationKey,
+              key: DsmesNavigationMixin.getNavigationKey(),
               onGenerateRoute: (settings) {
                 // Log current route name
                 print('[ROUTE] Current Route: ${settings.name}');
                 _currentRoute = settings.name ?? '/';
                 // Log full navigator stack
                 print(
-                    '[ROUTE] Navigator Stack: ${DsmesNavigationMixin.navigationKey.currentState?.toString()}');
+                    '[ROUTE] Navigator Stack: ${DsmesNavigationMixin.getNavigationKey().currentState?.toString()}');
                 switch (settings.name) {
                   case '/':
                     return MaterialPageRoute(
@@ -409,9 +416,10 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                 onTap: () async {
                   _cubit.clearAppointments();
 
-                  DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
-                      NavigatorName.dsmes_booking_history,
-                      arguments: {
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_history,
+                          arguments: {
                         'bookingType': Const.BOOKING_TYPE_CLINIC,
                       });
                 },
@@ -504,7 +512,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                                   await _cubit.getDsmesAppointmentDetail(
                                       appointmentId: data.id);
 
-                              DsmesNavigationMixin.navigationKey.currentState
+                              DsmesNavigationMixin.getNavigationKey()
+                                  .currentState
                                   ?.pushNamed(
                                 NavigatorName.dsmes_booking_detail,
                                 arguments: {
@@ -554,7 +563,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
               onTap: () async {
                 if (specialty.name == "Bệnh khác") {
                   final specialties = await _cubit.getCLinicSpecialtyList();
-                  DsmesNavigationMixin.navigationKey.currentState
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.pushNamed(NavigatorName.other_diseases, arguments: {
                     "specialties": specialties,
                   });
@@ -562,7 +572,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                   _cubit.clearClinicProviders();
                   final position = await AppSettings.getPositionPreferences();
                   print('POSITION: $position');
-                  DsmesNavigationMixin.navigationKey.currentState
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
                       ?.pushNamed(NavigatorName.clinic_providers, arguments: {
                     "specialtyId": specialty.id,
                   });

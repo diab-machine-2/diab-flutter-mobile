@@ -105,6 +105,10 @@ android {
             // shrinkResources false
         }
     }
+
+    configurations {
+        implementation.exclude group: 'com.amazon.device', module: 'amazon-appstore-sdk'
+    }
 }
 
 dependencies {

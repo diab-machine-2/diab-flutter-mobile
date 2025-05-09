@@ -21,6 +21,7 @@ import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/mark_share_request.dart';
+import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
@@ -53,6 +54,7 @@ import 'package:medical/src/model/response/food_suggest_response.dart';
 import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/get_subscription_banners_response.dart';
 import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
@@ -1176,10 +1178,30 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<GetSubscriptionBannersResponse>>
+      getSubscriptionBanners() async {
+    try {
+      final response = await appClient.getSubscriptionBanners();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<SearchListClinicResponse>> searchListBookingClinic(
       {required SearchBookingClinicListRequest request}) async {
     try {
       final response = await docosanClient.searchBookingClinicList(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> notifySubscription(
+      NotifySubscriptionRequest request) async {
+    try {
+      final response = await appClient.notifySubscription(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

@@ -242,4 +242,7 @@ class Const {
     BOOKING_TYPE_CLINIC,
     BOOKING_TYPE_DOCTOR,
   ];
+  static const TABLET_BREAKPOINT = 540;
+  static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
+  static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
 }

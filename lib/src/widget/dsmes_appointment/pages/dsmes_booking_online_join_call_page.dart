@@ -101,7 +101,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           highlightColor: R.color.transparent,
           icon: Icon(Icons.arrow_back, color: R.color.textDark),
           onPressed: () {
-            DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+            DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
           },
         ),
       ),
@@ -219,7 +219,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
               if (uri.toString() == "${Utils.getDocosanDomainUrl()}/") {
                 if (mounted) {
-                  DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                  DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
                 }
                 return NavigationActionPolicy.CANCEL;
               }
