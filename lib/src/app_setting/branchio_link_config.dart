@@ -78,6 +78,8 @@ class BranchioLinkConfig {
 
       // Handle login deeplink
       if (data['+clicked_branch_link'] == true && data.containsKey("\$login")) {
+        final token = await AppSettings.getToken();
+        if (token.isNotEmpty) return;
         _hasPendingLoginDeeplink = true;
 
         // Navigate immediately if app is initialized
@@ -504,15 +506,28 @@ class BranchioLinkConfig {
         if (response.length > 0) {
           bookingQuantity = response.length;
           if (bookingQuantity >= 1) {
-            navigatorKey.currentState
-                ?.pushNamed(NavigatorName.calendar, arguments: {
-              "pickSlot": response.firstWhere(
-                  (element) => element.isDeleted == false,
-                  orElse: null),
-              "courseId": _courseId,
-              "endTime": _endTime ?? '',
-              "bookingQuantity": bookingQuantity,
-            });
+            bool isCalendarPage = _isCurrentRoute(NavigatorName.calendar);
+            if (isCalendarPage) {
+              navigatorKey.currentState
+                  ?.pushReplacementNamed(NavigatorName.calendar, arguments: {
+                "pickSlot": response.firstWhere(
+                    (element) => element.isDeleted == false,
+                    orElse: null),
+                "courseId": _courseId,
+                "endTime": _endTime ?? '',
+                "bookingQuantity": bookingQuantity,
+              });
+            } else {
+              navigatorKey.currentState
+                  ?.pushNamed(NavigatorName.calendar, arguments: {
+                "pickSlot": response.firstWhere(
+                    (element) => element.isDeleted == false,
+                    orElse: null),
+                "courseId": _courseId,
+                "endTime": _endTime ?? '',
+                "bookingQuantity": bookingQuantity,
+              });
+            }
             _resetDataLink();
             return;
           }
@@ -523,8 +538,16 @@ class BranchioLinkConfig {
       });
 
       if (bookingQuantity == 0) {
-        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-            arguments: {'courseId': _courseId, 'endTime': _endTime});
+        bool isCalendarBookingPage =
+            _isCurrentRoute(NavigatorName.calendar_booking);
+        if (isCalendarBookingPage) {
+          navigatorKey.currentState?.pushReplacementNamed(
+              NavigatorName.calendar_booking,
+              arguments: {'courseId': _courseId, 'endTime': _endTime});
+        } else {
+          navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
+              arguments: {'courseId': _courseId, 'endTime': _endTime});
+        }
         _resetDataLink();
       }
     }
@@ -573,5 +596,15 @@ class BranchioLinkConfig {
   void dispose() {
     _navigationTimer?.cancel();
     _subLink?.cancel();
+  }
+
+  bool _isCurrentRoute(String routeName) {
+    bool result = false;
+    navigatorKey.currentState?.popUntil((route) {
+      result = route.settings.name == routeName;
+      // Don't actually pop any routes
+      return true;
+    });
+    return result;
   }
 }
