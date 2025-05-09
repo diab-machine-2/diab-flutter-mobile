@@ -400,7 +400,7 @@ class AppSettings {
     return numberOfOpenHome;
   }
 
-  // Check to show 1st page
+  // Check to show 1st page -> Glucose
   static Future<String?> getLastOpenedGlucoseInputType() async {
     String? lastOpenedGlucoseInputType =
         appPreference.getData("lastOpenedGlucoseInputType");
@@ -415,7 +415,7 @@ class AppSettings {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }
 
-   static Future<void> saveZaloGroup(String? zaloGroup) async {
+  static Future<void> saveZaloGroup(String? zaloGroup) async {
     if (zaloGroup != null && zaloGroup.isNotEmpty) {
       print('[ONBOARDING] saveZaloGroup: $zaloGroup');
       appPreference.setData("zaloGroup", zaloGroup);
@@ -426,8 +426,40 @@ class AppSettings {
     return appPreference.getData("zaloGroup");
   }
 
-   static Future<void> clearZaloGroup() async {
+  static Future<void> clearZaloGroup() async {
     appPreference.removeData("zaloGroup");
+  }
+
+  // Check to show 1st page -> Blood Pressure
+  static Future<String?> getLastOpenedBloodPressureInputType() async {
+    String? lastOpenedBloodPressureInputType =
+        appPreference.getData("lastOpenedBloodPressureInputType");
+    return lastOpenedBloodPressureInputType;
+  }
+
+  static void setLastOpenedBloodPressureInputType(String inputType) {
+    appPreference.setData("lastOpenedBloodPressureInputType", inputType);
+  }
+
+  static void clearLastOpenedBloodPressureInputType() {
+    appPreference.removeData("lastOpenedBloodPressureInputType");
+  }
+
+  // Check to show heart rate input with blood pressure
+  static Future<bool?> getInputHeartRateWithBloodPressure() async {
+    String? inputHeartRateWithBloodPressure =
+        appPreference.getData("inputHeartRateWithBloodPressure");
+    return inputHeartRateWithBloodPressure != null
+        ? inputHeartRateWithBloodPressure == "true"
+        : null;
+  }
+
+  static void setInputHeartRateWithBloodPressure(bool input) {
+    appPreference.setData("inputHeartRateWithBloodPressure", input.toString());
+  }
+
+  static void clearInputHeartRateWithBloodPressure() {
+    appPreference.removeData("inputHeartRateWithBloodPressure");
   }
 
   static Future<bool> logout(
