@@ -5,7 +5,6 @@ class HorizontalSelector extends StatefulWidget {
   final List<int> values;
   final List<String> labels;
   final int initialValue;
-
   final double height;
 
   const HorizontalSelector({
@@ -32,39 +31,46 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: Colors.grey.shade300),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: widget.labels.asMap().entries.map((entry) {
-          final int day = entry.key;
-          final bool isSelected = day == _selectedValue;
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedValue = day;
-              });
-              widget.onSelected(day);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              height: widget.height,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF00867D) : Colors.transparent,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                entry.value,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey[700],
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: _buildItems(),
+        ),
       ),
     );
+  }
+
+  List<Widget> _buildItems() {
+    return widget.labels.asMap().entries.map((entry) {
+      final int day = entry.key;
+      final bool isSelected = day == _selectedValue;
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedValue = day;
+          });
+          widget.onSelected(day);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: widget.height,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF00867D) : Colors.transparent,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            entry.value,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey[700],
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }).toList();
   }
 }

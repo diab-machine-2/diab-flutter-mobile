@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -26,6 +27,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
   @override
   bool get wantKeepAlive => true;
 
+  BloodPressureBloc _bloodPressureBloc = BloodPressureBloc();
+  StreamSubscription? _subscription;
+
   int _focusIndex = -1;
 
   int _periodFilterType = 1;
@@ -39,15 +43,39 @@ class BloodPressureChartState extends State<BloodPressureChart>
   void initState() {
     _periodFilterType = widget.initPeriodFilterType;
     super.initState();
+    _registerEmptyNavigation();
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _subscription?.cancel();
+    _bloodPressureBloc.close();
     super.dispose();
   }
 
+  void _registerEmptyNavigation() {
+    _subscription?.cancel();
+    _subscription = _bloodPressureBloc.stream.listen((state) {
+      if (!mounted) return;
+      if (state is BloodPressureTrendLoaded) {
+        _subscription?.cancel();
+        _subscription = null;
+
+        final trends = _getTrends(state.model);
+        if (trends.isEmpty) {
+          Future.delayed(Duration(milliseconds: 500)).then((value) {
+            if (!mounted) return;
+            Navigator.pushReplacementNamed(context, NavigatorName.add_blood_pressure,
+                arguments: {'type': 'input'});
+          });
+        }
+      }
+    });
+  }
+
   void reloadData(int periodFilter, [bool isNew = false]) {
+    _registerEmptyNavigation();
     if (isNew) {
       _focusIndex = -1;
     }
@@ -134,8 +162,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocProvider<BloodPressureBloc>(
-      create: (context) => BloodPressureBloc(),
+    return BlocProvider<BloodPressureBloc>.value(
+      value: _bloodPressureBloc,
       child: BlocBuilder<BloodPressureBloc, BloodPressureState>(
         builder: (BuildContext context, BloodPressureState state) {
           currentContext = context;
@@ -257,7 +285,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 130,
+                  width: 138,
                   height: 38,
                   decoration: BoxDecoration(
                     color: R.color.white,
@@ -351,6 +379,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   child: Center(
                     child: Text(
                       selectedType,
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
