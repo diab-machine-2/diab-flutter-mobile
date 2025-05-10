@@ -11,6 +11,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widgets/background_page.dart';
 
 import 'bloodpressure_result.dto.dart';
 import 'intro/widgets/bloodpresure_lesson_section.dart';
@@ -68,7 +69,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   @override
   void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'BloodPressure_change_data') {
-      _reload();
+      bool isForce = map?['isNew'] == true;
+      _reload(isForce);
     }
   }
 
@@ -111,8 +113,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     }
   }
 
-  void _reload() async {
-    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType);
+  void _reload([bool isNew = false]) async {
+    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType, isNew);
     _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
     await _loadAITrend();
     if (mounted) {
@@ -146,17 +148,19 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: R.color.greenGradientBottom,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.arrow_back, color: R.color.white),
         ),
+        centerTitle: false,
         title: Text(
           R.string.huyet_ap.tr(),
           style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             color: R.color.white,
           ),
         ),
@@ -169,53 +173,52 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
               },
               child: Text(
                 R.string.huong_dan.tr(),
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.white),
+                style: TextStyle(fontSize: 15, color: R.color.white),
               ),
             ),
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          // Main Content
-          Positioned.fill(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 12),
-                  _buildFilter(),
-                  const SizedBox(height: 12),
-                  _buildTrendingChart(),
-                  const SizedBox(height: 12),
-                  // TODO: Find range type
-                  _sectionAIHelp(_aiSuggestion, BloodPressureRangeType.normal),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: _buildFrequencyChart(),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: _buildSuggestLessons(),
-                  ),
-                  const SizedBox(height: 100),
-                ],
+      body: BackgroundPage(
+        background: R.drawable.bg_bloodpressure,
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            _buildFilter(),
+            const SizedBox(height: 8),
+            // Main Content
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+                    _buildTrendingChart(),
+                    const SizedBox(height: 12),
+                    _sectionAIHelp(_aiSuggestion, BloodPressureRangeType.normal),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: _buildFrequencyChart(),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: _buildSuggestLessons(),
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
-          ),
-
-          // Sticky bottom button
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
+            
+            // Sticky bottom button
+            Container(
               padding: EdgeInsets.only(
                 bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
-                left: 16,
-                right: 16,
-                top: 12,
+                left: 12,
+                right: 12,
+                top: 8,
               ),
               color: Colors.white,
               child: Padding(
@@ -226,7 +229,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
                     height: 48,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: R.color.accentColor,
+                      color: R.color.greenGradientBottom,
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Center(
@@ -243,8 +246,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -316,18 +319,13 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
               Text(
                 R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: R.color.textDark,
-                  height: 21 / 15,
                 ),
               ),
               const SizedBox(width: 6),
               Image.asset(R.drawable.ic_info, width: 18, height: 18),
-              // InkWell(
-              //   onTap: () {},
-              //   child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
-              // ),
             ],
           ),
           const SizedBox(height: 8),
@@ -340,7 +338,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
             Text(
               'Có lỗi xảy ra',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w400,
                 color: Color(0xFFC82221),
               ),
@@ -349,10 +347,10 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
             Text(
               aiSuggestion,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
-                height: 16 / 12,
+                height: 1.46,
               ),
             ),
             const SizedBox(height: 16),

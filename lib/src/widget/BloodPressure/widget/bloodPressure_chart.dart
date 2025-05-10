@@ -47,7 +47,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
     super.dispose();
   }
 
-  void reloadData(int periodFilter) {
+  void reloadData(int periodFilter, [bool isNew = false]) {
+    if (isNew) {
+      _focusIndex = -1;
+    }
     _periodFilterType = periodFilter;
     _refresh();
   }
@@ -157,7 +160,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             }
 
             if (_focusIndex == -1 || _focusIndex >= trends.length) {
-              _focusIndex = (trends.length - 1) ~/ 2;
+              _focusIndex = (trends.length - 1);
             }
           }
 
@@ -180,7 +183,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             },
             child: Container(
               color: R.color.transparent,
-              padding: EdgeInsets.only(left: 18, right: 18),
+              padding: EdgeInsets.only(left: 12, right: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -539,10 +542,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             if (event is! FlLongPressEnd && event is! FlPanEndEvent) {
                               final value = lineTouch?.lineBarSpots?[0].x;
                               if (value != null) {
-                                //  setState(() {
-                                _focusIndex = value.toInt();
-                                //  });
                                 setState(() {
+                                  _focusIndex = value.toInt();
                                 });
                               }
                             } else {

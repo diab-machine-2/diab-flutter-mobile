@@ -128,7 +128,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                               R.string.show_more.tr(),
                               style: TextStyle(
                                 fontSize: 15,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w400,
                                 color: Color(0xFF95682E),
                               ),
                             ),
@@ -193,7 +193,6 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                 style: TextStyle(
                                   color: R.color.textDark,
                                   fontSize: 14,
-                                  height: 20 / 14,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -204,7 +203,6 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                     : '${model.lowestSystolic?.toInt() ?? 0}/${model.lowestDiastolic?.toInt() ?? 0}',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  height: 24 / 20,
                                   fontWeight: FontWeight.bold,
                                   color: R.color.textDark,
                                 ),
@@ -232,7 +230,6 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                 style: TextStyle(
                                   color: R.color.textDark,
                                   fontSize: 14,
-                                  height: 20 / 14,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -243,7 +240,6 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                     : '${model.highestSystolic?.toInt() ?? 0}/${model.highestDiastolic?.toInt() ?? 0}',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  height: 24 / 20,
                                   fontWeight: FontWeight.bold,
                                   color: R.color.textDark,
                                 ),
@@ -282,6 +278,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
           const SizedBox(height: 12),
           // Chart "tần suất phân bổ"
           Expanded(
+            flex: 5,
             child: SizedBox(
               height: 140,
               child: PieChart(
@@ -334,6 +331,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
           const SizedBox(width: 12),
           // Guide
           Expanded(
+            flex: 4,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -345,72 +343,72 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.increaseLevelThreeColor),
-                      number: (model.increaseLevelThree! / total * 100).round().toString(),
+                      number: '', // (model.increaseLevelThree! / total * 100).round().toString(),
                       text: R.string.grade_3_hypertension.tr(),
                       fontsize: fontsize,
                     ),
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 8),
                 InkWell(
                   onTap: () => widget.onViewDetail(BloodPressureRangeType.high2),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.increaseLevelTwoColor),
-                      number: (model.increaseLevelTwo! / total * 100).round().toString(),
+                      number: '', // (model.increaseLevelTwo! / total * 100).round().toString(),
                       text: R.string.grade_2_hypertension.tr(),
                       fontsize: fontsize,
                     ),
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 8),
                 InkWell(
                   onTap: () => widget.onViewDetail(BloodPressureRangeType.high1),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.increaseLevelOneColor),
-                      number: (model.increaseLevelOne! / total * 100).round().toString(),
+                      number: '', // (model.increaseLevelOne! / total * 100).round().toString(),
                       text: R.string.grade_1_hypertension.tr(),
                       fontsize: fontsize,
                     ),
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 8),
                 InkWell(
                   onTap: () => widget.onViewDetail(BloodPressureRangeType.normal_high),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.preIncreaseColor),
-                      number: (model.preIncrease! / total * 100).round().toString(),
+                      number: '', // (model.preIncrease! / total * 100).round().toString(),
                       text: R.string.normal_high.tr(),
                       fontsize: fontsize,
                     ),
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: InkWell(
                     onTap: () => widget.onViewDetail(BloodPressureRangeType.normal),
                     child: CircleIndicator(
                       color: toColor(model.normalColor),
-                      number: (model.normal! / total * 100).round().toString(),
+                      number: '', // (model.normal! / total * 100).round().toString(),
                       text: R.string.normal.tr(),
                       fontsize: fontsize,
                     ),
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(height: 8),
                 InkWell(
                   onTap: () => widget.onViewDetail(BloodPressureRangeType.low),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.lowColor),
-                      number: (model.low! / total * 100).round().toString(),
+                      number: '', // (model.low! / total * 100).round().toString(),
                       text: R.string.low.tr(),
                       fontsize: fontsize,
                     ),

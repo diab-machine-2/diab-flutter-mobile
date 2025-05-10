@@ -115,7 +115,7 @@ class CircleIndicator extends StatelessWidget {
             ),
             SizedBox(width: 4),
             Text(
-              '$text ($number%)',
+              text + (number.isNotEmpty ? ' ($number%)' : ''),
               style: TextStyle(
                 fontSize: fontsize,
                 height: 18 / fontsize,

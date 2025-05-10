@@ -156,8 +156,7 @@ class _BloodSugarDetailTabbarControllerState extends State<BloodSugarDetailTabba
               },
               child: Text(
                 R.string.huong_dan.tr(),
-                style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
+                style: TextStyle(fontSize: 15, color: R.color.textDark),
               ),
             ),
           ),

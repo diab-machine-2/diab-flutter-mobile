@@ -463,7 +463,7 @@ class _HomeControllerState extends State<HomeController>
             //
             if (state.model.measurements?.isNotEmpty == true) {
               List<HomeMeasurementData> huyetAps =
-                  state.model.measurements!.where((e) => e.title == "Huyết áp").toList();
+                  state.model.measurements!.where((e) => e.title.toLowerCase() == "huyết áp").toList();
               _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
@@ -634,6 +634,11 @@ class _HomeControllerState extends State<HomeController>
                               // case input glucose
                               if (await _showGlucoseAddBottomSheet(routeName) ==
                                   false) {
+                                return;
+                              }
+                              // check first time open blood pressure intro
+                              if (routeName == "/add_blood_pressure" && !_haveInputBloodpressureAlready) {
+                                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_1st_page);
                                 return;
                               }
                               // others

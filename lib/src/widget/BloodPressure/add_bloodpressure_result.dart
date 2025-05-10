@@ -114,7 +114,11 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
         );
       }
       BotToast.closeAllLoading();
-      Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
+      Observable.instance.notifyObservers(
+        [],
+        notifyName: "BloodPressure_change_data",
+        map: {'isNew': widget.data.isNew},
+      );
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     } finally {
@@ -135,7 +139,11 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   }
 
   void _doBack() {
-    Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
+    Observable.instance.notifyObservers(
+      [],
+      notifyName: "BloodPressure_change_data",
+      map: {'isNew': widget.data.isNew},
+    );
   }
 
   @override
@@ -193,7 +201,6 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
-      centerTitle: true,
       title: Text(
         formattedDateTime,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.white),
@@ -426,7 +433,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
       maxMedia: 5,
       key: _sectionAddNoteKey,
       initialFiles: _files,
-      noteTitle: 'Ghi chú',
+      noteTitle: R.string.ghi_chu.tr(),
       horizontalPadding: 12,
     );
   }
