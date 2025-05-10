@@ -82,7 +82,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     if (_controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty) {
       double systolic = double.tryParse(_controllerSystolic.text) ?? 0;
       double diastolic = double.tryParse(_controllerDiastolic.text) ?? 0;
-      if (systolic < 30 || systolic > 300 || diastolic < 25 || diastolic > 250 || systolic < diastolic) {
+      if (systolic < 30 ||
+          systolic > 300 ||
+          diastolic < 25 ||
+          diastolic > 250 ||
+          systolic < diastolic) {
         return true;
       }
     }
@@ -386,7 +390,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       rangeColors: _colorList,
       diastolic: _valueOfDiastolic,
       systolic: _valueOfSystolic,
-      pulse: double.tryParse(_controllerHeart.text) ?? 0,
+      pulse: _isInputHeartRate ? double.parse(_controllerHeart.text) : 0,
       pulseRateStatus: pulseRateStatus,
       reasons: reasons,
       note: _controllerNote.text,
@@ -1414,7 +1418,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _editData() async {
     // prevent submit button
-    if (_isNotValidInput || _isNotValidHeartRate) return;
+    if (_isNotValidInput) return;
+    if (_isInputHeartRate && _isNotValidHeartRate) return;
 
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
@@ -1475,7 +1480,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _submitData() async {
     // prevent submit button
-    if (_isNotValidInput || _isNotValidHeartRate) return;
+    if (_isNotValidInput) return;
+    if (_isInputHeartRate && _isNotValidHeartRate) return;
 
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;

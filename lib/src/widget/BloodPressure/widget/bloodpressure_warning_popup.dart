@@ -71,6 +71,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
               const SizedBox(height: 12),
               Text(
                 'Huyết áp trong ngưỡng',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -78,7 +79,7 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Không an toàn',
                 textAlign: TextAlign.center,
                 style: TextStyle(
