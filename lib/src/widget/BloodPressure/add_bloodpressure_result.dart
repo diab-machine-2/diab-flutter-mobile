@@ -201,7 +201,6 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
-      centerTitle: true,
       title: Text(
         formattedDateTime,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.white),

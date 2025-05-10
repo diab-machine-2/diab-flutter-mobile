@@ -75,10 +75,25 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     "Tăng huyết áp độ 2",
     "Tăng huyết áp độ 3",
   ];
+  // Range tâm thu (systolic): 30-300
+  // Range tâm trương (diastolic): 25-250
+  // Systolic phải lớn hơn diastolic
   bool get _isNotValidInput {
     if (_controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty) {
-      if ((double.tryParse(_controllerSystolic.text) ?? 0) == 0 ||
-          (double.tryParse(_controllerDiastolic.text) ?? 0) == 0) {
+      double systolic = double.tryParse(_controllerSystolic.text) ?? 0;
+      double diastolic = double.tryParse(_controllerDiastolic.text) ?? 0;
+      if (systolic < 30 || systolic > 300 || diastolic < 25 || diastolic > 250 || systolic < diastolic) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Range nhịp tim (pulse): 40-300
+  bool get _isNotValidHeartRate {
+    if (_controllerHeart.text.isNotEmpty) {
+      double pulse = double.tryParse(_controllerHeart.text) ?? 0;
+      if (pulse < 40 || pulse > 300) {
         return true;
       }
     }
@@ -463,13 +478,14 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   Widget _appBarSection() {
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
       title: Text(
         widget.type == 'update'
             ? R.string.update_blood_pressure.tr()
             : R.string.enter_blood_pressure.tr(),
         style: TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.bold,
           color: R.color.white,
         ),
       ),
@@ -483,7 +499,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       actions: [
         Center(
           child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 12.0),
             child: InkWell(
               onTap: () {
                 _doGuide();
@@ -622,13 +638,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
                   decoration: InputDecoration(
-                      hintText: '0',
-                      contentPadding: EdgeInsets.only(bottom: 8),
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                          color: R.color.captionColorGray,
-                          fontSize: 48,
-                          fontWeight: FontWeight.w500)),
+                    hintText: '0',
+                    contentPadding: EdgeInsets.only(bottom: 8),
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                        color: R.color.captionColorGray, fontSize: 48, fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
             ],
@@ -713,7 +728,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         if (_isNotValidInput)
           Text(
             'Chỉ số không hợp lệ!',
-            style: TextStyle(color: Color(0xFFFF3C3C), fontSize: 16, fontWeight: FontWeight.w400),
+            style: TextStyle(color: Color(0xFFFF3C3C), fontSize: 13, fontWeight: FontWeight.w400),
           )
         else if (_valueOfSystolic != 0 && _valueOfDiastolic != 0)
           RichText(
@@ -1029,7 +1044,22 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
               ),
             ),
             SizedBox(height: 2),
-            Container(height: 1, width: double.infinity, color: R.color.color0xffE5E5E5)
+            Container(height: 1, width: double.infinity, color: R.color.color0xffE5E5E5),
+            if (_isNotValidHeartRate)
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Center(
+                  child: Text(
+                    'Chỉ số không hợp lệ!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFFFF3C3C),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+              )
           ],
           SizedBox(height: 8),
         ],
@@ -1384,7 +1414,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _editData() async {
     // prevent submit button
-    if (_isNotValidInput) return;
+    if (_isNotValidInput || _isNotValidHeartRate) return;
 
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
@@ -1445,7 +1475,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   void _submitData() async {
     // prevent submit button
-    if (_isNotValidInput) return;
+    if (_isNotValidInput || _isNotValidHeartRate) return;
 
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;

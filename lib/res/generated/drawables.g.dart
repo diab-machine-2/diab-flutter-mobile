@@ -36,6 +36,7 @@ class Drawables {
   String get bg_hba1c => "lib/res/drawables/bg_hba1c.png";
   String get bg_hba1c_high => "lib/res/drawables/bg_hba1c_high.png";
   String get bg_home => "lib/res/drawables/bg_home.jpg";
+  String get bg_bloodpressure => "lib/res/drawables/bg_bloodpressure.png";
   String get bg_lesson_detail => "lib/res/drawables/bg_lesson_detail.png";
   String get bg_glucose => "lib/res/drawables/bg_glucose.jpg";
   String get bg_popup => "lib/res/drawables/bg_popup.png";

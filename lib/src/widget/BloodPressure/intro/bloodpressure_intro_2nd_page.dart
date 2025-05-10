@@ -80,11 +80,12 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
   Widget _appBarSection() {
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
       title: Text(
         R.string.huong_dan.tr(),
         style: TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.bold,
           color: R.color.white,
         ),
       ),

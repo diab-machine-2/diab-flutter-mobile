@@ -183,7 +183,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             },
             child: Container(
               color: R.color.transparent,
-              padding: EdgeInsets.only(left: 18, right: 18),
+              padding: EdgeInsets.only(left: 12, right: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
