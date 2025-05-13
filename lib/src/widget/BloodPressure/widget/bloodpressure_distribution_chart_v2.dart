@@ -99,12 +99,12 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 // Title
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.only(left: 16, right: 6),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Text(
@@ -319,7 +319,13 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                       return PieChartSectionData(
                         color: color,
                         value: value,
-                        showTitle: showTitle,
+                        showTitle: true,
+                        title: '${value.round()}%',
+                        titleStyle: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
                         radius: 45,
                       );
                     },

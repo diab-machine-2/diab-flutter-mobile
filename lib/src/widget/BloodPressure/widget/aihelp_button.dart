@@ -69,7 +69,7 @@ class AIHelpButton extends StatelessWidget {
             //         : 'Bí quyết ổn định đường huyết',
             style: TextStyle(
               color: R.color.mainColor,
-              fontSize: 13,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
           ),
