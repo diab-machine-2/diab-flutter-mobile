@@ -90,15 +90,15 @@ extension BloodPressureRangeTypeExtension on BloodPressureRangeType {
   Color get color {
     switch (this) {
       case BloodPressureRangeType.low:
-        return Color(0xFFF9BA1A);
+        return Color(0xFFFFCD57);
       case BloodPressureRangeType.normal:
-        return Color(0xFF16AA47);
+        return Color(0xFF23C559);
       case BloodPressureRangeType.normal_high:
-        return Color(0xFFA1F0BC);
+        return Color(0xFF64E18E);
       case BloodPressureRangeType.high1:
-        return Color(0xFFFFCDD2);
-      case BloodPressureRangeType.high2:
         return Color(0xFFF86F6F);
+      case BloodPressureRangeType.high2:
+        return Color(0xFFD02424);
       case BloodPressureRangeType.very_high:
         return Color(0xFFAF0000);
     }
