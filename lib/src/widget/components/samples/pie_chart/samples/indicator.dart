@@ -81,12 +81,14 @@ class CircleIndicator extends StatelessWidget {
   final Color color;
   final String text;
   final String number;
+  final double fontsize;
 
   const CircleIndicator({
     Key? key,
     required this.text,
     required this.color,
     required this.number,
+    this.fontsize = 13,
   }) : super(key: key);
 
   @override
@@ -113,10 +115,10 @@ class CircleIndicator extends StatelessWidget {
             ),
             SizedBox(width: 4),
             Text(
-              '$text ($number%)',
+              text + (number.isNotEmpty ? ' ($number%)' : ''),
               style: TextStyle(
-                fontSize: 14,
-                height: 20 / 14,
+                fontSize: fontsize,
+                height: 18 / fontsize,
                 color: R.color.textDark,
               ),
             )

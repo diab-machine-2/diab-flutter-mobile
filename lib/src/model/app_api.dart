@@ -14,6 +14,7 @@ import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
+import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
@@ -282,6 +283,10 @@ abstract class AppApi {
 
   @POST("App/Home/MarkDisplayedWelcome")
   Future<CommonResponse> markDisplayedWelcome();
+
+  @GET("App/CustomerReceives/user")
+  Future<GetCustomerReceivesUserResponse> getCustomerReceivesUser(
+      @Query('PhoneNumber') String phoneNumber);
 
   @GET("App/MyProgress/Reports")
   Future<ReportListResponse> getReports();

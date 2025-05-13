@@ -36,6 +36,7 @@ class Drawables {
   String get bg_hba1c => "lib/res/drawables/bg_hba1c.png";
   String get bg_hba1c_high => "lib/res/drawables/bg_hba1c_high.png";
   String get bg_home => "lib/res/drawables/bg_home.jpg";
+  String get bg_bloodpressure => "lib/res/drawables/bg_bloodpressure.png";
   String get bg_lesson_detail => "lib/res/drawables/bg_lesson_detail.png";
   String get bg_glucose => "lib/res/drawables/bg_glucose.jpg";
   String get bg_popup => "lib/res/drawables/bg_popup.png";
@@ -475,6 +476,15 @@ class Drawables {
       "lib/res/drawables/glucose/im_glucose_input_device.png";
   String get im_glucose_input_manual =>
       "lib/res/drawables/glucose/im_glucose_input_manual.png";
+
+  String get im_bloodpressure_intro =>
+      "lib/res/drawables/bloodpressure/im_bloodpressure_intro.png";
+  String get im_bloodpressure_input_manual =>
+      "lib/res/drawables/bloodpressure/im_bloodpressure_input_manual.png";
+  String get ic_bloodpressure_pulse =>
+      "lib/res/drawables/bloodpressure/ic_bloodpressure_pulse.png";
+  String get ic_bloodpressure_warning =>
+      "lib/res/drawables/bloodpressure/ic_bloodpressure_warning.png";
 
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";

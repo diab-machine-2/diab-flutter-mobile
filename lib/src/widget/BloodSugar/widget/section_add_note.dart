@@ -17,6 +17,8 @@ class SectionAddNote extends StatefulWidget {
     this.maxMedia = 5,
     this.initialFiles,
     this.maxLength = 250,
+    this.noteTitle,
+    this.horizontalPadding = 16,
   });
 
   final FocusNode? focusNode;
@@ -24,6 +26,10 @@ class SectionAddNote extends StatefulWidget {
   final int maxMedia;
   final int maxLength;
   final List<dynamic>? initialFiles;
+
+  // decorator
+  final String? noteTitle;
+  final double horizontalPadding;
 
   @override
   State<SectionAddNote> createState() => SectionAddNoteState();
@@ -61,10 +67,23 @@ class SectionAddNoteState extends State<SectionAddNote> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.noteTitle != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: Text(
+                widget.noteTitle!,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: R.color.textDark,
+                  height: 21 / 15,
+                ),
+              ),
+            ),
           TextField(
             focusNode: widget.focusNode,
             controller: widget.controllerNote,

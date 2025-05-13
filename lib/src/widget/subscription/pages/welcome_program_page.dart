@@ -52,9 +52,9 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
     // Use new subscription service for improved UX
     await _subscriptionActivateService.activateSubscription(accountId, context);
 
-    // In case current account already display welcome screen
-    // we need to reset state display when activate new subscription
-    AppSettings.isDisplayedWelcome = false;
+    // // In case current account already display welcome screen
+    // // we need to reset state display when activate new subscription
+    // AppSettings.isDisplayedWelcome = false;
 
     Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
       NavigatorName.tabbar,

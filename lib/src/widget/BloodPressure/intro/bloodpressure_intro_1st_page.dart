@@ -1,0 +1,313 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
+
+import 'widgets/bloodpresure_lesson_section.dart';
+
+class BloodPressureIntro1stPage extends StatefulWidget {
+  const BloodPressureIntro1stPage({super.key});
+
+  @override
+  State<BloodPressureIntro1stPage> createState() => _BloodPressureIntro1stPageState();
+}
+
+class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
+  final List<BloodPressureLesson> _pinedLessons = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLessons();
+  }
+
+  void _loadLessons() async {
+    try {
+      _pinedLessons.clear();
+      final lessons = await BloodPressureClient().fetchBloodPressureLessons();
+      if (lessons != null) {
+        setState(() {
+          _pinedLessons.addAll(lessons);
+        });
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  void _navigateToInputSelection() async {
+    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    // Grant access to HealthKit already
+    if (hasHealthConnection == true) {
+      Navigator.pushNamed(
+        context, NavigatorName.add_blood_pressure,
+        arguments: {'type': 'input'},
+      );
+      return;
+    }
+    // Show the modal to choose methods
+    BloodPressureFunctions.showModalAddData(context, popPrevious: true);
+  }
+
+  void _navigateToLessonDetail(String id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
+
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id,
+        onComplete: (_, __) {},
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: R.color.glucose_bg_color,
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          _appBarSection(),
+          Expanded(child: _composeLayout()),
+        ],
+      ),
+    );
+  }
+
+  Widget _appBarSection() {
+    return CustomAppBar(
+      backgroundColor: R.color.greenGradientBottom,
+      title: Text(
+        R.string.huyet_ap.tr(),
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: R.color.white,
+        ),
+      ),
+      leadingIcon: IconButton(
+          splashColor: R.color.white,
+          highlightColor: R.color.white,
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+          onPressed: () {
+            NavigationUtil.pop(context);
+          }),
+      actions: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _composeLayout() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+          _buildBannerSection(),
+          const SizedBox(height: 16),
+          _buildPinnedLessonsSection(),
+          const SizedBox(height: 16),
+          _buildLessonSection(),
+          const SizedBox(height: 47),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBannerSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+            R.drawable.im_bloodpressure_intro,
+            width: 319,
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  R.string.did_you_know.tr(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  R.string.bloodpressure_benefit_observe.tr(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 24 / 15,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.primaryGreyColor,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _navigateToInputSelection,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: R.color.mainColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    minimumSize: Size.fromHeight(40),
+                  ),
+                  child: Text(
+                    R.string.enter_blood_pressure.tr(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPinnedLessonsSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              R.string.bloodpressure_intro_help_title.tr(),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                height: 24 / 18,
+                color: R.color.dark,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (_pinedLessons.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _pinedLessons.length > 1
+                        ? _buildPinnedLessonItem(_pinedLessons[1])
+                        : const SizedBox()),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
+          if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+            Row(
+              children: [
+                Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
+                const SizedBox(width: 8),
+                Expanded(
+                    child: _pinedLessons.length > 3
+                        ? _buildPinnedLessonItem(_pinedLessons[3])
+                        : const SizedBox()),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLessonSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: BloodPressureLessonSection(
+        onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+      ),
+    );
+  }
+
+  Widget _buildPinnedLessonItem(BloodPressureLesson lesson) {
+    String title = lesson.name;
+    String? imageUrl = lesson.imageUrl;
+    return InkWell(
+      onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        height: 152.h,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          border: Border.all(color: R.color.grayComponentBorder),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            NetWorkImageWidget(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              width: 72,
+              height: 72,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                height: 20 / 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.primaryGreyColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

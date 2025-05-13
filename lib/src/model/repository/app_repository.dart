@@ -48,6 +48,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
+import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
 import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
@@ -1157,6 +1158,17 @@ class AppRepository {
       getDiabClinicsSchedule() async {
     try {
       final response = await docosanClient.getDiabClinicsSchedule();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<GetCustomerReceivesUserResponse>> getCustomerReceivesUser(
+      String phoneNumber) async {
+    try {
+      final GetCustomerReceivesUserResponse response =
+          await appClient.getCustomerReceivesUser(phoneNumber);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
