@@ -55,7 +55,7 @@
             "text": "12 buổi cung cấp kiến thức, hướng dẫn thực hành",
             "richText": [
               {"text": "12 buổi", "isBold": true},
-              {"text": "cung cấp kiến thức, hướng dẫn thực hành", "isBold": false}
+              {"text": " cung cấp kiến thức, hướng dẫn thực hành", "isBold": false}
             ]
           }
         ]
@@ -67,7 +67,7 @@
         "price": "4.100.000đ",
         "duration": "3 tháng",
         "backgroundImagePath": "assets/images/bg_dong_hanh.png",
-        "isRecommended": true,
+        "isRecommended": false,
         "features": [
           {
             "text": "6 buổi tư vấn bởi chuyên gia đầu ngành",

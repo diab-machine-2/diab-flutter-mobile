@@ -418,13 +418,13 @@ class ProgramCard extends StatelessWidget {
                     ProgramService.showPopupConfirmBasicSubscription(
                         title: program.title,
                         subtitle: R.string.basic_program_confirm.tr(),
-                        onConfirm: () {
-                          // Navigator.of(context, rootNavigator: true)
-                          //     .pushNamedAndRemoveUntil(
-                          //   NavigatorName.tabbar,
-                          //   (route) =>
-                          //       false, // This removes all routes from stack
-                          // );
+                        onConfirm: () async {
+                          await SubscriptionNavigationMixin
+                              .navigationKey.currentState
+                              ?.pushNamed(
+                            NavigatorName.welcome_program,
+                            arguments: {'program': program},
+                          );
                         },
                         context: context);
                     return;
@@ -679,15 +679,13 @@ class ProgramCard extends StatelessWidget {
                       ProgramService.showPopupConfirmBasicSubscription(
                           title: program.title,
                           subtitle: R.string.basic_program_confirm.tr(),
-                          onConfirm: () {
-                            // TODO: Handle call API upgrade subscription and update UI program with tooltip
-                            
-                            // Navigator.of(context, rootNavigator: true)
-                            //     .pushNamedAndRemoveUntil(
-                            //   NavigatorName.tabbar,
-                            //   (route) =>
-                            //       false, // This removes all routes from stack
-                            // );
+                          onConfirm: () async {
+                            await SubscriptionNavigationMixin
+                                .navigationKey.currentState
+                                ?.pushNamed(
+                              NavigatorName.welcome_program,
+                              arguments: {'program': program},
+                            );
                           },
                           context: context);
                       return;

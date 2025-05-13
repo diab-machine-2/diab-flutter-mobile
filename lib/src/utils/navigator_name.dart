@@ -113,4 +113,5 @@ class NavigatorName {
   static const String paywall_screen = '/paywall_screen';
   static const String package_program_list = '/package_program_list';
   static const String package_program_detail = '/package_program_detail';
+  static const String welcome_program = '/welcome_program';
 }

@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
@@ -130,6 +131,106 @@ class _SubscriptionOptionsBottomSheetState
         log('[SUBSCRIPTION] Package title: ${packageToPurchase.storeProduct.title}');
         log('[SUBSCRIPTION] Package price: ${packageToPurchase.storeProduct.priceString}');
 
+        // First validate that no other user has active subscriptions
+        final canPurchase =
+            await RevenueCatService.validateNoOtherUserHasActiveSubscription();
+
+        if (!canPurchase) {
+          setState(() {
+            _isLoading = false;
+            _isPurchaseInProgress = false;
+          });
+
+          // Show a dialog informing the user that subscription exists on another account
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(R.string.subscription_already_active.tr()),
+              content: Text(R.string.subscription_already_active_content.tr()),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          HomeSupportFunctions.showModalAddData(context);
+                        },
+                        child: Container(
+                          height: 43,
+                          margin: EdgeInsets.only(left: 12),
+                          decoration: BoxDecoration(
+                            color: R.color.white,
+                            borderRadius: BorderRadius.circular(200),
+                            border: Border.all(
+                              color: R.color.greenGradientBottom,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.contact.tr(),
+                              style: TextStyle(
+                                color: R.color.greenGradientBottom,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    GapW(12),
+                    Flexible(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context, rootNavigator: true)
+                              .pushNamedAndRemoveUntil(
+                            NavigatorName.tabbar,
+                            (route) =>
+                                false, // This removes all routes from stack
+                          );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(right: 12),
+                          decoration: BoxDecoration(
+                            color: R.color.white,
+                          ),
+                          child: Container(
+                            height: 43,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  R.color.greenGradientTop02,
+                                  R.color.greenGradientBottom,
+                                  R.color.greenGradientBottom,
+                                ],
+                              ),
+                            ),
+                            child: Text(
+                              R.string.back_home_page.tr(),
+                              style: TextStyle(
+                                  color: R.color.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+
         // Attempt to purchase the package
         final purchased =
             await RevenueCatService.purchasePackage(packageToPurchase);
@@ -155,7 +256,6 @@ class _SubscriptionOptionsBottomSheetState
           );
 
           // Refresh home screen and subscription screen
-          Observable.instance.notifyObservers([], notifyName: "refresh_home");
           Observable.instance
               .notifyObservers([], notifyName: "refresh_subscription");
         } else {

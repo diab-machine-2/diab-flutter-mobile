@@ -8,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_detail_page.dart';
+import 'package:medical/src/widget/subscription/pages/welcome_program_page.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
@@ -144,6 +145,15 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     return _buildRoute(
                       settings,
                       ProgramDetailPage(
+                        program: args?['program'],
+                      ),
+                    );
+                  case NavigatorName.welcome_program:
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      WelcomeProgramPage(
                         program: args?['program'],
                       ),
                     );

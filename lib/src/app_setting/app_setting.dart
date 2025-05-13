@@ -425,6 +425,7 @@ class AppSettings {
       }
       userInfo = null;
       await FetchClient().checkNetwork();
+      await RevenueCatService.logout();
       await LoginClient().logout();
       await deleteHomeData();
       await clearToken();
@@ -443,7 +444,6 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
-      await RevenueCatService.logout();
       return true;
     } catch (_) {
       return false;

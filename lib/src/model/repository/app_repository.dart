@@ -13,7 +13,6 @@ import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
-import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
@@ -1178,6 +1177,16 @@ class AppRepository {
       NotifySubscriptionRequest request) async {
     try {
       final response = await appClient.notifySubscription(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> subscriptionActivePackage(
+      String accountId) async {
+    try {
+      final response = await appClient.subscriptionActivePackage(accountId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

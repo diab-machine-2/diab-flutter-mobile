@@ -141,6 +141,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                       if(!isClickSkip){
                         isClickSkip = true;
                         await _backPressed();
+                        Observable.instance.notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
                         Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
                       }                      
                     },
@@ -176,6 +177,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
     await _cubit.markDisplayedWelcome();
     isClickSkip = false;
     Navigator.pop(context);
+    Observable.instance.notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
     return true;
   }
 }
