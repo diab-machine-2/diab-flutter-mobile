@@ -9,14 +9,22 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+typedef BloodPressureChartCallback = void Function(BloodPressureRangeType rangeType);
+
 class BloodPressureChart extends StatefulWidget {
-  BloodPressureChart({Key? key, required this.initPeriodFilterType}) : super(key: key);
+  BloodPressureChart({
+    Key? key,
+    required this.initPeriodFilterType,
+    required this.bloodPressureChartCallback,
+  }) : super(key: key);
   final int initPeriodFilterType;
+  final BloodPressureChartCallback bloodPressureChartCallback;
   @override
   BloodPressureChartState createState() => BloodPressureChartState();
 }
@@ -118,7 +126,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
     double paddingOutSideBoth = 12 * 2;
     double leftTitleWidth = 50;
     double leftTitleMargin = 2;
-    double chartWidth = MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
+    double chartWidth =
+        MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
     final width = chartWidth / 18;
     final itemWidth = width + 12; // same as used in chart
 
@@ -135,8 +144,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
       // When reversed, we need to calculate from the right edge
       final totalWidth = ((trends.length < 5 ? 5 : trends.length) * itemWidth);
       final rightEdgeOffset = totalWidth - (_focusIndex + 1) * itemWidth;
-      final targetOffset =
-          rightEdgeOffset + (itemWidth / 2) - (chartWidth / 2);
+      final targetOffset = rightEdgeOffset + (itemWidth / 2) - (chartWidth / 2);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
@@ -193,6 +201,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
             if (_focusIndex == -1 || _focusIndex >= trends.length) {
               _focusIndex = (trends.length - 1);
+              final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+              Future.delayed(Duration(milliseconds: 200)).then((value) {
+                widget.bloodPressureChartCallback(rangeType);
+              });
             }
           }
 
@@ -357,6 +369,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           setState(() {
                             _focusIndex = max(0, _focusIndex - 1);
                           });
+                          final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                          widget.bloodPressureChartCallback(rangeType);
                           if (_focusIndex > 0) {
                             _scrollToFocusIndex();
                           }
@@ -403,6 +417,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           setState(() {
                             _focusIndex = min(trends.length - 1, _focusIndex + 1);
                           });
+                          final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                          widget.bloodPressureChartCallback(rangeType);
                           if (_focusIndex < trends.length - 1) {
                             _scrollToFocusIndex();
                           }
@@ -472,7 +488,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
     double paddingOutSideBoth = 12 * 2;
     double leftTitleWidth = 50;
     double leftTitleMargin = 2;
-    double chartWidth = MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
+    double chartWidth =
+        MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
     // Calculate width to show 11 points on the page
     final width = chartWidth / 18;
 
@@ -584,6 +601,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 setState(() {
                                   _focusIndex = value.toInt();
                                 });
+                                final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                                widget.bloodPressureChartCallback(rangeType);
                               }
                             } else {
                               _focusIndex = -1;
