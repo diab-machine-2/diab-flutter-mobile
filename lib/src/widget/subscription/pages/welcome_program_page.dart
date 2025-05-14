@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
 import 'package:medical/src/widget/subscription/services/subscription_activate_service.dart';
@@ -32,6 +31,7 @@ class WelcomeProgramPage extends StatefulWidget {
 class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
   late SubscriptionCubit _cubit;
   final _subscriptionActivateService = SubscriptionActivateService();
+  bool _isActivated = false;
 
   @override
   void initState() {
@@ -50,15 +50,150 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
     }
 
     // Use new subscription service for improved UX
-    await _subscriptionActivateService.activateSubscription(accountId, context);
+    final result = await _subscriptionActivateService.activateSubscription(
+        accountId, context);
 
-    // // In case current account already display welcome screen
-    // // we need to reset state display when activate new subscription
-    // AppSettings.isDisplayedWelcome = false;
+    if (result) {
+      setState(() {
+        _isActivated = true;
+      });
+    } else {
+      // Handle activation failure if needed
+    }
+  }
 
+  void _navigateToHomeScreen() {
     Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
       NavigatorName.tabbar,
       (route) => false, // This removes all routes from stack
+    );
+  }
+
+  void _learnMoreAboutProgram() async {
+    // Implement navigation to program details or info page
+    var result = await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: 1,
+        lessonId: '43b767c7-4088-477f-e4cd-08d9ec6038bc',
+        onComplete: (lessonId, percentComplete) {
+          Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+            NavigatorName.tabbar,
+            (route) => false, // This removes all routes from stack
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStartButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: () async {
+            await _activateSubscription();
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: R.color.white,
+            ),
+            child: Container(
+              height: 43,
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 0),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    R.color.greenGradientTop02,
+                    R.color.greenGradientBottom,
+                    R.color.greenGradientBottom,
+                  ],
+                ),
+              ),
+              child: Text(
+                R.string.start.tr(),
+                style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActivatedContent() {
+    return Column(
+      children: [
+        Text(
+          R.string.waiting_active_subscription_content_2.tr(),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: Color(0xFF636A6B),
+          ),
+          maxLines: 2,
+          textAlign: TextAlign.center,
+        ),
+        GapH(20),
+        InkWell(
+          onTap: _learnMoreAboutProgram,
+          child: Container(
+            height: 42,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  R.color.greenGradientTop02,
+                  R.color.greenGradientBottom,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(200),
+            ),
+            child: Center(
+              child: Text(
+               R.string.explore_program.tr(),
+                style: TextStyle(
+                  color: R.color.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ),
+        GapH(12),
+        InkWell(
+          onTap: _navigateToHomeScreen,
+          child: Container(
+            height: 42,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Color(0xFFDCFFFC),
+              borderRadius: BorderRadius.circular(200),
+            ),
+            child: Center(
+              child: Text(
+                R.string.back_home_page.tr(),
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -215,47 +350,7 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
               ),
             ),
             GapH(24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () async {
-                    await _activateSubscription();
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: R.color.white,
-                    ),
-                    child: Container(
-                      height: 43,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 40, vertical: 0),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            R.color.greenGradientTop02,
-                            R.color.greenGradientBottom,
-                            R.color.greenGradientBottom,
-                          ],
-                        ),
-                      ),
-                      child: Text(
-                        R.string.start.tr(),
-                        style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _isActivated ? _buildActivatedContent() : _buildStartButton(),
           ],
         ),
       ),

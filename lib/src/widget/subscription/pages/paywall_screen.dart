@@ -187,22 +187,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ),
                   ),
 
-                  // Back arrow positioned at top
-                  Positioned(
-                    top: 40,
-                    left: 16,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back,
-                          color: R.color.greenGradientTop02),
-                      onPressed: () {
-                        // Make sure bottom bar shows when navigating back
-                        Observable.instance
-                            .notifyObservers([], notifyName: 'show_bottom_bar');
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-
                   // Main content aligned to bottom
                   Positioned(
                     left: 0,
@@ -230,6 +214,22 @@ class _PaywallScreenState extends State<PaywallScreen> {
                               _localPackages[_selectedPackageIndex]),
                         ],
                       ),
+                    ),
+                  ),
+
+                  // Back arrow positioned at top
+                  Positioned(
+                    top: 40,
+                    left: 16,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back,
+                          color: R.color.greenGradientTop02),
+                      onPressed: () {
+                        // Make sure bottom bar shows when navigating back
+                        Observable.instance
+                            .notifyObservers([], notifyName: 'show_bottom_bar');
+                        Navigator.of(context).pop();
+                      },
                     ),
                   ),
                 ],

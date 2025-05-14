@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/widgets/gap_widget.dart';
 
 class SubscriptionActivateService {
   static final SubscriptionActivateService _instance =
@@ -33,34 +30,34 @@ class SubscriptionActivateService {
   /// Start the actual subscription activation API call
   Future<bool> _startActivation(String accountId) async {
     try {
-      BotToast.showCustomLoading(
-        toastBuilder: (cancelFunc) {
-          return Container(
-            width: 300,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: R.color.color0xff111515.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GapH(12),
-                Text(
-                  R.string.waiting_active_subscription_content_1.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-              ],
-            ),
-          );
-        },
-        crossPage: true,
-        backgroundColor: R.color.color0xff111515.withOpacity(0.7),
-        backButtonBehavior: BackButtonBehavior.ignore,
-        clickClose: true,
-        allowClick: false,
-      );
+      // BotToast.showCustomLoading(
+      //   toastBuilder: (cancelFunc) {
+      //     return Container(
+      //       width: 300,
+      //       padding: const EdgeInsets.all(16),
+      //       decoration: BoxDecoration(
+      //         color: R.color.color0xff111515.withOpacity(0.7),
+      //         borderRadius: BorderRadius.circular(8),
+      //       ),
+      //       child: Column(
+      //         mainAxisSize: MainAxisSize.min,
+      //         children: [
+      //           GapH(12),
+      //           Text(
+      //             R.string.waiting_active_subscription_content_1.tr(),
+      //             textAlign: TextAlign.center,
+      //             style: TextStyle(color: Colors.white, fontSize: 14),
+      //           ),
+      //         ],
+      //       ),
+      //     );
+      //   },
+      //   crossPage: true,
+      //   backgroundColor: R.color.color0xff111515.withOpacity(0.7),
+      //   backButtonBehavior: BackButtonBehavior.ignore,
+      //   clickClose: true,
+      //   allowClick: false,
+      // );
 
       final apiResult =
           await AppRepository().subscriptionActivePackage(accountId);
