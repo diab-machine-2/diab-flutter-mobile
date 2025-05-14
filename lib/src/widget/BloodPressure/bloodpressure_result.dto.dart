@@ -67,6 +67,13 @@ enum BloodPressureRangeType {
       orElse: () => BloodPressureRangeType.normal,
     );
   }
+
+  static BloodPressureRangeType fromTitle(String title) {
+    return BloodPressureRangeType.values.firstWhere(
+      (e) => e.title == title,
+      orElse: () => BloodPressureRangeType.normal,
+    );
+  }
 }
 
 extension BloodPressureRangeTypeExtension on BloodPressureRangeType {
