@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../bloodpressure_result.dto.dart';
 
@@ -20,14 +20,7 @@ class AIHelpButton extends StatelessWidget {
 
   void _actionByRangeType(BuildContext context) async {
     if (_isLowPressure) {
-      // Redirect to "Redirect ‘AI Chat’"
-      const url = Const.ZALO_OA_TECHNICAL_SUPPORT_LINK;
-      final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        throw 'Could not launch $url';
-      }
+      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_CHAT_TAB);
     } else if (_isHighPressure) {
       // Redirect ‘Tư vấn sống khoẻ’ (PSC Booking Online 816, màn hình chọn nhu cầu tư vấn)
       Navigator.of(context).pushNamed('/dsmes_booking');
