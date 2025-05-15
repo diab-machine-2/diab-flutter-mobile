@@ -268,6 +268,10 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _jumpTo(TabBarType.home.index);
     }
+    if (notifyName == Const.NAVIGATE_TO_CHAT_TAB) {
+      Navigator.of(context).popUntil((route) => route.isFirst || route.settings.name == NavigatorName.tabbar);
+      _jumpTo(TabBarType.chat.index);
+    }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
         notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
       _checkExistLessonId();

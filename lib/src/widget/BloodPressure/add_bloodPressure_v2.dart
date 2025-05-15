@@ -1419,7 +1419,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
     final diastolic = _controllerDiastolic.text;
-    final pulseRate = _isInputHeartRate ? _controllerHeart.text : '0';
+    final pulseRate = _isInputHeartRate ? _controllerHeart.text : '';
 
     if (!_validateInput(systolic, diastolic, pulseRate)) return;
 
@@ -1442,7 +1442,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           widget.id,
           systolic,
           diastolic,
-          pulseRate.isNotEmpty ? pulseRate : '0',
+          pulseRate.isNotEmpty ? pulseRate : '',
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           _selectedTimeFrame!.id,
           data.note, // updated to use data.note
