@@ -98,7 +98,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
           widget.data.id,
           widget.data.systolic.toString(),
           widget.data.diastolic.toString(),
-          widget.data.pulse.toString(),
+          (widget.data.pulse ?? 0) > 0 ? widget.data.pulse.toString() : '',
           widget.data.dateTime.millisecondsSinceEpoch ~/ 1000,
           widget.data.timeFrameId,
           data.note,

@@ -215,7 +215,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     if (model != null) {
       _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
-      _controllerHeart.text = model!.pulseRate?.toInt().toString() ?? '';
+      if (model!.pulseRate != null && model!.pulseRate! > 0) {
+        _controllerHeart.text = model!.pulseRate!.toInt().toString();
+      } else {
+        _controllerHeart.text = '';
+      }
       _controllerNote.text = model?.note ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       _files.addAll(model!.images);
