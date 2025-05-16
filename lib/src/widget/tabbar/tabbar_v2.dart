@@ -185,12 +185,16 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     } else if (index == TabBarType.chat.index) {
       // _jumpTo(index);
       // _lastIndex = index;
-      Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
+      _onChatWithAI();
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
       _jumpTo(index);
     }
+  }
+
+  void _onChatWithAI() {
+    Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
   }
 
   void _checkExistZoomId() async {
@@ -286,9 +290,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _jumpTo(TabBarType.home.index);
     }
     if (notifyName == Const.NAVIGATE_TO_CHAT_TAB) {
-      Navigator.of(context).popUntil((route) =>
-          route.isFirst || route.settings.name == NavigatorName.tabbar);
-      _jumpTo(TabBarType.chat.index);
+      Navigator.of(context).popUntil((route) => route.isFirst || route.settings.name == NavigatorName.tabbar);
+      _onChatWithAI();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
         notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
