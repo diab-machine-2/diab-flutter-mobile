@@ -165,6 +165,8 @@ class _DsmesAppointmentHistoryPageState
                                       endDateTime.isBefore(DateTime.now());
                                   return appointment.status ==
                                           DSMES_STATUS_REQUEST ||
+                                      appointment.status ==
+                                          DSMES_STATUS_ON_HOLD ||
                                       (appointment.status ==
                                               DSMES_STATUS_APPROVE &&
                                           !isPast);
