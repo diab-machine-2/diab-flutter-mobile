@@ -198,7 +198,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
         if (isProcessing['clinicDetail']!) return;
         isProcessing['clinicDetail'] = true;
         try {
-          final detailSuccess = await _cubit.getClinicDetail(id: data.id);
+          final detailSuccess = await _cubit.getClinicDetail(id: data.clinicId);
 
           if (!detailSuccess || _cubit.selectedClinic == null) {
             return;
@@ -314,7 +314,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                   isProcessing['onlineConsult'] = true;
                                   try {
                                     final detailSuccess = await _cubit
-                                        .getClinicDetail(id: data.id);
+                                        .getClinicDetail(id: data.clinicId);
 
                                     if (!detailSuccess ||
                                         _cubit.selectedClinic == null) {
@@ -390,7 +390,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                   isProcessing['clinicConsult'] = true;
                                   try {
                                     final detailSuccess = await _cubit
-                                        .getClinicDetail(id: data.id);
+                                        .getClinicDetail(id: data.clinicId);
 
                                     if (!detailSuccess ||
                                         _cubit.selectedClinic == null) {

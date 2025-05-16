@@ -148,7 +148,23 @@
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="diabvnpay" 
+                        android:host="sdk" />
+            </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.vnpay.authentication.VNP_AuthenticationActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <activity-alias
             android:name="ViewPermissionUsageActivity"

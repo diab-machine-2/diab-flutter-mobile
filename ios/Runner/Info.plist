@@ -65,6 +65,16 @@
 				<string>zalo-3372616423345602339</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>vnpay</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>diabvnpay</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -121,6 +131,10 @@
 	<string>This app requires the access to Microphone to record your voice memo.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Cho phép diaB truy cập định vi</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Cho phép diaB truy cập định vi</string>
 	<key>Privacy - Audio Video Interactions</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

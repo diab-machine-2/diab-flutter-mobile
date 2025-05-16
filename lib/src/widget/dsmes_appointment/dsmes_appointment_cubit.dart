@@ -512,7 +512,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
     // Priority 2: Requested appointments closest to current time
     List<DsmesAppointment> requestedAppointments = myAppointments
-        .where((appointment) => appointment.status == DSMES_STATUS_REQUEST)
+        .where((appointment) =>
+            appointment.status == DSMES_STATUS_REQUEST ||
+            appointment.status == DSMES_STATUS_ON_HOLD)
         .toList();
 
     requestedAppointments.sort((a, b) {

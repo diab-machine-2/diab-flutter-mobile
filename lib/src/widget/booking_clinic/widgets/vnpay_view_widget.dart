@@ -1,264 +1,120 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:medical/res/R.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 
 class VNPayView extends StatefulWidget {
   const VNPayView({
     required this.paymentUrl,
+    required this.tmnCode,
     super.key,
     this.onPaymentSuccess,
     this.onPaymentError,
   });
+
   final String paymentUrl;
+  final String tmnCode;
   final void Function(Map<String, dynamic> value)? onPaymentSuccess;
   final void Function(Map<String, dynamic> error)? onPaymentError;
 
   @override
-  State<VNPayView> createState() => VNPayViewState();
+  State<VNPayView> createState() => _VNPayViewState();
 }
 
-class VNPayViewState extends State<VNPayView> {
-  late InAppWebViewController webViewController;
-  bool isPaymentHandled = false;
-  bool hasError = false;
+class _VNPayViewState extends State<VNPayView> {
+  static const platform = MethodChannel('paymentGateway');
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    platform.setMethodCallHandler(_handleMethod);
+    _openVNPaySDK();
+  }
+
+  Future<dynamic> _handleMethod(MethodCall call) async {
+    if (call.method == 'PaymentBack') {
+      _handlePaymentResult(call.arguments);
+    }
+    return null;
+  }
+
+  void _handlePaymentResult(dynamic arguments) {
+    final String action = arguments['action'] ?? '';
+    final int resultCode = arguments['resultCode'] ?? -1;
+    final String responseCode = arguments['vnp_ResponseCode'] ?? '99';
+
+    print("[VNPAY] Payment result: action=$action, resultCode=$resultCode, responseCode=$responseCode");
+
+    // Extract transaction details if available
+    Map<String, dynamic> transactionDetails = {};
+    
+    // Copy all vnp_ prefixed parameters to transaction details
+    arguments.forEach((key, value) {
+      if (key.startsWith('vnp_')) {
+        transactionDetails[key] = value;
+      }
+    });
+
+    if (resultCode == 0 || responseCode == '00') {
+      // Payment successful
+      widget.onPaymentSuccess?.call({
+        'vnp_ResponseCode': responseCode,
+        ...transactionDetails,
+      });
+    } else if (resultCode == 10) {
+      // User selected mobile banking app, waiting for return
+      // No dialog here as we're waiting for the user to return from the banking app
+    } else if (resultCode == 24) {
+      // Payment canceled
+      widget.onPaymentError?.call({
+        'vnp_ResponseCode': responseCode,
+        'error': 'Payment canceled',
+        ...transactionDetails,
+      });
+    } else {
+      // Payment failed
+      widget.onPaymentError?.call({
+        'vnp_ResponseCode': responseCode,
+        ...transactionDetails,
+      });
+      
+    }
+  }
 
   @override
   void dispose() {
+    platform.setMethodCallHandler(null);
     super.dispose();
   }
 
-  Future<NavigationActionPolicy> _handleBankUrl(String url) async {
-    print('[VNPAY] BANK URL: $url');
-
-    // Handle intent:// URLs (format used by many banks on Android)
-    if (url.startsWith('intent://')) {
-      print('[VNPAY] Intent URL: $url');
-      try {
-        // Parse the intent URL
-        final uri = Uri.parse(url.replaceFirst('intent://', 'intent:'));
-
-        // Extract all important parts from the intent URL
-        final packageName = url.split('package=')[1].split(';')[0];
-        final scheme = url.split('scheme=')[1].split(';')[0];
-
-        // Extract the data parameter
-        final data = uri.queryParameters['data'];
-        final callbackUrl = uri.queryParameters['callbackurl'];
-
-        // Construct the deep link URL with all necessary parameters
-        final deepLinkData = {
-          'data': data,
-          'callbackurl': callbackUrl,
-        };
-
-        // Create the final URL with scheme and encoded parameters
-        final deepLinkUrl = Uri(
-          scheme: scheme,
-          host: 'view',
-          queryParameters: deepLinkData,
-        ).toString();
-
-        print('[VNPAY] Deep link URL: $deepLinkUrl');
-
-        // Try to launch the bank app with the payment data
-        await _launchUrlOrStore(deepLinkUrl, packageName);
-      } catch (e) {
-        print('[VNPAY] Error launching intent URL: $e');
-      }
-      return NavigationActionPolicy.CANCEL;
-    }
-    // Handle direct scheme URLs (banking apps with custom URL schemes)
-    else if (url.contains('://') && !url.startsWith('http')) {
-      print('[VNPAY] Direct scheme URL: $url');
-
-      try {
-        // Parse the URL to extract scheme, host and parameters
-        final uri = Uri.parse(url);
-        final scheme = uri.scheme;
-        String? packageName;
-
-        // Extract QR content parameter
-        String? qrContent;
-        if (uri.queryParameters.containsKey('qrContent')) {
-          qrContent = uri.queryParameters['qrContent'];
-        }
-
-        final callbackUrl = uri.queryParameters['callbackurl'];
-
-        // Known package mappings - extend this list as needed
-        final knownSchemes = {
-          'vpbankneo': 'com.vnpay.vpbankonline',
-          'tcb': 'vn.com.techcombank.bb.app',
-          // Add more mappings as you discover them
-        };
-
-        packageName = knownSchemes[scheme];
-
-        // Reconstruct URL with consistent 'data' parameter
-        // This aligns with the intent:// format for consistency
-        if (qrContent != null && callbackUrl != null) {
-          // Create URL with standardized parameters
-          final standardizedUri = Uri(
-            scheme: scheme,
-            host: uri.host,
-            path: uri.path,
-            queryParameters: {
-              'data': qrContent,
-              'callbackurl': callbackUrl,
-            },
-          );
-
-          print('[VNPAY] Standardized URL: ${standardizedUri.toString()}');
-
-          // Try to launch with standardized format
-          final launched =
-              await _launchUrlOrStore(standardizedUri.toString(), packageName);
-          if (launched) {
-            return NavigationActionPolicy.CANCEL;
-          }
-        }
-
-        // If standardization failed, try original URL as fallback
-        await _launchUrlOrStore(url, packageName);
-      } catch (e) {
-        print('[VNPAY] Error handling direct scheme URL: $e');
-      }
-      return NavigationActionPolicy.CANCEL;
-    }
-
-    // Allow all other URLs to load normally
-    return NavigationActionPolicy.ALLOW;
-  }
-
-  // Helper method to launch URL or open app store if not installed
-  Future<bool> _launchUrlOrStore(String url, String? packageName) async {
+  Future<void> _openVNPaySDK() async {
     try {
-      final canLaunch = await canLaunchUrl(Uri.parse(url));
-      if (canLaunch) {
-        await launchUrl(
-          Uri.parse(url),
-          mode: LaunchMode.externalApplication,
-        );
-        return true;
-      } else if (packageName != null) {
-        // If app is not installed, open Play Store
-        final marketUrl = Uri.parse('market://details?id=$packageName');
-        final httpUrl = Uri.parse(
-            'https://play.google.com/store/apps/details?id=$packageName');
-
-        try {
-          await launchUrl(marketUrl, mode: LaunchMode.externalApplication);
-        } catch (_) {
-          await launchUrl(httpUrl, mode: LaunchMode.externalApplication);
-        }
-        return true;
-      }
-    } catch (e) {
-      print('[VNPAY] Error launching URL: $e');
+      await platform.invokeMethod('openSDK', {
+        'url': widget.paymentUrl,
+        'tmnCode': widget.tmnCode,
+        'scheme': 'diabvnpay',
+      });
+      setState(() {
+        isLoading = false;
+      });
+    } on PlatformException catch (e) {
+      print("[VNPAY] Error opening SDK: ${e.message}");
+      setState(() {
+        isLoading = false;
+      });
+      widget.onPaymentError?.call({
+        'vnp_ResponseCode': '99',
+        'error': 'Failed to open payment: ${e.message}',
+      });
     }
-    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        return false;
-      },
-      child: Expanded(
-        child: Stack(
-          children: [
-            Container(
-              child: InAppWebView(
-                initialUrlRequest:
-                    URLRequest(url: WebUri.uri(Uri.parse(widget.paymentUrl))),
-                initialSettings: InAppWebViewSettings(
-                  javaScriptEnabled: true,
-                  useOnLoadResource: true,
-                  useShouldOverrideUrlLoading: true,
-                  // Enable app scheme URLs
-                  allowUniversalAccessFromFileURLs: true,
-                  // Add this settings prevent case unable to load webview
-                  useHybridComposition: true,
-                  // Enable external app launching
-                ),
-                shouldOverrideUrlLoading: (controller, navigationAction) async {
-                  final url = navigationAction.request.url.toString();
-                  print('[VNPAY] BANK URL: $url');
-                  return _handleBankUrl(url);
-                },
-                onWebViewCreated: (controller) {
-                  webViewController = controller;
-                },
-                onLoadStop: (controller, url) {
-                  if (url.toString().contains('vnp_ResponseCode') &&
-                      !isPaymentHandled) {
-                    final params = Uri.parse(url.toString()).queryParameters;
-                    if (params['vnp_ResponseCode'] == '00') {
-                      isPaymentHandled = true;
-                      widget.onPaymentSuccess?.call(params);
-                    } else {
-                      widget.onPaymentError?.call(params);
-                    }
-                    // Navigator.of(context).pop();
-                  }
-                },
-                onReceivedError: (controller, request, error) {
-                  print('[VNPAY] Receive error: ${error.description}');
-                  setState(() {
-                    hasError = true;
-                  });
-                },
-              ),
-            ),
-            if (hasError)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    color: R.color.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    child: Container(
-                      height: 44,
-                      // width: 158,
-                      decoration: BoxDecoration(
-                        color: R.color.mainColor,
-                        borderRadius: BorderRadius.circular(200),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            R.color.greenGradientTop,
-                            R.color.greenGradientMid,
-                            R.color.greenGradientBottom,
-                          ],
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          R.string.repayment.tr(),
-                          style: TextStyle(
-                            color: R.color.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
+    return Expanded(
+      child: Center(
+        child: isLoading
+            ? SizedBox.shrink()
+            : Text('Processing payment via VNPAY...'),
       ),
     );
   }
