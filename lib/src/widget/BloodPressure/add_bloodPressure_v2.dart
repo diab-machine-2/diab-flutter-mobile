@@ -1446,7 +1446,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           widget.id,
           systolic,
           diastolic,
-          pulseRate.isNotEmpty ? pulseRate : '',
+          pulseRate.isNotEmpty ? pulseRate : '0',
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           _selectedTimeFrame!.id,
           data.note, // updated to use data.note
