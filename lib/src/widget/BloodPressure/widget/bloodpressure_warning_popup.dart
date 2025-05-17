@@ -4,10 +4,11 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/keyvalue.dart';
 
 class BloodPressureWarningPopupWidget extends StatefulWidget {
-  BloodPressureWarningPopupWidget({super.key, required this.reasons});
+  BloodPressureWarningPopupWidget({super.key, required this.reasons, this.initValue = const []});
 
   final List<KeyValue> reasons;
 
+  final List<String>? initValue;
   @override
   State<BloodPressureWarningPopupWidget> createState() => _BloodPressureWarningPopupWidgetState();
 }
@@ -18,6 +19,21 @@ class _BloodPressureWarningPopupWidgetState extends State<BloodPressureWarningPo
   final List<KeyValue> _selectedReasons = [];
   bool get _isConfirmEnable {
     return _selectedReasons.isNotEmpty;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    
+    final initKeys = widget.initValue ?? [];
+    
+    if (initKeys.length == 0) return;
+
+    for (final reason in widget.reasons) {
+      if (initKeys.contains(reason.value)) {
+        _selectedReasons.add(reason);
+      }
+    }
   }
 
   void _inputtedReason() {
