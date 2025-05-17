@@ -298,21 +298,27 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                       late final double value;
                       late final Color color;
                       if (i == 0) {
+                        // "Tăng huyết áp độ 3"
                         color = toColor(model.increaseLevelThreeColor);
                         value = model.increaseLevelThree! / total * 100;
                       } else if (i == 1) {
+                        // "Tăng huyết áp độ 2"
                         color = toColor(model.increaseLevelTwoColor);
                         value = model.increaseLevelTwo! / total * 100;
                       } else if (i == 2) {
+                        // "Tăng huyết áp độ 1"
                         color = toColor(model.increaseLevelOneColor);
                         value = model.increaseLevelOne! / total * 100;
                       } else if (i == 3) {
+                        // "Bình thường cao"
                         color = toColor(model.preIncreaseColor);
                         value = model.preIncrease! / total * 100;
                       } else if (i == 4) {
+                        // "Bình thường"
                         color = toColor(model.normalColor);
                         value = model.normal! / total * 100;
                       } else {
+                        // "Thấp"
                         color = toColor(model.lowColor);
                         value = model.low! / total * 100;
                       }
