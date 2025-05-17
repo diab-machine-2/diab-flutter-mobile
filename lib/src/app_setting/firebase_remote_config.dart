@@ -67,8 +67,8 @@ class FirebaseRemoteSetting {
           "{\"Lazada\":\"https://www.lazada.vn/shop/diab-official123/?spm=a2o4n.pdp_revamp.seller.1.22551b10iVUR71&itemId=2204466993&channelSource=pdp\",\"Shopee\":\"https://shopee.vn/diab_official123?categoryId=100001&entryPoint=ShopByPDP&itemId=17493490410\",\"Store\":\"https://store.diab.com.vn\"}",
       "APP_DEVELOPER_MODE":
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
-      "UTILITIES_ORDER":
-          "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,dat-lich-kham-benh",
+      "UTILITIES_ORDER": localSetting["UTILITIES_ORDER"] ??
+          "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
       "GLUCOSE_FAQS":
           jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
       "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ??
@@ -110,8 +110,7 @@ class FirebaseRemoteSetting {
         remoteConfig.getBool('ACTIVE_POPUP_HEALTH_CONNECT');
     _linkStoreNavigation = remoteConfig.getString('LINKSTORE_NAVIGATION_URL');
     _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
-    _utilitiesOrder =
-        "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,dat-lich-kham-benh";
+    _utilitiesOrder = remoteConfig.getString('UTILITIES_ORDER');
     if (remoteConfig.getString('GLUCOSE_FAQS').isNotEmpty == true) {
       _glucoseFaqs =
           (jsonDecode(remoteConfig.getString('GLUCOSE_FAQS')) as List<dynamic>)
