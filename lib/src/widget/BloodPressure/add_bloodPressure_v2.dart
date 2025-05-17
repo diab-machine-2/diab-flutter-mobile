@@ -1435,7 +1435,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           paths.add(file.path);
         }
       }
-      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic);
+      
+    List<String> currentReason = model?.reason
+        ?.split("|")
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList() ?? [];
+      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic, currentReason);
       if (reasonsOrNull == false) {
         // request focus on systolic input
         _systolicFocus.requestFocus();
@@ -1543,7 +1549,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
   }
 
-  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic) async {
+  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic, [List<String>? initReason]) async {
+    initReason ??= [];   
     double systolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
     double diastolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
@@ -1559,11 +1566,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           builder: (context) {
             return BloodPressureWarningPopupWidget(
               reasons: reasons,
+              initValue: initReason,
             );
           });
     }
     return null;
-  }
+}
 
   void _showDialogDelete(BuildContext context) {
     showDialog(
