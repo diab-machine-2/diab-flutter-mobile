@@ -11,6 +11,7 @@ class ToggleButtonsHorizontal extends StatelessWidget {
     this.backgroundColor = Colors.transparent,
     this.height = 32,
     this.flexes,
+    this.selectionTextStyle,
   }) : assert(
           flexes == null || flexes.length == names.length,
           'flexes must be null or have the same length as names',
@@ -22,6 +23,7 @@ class ToggleButtonsHorizontal extends StatelessWidget {
   final Color backgroundColor;
   final double height;
   final List<int>? flexes;
+  final TextStyle? selectionTextStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -71,10 +73,13 @@ class ToggleButtonsHorizontal extends StatelessWidget {
           child: Center(
             child: Text(
               names[currentIndex],
-              style: TextStyle(
-                color: isSelected ? R.color.white : R.color.primaryGreyColor,
+              style: (selectionTextStyle ?? TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w400,
+              )).copyWith(
+                color: isSelected ? R.color.white : R.color.primaryGreyColor,
+                fontWeight: (selectionTextStyle?.fontWeight != null && isSelected)
+                    ? selectionTextStyle?.fontWeight
+                    : FontWeight.w400,
               ),
             ),
           ),

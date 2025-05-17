@@ -67,8 +67,7 @@ class _BloodPressureDetailState extends State<BloodPressureDetail> with Observer
               },
               child: Text(
                 R.string.huong_dan.tr(),
-                style:
-                    TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: R.color.textDark),
+                style: TextStyle(fontSize: 15, color: R.color.textDark),
               ),
             ),
           ),

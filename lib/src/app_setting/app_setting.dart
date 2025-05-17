@@ -417,27 +417,49 @@ class AppSettings {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }
 
+  static Future<void> saveZaloGroup(String? zaloGroup) async {
+    if (zaloGroup != null && zaloGroup.isNotEmpty) {
+      print('[ONBOARDING] saveZaloGroup: $zaloGroup');
+      appPreference.setData("zaloGroup", zaloGroup);
+    }
+  }
+
+  static Future<String?> getZaloGroup() async {
+    return appPreference.getData("zaloGroup");
+  }
+
+  static Future<void> clearZaloGroup() async {
+    appPreference.removeData("zaloGroup");
+  }
+
   // Check to show 1st page -> Blood Pressure
   static Future<String?> getLastOpenedBloodPressureInputType() async {
-    String? lastOpenedBloodPressureInputType = appPreference.getData("lastOpenedBloodPressureInputType");
+    String? lastOpenedBloodPressureInputType =
+        appPreference.getData("lastOpenedBloodPressureInputType");
     return lastOpenedBloodPressureInputType;
   }
+
   static void setLastOpenedBloodPressureInputType(String inputType) {
     appPreference.setData("lastOpenedBloodPressureInputType", inputType);
   }
+
   static void clearLastOpenedBloodPressureInputType() {
     appPreference.removeData("lastOpenedBloodPressureInputType");
   }
 
   // Check to show heart rate input with blood pressure
   static Future<bool?> getInputHeartRateWithBloodPressure() async {
-    String? inputHeartRateWithBloodPressure = appPreference.getData("inputHeartRateWithBloodPressure");
-    return inputHeartRateWithBloodPressure != null ?
-        inputHeartRateWithBloodPressure == "true" : null;
+    String? inputHeartRateWithBloodPressure =
+        appPreference.getData("inputHeartRateWithBloodPressure");
+    return inputHeartRateWithBloodPressure != null
+        ? inputHeartRateWithBloodPressure == "true"
+        : null;
   }
+
   static void setInputHeartRateWithBloodPressure(bool input) {
     appPreference.setData("inputHeartRateWithBloodPressure", input.toString());
   }
+
   static void clearInputHeartRateWithBloodPressure() {
     appPreference.removeData("inputHeartRateWithBloodPressure");
   }
@@ -470,6 +492,7 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
+      await clearZaloGroup();
       await RevenueCatService.logout();
       return true;
     } catch (_) {

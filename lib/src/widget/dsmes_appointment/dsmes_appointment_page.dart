@@ -33,11 +33,13 @@ class DsmesAppointmentPage extends StatefulWidget {
   final bool? pendingOnlineDeeplink;
   final int? pendingClinicId;
   final int? pendingMode;
+  final bool? bloodPressureConsult;
   const DsmesAppointmentPage({
     Key? key,
     this.pendingOnlineDeeplink = false,
     this.pendingClinicId,
     this.pendingMode,
+    this.bloodPressureConsult = false,
   }) : super(key: key);
 
   @override
@@ -94,6 +96,12 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
 
     // Initialize without handling deeplinks yet
     _cubit.initDsmesBooking();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (widget.bloodPressureConsult == true) {
+      _handleBloodPressureConsult();
+    }
+  });
   }
 
   @override
@@ -286,33 +294,35 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     try {
       // Set active deeplink type for back navigation
       _activeDeeplinkType = 'online';
-
-      final clinics = await _cubit.getClinicList(type: 'online');
-      if (clinics.isNotEmpty) {
-        final priorityClinic = clinics.first;
-        final detailSuccess =
-            await _cubit.getClinicDetail(id: priorityClinic.id);
-
-        if (!detailSuccess || _cubit.selectedClinic == null) {
-          return;
-        }
-
-        await _cubit.initCreateDsmesBookingRequest(
-            locale: context.locale.languageCode);
-
-        _navigatorKey.currentState
-            ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
-          'action': 'create',
-          'clinic': _cubit.selectedClinic,
-          'serviceType': DsmesAppointmentMode.telemedicine.toString(),
-          'isMergedSchedule': true
-        });
-
-        // Update current route
-        _currentRoute = NavigatorName.dsmes_select_service;
-      }
+      await _navigateToSelectService();
     } catch (e) {
       print('[ROUTE] Error handling online deeplink: $e');
+    }
+  }
+
+  Future<void> _navigateToSelectService() async {
+    final clinics = await _cubit.getClinicList(type: 'online');
+    if (clinics.isNotEmpty) {
+      final priorityClinic = clinics.first;
+      final detailSuccess = await _cubit.getClinicDetail(id: priorityClinic.id);
+
+      if (!detailSuccess || _cubit.selectedClinic == null) {
+        return;
+      }
+
+      await _cubit.initCreateDsmesBookingRequest(
+          locale: context.locale.languageCode);
+
+      _navigatorKey.currentState
+          ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
+        'action': 'create',
+        'clinic': _cubit.selectedClinic,
+        'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+        'isMergedSchedule': true
+      });
+
+      // Update current route
+      _currentRoute = NavigatorName.dsmes_select_service;
     }
   }
 
@@ -371,6 +381,10 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
       isProcessing['deeplink'] = false;
       print('[ROUTE] Error handling clinic detail deeplink: $e');
     }
+  }
+
+  Future<void> _handleBloodPressureConsult() async {
+    await _navigateToSelectService();
   }
 
   @override

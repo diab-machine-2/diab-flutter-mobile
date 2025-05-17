@@ -172,6 +172,7 @@ class BloodPressureClient extends FetchClient {
             'periodFilterType': '$periodFilterType',
             'page': '1',
             'size': '100',
+            'IsFromLatestTime': 'true'
           });
       if (response.statusCode == 200) {
         return BloodPressureTrendModel.fromJson(response.data['data']);

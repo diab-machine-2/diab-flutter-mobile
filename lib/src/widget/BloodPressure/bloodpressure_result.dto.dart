@@ -19,6 +19,7 @@ class BloodPressureResultDto {
   final BloodPressureRangeType rangeType;
   final bool? isFetchAnalysis;
   final String? healthRecommendation;
+  final bool isNew;
 
   // Old logic
   final String? goalId;
@@ -43,6 +44,7 @@ class BloodPressureResultDto {
     this.isFetchAnalysis,
     this.healthRecommendation,
     this.goalId,
+    this.isNew = false,
   });
 }
 
@@ -62,6 +64,13 @@ enum BloodPressureRangeType {
   static BloodPressureRangeType fromInt(int value) {
     return BloodPressureRangeType.values.firstWhere(
       (e) => e.value == value,
+      orElse: () => BloodPressureRangeType.normal,
+    );
+  }
+
+  static BloodPressureRangeType fromTitle(String title) {
+    return BloodPressureRangeType.values.firstWhere(
+      (e) => e.title == title,
       orElse: () => BloodPressureRangeType.normal,
     );
   }
@@ -88,17 +97,17 @@ extension BloodPressureRangeTypeExtension on BloodPressureRangeType {
   Color get color {
     switch (this) {
       case BloodPressureRangeType.low:
-        return Color(0xFFF99D1A);
+        return Color(0xFFFFCD57);
       case BloodPressureRangeType.normal:
-        return Color(0xFF21A567);
+        return Color(0xFF23C559);
       case BloodPressureRangeType.normal_high:
-        return Color(0xFF008479);
+        return Color(0xFF64E18E);
       case BloodPressureRangeType.high1:
-        return Color(0xFFFF3C3C);
+        return Color(0xFFF86F6F);
       case BloodPressureRangeType.high2:
-        return Color(0xFFC82221);
+        return Color(0xFFD02424);
       case BloodPressureRangeType.very_high:
-        return Color(0xFF880808);
+        return Color(0xFFAF0000);
     }
   }
 }

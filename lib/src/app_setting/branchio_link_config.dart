@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -33,6 +34,7 @@ class BranchioLinkConfig {
   String? get meetingId => _meetingId;
   String? get meetingPassword => _meetingPassword;
   String? get referalCode => _referalCode;
+
   DateTime? lastMeetingEndTime;
 
   // Tracking pending deep link navigation
@@ -40,12 +42,14 @@ class BranchioLinkConfig {
   int? _pendingClinicId;
   int? _pendingMode; // 0 = online, 1 = offline
   String? _pendingType; // dsmes, clinic, doctor
+  bool _hasPendingLoginDeeplink = false;
   Timer? _navigationTimer;
 
   String? _pendingMeasurementScreen;
 
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
+  bool get hasPendingLoginDeeplink => _hasPendingLoginDeeplink;
 
   // Getters for pending data
   int? get pendingClinicId => _pendingClinicId;
@@ -61,7 +65,7 @@ class BranchioLinkConfig {
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
-      print('listenDynamicLinks - Branchio DeepLink Data: $data');
+      log('listenDynamicLinks - Branchio DeepLink Data: $data');
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
 
       final zoomStatus = await ZoomService().getMeetingStatus();
@@ -69,6 +73,19 @@ class BranchioLinkConfig {
 
       if (zoomStatus[0] == 'MEETING_STATUS_INMEETING') {
         await ZoomService().returnToMeeting();
+        return;
+      }
+
+      // Handle login deeplink
+      if (data['+clicked_branch_link'] == true && data.containsKey("\$login")) {
+        final token = await AppSettings.getToken();
+        if (token.isNotEmpty) return;
+        _hasPendingLoginDeeplink = true;
+
+        // Navigate immediately if app is initialized
+        if (AppSettings.splashScreenInitDone) {
+          executeLoginDeeplinkNavigation();
+        }
         return;
       }
 
@@ -181,6 +198,22 @@ class BranchioLinkConfig {
       }
       TrackingManager.recordError(error, null);
     });
+  }
+
+  // Execute login deeplink navigation to the login screen
+  Future<void> executeLoginDeeplinkNavigation() async {
+    print('[ROUTE] Executing login deeplink navigation');
+
+    try {
+      // Navigate to login screen
+      await navigatorKey.currentState?.pushNamed(NavigatorName.login);
+
+      // Clear pending login data
+      clearPendingLoginData();
+    } catch (e) {
+      print('[ROUTE] Error executing login deeplink navigation: $e');
+      clearPendingLoginData();
+    }
   }
 
   void _processMeasurementDeepLink(String screenValue) async {
@@ -424,6 +457,11 @@ class BranchioLinkConfig {
     _openBookingPages.updateAll((key, value) => false);
   }
 
+  // Helper method to clear pending login data
+  void clearPendingLoginData() {
+    _hasPendingLoginDeeplink = false;
+  }
+
   // Schedule delayed navigation for TabbarController to use after initialization
   void scheduleDeeplinkNavigation() {
     if (_navigationTimer != null) {
@@ -468,15 +506,28 @@ class BranchioLinkConfig {
         if (response.length > 0) {
           bookingQuantity = response.length;
           if (bookingQuantity >= 1) {
-            navigatorKey.currentState
-                ?.pushNamed(NavigatorName.calendar, arguments: {
-              "pickSlot": response.firstWhere(
-                  (element) => element.isDeleted == false,
-                  orElse: null),
-              "courseId": _courseId,
-              "endTime": _endTime,
-              "bookingQuantity": bookingQuantity,
-            });
+            bool isCalendarPage = _isCurrentRoute(NavigatorName.calendar);
+            if (isCalendarPage) {
+              navigatorKey.currentState
+                  ?.pushReplacementNamed(NavigatorName.calendar, arguments: {
+                "pickSlot": response.firstWhere(
+                    (element) => element.isDeleted == false,
+                    orElse: null),
+                "courseId": _courseId,
+                "endTime": _endTime ?? '',
+                "bookingQuantity": bookingQuantity,
+              });
+            } else {
+              navigatorKey.currentState
+                  ?.pushNamed(NavigatorName.calendar, arguments: {
+                "pickSlot": response.firstWhere(
+                    (element) => element.isDeleted == false,
+                    orElse: null),
+                "courseId": _courseId,
+                "endTime": _endTime ?? '',
+                "bookingQuantity": bookingQuantity,
+              });
+            }
             _resetDataLink();
             return;
           }
@@ -487,8 +538,16 @@ class BranchioLinkConfig {
       });
 
       if (bookingQuantity == 0) {
-        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-            arguments: {'courseId': _courseId, 'endTime': _endTime});
+        bool isCalendarBookingPage =
+            _isCurrentRoute(NavigatorName.calendar_booking);
+        if (isCalendarBookingPage) {
+          navigatorKey.currentState?.pushReplacementNamed(
+              NavigatorName.calendar_booking,
+              arguments: {'courseId': _courseId, 'endTime': _endTime});
+        } else {
+          navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
+              arguments: {'courseId': _courseId, 'endTime': _endTime});
+        }
         _resetDataLink();
       }
     }
@@ -537,5 +596,15 @@ class BranchioLinkConfig {
   void dispose() {
     _navigationTimer?.cancel();
     _subLink?.cancel();
+  }
+
+  bool _isCurrentRoute(String routeName) {
+    bool result = false;
+    navigatorKey.currentState?.popUntil((route) {
+      result = route.settings.name == routeName;
+      // Don't actually pop any routes
+      return true;
+    });
+    return result;
   }
 }
