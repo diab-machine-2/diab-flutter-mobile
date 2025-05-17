@@ -452,6 +452,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         slug: "tu-van-song-khoe",
         navigatorName: NavigatorName.dsmes_booking,
       ),
+      HomeUtilityData(
+        icon: R.drawable.ic_booking_clinic,
+        title: "Đặt lịch khám bệnh",
+        slug: "dat-lich-kham-benh",
+        navigatorName: NavigatorName.booking_clinic,
+      ),
     ];
 
     if (preOrder?.isNotEmpty == true) {

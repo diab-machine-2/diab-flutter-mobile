@@ -12,6 +12,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DsmesAppointmentItem extends StatelessWidget {
   final DsmesAppointment data;
@@ -60,7 +61,6 @@ class DsmesAppointmentItem extends StatelessWidget {
             _buildHeader(mode, icon, isPast: isPast),
             GapH(12),
             _buildClinicInfo(data),
-            GapH(12),
             _buildDateTime(startDateTime, formattedDate, startTime, endTime),
             if (displayActionButtons)
               Padding(
@@ -127,6 +127,7 @@ class DsmesAppointmentItem extends StatelessWidget {
 
   Widget _buildClinicInfo(DsmesAppointment data) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
             width: 40,
@@ -274,7 +275,6 @@ class DsmesAppointmentItem extends StatelessWidget {
             flex: 1,
             child: GestureDetector(
               onTap: () {
-                // TODO: Handle support
                 HomeSupportFunctions.showModalAddData(context);
               },
               child: Container(
@@ -368,19 +368,23 @@ class DsmesAppointmentItem extends StatelessWidget {
     cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
 
     if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
-      DsmesNavigationMixin.getNavigationKey().currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.popUntil((route) => route.isFirst);
 
-      await DsmesNavigationMixin.getNavigationKey().currentState
+      await DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
         'serviceType': appointment.mode,
         'action': 'create',
       });
     } else {
-      DsmesNavigationMixin.getNavigationKey().currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.popUntil((route) => route.isFirst);
 
-      DsmesNavigationMixin.getNavigationKey().currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
         'action': 'create',
         'clinic': cubit.selectedClinic,
@@ -421,7 +425,7 @@ class DsmesAppointmentItem extends StatelessWidget {
               : Container(
                   height: 44,
                   // width: 158,
-                  margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                  // margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
                   decoration: BoxDecoration(
                     color: R.color.color0xffBFC6C6,
                     borderRadius: BorderRadius.circular(200),
@@ -443,7 +447,8 @@ class DsmesAppointmentItem extends StatelessWidget {
   }
 
   _handleJoinRoom() async {
-    await DsmesNavigationMixin.getNavigationKey().currentState
+    await DsmesNavigationMixin.getNavigationKey()
+        .currentState
         ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
       'telemedicineId': data.teleMedicine?.id,
     });
