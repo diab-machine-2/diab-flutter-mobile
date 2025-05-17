@@ -104,7 +104,7 @@ class _StepListControllerState extends State<StepListController>
             // _retry start from 0
             _retry++;
             if (_retry == 1) {
-              _showRetryPopup();
+              loginZalo();
             } else {
               Message.showToastMessage(
                   context, "zalo_second_failed_message".tr());
