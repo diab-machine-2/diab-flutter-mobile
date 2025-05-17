@@ -72,7 +72,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     TabBarType.program,
     TabBarType.library,
     TabBarType.chat,
-    TabBarType.store,
+    // TabBarType.store,
   ];
 
   int _initialPage = 0;
@@ -93,7 +93,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _buildProgramTab(),
       MyPlanPage(index: 0),
       Conversations(),
-      _buildStoreTab(),
+      // _buildStoreTab(),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
@@ -308,7 +308,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           _buildProgramTab(),
           MyPlanPage(index: 0),
           Conversations(),
-          _buildStoreTab(),
+          // _buildStoreTab(),
         ];
       });
     }
