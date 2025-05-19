@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -11,13 +12,17 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_item.dart';
+import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DsmesClinicDetailPage extends StatefulWidget {
   final int clinicId;
+  final String bookingType; // 'clinic' or 'center'
   const DsmesClinicDetailPage({
     Key? key,
     required this.clinicId,
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
   }) : super(key: key);
 
   @override
@@ -31,6 +36,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
   Map<String, bool> isProcessing = {
     'onlineConsult': false,
     'clinicConsult': false,
+    'clinicBooking': false,
   };
 
   @override
@@ -85,7 +91,16 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Column(
                     children: [
-                      _buildClinicItem(_cubit.selectedClinic!),
+                      _cubit.selectedClinic != null
+                          ? _buildClinicItem(_cubit.selectedClinic!)
+                          : Center(
+                              child: DsmesEmptyWidget(
+                                imagePath: R.drawable.bg_empty_clinic,
+                                title: R.string.not_exist_clinic.tr(),
+                                titleColor: R.color.color0xff636A6B,
+                                subtitle: "",
+                              ),
+                            ),
                       GapH(24),
                     ],
                   ),
@@ -94,12 +109,15 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
             ),
           ],
         ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: _buildAppointmentActionButtons(),
-        ),
+        if (_cubit.selectedClinic != null)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: widget.bookingType == Const.BOOKING_TYPE_CENTER
+                ? _buildAppointmentActionButtons()
+                : _buildBookingClinicActionButtons(),
+          ),
       ],
     );
   }
@@ -211,13 +229,25 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                     child: GestureDetector(
                       onTap: data.extraAvatar.isNotEmpty
                           ? () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => Dialog(
-                                  child: Image.network(
-                                      "${Utils.getHostDocosanUrl()}${data.extraAvatar.first.path}"),
-                                ),
-                              );
+                              if (widget.bookingType ==
+                                  Const.BOOKING_TYPE_CENTER) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog(
+                                    child: Image.network(
+                                        "${Utils.getHostDocosanUrl()}${data.extraAvatar.first.path}"),
+                                  ),
+                                );
+                              } else {
+                                final lat = data.lat;
+                                final lng = data.lng;
+                                if (lat.isNotEmpty && lng.isNotEmpty) {
+                                  launchUrl(
+                                      Uri.parse(
+                                          'https://www.google.com/maps/search/?api=1&query=$lat,$lng'),
+                                      mode: LaunchMode.externalApplication);
+                                }
+                              }
                             }
                           : null,
                       child: Container(
@@ -259,11 +289,13 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        goodAtList.first.name,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          goodAtList.first.name,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
@@ -644,6 +676,74 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                 ),
               ),
             ),
+        ],
+      ),
+    );
+  }
+
+  _buildBookingClinicActionButtons() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          Utils.getBoxShadowDropButton(),
+        ],
+      ),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () async {
+                if (isProcessing['clinicBooking']!) return;
+                isProcessing['clinicBooking'] = true;
+                try {
+                  await _cubit.getClinicDetail(id: widget.clinicId);
+                  if (_cubit.selectedClinic == null) return;
+                  _cubit.initCreateDsmesBookingRequest(
+                      locale: context.locale.languageCode);
+                  await DsmesNavigationMixin.getNavigationKey().currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                          arguments: {
+                        // 'serviceType': widget.serviceType,
+                        'action': 'create',
+                        'bookingType': Const.BOOKING_TYPE_CLINIC,
+                      });
+                } finally {
+                  isProcessing['clinicBooking'] = false;
+                }
+              },
+              child: Container(
+                height: 44,
+                margin: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                decoration: BoxDecoration(
+                  color: R.color.mainColor,
+                  borderRadius: BorderRadius.circular(200),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      R.color.greenGradientTop,
+                      R.color.greenGradientMid,
+                      R.color.greenGradientBottom,
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.submit_booking.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

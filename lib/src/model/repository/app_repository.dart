@@ -13,6 +13,7 @@ import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/exercise_feedback_request.dart';
 import 'package:medical/src/model/request/food_change_request.dart';
+import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
 import 'package:medical/src/model/request/ios_receipt_request.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
@@ -32,6 +33,7 @@ import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
+import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
@@ -49,6 +51,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
+import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
 import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
@@ -71,6 +74,7 @@ import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/register_docosan_user_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
 import 'package:medical/src/model/response/save_survey_result_response.dart';
+import 'package:medical/src/model/response/search_list_clinic_response.dart';
 import 'package:medical/src/model/response/smart_goal_detail_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/smart_goal_statistic_response.dart';
@@ -1164,10 +1168,42 @@ class AppRepository {
     }
   }
 
+    Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyList(
+      {String? top}) async {
+    try {
+      final response = await docosanClient.getCLinicSpecialtyList(
+          language: "vi", version: "8.5", top: top);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<GetCustomerReceivesUserResponse>> getCustomerReceivesUser(
+      String phoneNumber) async {
+    try {
+      final GetCustomerReceivesUserResponse response =
+          await appClient.getCustomerReceivesUser(phoneNumber);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<GetSubscriptionBannersResponse>>
       getSubscriptionBanners() async {
     try {
       final response = await appClient.getSubscriptionBanners();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SearchListClinicResponse>> searchListBookingClinic(
+      {required SearchBookingClinicListRequest request}) async {
+    try {
+      final response = await docosanClient.searchBookingClinicList(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

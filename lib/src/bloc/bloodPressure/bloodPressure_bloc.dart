@@ -65,12 +65,12 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
   Stream<BloodPressureState> fetchInputPressureGlucose(String? currentDateTime,
       String? periodFilterType, String? bloodPressureType, int? page) async* {
     try {
-      periodFilterType =
+      String finalPeriodFilterType =  periodFilterType ??
           await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index);
       final client = BloodPressureClient();
       final BloodPressureState currenState = state;
       var model = await client.fetchBloodPressureInput(
-          currentDateTime, periodFilterType, bloodPressureType, page);
+          currentDateTime, finalPeriodFilterType, bloodPressureType, page);
 
       if (currenState is BloodPressureDataLoaded) {
         if (page != 1) {
@@ -97,13 +97,13 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     String? periodFilterType,
   ) async* {
     try {
-      periodFilterType =
+      String finalPeriodFilterType =  periodFilterType ??
           await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index);
       final client = BloodPressureClient();
       yield BloodPressureLoading();
       yield BloodPressureDataHeartRateLoaded(
           bloodPressureHeartRateModel: await client.fetchBloodPressureHeartRate(
-              currentDateTime, periodFilterType),
+              currentDateTime, finalPeriodFilterType),
           lastestSummaryModel: await client.fetchBloodPressureLatest());
     } catch (e, _) {
       if (e is Error) {
@@ -120,12 +120,20 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     String? periodFilterType,
   ) async* {
     try {
-      periodFilterType =
+      String finalPeriodFilterType =  periodFilterType ??
           await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index);
       final client = BloodPressureClient();
       yield BloodPressureLoading();
-      var model = await client.fetchBloodDistribution(
-          currentDateTime, periodFilterType);
+      final model = await client.fetchBloodDistribution(
+          currentDateTime, finalPeriodFilterType);
+      final lowHigh = await client.fetchBloodPressureHeartRate(
+          currentDateTime, finalPeriodFilterType);
+      model.lowestId = lowHigh.diastolicLowestId;
+      model.lowestSystolic = lowHigh.systolicLowest;
+      model.lowestDiastolic = lowHigh.diastolicLowest;
+      model.highestId = lowHigh.diastolicHighestId;
+      model.highestSystolic = lowHigh.systolicHighest;
+      model.highestDiastolic = lowHigh.diastolicHighest;
       yield BloodPressureDistributionLoaded(listDistribution: model);
     } catch (e, _) {
       if (e is Error) {
@@ -142,12 +150,12 @@ class BloodPressureBloc extends Bloc<BloodPressureEvent, BloodPressureState> {
     int? periodFilterType,
   ) async* {
     try {
-      periodFilterType = int.parse(
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index));
+      int finalPeriodFilterType = periodFilterType ??
+          int.parse(await AppSettings.getPeriodByScreen(ScreenList.BLOOD_PRESSURE.index));
       final client = BloodPressureClient();
       yield BloodPressureLoading();
       var model = await client.fetchBloodPressureTrend(
-          currentDateTime, periodFilterType);
+          currentDateTime, finalPeriodFilterType);
       yield BloodPressureTrendLoaded(model: model);
     } catch (e, _) {
       if (e is Error) {

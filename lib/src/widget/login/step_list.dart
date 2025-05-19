@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -14,7 +15,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/deep_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -104,7 +104,7 @@ class _StepListControllerState extends State<StepListController>
             // _retry start from 0
             _retry++;
             if (_retry == 1) {
-              _showRetryPopup();
+              loginZalo();
             } else {
               Message.showToastMessage(
                   context, "zalo_second_failed_message".tr());
@@ -155,10 +155,19 @@ class _StepListControllerState extends State<StepListController>
       // );
     }
     Future.delayed(Duration(milliseconds: 600), () async {
+      print(
+          '[ONBOARDING] native splash removed: ${DateTime.now().millisecondsSinceEpoch}');
       FlutterNativeSplash.remove();
       checkReferralCode();
     });
     firebaseSetup();
+    if (BranchioLinkConfig.instance.hasPendingLoginDeeplink) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // This runs after the frame is built
+        Navigator.of(context).pushNamed(NavigatorName.login, arguments: '');
+        BranchioLinkConfig.instance.clearPendingLoginData();
+      });
+    }
   }
 
   Future firebaseSetup() async {

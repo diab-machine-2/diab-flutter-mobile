@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
@@ -283,6 +284,7 @@ class AppSettings {
     appPreference.removeData(Const.TOKEN);
     appPreference.removeData(Const.DOCOSAN_TOKEN);
     appPreference.removeData('healthAppPermission');
+    appPreference.removeData('position');
     return true;
   }
 
@@ -400,7 +402,7 @@ class AppSettings {
     return numberOfOpenHome;
   }
 
-  // Check to show 1st page
+  // Check to show 1st page -> Glucose
   static Future<String?> getLastOpenedGlucoseInputType() async {
     String? lastOpenedGlucoseInputType =
         appPreference.getData("lastOpenedGlucoseInputType");
@@ -413,6 +415,53 @@ class AppSettings {
 
   static void clearLastOpenedGlucoseInputType() {
     appPreference.removeData("lastOpenedGlucoseInputType");
+  }
+
+  static Future<void> saveZaloGroup(String? zaloGroup) async {
+    if (zaloGroup != null && zaloGroup.isNotEmpty) {
+      print('[ONBOARDING] saveZaloGroup: $zaloGroup');
+      appPreference.setData("zaloGroup", zaloGroup);
+    }
+  }
+
+  static Future<String?> getZaloGroup() async {
+    return appPreference.getData("zaloGroup");
+  }
+
+  static Future<void> clearZaloGroup() async {
+    appPreference.removeData("zaloGroup");
+  }
+
+  // Check to show 1st page -> Blood Pressure
+  static Future<String?> getLastOpenedBloodPressureInputType() async {
+    String? lastOpenedBloodPressureInputType =
+        appPreference.getData("lastOpenedBloodPressureInputType");
+    return lastOpenedBloodPressureInputType;
+  }
+
+  static void setLastOpenedBloodPressureInputType(String inputType) {
+    appPreference.setData("lastOpenedBloodPressureInputType", inputType);
+  }
+
+  static void clearLastOpenedBloodPressureInputType() {
+    appPreference.removeData("lastOpenedBloodPressureInputType");
+  }
+
+  // Check to show heart rate input with blood pressure
+  static Future<bool?> getInputHeartRateWithBloodPressure() async {
+    String? inputHeartRateWithBloodPressure =
+        appPreference.getData("inputHeartRateWithBloodPressure");
+    return inputHeartRateWithBloodPressure != null
+        ? inputHeartRateWithBloodPressure == "true"
+        : null;
+  }
+
+  static void setInputHeartRateWithBloodPressure(bool input) {
+    appPreference.setData("inputHeartRateWithBloodPressure", input.toString());
+  }
+
+  static void clearInputHeartRateWithBloodPressure() {
+    appPreference.removeData("inputHeartRateWithBloodPressure");
   }
 
   static Future<bool> logout(
@@ -443,10 +492,25 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
+      await clearZaloGroup();
       await RevenueCatService.logout();
       return true;
     } catch (_) {
       return false;
     }
+  }
+
+  static Future<void> saveLocationPreferences(Position position) async {
+    try {
+      appPreference.setData(
+          'position', "${position.latitude},${position.longitude}");
+    } catch (error) {}
+  }
+
+  static Future<String?> getPositionPreferences() async {
+    final position = appPreference.getData('position') ?? '';
+    Console.log("getPositionPreferences", position);
+
+    return position;
   }
 }

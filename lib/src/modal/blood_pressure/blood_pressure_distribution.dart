@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-@immutable
 class BloodPressureDistributionModel {
   final int? total;
   final int? low;
@@ -21,7 +19,15 @@ class BloodPressureDistributionModel {
   final String? increaseLevelThreeColor;
   final String? increaseLevelThreeFontColor;
 
-  const BloodPressureDistributionModel({
+  // setter by other api
+  String? lowestId;
+  double? lowestSystolic = 0;
+  double? lowestDiastolic = 0;
+  String? highestId;
+  double? highestSystolic = 0;
+  double? highestDiastolic = 0;
+
+  BloodPressureDistributionModel({
     required this.total,
     required this.low,
     required this.lowColor,
@@ -67,8 +73,6 @@ class BloodPressureDistributionModel {
   }
 
   static List<BloodPressureDistributionModel> toList(List<dynamic> items) {
-    return items
-        .map((item) => BloodPressureDistributionModel.fromJson(item))
-        .toList();
+    return items.map((item) => BloodPressureDistributionModel.fromJson(item)).toList();
   }
 }
