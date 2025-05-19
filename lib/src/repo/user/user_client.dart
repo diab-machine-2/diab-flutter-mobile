@@ -127,7 +127,7 @@ class UserClient extends FetchClient {
         }
       } else {
         final errorMessage = response.data is String
-            ? Error(message: response.data, code: '', error: '') 
+            ? Error(message: response.data, code: '', error: '')
             : Error.fromJson(response.data);
         throw errorMessage;
       }
@@ -209,7 +209,8 @@ class UserClient extends FetchClient {
       TrackingManager.setUserId(user.id!);
       TrackingManager.setUserProperty(name: 'gender', value: user.gender ?? '');
       TrackingManager.setUserProperty(
-          name: 'referral_code', value: user.shareRefCode ?? '');
+          name: 'referral_name',
+          value: user.nameOfAgency ?? user.nameOfDoctor ?? '');
       // TrackingManager.setUserProperty(
       //     name: 'interest', value: interestNameList.join('_'));
       TrackingManager.setUserProperty(name: 'age', value: "${user.age}");
