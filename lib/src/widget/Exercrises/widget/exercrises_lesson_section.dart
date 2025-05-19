@@ -79,7 +79,7 @@ class ExercrisesLessonSectionState extends State<ExercrisesLessonSection> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    R.string.exercise_help_title.tr(),
+                    R.string.knowledge_from_diab_experts.tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,

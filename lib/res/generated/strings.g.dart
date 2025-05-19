@@ -1279,4 +1279,9 @@ class Strings {
       'exercrise_select_category_title';
   String get exercrise_result_title => 'exercrise_result_title';
   String get exercise_help_title => 'exercise_help_title';
+  String get exercise_delete_popup_title => 'exercise_delete_popup_title';
+  String get exercise_delete_popup_body => 'exercise_delete_popup_body';
+  String get exercise_delete_success => 'exercise_delete_success';
+  String get setup_personal_exercise => 'setup_personal_exercise';
+  String get connect_to_health => 'connect_to_health';
 }

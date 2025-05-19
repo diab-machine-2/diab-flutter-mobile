@@ -326,6 +326,11 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
           goalWaist: goalWaist,
           goalWeight:
               double.parse(goalWeight.text.isEmpty ? '0' : goalWeight.text)));
+      AppSettings.userInfo = AppSettings.userInfo?.copyWith(
+        energyGoal: double.parse(weeklyTargetBurnedCalorie.text.isEmpty
+            ? '0'
+            : weeklyTargetBurnedCalorie.text),
+      );
       Observable.instance.notifyObservers([], notifyName: "goal_calo_changed");
       BotToast.closeAllLoading();
       Navigator.pop(context);

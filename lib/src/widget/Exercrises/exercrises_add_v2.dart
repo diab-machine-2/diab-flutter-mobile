@@ -16,20 +16,28 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/add_exercise_request.dart';
 import 'package:medical/src/model/response/exercise_intensity_response.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
-import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_note_with_media.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/home/fliter_enum.dart';
-import 'package:medical/src/widgets/CalendarPicker/custom_date_picker2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 
+import '../../modal/exercrises/exercrise_Input_detail_model.dart';
+import '../../modal/glucose/glucose_timeFrame.dart';
 import 'widget/date_multi_picker.dart';
 
 class ExercrisesAddV2 extends StatefulWidget {
-  ExercrisesAddV2({Key? key}) : super(key: key);
+  final bool? isUpdate;
+  final String? exerciseInputId;
+  final bool? isOnlyOne;
+  ExercrisesAddV2({Key? key,
+    this.isUpdate,
+    this.exerciseInputId,
+    this.isOnlyOne,
+  }) : super(key: key);
 
   ExercrisesAddV2State createState() => ExercrisesAddV2State();
 }
@@ -48,23 +56,65 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
   bool isLoading = false;
   DateTime? selectedDate;
-  List<ExercrisesCategoryModel> selectedCategory = [];
+  ExercrisesCategoryModel? selectedCategory;
   ExerciseIntensity? intensity;
+  InputDetailExercriseModel? model;
+  TimeFrameModel? selectedTimeFrame;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     selectedDate = DateTime.now();
-    selectedCategory = [];
+    // selectedCategory = [];
+    if (widget.isUpdate == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadDetail();
+      });
+    }
   }
 
   bool _shouldCalculateCalo() {
     return selectedDate != null &&
-        selectedCategory.isNotEmpty &&
+        selectedCategory != null &&
         intensity != null &&
         _controllerDuration.text.isNotEmpty &&
         double.tryParse(_controllerDuration.text) != null;
+  }
+
+  loadDetail() async {
+    BotToast.showLoading();
+
+    try {
+      model = await ExercrisesClient().fetchDetail(widget.exerciseInputId);
+      if (model != null) {
+        selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+        selectedCategory = model?.exercise != null ? model!.exercise.first : null;
+        note = model?.note ?? '';
+        selectedTimeFrame = TimeFrameModel(
+            id: model!.timeFrameId, code: '', name: model!.timeFrame);
+        files = List.from(model!.imageUrls);
+        _controllerDuration.text = model?.exercise != null
+            ? model!.exercise.first.duration != null
+            ? model!.exercise.first.duration!.round().toString()
+            : ''
+            : '';
+        if (model?.exercise != null &&
+            model!.exercise.first.exerciseIntensityId != null) {
+          final updateIntensity = ExerciseIntensity(
+            intensityId: model!.exercise.first.exerciseIntensityId!,
+            name: intensity?.name ?? '',
+          );
+          intensity = updateIntensity;
+        }
+
+        setState(() {});
+      }
+    } catch(e) {
+      BotToast.showText(text: 'Error load detail fail: $e');
+    } finally {
+      BotToast.closeAllLoading();
+    }
   }
 
   @override
@@ -121,7 +171,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  R.string.exercrise_add_v2_title.tr(),
+                  R.string.title_exercise.tr(),
                   style: TextStyle(
                       color: R.color.white,
                       fontSize: 20,
@@ -129,6 +179,20 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                 ),
               ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  R.string.exercrise_step_onboarding_action_btn.tr(),
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'sfpro',
+                  ),
+                ),
+              ),
+            ],
             backgroundColor: R.color.transparent, //No more green
             elevation: 0.0, //Shadow gone
             flexibleSpace: Container(
@@ -143,248 +207,288 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
             ),
           ),
           body: _buildContainer(),
+          bottomNavigationBar:
+          // add animation face in/out (opacity) when keyboard show / hide
+          KeyboardVisibilityProvider(
+            child: KeyboardVisibilityBuilder(
+              builder: (context, isKeyboardVisible) {
+                return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    height: isKeyboardVisible ? 0 : 60,
+                    width: double.infinity,
+                    child: Container(
+                      // height: 60,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: widget.isUpdate == true
+                          ? Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: ButtonWidget(
+                              title: R.string.delete.tr(),
+                              backgroundColor: R.color.white,
+                              borderColor: R.color.redAccent,
+                              textColor: R.color.redAccent,
+                              onPressed: () {
+                                _showDialogDelete(context);
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 1,
+                            child: ButtonWidget(
+                              title: R.string.confirm.tr(),
+                              backgroundColor:
+                              R.color.greenGradientMid,
+                              textColor: R.color.white,
+                              onPressed: () {
+                                if(widget.exerciseInputId != null) {
+                                  editData();
+                                }
+                              },
+                            ),
+                          )
+                        ],
+                      )
+                          : ButtonWidget(
+                        title: R.string.confirm.tr(),
+                        onPressed: _submitData,
+                      ),
+                    ));
+              },
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildContainer() {
-    return Form(
-        key: _formKey,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                controller: scrollController,
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: Column(
-                  children: [
-                    Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: R.color.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: Column(children: [
-                          GestureDetector(
-                            onTap: () {
-                              showDialog(
-                                barrierColor:
-                                    R.color.color0xff003F38.withOpacity(0.5),
-                                context: context,
-                                builder: (_) => DateMultiPicker(
-                                  initDate: selectedDate,
-                                  callback: (date) {
-                                    setState(() {
-                                      selectedDate = date;
-                                    });
-                                  },
-                                ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(200),
-                                  border: Border.all(
-                                      color: R.color.color0xffDFE4E4),
-                                  color: R.color.white),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                        convertToUTC(
-                                            (selectedDate
-                                                        ?.millisecondsSinceEpoch ??
-                                                    0) ~/
-                                                1000,
-                                            'HH:mm - dd/MM/yyyy'),
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400)),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      Icons.expand_more,
-                                      color: R.color.primaryGreyColor,
-                                      size: 24,
-                                    ),
-                                  ]),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            keyboardType: TextInputType.number,
-                            controller: _controllerDuration,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 36,
-                                color: R.color.textDark,
-                                fontWeight: FontWeight.w900),
-                            decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 16),
-                              hintText: '0',
-                              hintStyle: TextStyle(
-                                  fontSize: 36,
-                                  color:
-                                      R.color.primaryGreyColor.withOpacity(0.5),
-                                  fontWeight: FontWeight.w900),
-                              // set border bottom only
-                              border: UnderlineInputBorder(
-                                  borderSide: BorderSide.lerp(
-                                      BorderSide(
-                                          color: R.color.primaryGreyColor,
-                                          width: 1),
-                                      BorderSide(
-                                          color: R.color.primaryGreyColor,
-                                          width: 1),
-                                      0.5)),
-                              suffixText: R.string.minute.tr(),
-                              suffixStyle: TextStyle(
-                                  fontSize: 16,
-                                  color: R.color.primaryGreyColor,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return R.string.nhap_chi_so_van_dong.tr();
-                              }
-                              // check if value is number
-                              if (double.tryParse(value) == null) {
-                                return R.string.data_input_not_valid.tr();
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          ExerxisesIntensity(
-                            selectedIntensity: intensity,
-                            onIntensityChanged: (newIntensity) {
-                              setState(() {
-                                intensity = newIntensity;
-                              });
-                            },
-                          )
-                        ])),
-                    const SizedBox(height: 16),
-                    ExercisesCategories(
-                      selected: selectedCategory,
-                      onChanged: (List<ExercrisesCategoryModel> list) {
-                        setState(() {
-                          selectedCategory = list;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    ExercisesNoteWithMedia(
-                      mediaUrls: files,
-                      maxMedia: maxMedia,
-                      onChangedNote: (String note) {
-                        setState(() {
-                          this.note = note;
-                        });
-                      },
-                      onChangedMediaUrls: (mediaUrls) {
-                        setState(() {
-                          files = mediaUrls;
-                        });
-                      },
-                      onFileRemoved: (fileId) {
-                        if (fileId.isNotEmpty) {
-                          setState(() {
-                            removeFileIds.add(fileId);
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    // add divider vertical with label 'hello' in the middle
-                    Container(
-                        width: MediaQuery.of(context).size.width / 2,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: R.color.greenGradientBottom,
-                              ),
-                            ),
-                            Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              child: Text(R.string.or.tr(),
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: R.color.greenGradientBottom,
-                                      fontWeight: FontWeight.w500)),
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 1,
-                                color: R.color.greenGradientBottom,
-                              ),
-                            ),
-                          ],
-                        )),
-                    const SizedBox(height: 16),
-                    // add button to connect to health app / apple health
-                    HealthConnectButton(
-                      margin: const EdgeInsets.all(0),
-                      callback: () {
-                        print('HealthConnectButton pressed');
-                      },
-                    ),
-                    const SizedBox(height: 60),
-                  ],
-                ),
+    return SingleChildScrollView(
+      controller: scrollController,
+      keyboardDismissBehavior:
+          ScrollViewKeyboardDismissBehavior.onDrag,
+      padding:
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Column(
+        children: [
+          Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: R.color.white,
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
-            // add animation face in/out (opacity) when keyboard show / hide
-            Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: KeyboardVisibilityProvider(
-                  child: KeyboardVisibilityBuilder(
-                    builder: (context, isKeyboardVisible) {
-                      return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          height: isKeyboardVisible ? 0 : 60,
-                          width: double.infinity,
-                          child: Container(
-                            // height: 60,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: ButtonWidget(
-                              title: R.string.confirm.tr(),
-                              onPressed: _submitData,
-                            ),
-                          ));
+              padding: EdgeInsets.all(16),
+              child: Column(children: [
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      barrierColor:
+                          R.color.color0xff003F38.withOpacity(0.5),
+                      context: context,
+                      builder: (_) => DateMultiPicker(
+                        initDate: selectedDate,
+                        callback: (date) {
+                          setState(() {
+                            selectedDate = date;
+                            if (widget.isUpdate == true) {
+                              selectedTimeFrame = null;
+                            }
+                          });
+                        },
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(200),
+                        border: Border.all(
+                            color: R.color.color0xffDFE4E4),
+                        color: R.color.white),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                              convertToUTC(
+                                  (selectedDate
+                                              ?.millisecondsSinceEpoch ??
+                                          0) ~/
+                                      1000,
+                                  'HH:mm - dd/MM/yyyy'),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400)),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.expand_more,
+                            color: R.color.primaryGreyColor,
+                            size: 24,
+                          ),
+                        ]),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _controllerDuration,
+                    textAlign: TextAlign.center,
+                    autofocus: true,
+                    style: TextStyle(
+                        fontSize: 36,
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.w900),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
+                      hintText: '00',
+                      hintStyle: TextStyle(
+                          fontSize: 36,
+                          color:
+                              R.color.primaryGreyColor.withOpacity(0.5),
+                          fontWeight: FontWeight.w900),
+                      // set border bottom only
+                      border: UnderlineInputBorder(
+                          borderSide: BorderSide.lerp(
+                              BorderSide(
+                                  color: R.color.primaryGreyColor,
+                                  width: 1),
+                              BorderSide(
+                                  color: R.color.primaryGreyColor,
+                                  width: 1),
+                              0.5)),
+                      suffixText: R.string.minute.tr(),
+                      suffixStyle: TextStyle(
+                          fontSize: 16,
+                          color: R.color.primaryGreyColor,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    onChanged: (value) {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          _controllerDuration.text = value;
+                          _controllerDuration.selection =
+                              TextSelection.fromPosition(TextPosition(
+                                  offset: _controllerDuration.text.length));
+                        });
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return R.string.nhap_chi_so_van_dong.tr();
+                      }
+                      // check if value is number
+                      if (double.tryParse(value) == null) {
+                        return R.string.data_input_not_valid.tr();
+                      }
+                      return null;
                     },
                   ),
-                ))
-          ],
-        ));
+                ),
+                const SizedBox(height: 16),
+                ExerxisesIntensity(
+                  selectedIntensity: intensity,
+                  onIntensityChanged: (newIntensity) {
+                    setState(() {
+                      intensity = newIntensity;
+                    });
+                  },
+                )
+              ])),
+          const SizedBox(height: 16),
+          ExercisesCategories(
+            selected:selectedCategory,
+            onChanged: (ExercrisesCategoryModel? item) {
+              setState(() {
+                selectedCategory = item;
+              });
+            },
+          ),
+          const SizedBox(height: 16),
+          ExercisesNoteWithMedia(
+            mediaUrls: files,
+            maxMedia: maxMedia,
+            note: note,
+            onChangedNote: (String notes) {
+              setState(() {
+                this.note = notes;
+              });
+            },
+            onChangedMediaUrls: (mediaUrls) {
+              setState(() {
+                this.files = mediaUrls;
+              });
+            },
+            onFileRemoved: (fileId) {
+              if (fileId.isNotEmpty) {
+                setState(() {
+                  removeFileIds.add(fileId);
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          // add divider vertical with label 'hello' in the middle
+          Container(
+              width: MediaQuery.of(context).size.width / 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(R.string.or.tr(),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: R.color.greenGradientBottom,
+                            fontWeight: FontWeight.w500)),
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                ],
+              )),
+          const SizedBox(height: 16),
+          // add button to connect to health app / apple health
+          HealthConnectButton(
+            margin: const EdgeInsets.all(0),
+            callback: () {
+              print('HealthConnectButton pressed');
+            },
+          ),
+          const SizedBox(height: 60),
+        ],
+      ),
+    );
   }
 
   calculatorCalo() async {
@@ -400,65 +504,38 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
     try {
       BotToast.showLoading();
-      final List<ExercrisesCategoryModel> updatedCategories =
-          List.from(selectedCategory);
+      ExercrisesCategoryModel updatedCategories = selectedCategory!;
       final int duration = int.tryParse(_controllerDuration.text) ?? 0;
 
-      for (int i = 0; i < updatedCategories.length; i++) {
-        final category = updatedCategories[i];
 
-        // Đảm bảo tham số được truyền đúng thứ tự như API cũ
-        for (final exercise in category.exercises) {
-          final response = await ExercrisesClient().fetchCalories(
-              category.categoryId,
-              intensity?.intensityId, // Sử dụng intensity từ state
-              exercise.exerciseId,
-              duration);
-          // Debug kiểm tra
-          print('API Response: $response');
+      final response = await ExercrisesClient().fetchCalories(
+        updatedCategories.categoryId,
+        intensity?.intensityId, // Sử dụng intensity từ state
+        duration,
+      );
+      // Debug kiểm tra
+      print('API Response: $response');
 
-          // Trích xuất thông tin từ response
-          final caloriesNumber = response['calories'] ?? 0.0;
-          final unit = response['unit'] ?? 'kcal';
+      // Trích xuất thông tin từ response
+      final caloriesNumber = response['calories'] ?? 0.0;
+      final unit = response['unit'] ?? 'kcal';
 
-          // Cập nhật calories cho từng bài tập
-          final updatedExercise = ExerciseDetail(
-            exerciseId: exercise.exerciseId,
-            seq: exercise.seq,
-            description: exercise.description,
-            duration: duration.toDouble(),
-            burnedCalorie: caloriesNumber,
-            intensityId: intensity?.intensityId ?? '',
-            exerciseCategoryId: category.categoryId,
-            code: exercise.code,
-            name: exercise.name,
-            intensityName: intensity?.name ?? '',
-            defaultMets: exercise.defaultMets,
-            mets: exercise.mets,
-          );
-          // Cập nhật danh sách bài tập trong category
-          updatedCategories[i] = ExercrisesCategoryModel(
-            categoryId: updatedCategories[i].categoryId,
-            category: updatedCategories[i].category,
-            exerciseId: exercise.exerciseId,
-            code: exercise.code,
-            duration:
-                (updatedCategories[i].duration ?? 0) + duration.toDouble(),
-            burnedCalorie: caloriesNumber,
-            exerciseIntensityId: intensity?.intensityId,
-            unit: unit,
-            exercises: [
-              ...updatedCategories[i].exercises.where(
-                  (element) => element.exerciseId != exercise.exerciseId),
-              updatedExercise
-            ],
-            // Copy other fields from the original category
-            description: updatedCategories[i].description,
-            order: updatedCategories[i].order,
-            cover: updatedCategories[i].cover,
-          );
-        }
-      }
+      // Cập nhật danh sách bài tập trong category
+      updatedCategories = ExercrisesCategoryModel(
+        categoryId: updatedCategories.categoryId,
+        category: updatedCategories.category,
+        exerciseId: '',
+        code: '',
+        duration: duration.toDouble(),
+        burnedCalorie: caloriesNumber,
+        exerciseIntensityId: intensity?.intensityId,
+        unit: unit,
+        exercises: [],
+        // Copy other fields from the original category
+        description: updatedCategories.description,
+        order: updatedCategories.order,
+        cover: updatedCategories.cover,
+      );
 
       // Cập nhật state một lần duy nhất
       setState(() {
@@ -474,6 +551,165 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         isLoading = false;
       });
     }
+  }
+
+  editData() async {
+
+    FocusScope.of(context).unfocus();
+
+    if (selectedDate == null) {
+      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
+      return;
+    }
+    if (selectedCategory == null) {
+      Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
+      return;
+    }
+
+    BotToast.showLoading();
+
+    try {
+
+      await calculatorCalo();
+
+      List<String> paths = [];
+      for (var file in files) {
+        if (file is XFile) {
+          paths.add(file.path);
+        }
+      }
+      final result = await ExercrisesClient().updateExercrises(
+          widget.exerciseInputId,
+          (selectedDate!.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedTimeFrame?.id,
+          note,
+          selectedCategory!,
+          removeFileIds,
+          paths,
+          intensity?.intensityId ?? '',
+      );
+      if (result == true) {
+        Observable.instance
+            .notifyObservers([], notifyName: "active_change_data_v2");
+      }
+      BotToast.closeAllLoading();
+      Navigator.pop(context);
+      Message.showToastMessage(context, R.string.exercise_delete_success.tr());
+
+      BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
+  deleteData() async {
+    try {
+      BotToast.showLoading();
+      final result = await ExercrisesClient().deleteExercrises(widget.exerciseInputId);
+      if (result == true) {
+        Observable.instance
+            .notifyObservers([], notifyName: "active_change_data_v2");
+      }
+      // if(result.)
+      BotToast.closeAllLoading();
+      if (widget.isOnlyOne == true) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          NavigatorName.exercrise_onboarding,
+          (route) => false,
+        );
+      } else {
+        Navigator.pop(context);
+      }
+      Message.showToastMessage(context, R.string.exercise_delete_success.tr());
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
+  }
+
+  _showDialogDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(children: [
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(R.string.exercise_delete_popup_title.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                            '${R.string.exercise_delete_popup_body.tr()} " ${selectedCategory?.category} " ',
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 16),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            if (widget.exerciseInputId != null) {
+                              deleteData();
+                            }
+                          },
+                          child: Container(
+                            height: 43,
+                            decoration: BoxDecoration(
+                              color: R.color.red,
+                              borderRadius: BorderRadius.circular(200),
+                            ),
+                            child: Center(
+                              child: Text(R.string.confirm.tr(),
+                                  style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.textDark),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                )
+              ])),
+        );
+      },
+    );
   }
 
   _submitData() async {
@@ -496,18 +732,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         //   }
         // }
 
-        // nếu tổng exercises
-        final exercises =
-            selectedCategory.expand((category) => category.exercises).toList();
-        if (exercises.isEmpty) {
-          BotToast.showText(
-            text: 'Please select at least one exercise',
-            duration: Duration(seconds: 2),
-            backgroundColor: R.color.black,
-            textStyle: TextStyle(color: R.color.white),
-          );
-          return;
-        }
         // Chuẩn bị dữ liệu
         List<String> paths = [];
         for (var file in files) {
@@ -520,7 +744,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
             ((selectedDate?.millisecondsSinceEpoch ?? 0) ~/ 1000).toInt(),
             null,
             note,
-            selectedCategory,
+            selectedCategory!,
             paths,
             intensity?.intensityId);
         if (result) {
@@ -571,6 +795,16 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
     _fetchIntensities();
   }
 
+  @override
+  void didUpdateWidget(covariant ExerxisesIntensity oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if(widget.selectedIntensity != null &&
+        widget.selectedIntensity != oldWidget.selectedIntensity) {
+      _fetchIntensities();
+    }
+  }
+
   Future<void> _fetchIntensities() async {
     final token = await AppSettings.getToken();
     print('Token: $token');
@@ -581,6 +815,12 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
         success: (data) {
           setState(() {
             intensities = data;
+            if (widget.selectedIntensity == null) {
+              widget.onIntensityChanged(intensities
+                  .where((e) =>
+                      e.intensityId == "3f29e372-1179-477e-b183-33356a28ece5")
+                  .first);
+            }
             isLoading = false;
           });
         },
