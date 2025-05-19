@@ -635,4 +635,6 @@ class Drawables {
       "lib/res/drawables/exercrise-step/ic-health-connect-input-btn.png";
   String get ic_manual_input_btn =>
       "lib/res/drawables/exercrise-step/ic-manual-input-btn.png";
+  String get ic_upload_images =>
+      "lib/res/drawables/ic_upload_images.png";
 }

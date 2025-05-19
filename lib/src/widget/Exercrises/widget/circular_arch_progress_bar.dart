@@ -111,17 +111,12 @@ class _CircularArchProgressBarState extends State<CircularArchProgressBar>
         SizedBox(
           width: adjustedSize,
           height: adjustedContainerHeight,
-          child: AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: CircularArchProgressBarPainter(
-                  strokeWidth: widget.strokeWidth,
-                  color: widget.fillColor,
-                  value: _animation.value, // Giá trị động
-                ),
-              );
-            },
+          child: CustomPaint(
+            painter: CircularArchProgressBarPainter(
+              strokeWidth: widget.strokeWidth,
+              color: widget.fillColor,
+              value: widget.value, // Giá trị động
+            ),
           ),
         ),
       ],

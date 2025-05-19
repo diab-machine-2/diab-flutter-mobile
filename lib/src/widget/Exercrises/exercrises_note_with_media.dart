@@ -10,6 +10,7 @@ import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../modal/exercrises/exercrise_Input_detail_model.dart';
 import '../helper/show_message.dart';
 
 class ExercisesNoteWithMedia extends StatefulWidget {
@@ -36,11 +37,36 @@ class ExercisesNoteWithMedia extends StatefulWidget {
 
 class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
   List<dynamic> files = [];
+  TextEditingController _controllerNote = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     files = List.from(widget.mediaUrls);
+    if (widget.note != null) {
+      _controllerNote.text = widget.note!;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant ExercisesNoteWithMedia oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.mediaUrls != widget.mediaUrls) {
+      setState(() {
+        files = List.from(widget.mediaUrls);
+      });
+    }
+    if (oldWidget.note != widget.note) {
+      setState(() {
+        _controllerNote.text = widget.note ?? '';
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controllerNote.dispose();
+    super.dispose();
   }
 
   @override
@@ -66,7 +92,8 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
               Container(
                   width: double.infinity,
                   child: TextFormField(
-                    initialValue: widget.note,
+                    // initialValue: widget.note ?? '',
+                    controller: _controllerNote,
                     maxLines: 5,
                     minLines: 1,
                     keyboardType: TextInputType.multiline,
@@ -74,9 +101,7 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                     //count number character of text
                     maxLength: 250,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    onChanged: (value) {
-                      widget.onChangedNote(value);
-                    },
+                    onChanged: (value) => widget.onChangedNote(value),
                     //set only one line border at the bottom
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.only(
@@ -95,8 +120,11 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                                   color: R.color.primaryGreyColor, width: 1),
                               0.5)),
                       suffixIcon: InkWell(
-                        child: Icon(Icons.image,
-                            color: R.color.primaryGreyColor, size: 24),
+                        child: Image.asset(
+                          R.drawable.ic_upload_images,
+                          width: 24,
+                          height: 24,
+                        ),
                         onTap: () {
                           // Clear the text field
                           showActionSheet(context);
@@ -129,12 +157,10 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                                     onTap: () {
                                       setState(() {
                                         // Call onFileRemoved if it's a server file
-                                        if (files[index]
-                                                is Map<String, dynamic> &&
-                                            files[index].containsKey('id') &&
+                                        if (files[index] is ImagesUrlModel &&
                                             widget.onFileRemoved != null) {
-                                          widget.onFileRemoved!(
-                                              files[index]['id'].toString());
+                                          final file = files[index] as ImagesUrlModel;
+                                          widget.onFileRemoved!(file.id ?? '');
                                         }
                                         files.removeAt(index);
                                         widget.onChangedMediaUrls(files);

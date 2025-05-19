@@ -20,8 +20,8 @@ class ExercisesCategories extends StatefulWidget {
       {Key? key, this.validator, this.onChanged, this.selected})
       : super(key: key);
   final String? Function(String)? validator;
-  final void Function(List<ExercrisesCategoryModel>)? onChanged;
-  final List<ExercrisesCategoryModel>? selected;
+  final void Function(ExercrisesCategoryModel?)? onChanged;
+  final ExercrisesCategoryModel? selected;
   @override
   _ExercisesCategoriesState createState() => _ExercisesCategoriesState();
 }
@@ -29,7 +29,7 @@ class ExercisesCategories extends StatefulWidget {
 class _ExercisesCategoriesState extends State<ExercisesCategories>
     with WidgetsBindingObserver, Observer {
   late BuildContext currentContext;
-  List<ExercrisesCategoryModel>? selectedCateroty = [];
+  ExercrisesCategoryModel? selectedCateroty;
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
@@ -48,6 +48,15 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
   }
 
   @override
+  void didUpdateWidget(covariant ExercisesCategories oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selected != null &&
+        widget.selected != oldWidget.selected) {
+      selectedCateroty = widget.selected;
+    }
+  }
+
+  @override
   void dispose() {
     Observable.instance.removeObserver(this); // Hủy đăng ký observer
     super.dispose(); // Gọi super.dispose() để giải phóng tài nguyên
@@ -57,12 +66,11 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
     bool isSelected,
     ExercrisesCategoryModel e,
   ) {
-    final newSelectedCateroty = selectedCateroty ?? [];
+    var newSelectedCateroty = selectedCateroty;
     if (isSelected) {
-      newSelectedCateroty
-          .removeWhere((item) => item.categoryId == e.categoryId);
+      newSelectedCateroty = null;
     } else {
-      newSelectedCateroty.add(e);
+      newSelectedCateroty = e;
     }
     setState(() {
       selectedCateroty = newSelectedCateroty;
@@ -132,10 +140,8 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                         // sort for selected on top
                         if (selectedCateroty != null) {
                           data.sort((a, b) {
-                            final aSelected = selectedCateroty?.any(
-                                (item) => item.categoryId == a.categoryId);
-                            final bSelected = selectedCateroty?.any(
-                                (item) => item.categoryId == b.categoryId);
+                            final aSelected = selectedCateroty?.categoryId == a.categoryId;
+                            final bSelected = selectedCateroty?.categoryId == b.categoryId;
                             if (aSelected == true && bSelected == false) {
                               return -1;
                             } else if (aSelected == false &&
@@ -170,9 +176,7 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ...data.map((e) {
-          final isSelected = selectedCateroty
-                  ?.any((item) => item.categoryId == e.categoryId) ??
-              false;
+          final isSelected = (e.categoryId == selectedCateroty?.categoryId);
           return InkWell(
               onTap: () {
                 _onSelectedChange(
@@ -184,11 +188,19 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(200),
-                    child: NetWorkImageWidget(
-                      imageUrl: e.cover?.url ?? '',
-                      width: imageSize.w,
-                      height: imageSize.h,
-                      fit: BoxFit.cover,
+                    child: Container(
+                      width: (1.sw - 16.w * 4) / 4 * 0.75,
+                      height: (1.sw - 16.w * 4) / 4 * 0.75,
+                      padding: EdgeInsets.all(12),
+                      color: isSelected
+                          ? R.color.main_1.withOpacity(0.8)
+                          : R.color.greenGradientTop
+                          .withOpacity(0.1),
+                      child: NetWorkImageWidget(
+                        imageUrl: e.cover?.url ?? '',
+                        isSelected: isSelected,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   SizedBox(height: 8),
@@ -213,13 +225,13 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                   ),
                 ],
               ));
-        }).toList(),
+        }),
         InkWell(
           onTap: () {
             Navigator.of(context)
                 .pushNamed(NavigatorName.exercrise_select_category, arguments: {
               'selected': selectedCateroty,
-              'onChanged': (List<ExercrisesCategoryModel> selected) {
+              'onChanged': (ExercrisesCategoryModel? selected) {
                 setState(() {
                   selectedCateroty = selected;
                 });
@@ -267,8 +279,8 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
 class ExercisesSelectCategory extends StatefulWidget {
   const ExercisesSelectCategory({Key? key, this.onChanged, this.selected})
       : super(key: key);
-  final void Function(List<ExercrisesCategoryModel>)? onChanged;
-  final List<ExercrisesCategoryModel>? selected;
+  final void Function(ExercrisesCategoryModel?)? onChanged;
+  final ExercrisesCategoryModel? selected;
 
   @override
   _ExercisesSelectCategoryState createState() =>
@@ -278,7 +290,7 @@ class ExercisesSelectCategory extends StatefulWidget {
 class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
     with WidgetsBindingObserver, Observer {
   late BuildContext currentContext;
-  List<ExercrisesCategoryModel>? selectedCateroty = [];
+  ExercrisesCategoryModel? selectedCateroty;
   TextEditingController _controllerSearch = TextEditingController();
   @override
   void update(
@@ -321,12 +333,11 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
     bool isSelected,
     ExercrisesCategoryModel e,
   ) {
-    final newSelectedCateroty = selectedCateroty ?? [];
+    var newSelectedCateroty = selectedCateroty;
     if (isSelected) {
-      newSelectedCateroty
-          .removeWhere((item) => item.categoryId == e.categoryId);
+      newSelectedCateroty = null;
     } else {
-      newSelectedCateroty.add(e);
+      newSelectedCateroty = e;
     }
     setState(() {
       selectedCateroty = newSelectedCateroty;
@@ -357,7 +368,7 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
         },
         child: Scaffold(
             resizeToAvoidBottomInset: false,
-            backgroundColor: R.color.backgroundColorNew,
+            backgroundColor: Colors.white,
             appBar: AppBar(
               leading: IconButton(
                   splashColor: R.color.transparent,
@@ -369,7 +380,7 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    R.string.exercrise_dashboard_title.tr(),
+                    R.string.them_hoat_dong.tr(),
                     style: TextStyle(
                         color: R.color.white,
                         fontSize: 20,
@@ -407,18 +418,15 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
             children: [
               // Thanh tìm kiếm
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: R.color.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(
+                    color: R.color.textDark.withOpacity(0.25),
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -507,15 +515,12 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                             crossAxisCount: 4,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 0.8,
+                            childAspectRatio: 0.75,
                           ),
                           itemCount: data.length,
                           itemBuilder: (context, index) {
                             final e = data![index];
-                            final isSelected = selectedCateroty?.any((item) =>
-                                    item.categoryId == e.categoryId) ??
-                                false;
-
+                            final isSelected = (e.categoryId == selectedCateroty?.categoryId);
                             return GestureDetector(
                               onTap: () {
                                 _onSelectedChange(isSelected, e);
@@ -529,15 +534,15 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                                     child: Container(
                                       width: containerSize * 0.75,
                                       height: containerSize * 0.75,
+                                      padding: EdgeInsets.all(12),
                                       color: isSelected
-                                          ? R.color.greenGradientBottom
-                                              .withOpacity(0.2)
-                                          : R.color.textDark.withOpacity(0.1),
+                                          ? R.color.main_1.withOpacity(0.8)
+                                          : R.color.greenGradientTop
+                                              .withOpacity(0.1),
                                       child: NetWorkImageWidget(
                                         imageUrl: e.cover?.url ?? '',
-                                        width: containerSize * 0.75,
-                                        height: containerSize * 0.75,
-                                        fit: BoxFit.cover,
+                                        isSelected: isSelected,
+                                        fit: BoxFit.contain,
                                       ),
                                     ),
                                   ),
@@ -577,6 +582,8 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                       return Container();
                     })),
               ),
+
+              SizedBox(height: 60),
             ],
           ),
         ),
@@ -620,7 +627,7 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
 
   _submitData() {
     if (widget.onChanged != null) {
-      widget.onChanged!(selectedCateroty ?? []);
+      widget.onChanged!(selectedCateroty);
     }
     Navigator.pop(context);
   }

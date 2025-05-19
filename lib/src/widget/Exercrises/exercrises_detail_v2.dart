@@ -17,6 +17,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
+import '../../utils/navigator_name.dart';
 import 'widget/exercrises_list_card.dart';
 
 class ExercrisesDetailV2 extends StatefulWidget {
@@ -159,6 +160,23 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                     R.color.greenGradientBottom
                   ])),
             ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Message.showToastMessage(context,
+                      R.string.exercrise_step_onboarding_action_btn.tr());
+                },
+                child: Text(
+                  R.string.exercrise_step_onboarding_action_btn.tr(),
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'sfpro',
+                  ),
+                ),
+              ),
+            ],
           ),
           body: _buildContainer(),
         ),
@@ -285,13 +303,14 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                               fontFamily: 'sfpro',
                                               fontWeight: FontWeight.w700)),
                                       SizedBox(height: 16),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: _buildExerciseItem(
-                                          exercises,
-                                        ),
-                                      ),
+                                      ...item.exerciseInput.expand((input) {
+                                        if (input.exercise.isEmpty) return [];
+                                        return _buildExerciseItem(
+                                            input.exercise,
+                                            input.id ?? '',
+                                            model?.length == 1,
+                                        );
+                                      }).toList(),
                                     ],
                                   ),
                                 );
@@ -305,19 +324,31 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
     );
   }
 
-  _buildExerciseItem(List<ListExercriseModel> exercise) {
+  _buildExerciseItem(
+      List<ListExercriseModel> exercise,
+      String exerciseInputId,
+      bool isOnlyOne,
+      ) {
     return exercise.map((e) {
       bool isFirst = exercise.indexOf(e) == 0;
       bool isLast = exercise.indexOf(e) == exercise.length - 1;
 
       return InkWell(
           onTap: () {
-            // Handle item tap
-            print('Item tapped: ${e.name}');
+            debugPrint('Exercise Lenght: ${exercise.length}');
+            Navigator.pushNamed(
+              context,
+              NavigatorName.exercrise_add_v2,
+              arguments: {
+                'isUpdate': true,
+                'exerciseInputId': exerciseInputId,
+                'isOnlyOne': isOnlyOne,
+              },
+            );
           },
           child: Container(
             margin: EdgeInsets.zero,
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: R.color.white,
               borderRadius: BorderRadius.only(
@@ -341,21 +372,30 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(200),
-                        child: NetWorkImageWidget(
-                          imageUrl: e.imageUrl.url ?? '',
+                        child: Container(
                           width: 42.w,
                           height: 42.h,
-                          fit: BoxFit.cover,
+                          padding: EdgeInsets.all(8),
+                          color: R.color.main_1.withOpacity(0.8),
+                          child: NetWorkImageWidget(
+                            imageUrl: e.imageUrl.url ?? '',
+                            width: 42.w,
+                            height: 42.h,
+                            isSelected: true,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                       SizedBox(width: 8),
-                      Text(
-                        e.category ?? '',
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 18,
-                          fontFamily: 'sfpro',
-                          fontWeight: FontWeight.w900,
+                      Flexible(
+                        child: Text(
+                          e.category ?? '',
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 18,
+                            fontFamily: 'sfpro',
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                       Padding(

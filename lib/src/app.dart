@@ -704,7 +704,12 @@ class App extends StatelessWidget {
                           periodFilterType: args['periodFilterType'],
                         ));
                   case NavigatorName.exercrise_add_v2:
-                    return _buildRoute(settings, ExercrisesAddV2());
+                    Map<String, dynamic>? args = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(settings, ExercrisesAddV2(
+                      isUpdate: args?['isUpdate'],
+                      exerciseInputId: args?['exerciseInputId'],
+                      isOnlyOne: args?['isOnlyOne'],
+                    ));
                   case NavigatorName.exercrise_select_category:
                     final args = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(

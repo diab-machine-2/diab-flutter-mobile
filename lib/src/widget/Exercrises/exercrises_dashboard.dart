@@ -76,7 +76,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
 
   void _goBack() {
     if (Navigator.canPop(context)) {
-      Navigator.pop(context);
+      Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
     } else {
       BotToast.showText(
         text: 'Opps! You can not go back',
