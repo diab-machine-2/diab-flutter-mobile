@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+
 @immutable
 class BloodPressureTrendModel {
   final TrendModel trendItems;
@@ -6,9 +7,7 @@ class BloodPressureTrendModel {
   final List<String>? colors;
 
   const BloodPressureTrendModel(
-      {required this.trendItems,
-      required this.legends,
-      required this.colors});
+      {required this.trendItems, required this.legends, required this.colors});
   @override
   factory BloodPressureTrendModel.fromJson(Map<String, dynamic> json) {
     return BloodPressureTrendModel(
@@ -28,11 +27,7 @@ class TrendModel {
   final int? size;
   final List<TrendItemModel> items;
 
-  TrendModel(
-      {required this.total,
-      required this.page,
-      required this.size,
-      required this.items});
+  TrendModel({required this.total, required this.page, required this.size, required this.items});
   @override
   factory TrendModel.fromJson(Map<String, dynamic> json) {
     return TrendModel(
@@ -52,8 +47,7 @@ class TrendItemModel {
   factory TrendItemModel.fromJson(Map<String, dynamic> json) {
     return TrendItemModel(
         date: json['date'],
-        subTrendItems:
-            SubTrendItemModel.toList(json['subTrendItems']).reversed.toList());
+        subTrendItems: SubTrendItemModel.toList(json['subTrendItems']).reversed.toList());
   }
 
   static List<TrendItemModel> toList(List<dynamic> items) {
@@ -65,17 +59,31 @@ class SubTrendItemModel {
   final double? systolic;
   final double? diastolic;
   final double? pulseRate;
+  final String? color;
+  final String? type;
+  final int? date;
+  final String? timeFrameName;
 
-  SubTrendItemModel(
-      {required this.systolic,
-      required this.diastolic,
-      required this.pulseRate});
+  SubTrendItemModel({
+    required this.systolic,
+    required this.diastolic,
+    required this.pulseRate,
+    this.color,
+    this.type,
+    this.date,
+    this.timeFrameName,
+  });
   @override
   factory SubTrendItemModel.fromJson(Map<String, dynamic> json) {
     return SubTrendItemModel(
-        systolic: json['systolic'],
-        diastolic: json['diastolic'],
-        pulseRate: json['pulseRate']);
+      systolic: json['systolic'],
+      diastolic: json['diastolic'],
+      pulseRate: json['pulseRate'],
+      color: json['color'],
+      type: json['type'],
+      date: json['date'],
+      timeFrameName: json['timeFrameName'],
+    );
   }
 
   static List<SubTrendItemModel> toList(List<dynamic> items) {

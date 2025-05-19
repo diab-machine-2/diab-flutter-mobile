@@ -10,17 +10,20 @@ class CalendarCoachModel {
   int? createDatetime;
   int? updateDatetime;
   bool? isDeleted;
+  final String zoomUserId;
 
-  CalendarCoachModel(
-      {required this.id,
-      required this.coachId,
-      required this.startTime,
-      required this.endTime,
-      required this.status,
-      required this.courseId,
-      this.createDatetime,
-      this.updateDatetime,
-      this.isDeleted});
+  CalendarCoachModel({
+    required this.id,
+    required this.coachId,
+    required this.startTime,
+    required this.endTime,
+    required this.status,
+    required this.courseId,
+    this.createDatetime,
+    this.updateDatetime,
+    this.isDeleted,
+    required this.zoomUserId,
+  });
 
   factory CalendarCoachModel.fromJson(Map<String, dynamic> json) {
     return CalendarCoachModel(
@@ -33,6 +36,7 @@ class CalendarCoachModel {
       isDeleted: json['isDeleted'] ?? false,
       createDatetime: json['createDatetime'] ?? 0,
       updateDatetime: json['updateDatetime'] ?? 0,
+      zoomUserId: json['zoomUserId'] ?? '',
     );
   }
   Map<String, dynamic> toJson() {
@@ -46,6 +50,7 @@ class CalendarCoachModel {
       'isDeleted': isDeleted ?? false,
       'createDatetime': createDatetime,
       'updateDatetime': updateDatetime,
+      'zoomUserId': zoomUserId,
     };
   }
 

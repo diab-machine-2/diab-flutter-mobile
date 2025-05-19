@@ -56,9 +56,10 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
   Future<void> setUpCalendar() async {
     await _cubit.initializeMyCalendar(
-        courseId: widget.courseId,
-        endDate: DateTime.fromMillisecondsSinceEpoch(
-            int.parse(widget.endTime) * 1000));
+      courseId: widget.courseId,
+      // endDate: DateTime.fromMillisecondsSinceEpoch(
+      //     int.parse(widget.endTime) * 1000)
+    );
 
     myCalendar = CalendarBookingCubit.myCalendar;
     seletedDate = myCalendar != null
@@ -112,51 +113,60 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
+    return WillPopScope(
+      onWillPop: () async {
+        print('[ONBOARDING] on pop scope calendar booking page');
+        if (Navigator.of(context).canPop()) {
+          print('[ONBOARDING] pop scope calendar booking page');
+          Navigator.of(context).pop();
+        }
+        return true;
       },
-      child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            color: R.color.backgroundColorNew
-          ),
-          child: BlocProvider(
-              create: (context) => _cubit,
-              child: BlocConsumer<CalendarBookingCubit, CalendarBookingState>(
-                  listener: (context, state) => {
-                        if (state is CalendarBookingFailure)
-                          {
-                            Message.showToastMessage(context, state.error),
-                            BotToast.closeAllLoading()
-                          }
-                        else if (state is CreateCalendarSuccess)
-                          {
-                            if (myCalendar != null)
-                              CalendarBookingCubit.updateCount += 1,
-                            Navigator.pushNamed(context, NavigatorName.calendar,
-                                arguments: {
-                                  "pickSlot": state.response,
-                                  "courseId": widget.courseId,
-                                  "endTime": widget.endTime,
-                                  "bookingQuantity":
-                                      CalendarBookingCubit.updateCount,
-                                })
-                          }
-                      },
-                  builder: ((context, state) {
-                    try {
-                      if (state is CalendarBookingLoading) {
-                        BotToast.showLoading();
-                      } else if (state is CalendarBookingCloseLoading) {
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          body: Container(
+            decoration: BoxDecoration(color: R.color.backgroundColorNew),
+            child: BlocProvider(
+                create: (context) => _cubit,
+                child: BlocConsumer<CalendarBookingCubit, CalendarBookingState>(
+                    listener: (context, state) => {
+                          if (state is CalendarBookingFailure)
+                            {
+                              Message.showToastMessage(context, state.error),
+                              BotToast.closeAllLoading()
+                            }
+                          else if (state is CreateCalendarSuccess)
+                            {
+                              if (myCalendar != null)
+                                CalendarBookingCubit.updateCount += 1,
+                              Navigator.pushReplacementNamed(
+                                  context, NavigatorName.calendar,
+                                  arguments: {
+                                    "pickSlot": state.response,
+                                    "courseId": widget.courseId,
+                                    "endTime": widget.endTime,
+                                    "bookingQuantity":
+                                        CalendarBookingCubit.updateCount,
+                                  })
+                            }
+                        },
+                    builder: ((context, state) {
+                      try {
+                        if (state is CalendarBookingLoading) {
+                          BotToast.showLoading();
+                        } else if (state is CalendarBookingCloseLoading) {
+                          BotToast.closeAllLoading();
+                        }
+                        return _buildPage();
+                      } catch (e) {
                         BotToast.closeAllLoading();
+                        return _buildPage();
                       }
-                      return _buildPage();
-                    } catch (e) {
-                      BotToast.closeAllLoading();
-                      return _buildPage();
-                    }
-                  }))),
+                    }))),
+          ),
         ),
       ),
     );
@@ -360,6 +370,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       calendarAccounts: [account],
       goal: "Phỏng vấn đầu vào",
       trainingGroupIds: [],
+      userId: pickSlot!.zoomUserId,
     );
     _cubit.createCalendar(request);
   }
@@ -397,7 +408,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     );
   }
 
-   _showPopupOverSwitchTime({
+  _showPopupOverSwitchTime({
     required Function onConfirm,
     bool isShowImg = false,
     String? subtitle,
@@ -585,7 +596,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
   }
 
   Widget _buildTimeFrame() {
-    List<CalendarCoachModel> coachSchedules = pickSlots;
+    List<CalendarCoachModel> coachSchedules =
+        pickSlots.where((element) => element.zoomUserId.isNotEmpty).toList();
     List<Widget> morningTargets = [];
     List<Widget> afternoonTargets = [];
 
@@ -629,16 +641,15 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                 Text(
                   "-",
                   style: TextStyle(
-                    fontSize: 14.0,
-                    fontFamily: 'sfpro',
-                    fontWeight: PickerHelper.getTextFontWeightByState(
-                      isSelected: isSlotPicked,
-                    ),
-                    color: PickerHelper.getTextColorByState(
-                      isSelected: isSlotPicked,
-                      hasSlot: true,
-                    )
-                  ),
+                      fontSize: 14.0,
+                      fontFamily: 'sfpro',
+                      fontWeight: PickerHelper.getTextFontWeightByState(
+                        isSelected: isSlotPicked,
+                      ),
+                      color: PickerHelper.getTextColorByState(
+                        isSelected: isSlotPicked,
+                        hasSlot: true,
+                      )),
                 ),
                 _buildItemTimeFrame(
                   endTime,

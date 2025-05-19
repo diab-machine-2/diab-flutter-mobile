@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -11,12 +12,10 @@ import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/service/zoom_service.dart';
-import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -35,6 +34,7 @@ class BranchioLinkConfig {
   String? get meetingId => _meetingId;
   String? get meetingPassword => _meetingPassword;
   String? get referalCode => _referalCode;
+
   DateTime? lastMeetingEndTime;
 
   // Tracking pending deep link navigation
@@ -42,17 +42,21 @@ class BranchioLinkConfig {
   int? _pendingClinicId;
   int? _pendingMode; // 0 = online, 1 = offline
   String? _pendingType; // dsmes, clinic, doctor
+  bool _hasPendingLoginDeeplink = false;
   Timer? _navigationTimer;
+
+  String? _pendingMeasurementScreen;
 
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
+  bool get hasPendingLoginDeeplink => _hasPendingLoginDeeplink;
 
   // Getters for pending data
   int? get pendingClinicId => _pendingClinicId;
   int? get pendingMode => _pendingMode;
   String? get pendingType => _pendingType;
 
-  // Ttracking map for booking feature pages is already open
+  // Tracking map for booking feature pages is already open
   Map<String, bool> _openBookingPages = {
     'dsmes': false,
     'clinic': false,
@@ -61,8 +65,29 @@ class BranchioLinkConfig {
 
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
-      print('listenDynamicLinks - Branchio DeepLink Data: $data');
+      log('listenDynamicLinks - Branchio DeepLink Data: $data');
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
+
+      final zoomStatus = await ZoomService().getMeetingStatus();
+      print('[Meeting Status] Zoom Status: ${zoomStatus[0]}');
+
+      if (zoomStatus[0] == 'MEETING_STATUS_INMEETING') {
+        await ZoomService().returnToMeeting();
+        return;
+      }
+
+      // Handle login deeplink
+      if (data['+clicked_branch_link'] == true && data.containsKey("\$login")) {
+        final token = await AppSettings.getToken();
+        if (token.isNotEmpty) return;
+        _hasPendingLoginDeeplink = true;
+
+        // Navigate immediately if app is initialized
+        if (AppSettings.splashScreenInitDone) {
+          executeLoginDeeplinkNavigation();
+        }
+        return;
+      }
 
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
@@ -145,6 +170,14 @@ class BranchioLinkConfig {
         return;
       }
 
+      // Handle input index deep link
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$screen_value")) {
+        final inputIndexScreen = data['\$screen_value'] as String;
+        _processMeasurementDeepLink(inputIndexScreen);
+        return;
+      }
+
       //Handle old dynamic link referral code
       if (data['+non_branch_link'] != null) {
         final urlString = data['+non_branch_link'] as String;
@@ -165,6 +198,87 @@ class BranchioLinkConfig {
       }
       TrackingManager.recordError(error, null);
     });
+  }
+
+  // Execute login deeplink navigation to the login screen
+  Future<void> executeLoginDeeplinkNavigation() async {
+    print('[ROUTE] Executing login deeplink navigation');
+
+    try {
+      // Navigate to login screen
+      await navigatorKey.currentState?.pushNamed(NavigatorName.login);
+
+      // Clear pending login data
+      clearPendingLoginData();
+    } catch (e) {
+      print('[ROUTE] Error executing login deeplink navigation: $e');
+      clearPendingLoginData();
+    }
+  }
+
+  void _processMeasurementDeepLink(String screenValue) async {
+    // Wait for the app to be fully initialized
+    if (!AppSettings.splashScreenInitDone || AppSettings.userInfo == null) {
+      _pendingMeasurementScreen = screenValue;
+      return;
+    }
+
+    navigatorKey.currentState?.popUntil((route) {
+      return route.settings.name == NavigatorName.tabbar;
+    });
+
+    // Map of measurement types to their corresponding routes and arguments
+    Map<String, Map<String, dynamic>> measurementRoutes = {
+      'duong-huyet': {
+        'route': NavigatorName.add_blood_sugar_new,
+        'args': {'type': 'input'}
+      },
+      'huyet-ap': {
+        'route': NavigatorName.add_blood_pressure,
+        'args': {'type': 'input', 'id': null}
+      },
+      'van-dong': {
+        'route': NavigatorName.add_exercrises,
+        'args': {'type': 'input'}
+      },
+      'dinh-duong': {
+        'route': NavigatorName.add_food,
+        'args': {'type': 'input'}
+      },
+      'hba1c': {
+        'route': NavigatorName.add_hba1c,
+        'args': {'type': 'input', 'id': null}
+      },
+      'can-nang': {
+        'route': NavigatorName.add_bmi,
+        'args': {'type': 'input'}
+      }
+    };
+
+    // If the screen value is in our map, navigate to it
+    if (measurementRoutes.containsKey(screenValue)) {
+      final routeInfo = measurementRoutes[screenValue]!;
+
+      // For all other measurements, navigate directly
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          routeInfo['route'] as String,
+          (route) => route.settings.name == NavigatorName.tabbar,
+          arguments: routeInfo['args']);
+    } else {
+      print('Unknown measurement screen value: $screenValue');
+    }
+  }
+
+  void checkPendingMeasurementScreen() {
+    if (_pendingMeasurementScreen != null) {
+      final screenValue = _pendingMeasurementScreen ?? '';
+      _pendingMeasurementScreen = null;
+
+      if (screenValue.isEmpty) return;
+
+      // This shouldn't happen, but just in case
+      _processMeasurementDeepLink(screenValue);
+    }
   }
 
   // Execute pending deeplink navigation based on parameters
@@ -340,8 +454,12 @@ class BranchioLinkConfig {
   }
 
   void resetPageTracking() {
-    print('[ROUTE] Resetting all page tracking - user is at home screen');
     _openBookingPages.updateAll((key, value) => false);
+  }
+
+  // Helper method to clear pending login data
+  void clearPendingLoginData() {
+    _hasPendingLoginDeeplink = false;
   }
 
   // Schedule delayed navigation for TabbarController to use after initialization
@@ -388,15 +506,28 @@ class BranchioLinkConfig {
         if (response.length > 0) {
           bookingQuantity = response.length;
           if (bookingQuantity >= 1) {
-            navigatorKey.currentState
-                ?.pushNamed(NavigatorName.calendar, arguments: {
-              "pickSlot": response.firstWhere(
-                  (element) => element.isDeleted == false,
-                  orElse: null),
-              "courseId": _courseId,
-              "endTime": _endTime,
-              "bookingQuantity": bookingQuantity,
-            });
+            bool isCalendarPage = _isCurrentRoute(NavigatorName.calendar);
+            if (isCalendarPage) {
+              navigatorKey.currentState
+                  ?.pushReplacementNamed(NavigatorName.calendar, arguments: {
+                "pickSlot": response.firstWhere(
+                    (element) => element.isDeleted == false,
+                    orElse: null),
+                "courseId": _courseId,
+                "endTime": _endTime ?? '',
+                "bookingQuantity": bookingQuantity,
+              });
+            } else {
+              navigatorKey.currentState
+                  ?.pushNamed(NavigatorName.calendar, arguments: {
+                "pickSlot": response.firstWhere(
+                    (element) => element.isDeleted == false,
+                    orElse: null),
+                "courseId": _courseId,
+                "endTime": _endTime ?? '',
+                "bookingQuantity": bookingQuantity,
+              });
+            }
             _resetDataLink();
             return;
           }
@@ -407,8 +538,16 @@ class BranchioLinkConfig {
       });
 
       if (bookingQuantity == 0) {
-        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-            arguments: {'courseId': _courseId, 'endTime': _endTime});
+        bool isCalendarBookingPage =
+            _isCurrentRoute(NavigatorName.calendar_booking);
+        if (isCalendarBookingPage) {
+          navigatorKey.currentState?.pushReplacementNamed(
+              NavigatorName.calendar_booking,
+              arguments: {'courseId': _courseId, 'endTime': _endTime});
+        } else {
+          navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
+              arguments: {'courseId': _courseId, 'endTime': _endTime});
+        }
         _resetDataLink();
       }
     }
@@ -457,5 +596,15 @@ class BranchioLinkConfig {
   void dispose() {
     _navigationTimer?.cancel();
     _subLink?.cancel();
+  }
+
+  bool _isCurrentRoute(String routeName) {
+    bool result = false;
+    navigatorKey.currentState?.popUntil((route) {
+      result = route.settings.name == routeName;
+      // Don't actually pop any routes
+      return true;
+    });
+    return result;
   }
 }

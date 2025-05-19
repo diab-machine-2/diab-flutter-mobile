@@ -68,6 +68,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 
 import android.util.Log;
+import android.net.Uri;
 // import javax.naming.spi.DirStateFactory.Result;
 
 import io.reactivex.Observable;
@@ -76,6 +77,9 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.vnpay.authentication.VNP_AuthenticationActivity;
+import com.vnpay.authentication.VNP_SdkCompletedCallback;
 
 public class MainActivity extends FlutterFragmentActivity {
 
@@ -87,6 +91,9 @@ public class MainActivity extends FlutterFragmentActivity {
     private EventChannel.EventSink events;
 
     private Context context;
+    private static final String TAG = "MainActivity";
+    private static final String VNPAY_CHANNEL = "paymentGateway";
+    private static final String VNPAY_APP_SCHEME = "diabvnpay";
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -134,21 +141,25 @@ public class MainActivity extends FlutterFragmentActivity {
                         }
                 );
 
-        new EventChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "eventChannelStreamiBle").setStreamHandler(
-                new EventChannel.StreamHandler() {
-                    @Override
-                    public void onListen(Object args, EventChannel.EventSink event) {
-                        events = event;
-                    }
-
-                    @Override
-                    public void onCancel(Object args) {
-                        emitData("event_cancel", null);
-                    }
-                }
-        );
+        // Add VNPay channel
+        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), VNPAY_CHANNEL)
+                .setMethodCallHandler(
+                        (call, result) -> {
+                            if (call.method.equals("openSDK")) {
+                                String url = call.argument("url");
+                                String tmnCode = call.argument("tmnCode");
+                                String scheme = call.argument("scheme") != null ? call.argument("scheme") : VNPAY_APP_SCHEME;
+                                Boolean isSandbox = call.argument("isSandbox") != null ? call.argument("isSandbox") : false;
+                                
+                                Log.d(TAG, "Opening VNPay SDK with URL: " + url);
+                                startVNPayActivity(url, tmnCode, scheme, isSandbox);
+                                result.success(true);
+                            } else {
+                                result.notImplemented();
+                            }
+                        }
+                );
     }
-
 
     final IBLE_Callback mIBleCallback = new IBLE_Callback() {
 
@@ -496,4 +507,122 @@ public class MainActivity extends FlutterFragmentActivity {
         IBLE_Manager.getInstance().RequestAllRecords();
     }
 
+    /**
+     * Start the VNPAY Authentication Activity
+    */
+    private void sendPaymentResult(String action, int resultCode, Map<String, Object> extras) {
+        HashMap<String, Object> resultMap = new HashMap<>();
+        MethodChannel channel = new MethodChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), VNPAY_CHANNEL);
+        resultMap.put("action", action);
+        resultMap.put("resultCode", resultCode);
+        resultMap.putAll(extras);
+
+        runOnUiThread(() -> {
+            channel.invokeMethod("PaymentBack", resultMap);
+        });
+    }
+
+    private void startVNPayActivity(String url, String tmnCode, String scheme, Boolean isSandbox) {
+        Intent intent = new Intent(this, VNP_AuthenticationActivity.class);
+        
+        // Required parameters for VNPay SDK
+        intent.putExtra("url", url);          // Payment URL provided by VNPay
+        intent.putExtra("tmn_code", tmnCode); // Terminal code provided by VNPay
+        intent.putExtra("scheme", scheme);    // Scheme for reopening app after bank payment
+        intent.putExtra("is_sandbox", isSandbox); // Whether to use sandbox environment
+        
+        Log.d(TAG, "[VNPAY] Starting VNPay activity with URL: " + url);
+        
+        // Set callback for VNPay SDK
+        VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
+            @Override
+            public void sdkAction(String action) {
+                Log.wtf("[VNPAY] SplashActivity", "action: " + action);
+                switch (action) {
+                    case "AppBackAction":
+                        sendPaymentResult(action, 24, new HashMap<>()); // custom code for canceled
+                        break;
+                    case "CallMobileBankingApp":
+                        sendPaymentResult(action, 10, new HashMap<>()); // custom code for "in progress"
+                        break;
+                    case "WebBackAction":
+                        sendPaymentResult(action, 24, new HashMap<>());
+                        break;
+                    case "FaildBackAction":
+                        sendPaymentResult(action, 99, new HashMap<>()); // error code
+                        break;
+                    case "SuccessBackAction":
+                        sendPaymentResult(action, 0, new HashMap<>()); // success code
+                        break;
+                }
+            }
+        });
+        
+        // Start the VNPay activity
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        String scheme = intent.getScheme();
+        String data = intent.getDataString();
+
+        Log.d(TAG, "[VNPAY] New Intent received: " + data + " with scheme: " + scheme);
+
+        if (VNPAY_APP_SCHEME.equals(scheme)) {
+            try {
+                Uri uri = Uri.parse(data);
+                String responseCode = uri.getQueryParameter("vnp_ResponseCode") != null ? 
+                                    uri.getQueryParameter("vnp_ResponseCode") : "99";
+                String bankTranNo = uri.getQueryParameter("vnp_BankTranNo") != null ?
+                                    uri.getQueryParameter("vnp_BankTranNo") : "";
+                String amount = uri.getQueryParameter("vnp_Amount") != null ? 
+                                uri.getQueryParameter("vnp_Amount") : "0";
+                String bankCode = uri.getQueryParameter("vnp_BankCode") != null ? 
+                                uri.getQueryParameter("vnp_BankCode") : "";
+                String orderInfo = uri.getQueryParameter("vnp_OrderInfo") != null ? 
+                                uri.getQueryParameter("vnp_OrderInfo") : "";
+                String cardType = uri.getQueryParameter("vnp_CardType") != null ?
+                                uri.getQueryParameter("vnp_CardType") : "";
+                String payDate = uri.getQueryParameter("vnp_PayDate") != null ?
+                                uri.getQueryParameter("vnp_PayDate") : "";
+                String tmnCode = uri.getQueryParameter("vnp_TmnCode") != null ?
+                                uri.getQueryParameter("vnp_TmnCode") : "";
+                String transactionNo = uri.getQueryParameter("vnp_TransactionNo") != null ?
+                                uri.getQueryParameter("vnp_TransactionNo") : "";
+                String transactionStatus = uri.getQueryParameter("vnp_TransactionStatus") != null ?
+                                uri.getQueryParameter("vnp_TransactionStatus") : "";
+                String txnRef = uri.getQueryParameter("vnp_TxnRef") != null ?
+                                uri.getQueryParameter("vnp_TxnRef") : "";
+
+
+                Map<String, Object> extras = new HashMap<>();
+                extras.put("vnp_ResponseCode", responseCode);
+                extras.put("vnp_BankTranNo", bankTranNo);
+                extras.put("vnp_Amount", amount);
+                extras.put("vnp_BankCode", bankCode);
+                extras.put("vnp_OrderInfo", orderInfo);
+                extras.put("vnp_CardType", cardType);
+                extras.put("vnp_PayDate", payDate);
+                extras.put("vnp_TmnCode", tmnCode);
+                extras.put("vnp_TransactionNo", transactionNo);
+                extras.put("vnp_TransactionStatus", transactionStatus);
+                extras.put("vnp_TxnRef", txnRef);
+
+                int resultCode = "00".equals(responseCode) ? 0 : 99;
+                Date date = new Date();
+                //This method returns the time in millis
+                long timeMilli = date.getTime();
+                Log.d(TAG, "[VNPAY] native return data: " + timeMilli);
+                sendPaymentResult("ReturnFromVNPay", resultCode, extras);
+            } catch (Exception e) {
+                Log.d(TAG, "[VNPAY] Error parsing return URL: " + e.getMessage());
+                Map<String, Object> errorMap = new HashMap<>();
+                errorMap.put("error", e.getMessage() != null ? e.getMessage() : "Unknown error");
+                sendPaymentResult("ReturnFromVNPay", 99, errorMap);
+            }
+        }
+    }
 }

@@ -34,6 +34,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   bool isNavigateToStepList = false;
   SecureModel? secureModel;
   AppVersionResponse? appVersion;
+  bool _isInitialized = false;
 
   @override
   void initState() {
@@ -47,12 +48,12 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     // Setup deeplink handlers
     BranchioLinkConfig.instance.setUpHandleDeepLink();
     await DynamicLinkConfig.instance.setUpHandleDeepLink();
-    
+
     // Initialize app configurations
     await getSecuredModel();
     await getVersion();
     BlocProvider.of<NiproBloc>(context).add(NiproEventFetchSavedDevice());
-    
+
     // Continue with normal app initialization
     await getData(context);
   }
@@ -120,16 +121,17 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     }
-    
+
     try {
       final token = await AppSettings.getToken();
       final clickedBranchLink = await AppSettings.getClickedBranchLink();
       print('flashScreen clickedBranchLink: $clickedBranchLink');
       AppSettings.environment = await AppSettings.getEnvironment();
-      
+
       // Mark splash screen initialization as complete
       AppSettings.setSplashScreenInitDone(true);
-      
+      _isInitialized = true;
+
       // Normal flow - navigate to tabbar or login screen
       if (token.isNotEmpty) {
         var user = await UserClient().getUserPreferences();
@@ -145,12 +147,15 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
               arguments: sharedCode,
             );
             isNavigateToStepList = true;
+
+            // After navigating to step_list, check if we need to navigate to login screen
+            await handleDeeplinkLogin();
           }
         } else {
           await AppSettings.loadPrecachedHome().catchError((e) {
             TrackingManager.recordError(e, null);
           });
-          
+
           // Navigate to tabbar (TabbarController will handle any pending deeplinks)
           await Navigator.pushReplacementNamed(
             context,
@@ -164,6 +169,9 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           NavigatorName.step_list,
           arguments: sharedCode,
         );
+
+        // After navigating to step_list, check if we need to navigate to login screen
+        await handleDeeplinkLogin();
       }
     } catch (e, s) {
       TrackingManager.recordError(e, s);
@@ -180,7 +188,18 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
         AppSettings.logout();
         isNavigateToStepList = true;
+
+        // After navigating to step_list, check if we need to navigate to login screen
+        await handleDeeplinkLogin();
       }
+    }
+  }
+
+  handleDeeplinkLogin() async {
+    // After navigating to step_list, check if we need to navigate to login screen
+    if (BranchioLinkConfig.instance.hasPendingLoginDeeplink) {
+      await Future.delayed(Duration(milliseconds: 100));
+      await BranchioLinkConfig.instance.executeLoginDeeplinkNavigation();
     }
   }
 
