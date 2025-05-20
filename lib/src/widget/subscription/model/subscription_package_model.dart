@@ -64,7 +64,8 @@ class SubscriptionPackage {
     this.isRecommended = false,
   });
 
-  String get priceText => '$price/$duration';
+  // String get priceText => '$price/$duration';
+  String get priceText => '$duration';
 
   factory SubscriptionPackage.fromJson(Map<String, dynamic> json) {
     List<PackageFeature> featuresList = [];
