@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,7 +14,7 @@
 		5A88EF00294CC7160038A34F /* ibtFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; };
 		5A88EF01294CC7160038A34F /* ibtFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5A88EF04294CC71C0038A34F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C731C1F270ABB8800B4BC5B /* StoreKit.framework */; };
-		5AE2ED6C294C759100013BFA /* BuildFile in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5AE2ED6C294C759100013BFA /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		600D316F28DB0B33000C7EE7 /* UIVIewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316528DB0B2A000C7EE7 /* UIVIewController+Extension.swift */; };
 		600D317028DB0B33000C7EE7 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316628DB0B2B000C7EE7 /* UIColor+Extension.swift */; };
 		600D317128DB0B33000C7EE7 /* iBTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316728DB0B2C000C7EE7 /* iBTManager.swift */; };
@@ -38,7 +38,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				5A88EF01294CC7160038A34F /* ibtFramework.xcframework in Embed Frameworks */,
-				5AE2ED6C294C759100013BFA /* BuildFile in Embed Frameworks */,
+				5AE2ED6C294C759100013BFA /* (null) in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -202,6 +202,7 @@
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
+				1FEDC2442DE1BD7100F78737 /* Ignore CallAppSDK on Simulator */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				E076A838C16F9A0C96A0A52F /* [CP] Embed Pods Frameworks */,
@@ -265,6 +266,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1FEDC2442DE1BD7100F78737 /* Ignore CallAppSDK on Simulator */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Ignore CallAppSDK on Simulator";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/sh\n\n# Remove the framework when building for the simulator\nif [[ \"$PLATFORM_NAME\" == *simulator* ]]; then\n    echo \"Excluding CallAppSDK.framework for Simulator build\"\n    rm -rf \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Frameworks/CallAppSDK.frameworkwork\"\nfi\n";
+		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;
@@ -287,7 +306,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
+			name = "Do nothing";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -347,9 +366,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -558,6 +581,7 @@
 				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Runner",
@@ -652,6 +676,7 @@
 				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Runner",
@@ -663,6 +688,273 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-l\"sqlite3\"",
+					"-l\"stdc++\"",
+					"-l\"swiftCoreGraphics\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AVFoundation\"",
+					"-framework",
+					"\"AppAuth\"",
+					"-framework",
+					"\"BranchSDK\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Cache\"",
+					"-framework",
+					"\"CoreBluetooth\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreServices\"",
+					"-framework",
+					"\"CoreTelephony\"",
+					"-framework",
+					"\"CoreText\"",
+					"-framework",
+					"\"FBLPromises\"",
+					"-framework",
+					"\"FBSDKCoreKit\"",
+					"-framework",
+					"\"FBSDKLoginKit\"",
+					"-framework",
+					"\"FirebaseABTesting\"",
+					"-framework",
+					"\"FirebaseAnalytics\"",
+					"-framework",
+					"\"FirebaseCore\"",
+					"-framework",
+					"\"FirebaseCoreExtension\"",
+					"-framework",
+					"\"FirebaseCoreInternal\"",
+					"-framework",
+					"\"FirebaseCrashlytics\"",
+					"-framework",
+					"\"FirebaseDynamicLinks\"",
+					"-framework",
+					"\"FirebaseInstallations\"",
+					"-framework",
+					"\"FirebaseMessaging\"",
+					"-framework",
+					"\"FirebaseRemoteConfig\"",
+					"-framework",
+					"\"FirebaseSessions\"",
+					"-framework",
+					"\"FirebaseSharedSwift\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"GCDWebServer\"",
+					"-framework",
+					"\"GTMAppAuth\"",
+					"-framework",
+					"\"GTMSessionFetcher\"",
+					"-framework",
+					"\"GoogleAppMeasurement\"",
+					"-framework",
+					"\"GoogleAppMeasurementIdentitySupport\"",
+					"-framework",
+					"\"GoogleDataTransport\"",
+					"-framework",
+					"\"GoogleSignIn\"",
+					"-framework",
+					"\"GoogleUtilities\"",
+					"-framework",
+					"\"HLSCachingReverseProxyServer\"",
+					"-framework",
+					"\"ImageIO\"",
+					"-framework",
+					"\"LocalAuthentication\"",
+					"-framework",
+					"\"MTBBarcodeScanner\"",
+					"-framework",
+					"\"Mantle\"",
+					"-framework",
+					"\"Mixpanel\"",
+					"-framework",
+					"\"MobileCoreServices\"",
+					"-framework",
+					"\"MobileRTC\"",
+					"-framework",
+					"\"OrderedSet\"",
+					"-framework",
+					"\"PINCache\"",
+					"-framework",
+					"\"PINOperation\"",
+					"-framework",
+					"\"Promises\"",
+					"-framework",
+					"\"PurchasesHybridCommon\"",
+					"-framework",
+					"\"PurchasesHybridCommonUI\"",
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"RevenueCat\"",
+					"-framework",
+					"\"RevenueCatUI\"",
+					"-framework",
+					"\"SDWebImage\"",
+					"-framework",
+					"\"SDWebImageWebPCoder\"",
+					"-framework",
+					"\"SafariServices\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"StoreKit\"",
+					"-framework",
+					"\"SwiftUI\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"TOCropViewController\"",
+					"-framework",
+					"\"Toast\"",
+					"-framework",
+					"\"UIKit\"",
+					"-framework",
+					"\"WebKit\"",
+					"-framework",
+					"\"ZaloSDK\"",
+					"-framework",
+					"\"ZaloSDKCoreKit\"",
+					"-framework",
+					"\"app_links\"",
+					"-framework",
+					"\"app_settings\"",
+					"-framework",
+					"\"audio_session\"",
+					"-framework",
+					"\"audioplayers_darwin\"",
+					"-framework",
+					"\"better_player_plus\"",
+					"-framework",
+					"\"camera_avfoundation\"",
+					"-framework",
+					"\"device_info_plus\"",
+					"-framework",
+					"\"external_app_launcher\"",
+					"-framework",
+					"\"firebase_analytics\"",
+					"-framework",
+					"\"firebase_core\"",
+					"-framework",
+					"\"firebase_crashlytics\"",
+					"-framework",
+					"\"firebase_dynamic_links\"",
+					"-framework",
+					"\"firebase_messaging\"",
+					"-framework",
+					"\"firebase_remote_config\"",
+					"-framework",
+					"\"flutter_blue_plus\"",
+					"-framework",
+					"\"flutter_branch_sdk\"",
+					"-framework",
+					"\"flutter_facebook_login\"",
+					"-framework",
+					"\"flutter_image_compress_common\"",
+					"-framework",
+					"\"flutter_inapp_purchase\"",
+					"-framework",
+					"\"flutter_inappwebview_ios\"",
+					"-framework",
+					"\"flutter_native_splash\"",
+					"-framework",
+					"\"flutter_pdfview\"",
+					"-framework",
+					"\"flutter_zoom_meeting\"",
+					"-framework",
+					"\"fluttertoast\"",
+					"-framework",
+					"\"geolocator_apple\"",
+					"-framework",
+					"\"google_sign_in_ios\"",
+					"-framework",
+					"\"health\"",
+					"-framework",
+					"\"image_cropper\"",
+					"-framework",
+					"\"image_picker_ios\"",
+					"-framework",
+					"\"in_app_review\"",
+					"-framework",
+					"\"just_audio\"",
+					"-framework",
+					"\"libwebp\"",
+					"-framework",
+					"\"mixpanel_flutter\"",
+					"-framework",
+					"\"nanopb\"",
+					"-framework",
+					"\"package_info\"",
+					"-framework",
+					"\"package_info_plus\"",
+					"-framework",
+					"\"path_provider_foundation\"",
+					"-framework",
+					"\"permission_handler_apple\"",
+					"-framework",
+					"\"purchases_flutter\"",
+					"-framework",
+					"\"purchases_ui_flutter\"",
+					"-framework",
+					"\"qr_code_scanner\"",
+					"-framework",
+					"\"share_plus\"",
+					"-framework",
+					"\"shared_preferences_foundation\"",
+					"-framework",
+					"\"sign_in_with_apple\"",
+					"-framework",
+					"\"sqflite\"",
+					"-framework",
+					"\"store_redirect\"",
+					"-framework",
+					"\"uni_links\"",
+					"-framework",
+					"\"url_launcher_ios\"",
+					"-framework",
+					"\"wakelock_plus\"",
+					"-framework",
+					"\"zalo_flutter\"",
+					"-weak_framework",
+					"\"Accelerate\"",
+					"-weak_framework",
+					"\"Accounts\"",
+					"-weak_framework",
+					"\"AudioToolbox\"",
+					"-weak_framework",
+					"\"AuthenticationServices\"",
+					"-weak_framework",
+					"\"CoreGraphics\"",
+					"-weak_framework",
+					"\"CoreLocation\"",
+					"-weak_framework",
+					"\"Foundation\"",
+					"-weak_framework",
+					"\"LinkPresentation\"",
+					"-weak_framework",
+					"\"QuartzCore\"",
+					"-weak_framework",
+					"\"Security\"",
+					"-weak_framework",
+					"\"Social\"",
+					"-weak_framework",
+					"\"UIKit\"",
+					"-weak_framework",
+					"\"UserNotifications\"",
+					"-weak_framework",
+					"\"WebKit\"",
+					"-weak_framework",
+					"\"CallAppSDK\"",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
