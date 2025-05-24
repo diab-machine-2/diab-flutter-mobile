@@ -129,7 +129,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
           if (trends.isEmpty) {
             return Container(
               height: 100,
-              child: Center(child: Text('No data available')),
+              child: Center(child: Text(R.string.no_data_available.tr())),
             );
           }
 

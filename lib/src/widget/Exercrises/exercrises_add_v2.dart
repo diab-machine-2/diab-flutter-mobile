@@ -349,6 +349,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                 const SizedBox(height: 16),
                 Form(
                   key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: TextFormField(
                     keyboardType: TextInputType.number,
                     controller: _controllerDuration,
@@ -358,6 +359,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                         fontSize: 36,
                         color: R.color.textDark,
                         fontWeight: FontWeight.w900),
+                    maxLength: 3,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 16),
@@ -681,7 +683,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                           child: Container(
                             height: 43,
                             decoration: BoxDecoration(
-                              color: R.color.red,
+                              color: R.color.red_2,
                               borderRadius: BorderRadius.circular(200),
                             ),
                             child: Center(

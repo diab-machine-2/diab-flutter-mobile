@@ -230,7 +230,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
               if (model == null || model.isEmpty) {
                 return Center(
                   child: Text(
-                    'No data available',
+                    R.string.no_data_available.tr(),
                     style: TextStyle(color: R.color.textDark, fontSize: 16),
                   ),
                 );
@@ -263,7 +263,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                     model[index].exerciseInput.isEmpty) {
                                   return Center(
                                     child: Text(
-                                      'No data available',
+                                      R.string.no_data_available.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16),
@@ -278,7 +278,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                 if (exercises.isEmpty) {
                                   return Center(
                                     child: Text(
-                                      'No data available',
+                                      R.string.no_data_available.tr(),
                                       style: TextStyle(
                                           color: R.color.textDark,
                                           fontSize: 16),
@@ -306,9 +306,9 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                       ...item.exerciseInput.expand((input) {
                                         if (input.exercise.isEmpty) return [];
                                         return _buildExerciseItem(
-                                            input.exercise,
-                                            input.id ?? '',
-                                            model?.length == 1,
+                                          input.exercise,
+                                          input.id ?? '',
+                                          model?.length == 1,
                                         );
                                       }).toList(),
                                     ],
@@ -325,10 +325,10 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
   }
 
   _buildExerciseItem(
-      List<ListExercriseModel> exercise,
-      String exerciseInputId,
-      bool isOnlyOne,
-      ) {
+    List<ListExercriseModel> exercise,
+    String exerciseInputId,
+    bool isOnlyOne,
+  ) {
     return exercise.map((e) {
       bool isFirst = exercise.indexOf(e) == 0;
       bool isLast = exercise.indexOf(e) == exercise.length - 1;
