@@ -1285,4 +1285,6 @@ class Strings {
   String get setup_personal_exercise => 'setup_personal_exercise';
   String get connect_to_health => 'connect_to_health';
   String get no_data_available => 'no_data_available';
+  String get add_exercise_successfully => 'add_exercise_successfully';
+  String get add_exercise_failed => 'add_exercise_failed';
 }

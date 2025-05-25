@@ -751,7 +751,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
             intensity?.intensityId);
         if (result) {
           // Xử lý thành công
-          BotToast.showText(text: 'Thêm bài tập thành công!');
+          // BotToast.showText(text: 'Thêm bài tập thành công!');
+          Message.showToastMessage(
+              context, R.string.add_exercise_successfully.tr());
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data_v2");
           Navigator.pushNamed(context, NavigatorName.exercrise_result,
@@ -761,7 +763,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
               });
         } else {
           // Xử lý lỗi
-          BotToast.showText(text: 'Thêm bài tập thất bại');
+          // BotToast.showText(text: 'Thêm bài tập thất bại');
+          Message.showToastMessage(context, R.string.add_exercise_failed.tr());
         }
       } catch (e) {
         // Xử lý lỗi
