@@ -410,13 +410,14 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
-        width: 36,
         height: 200,
+        margin: EdgeInsets.only(right: 5),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(number.length, (index) {
               return Text(formatNumber(number[index]),
+                  maxLines: 1,
                   style: TextStyle(
                       fontSize: 14,
                       color: R.color.black,

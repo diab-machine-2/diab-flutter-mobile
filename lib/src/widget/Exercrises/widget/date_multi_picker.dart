@@ -21,11 +21,14 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   DateTime? selectedDate = DateTime.now();
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
+  ValueNotifier<DateTime> selectedDateNotifier = ValueNotifier(DateTime.now());
+
 
   @override
   void initState() {
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
+      selectedDateNotifier.value = widget.initDate!;
       selectedHour = widget.initDate!.hour;
       selectedMinute = widget.initDate!.minute;
     }
@@ -79,6 +82,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
                           selectedDate = datetime;
+                          selectedDateNotifier.value = datetime!;
+                          debugPrint('selectedDate ${selectedDateNotifier.value}');
                         }),
                     Row(
                       children: [
@@ -93,13 +98,20 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    CustomTimePicker(
-                        selectedHour: selectedHour,
-                        selectedMinute: selectedMinute,
-                        callback: (hour, minute) {
-                          selectedHour = hour ?? DateTime.now().hour;
-                          selectedMinute = minute ?? DateTime.now().minute;
-                        }),
+                    ValueListenableBuilder<DateTime>(
+                      valueListenable: selectedDateNotifier,
+                      builder: (context, selectedDate, _) {
+                        return CustomTimePicker(
+                          selectedHour: selectedHour,
+                          selectedMinute: selectedMinute,
+                          selectedDate: selectedDate,
+                          callback: (hour, minute) {
+                            selectedHour = hour ?? DateTime.now().hour;
+                            selectedMinute = minute ?? DateTime.now().minute;
+                          },
+                        );
+                      },
+                    ),
                     SizedBox(height: 20),
                     Row(children: [
                       SizedBox(width: 16),
@@ -131,6 +143,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 selectedDate!.day,
                                 selectedHour,
                                 selectedMinute);
+
+                            selectedDateNotifier.value = selectedDate!;
 
                             widget.callback!(selectedDate);
 
