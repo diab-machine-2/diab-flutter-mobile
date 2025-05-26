@@ -92,7 +92,7 @@ class _ConnectDeviceAppState extends State<ConnectDeviceApp> {
                   //       )),
                   // ),
                   // SizedBox(height: 16),
-                  if (!AppSettings.isUS) ...[
+                  if (AppSettings.isRegionAllowInputDevice) ...[
                     GestureDetector(
                       onTap: () => Navigator.push(
                             context,
