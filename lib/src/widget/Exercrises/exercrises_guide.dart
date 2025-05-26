@@ -34,10 +34,14 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
     model = await UserClient().fetchGoalInfo();
     if (model!.dailyTargetDuration != 0) {
       dailyTargetDuration.text = roundNumber1(model!.dailyTargetDuration!);
+    } else {
+      submitData(true, '30');
     }
     if (model!.dailyTargetBurnedCalorie != 0) {
       dailyTargetBurnedCalorie.text =
           roundNumber1(model!.dailyTargetBurnedCalorie!);
+    } else {
+      submitData(false, '100');
     }
     BotToast.closeAllLoading();
     setState(() {});
