@@ -115,4 +115,5 @@ class NavigatorName {
   static const String exercrise_add_v2 = '/exercrise_add_v2';
   static const String exercrise_select_category = '/exercrise_select_category';
   static const String exercrise_result = '/exercrise_result';
+  static const String exercrise_guide = '/exercrise_guide';
 }

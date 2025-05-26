@@ -1244,3 +1244,4 @@ connect_to_health,"Kết nối với thiết bị theo dõi sức khoẻ","Conne
 no_data_available,"Không có dữ liệu","No data available",
 add_exercise_successfully,"Thêm bài tập thành công!","Add exercise successfully!",
 add_exercise_failed,"Thêm bài tập thất bại!","Add failed exercise",
+kcal_burned_per_day,"KCal đốt cháy mỗi ngày","KCal burned per day",

@@ -32,6 +32,7 @@ import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_dashboard.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_v2.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_guide.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_result.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
@@ -726,6 +727,8 @@ class App extends StatelessWidget {
                           date: args['date'] ?? DateTime.now(),
                           periodFilterType: args['periodFilterType'] ?? 1,
                         ));
+                  case NavigatorName.exercrise_guide:
+                    return _buildRoute(settings, ExercisesGuide());
                   default:
                     return null;
                 }

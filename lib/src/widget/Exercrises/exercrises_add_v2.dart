@@ -181,7 +181,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
             ),
             actions: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, NavigatorName.exercrise_guide);
+                },
                 child: Text(
                   R.string.exercrise_step_onboarding_action_btn.tr(),
                   style: TextStyle(
@@ -739,6 +741,12 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         for (var file in files) {
           paths.add(file.path);
         }
+
+        Navigator.pushNamed(context, NavigatorName.exercrise_result,
+            arguments: {
+              'date': selectedDate,
+              'periodFilterType': 1,
+            });
 
         // Use repository to handle both API call and file upload
 

@@ -123,8 +123,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
             actions: [
               TextButton(
                 onPressed: () {
-                  Message.showToastMessage(context,
-                      R.string.exercrise_step_onboarding_action_btn.tr());
+                  Navigator.pushNamed(context, NavigatorName.exercrise_guide);
                 },
                 child: Text(
                   R.string.exercrise_step_onboarding_action_btn.tr(),

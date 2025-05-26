@@ -1287,4 +1287,5 @@ class Strings {
   String get no_data_available => 'no_data_available';
   String get add_exercise_successfully => 'add_exercise_successfully';
   String get add_exercise_failed => 'add_exercise_failed';
+  String get kcal_burned_per_day => 'kcal_burned_per_day';
 }

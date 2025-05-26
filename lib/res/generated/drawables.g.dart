@@ -637,4 +637,6 @@ class Drawables {
       "lib/res/drawables/exercrise-step/ic-manual-input-btn.png";
   String get ic_upload_images =>
       "lib/res/drawables/ic_upload_images.png";
+  String get exercise_guide_image =>
+      "lib/res/drawables/exercrise-step/exercise_guide_image.png";
 }

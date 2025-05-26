@@ -176,7 +176,9 @@ class _ExercisesResultState extends State<ExercisesResult>
                     centerTitle: true,
                     actions: [
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, NavigatorName.exercrise_guide);
+                        },
                         child: Text(
                           R.string.exercrise_step_onboarding_action_btn.tr(),
                           style: TextStyle(
