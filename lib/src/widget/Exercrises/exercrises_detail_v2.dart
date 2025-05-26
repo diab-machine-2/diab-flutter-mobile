@@ -404,7 +404,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                             size: 10, color: R.color.primaryGreyColor),
                       ),
                       Text(
-                        '${formatNumber(e.burnedCalorie)} ${e.unit}',
+                        '${formatNumber(e.burnedCalorie)} ${R.string.kcal.tr()}',
                         style: TextStyle(
                           color: R.color.primaryGreyColor,
                           fontSize: 14,

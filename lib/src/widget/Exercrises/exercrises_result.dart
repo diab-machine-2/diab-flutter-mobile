@@ -456,7 +456,7 @@ class _ExercisesResultState extends State<ExercisesResult>
               ),
               SizedBox(width: 4.w),
               Text(
-                '$completedCalories/$targetCalories Kcal',
+                '$completedCalories/$targetCalories ${R.string.kcal.tr()}',
                 style: TextStyle(
                   fontSize: 14.sp,
                   color: R.color.textDark,
@@ -622,7 +622,7 @@ class _ExercisesResultState extends State<ExercisesResult>
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  '${exercise.duration != null ? exercise.duration!.round() : 0} Phút   |   ${exercise.burnedCalorie ?? 0} Kcal',
+                  '${exercise.duration != null ? exercise.duration!.round() : 0} Phút   |   ${exercise.burnedCalorie ?? 0} ${R.string.kcal.tr()}',
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: R.color.textDark,
