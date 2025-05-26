@@ -103,7 +103,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
               _buildSupportDoYouNeed(),
               _inputTarget(),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
+                padding: const EdgeInsets.only(left: 5, right: 2.5),
                 child: Image.asset(
                   R.drawable.exercise_guide_image,
                 ),
@@ -204,10 +204,12 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
   Widget _inputTarget() {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.fromLTRB(12, 0, 12, 6),
+      margin: EdgeInsets.fromLTRB(12, 0, 19, 6),
       padding: EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(16.r)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -222,12 +224,13 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
           ),
           buildItem(
             R.string.so_phut_van_dong_moi_ngay.tr(),
-            R.string.minute.tr(),
+            R.string.minute_upperCase_first_character.tr(),
             dailyTargetDuration,
             (newTargetDuration) {
               debugPrint('new target Duration $newTargetDuration');
               submitData(true, newTargetDuration);
             },
+            3,
           ),
           buildItem(
             R.string.kcal_burned_per_day.tr(),
@@ -237,7 +240,9 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
               debugPrint('new target Burned $newTargetBurnedCalorie');
               submitData(false, newTargetBurnedCalorie);
             },
+            4,
           ),
+          SizedBox(height: 24.h),
         ],
       ),
     );
@@ -248,48 +253,67 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
     String unit,
     TextEditingController controller,
     Function(String)? onSubmitted,
+    int maxLength,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 0, top: 16, left: 16, right: 16),
+      padding: const EdgeInsets.only(bottom: 0, top: 16, left: 8),
       child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(title,
-                  style: TextStyle(
-                      color: R.color.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700)),
-            ),
-            SizedBox(
-              width: 140,
-              child: Row(children: [
-                Column(children: [
-                  SizedBox(
-                    width: 100,
-                    child: CupertinoTextField(
-                        controller: controller,
-                        decoration: BoxDecoration(color: R.color.transparent),
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        onSubmitted: onSubmitted,
-                        style: TextStyle(
-                            color: R.color.black,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700),
-                        placeholder: '--',
-                        placeholderStyle: TextStyle(
-                            color: R.color.black,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700)),
-                  ),
-                  Container(
-                      height: 1, width: 72, color: R.color.grayComponentBorder)
-                ]),
-                Text(unit)
-              ]),
+            Text(title,
+                style: TextStyle(
+                    color: R.color.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700)),
+            Container(
+              width: 140.w,
+              margin: EdgeInsets.only(bottom: 8),
+              padding: EdgeInsets.zero,
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                        children: [
+                      SizedBox(
+                        width: 100.w,
+                        height: 42.h,
+                        child: CupertinoTextField(
+                            controller: controller,
+                            decoration:
+                                BoxDecoration(color: R.color.transparent),
+                            maxLength: maxLength,
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            onSubmitted: onSubmitted,
+                            style: TextStyle(
+                                color: R.color.black,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700),
+                            placeholder: '--',
+                            placeholderStyle: TextStyle(
+                                color: R.color.black,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700)),
+                      ),
+                      Container(
+                          height: 1,
+                          width: 90.w,
+                          color: R.color.grayComponentBorder)
+                    ]),
+                    Text(
+                      unit,
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        height: 0,
+                        color: R.color.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    )
+                  ]),
             )
           ]),
     );

@@ -1288,4 +1288,5 @@ class Strings {
   String get add_exercise_successfully => 'add_exercise_successfully';
   String get add_exercise_failed => 'add_exercise_failed';
   String get kcal_burned_per_day => 'kcal_burned_per_day';
+  String get minute_upperCase_first_character => 'minute_upperCase_first_character';
 }
