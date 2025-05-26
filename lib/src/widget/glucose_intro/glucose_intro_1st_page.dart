@@ -47,7 +47,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
   }
 
   void _navigateToInputSelection() {
-    if (AppSettings.isUS) {
+    if (!AppSettings.isRegionAllowInputDevice) {
       Navigator.of(context).pop();
       Navigator.of(context).pushNamed(
         NavigatorName.add_blood_sugar_new,

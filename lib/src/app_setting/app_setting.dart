@@ -56,6 +56,9 @@ class AppSettings {
     _countryCode = code;
   }
 
+  static bool get isRegionAllowInputDevice =>
+      Const.REGION_ALLOW_CONNECT_DEVICE.contains(countryCode);
+
   static bool _splashScreenInitDone = false;
   static bool get splashScreenInitDone => _splashScreenInitDone;
   static void setSplashScreenInitDone(bool value) {

@@ -234,7 +234,7 @@ class Const {
     CLINIC_TIMEFRAME_WEEKDAY,
     CLINIC_TIMEFRAME_AFTER_HOURS,
   ];
-  
+
   static const String BOOKING_TYPE_CENTER = 'center';
   static const String BOOKING_TYPE_CLINIC = 'clinic';
   static const String BOOKING_TYPE_DOCTOR = 'doctor';
@@ -246,4 +246,8 @@ class Const {
   static const TABLET_BREAKPOINT = 540;
   static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
+  static const REGION_ALLOW_CONNECT_DEVICE = [
+    "VN",
+    "KR"
+  ];
 }

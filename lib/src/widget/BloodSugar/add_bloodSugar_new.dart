@@ -347,7 +347,7 @@ class _AddBloodSugarControllerNewState
                       ),
                     ),
                     _selectImageSection(),
-                    if (!AppSettings.isUS) _connectMachine(context),
+                    if (AppSettings.isRegionAllowInputDevice) _connectMachine(context),
                     const SizedBox(height: 16),
                   ]),
                 ),
