@@ -163,6 +163,7 @@ class VNPayService {
         } else if (resultCode == 10) {
           // User selected mobile banking app, waiting for return
           // Remove overlay as we're waiting for user to return from banking app
+          BotToast.closeAllLoading();
         } else if (resultCode == 24) {
           // Payment canceled
           await _handlePaymentFailed(params: {
@@ -202,9 +203,9 @@ class VNPayService {
             : "vnpay_${paymentMethod.toLowerCase()}",
         selectedServices: selectedServices);
 
-    resp = await cubit.createDsmesBookingOnline();
+    // resp = await cubit.createDsmesBookingOnline();
 
-    if (resp == null) return;
+    // if (resp == null) return;
 
     // Parse the payment date from VNPAY format
     DateTime parsedDate;
@@ -236,7 +237,7 @@ class VNPayService {
         'time': payTime,
         'date': payDate,
       }),
-      appointmentId: resp.id,
+      appointmentId: 59407,
     );
   }
 

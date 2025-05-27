@@ -151,7 +151,7 @@ public class MainActivity extends FlutterFragmentActivity {
                                 String scheme = call.argument("scheme") != null ? call.argument("scheme") : VNPAY_APP_SCHEME;
                                 Boolean isSandbox = call.argument("isSandbox") != null ? call.argument("isSandbox") : false;
                                 
-                                Log.d(TAG, "Opening VNPay SDK with URL: " + url);
+                                Log.d(TAG, "[VNPAY] Opening VNPay SDK with URL: " + url);
                                 startVNPayActivity(url, tmnCode, scheme, isSandbox);
                                 result.success(true);
                             } else {
