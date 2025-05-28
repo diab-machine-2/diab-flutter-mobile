@@ -1272,4 +1272,8 @@ subscription_subtitle,"Chương trình Giáo dục, Hỗ trợ tự quản lý, 
 tiet_kiem_nhat,"Tiết kiệm nhất","Best saving",
 begin_program,"Bắt đầu chương trình","Start program",
 loading_subscription_packages,"Đang tải các gói đăng ký","Loading subscription packages",
-basic_program_confirm,"Bạn có muốn xác nhận chọn mục tiêu sức khoẻ này không?","Are you sure you want to confirm this health goal?"
+basic_program_confirm,"Bạn có muốn xác nhận chọn mục tiêu sức khoẻ này không?","Are you sure you want to confirm this health goal?",
+booking_screening_interview,"Đặt lịch phỏng vấn đầu vào","Booking screening interview",
+booking_evaluate_interview,"Đặt lịch phỏng vấn đầu ra","Booking evaluate interview",
+screening_interview,"Phỏng vấn đầu vào","Screening interview",
+evaluate_interview,"Phỏng vấn đầu ra","Evaluate interview"

@@ -612,6 +612,7 @@ class App extends StatelessWidget {
                         CalendarBookingController(
                           courseId: arguments?['courseId'] as String? ?? '',
                           endTime: arguments?['endTime'] as String? ?? '',
+                          interviewType: arguments?['interviewType'] as int? ?? 30,
                         ),
                       );
                     }
@@ -627,6 +628,7 @@ class App extends StatelessWidget {
                             args["courseId"],
                             args["endTime"],
                             args["bookingQuantity"],
+                            args["interviewType"],
                           ));
                     }
 

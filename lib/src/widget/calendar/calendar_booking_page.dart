@@ -7,16 +7,16 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
-import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_state.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
 import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
 
@@ -25,8 +25,12 @@ import '../../model/repository/app_repository.dart';
 class CalendarBookingController extends StatefulWidget {
   final String courseId;
   final String endTime;
+  final int interviewType;
   const CalendarBookingController(
-      {Key? key, required this.courseId, required this.endTime})
+      {Key? key,
+      required this.courseId,
+      required this.endTime,
+      required this.interviewType})
       : super(key: key);
   @override
   _CalendarBookingControllerState createState() =>
@@ -59,6 +63,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       courseId: widget.courseId,
       // endDate: DateTime.fromMillisecondsSinceEpoch(
       //     int.parse(widget.endTime) * 1000)
+      interviewType: widget.interviewType,
     );
 
     myCalendar = CalendarBookingCubit.myCalendar;
@@ -150,6 +155,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                                     "endTime": widget.endTime,
                                     "bookingQuantity":
                                         CalendarBookingCubit.updateCount,
+                                    "interviewType": widget.interviewType,
                                   })
                             }
                         },
@@ -271,6 +277,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                                   'endTime': widget.endTime,
                                   "bookingQuantity":
                                       CalendarBookingCubit.updateCount,
+                                  "type": widget.interviewType,
                                 });
                             BotToast.closeAllLoading();
                             return;
@@ -353,8 +360,12 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       accountId: AppSettings.userInfo!.accountId!,
       modelStatus: 3, // ModelStatusEnum => 3  is New
     );
+    final title =
+        widget.interviewType == ScheduleType.screening_interview.typeIndex
+            ? R.string.screening_interview.tr()
+            : R.string.evaluate_interview.tr();
     CreateCalendarRequest request = new CreateCalendarRequest(
-      name: "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
+      name: "${Utils.capitalize(title)} - ${AppSettings.userInfo!.fullName}",
       startTime: pickSlot!.startTime,
       endTime: pickSlot!.endTime,
       courseId: widget.courseId,
@@ -366,9 +377,10 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       modelStatus: 3,
       meetingLink: "",
       zoomTypeId: 1, // auto generate link zoom
-      type: "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
+      type: widget.interviewType
+          .toString(), // 30 is DanhGiaDauVao, 31 is DanhGiaDauRa
       calendarAccounts: [account],
-      goal: "Phỏng vấn đầu vào",
+      goal: title,
       trainingGroupIds: [],
       userId: pickSlot!.zoomUserId,
     );
