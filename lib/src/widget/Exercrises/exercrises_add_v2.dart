@@ -104,6 +104,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           final updateIntensity = ExerciseIntensity(
             intensityId: model!.exercise.first.exerciseIntensityId!,
             name: intensity?.name ?? '',
+            seq: intensity?.seq ?? 1
           );
           intensity = updateIntensity;
         }
@@ -826,6 +827,7 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
 
       result.when(
         success: (data) {
+          data.sort((a, b) => a.seq.compareTo(b.seq)); // sort by seq 
           setState(() {
             intensities = data;
             if (widget.selectedIntensity == null) {

@@ -61,16 +61,19 @@ class Meta {
 class ExerciseIntensity {
   final String intensityId;
   final String name;
+  final int seq; 
 
   ExerciseIntensity({
     required this.intensityId,
     required this.name,
+    required this.seq,
   });
 
   factory ExerciseIntensity.fromJson(Map<String, dynamic> json) {
     return ExerciseIntensity(
       intensityId: json['intensityId'] ?? json['id'],
       name: json['name'],
+      seq: json['seq'] ?? 0, 
     );
   }
 
@@ -78,6 +81,7 @@ class ExerciseIntensity {
     return {
       'intensityId': intensityId,
       'name': name,
+      'seq': seq,
     };
   }
 }

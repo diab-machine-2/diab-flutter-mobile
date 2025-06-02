@@ -200,7 +200,19 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
           fit: BoxFit.cover,
         ),
       );
-    } else if (file is Map<String, dynamic> && file.containsKey('url')) {
+    }
+     else if (file is ImagesUrlModel) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: NetWorkImageWidget(
+          imageUrl: file.url ?? '',
+          height: 56,
+          width: 56,
+          fit: BoxFit.cover,
+        ),
+      );
+    }  
+    else if (file is Map<String, dynamic> && file.containsKey('url')) {
       // Server file with URL
       return ClipRRect(
         borderRadius: BorderRadius.circular(4),
