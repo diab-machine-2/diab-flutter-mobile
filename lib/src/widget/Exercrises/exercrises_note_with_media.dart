@@ -89,6 +89,17 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  R.string.ghi_chu.tr(),
+                  style: TextStyle(
+                    color: R.color.color0xff111515,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
               Container(
                   width: double.infinity,
                   child: TextFormField(
@@ -105,7 +116,10 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                     //set only one line border at the bottom
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.only(
-                          left: 8, right: 8, top: 8, bottom: 0),
+                        right: 8,
+                        top: 8,
+                        bottom: 8,
+                      ),
                       hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
                       hintStyle: TextStyle(
                           fontSize: 16,
@@ -121,7 +135,9 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                               0.5)),
                       suffixIcon: InkWell(
                         child: Image.asset(
-                          R.drawable.ic_upload_images,
+                          files.length == 5
+                              ? R.drawable.exercise_upload_images_disable
+                              : R.drawable.ic_upload_images,
                           width: 24,
                           height: 24,
                         ),
@@ -159,7 +175,8 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                                         // Call onFileRemoved if it's a server file
                                         if (files[index] is ImagesUrlModel &&
                                             widget.onFileRemoved != null) {
-                                          final file = files[index] as ImagesUrlModel;
+                                          final file =
+                                              files[index] as ImagesUrlModel;
                                           widget.onFileRemoved!(file.id ?? '');
                                         }
                                         files.removeAt(index);

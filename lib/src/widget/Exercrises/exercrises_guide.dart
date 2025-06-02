@@ -10,6 +10,7 @@ import '../../modal/user/goal_info.dart';
 import '../../repo/user/user_client.dart';
 import '../helper/helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 
 class ExercisesGuide extends StatefulWidget {
   const ExercisesGuide({super.key});
@@ -40,6 +41,13 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
     if (model!.dailyTargetBurnedCalorie != 0) {
       dailyTargetBurnedCalorie.text =
           roundNumber1(model!.dailyTargetBurnedCalorie!);
+      AppSettings.userInfo = AppSettings.userInfo?.copyWith(
+        energyGoal: double.parse(
+          dailyTargetBurnedCalorie.text.isEmpty
+              ? '0'
+              : dailyTargetBurnedCalorie.text,
+        ),
+      );
     } else {
       submitData(false, '100');
     }
@@ -278,9 +286,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                        children: [
+                    Column(mainAxisSize: MainAxisSize.min, children: [
                       SizedBox(
                         width: 100.w,
                         height: 42.h,

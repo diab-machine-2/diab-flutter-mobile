@@ -639,4 +639,6 @@ class Drawables {
       "lib/res/drawables/ic_upload_images.png";
   String get exercise_guide_image =>
       "lib/res/drawables/exercrise-step/exercise_guide_image.png";
+  String get exercise_upload_images_disable =>
+      "lib/res/drawables/ic_upload_images_disable.png";
 }

@@ -341,7 +341,7 @@ showActivityInputMethodSelection() async {
         lastOpenedGlucoseInputType == 'auto') {
       // disable diablog if user has already input exercise
       Navigator.pushNamed(
-          navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
+          navigatorKey.currentContext!, NavigatorName.exercrise_add_v2);
       return;
     }
 

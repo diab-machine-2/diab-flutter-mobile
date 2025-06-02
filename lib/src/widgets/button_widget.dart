@@ -49,9 +49,8 @@ class ButtonWidget extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFF4BB2AB),
-                    Color(0xFF01857A),
-                    Color(0xFF008479)
+                    Color(0xFF0DAB9C),
+                    Color(0xFF01847A),
                   ],
                 )
               : null,
@@ -66,7 +65,7 @@ class ButtonWidget extends StatelessWidget {
                               backgroundColor ??
                               R.color.accentColor),
                       width: 1.5),
-          borderRadius: BorderRadius.circular(radius ?? 200),
+          borderRadius: BorderRadius.circular(radius ?? 20),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
