@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/docosan_api.dart';
@@ -24,6 +26,7 @@ import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
@@ -91,6 +94,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
@@ -1205,6 +1209,20 @@ class AppRepository {
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<bool> saveVnpayTransactionInfo(VnpayPaymentRequest request) async {
+    try {
+      log('[VNPAY] saveVnpayTransactionInfo payload: $request');
+      final response = await FetchClient().postHttp(
+          path: '/App/PaymentMethodVnpay', params: request.toFormData());
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      throw e is Error ? e : "Lưu thông tin thanh toán không thành công";
     }
   }
 }

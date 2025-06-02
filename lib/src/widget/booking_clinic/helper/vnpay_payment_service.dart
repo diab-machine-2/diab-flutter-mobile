@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
+import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/booking_clinic/model/vnpay_model.dart';
@@ -81,7 +82,7 @@ class VNPayService {
       url: vnpayIntegratedInfoMap['vnp_Url'] ?? '',
       version: '2.1.0',
       tmnCode: tmnCode,
-      txnRef: DateTime.now().millisecondsSinceEpoch.toString(),
+      txnRef: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       orderInfo: 'Payment for booking ${bookingType} - Account: $accountId',
       amount: totalPrice.toDouble(),
       returnUrl: vnpayIntegratedInfoMap['vnp_ReturnUrl'] ?? '',
@@ -135,8 +136,6 @@ class VNPayService {
         "[VNPAY] handlePyamentResult callback: ${DateTime.now().millisecondsSinceEpoch}");
     if (call.method == 'PaymentBack') {
       try {
-        
-
         final String action = call.arguments['action'] ?? '';
         final int resultCode = call.arguments['resultCode'] ?? -1;
         final String responseCode = call.arguments['vnp_ResponseCode'] ?? '99';
@@ -203,9 +202,28 @@ class VNPayService {
             : "vnpay_${paymentMethod.toLowerCase()}",
         selectedServices: selectedServices);
 
-    // resp = await cubit.createDsmesBookingOnline();
+    resp = await cubit.createDsmesBookingOnline();
 
-    // if (resp == null) return;
+    if (resp == null) return;
+
+    final request = VnpayPaymentRequest(
+      appointmentId: resp.id.toString(),
+      phoneNumber: AppSettings.userInfo?.phoneNumber ?? '',
+      accountId: AppSettings.userInfo?.accountId ?? '',
+      vnpTmnCode: params['vnp_TmnCode'] ?? '',
+      vnpAmount: params['vnp_Amount'] ?? '',
+      vnpPayDate: params['vnp_PayDate'] ?? '',
+      vnpOrderInfo: params['vnp_OrderInfo'] ?? '',
+      vnpTransactionNo: params['vnp_TransactionNo'] ?? '',
+      vnpResponseCode: params['vnp_ResponseCode'] ?? '',
+      vnpTransactionStatus: params['vnp_TransactionStatus'] ?? '',
+      vnpTxnRef: params['vnp_TxnRef'] ?? '',
+      vnpSecureHash: params['vnp_SecureHash'] ?? '',
+    );
+
+    final result = await cubit.saveVnpayTransactionInfo(request);
+
+    if (result == false) return;
 
     // Parse the payment date from VNPAY format
     DateTime parsedDate;
@@ -237,7 +255,7 @@ class VNPayService {
         'time': payTime,
         'date': payDate,
       }),
-      appointmentId: 59407,
+      appointmentId: 55334,
     );
   }
 
@@ -251,7 +269,7 @@ class VNPayService {
 
     print(
         "[VNPAY] _showFailureDialog: ${DateTime.now().millisecondsSinceEpoch}");
-        
+
     _showFailureDialog(
       title2: R.string.payment_failed.tr(),
       title: Utils.formatMoney(totalPrice) ?? '',

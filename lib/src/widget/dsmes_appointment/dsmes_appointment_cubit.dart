@@ -12,6 +12,7 @@ import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
@@ -738,5 +739,11 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       default:
         return R.color.white;
     }
+  }
+
+  Future<bool> saveVnpayTransactionInfo(VnpayPaymentRequest request) async {
+    final result = await appRepository.saveVnpayTransactionInfo(request);
+
+    return result;
   }
 }
