@@ -114,9 +114,12 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                 child: Text(
                   R.string.exercrise_step_onboarding_title.tr(),
                   style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400),
+                    color: R.color.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                    fontFamily: 'sfpro',
+                  ),
                 ),
               ),
             ),
@@ -144,8 +147,8 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                    R.color.greenGradientMid,
-                    R.color.greenGradientBottom
+                        Color(0xFF0DAB9C),
+                        Color(0xFF01847A),
                   ])),
             ),
           ),
@@ -341,7 +344,7 @@ showActivityInputMethodSelection() async {
         lastOpenedGlucoseInputType == 'auto') {
       // disable diablog if user has already input exercise
       Navigator.pushNamed(
-          navigatorKey.currentContext!, NavigatorName.exercrise_add_v2);
+          navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
       return;
     }
 

@@ -142,9 +142,12 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                 child: Text(
                   R.string.exercrise_detail_v2_title.tr(),
                   style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400),
+                    color: R.color.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                    fontFamily: 'sfpro',
+                  ),
                 ),
               ),
             ),
@@ -156,8 +159,8 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                    R.color.greenGradientMid,
-                    R.color.greenGradientBottom
+                    Color(0xFF0DAB9C),
+                    Color(0xFF01847A),
                   ])),
             ),
             actions: [

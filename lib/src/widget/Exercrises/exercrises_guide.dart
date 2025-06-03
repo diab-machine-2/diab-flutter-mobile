@@ -91,7 +91,9 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                 style: TextStyle(
                   color: R.color.white,
                   fontSize: 20,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                  fontFamily: 'sfpro',
                 ),
               ),
             ),
@@ -104,8 +106,8 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                  R.color.greenGradientMid,
-                  R.color.greenGradientBottom
+                  Color(0xFF0DAB9C),
+                  Color(0xFF01847A),
                 ])),
           ),
         ),

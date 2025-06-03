@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -33,7 +35,8 @@ class ExercrisesAddV2 extends StatefulWidget {
   final bool? isUpdate;
   final String? exerciseInputId;
   final bool? isOnlyOne;
-  ExercrisesAddV2({Key? key,
+  ExercrisesAddV2({
+    Key? key,
     this.isUpdate,
     this.exerciseInputId,
     this.isOnlyOne,
@@ -89,15 +92,16 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       model = await ExercrisesClient().fetchDetail(widget.exerciseInputId);
       if (model != null) {
         selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
-        selectedCategory = model?.exercise != null ? model!.exercise.first : null;
+        selectedCategory =
+            model?.exercise != null ? model!.exercise.first : null;
         note = model?.note ?? '';
         selectedTimeFrame = TimeFrameModel(
             id: model!.timeFrameId, code: '', name: model!.timeFrame);
         files = List.from(model!.imageUrls);
         _controllerDuration.text = model?.exercise != null
             ? model!.exercise.first.duration != null
-            ? model!.exercise.first.duration!.round().toString()
-            : ''
+                ? model!.exercise.first.duration!.round().toString()
+                : ''
             : '';
         if (model?.exercise != null &&
             model!.exercise.first.exerciseIntensityId != null) {
@@ -110,7 +114,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
         setState(() {});
       }
-    } catch(e) {
+    } catch (e) {
       BotToast.showText(text: 'Error load detail fail: $e');
     } finally {
       BotToast.closeAllLoading();
@@ -173,9 +177,12 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                 child: Text(
                   R.string.title_exercise.tr(),
                   style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400),
+                    color: R.color.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                    fontFamily: 'sfpro',
+                  ),
                 ),
               ),
             ),
@@ -203,15 +210,15 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                    R.color.greenGradientMid,
-                    R.color.greenGradientBottom
+                        Color(0xFF0DAB9C),
+                        Color(0xFF01847A),
                   ])),
             ),
           ),
           body: _buildContainer(),
           bottomNavigationBar:
-          // add animation face in/out (opacity) when keyboard show / hide
-          KeyboardVisibilityProvider(
+              // add animation face in/out (opacity) when keyboard show / hide
+              KeyboardVisibilityProvider(
             child: KeyboardVisibilityBuilder(
               builder: (context, isKeyboardVisible) {
                 return AnimatedContainer(
@@ -235,43 +242,41 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                       ),
                       child: widget.isUpdate == true
                           ? Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: ButtonWidget(
-                              title: R.string.delete.tr(),
-                              backgroundColor: R.color.white,
-                              borderColor: R.color.redAccent,
-                              textColor: R.color.redAccent,
-                              onPressed: () {
-                                _showDialogDelete(context);
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            flex: 1,
-                            child: ButtonWidget(
-                              title: R.string.confirm.tr(),
-                              backgroundColor:
-                              R.color.greenGradientMid,
-                              textColor: R.color.white,
-                              onPressed: () {
-                                if(widget.exerciseInputId != null) {
-                                  editData();
-                                }
-                              },
-                            ),
-                          )
-                        ],
-                      )
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: ButtonWidget(
+                                    title: R.string.delete.tr(),
+                                    backgroundColor: R.color.white,
+                                    borderColor: R.color.redAccent,
+                                    textColor: R.color.redAccent,
+                                    onPressed: () {
+                                      _showDialogDelete(context);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  flex: 1,
+                                  child: ButtonWidget(
+                                    title: R.string.confirm.tr(),
+                                    backgroundColor: R.color.greenGradientMid,
+                                    textColor: R.color.white,
+                                    onPressed: () {
+                                      if (widget.exerciseInputId != null) {
+                                        editData();
+                                      }
+                                    },
+                                  ),
+                                )
+                              ],
+                            )
                           : ButtonWidget(
-                        title: R.string.confirm.tr(),
-                        onPressed: _submitData,
-                      ),
+                              title: R.string.confirm.tr(),
+                              onPressed: _submitData,
+                            ),
                     ));
               },
             ),
@@ -284,10 +289,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   Widget _buildContainer() {
     return SingleChildScrollView(
       controller: scrollController,
-      keyboardDismissBehavior:
-          ScrollViewKeyboardDismissBehavior.onDrag,
-      padding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         children: [
           Container(
@@ -301,8 +304,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                 GestureDetector(
                   onTap: () {
                     showDialog(
-                      barrierColor:
-                          R.color.color0xff003F38.withOpacity(0.5),
+                      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                       context: context,
                       builder: (_) => DateMultiPicker(
                         initDate: selectedDate,
@@ -320,25 +322,21 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(200),
-                        border: Border.all(
-                            color: R.color.color0xffDFE4E4),
+                        border: Border.all(color: R.color.color0xffDFE4E4),
                         color: R.color.white),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
                               convertToUTC(
-                                  (selectedDate
-                                              ?.millisecondsSinceEpoch ??
-                                          0) ~/
+                                  (selectedDate?.millisecondsSinceEpoch ?? 0) ~/
                                       1000,
                                   'HH:mm - dd/MM/yyyy'),
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400)),
+                                  fontSize: 16, fontWeight: FontWeight.w400)),
                           const SizedBox(width: 8),
                           Icon(
                             Icons.expand_more,
@@ -356,46 +354,60 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                     keyboardType: TextInputType.number,
                     controller: _controllerDuration,
                     textAlign: TextAlign.center,
+                    cursorColor: _controllerDuration.text.isNotEmpty
+                        ? R.color.greenGradientBottom
+                        : R.color.color0xff636A6B,
+                    cursorHeight: 36,
+                    cursorWidth: 3,
                     autofocus: true,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(3),
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
                     style: TextStyle(
-                        fontSize: 36,
-                        color: R.color.textDark,
-                        fontWeight: FontWeight.w900),
-                    maxLength: 3,
+                      fontSize: 48,
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.w700,
+                      height: 0.95,
+                    ),
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 8, horizontal: 16),
                       hintText: '00',
                       hintStyle: TextStyle(
-                          fontSize: 36,
-                          color:
-                              R.color.primaryGreyColor.withOpacity(0.5),
-                          fontWeight: FontWeight.w900),
+                        fontSize: 48,
+                        color: R.color.color0xff636A6B,
+                        fontWeight: FontWeight.w700,
+                        height: 0.95,
+                      ),
                       // set border bottom only
                       border: UnderlineInputBorder(
-                          borderSide: BorderSide.lerp(
-                              BorderSide(
-                                  color: R.color.primaryGreyColor,
-                                  width: 1),
-                              BorderSide(
-                                  color: R.color.primaryGreyColor,
-                                  width: 1),
-                              0.5)),
-                      suffixText: R.string.minute.tr(),
-                      suffixStyle: TextStyle(
-                          fontSize: 16,
-                          color: R.color.primaryGreyColor,
-                          fontWeight: FontWeight.w500),
+                        borderSide: BorderSide.lerp(
+                          BorderSide(color: R.color.primaryGreyColor, width: 1),
+                          BorderSide(color: R.color.primaryGreyColor, width: 1),
+                          0.5,
+                        ),
+                      ),
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.only(top: 22),
+                        child: Text(
+                          R.string.minute_upper_case_first.tr(),
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: R.color.color0xff636A6B,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
                     ),
                     onChanged: (value) {
                       if (value.isNotEmpty) {
-                        setState(() {
-                          _controllerDuration.text = value;
-                          _controllerDuration.selection =
-                              TextSelection.fromPosition(TextPosition(
-                                  offset: _controllerDuration.text.length));
-                        });
+                        _controllerDuration.text = value;
+                        _controllerDuration.selection =
+                            TextSelection.fromPosition(TextPosition(
+                                offset: _controllerDuration.text.length));
                       }
+                      setState(() {});
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -421,7 +433,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
               ])),
           const SizedBox(height: 16),
           ExercisesCategories(
-            selected:selectedCategory,
+            selected: selectedCategory,
             onChanged: (ExercrisesCategoryModel? item) {
               setState(() {
                 selectedCategory = item;
@@ -465,8 +477,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                     ),
                   ),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(R.string.or.tr(),
                         style: TextStyle(
                             fontSize: 14,
@@ -510,7 +521,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       BotToast.showLoading();
       ExercrisesCategoryModel updatedCategories = selectedCategory!;
       final int duration = int.tryParse(_controllerDuration.text) ?? 0;
-
 
       final response = await ExercrisesClient().fetchCalories(
         updatedCategories.categoryId,
@@ -558,7 +568,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   }
 
   editData() async {
-
     FocusScope.of(context).unfocus();
 
     if (selectedDate == null) {
@@ -573,7 +582,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
     BotToast.showLoading();
 
     try {
-
       await calculatorCalo();
 
       List<String> paths = [];
@@ -583,14 +591,14 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         }
       }
       final result = await ExercrisesClient().updateExercrises(
-          widget.exerciseInputId,
-          (selectedDate!.millisecondsSinceEpoch ~/ 1000).toInt(),
-          selectedTimeFrame?.id,
-          note,
-          selectedCategory!,
-          removeFileIds,
-          paths,
-          intensity?.intensityId ?? '',
+        widget.exerciseInputId,
+        (selectedDate!.millisecondsSinceEpoch ~/ 1000).toInt(),
+        selectedTimeFrame?.id,
+        note,
+        selectedCategory!,
+        removeFileIds,
+        paths,
+        intensity?.intensityId ?? '',
       );
       if (result == true) {
         Observable.instance
@@ -614,7 +622,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   deleteData() async {
     try {
       BotToast.showLoading();
-      final result = await ExercrisesClient().deleteExercrises(widget.exerciseInputId);
+      final result =
+          await ExercrisesClient().deleteExercrises(widget.exerciseInputId);
       if (result == true) {
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data_v2");
@@ -622,6 +631,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       // if(result.)
       BotToast.closeAllLoading();
       if (widget.isOnlyOne == true) {
+        AppSettings.clearLastOpenedExerciseInputType();
         Navigator.pushNamedAndRemoveUntil(
           context,
           NavigatorName.exercrise_onboarding,
@@ -812,7 +822,7 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
   void didUpdateWidget(covariant ExerxisesIntensity oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if(widget.selectedIntensity != null &&
+    if (widget.selectedIntensity != null &&
         widget.selectedIntensity != oldWidget.selectedIntensity) {
       _fetchIntensities();
     }
@@ -879,7 +889,7 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
         ),
       ),
       child: Container(
-        width: double.infinity,
+        // width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         child: SegmentedButton<String>(
           segments: intensities.map((intensity) {
@@ -888,7 +898,6 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
               label: Text(
                 intensity.name,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
               ),
             );
           }).toList(),
@@ -901,6 +910,20 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
             // The parent will handle calling calculatorCalo when intensity changes
           },
           style: ButtonStyle(
+            minimumSize: MaterialStateProperty.all(const Size(100, 40)),
+            textStyle: MaterialStateProperty.resolveWith<TextStyle>(
+              (Set<MaterialState> states) {
+                return TextStyle(
+                  fontSize: 15,
+                  fontWeight: states.contains(MaterialState.selected)
+                      ? FontWeight.w700
+                      : FontWeight.w400,
+                  color: states.contains(MaterialState.selected)
+                      ? R.color.color0xffF7F8F8
+                      : R.color.color0xff636A6B,
+                );
+              },
+            ),
             backgroundColor: MaterialStateProperty.resolveWith<Color?>(
               (Set<MaterialState> states) {
                 if (states.contains(MaterialState.selected)) {
@@ -918,7 +941,7 @@ class _ExerxisesIntensityState extends State<ExerxisesIntensity> {
               },
             ),
             padding: MaterialStateProperty.all(
-              const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
             ),
             shape: MaterialStateProperty.all(
               RoundedRectangleBorder(

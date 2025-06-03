@@ -91,9 +91,9 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
     int visibleItemCount = dataFilter.length - _visibleStartIndex;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       child: CustomSlidingSegmentedControl<int>(
-        fixedWidth: (MediaQuery.of(context).size.width - 38) / visibleItemCount,
+        fixedWidth: (MediaQuery.of(context).size.width - 32) / visibleItemCount,
         children: {
           // Create map only for visible items (skip first item)
           for (int i = _visibleStartIndex; i < dataFilter.length; i++)
@@ -133,14 +133,12 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
 
   Widget _buildSegmentButtonItem(String title, int index, bool isSelected) {
     return Container(
-      child: Center(
-        child: Text(
-          title,
-          style: TextStyle(
-            color: isSelected ? R.color.white : R.color.color0xff636A6B,
-            fontSize: 16,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-          ),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? R.color.white : R.color.color0xff636A6B,
+          fontSize: 16,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
         ),
       ),
     );

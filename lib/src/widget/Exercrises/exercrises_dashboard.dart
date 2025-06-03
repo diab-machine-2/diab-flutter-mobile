@@ -145,9 +145,12 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
                 child: Text(
                   R.string.exercrise_dashboard_title.tr(),
                   style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w400),
+                    color: R.color.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                    fontFamily: 'sfpro',
+                  ),
                 ),
               ),
             ),
@@ -159,8 +162,8 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                    R.color.greenGradientMid,
-                    R.color.greenGradientBottom
+                    Color(0xFF0DAB9C),
+                    Color(0xFF01847A),
                   ])),
             ),
           ),

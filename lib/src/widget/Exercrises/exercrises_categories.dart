@@ -50,8 +50,7 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
   @override
   void didUpdateWidget(covariant ExercisesCategories oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selected != null &&
-        widget.selected != oldWidget.selected) {
+    if (widget.selected != null && widget.selected != oldWidget.selected) {
       selectedCateroty = widget.selected;
     }
   }
@@ -140,8 +139,10 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                         // sort for selected on top
                         if (selectedCateroty != null) {
                           data.sort((a, b) {
-                            final aSelected = selectedCateroty?.categoryId == a.categoryId;
-                            final bSelected = selectedCateroty?.categoryId == b.categoryId;
+                            final aSelected =
+                                selectedCateroty?.categoryId == a.categoryId;
+                            final bSelected =
+                                selectedCateroty?.categoryId == b.categoryId;
                             if (aSelected == true && bSelected == false) {
                               return -1;
                             } else if (aSelected == false &&
@@ -194,8 +195,7 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                       padding: EdgeInsets.all(12),
                       color: isSelected
                           ? R.color.main_1.withOpacity(0.8)
-                          : R.color.greenGradientTop
-                          .withOpacity(0.1),
+                          : R.color.greenGradientTop.withOpacity(0.1),
                       child: NetWorkImageWidget(
                         imageUrl: e.cover?.url ?? '',
                         isSelected: isSelected,
@@ -382,9 +382,12 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                   child: Text(
                     R.string.them_hoat_dong.tr(),
                     style: TextStyle(
-                        color: R.color.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400),
+                      color: R.color.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
+                      fontFamily: 'sfpro',
+                    ),
                   ),
                 ),
               ),
@@ -396,8 +399,8 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                      R.color.greenGradientMid,
-                      R.color.greenGradientBottom
+                      Color(0xFF0DAB9C),
+                      Color(0xFF01847A),
                     ])),
               ),
             ),
@@ -418,7 +421,8 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
             children: [
               // Thanh tìm kiếm
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: R.color.white,
@@ -520,7 +524,8 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                           itemCount: data.length,
                           itemBuilder: (context, index) {
                             final e = data![index];
-                            final isSelected = (e.categoryId == selectedCateroty?.categoryId);
+                            final isSelected =
+                                (e.categoryId == selectedCateroty?.categoryId);
                             return GestureDetector(
                               onTap: () {
                                 _onSelectedChange(isSelected, e);

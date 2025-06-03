@@ -168,16 +168,20 @@ class _ExercisesResultState extends State<ExercisesResult>
                       child: Text(
                         formatVietnameseDate(date),
                         style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w400),
+                          color: R.color.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                          fontFamily: 'sfpro',
+                        ),
                       ),
                     ),
                     centerTitle: true,
                     actions: [
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, NavigatorName.exercrise_guide);
+                          Navigator.pushNamed(
+                              context, NavigatorName.exercrise_guide);
                         },
                         child: Text(
                           R.string.exercrise_step_onboarding_action_btn.tr(),
@@ -198,8 +202,8 @@ class _ExercisesResultState extends State<ExercisesResult>
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                            R.color.greenGradientMid,
-                            R.color.greenGradientBottom
+                            Color(0xFF0DAB9C),
+                            Color(0xFF01847A),
                           ])),
                     ),
                   ),
@@ -557,12 +561,12 @@ class _ExercisesResultState extends State<ExercisesResult>
   }
 
   Widget _buildExerciseInputs(
-      ListExercriseModel exercise,
-      String timeStr,
-      String exerciseInputId,
-      DateTime exerciseInputDate,
-      bool isOnlyOne,
-      ) {
+    ListExercriseModel exercise,
+    String timeStr,
+    String exerciseInputId,
+    DateTime exerciseInputDate,
+    bool isOnlyOne,
+  ) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 0.w),
       padding: EdgeInsets.all(16.w),
@@ -580,11 +584,13 @@ class _ExercisesResultState extends State<ExercisesResult>
               padding: EdgeInsets.all(8),
               color: R.color.main_1.withOpacity(0.8),
               child: NetWorkImageWidget(
-                  imageUrl: exercise.imageUrl.url ?? '',
-                  width: 48.w,
-                  height: 48.h,
-                  isSelected: true, /// set color white for icon
-                  fit: BoxFit.contain,
+                imageUrl: exercise.imageUrl.url ?? '',
+                width: 48.w,
+                height: 48.h,
+                isSelected: true,
+
+                /// set color white for icon
+                fit: BoxFit.contain,
               ),
             ),
           ),
