@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:uni_links/uni_links.dart';
 
 class DeepLinkConfig {
@@ -24,7 +25,8 @@ class DeepLinkConfig {
           !link.contains("referralCode") &&
           !link.contains("activityId") &&
           !link.contains("lessonId") &&
-          !link.contains("calendar")) {
+          !link.contains("calendar") &&
+          !link.contains('diabvnpay')) {
         onHaveLink(getShareCodeFromUrl(link));
       }
       // else if (link != null &&
@@ -50,7 +52,8 @@ class DeepLinkConfig {
       if (initialLink != null &&
           !initialLink.contains("click.diab.com.vn") &&
           !initialLink.contains("referralCode") &&
-          !initialLink.contains("calendar")) {
+          !initialLink.contains("calendar") &&
+          !initialLink.contains('diabvnpay')) {
         sharedCode = getShareCodeFromUrl(initialLink);
         return sharedCode;
       }

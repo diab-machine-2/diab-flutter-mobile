@@ -543,7 +543,7 @@ public class MainActivity extends FlutterFragmentActivity {
                         sendPaymentResult(action, 24, new HashMap<>()); // custom code for canceled
                         break;
                     case "CallMobileBankingApp":
-                        sendPaymentResult(action, 10, new HashMap<>()); // custom code for "in progress"
+                        // sendPaymentResult(action, 10, new HashMap<>()); // custom code for "in progress"
                         break;
                     case "WebBackAction":
                         sendPaymentResult(action, 24, new HashMap<>());

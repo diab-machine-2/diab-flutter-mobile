@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -143,6 +144,8 @@ class VNPayService {
         print(
             "[VNPAY] Payment result: action=$action, resultCode=$resultCode, responseCode=$responseCode");
 
+        if (responseCode.isEmpty) return;
+
         // Extract transaction details if available
         Map<String, dynamic> transactionDetails = {};
 
@@ -213,6 +216,9 @@ class VNPayService {
       vnpTmnCode: params['vnp_TmnCode'] ?? '',
       vnpAmount: params['vnp_Amount'] ?? '',
       vnpPayDate: params['vnp_PayDate'] ?? '',
+      vnpBankCode: params['vnp_BankCode'] ?? '',
+      vnpCardType: params['vnp_CardType'] ?? '',
+      vnpBankTranNo: params['vnp_BankTranNo'] ?? '',
       vnpOrderInfo: params['vnp_OrderInfo'] ?? '',
       vnpTransactionNo: params['vnp_TransactionNo'] ?? '',
       vnpResponseCode: params['vnp_ResponseCode'] ?? '',
@@ -223,7 +229,9 @@ class VNPayService {
 
     final result = await cubit.saveVnpayTransactionInfo(request);
 
-    if (result == false) return;
+    if (result == false) {
+      log('[VNPAY] saveVnpayTransactionInfo failed');
+    }
 
     // Parse the payment date from VNPAY format
     DateTime parsedDate;
@@ -255,14 +263,39 @@ class VNPayService {
         'time': payTime,
         'date': payDate,
       }),
-      appointmentId: 55334,
+      appointmentId: resp.id,
     );
   }
 
   Future<void> _handlePaymentFailed(
       {required Map<String, dynamic> params}) async {
+    log("[VNPAY] _handlePaymentFailed: $params");
     String errorMessage = VnpayResponseCode.getResponseCodeMessage(
         params['vnp_ResponseCode'] ?? '');
+
+    final request = VnpayPaymentRequest(
+      appointmentId: '',
+      phoneNumber: AppSettings.userInfo?.phoneNumber ?? '',
+      accountId: AppSettings.userInfo?.accountId ?? '',
+      vnpTmnCode: params['vnp_TmnCode'] ?? '',
+      vnpAmount: params['vnp_Amount'] ?? '',
+      vnpPayDate: params['vnp_PayDate'] ?? '',
+      vnpBankCode: params['vnp_BankCode'] ?? '',
+      vnpCardType: params['vnp_CardType'] ?? '',
+      vnpBankTranNo: params['vnp_BankTranNo'] ?? '',
+      vnpOrderInfo: params['vnp_OrderInfo'] ?? '',
+      vnpTransactionNo: params['vnp_TransactionNo'] ?? '',
+      vnpResponseCode: params['vnp_ResponseCode'] ?? '',
+      vnpTransactionStatus: params['vnp_TransactionStatus'] ?? '',
+      vnpTxnRef: params['vnp_TxnRef'] ?? '',
+      vnpSecureHash: params['vnp_SecureHash'] ?? '',
+    );
+
+    final result = await cubit.saveVnpayTransactionInfo(request);
+
+    if (result == false) {
+      log('[VNPAY] saveVnpayTransactionInfo failed');
+    }
 
     // Close any loading indicators before showing the failure dialog
     BotToast.closeAllLoading();
