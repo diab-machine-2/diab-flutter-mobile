@@ -175,6 +175,7 @@ dependencies:
   supabase_flutter: ^2.0.0
   bubble: ^1.2.1
   readmore: ^3.0.0
+  saver_gallery: ^1.0.8
 
 dev_dependencies:
   flutter_test:
