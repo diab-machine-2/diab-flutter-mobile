@@ -15,7 +15,7 @@ class FoodImageCapture extends StatefulWidget {
   State<FoodImageCapture> createState() => _FoodImageCaptureState();
 }
 
-class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBindingObserver {
+class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBindingObserver, TickerProviderStateMixin {
   final String _refImagePathKey = 'last_captured_food_image';
   CameraController? _controller;
   List<CameraDescription> _cameras = [];
@@ -24,6 +24,14 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
   bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
   File? _lastCapturedImage;
+  
+  // Animation properties
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<Offset> _positionAnimation;
+  bool _showCaptureAnimation = false;
+  File? _captureAnimationImage;
+  bool _showFlashEffect = false;
 
   @override
   void initState() {
@@ -31,12 +39,47 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
     WidgetsBinding.instance.addObserver(this);
     _initializeCamera();
     _loadLastCapturedImage();
+    
+    // Initialize animation controller
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    
+    // Scale animation: starts at 1.0 (full size) and ends at 0.1 (small size)
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.15,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    
+    // Position animation: moves from center to bottom left
+    _positionAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.0), // Center of screen
+      end: const Offset(-0.7, 0.8),  // Bottom left area where preview button is
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    
+    // Listen for animation completion
+    _animationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _showCaptureAnimation = false;
+          _captureAnimationImage = null;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -134,13 +177,11 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
       // Save image to photo album
       await _saveToPhotoAlbum(imageFile);
 
-      // Update preview with last captured image
-      setState(() {
-        _lastCapturedImage = imageFile;
-      });
-
       // Save the image path to SharedPreferences for future loading
       await _saveImagePathToPreferences(imageFile.path);
+
+      // Start the zoom animation
+      await _startCaptureAnimation(imageFile);
 
       // Haptic feedback
       HapticFeedback.mediumImpact();
@@ -151,6 +192,33 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _startCaptureAnimation(File imageFile) async {
+    // Show flash effect
+    setState(() {
+      _showFlashEffect = true;
+    });
+
+    // Brief flash duration
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    setState(() {
+      _showFlashEffect = false;
+      _captureAnimationImage = imageFile;
+      _showCaptureAnimation = true;
+    });
+
+    // Start animation
+    await _animationController.forward();
+
+    // Update the actual preview after animation completes
+    setState(() {
+      _lastCapturedImage = imageFile;
+    });
+
+    // Reset animation for next capture
+    _animationController.reset();
   }
 
   Future<void> _saveToPhotoAlbum(File imageFile) async {
@@ -274,13 +342,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
         children: [
           // Camera Preview
           _buildCameraPreview(),
-
+          
           // Top overlay guide
           _buildTopOverlay(),
-
+          
           // Bottom controls
           _buildBottomControls(),
-
+          
+          // Capture animation overlay
+          if (_showCaptureAnimation) _buildCaptureAnimationOverlay(),
+          
+          // Flash effect
+          if (_showFlashEffect) _buildFlashEffect(),
+          
           // Loading indicator
           if (_isLoading) _buildLoadingOverlay(),
         ],
@@ -604,6 +678,59 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCaptureAnimationOverlay() {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Positioned.fill(
+          child: Stack(
+            children: [
+              // Semi-transparent background
+              Container(
+                color: Colors.black.withOpacity(0.3),
+              ),
+              
+              // Animated captured image
+              Center(
+                child: Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: Transform.translate(
+                    offset: Offset(
+                      _positionAnimation.value.dx * MediaQuery.of(context).size.width,
+                      _positionAnimation.value.dy * MediaQuery.of(context).size.height,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                        _scaleAnimation.value < 0.5 ? 28 * (1 - _scaleAnimation.value) : 0,
+                      ),
+                      child: AspectRatio(
+                        aspectRatio: _controller?.value.aspectRatio ?? 1.0,
+                        child: Image.file(
+                          _captureAnimationImage!,
+                          fit: BoxFit.cover,
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFlashEffect() {
+    return Positioned.fill(
+      child: Container(
+        color: Colors.white.withOpacity(0.8),
       ),
     );
   }
