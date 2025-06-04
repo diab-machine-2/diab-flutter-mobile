@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -14,6 +15,12 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 class DsmesAppointmentHistoryPage extends StatefulWidget {
+  final String bookingType; // 'clinic' or 'center' or 'doctor'
+
+  const DsmesAppointmentHistoryPage({
+    Key? key,
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
+  }) : super(key: key);
   @override
   _DsmesAppointmentHistoryPageState createState() =>
       _DsmesAppointmentHistoryPageState();
@@ -130,12 +137,17 @@ class _DsmesAppointmentHistoryPageState
                             onRefresh: () async {
                               await _cubit.getDsmesAppointmentList(
                                   isRefresh: true, page: 1, showLoading: false);
+                              sortedMyAppointments =
+                                  _cubit.getSortedAppointments();
                               _refreshController.refreshCompleted();
                               setState(() {});
                             },
                             onLoading: () async {
                               await _cubit.getDsmesAppointmentList(
-                                  page: _cubit.currentPage + 1);
+                                  page: _cubit.currentPage + 1,
+                                  showLoading: false);
+                              sortedMyAppointments =
+                                  _cubit.getSortedAppointments();
                               _refreshController.loadComplete();
                               setState(() {});
                             },
@@ -153,13 +165,15 @@ class _DsmesAppointmentHistoryPageState
                                       endDateTime.isBefore(DateTime.now());
                                   return appointment.status ==
                                           DSMES_STATUS_REQUEST ||
+                                      appointment.status ==
+                                          DSMES_STATUS_ON_HOLD ||
                                       (appointment.status ==
                                               DSMES_STATUS_APPROVE &&
                                           !isPast);
                                 }).toList();
 
-                                final doneAppointments =
-                                    sortedMyAppointments.where((appointment) {
+                                final doneAppointments = sortedMyAppointments
+                                    .where((appointment) {
                                   final endDateTime =
                                       DateFormat('yyyy-MM-dd HH:mm:ss')
                                           .parse(appointment.endTime);
@@ -170,7 +184,13 @@ class _DsmesAppointmentHistoryPageState
                                       (appointment.status ==
                                               DSMES_STATUS_APPROVE &&
                                           isPast);
-                                }).toList();
+                                }).toList()
+                                  ..sort((a, b) =>
+                                      DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(b.startTime)
+                                          .compareTo(
+                                              DateFormat('yyyy-MM-dd HH:mm:ss')
+                                                  .parse(a.startTime)));
 
                                 // Manage expansion state
                                 final isExpanded = ValueNotifier<bool>(true);
@@ -265,6 +285,8 @@ class _DsmesAppointmentHistoryPageState
                                                     'appointment': appointment,
                                                     'previousRoute': NavigatorName
                                                         .dsmes_booking_history,
+                                                    'bookingType':
+                                                        widget.bookingType,
                                                   },
                                                 );
                                               } finally {

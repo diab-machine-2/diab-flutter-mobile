@@ -7,6 +7,9 @@ import ZaloSDK
 import BranchSDK
 // import MobileRTC
 
+private let kPaymentGatewayChannel = "paymentGateway"
+private let kSDKCompletedNotification = "SDK_COMPLETED"
+
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
@@ -19,6 +22,8 @@ import BranchSDK
     
     // private var zoomInited: Bool = false
     // private var zoomAuthResult: FlutterResult?
+    private var vnPayEventChannel: FlutterMethodChannel!
+    private let kVNPayScheme: String = "diabvnpay"
     
     override func application(
         _ application: UIApplication,
@@ -75,12 +80,54 @@ import BranchSDK
         //     }
         // })
         
+        vnPayEventChannel = FlutterMethodChannel(name: kPaymentGatewayChannel, binaryMessenger: controller.binaryMessenger)
+        vnPayEventChannel.setMethodCallHandler({
+            (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+            if call.method == "openSDK" {
+                self.processVNPay(call: call, result: result)
+            } else {
+                result(FlutterMethodNotImplemented)
+                return
+            }
+        })
         
         GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        // Check if this is our payment scheme
+        if url.scheme?.lowercased().contains(kVNPayScheme) == true {
+            do {
+                var extras: [String: Any] = [:]
+                let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                
+                if let queryItems = components?.queryItems {
+                    for item in queryItems {
+                        extras[item.name] = item.value ?? ""
+                    }
+                }
+                
+                // Get response code to determine success
+                let responseCode = extras["vnp_ResponseCode"] as? String ?? "99"
+                let resultCode = responseCode == "00" ? 0 : 99
+                
+                print("ReturnFromVNPay - resultCode: \(resultCode), extras: \(extras)")
+                sendPaymentResult(action: "ReturnFromVNPay", resultCode: resultCode, extras: extras)
+                
+                return true
+            } catch {
+                print("Error parsing VNPay return URL: \(error.localizedDescription)")
+                 sendPaymentResult(
+                     action: "ReturnFromVNPay", 
+                     resultCode: 99, 
+                     extras: ["error": error.localizedDescription]
+                 )
+                return true
+            }
+        }
+        
+        // Pass to Zalo SDK if not handled
         return ZDKApplicationDelegate.sharedInstance().application(app, open: url, options: options)
     }
     
@@ -191,6 +238,110 @@ import BranchSDK
 //            control.reqDataCurrentAll(currPeri)
 //        }
     }
+
+    // * START: Zone of VNPay
+    private func processVNPay(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        guard let data = call.arguments as? Dictionary<String, Any> else {
+            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Invalid arguments", details: nil))
+            return
+        }
+       
+        let tmnCode: String = data["tmnCode"] as! String
+        let url: String = data["url"] as! String
+        let scheme = kVNPayScheme
+        let isSandBox = data["isSandBox"] as? Bool ?? true
+       
+        // Set up notification observer for payment completion
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(kSDKCompletedNotification), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handlePaymentResponse), name: NSNotification.Name(kSDKCompletedNotification), object: nil)
+       
+        // Store method channel for callback
+        if vnPayEventChannel == nil {
+            vnPayEventChannel = FlutterMethodChannel(
+                name: kPaymentGatewayChannel,
+                binaryMessenger: (window?.rootViewController as! FlutterViewController).binaryMessenger)
+        }
+       
+        // Configure VNPay SDK
+        if let controller = window?.rootViewController {
+            CallAppInterface.setHomeViewController(controller)
+        }
+        CallAppInterface.setSchemes(scheme)
+        CallAppInterface.setIsSandbox(isSandBox)
+        CallAppInterface.setEnableBackAction(false)
+       
+        // Optional parameters with defaults
+        let title = data["title"] as? String ?? "Thanh toán"
+        let iconBackName = data["iconBackName"] as? String ?? ""
+        let beginColor = data["beginColor"] as? String ?? "#FFFFFF"
+        let endColor = data["endColor"] as? String ?? "#FFFFFF"
+        let titleColor = data["titleColor"] as? String ?? "#000000"
+        let backAlert = data["backAlert"] as? String ?? ""
+       
+        if !backAlert.isEmpty {
+            CallAppInterface.setAppBackAlert(backAlert)
+        }
+       
+        // Show VNPay payment screen
+        CallAppInterface.showPushPaymentwithPaymentURL(
+            url,
+            withTitle: title,
+            iconBackName: iconBackName,
+            beginColor: beginColor,
+            endColor: endColor,
+            titleColor: titleColor,
+            tmn_code: tmnCode
+        )
+       
+        result(nil)
+    }
+
+    private func sendPaymentResult(action: String, resultCode: Int, extras: [String: Any] = [:]) {
+        var resultMap: [String: Any] = [:]
+        resultMap["action"] = action
+        resultMap["resultCode"] = resultCode
+        
+        // Merge the extras dictionary into resultMap
+        for (key, value) in extras {
+            resultMap[key] = value
+        }
+        
+        // Send result back to Flutter
+        DispatchQueue.main.async { [weak self] in
+            self?.vnPayEventChannel?.invokeMethod("PaymentBack", arguments: resultMap)
+        }
+    }
+
+    @objc private func handlePaymentResponse(_ notification: Notification?) {
+        let name = notification?.name.rawValue ?? ""
+        if name == kSDKCompletedNotification {
+            guard let actionValue = (notification?.object as? NSObject)?.value(forKey: "Action") as? String else {
+                return
+            }
+            print("VNPay payment action: \(actionValue)")
+           
+            switch actionValue {
+            case "AppBackAction":
+                // User pressed back from SDK
+                sendPaymentResult(action: actionValue, resultCode: 24)
+            case "CallMobileBankingApp":
+                // User selected payment via banking app
+                sendPaymentResult(action: actionValue, resultCode: 10)
+            case "WebBackAction":
+                // User pressed back from payment success page
+                sendPaymentResult(action: actionValue, resultCode: 24)
+            case "FaildBackAction":
+                // Payment transaction failed
+                sendPaymentResult(action: actionValue, resultCode: 99)
+            case "SuccessBackAction":
+                // Payment success on webview
+                sendPaymentResult(action: actionValue, resultCode: 0)
+            default:
+                sendPaymentResult(action: actionValue, resultCode: 99)
+            }
+        }
+    }
+    // * END: Zone of VNPay
 }
 
 class IBleStreamHandler: NSObject, FlutterStreamHandler {
@@ -394,6 +545,7 @@ extension AppDelegate: iDeviceManagerDelegate {
         iDeviceManager.shared.operateTimer(false)
     }
 }
+
 // extension AppDelegate: MobileRTCAuthDelegate, MobileRTCMeetingServiceDelegate {
 //     func initZoom(info: Dictionary<String, Any>, result: @escaping FlutterResult) {
 //         if (MobileRTC.shared().getAuthService()?.isLoggedIn() == true) {

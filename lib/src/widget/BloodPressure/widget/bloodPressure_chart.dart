@@ -9,14 +9,22 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+typedef BloodPressureChartCallback = void Function(BloodPressureRangeType rangeType);
+
 class BloodPressureChart extends StatefulWidget {
-  BloodPressureChart({Key? key, required this.initPeriodFilterType}) : super(key: key);
+  BloodPressureChart({
+    Key? key,
+    required this.initPeriodFilterType,
+    required this.bloodPressureChartCallback,
+  }) : super(key: key);
   final int initPeriodFilterType;
+  final BloodPressureChartCallback bloodPressureChartCallback;
   @override
   BloodPressureChartState createState() => BloodPressureChartState();
 }
@@ -114,9 +122,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   void _scrollToFocusIndex() {
-    final mediaWidth = MediaQuery.of(context).size.width;
-    final width = (mediaWidth - 200) / 18;
-    final itemWidth = width + 20; // same as used in chart
+    // REF: [_buildChart]
+    double paddingOutSideBoth = 12 * 2;
+    double leftTitleWidth = 50;
+    double leftTitleMargin = 2;
+    double chartWidth =
+        MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
+    final width = chartWidth / 18;
+    final itemWidth = width + 12; // same as used in chart
 
     // Get the trends list from the current state
     final BloodPressureState state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
@@ -131,8 +144,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
       // When reversed, we need to calculate from the right edge
       final totalWidth = ((trends.length < 5 ? 5 : trends.length) * itemWidth);
       final rightEdgeOffset = totalWidth - (_focusIndex + 1) * itemWidth;
-      final targetOffset =
-          rightEdgeOffset + (itemWidth / 2) - (mediaWidth / 2) + 23; // 23 is magic number
+      final targetOffset = rightEdgeOffset + (itemWidth / 2) - (chartWidth / 2);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
@@ -145,7 +157,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
       });
     } else {
       // Normal left-to-right scrolling
-      final targetOffset = (_focusIndex * itemWidth) - (mediaWidth / 2) + (itemWidth / 2);
+      final targetOffset = (_focusIndex * itemWidth) - (chartWidth / 2) + (itemWidth / 2);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
@@ -189,6 +201,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
             if (_focusIndex == -1 || _focusIndex >= trends.length) {
               _focusIndex = (trends.length - 1);
+              final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+              Future.delayed(Duration(milliseconds: 200)).then((value) {
+                widget.bloodPressureChartCallback(rangeType);
+              });
             }
           }
 
@@ -344,6 +360,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             const SizedBox(height: 4),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(width: 12),
                 InkWell(
@@ -352,6 +369,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           setState(() {
                             _focusIndex = max(0, _focusIndex - 1);
                           });
+                          final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                          widget.bloodPressureChartCallback(rangeType);
                           if (_focusIndex > 0) {
                             _scrollToFocusIndex();
                           }
@@ -375,28 +394,31 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     ),
                   ),
                 ),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      selectedType,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: selectedColor.isNotEmpty
-                            ? Color(int.parse('0xff${selectedColor.split('#').join()}'))
-                            : null,
-                        height: 36 / 24,
-                      ),
+                const SizedBox(width: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: 200),
+                  child: Text(
+                    selectedType,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: selectedColor.isNotEmpty
+                          ? Color(int.parse('0xff${selectedColor.split('#').join()}'))
+                          : null,
+                      height: 36 / 24,
                     ),
                   ),
                 ),
+                const SizedBox(width: 16),
                 InkWell(
                   onTap: _focusIndex < trends.length - 1
                       ? () {
                           setState(() {
                             _focusIndex = min(trends.length - 1, _focusIndex + 1);
                           });
+                          final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                          widget.bloodPressureChartCallback(rangeType);
                           if (_focusIndex < trends.length - 1) {
                             _scrollToFocusIndex();
                           }
@@ -463,12 +485,17 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   Widget _buildChart(BloodPressureTrendModel model, List<SubTrendItemModel> trends) {
+    double paddingOutSideBoth = 12 * 2;
+    double leftTitleWidth = 50;
+    double leftTitleMargin = 2;
+    double chartWidth =
+        MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
     // Calculate width to show 11 points on the page
-    final width = (MediaQuery.of(context).size.width - 200) / 18;
+    final width = chartWidth / 18;
 
     // less no.trends need to scale width to fill screen
-    final minWidth = MediaQuery.of(context).size.width - 50 - 74;
-    double calculatedWidth = ((trends.length < 5 ? 5 : trends.length) * (width + 20)).toDouble();
+    final minWidth = chartWidth;
+    double calculatedWidth = (trends.length * (width + 12)).toDouble();
     if (calculatedWidth < minWidth) {
       calculatedWidth = minWidth;
     }
@@ -493,7 +520,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 50,
+              width: leftTitleWidth,
               height: 120,
               padding: EdgeInsets.only(top: 8, bottom: 8),
               child: Column(
@@ -510,7 +537,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 ],
               ),
             ),
-            SizedBox(width: 10),
+            SizedBox(width: leftTitleMargin),
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,
@@ -574,6 +601,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 setState(() {
                                   _focusIndex = value.toInt();
                                 });
+                                final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                                widget.bloodPressureChartCallback(rangeType);
                               }
                             } else {
                               _focusIndex = -1;

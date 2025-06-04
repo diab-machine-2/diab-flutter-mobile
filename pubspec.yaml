@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: 'none'
 
-version: 1.7.0+18
+version: 2.0.0+12
 
 environment:
   sdk: '>=2.18.0 <4.0.0'
@@ -166,6 +166,8 @@ dependencies:
       ref: 1.0.4
   mixpanel_flutter: ^2.3.3
   animated_text_kit: ^4.2.2
+  geolocator: ^11.1.0
+  flutter_widget_from_html_core: ^0.14.12
   flutter_chat_ui:
     git:
       url: https://github.com/longpnmd/flutter_chat_ui.git
@@ -224,6 +226,7 @@ flutter:
     - lib/res/generated/
     - lib/res/icons/
     - lib/res/drawables/dsmes_service/
+    - lib/res/drawables/clinic_specialty/
     - lib/res/drawables/subscription/
     - lib/src/widget/subscription/data/subscription_packages.json
     - lib/src/widget/subscription/data/package_programs.json

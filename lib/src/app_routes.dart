@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
@@ -80,6 +81,11 @@ class AppRoutes {
             pendingClinicId: data?['pendingClinicId'],
             pendingMode: data?['pendingMode'],
           );
+          break;
+        }
+      case NavigatorName.booking_clinic:
+        {
+          page = BookingClinicPage();
           break;
         }
       case NavigatorName.add_blood_sugar_result:

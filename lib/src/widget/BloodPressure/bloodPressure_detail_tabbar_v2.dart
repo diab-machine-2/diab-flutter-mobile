@@ -42,6 +42,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   int _periodFilterType = 3;
   String? _aiSuggestion;
 
+  BloodPressureRangeType _rangeType = BloodPressureRangeType.normal;
+
   @override
   void initState() {
     super.initState();
@@ -195,7 +197,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
                     const SizedBox(height: 12),
                     _buildTrendingChart(),
                     const SizedBox(height: 12),
-                    _sectionAIHelp(_aiSuggestion, BloodPressureRangeType.normal),
+                    _sectionAIHelp(_aiSuggestion),
                     const SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -276,6 +278,13 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     return BloodPressureChart(
       key: _bloodPressureTrendKey,
       initPeriodFilterType: _periodFilterType,
+      bloodPressureChartCallback: (rangeType) {
+        if (!mounted) return;
+        if (rangeType == _rangeType) return;
+        setState(() {
+          _rangeType = rangeType;
+        });
+      },
     );
   }
 
@@ -299,7 +308,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
     );
   }
 
-  Widget _sectionAIHelp(String? aiSuggestion, BloodPressureRangeType? rangeType) {
+  Widget _sectionAIHelp(String? aiSuggestion) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -354,7 +363,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
               ),
             ),
             const SizedBox(height: 16),
-            AIHelpButton(rangeType: rangeType),
+            AIHelpButton(rangeType: _rangeType),
           ],
         ],
       ),

@@ -17,19 +17,24 @@ class FirebaseRemoteSetting {
   late bool _activePopupHealthConnect; //ACTIVE_POPUP_HEALTH_CONNECT
   late String _linkStoreNavigation;
   String? _utilitiesOrder;
+  String? _specialtyOrder;
   List<GlucoseFaq> _glucoseFaqs = [
     GlucoseFaq(
       title: 'Máy đo của bạn không thuộc danh sách thiết bị hỗ trợ?',
       linkTitle: 'Xem chương trình Thu cũ đổi mới của DiaB',
-      url: 'https://diab.com.vn/nang-cap-may-do-duong-huyet-tai-benh-vien-dong-nai-2-co-hoi-tiet-kiem-200-000d-va-cham-soc-suc-khoe-toan-dien/',
+      url:
+          'https://diab.com.vn/nang-cap-may-do-duong-huyet-tai-benh-vien-dong-nai-2-co-hoi-tiet-kiem-200-000d-va-cham-soc-suc-khoe-toan-dien/',
     ),
     GlucoseFaq(
       title: 'Bạn chưa có máy đo đường huyết?',
-      linkTitle: 'Tìm hiểu về lợi ích máy đo đường huyết có kết nối với ứng dụng DiaB',
-      url: 'https://diab.com.vn/tim-hieu-loi-ich-cua-may-do-duong-huyet-co-ket-noi-voi-ung-dung-diab/',
+      linkTitle:
+          'Tìm hiểu về lợi ích máy đo đường huyết có kết nối với ứng dụng DiaB',
+      url:
+          'https://diab.com.vn/tim-hieu-loi-ich-cua-may-do-duong-huyet-co-ket-noi-voi-ung-dung-diab/',
     ),
   ];
   bool? _appDeveloperMode = false;
+  String? _vnpayIntegratedInfo;
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
@@ -42,6 +47,8 @@ class FirebaseRemoteSetting {
   bool get appDeveloperMode => _appDeveloperMode ?? false;
   String? get utilitiesOrder => _utilitiesOrder;
   List<GlucoseFaq> get glucoseFaqs => _glucoseFaqs;
+  String? get specialtyOrder => _specialtyOrder;
+  String? get vnpayIntegratedInfo => _vnpayIntegratedInfo;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
@@ -60,9 +67,13 @@ class FirebaseRemoteSetting {
           "{\"Lazada\":\"https://www.lazada.vn/shop/diab-official123/?spm=a2o4n.pdp_revamp.seller.1.22551b10iVUR71&itemId=2204466993&channelSource=pdp\",\"Shopee\":\"https://shopee.vn/diab_official123?categoryId=100001&entryPoint=ShopByPDP&itemId=17493490410\",\"Store\":\"https://store.diab.com.vn\"}",
       "APP_DEVELOPER_MODE":
           bool.parse(localSetting["APP_DEVELOPER_MODE"] ?? "true"),
-      "UTILITIES_ORDER":
-          localSetting["UTILITIES_ORDER"] ?? "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
-      "GLUCOSE_FAQS": jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
+      "UTILITIES_ORDER": localSetting["UTILITIES_ORDER"] ??
+          "thiet-lap-muc-tieu,lich-do-duong-huyet,lich-nhac-nho,thuc-don-mau,ket-noi-thiet-bi,lich-uong-thuoc,moi-ban-be",
+      "GLUCOSE_FAQS":
+          jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
+      "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ??
+          "cao-huyet-ap,tieu-duong,suy-than-man,suc-khoe-tim-mach,benh-khac",
+      "VNPAY_INTEGRATED_INFO": localSetting["VNPAY_INTEGRATED_INFO"] ?? ''
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -100,9 +111,12 @@ class FirebaseRemoteSetting {
     _appDeveloperMode = remoteConfig.getBool('APP_DEVELOPER_MODE');
     _utilitiesOrder = remoteConfig.getString('UTILITIES_ORDER');
     if (remoteConfig.getString('GLUCOSE_FAQS').isNotEmpty == true) {
-      _glucoseFaqs = (jsonDecode(remoteConfig.getString('GLUCOSE_FAQS')) as List<dynamic>)
-                        .map((item) => GlucoseFaq.fromJson(item as Map<String, dynamic>))
-                        .toList();
+      _glucoseFaqs =
+          (jsonDecode(remoteConfig.getString('GLUCOSE_FAQS')) as List<dynamic>)
+              .map((item) => GlucoseFaq.fromJson(item as Map<String, dynamic>))
+              .toList();
     }
+    _specialtyOrder = remoteConfig.getString('SPECIALTIES_ORDER');
+    _vnpayIntegratedInfo = remoteConfig.getString('VNPAY_INTEGRATED_INFO');
   }
 }

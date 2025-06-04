@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -380,64 +378,68 @@ class _PaywallScreenState extends State<PaywallScreen> {
                                 color: R.color.color0xffEDEEEE,
                               ),
                         GapW(12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  p.title,
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    p.title,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.greenGradientTop02,
+                                    ),
+                                  ),
+                                  GapW(8),
+                                  Visibility(
+                                    visible: p.isRecommended,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            R.color.gradientGold1,
+                                            R.color.gradientGold2,
+                                            R.color.gradientGold3,
+                                            R.color.gradientGold4,
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          stops: [0.0, 0.25, 0.63, 1],
+                                        ),
+                                      ),
+                                      child: Text(
+                                        R.string.recommended.tr(),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                          color: R.color.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // GapW(4),
+                              Flexible(
+                                child: Text(
+                                  p.priceText,
                                   style: TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.greenGradientTop02,
+                                    fontWeight: FontWeight.w500,
+                                    color: R.color.black,
                                   ),
-                                ),
-                                GapW(8),
-                                Visibility(
-                                  visible: p.isRecommended,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          R.color.gradientGold1,
-                                          R.color.gradientGold2,
-                                          R.color.gradientGold3,
-                                          R.color.gradientGold4,
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        stops: [0.0, 0.25, 0.63, 1],
-                                      ),
-                                    ),
-                                    child: Text(
-                                      R.string.recommended.tr(),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                        color: R.color.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            GapH(4),
-                            Flexible(
-                              child: Text(
-                                p.priceText,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: R.color.black,
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),

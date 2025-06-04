@@ -106,15 +106,15 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   List<Color> _colorList = [
     // "Thấp"
-    Color(0xFFF9BA1A),
+    Color(0xFFFFCD57),
     // "Bình thường"
-    Color(0xFF16AA47),
+    Color(0xFF23C559),
     // "Bình thường cao"
-    Color(0xFFA1F0BC),
+    Color(0xFF64E18E),
     // "Tăng huyết áp độ 1"
-    Color(0xFFFFCDD2),
-    // "Tăng huyết áp độ 2"
     Color(0xFFF86F6F),
+    // "Tăng huyết áp độ 2"
+    Color(0xFFD02424),
     // "Tăng huyết áp độ 3"
     Color(0xFFAF0000),
   ];
@@ -133,12 +133,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   // UI affect
   bool get _isInputEnough {
-    if (!mounted) return false;
-    bool activating = _controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty;
-    if (_isInputHeartRate) {
-      activating = activating && _controllerHeart.text.isNotEmpty;
-    }
-    return activating;
+    return !_isNotValidInput && !_isNotValidHeartRate;
   }
 
   @override
@@ -220,7 +215,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     if (model != null) {
       _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
-      _controllerHeart.text = model!.pulseRate?.toInt().toString() ?? '';
+      if (model!.pulseRate != null && model!.pulseRate! > 0) {
+        _controllerHeart.text = model!.pulseRate!.toInt().toString();
+      } else {
+        _controllerHeart.text = '';
+      }
       _controllerNote.text = model?.note ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       _files.addAll(model!.images);
@@ -390,7 +389,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       rangeColors: _colorList,
       diastolic: _valueOfDiastolic,
       systolic: _valueOfSystolic,
-      pulse: _isInputHeartRate ? double.parse(_controllerHeart.text) : 0,
+      pulse: _isInputHeartRate ? (double.tryParse(_controllerHeart.text) ?? 0) : 0,
       pulseRateStatus: pulseRateStatus,
       reasons: reasons,
       note: _controllerNote.text,
@@ -1183,7 +1182,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   height: 48,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      color: R.color.mainColor,
+                      color: R.color.greenGradientBottom,
                       borderRadius: BorderRadius.circular(200),
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
@@ -1226,7 +1225,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                       height: 48,
                       width: 164,
                       decoration: BoxDecoration(
-                          color: R.color.mainColor,
+                          color: R.color.greenGradientBottom,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
@@ -1404,7 +1403,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
     if (_isInputHeartRate) {
       int pulseRateValue = int.tryParse(pulseRate.replaceAll(',', '.')) ?? 0;
-      if (pulseRateValue < 40 || pulseRateValue > 300) {
+      if (pulseRateValue > 0 && (pulseRateValue < 40 || pulseRateValue > 300)) {
         Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
         return false;
       }
@@ -1436,7 +1435,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           paths.add(file.path);
         }
       }
-      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic);
+      
+    List<String> currentReason = model?.reason
+        ?.split("|")
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList() ?? [];
+      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic, currentReason);
       if (reasonsOrNull == false) {
         // request focus on systolic input
         _systolicFocus.requestFocus();
@@ -1447,7 +1452,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           widget.id,
           systolic,
           diastolic,
-          pulseRate,
+          pulseRate.isNotEmpty ? pulseRate : '0',
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           _selectedTimeFrame!.id,
           data.note, // updated to use data.note
@@ -1507,7 +1512,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       final result = await BloodPressureClient().postBloodPressureInput(
           systolic,
           diastolic,
-          pulseRate,
+          pulseRate.isNotEmpty ? pulseRate : '0',
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           _selectedTimeFrame!.id,
           data.note,
@@ -1544,7 +1549,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
   }
 
-  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic) async {
+  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic, [List<String>? initReason]) async {
+    initReason ??= [];   
     double systolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
     double diastolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
@@ -1560,11 +1566,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           builder: (context) {
             return BloodPressureWarningPopupWidget(
               reasons: reasons,
+              initValue: initReason,
             );
           });
     }
     return null;
-  }
+}
 
   void _showDialogDelete(BuildContext context) {
     showDialog(
@@ -1796,18 +1803,24 @@ class DateMultiPicker extends StatefulWidget {
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime? selectedDate = DateTime.now();
+  DateTime? selectedDate;
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
+  final GlobalKey<CustomTimePickerState> _calendarDatePickerKey =
+      GlobalKey<CustomTimePickerState>();
 
   @override
   void initState() {
+    super.initState();
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
       selectedHour = widget.initDate!.hour;
       selectedMinute = widget.initDate!.minute;
+    } else {
+      selectedDate = DateTime.now();
+      selectedHour = DateTime.now().hour;
+      selectedMinute = DateTime.now().minute;
     }
-    super.initState();
   }
 
   @override
@@ -1850,6 +1863,9 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
                           selectedDate = datetime ?? DateTime.now();
+                          if (_calendarDatePickerKey.currentState != null) {
+                            _calendarDatePickerKey.currentState!.setSelectedDate(selectedDate!);
+                          }
                         }),
                     Row(
                       children: [
@@ -1863,6 +1879,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     ),
                     SizedBox(height: 20),
                     CustomTimePicker(
+                        key: _calendarDatePickerKey,
+                        initSelectedDate: selectedDate,
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) {
@@ -1878,16 +1896,19 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             Navigator.pop(context);
                           },
                           child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                  color: R.color.grayBorder,
-                                  borderRadius: BorderRadius.circular(21.5)),
-                              child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700)))),
+                            height: 43,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(21.5),
+                              border: Border.all(color: R.color.greenGradientBottom),
+                            ),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(
+                                      color: R.color.greenGradientBottom,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700)),
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(width: 16),
@@ -1904,7 +1925,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: R.color.mainColor,
+                                  color: R.color.greenGradientBottom,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text(R.string.yes.tr(),
@@ -1934,21 +1955,26 @@ class CustomTimePicker extends StatefulWidget {
   final int? selectedHour;
   final int? selectedMinute;
   final TimeHourCallback? callback;
-  CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
+  final DateTime? initSelectedDate;
+  CustomTimePicker(
+      {Key? key, this.selectedHour, this.selectedMinute, this.callback, this.initSelectedDate})
+      : super(key: key);
   @override
-  _CustomTimePickerState createState() => _CustomTimePickerState();
+  CustomTimePickerState createState() => CustomTimePickerState();
 }
 
-class _CustomTimePickerState extends State<CustomTimePicker> {
+class CustomTimePickerState extends State<CustomTimePicker> {
   FixedExtentScrollController? hourController;
   FixedExtentScrollController? minuteController;
   int? selectedHour = 1;
   int? selectedMinute = 1;
   DateTime now = DateTime.now();
+  DateTime? selectedDate;
 
   @override
   void initState() {
     super.initState();
+    selectedDate = widget.initSelectedDate;
     selectedHour = now.hour;
     selectedMinute = now.minute;
     if (widget.selectedHour != null) {
@@ -1961,9 +1987,24 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
+  void setSelectedDate(DateTime date) {
+    selectedDate = date;
+    if (_isTimeInFuture(selectedHour!, selectedMinute!)) {
+      selectedHour = now.hour;
+      selectedMinute = now.minute;
+      hourController!.jumpToItem(selectedHour!);
+      minuteController!.jumpToItem(selectedMinute!);
+    }
+    setState(() {});
+  }
+
   // Check if a time is in the future
   bool _isTimeInFuture(int hour, int minute) {
     final now = DateTime.now();
+    if (selectedDate != null &&
+        selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
+      return false;
+    }
     return now.hour < hour || (now.hour == hour && now.minute < minute);
   }
 
@@ -1999,7 +2040,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? R.color.mainColor
+                                      ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
@@ -2031,7 +2072,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? R.color.mainColor
+                                      ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),

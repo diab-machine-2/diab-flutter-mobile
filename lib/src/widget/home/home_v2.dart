@@ -1076,7 +1076,7 @@ class _HomeControllerState extends State<HomeController>
         Navigator.of(context).pushNamed(NavigatorName.glucose_intro_1st_page);
         return false;
       }
-      if (AppSettings.isUS) {
+      if (!AppSettings.isRegionAllowInputDevice) {
         return true;
       }
       // Logic navigate to glucose input page (saved before)

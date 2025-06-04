@@ -98,7 +98,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
           widget.data.id,
           widget.data.systolic.toString(),
           widget.data.diastolic.toString(),
-          widget.data.pulse.toString(),
+          (widget.data.pulse ?? 0) > 0 ? widget.data.pulse.toString() : '',
           widget.data.dateTime.millisecondsSinceEpoch ~/ 1000,
           widget.data.timeFrameId,
           data.note,
@@ -344,10 +344,9 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
               Text(
                 R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: R.color.textDark,
-                  height: 21 / 15,
                 ),
               ),
               const SizedBox(width: 6),
@@ -368,7 +367,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             Text(
               'Có lỗi xảy ra',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w400,
                 color: Color(0xFFC82221),
               ),
@@ -377,10 +376,10 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             Text(
               _aiResult ?? '',
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
-                height: 16 / 12,
+                height: 1.46,
               ),
             ),
             const SizedBox(height: 16),
@@ -441,9 +440,12 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   Widget _bottomSection() {
     return ElevatedButton(
       onPressed: _doComplete,
-      child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
+      child: Text(
+        R.string.completed.tr(),
+        style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+      ),
       style: ElevatedButton.styleFrom(
-        backgroundColor: R.color.mainColor,
+        backgroundColor: R.color.greenGradientBottom,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
         ),

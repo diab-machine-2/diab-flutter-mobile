@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
@@ -54,6 +55,9 @@ class AppSettings {
   static void setCountryCode(String code) {
     _countryCode = code;
   }
+
+  static bool get isRegionAllowInputDevice =>
+      Const.REGION_ALLOW_CONNECT_DEVICE.contains(countryCode);
 
   static bool _splashScreenInitDone = false;
   static bool get splashScreenInitDone => _splashScreenInitDone;
@@ -283,6 +287,7 @@ class AppSettings {
     appPreference.removeData(Const.TOKEN);
     appPreference.removeData(Const.DOCOSAN_TOKEN);
     appPreference.removeData('healthAppPermission');
+    appPreference.removeData('position');
     return true;
   }
 
@@ -496,5 +501,19 @@ class AppSettings {
     } catch (_) {
       return false;
     }
+  }
+
+  static Future<void> saveLocationPreferences(Position position) async {
+    try {
+      appPreference.setData(
+          'position', "${position.latitude},${position.longitude}");
+    } catch (error) {}
+  }
+
+  static Future<String?> getPositionPreferences() async {
+    final position = appPreference.getData('position') ?? '';
+    Console.log("getPositionPreferences", position);
+
+    return position;
   }
 }

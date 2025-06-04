@@ -99,12 +99,12 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 // Title
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.only(left: 16, right: 6),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Expanded(
                         child: Text(
@@ -150,7 +150,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                           //   "screen_name": 'kpi_glycemic',
                           //   'cta_button_name': 'cta_add_glycemic_0',
                           // });
-                          if (AppSettings.isUS) {
+                          if (!AppSettings.isRegionAllowInputDevice) {
                             Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
                                 arguments: {'type': 'input'});
                           } else {
@@ -298,28 +298,40 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                       late final double value;
                       late final Color color;
                       if (i == 0) {
+                        // "Tăng huyết áp độ 3"
                         color = toColor(model.increaseLevelThreeColor);
                         value = model.increaseLevelThree! / total * 100;
                       } else if (i == 1) {
+                        // "Tăng huyết áp độ 2"
                         color = toColor(model.increaseLevelTwoColor);
                         value = model.increaseLevelTwo! / total * 100;
                       } else if (i == 2) {
+                        // "Tăng huyết áp độ 1"
                         color = toColor(model.increaseLevelOneColor);
                         value = model.increaseLevelOne! / total * 100;
                       } else if (i == 3) {
+                        // "Bình thường cao"
                         color = toColor(model.preIncreaseColor);
                         value = model.preIncrease! / total * 100;
                       } else if (i == 4) {
+                        // "Bình thường"
                         color = toColor(model.normalColor);
                         value = model.normal! / total * 100;
                       } else {
+                        // "Thấp"
                         color = toColor(model.lowColor);
                         value = model.low! / total * 100;
                       }
                       return PieChartSectionData(
                         color: color,
                         value: value,
-                        showTitle: showTitle,
+                        showTitle: true,
+                        title: '${value.round()}%',
+                        titleStyle: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
                         radius: 45,
                       );
                     },

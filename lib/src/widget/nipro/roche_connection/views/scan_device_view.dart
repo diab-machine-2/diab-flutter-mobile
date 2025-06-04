@@ -616,7 +616,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       if (result.device.platformName.contains('meter')) {
         deviceFound = true;
         await result.device.connect();
-        connectDevice(result.device);
+        await connectDevice(result.device);
         device = result.device;
         appStatus = AppStatus.isConnecting;
         await FlutterBluePlus.stopScan();

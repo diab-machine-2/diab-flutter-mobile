@@ -142,7 +142,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                             //   "screen_name": 'kpi_glycemic',
                             //   'cta_button_name': 'cta_add_glycemic_0',
                             // });
-                            if (AppSettings.isUS) {
+                            if (!AppSettings.isRegionAllowInputDevice) {
                               Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
                                   arguments: {'type': 'input'});
                             } else {

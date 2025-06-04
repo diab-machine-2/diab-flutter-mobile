@@ -11,6 +11,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -136,16 +137,17 @@ class _CalendarControllerState extends State<CalendarController> {
                                   color: R.color.ho_so_color,
                                   fit: BoxFit.scaleDown,
                                 ),
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                Text(
-                                  R.string.contact.tr(),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: 'sfpro',
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.ho_so_color,
+                                GapW(4),
+                                Expanded(
+                                  child: Text(
+                                    R.string.contact.tr(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'sfpro',
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.ho_so_color,
+                                    ),
                                   ),
                                 ),
                               ],
