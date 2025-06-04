@@ -281,55 +281,48 @@ class _ExercisesResultState extends State<ExercisesResult>
       return Center(child: CircularProgressIndicator());
     }
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Progress Section
-              _buildProgressSection(),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Progress Section
+          _buildProgressSection(),
 
-              // Suggestion Section
-              _buildSuggestionSection(),
+          // Suggestion Section
+          _buildSuggestionSection(),
 
-              // Nút "Thêm vận động"
-              SizedBox(
-                width: double.infinity,
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
-                  child: ButtonWidget(
-                    title: R.string.them_hoat_dong.tr(),
-                    backgroundColor: R.color.white,
-                    textSize: 14,
-                    borderColor: R.color.greenGradientBottom,
-                    textColor: R.color.greenGradientBottom,
-                    wIcon: Icon(
-                      Icons.add_circle_outline,
-                      color: R.color.greenGradientBottom,
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(
-                          context, NavigatorName.exercrise_add_v2);
-                    },
-                  ),
+          // Nút "Thêm vận động"
+          SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
+              child: ButtonWidget(
+                title: R.string.them_hoat_dong.tr(),
+                backgroundColor: R.color.white,
+                textSize: 14,
+                borderColor: R.color.greenGradientBottom,
+                textColor: R.color.greenGradientBottom,
+                wIcon: Icon(
+                  Icons.add_circle_outline,
+                  color: R.color.greenGradientBottom,
                 ),
+                onPressed: () {
+                  Navigator.pushNamed(context, NavigatorName.exercrise_add_v2);
+                },
               ),
-              SizedBox(height: 8.h),
-
-              // Activity List
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: _buildActivityList(),
-              ),
-
-              SizedBox(height: 80),
-            ],
+            ),
           ),
-        ),
-      ],
+          SizedBox(height: 8.h),
+
+          // Activity List
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: _buildActivityList(),
+          ),
+
+          SizedBox(height: 80),
+        ],
+      ),
     );
   }
 
@@ -501,11 +494,12 @@ class _ExercisesResultState extends State<ExercisesResult>
 
   Widget _buildSuggestionSection() {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(12.w),
       color: R.color.backgroundColorNew,
       child: ExercrisesAISuggestion(
         periodFilterType: periodFilterType,
         date: DateTime.now().subtract(Duration(days: 1)),
+        titleButton: R.string.roadmap_for_beginners.tr(),
       ),
     );
   }

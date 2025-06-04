@@ -1289,4 +1289,6 @@ class Strings {
   String get add_exercise_failed => 'add_exercise_failed';
   String get kcal_burned_per_day => 'kcal_burned_per_day';
   String get minute_upperCase_first_character => 'minute_upperCase_first_character';
+  String get chat_with_AI => 'chat_with_AI';
+  String get roadmap_for_beginners => 'roadmap_for_beginners';
 }

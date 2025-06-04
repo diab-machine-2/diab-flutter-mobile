@@ -162,6 +162,10 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                   end: Alignment.topCenter,
                   stops: const [0.6, 1.0],
                 ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -174,6 +178,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                         ? DateTime.fromMillisecondsSinceEpoch(
                             selectedTrend.date ?? 0)
                         : DateTime.now(),
+                    titleButton: R.string.chat_with_AI.tr(),
                   ),
                 ],
               ),
@@ -239,14 +244,19 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
       if (selectedTrend.duration != null) {
         selectedDuration = roundNumber(selectedTrend.duration!).toString();
       }
-      if (selectedTrend.firstDateOfWeek != null &&
-          selectedTrend.lastDateOfWeek != null) {
-        selectedDate =
-            convertToUTC(selectedTrend.firstDateOfWeek!, 'dd' + '-') +
-                convertToUTC(selectedTrend.lastDateOfWeek!, 'dd/MM');
-      } else {
-        selectedDate = convertToSectionTicketDate(selectedTrend.date!, '');
-      }
+      // if (selectedTrend.firstDateOfWeek != null &&
+      //     selectedTrend.lastDateOfWeek != null) {
+      //   selectedDate =
+      //       convertToUTC(selectedTrend.firstDateOfWeek!, 'dd' + '-') +
+      //           convertToUTC(selectedTrend.lastDateOfWeek!, 'dd/MM');
+      // } else {
+      //  selectedDate = convertToSectionTicketDate(selectedTrend.date!, '');
+      // }
+      String selectedTrendDateTime =
+          DateFormat('dd/MM/yyyy', 'vi_VN').format(DateTime.now());
+      selectedDate = selectedTrend.date != null
+          ? convertToSectionTicketDate(selectedTrend.date!, '')
+          : selectedTrendDateTime;
       selectedColor = selectedTrend.targetColor ?? '';
       selectedType = selectedTrend.targetDescription ?? '';
     }
@@ -508,10 +518,8 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     minY = (minY * (trends.length == 1 ? 0.53 : 0.8)).roundToDouble();
     double maxY = trends.map<double>((e) => e.duration ?? 0).reduce(max);
     maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
-    double minX = trends.length == 1 ? -1: 0;
-    double maxX = trends.length == 1
-        ? 1
-        : trends.length.toDouble() - 1;
+    double minX = trends.length == 1 ? -1 : 0;
+    double maxX = trends.length == 1 ? 1 : trends.length.toDouble() - 1;
     double avgY = (maxY + minY) / 2;
     _focusIndex = (trends.length == 1) ? 0 : _focusIndex;
 
@@ -668,9 +676,9 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
   }
 
   void _touchCallback(
-      FlTapUpEvent event,
-      LineTouchResponse? lineTouch,
-      ) {
+    FlTapUpEvent event,
+    LineTouchResponse? lineTouch,
+  ) {
     final now = DateTime.now();
     // detect double press
     if (_lastTapTime != null &&
