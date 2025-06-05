@@ -746,4 +746,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
     return result;
   }
+
+  Future<bool> updateVnpayTransactionInfo(
+      {required int appointmentId, required String txnRef}) async {
+    final result = await appRepository.updateVnpayTransactionInfo(
+        appointmentId: appointmentId, txnRef: txnRef);
+
+    return result;
+  }
 }

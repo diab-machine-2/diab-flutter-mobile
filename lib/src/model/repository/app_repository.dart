@@ -1225,4 +1225,24 @@ class AppRepository {
       throw e is Error ? e : "Lưu thông tin thanh toán không thành công";
     }
   }
+
+  Future<bool> updateVnpayTransactionInfo(
+      {required int appointmentId, required String txnRef}) async {
+    try {
+      log('[VNPAY] updateVnpayTransactionInfo payload: appointmentId $appointmentId txnRef $txnRef');
+      final response = await FetchClient().putData(
+          url: '/App/PaymentMethodVnpay/update-by-refcode',
+          params: {},
+          queryParams: {
+            'appointmentId': appointmentId.toString(),
+            'refCode': txnRef,
+          });
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      throw e is Error ? e : "Cập nhật thông tin thanh toán không thành công";
+    }
+  }
 }

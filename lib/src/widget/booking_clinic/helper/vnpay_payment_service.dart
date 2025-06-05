@@ -15,6 +15,8 @@ import 'package:http/http.dart' as http;
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:uuid/uuid.dart';
 
 class VNPayService {
   static const platform = MethodChannel('paymentGateway');
@@ -79,12 +81,16 @@ class VNPayService {
     final vnpayIntegratedInfoMap = jsonDecode(vnpayIntegratedInfo);
     tmnCode = vnpayIntegratedInfoMap['vnp_TmnCode'] ?? '';
 
+    var uuid = Uuid();
+    var txnRef = uuid.v4();
+    var orderInfo =
+        'Payment for booking $bookingType $serviceType - Account: $accountId';
     paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
       url: vnpayIntegratedInfoMap['vnp_Url'] ?? '',
       version: '2.1.0',
       tmnCode: tmnCode,
-      txnRef: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-      orderInfo: 'Payment for booking ${bookingType} - Account: $accountId',
+      txnRef: txnRef,
+      orderInfo: orderInfo,
       amount: totalPrice.toDouble(),
       returnUrl: vnpayIntegratedInfoMap['vnp_ReturnUrl'] ?? '',
       ipAdress: ipAddress,
@@ -92,6 +98,22 @@ class VNPayService {
       vnPayHashType: VNPayHashType.HMACSHA512,
     );
     print('[VNPAY] Payment url: $paymentUrl');
+
+    final request = VnpayPaymentRequest(
+      phoneNumber: AppSettings.userInfo?.phoneNumber ?? '',
+      accountId: accountId,
+      vnpTmnCode: tmnCode,
+      vnpAmount: (totalPrice.toDouble() * 100).toStringAsFixed(0),
+      vnpOrderInfo: orderInfo,
+      vnpTxnRef: txnRef,
+      vnpSecureHash: VNPAYFlutter.instance.vnpSecureHash ?? '',
+    );
+
+    final result = await cubit.saveVnpayTransactionInfo(request);
+
+    if (result == false) {
+      log('[VNPAY] saveVnpayTransactionInfo failed');
+    }
     return true;
   }
 
@@ -139,7 +161,7 @@ class VNPayService {
       try {
         final String action = call.arguments['action'] ?? '';
         final int resultCode = call.arguments['resultCode'] ?? -1;
-        final String responseCode = call.arguments['vnp_ResponseCode'] ?? '99';
+        final String responseCode = call.arguments['vnp_ResponseCode'] ?? '';
 
         print(
             "[VNPAY] Payment result: action=$action, resultCode=$resultCode, responseCode=$responseCode");
@@ -165,7 +187,11 @@ class VNPayService {
         } else if (resultCode == 10) {
           // User selected mobile banking app, waiting for return
           // Remove overlay as we're waiting for user to return from banking app
-          BotToast.closeAllLoading();
+          await _handleCreateBookingClinic(params: {
+            'vnp_ResponseCode': responseCode,
+            ...transactionDetails,
+          });
+          // BotToast.closeAllLoading();
         } else if (resultCode == 24) {
           // Payment canceled
           await _handlePaymentFailed(params: {
@@ -182,6 +208,8 @@ class VNPayService {
         }
       } catch (e) {
         print("[VNPAY] Error handling payment result: $e");
+        Message.showToastMessage(
+            context, "Create booking after payment success failed");
         BotToast.closeAllLoading();
       }
     }
@@ -209,28 +237,11 @@ class VNPayService {
 
     if (resp == null) return;
 
-    final request = VnpayPaymentRequest(
-      appointmentId: resp.id.toString(),
-      phoneNumber: AppSettings.userInfo?.phoneNumber ?? '',
-      accountId: AppSettings.userInfo?.accountId ?? '',
-      vnpTmnCode: params['vnp_TmnCode'] ?? '',
-      vnpAmount: params['vnp_Amount'] ?? '',
-      vnpPayDate: params['vnp_PayDate'] ?? '',
-      vnpBankCode: params['vnp_BankCode'] ?? '',
-      vnpCardType: params['vnp_CardType'] ?? '',
-      vnpBankTranNo: params['vnp_BankTranNo'] ?? '',
-      vnpOrderInfo: params['vnp_OrderInfo'] ?? '',
-      vnpTransactionNo: params['vnp_TransactionNo'] ?? '',
-      vnpResponseCode: params['vnp_ResponseCode'] ?? '',
-      vnpTransactionStatus: params['vnp_TransactionStatus'] ?? '',
-      vnpTxnRef: params['vnp_TxnRef'] ?? '',
-      vnpSecureHash: params['vnp_SecureHash'] ?? '',
-    );
-
-    final result = await cubit.saveVnpayTransactionInfo(request);
+    final result = await cubit.updateVnpayTransactionInfo(
+        appointmentId: resp.id, txnRef: params['vnp_TxnRef']);
 
     if (result == false) {
-      log('[VNPAY] saveVnpayTransactionInfo failed');
+      log('[VNPAY] updateVnpayTransactionInfo failed');
     }
 
     // Parse the payment date from VNPAY format
@@ -272,30 +283,6 @@ class VNPayService {
     log("[VNPAY] _handlePaymentFailed: $params");
     String errorMessage = VnpayResponseCode.getResponseCodeMessage(
         params['vnp_ResponseCode'] ?? '');
-
-    final request = VnpayPaymentRequest(
-      appointmentId: '',
-      phoneNumber: AppSettings.userInfo?.phoneNumber ?? '',
-      accountId: AppSettings.userInfo?.accountId ?? '',
-      vnpTmnCode: params['vnp_TmnCode'] ?? '',
-      vnpAmount: params['vnp_Amount'] ?? '',
-      vnpPayDate: params['vnp_PayDate'] ?? '',
-      vnpBankCode: params['vnp_BankCode'] ?? '',
-      vnpCardType: params['vnp_CardType'] ?? '',
-      vnpBankTranNo: params['vnp_BankTranNo'] ?? '',
-      vnpOrderInfo: params['vnp_OrderInfo'] ?? '',
-      vnpTransactionNo: params['vnp_TransactionNo'] ?? '',
-      vnpResponseCode: params['vnp_ResponseCode'] ?? '',
-      vnpTransactionStatus: params['vnp_TransactionStatus'] ?? '',
-      vnpTxnRef: params['vnp_TxnRef'] ?? '',
-      vnpSecureHash: params['vnp_SecureHash'] ?? '',
-    );
-
-    final result = await cubit.saveVnpayTransactionInfo(request);
-
-    if (result == false) {
-      log('[VNPAY] saveVnpayTransactionInfo failed');
-    }
 
     // Close any loading indicators before showing the failure dialog
     BotToast.closeAllLoading();

@@ -326,7 +326,7 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
                 sendPaymentResult(action: actionValue, resultCode: 24)
             case "CallMobileBankingApp":
                 // User selected payment via banking app
-                // sendPaymentResult(action: actionValue, resultCode: 10)
+                sendPaymentResult(action: actionValue, resultCode: 10)
             case "WebBackAction":
                 // User pressed back from payment success page
                 sendPaymentResult(action: actionValue, resultCode: 24)

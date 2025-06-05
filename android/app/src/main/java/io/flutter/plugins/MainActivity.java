@@ -537,13 +537,13 @@ public class MainActivity extends FlutterFragmentActivity {
         VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
             @Override
             public void sdkAction(String action) {
-                Log.wtf("[VNPAY] SplashActivity", "action: " + action);
+                Log.d("[VNPAY] SplashActivity", "action: " + action);
                 switch (action) {
                     case "AppBackAction":
                         sendPaymentResult(action, 24, new HashMap<>()); // custom code for canceled
                         break;
                     case "CallMobileBankingApp":
-                        // sendPaymentResult(action, 10, new HashMap<>()); // custom code for "in progress"
+                        sendPaymentResult(action, 10, new HashMap<>()); // custom code for "in progress"
                         break;
                     case "WebBackAction":
                         sendPaymentResult(action, 24, new HashMap<>());
@@ -587,8 +587,9 @@ public class MainActivity extends FlutterFragmentActivity {
     private void handleVNPayAppSchemeReturn(String data) {
         try {
             Uri uri = Uri.parse(data);
+            Log.d(TAG, "[VNPAY] handleVNPayAppSchemeReturn data:  " + data);;
             String responseCode = uri.getQueryParameter("vnp_ResponseCode") != null ? 
-                                uri.getQueryParameter("vnp_ResponseCode") : "99";
+                                uri.getQueryParameter("vnp_ResponseCode") : "";
             
             Map<String, Object> extras = extractAllVNPayParams(uri);
             
