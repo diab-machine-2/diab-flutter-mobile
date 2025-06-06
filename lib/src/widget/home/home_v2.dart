@@ -457,13 +457,15 @@ class _HomeControllerState extends State<HomeController>
               });
             }
             //
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty == true
-              && state.model.measurements?.first.value1?.isNotEmpty == true
-              && state.model.measurements?.first.value1 != "--";
+            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
+                    true &&
+                state.model.measurements?.first.value1?.isNotEmpty == true &&
+                state.model.measurements?.first.value1 != "--";
             //
             if (state.model.measurements?.isNotEmpty == true) {
-              List<HomeMeasurementData> huyetAps =
-                  state.model.measurements!.where((e) => e.title.toLowerCase() == "huyết áp").toList();
+              List<HomeMeasurementData> huyetAps = state.model.measurements!
+                  .where((e) => e.title.toLowerCase() == "huyết áp")
+                  .toList();
               _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
@@ -637,8 +639,10 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // check first time open blood pressure intro
-                              if (routeName == "/add_blood_pressure" && !_haveInputBloodpressureAlready) {
-                                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                              if (routeName == "/add_blood_pressure" &&
+                                  !_haveInputBloodpressureAlready) {
+                                Navigator.of(context).pushNamed(NavigatorName
+                                    .blood_pressure_intro_1st_page);
                                 return;
                               }
                               // others
@@ -1063,7 +1067,8 @@ class _HomeControllerState extends State<HomeController>
   }
 
   // return allow next route
-  Future<bool> _showGlucoseAddBottomSheet(String? routeName) async {
+  Future<bool> _showGlucoseAddBottomSheet(String? routeName,
+      {String? smartGoalId}) async {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
       // check first time open glucose intro
@@ -1083,7 +1088,7 @@ class _HomeControllerState extends State<HomeController>
         BlocProvider.of<NiproBloc>(context).tryAutoConnect();
       } else if (lastOpenedGlucoseInputType == 'manual') {
         Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-            arguments: {'type': 'input'});
+            arguments: {'type': 'input', 'goalId': smartGoalId});
         // or can return "true" to next page
       }
       return false;
@@ -1113,7 +1118,8 @@ class _HomeControllerState extends State<HomeController>
     switch (type) {
       case ScheduleType.blood_sugar:
       case ScheduleType.blood_sugar_recommend:
-        _showGlucoseAddBottomSheet(NavigatorName.add_blood_sugar_new);
+        _showGlucoseAddBottomSheet(NavigatorName.add_blood_sugar_new,
+            smartGoalId: smartGoal?.id);
         // await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
         //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);
@@ -1122,7 +1128,8 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.blood_pressure_recommend:
         // check first time open blood pressure intro
         if (!_haveInputBloodpressureAlready) {
-          Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+          Navigator.of(context)
+              .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
           return;
         }
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
