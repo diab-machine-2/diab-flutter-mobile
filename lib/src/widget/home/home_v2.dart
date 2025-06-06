@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -19,8 +20,11 @@ import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
+import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/service/api_result.dart';
+import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
@@ -34,6 +38,7 @@ import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
+import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -1259,6 +1264,12 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.completed:
         // Do nothing
         break;
+      case ScheduleType.screening_interview:
+        await _handleInterviewNavigation(interviewType: 30);
+        break;
+      case ScheduleType.evaluate_interview:
+        await _handleInterviewNavigation(interviewType: 31);
+        break;
     }
   }
 
@@ -1778,5 +1789,77 @@ class _HomeControllerState extends State<HomeController>
               .toInt(),
           unit: ''),
     );
+  }
+
+  Future<void> _handleInterviewNavigation({required int interviewType}) async {
+    final courseId = '350a3050-c0f7-11ef-b57a-03ea338ae610';
+    try {
+      // Check if course exists (using temp courseId for now)
+      bool isExist = await UserClient().IsExistCourse(courseId);
+      if (!isExist) {
+        Console.log("Course does not exist for interviewType: $interviewType");
+        return;
+      }
+
+      final startDate = DateTime.now().add(Duration(days: 0));
+      final endDate = DateTime.now().add(Duration(days: 21));
+      int bookingQuantity = 0;
+
+      final request = CalendarFilter(
+        accountPatientId: AppSettings.userInfo!.accountId,
+        courseId: courseId,
+        fromDate: startDate,
+        toDate: endDate,
+        calendarType: interviewType,
+      );
+
+      final ApiResult<List<CreateCalendarResponse>> apiResult =
+          await AppRepository().getMyCalendar(request);
+
+      apiResult.when(
+        success: (List<CreateCalendarResponse> response) {
+          if (response.length > 0) {
+            bookingQuantity = response.length;
+            if (bookingQuantity >= 1) {
+              // Navigate to existing calendar
+              Navigator.pushNamed(context, NavigatorName.calendar, arguments: {
+                "pickSlot": response.firstWhere(
+                    (element) => element.isDeleted == false,
+                    orElse: () => response.first),
+                "courseId": courseId,
+                "endTime": '',
+                "bookingQuantity": bookingQuantity,
+                "interviewType": interviewType,
+              });
+              return;
+            }
+          }
+
+          // If no existing bookings, navigate to booking page
+          if (bookingQuantity == 0) {
+            Navigator.pushNamed(context, NavigatorName.calendar_booking,
+                arguments: {
+                  'courseId': courseId,
+                  'endTime': '',
+                  'interviewType': interviewType
+                });
+          }
+        },
+        failure: (NetworkExceptions error) {
+          log("Error fetching calendar for interviewType $interviewType: $error");
+          TrackingManager.recordError(error, null);
+          // Still navigate to booking page on error
+          Navigator.pushNamed(context, NavigatorName.calendar_booking,
+              arguments: {
+                'courseId': courseId,
+                'endTime': '',
+                'interviewType': interviewType
+              });
+        },
+      );
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+      log("Exception in _handleInterviewNavigation: $e");
+    }
   }
 }

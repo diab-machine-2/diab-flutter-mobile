@@ -32,17 +32,23 @@ class Utils {
   }
 
   static String getNewTitle(String title) {
-    if (title.length > 1) {
-      var temp = title.substring(title.length - 1, title.length);
-      var tempInt = 0;
-      try {
-        tempInt = int.parse(temp);
-        tempInt = tempInt + 1;
-      } catch (error) {}
-      return title.substring(0, title.length - 1) + tempInt.toString();
-    } else {
-      return title;
+    if (title.isEmpty) return title;
+
+    // Use regex to find the last number in the string
+    final RegExp numberRegex = RegExp(r'(\d+)(?!.*\d)');
+    final Match? match = numberRegex.firstMatch(title);
+
+    if (match != null) {
+      final String numberStr = match.group(1)!;
+      final int currentNumber = int.parse(numberStr);
+      final int newNumber = currentNumber + 1;
+
+      // Replace the last number with the incremented value
+      return title.replaceRange(match.start, match.end, newNumber.toString());
     }
+
+    // If no number found, return original title
+    return title;
   }
 
   static void setStatusColor(Color color) {
@@ -532,6 +538,8 @@ class Utils {
       case ScheduleType.book_1_1:
       case ScheduleType.io_evaluate:
       case ScheduleType.output_assessment:
+      case ScheduleType.screening_interview:
+      case ScheduleType.evaluate_interview:
         return R.string.event.tr();
       case ScheduleType.survey:
       case ScheduleType.update_profile:

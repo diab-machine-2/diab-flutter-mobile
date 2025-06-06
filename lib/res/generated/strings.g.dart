@@ -1311,4 +1311,8 @@ class Strings {
   String get begin_program => 'begin_program';
   String get loading_subscription_packages => 'loading_subscription_packages';
   String get basic_program_confirm => 'basic_program_confirm';
+  String get screening_interview => 'screening_interview';
+  String get evaluate_interview => 'evaluate_interview';
+  String get booking_screening_interview => 'booking_screening_interview';
+  String get booking_evaluate_interview => 'booking_evaluate_interview';
 }

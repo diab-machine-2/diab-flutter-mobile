@@ -87,6 +87,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     required String courseId,
     DateTime? startDate,
     DateTime? endDate,
+    int interviewType = 30,
   }) async {
     startDate = DateTime.now().add(Duration(days: 0));
     endDate = DateTime.now()
@@ -94,11 +95,12 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     emit(CalendarBookingLoading());
 
     final request = CalendarFilter(
-        accountPatientId: AppSettings.userInfo!.accountId,
-        courseId: courseId,
-        fromDate: startDate,
-        toDate: endDate,
-        calendarType: 1);
+      accountPatientId: AppSettings.userInfo!.accountId,
+      courseId: courseId,
+      fromDate: startDate,
+      toDate: endDate,
+      calendarType: interviewType,
+    );
 
     final ApiResult<List<CreateCalendarResponse>> apiResult =
         await repository.getMyCalendar(request);

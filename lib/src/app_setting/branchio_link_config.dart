@@ -27,6 +27,7 @@ class BranchioLinkConfig {
   StreamSubscription? _subLink;
   String? _courseId;
   String? _endTime;
+  int? _interviewType;
 
   String? _meetingId;
   String? _meetingPassword;
@@ -91,8 +92,8 @@ class BranchioLinkConfig {
 
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
-        _processBookingCourseLink(
-            data['\$course'] as String, data['\$end_time'] as String?);
+        _processBookingCourseLink(data['\$course'] as String,
+            data['\$end_time'] as String?, data['\$type'] as String?);
         return;
       } else if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$meetingId") &&
@@ -495,11 +496,12 @@ class BranchioLinkConfig {
       int bookingQuantity = 0;
 
       final request = CalendarFilter(
-          accountPatientId: AppSettings.userInfo!.accountId,
-          courseId: _courseId!,
-          fromDate: startDate,
-          toDate: endDate,
-          calendarType: 1);
+        accountPatientId: AppSettings.userInfo!.accountId,
+        courseId: _courseId!,
+        fromDate: startDate,
+        toDate: endDate,
+        calendarType: _interviewType ?? 30,
+      );
       final ApiResult<List<CreateCalendarResponse>> apiResult =
           await AppRepository().getMyCalendar(request);
       apiResult.when(success: (List<CreateCalendarResponse> response) {
@@ -516,6 +518,7 @@ class BranchioLinkConfig {
                 "courseId": _courseId,
                 "endTime": _endTime ?? '',
                 "bookingQuantity": bookingQuantity,
+                "interviewType": _interviewType ?? 30,
               });
             } else {
               navigatorKey.currentState
@@ -526,6 +529,7 @@ class BranchioLinkConfig {
                 "courseId": _courseId,
                 "endTime": _endTime ?? '',
                 "bookingQuantity": bookingQuantity,
+                "interviewType": _interviewType ?? 30,
               });
             }
             _resetDataLink();
@@ -543,10 +547,18 @@ class BranchioLinkConfig {
         if (isCalendarBookingPage) {
           navigatorKey.currentState?.pushReplacementNamed(
               NavigatorName.calendar_booking,
-              arguments: {'courseId': _courseId, 'endTime': _endTime});
+              arguments: {
+                'courseId': _courseId,
+                'endTime': _endTime,
+                'interviewType': _interviewType
+              });
         } else {
           navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-              arguments: {'courseId': _courseId, 'endTime': _endTime});
+              arguments: {
+                'courseId': _courseId,
+                'endTime': _endTime,
+                'interviewType': _interviewType
+              });
         }
         _resetDataLink();
       }
@@ -580,9 +592,11 @@ class BranchioLinkConfig {
     return '';
   }
 
-  void _processBookingCourseLink(String courseId, String? endTime) {
+  void _processBookingCourseLink(
+      String courseId, String? endTime, String? type) {
     _courseId = courseId;
     _endTime = endTime;
+    _interviewType = int.tryParse(type ?? '30');
     if (AppSettings.userInfo != null) {
       tryNavigateBooking();
     }
@@ -591,6 +605,7 @@ class BranchioLinkConfig {
   void _resetDataLink() {
     _courseId = null;
     _endTime = null;
+    _interviewType = null;
   }
 
   void dispose() {
