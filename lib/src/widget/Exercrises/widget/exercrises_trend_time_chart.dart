@@ -252,11 +252,12 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
       // } else {
       //  selectedDate = convertToSectionTicketDate(selectedTrend.date!, '');
       // }
-      String selectedTrendDateTime =
-          DateFormat('dd/MM/yyyy', 'vi_VN').format(DateTime.now());
-      selectedDate = selectedTrend.date != null
-          ? convertToSectionTicketDate(selectedTrend.date!, '')
-          : selectedTrendDateTime;
+      if (selectedTrend.firstDateOfWeek != null &&
+          selectedTrend.lastDateOfWeek != null) {
+        selectedDate = DateFormat('dd/MM/yyyy', 'vi_VN').format(DateTime.now());
+      } else {
+       selectedDate = convertToSectionTicketDate(selectedTrend.date!, '');
+      }
       selectedColor = selectedTrend.targetColor ?? '';
       selectedType = selectedTrend.targetDescription ?? '';
     }
@@ -542,7 +543,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
         Container(
             width: chartWidth,
             height: chartHeight,
-            padding: EdgeInsets.only(left: 55, top: 8, bottom: 8),
+            padding: EdgeInsets.only(left: 55, top: 8),
             alignment: Alignment.center,
             child: LineChart(
                 LineChartData(
@@ -570,28 +571,39 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                   ),
                   gridData: FlGridData(show: false),
                   borderData: FlBorderData(show: false),
-                  // extraLinesData:
-                  //     ExtraLinesData(extraLinesOnTop: true, horizontalLines: [
-                  //   HorizontalLine(
-                  //     label: HorizontalLineLabel(
-                  //       show: true,
-                  //       style: TextStyle(
-                  //           color: R.color.textDark,
-                  //           fontSize: 14,
-                  //           fontWeight: FontWeight.w400),
-                  //       alignment: Alignment.centerLeft,
-                  //       padding: EdgeInsets.only(left: -leftReservedSize),
-                  //       labelResolver: (value) {
-                  //         return '${value.y.toInt()} ${R.string.minute.tr()}';
-                  //       },
-                  //     ),
-                  //     // Adjusted to align with the chart's data range
-                  //     y: target ?? 0,
-                  //     color: R.color.color0xffDFE4E4,
-                  //     strokeWidth: 1,
-                  //     dashArray: [8, 2],
-                  //   ),
-                  // ]),
+                  extraLinesData:
+                      ExtraLinesData(extraLinesOnTop: true, horizontalLines: [
+                    HorizontalLine(
+                      label: HorizontalLineLabel(
+                        show: true,
+                        style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(left: -60),
+                        labelResolver: (value) {
+                          return '${target.toInt()} ${R.string.minute.tr()}';
+                        },
+                      ),
+                      // Adjusted to align with the chart's data range
+                      y: (() {
+                        final isSingle = trends.length == 1;
+                        final trend = trends[0];
+                        final isWeekly = trend.firstDateOfWeek != null;
+                        final isGreen = trend.targetColor == '#21A567';
+
+                        if (isSingle) {
+                          return isGreen ? target : (isWeekly ? avgY + 8.0 : 25.5);
+                        } else {
+                          return target;
+                        }
+                      })(),
+                      color: R.color.textDark,
+                      strokeWidth: 1,
+                      dashArray: [8, 4],
+                    ),
+                  ]),
                   lineTouchData: LineTouchData(
                     getTouchLineStart: (barData, index) => -double.infinity,
                     getTouchLineEnd: (barData, index) => double.infinity,
@@ -646,31 +658,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                   ),
                 ),
                 swapAnimationDuration: Duration(milliseconds: 250))),
-        // Dòng kẻ ngang để chỉ ra giá trị mục tiêu = avgY
-        Positioned(
-            left: 0,
-            right: 0,
-            bottom: avgY / chartHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('${target?.toInt()} ${R.string.minute.tr()}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                    )),
-                const SizedBox(width: 8), // Khoảng cách giữa nhãn và dòng kẻ
-                Expanded(
-                  child: DashLine(
-                    color: R.color.primaryGreyColor,
-                    dashWidth: 8.0,
-                    dashSpace: 4.0,
-                    height: 1.0,
-                  ),
-                ),
-              ],
-            ))
       ],
     );
   }
