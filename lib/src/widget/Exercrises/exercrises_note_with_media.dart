@@ -270,8 +270,8 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
               ),
             ),
             onPressed: () {
-              _openGallery(context);
               Navigator.pop(context);
+              _openGallery(context);
             },
           ),
           CupertinoActionSheetAction(
@@ -338,6 +338,7 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
         if (files.length < widget.maxMedia) {
+          await Future.delayed(Duration.zero);
           setState(() {
             files.add(pickedFile);
           });
