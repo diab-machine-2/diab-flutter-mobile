@@ -22,6 +22,7 @@ import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/get_vnpay_transaction_info_response.dart';
 import 'package:medical/src/model/response/search_list_clinic_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -752,6 +753,19 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     final result = await appRepository.updateVnpayTransactionInfo(
         appointmentId: appointmentId, txnRef: txnRef);
 
+    return result;
+  }
+
+  Future<GetVnpayTransactionInfoResponse?> getPaymentVnpayTransactionInfo(
+      {required String txnRef}) async {
+    GetVnpayTransactionInfoResponse? result;
+    ApiResult<GetVnpayTransactionInfoResponse> apiResult =
+        await appRepository.getPaymentVnpayTransactionInfo(txnRef: txnRef);
+    apiResult.when(success: (GetVnpayTransactionInfoResponse response) {
+      result = response;
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
     return result;
   }
 }

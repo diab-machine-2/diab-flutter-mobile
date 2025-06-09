@@ -29,6 +29,15 @@ class VNPayService {
 
   String tmnCode = '';
   String paymentUrl = '';
+  String? currentTxnRef; // Store current transaction reference
+  bool isProcessingAppToApp = false; // Flag to track app-to-app payment
+
+  // Enhanced deduplication tracking
+  bool hasProcessedFinalResult = false; // Flag to prevent duplicate processing
+  String? processedTxnRef; // Track which transaction was already processed
+  int? createdAppointmentId; // Store the created appointment ID
+  DateTime? lastProcessedTime; // Track when last processed
+  static const int duplicateThresholdSeconds = 10; // Time window for duplicates
 
   Map<String, bool> isProcessing = {
     'recheckInfo': false,
@@ -45,6 +54,9 @@ class VNPayService {
   });
 
   Future<bool> initializePayment() async {
+    // Reset all states for new payment
+    _resetPaymentStates();
+
     final ipAddress = await _getPublicIpAddress();
     final accountId = AppSettings.userInfo?.accountId ?? '';
 
@@ -83,6 +95,8 @@ class VNPayService {
 
     var uuid = Uuid();
     var txnRef = uuid.v4();
+    currentTxnRef = txnRef; // Store the transaction reference
+
     var orderInfo =
         'Payment for booking $bookingType $serviceType - Account: $accountId';
     paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
@@ -115,6 +129,74 @@ class VNPayService {
       log('[VNPAY] saveVnpayTransactionInfo failed');
     }
     return true;
+  }
+
+  // Reset all payment states
+  void _resetPaymentStates() {
+    hasProcessedFinalResult = false;
+    processedTxnRef = null;
+    createdAppointmentId = null;
+    isProcessingAppToApp = false;
+    lastProcessedTime = null;
+    currentTxnRef = null;
+  }
+
+  bool _isDuplicateProcessing(String? txnRef, String responseCode,
+      {bool isAppToAppReturn = false}) {
+    final now = DateTime.now();
+
+    // If no transaction reference, can't determine if duplicate
+    if (txnRef == null || txnRef.isEmpty) {
+      return false;
+    }
+
+    // If we've already processed a successful result for this transaction
+    if (hasProcessedFinalResult &&
+        processedTxnRef == txnRef &&
+        responseCode == '00') {
+      print(
+          '[VNPAY] Duplicate detected: Already processed successful result for txnRef: $txnRef');
+      return true;
+    }
+
+    // If we processed the same transaction recently (within threshold)
+    if (processedTxnRef == txnRef &&
+        lastProcessedTime != null &&
+        now.difference(lastProcessedTime!).inSeconds <
+            duplicateThresholdSeconds &&
+        responseCode == '00') {
+      print(
+          '[VNPAY] Duplicate detected: Same transaction processed recently for txnRef: $txnRef');
+      return true;
+    }
+
+    // Don't treat app-to-app returns as duplicates - they should be processed
+    if (isAppToAppReturn) {
+      return false;
+    }
+
+    // Only consider it duplicate if we're in app-to-app mode AND this is a return URL callback with parameters
+    if (isProcessingAppToApp &&
+        txnRef == currentTxnRef &&
+        responseCode == '00') {
+      print(
+          '[VNPAY] Duplicate detected: Return URL callback during app-to-app processing for txnRef: $txnRef');
+      return true;
+    }
+
+    return false;
+  }
+
+  // Mark transaction as processed
+  void _markTransactionProcessed(String txnRef, {int? appointmentId}) {
+    hasProcessedFinalResult = true;
+    processedTxnRef = txnRef;
+    lastProcessedTime = DateTime.now();
+    if (appointmentId != null) {
+      createdAppointmentId = appointmentId;
+    }
+    isProcessingAppToApp = false;
+    print('[VNPAY] Transaction marked as processed: $txnRef');
   }
 
   Future<String> _getPublicIpAddress() async {
@@ -156,42 +238,67 @@ class VNPayService {
 
   Future<dynamic> _handlePaymentResult(MethodCall call) async {
     print(
-        "[VNPAY] handlePyamentResult callback: ${DateTime.now().millisecondsSinceEpoch}");
+        "[VNPAY] handlePaymentResult callback: ${DateTime.now().millisecondsSinceEpoch}");
     if (call.method == 'PaymentBack') {
       try {
         final String action = call.arguments['action'] ?? '';
         final int resultCode = call.arguments['resultCode'] ?? -1;
         final String responseCode = call.arguments['vnp_ResponseCode'] ?? '';
+        final String txnRef = call.arguments['vnp_TxnRef'] ?? '';
 
         print(
-            "[VNPAY] Payment result: action=$action, resultCode=$resultCode, responseCode=$responseCode");
+            "[VNPAY] Payment result: action=$action, resultCode=$resultCode, responseCode=$responseCode, txnRef=$txnRef");
 
-        if (responseCode.isEmpty) return;
-
-        // Extract transaction details if available
         Map<String, dynamic> transactionDetails = {};
 
-        // Copy all vnp_ prefixed parameters to transaction details
         call.arguments.forEach((key, value) {
           if (key.toString().startsWith('vnp_')) {
             transactionDetails[key] = value;
           }
         });
 
+        // Check for duplicate processing FIRST, but be more specific about when to ignore
+        if (responseCode == '00' && txnRef.isNotEmpty) {
+          // Only ignore if we've already fully processed this transaction
+          if (hasProcessedFinalResult && processedTxnRef == txnRef) {
+            print(
+                "[VNPAY] Ignoring duplicate: transaction already fully processed");
+            return;
+          }
+
+          // If this is a return URL callback during app-to-app processing, check if we should ignore it
+          if (isProcessingAppToApp && txnRef == currentTxnRef) {
+            print(
+                "[VNPAY] Return URL callback during app-to-app processing - this will be the actual processor");
+            // Reset app-to-app flag since return URL callback will handle it
+            isProcessingAppToApp = false;
+          }
+        }
+
+        // Check if this is app-to-app return without parameters
+        if (responseCode.isEmpty &&
+            isProcessingAppToApp &&
+            currentTxnRef != null) {
+          print("[VNPAY] App-to-app return detected, querying payment status");
+          await _handleAppToAppReturn();
+          return;
+        }
+
         if (resultCode == 0 || responseCode == '00') {
           // Payment successful
           await _handleCreateBookingClinic(params: {
             'vnp_ResponseCode': responseCode,
+            'vnp_TxnRef': txnRef,
             ...transactionDetails,
           });
         } else if (resultCode == 10) {
           // User selected mobile banking app, waiting for return
-          // Remove overlay as we're waiting for user to return from banking app
-          await _handleCreateBookingClinic(params: {
+          print("[VNPAY] App-to-app payment initiated");
+          isProcessingAppToApp = true;
+          await _handleCreateBookingAppToAppPayment(params: {
             'vnp_ResponseCode': responseCode,
             ...transactionDetails,
           });
-          // BotToast.closeAllLoading();
         } else if (resultCode == 24) {
           // Payment canceled
           await _handlePaymentFailed(params: {
@@ -216,8 +323,128 @@ class VNPayService {
     return null;
   }
 
+  // Handle app-to-app return by querying payment status from DB
+  Future<void> _handleAppToAppReturn() async {
+    try {
+      print("[VNPAY] Querying payment status for txnRef: $currentTxnRef");
+
+      // Check if already processed
+      if (hasProcessedFinalResult && processedTxnRef == currentTxnRef) {
+        print(
+            "[VNPAY] Transaction already processed, skipping app-to-app return");
+        return;
+      }
+
+      // Show loading
+      BotToast.showLoading();
+
+      // Waiting server to update payment info into DB from IPN URL
+      await Future.delayed(const Duration(seconds: 3));
+
+      print("[VNPAY] Starting API call to getPaymentVnpayTransactionInfo");
+
+      // Query payment status from your database using currentTxnRef
+      final paymentStatus =
+          await cubit.getPaymentVnpayTransactionInfo(txnRef: currentTxnRef!);
+
+      print('[VNPAY] API call completed');
+      log('[VNPAY] getPaymentVnpayTransactionInfo result: ${paymentStatus.toString()}');
+
+      if (paymentStatus != null) {
+        print('[VNPAY] Payment status found: ${paymentStatus.vnpResponseCode}');
+
+        // Payment status found in DB, process accordingly
+        if (paymentStatus.vnpResponseCode == '00') {
+          print("[VNPAY] Processing successful payment from app-to-app return");
+          // Payment successful - mark this as an app-to-app return processing
+          var params = paymentStatus.toJsonFormatted();
+          params['_isAppToAppReturn'] =
+              true; // Add flag to indicate this is from app-to-app return
+          await _handleCreateBookingClinic(params: params);
+        } else {
+          print("[VNPAY] Processing failed payment from app-to-app return");
+          // Payment failed
+          await _handlePaymentFailed(params: paymentStatus.toJsonFormatted());
+        }
+      } else {
+        print("[VNPAY] Payment status not found in database yet");
+        // Payment status not found yet, close loading and let the return URL callback handle it
+        BotToast.closeAllLoading();
+
+        // Wait a bit longer and try one more time
+        print("[VNPAY] Waiting additional time for payment status update");
+        await Future.delayed(const Duration(seconds: 2));
+
+        final retryPaymentStatus =
+            await cubit.getPaymentVnpayTransactionInfo(txnRef: currentTxnRef!);
+
+        if (retryPaymentStatus != null) {
+          print(
+              '[VNPAY] Payment status found on retry: ${retryPaymentStatus.vnpResponseCode}');
+
+          if (retryPaymentStatus.vnpResponseCode == '00') {
+            print(
+                "[VNPAY] Processing successful payment from app-to-app return (retry)");
+            // Show loading again for processing
+            BotToast.showLoading();
+            var params = retryPaymentStatus.toJsonFormatted();
+            params['_isAppToAppReturn'] =
+                true; // Add flag to indicate this is from app-to-app return
+            await _handleCreateBookingClinic(params: params);
+          } else {
+            print(
+                "[VNPAY] Processing failed payment from app-to-app return (retry)");
+            await _handlePaymentFailed(
+                params: retryPaymentStatus.toJsonFormatted());
+          }
+        } else {
+          print(
+              "[VNPAY] Payment status still not found, will rely on return URL callback");
+          // Keep app-to-app processing flag true so return URL callback can handle it
+          return;
+        }
+      }
+    } catch (e) {
+      print("[VNPAY] Error querying payment status: $e");
+      print("[VNPAY] Exception details: ${e.toString()}");
+      BotToast.closeAllLoading();
+
+      // Don't fail immediately, let the return URL callback handle it
+      print("[VNPAY] Will rely on return URL callback due to query error");
+      return;
+    } finally {
+      // Only reset app-to-app processing state if we successfully processed or failed
+      // If we're relying on return URL callback, keep the flag
+      print("[VNPAY] App-to-app return handling completed");
+    }
+  }
+
   Future<void> _handleCreateBookingClinic(
       {required Map<String, dynamic> params}) async {
+    String txnRef = params['vnp_TxnRef'] ?? '';
+    String responseCode = params['vnp_ResponseCode'] ?? '';
+    bool isFromAppToAppReturn = params['_isAppToAppReturn'] == true;
+
+    print(
+        "[VNPAY] _handleCreateBookingClinic called - txnRef: $txnRef, responseCode: $responseCode, isFromAppToAppReturn: $isFromAppToAppReturn");
+
+    // Final check for duplicate processing before creating booking
+    // Skip duplicate check if this is from app-to-app return
+    if (!isFromAppToAppReturn &&
+        _isDuplicateProcessing(txnRef, responseCode, isAppToAppReturn: false)) {
+      print(
+          "[VNPAY] Booking creation skipped due to duplicate processing for txnRef: $txnRef");
+      return;
+    }
+
+    // If we already have an appointment created for this transaction, reuse it
+    if (createdAppointmentId != null && processedTxnRef == txnRef) {
+      print(
+          "[VNPAY] Reusing existing appointment: $createdAppointmentId for txnRef: $txnRef");
+      _showExistingSuccessDialog(createdAppointmentId!);
+      return;
+    }
+
     DsmesAppointment? resp;
 
     String paymentMethod = params['vnp_CardType'] ?? '';
@@ -235,7 +462,13 @@ class VNPayService {
 
     resp = await cubit.createDsmesBookingOnline();
 
-    if (resp == null) return;
+    if (resp == null) {
+      print("[VNPAY] Failed to create booking");
+      return;
+    }
+
+    // Mark as processed immediately after successful booking creation
+    _markTransactionProcessed(txnRef, appointmentId: resp.id);
 
     final result = await cubit.updateVnpayTransactionInfo(
         appointmentId: resp.id, txnRef: params['vnp_TxnRef']);
@@ -278,6 +511,24 @@ class VNPayService {
     );
   }
 
+  // Show success dialog for already created appointment
+  void _showExistingSuccessDialog(int appointmentId) {
+    // Close any loading indicators
+    BotToast.closeAllLoading();
+
+    // Navigate directly to booking detail without showing dialog again
+    print("[VNPAY] Navigating to existing appointment: $appointmentId");
+    _navigateToBookingDetail(appointmentId);
+  }
+
+  Future<void> _handleCreateBookingAppToAppPayment(
+      {required Map<String, dynamic> params}) async {
+    // For app-to-app payment, we just wait for the return
+    // The actual booking creation will happen in _handleAppToAppReturn
+    print("[VNPAY] App-to-app payment initiated, waiting for return");
+    BotToast.closeAllLoading();
+  }
+
   Future<void> _handlePaymentFailed(
       {required Map<String, dynamic> params}) async {
     log("[VNPAY] _handlePaymentFailed: $params");
@@ -295,6 +546,9 @@ class VNPayService {
       title: Utils.formatMoney(totalPrice) ?? '',
       subtitle: errorMessage,
     );
+
+    // Reset states for failed payments
+    _resetPaymentStates();
   }
 
   void _showSuccessDialog({
@@ -649,6 +903,9 @@ class VNPayService {
     // Reset method handler
     platform.setMethodCallHandler(null);
 
+    // Reset all states
+    _resetPaymentStates();
+
     // Reinitialize payment
     bool initialized = await initializePayment();
     if (initialized) {
@@ -659,5 +916,6 @@ class VNPayService {
   // Make sure to call this method when done with the payment service
   void dispose() {
     platform.setMethodCallHandler(null);
+    _resetPaymentStates();
   }
 }

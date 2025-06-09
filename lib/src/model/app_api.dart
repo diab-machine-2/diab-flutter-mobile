@@ -16,6 +16,7 @@ import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
+import 'package:medical/src/model/response/get_vnpay_transaction_info_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
@@ -465,4 +466,8 @@ abstract class AppApi {
   //GET {{url}}/app/chat/conversations/me
   @GET('/App/Chat/conversations/me')
   Future<ConversationListResponse> getMyConversation();
+
+  @GET("App/PaymentMethodVnpay")
+  Future<GetVnpayTransactionInfoResponse> getPaymentVnpayTransactionInfo(
+      {@Query('refCode') String? txnRef});
 }

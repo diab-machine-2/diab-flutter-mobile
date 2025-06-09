@@ -58,6 +58,7 @@ import 'package:medical/src/model/response/get_diab_clinics_schedule_response.da
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
+import 'package:medical/src/model/response/get_vnpay_transaction_info_response.dart';
 import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
@@ -1243,6 +1244,17 @@ class AppRepository {
       return false;
     } catch (e) {
       throw e is Error ? e : "Cập nhật thông tin thanh toán không thành công";
+    }
+  }
+
+  Future<ApiResult<GetVnpayTransactionInfoResponse>>
+      getPaymentVnpayTransactionInfo({required String txnRef}) async {
+    try {
+      final response =
+          await appClient.getPaymentVnpayTransactionInfo(txnRef: txnRef);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 }
