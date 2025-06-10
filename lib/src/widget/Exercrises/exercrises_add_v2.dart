@@ -210,8 +210,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Color(0xFF0DAB9C),
-                        Color(0xFF01847A),
+                    Color(0xFF0DAB9C),
+                    Color(0xFF01847A),
                   ])),
             ),
           ),
@@ -508,7 +508,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
   calculatorCalo() async {
     // Only proceed if we have all required values
-    if (!_shouldCalculateCalo()) {
+    if (_shouldCalculateCalo()) {
       return;
     }
 
@@ -727,6 +727,10 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   }
 
   _submitData() async {
+    if (selectedCategory == null) {
+      Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
+      return;
+    }
     if (_formKey.currentState?.validate() ?? false) {
       try {
         // Hiển thị loading

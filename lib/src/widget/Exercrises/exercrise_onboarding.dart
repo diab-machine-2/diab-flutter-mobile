@@ -24,7 +24,9 @@ import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../app_setting/firebase_tracking/activity_list_tracking.dart';
+import '../../repo/exercrises/exercrises_client.dart';
 import '../../utils/navigation_util.dart';
+import '../BloodSugar/bloodSugar_table_distribution.dart';
 import '../helper/tracking_manager.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 
@@ -46,12 +48,25 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
     WidgetsBinding.instance.addObserver(this);
     firebaseSetup();
     subpabaseInit();
+    checkExerciseListEmpty();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  Future<void> checkExerciseListEmpty() async {
+    try {
+      var model = await ExercrisesClient()
+          .fetchInput(null, periodFilterType.toString(), 1);
+      if (model.inputs.isEmpty) {
+        AppSettings.clearLastOpenedExerciseInputType();
+      }
+    } catch (e) {
+      AppSettings.clearLastOpenedExerciseInputType();
+    }
   }
 
   Future subpabaseInit() async {
@@ -147,8 +162,8 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Color(0xFF0DAB9C),
-                        Color(0xFF01847A),
+                    Color(0xFF0DAB9C),
+                    Color(0xFF01847A),
                   ])),
             ),
           ),
