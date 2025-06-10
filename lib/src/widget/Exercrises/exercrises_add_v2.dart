@@ -752,14 +752,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           paths.add(file.path);
         }
 
-        Navigator.pushNamed(context, NavigatorName.exercrise_result,
-            arguments: {
-              'date': selectedDate,
-              'periodFilterType': 1,
-            });
-
         // Use repository to handle both API call and file upload
-
         final result = await ExercrisesClient().postIndexExercrises(
             ((selectedDate?.millisecondsSinceEpoch ?? 0) ~/ 1000).toInt(),
             null,
@@ -774,6 +767,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
               context, R.string.add_exercise_successfully.tr());
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data_v2");
+          if (widget.isOnlyOne == true) {
+            AppSettings.clearLastOpenedExerciseInputType();
+          }
           Navigator.pushNamed(context, NavigatorName.exercrise_result,
               arguments: {
                 'date': selectedDate,
