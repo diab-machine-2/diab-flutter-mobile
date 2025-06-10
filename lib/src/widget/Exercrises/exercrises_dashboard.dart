@@ -154,6 +154,23 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
                 ),
               ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                      context, NavigatorName.exercrise_guide);
+                },
+                child: Text(
+                  R.string.exercrise_step_onboarding_action_btn.tr(),
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'sfpro',
+                  ),
+                ),
+              ),
+            ],
             backgroundColor: R.color.transparent, //No more green
             elevation: 0.0, //Shadow gone
             flexibleSpace: Container(
