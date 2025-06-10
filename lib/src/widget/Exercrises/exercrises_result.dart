@@ -468,21 +468,34 @@ class _ExercisesResultState extends State<ExercisesResult>
           // Progress Bar for Calories
           Container(
             height: 12.h,
-            width: double.infinity,
+            width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               color: R.color.textDark.withOpacity(0.1),
               borderRadius: BorderRadius.circular(6.r),
             ),
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor:
-                  targetCalories > 0 ? completedCalories / targetCalories : 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: R.color.yellow,
-                  borderRadius: BorderRadius.circular(6.r),
+            child: Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: R.color.textDark.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6.r),
+                  ),
                 ),
-              ),
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      width: (MediaQuery.of(context).size.width) *
+                          (targetCalories > 0 ? completedCalories / targetCalories : 0),
+                      decoration: BoxDecoration(
+                        color: R.color.yellow,
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
