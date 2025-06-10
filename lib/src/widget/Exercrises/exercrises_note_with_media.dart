@@ -101,39 +101,42 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                 ),
               ),
               Container(
-                  width: double.infinity,
-                  child: TextFormField(
-                    // initialValue: widget.note ?? '',
-                    controller: _controllerNote,
-                    maxLines: 5,
-                    minLines: 1,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.done,
-                    //count number character of text
-                    maxLength: 250,
-                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    onChanged: (value) => widget.onChangedNote(value),
-                    //set only one line border at the bottom
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.only(
-                        right: 8,
-                        top: 8,
-                        bottom: 8,
-                      ),
-                      hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
-                      hintStyle: TextStyle(
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    TextFormField(
+                      controller: _controllerNote,
+                      maxLines: 5,
+                      minLines: 1,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.done,
+                      maxLength: 250,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                      onChanged: (value) => widget.onChangedNote(value),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.only(
+                          right: 48, // chừa khoảng cho icon
+                          top: 8,
+                          bottom: 8,
+                        ),
+                        hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+                        hintStyle: TextStyle(
                           fontSize: 16,
                           color: R.color.primaryGreyColor,
-                          fontWeight: FontWeight.normal),
-                      // set border bottom only
-                      border: UnderlineInputBorder(
-                          borderSide: BorderSide.lerp(
-                              BorderSide(
-                                  color: R.color.primaryGreyColor, width: 1),
-                              BorderSide(
-                                  color: R.color.primaryGreyColor, width: 1),
-                              0.5)),
-                      suffixIcon: InkWell(
+                          fontWeight: FontWeight.normal,
+                        ),
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: R.color.primaryGreyColor,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: InkWell(
                         child: Image.asset(
                           files.length == 5
                               ? R.drawable.exercise_upload_images_disable
@@ -142,12 +145,13 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                           height: 24,
                         ),
                         onTap: () {
-                          // Clear the text field
                           showActionSheet(context);
                         },
                       ),
                     ),
-                  )),
+                  ],
+                ),
+              ),
               const SizedBox(height: 10),
               files.isEmpty
                   ? Container()
