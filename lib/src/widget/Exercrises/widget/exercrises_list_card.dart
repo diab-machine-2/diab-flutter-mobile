@@ -76,7 +76,7 @@ class ExercrisesListCard extends StatelessWidget {
           print('isNotSyncFromHealth: $isNotSyncFromHealth');
           if (isNotSyncFromHealth) {
             KpiMotionTracking.clickKpiItem();
-            Navigator.pushNamed(context, NavigatorName.add_exercrises,
+            Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
                 arguments: {'type': 'update', 'id': itemInput.id});
           }
         },

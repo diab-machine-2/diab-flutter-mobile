@@ -716,7 +716,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:
-        await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+        await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;

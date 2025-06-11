@@ -382,7 +382,7 @@ void showPopupWeight({String? nextRoute, dynamic args}) {
                 .updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
             Navigator.pushNamed(navigatorKey.currentContext!,
-                nextRoute ?? NavigatorName.add_exercrises,
+                nextRoute ?? NavigatorName.exercrise_add_v2,
                 arguments: args ?? {'type': 'input'});
             BotToast.closeAllLoading();
           } catch (e, _) {

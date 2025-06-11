@@ -1022,7 +1022,7 @@ class _HomeControllerState extends State<HomeController>
 
   // return allow next route
   bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
-    if (routeName == NavigatorName.add_exercrises) {
+    if (routeName == NavigatorName.exercrise_add_v2) {
       if (AppSettings.userInfo?.weight == null ||
           AppSettings.userInfo!.weight == 0) {
         showPopupWeight(nextRoute: routeName, args: args);
@@ -1132,7 +1132,7 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.exercise:
       case ScheduleType.exercise_recommend:
-        await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+        await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         break;
       case ScheduleType.exercise_movement:
