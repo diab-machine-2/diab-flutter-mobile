@@ -132,8 +132,8 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                     color: R.color.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
-                    fontFamily: 'sfpro',
+                    letterSpacing: 20 * 0.002,
+                    fontFamily: 'SFPro',
                   ),
                 ),
               ),
@@ -149,7 +149,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                     color: R.color.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
-                    fontFamily: 'sfpro',
+                    fontFamily: 'SFPro',
                   ),
                 ),
               ),
@@ -244,7 +244,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'sfpro',
+                  fontFamily: 'SFPro',
                   color: R.color.black)),
           const SizedBox(height: 8.0),
           Text(
@@ -252,7 +252,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  fontFamily: 'sfpro',
+                  fontFamily: 'SFPro',
                   color: R.color.color0xff636A6B)),
           const SizedBox(height: 16.0),
           // Button
@@ -273,7 +273,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
-            fontFamily: 'sfpro',
+            fontFamily: 'SFPro',
             color: R.color.black,
           ),
         ),
@@ -335,7 +335,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  fontFamily: 'sfpro',
+                  fontFamily: 'SFPro',
                   color: R.color.black,
                 ),
               ),
@@ -405,14 +405,14 @@ showActivityInputMethodSelection() async {
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    fontFamily: 'sfpro',
+                    fontFamily: 'SFPro',
                     color: R.color.textDark),
               ),
               subtitle: Text(subTitle,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      fontFamily: 'sfpro',
+                      fontFamily: 'SFPro',
                       color: R.color.primaryGreyColor)),
               trailing: Icon(Icons.arrow_forward_ios,
                   color: R.color.primaryGreyColor),

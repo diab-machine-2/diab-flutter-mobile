@@ -108,8 +108,8 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                   color: R.color.white,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
-                  fontFamily: 'sfpro',
+                  letterSpacing: 20 * 0.002,
+                  fontFamily: 'SFPro',
                 ),
               ),
             ),
@@ -157,7 +157,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              fontFamily: 'sfpro',
+              fontFamily: 'SFPro',
               color: R.color.black,
             ),
           ),
@@ -220,7 +220,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  fontFamily: 'sfpro',
+                  fontFamily: 'SFPro',
                   color: R.color.black,
                 ),
               ),
@@ -248,7 +248,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 18,
-              fontFamily: 'sfpro',
+              fontFamily: 'SFPro',
               fontWeight: FontWeight.w900,
             ),
           ),

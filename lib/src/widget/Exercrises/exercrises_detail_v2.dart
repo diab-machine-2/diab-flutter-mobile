@@ -145,8 +145,8 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                     color: R.color.white,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
-                    fontFamily: 'sfpro',
+                    letterSpacing: 20 * 0.002,
+                    fontFamily: 'SFPro',
                   ),
                 ),
               ),
@@ -174,7 +174,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                     color: R.color.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
-                    fontFamily: 'sfpro',
+                    fontFamily: 'SFPro',
                   ),
                 ),
               ),
@@ -302,7 +302,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 20,
-                                              fontFamily: 'sfpro',
+                                              fontFamily: 'SFPro',
                                               fontWeight: FontWeight.w700)),
                                       SizedBox(height: 16),
                                       ...item.exerciseInput.expand((input) {
@@ -395,7 +395,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                           style: TextStyle(
                             color: R.color.textDark,
                             fontSize: 18,
-                            fontFamily: 'sfpro',
+                            fontFamily: 'SFPro',
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -410,7 +410,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                         style: TextStyle(
                           color: R.color.primaryGreyColor,
                           fontSize: 14,
-                          fontFamily: 'sfpro',
+                          fontFamily: 'SFPro',
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -423,7 +423,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                   style: TextStyle(
                     color: R.color.greenGradientBottom,
                     fontSize: 18,
-                    fontFamily: 'sfpro',
+                    fontFamily: 'SFPro',
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -433,7 +433,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                   style: TextStyle(
                     color: R.color.primaryGreyColor,
                     fontSize: 14,
-                    fontFamily: 'sfpro',
+                    fontFamily: 'SFPro',
                     fontWeight: FontWeight.w600,
                   ),
                 ),
