@@ -1291,4 +1291,5 @@ class Strings {
   String get minute_upperCase_first_character => 'minute_upperCase_first_character';
   String get chat_with_AI => 'chat_with_AI';
   String get roadmap_for_beginners => 'roadmap_for_beginners';
+  String get invalid_duration_exercise => 'invalid_duration_exercise';
 }

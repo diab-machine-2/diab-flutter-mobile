@@ -727,6 +727,10 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   }
 
   _submitData() async {
+    if (_controllerDuration.text == "0") {
+      Message.showToastMessage(context, R.string.invalid_duration_exercise.tr());
+      return;
+    }
     if (selectedCategory == null) {
       Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
       return;
