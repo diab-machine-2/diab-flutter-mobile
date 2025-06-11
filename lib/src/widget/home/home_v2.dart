@@ -122,9 +122,9 @@ class _HomeControllerState extends State<HomeController>
 
   void _initHealthApp() async {
     await AppSettings.setIsSyncing(false);
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
-    final String? activityId = DynamicLinkConfig.instance.activityId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
     // _checkShowRating();
 
     Future.delayed(Duration.zero, () async {

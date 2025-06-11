@@ -9,7 +9,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -133,14 +132,14 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   void _checkExistActivityId() async {
-    final String? activityId = DynamicLinkConfig.instance.activityId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
     if (activityId != null) {
       SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
       await Future.delayed(Duration(milliseconds: 500));
       NavigationUtil.navigatePage(navigatorKey.currentState!.context,
           IntroduceSurveyPage(survey: smartGoal));
       Future.delayed(Duration(seconds: 1), () {
-        DynamicLinkConfig.instance.removeActivityId();
+        BranchioLinkConfig.instance.removeActivityId();
       });
     }
   }
