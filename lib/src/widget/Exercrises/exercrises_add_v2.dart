@@ -29,6 +29,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 
 import '../../modal/exercrises/exercrise_Input_detail_model.dart';
 import '../../modal/glucose/glucose_timeFrame.dart';
+import '../../utils/app_storages.dart';
 import 'widget/date_multi_picker.dart';
 
 class ExercrisesAddV2 extends StatefulWidget {
@@ -63,18 +64,32 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   ExerciseIntensity? intensity;
   InputDetailExercriseModel? model;
   TimeFrameModel? selectedTimeFrame;
+  bool isConnectHealthApp = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     selectedDate = DateTime.now();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkConnectHealthApp();
+    });
     // selectedCategory = [];
     if (widget.isUpdate == true) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         loadDetail();
       });
     }
+  }
+
+  Future<void> checkConnectHealthApp() async {
+    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    if (hasHealthConnection == true) {
+      isConnectHealthApp = true;
+    } else {
+      isConnectHealthApp = false;
+    }
+    setState(() {});
   }
 
   bool _shouldCalculateCalo() {
@@ -125,6 +140,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'active_change_data_v2') {
+      checkConnectHealthApp();
       // overViewKey.currentState!.reloadData(periodFilterType);
     }
   }
@@ -465,8 +481,10 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           ),
           const SizedBox(height: 16),
           // add divider vertical with label 'hello' in the middle
+          if(!isConnectHealthApp)
           Container(
               width: MediaQuery.of(context).size.width / 2,
+              margin: EdgeInsets.only(bottom: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -492,11 +510,12 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                   ),
                 ],
               )),
-          const SizedBox(height: 16),
           // add button to connect to health app / apple health
+          if(!isConnectHealthApp)
           HealthConnectButton(
             margin: const EdgeInsets.all(0),
             callback: () {
+              checkConnectHealthApp();
               print('HealthConnectButton pressed');
             },
           ),

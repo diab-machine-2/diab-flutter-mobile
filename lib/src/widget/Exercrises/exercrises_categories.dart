@@ -515,11 +515,11 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                          SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 4,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 0.75,
+                            childAspectRatio: 0.75.r,
                           ),
                           itemCount: data.length,
                           itemBuilder: (context, index) {
