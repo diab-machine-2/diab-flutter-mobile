@@ -22,12 +22,28 @@ class ExercisesGuide extends StatefulWidget {
 class _ExercisesGuideState extends State<ExercisesGuide> {
   TextEditingController dailyTargetDuration = TextEditingController();
   TextEditingController dailyTargetBurnedCalorie = TextEditingController();
+  FocusNode durationFocus = FocusNode();
+  FocusNode burnedCalorieFocus = FocusNode();
   GoalInfoModel? model;
 
   @override
   void initState() {
     super.initState();
     loadData();
+    durationFocus.addListener(_onFocusChangeDuration);
+    burnedCalorieFocus.addListener(_onFocusChange);
+  }
+
+  void _onFocusChangeDuration() {
+    if (!durationFocus.hasFocus) {
+      submitData(true, dailyTargetDuration.text);
+    }
+  }
+
+  void _onFocusChange() {
+    if (!burnedCalorieFocus.hasFocus) {
+      submitData(false, dailyTargetBurnedCalorie.text);
+    }
   }
 
   loadData() async {
@@ -244,6 +260,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
               debugPrint('new target Duration $newTargetDuration');
               submitData(true, newTargetDuration);
             },
+            durationFocus,
             3,
           ),
           buildItem(
@@ -254,6 +271,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
               debugPrint('new target Burned $newTargetBurnedCalorie');
               submitData(false, newTargetBurnedCalorie);
             },
+            burnedCalorieFocus,
             4,
           ),
           SizedBox(height: 24.h),
@@ -267,6 +285,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
     String unit,
     TextEditingController controller,
     Function(String)? onSubmitted,
+    FocusNode focusNode,
     int maxLength,
   ) {
     return Padding(
@@ -294,6 +313,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                         height: 42.h,
                         child: CupertinoTextField(
                             controller: controller,
+                            focusNode: focusNode,
                             decoration:
                                 BoxDecoration(color: R.color.transparent),
                             maxLength: maxLength,

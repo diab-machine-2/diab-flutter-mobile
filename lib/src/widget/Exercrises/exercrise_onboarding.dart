@@ -48,7 +48,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
     WidgetsBinding.instance.addObserver(this);
     firebaseSetup();
     subpabaseInit();
-    checkExerciseListEmpty();
+    // checkExerciseListEmpty();
   }
 
   @override

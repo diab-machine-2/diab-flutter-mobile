@@ -508,7 +508,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
   calculatorCalo() async {
     // Only proceed if we have all required values
-    if (_shouldCalculateCalo()) {
+    if (!_shouldCalculateCalo()) {
       return;
     }
 
