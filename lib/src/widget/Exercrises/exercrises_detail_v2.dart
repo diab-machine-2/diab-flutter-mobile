@@ -364,6 +364,8 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
     ListExercriseModel exercise,
     String exerciseInputId,
   ) {
+    bool isItemFromHealthApp =
+        exercise.category?.contains('(health app)') ?? false;
     return InkWell(
         onTap: () {
           Navigator.pushNamed(
@@ -407,56 +409,164 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                       ),
                     ),
                     SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        exercise.category ?? '',
+                    (isItemFromHealthApp)
+                        ? _itemCategoryWithCalorieFromHealthConnect(
+                            category: exercise.category
+                                    ?.replaceAll(RegExp(r'\s*\(.*?\)'), '') ??
+                                '',
+                            burnedCalorie: exercise.burnedCalorie ?? 0.0,
+                          )
+                        : Flexible(
+                            child: Text(
+                              exercise.category ?? '',
+                              style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                fontFamily: 'SFPro',
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                    if (!isItemFromHealthApp)
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Icon(Icons.fiber_manual_record,
+                            size: 10, color: R.color.primaryGreyColor),
+                      ),
+                    if (!isItemFromHealthApp)
+                      Text(
+                        '${formatNumber(exercise.burnedCalorie)} ${R.string.kcal.tr()}',
                         style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 18,
+                          color: R.color.primaryGreyColor,
+                          fontSize: 13,
                           fontFamily: 'SFPro',
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: Icon(Icons.fiber_manual_record,
-                          size: 10, color: R.color.primaryGreyColor),
-                    ),
-                    Text(
-                      '${formatNumber(exercise.burnedCalorie)} ${R.string.kcal.tr()}',
-                      style: TextStyle(
-                        color: R.color.primaryGreyColor,
-                        fontSize: 14,
-                        fontFamily: 'SFPro',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
                   ],
                 ),
               ),
               SizedBox(width: 8),
-              Text(
-                formatNumber(exercise.duration),
-                style: TextStyle(
-                  color: R.color.greenGradientBottom,
-                  fontSize: 18,
-                  fontFamily: 'SFPro',
-                  fontWeight: FontWeight.w900,
+              isItemFromHealthApp
+                  ? _itemDurationWithStepsFromHealthConnect(
+                      duration: exercise.duration ?? 0.0,
+                      steps: exercise.value?.toDouble() ?? 0.0,
+                    )
+                  : Text(
+                      formatNumber(exercise.duration),
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 18,
+                        fontFamily: 'SFPro',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+              if (!isItemFromHealthApp)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text(
+                    isItemFromHealthApp
+                        ? R.string.minute.tr()
+                        : R.string.minute_upper_case_first.tr(),
+                    style: TextStyle(
+                      color: R.color.primaryGreyColor,
+                      fontSize: 12,
+                      fontFamily: 'SFPro',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(width: 8),
-              Text(
-                R.string.minute.tr(),
-                style: TextStyle(
-                  color: R.color.primaryGreyColor,
-                  fontSize: 14,
-                  fontFamily: 'SFPro',
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
             ],
           ),
         ));
+  }
+
+  Widget _itemCategoryWithCalorieFromHealthConnect(
+      {required String category, required double burnedCalorie}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: RichText(
+              text: TextSpan(children: [
+            TextSpan(
+              text: category,
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontFamily: 'SFPro',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            TextSpan(
+              text: ' (Health app)',
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 12,
+                fontFamily: 'SFPro',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ])),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          '${formatNumber(burnedCalorie)} ${R.string.kcal.tr()}',
+          style: TextStyle(
+            color: R.color.primaryGreyColor,
+            fontSize: 13,
+            fontFamily: 'SFPro',
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _itemDurationWithStepsFromHealthConnect(
+      {required double duration, required double steps}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+          child: RichText(
+              text: TextSpan(children: [
+            TextSpan(
+              text: formatNumber(duration),
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontSize: 18,
+                fontFamily: 'SFPro',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            WidgetSpan(
+              child: SizedBox(width: 8),
+            ),
+            TextSpan(
+              text: R.string.minute.tr(),
+              style: TextStyle(
+                color: R.color.primaryGreyColor,
+                fontSize: 12,
+                fontFamily: 'SFPro',
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ])),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          '${formatNumber(steps)}  ${R.string.steps.tr()}',
+          style: TextStyle(
+            color: R.color.primaryGreyColor,
+            fontSize: 13,
+            fontFamily: 'SFPro',
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
   }
 }

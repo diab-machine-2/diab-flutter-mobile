@@ -1292,4 +1292,5 @@ class Strings {
   String get chat_with_AI => 'chat_with_AI';
   String get roadmap_for_beginners => 'roadmap_for_beginners';
   String get invalid_duration_exercise => 'invalid_duration_exercise';
+  String get steps => 'steps';
 }
