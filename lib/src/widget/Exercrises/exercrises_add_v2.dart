@@ -65,6 +65,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   TimeFrameModel? selectedTimeFrame;
   bool isConnectHealthApp = false;
   bool hasExerciseData = false;
+  final ValueNotifier<bool> hasErrorNotifier = ValueNotifier(false);
 
   @override
   void initState() {
@@ -379,78 +380,125 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                 Form(
                   key: _formKey,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    controller: _controllerDuration,
-                    textAlign: TextAlign.center,
-                    cursorColor: _controllerDuration.text.isNotEmpty
-                        ? R.color.greenGradientBottom
-                        : R.color.color0xff636A6B,
-                    cursorHeight: 36,
-                    cursorWidth: 3,
-                    autofocus: true,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(3),
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    style: TextStyle(
-                      fontSize: 48,
-                      color: R.color.textDark,
-                      fontWeight: FontWeight.w700,
-                      height: 0.95,
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
-                      hintText: '00',
-                      hintStyle: TextStyle(
-                        fontSize: 48,
-                        color: R.color.color0xff636A6B,
-                        fontWeight: FontWeight.w700,
-                        height: 0.95,
-                      ),
-                      // set border bottom only
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide.lerp(
-                          BorderSide(color: R.color.primaryGreyColor, width: 1),
-                          BorderSide(color: R.color.primaryGreyColor, width: 1),
-                          0.5,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        keyboardType: TextInputType.number,
+                        controller: _controllerDuration,
+                        textAlign: TextAlign.right,
+                        cursorColor: _controllerDuration.text.isNotEmpty
+                            ? R.color.greenGradientBottom
+                            : R.color.color0xff636A6B,
+                        cursorHeight: 36,
+                        cursorWidth: 3,
+                        autofocus: true,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(3),
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        style: TextStyle(
+                          fontSize: 48,
+                          color: R.color.textDark,
+                          fontWeight: FontWeight.w700,
+                          height: 0.95,
                         ),
-                      ),
-                      suffixIcon: Padding(
-                        padding: const EdgeInsets.only(top: 22),
-                        child: Text(
-                          R.string.minute_upper_case_first.tr(),
-                          style: TextStyle(
-                            fontSize: 15,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
+                          hintText: '00',
+                          hintStyle: TextStyle(
+                            fontSize: 48,
                             color: R.color.color0xff636A6B,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w700,
+                            height: 0.95,
+                          ),
+                          // set border bottom only
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide.lerp(
+                              BorderSide(
+                                  color: R.color.primaryGreyColor, width: 1),
+                              BorderSide(
+                                  color: R.color.primaryGreyColor, width: 1),
+                              0.5,
+                            ),
+                          ),
+                          errorText: null,
+                          errorStyle: TextStyle(height: 0),
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(
+                              top: 22,
+                              right: 95.w,
+                              left: 10.w,
+                            ),
+                            child: Text(
+                              R.string.minute_upper_case_first.tr(),
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: R.color.color0xff636A6B,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                           ),
                         ),
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            hasErrorNotifier.value = false;
+                            _controllerDuration.text = value;
+                            _controllerDuration.selection =
+                                TextSelection.fromPosition(TextPosition(
+                                    offset: _controllerDuration.text.length));
+                          }
+                          setState(() {});
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            hasErrorNotifier.value = true;
+                            return '';
+                          }
+
+                          ///check if value is number
+                          if (double.tryParse(value) == null) {
+                            hasErrorNotifier.value = true;
+                            return '';
+                          }
+                          hasErrorNotifier.value = false;
+                          return null;
+                        },
                       ),
-                    ),
-                    onChanged: (value) {
-                      if (value.isNotEmpty) {
-                        _controllerDuration.text = value;
-                        _controllerDuration.selection =
-                            TextSelection.fromPosition(TextPosition(
-                                offset: _controllerDuration.text.length));
-                      }
-                      setState(() {});
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return R.string.nhap_chi_so_van_dong.tr();
-                      }
-                      // check if value is number
-                      if (double.tryParse(value) == null) {
-                        return R.string.data_input_not_valid.tr();
-                      }
-                      return null;
-                    },
+                      ValueListenableBuilder<bool>(
+                        valueListenable: hasErrorNotifier,
+                        builder: (context, hasError, _) {
+                          if (!hasError) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  R.drawable.ic_error_input_duration_exercise,
+                                  width: 16,
+                                  height: 16,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  R.string.please_enter_exercise_duration.tr(),
+                                  style: TextStyle(
+                                    color: R.color.red_2,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 ExerxisesIntensity(
                   selectedIntensity: intensity,
                   onIntensityChanged: (newIntensity) {

@@ -1293,4 +1293,5 @@ class Strings {
   String get roadmap_for_beginners => 'roadmap_for_beginners';
   String get invalid_duration_exercise => 'invalid_duration_exercise';
   String get steps => 'steps';
+  String get please_enter_exercise_duration => 'please_enter_exercise_duration';
 }

@@ -641,4 +641,5 @@ class Drawables {
   String get exercise_upload_images_disable =>
       "lib/res/drawables/ic_upload_images_disable.png";
   String get error_AI => "lib/res/drawables/ic_error_AI.png";
+  String get ic_error_input_duration_exercise => "lib/res/drawables/ic_error_input_duration_exercise.png";
 }
