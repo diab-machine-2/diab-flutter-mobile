@@ -1223,6 +1223,7 @@ class _HomeControllerState extends State<HomeController>
               lessonType: lessonDetail?.type,
               lessonId: lessonDetail?.id ?? '',
               onComplete: (String, int) {},
+              smartGoal: smartGoal,
             ));
         // _cubit.refreshData(isRefresh: true);
         Observable.instance

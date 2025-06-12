@@ -12,11 +12,14 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_share_lesson.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
@@ -38,7 +41,8 @@ class CourseQuizPage extends StatefulWidget {
       this.lessonSectionItem,
       this.onDone,
       required this.lessonDetail,
-      this.onComplete})
+      this.onComplete,
+      this.smartGoal})
       : super(key: key);
   final int currentPercent;
   final String lessonId;
@@ -46,6 +50,7 @@ class CourseQuizPage extends StatefulWidget {
   final LessonSectionListResponseData lessonDetail;
   final Function(bool isPassed)? onDone;
   final Function()? onComplete;
+  final SmartGoalList? smartGoal;
 
   @override
   _CourseQuizPageState createState() => _CourseQuizPageState();
@@ -538,7 +543,11 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
         context,
         lesson: _cubit.lessonSectionItem!,
       ),
-      onCancel: () {
+      onCancel: () async {
+        if (widget.smartGoal?.id != null) {
+          await HomeClient().completeSmartGoal(
+            DateTime.now(), widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
+        }
         NavigationUtil.pop(context);
         if (widget.onDone == null) {
           NavigationUtil.pop(context);
