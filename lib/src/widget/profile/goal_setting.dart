@@ -331,6 +331,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
             ? '0'
             : weeklyTargetBurnedCalorie.text),
       );
+      AppSettings.targetDuration = double.parse(dailyTargetDuration.text);
       Observable.instance.notifyObservers([], notifyName: "goal_calo_changed");
       BotToast.closeAllLoading();
       Navigator.pop(context);

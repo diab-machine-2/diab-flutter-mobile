@@ -116,6 +116,7 @@ class _HomeControllerState extends State<HomeController>
     }
     _firebaseSetup();
     _initHealthApp();
+    initTarget();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkExerciseData();
     });
@@ -126,6 +127,12 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance.removeObserver(this);
     _debouncer.dispose();
     super.dispose();
+  }
+
+  Future<void> initTarget() async {
+    var model = await UserClient().fetchGoalInfo();
+    if (model == null) return;
+    AppSettings.targetDuration = model.dailyTargetDuration ?? 0.0;
   }
 
   Future<void> checkExerciseData() async {

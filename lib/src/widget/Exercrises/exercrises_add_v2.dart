@@ -66,6 +66,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   bool isConnectHealthApp = false;
   bool hasExerciseData = false;
   final ValueNotifier<bool> hasErrorNotifier = ValueNotifier(false);
+  FocusNode durationFocus = FocusNode();
 
   @override
   void initState() {
@@ -327,6 +328,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextFormField(
+                              focusNode: durationFocus,
                               keyboardType: TextInputType.number,
                               controller: _controllerDuration,
                               textAlign: TextAlign.right,
@@ -730,6 +732,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       } else {
         Navigator.pop(context);
       }
+      FocusScope.of(context).unfocus();
       Message.showToastMessage(context, R.string.exercise_delete_success.tr());
     } catch (e, _) {
       BotToast.closeAllLoading();
@@ -777,6 +780,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                         margin: EdgeInsets.only(top: 16),
                         child: GestureDetector(
                           onTap: () {
+                            FocusScope.of(context).unfocus();
                             Navigator.pop(context);
                             if (widget.exerciseInputId != null) {
                               deleteData();
@@ -827,6 +831,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       return;
     }
     if (_formKey.currentState?.validate() ?? false) {
+      FocusScope.of(context).unfocus();
       try {
         // Hiển thị loading
         BotToast.showLoading();

@@ -143,7 +143,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  R.string.exercrise_dashboard_title.tr(),
+                  R.string.exercise.tr(),
                   style: TextStyle(
                     color: R.color.white,
                     fontSize: 20,
@@ -213,17 +213,8 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
         ListView(
           physics: const ClampingScrollPhysics(),
           padding:
-              const EdgeInsets.only(bottom: 80), // Add padding for the button
+              const EdgeInsets.only(bottom: 80, top: 70), // Add padding for the button
           children: [
-            FilterSegmentButton(
-              initialFilterType: periodFilterType,
-              onFilterChanged: (newFilterType) {
-                setState(() {
-                  periodFilterType = newFilterType;
-                  reloadData(periodFilterType);
-                });
-              },
-            ),
             periodFilterType > 0
                 ? ExercrisesTrendTimeChart(
                     key: exercrisesTrendTimeChartKey,
@@ -256,6 +247,20 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
               },
             ),
           ],
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: FilterSegmentButton(
+            initialFilterType: periodFilterType,
+            onFilterChanged: (newFilterType) {
+              setState(() {
+                periodFilterType = newFilterType;
+                reloadData(periodFilterType);
+              });
+            },
+          ),
         ),
         Positioned(
           bottom: 0,

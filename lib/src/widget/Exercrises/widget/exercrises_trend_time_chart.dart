@@ -14,7 +14,10 @@ import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ai_suggestion.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+
+import '../../../repo/user/user_client.dart';
 
 class ExercrisesTrendTimeChart extends StatefulWidget {
   const ExercrisesTrendTimeChart({
@@ -119,6 +122,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
             trends = model.trendItems.items
                 .where((item) => item.duration != null && item.duration! > 0)
                 .toList();
+
           }
 
           if (model == null) {
@@ -211,7 +215,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     int totalItems = trends.length;
 
     if (totalItems < _breakingTypeNumber) {
-      return _sectionTrendingLess(model.targetUnit, model.target);
+      return _sectionTrendingLess(model.targetUnit, AppSettings.targetDuration);
     } else {
       return _sectionTrendingMany(
           DateTime.now().microsecondsSinceEpoch,
@@ -549,7 +553,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                 LineChartData(
                   minX: minX,
                   maxX: maxX,
-                  maxY: maxY,
+                  maxY: max(target.toDouble(), maxY),
                   minY: minY,
                   lineBarsData: _linesBarData(trends),
                   titlesData: FlTitlesData(
@@ -587,18 +591,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                         },
                       ),
                       // Adjusted to align with the chart's data range
-                      y: (() {
-                        final isSingle = trends.length == 1;
-                        final trend = trends[0];
-                        final isWeekly = trend.firstDateOfWeek != null;
-                        final isGreen = trend.targetColor == '#21A567';
-
-                        if (isSingle) {
-                          return isGreen ? target : (isWeekly ? avgY + 8.0 : 25.5);
-                        } else {
-                          return target;
-                        }
-                      })(),
+                      y: target,
                       color: R.color.textDark,
                       strokeWidth: 1,
                       dashArray: [8, 4],

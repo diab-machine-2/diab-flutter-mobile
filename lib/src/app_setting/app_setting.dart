@@ -24,6 +24,7 @@ import '../modal/user/secure.dart';
 class AppSettings {
   static UserModel? userInfo;
   static bool isGetUser = false;
+  static double targetDuration = 0.0;
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;

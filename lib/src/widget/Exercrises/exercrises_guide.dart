@@ -51,6 +51,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
     model = await UserClient().fetchGoalInfo();
     if (model!.dailyTargetDuration != 0) {
       dailyTargetDuration.text = roundNumber1(model!.dailyTargetDuration!);
+      AppSettings.targetDuration = double.parse(dailyTargetDuration.text);
     } else {
       submitData(true, '30');
     }
