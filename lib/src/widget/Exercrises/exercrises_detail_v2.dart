@@ -305,14 +305,8 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                               fontFamily: 'SFPro',
                                               fontWeight: FontWeight.w700)),
                                       SizedBox(height: 16),
-                                      ...item.exerciseInput.expand((input) {
-                                        if (input.exercise.isEmpty) return [];
-                                        return _buildExerciseItem(
-                                          input.exercise,
-                                          input.id ?? '',
-                                          model?.length == 1,
-                                        );
-                                      }).toList(),
+                                      _buildExerciseGroupContainer(
+                                          item.exerciseInput),
                                     ],
                                   ),
                                 );
@@ -326,120 +320,143 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
     );
   }
 
-  _buildExerciseItem(
-    List<ListExercriseModel> exercise,
-    String exerciseInputId,
-    bool isOnlyOne,
-  ) {
-    return exercise.map((e) {
-      bool isFirst = exercise.indexOf(e) == 0;
-      bool isLast = exercise.indexOf(e) == exercise.length - 1;
+  Widget _buildExerciseGroupContainer(List<InputExercriseModel> inputs) {
+    final allExercises = <ListExercriseModel>[];
+    final exerciseInputIds = <String>[];
 
-      return InkWell(
-          onTap: () {
-            debugPrint('Exercise Lenght: ${exercise.length}');
-            Navigator.pushNamed(
-              context,
-              NavigatorName.exercrise_add_v2,
-              arguments: {
-                'isUpdate': true,
-                'exerciseInputId': exerciseInputId,
-                'isOnlyOne': isOnlyOne,
-              },
-            );
-          },
-          child: Container(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: R.color.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(isFirst ? 16 : 0),
-                topRight: Radius.circular(isFirst ? 16 : 0),
-                bottomLeft: Radius.circular(isLast ? 16 : 0),
-                bottomRight: Radius.circular(isLast ? 16 : 0),
-              ),
+    for (var input in inputs) {
+      if (input.exercise.isNotEmpty) {
+        allExercises.addAll(input.exercise);
+        exerciseInputIds.add(input.id ?? '');
+      }
+    }
+
+    if (allExercises.isEmpty) {
+      return SizedBox();
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: List.generate(allExercises.length, (index) {
+          final isLast = index == allExercises.length - 1;
+          final exercise = allExercises[index];
+          final exerciseInputId = index < exerciseInputIds.length
+              ? exerciseInputIds[index]
+              : ''; // đảm bảo không out-of-bound
+
+          return ClipRRect(
+            borderRadius: BorderRadius.vertical(
+              top: index == 0 ? Radius.circular(16) : Radius.zero,
+              bottom: isLast ? Radius.circular(16) : Radius.zero,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(200),
-                        child: Container(
+            child: _buildExerciseItem(exercise, exerciseInputId),
+          );
+        }),
+      ),
+    );
+  }
+
+  _buildExerciseItem(
+    ListExercriseModel exercise,
+    String exerciseInputId,
+  ) {
+    return InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            NavigatorName.exercrise_add_v2,
+            arguments: {
+              'isUpdate': true,
+              'exerciseInputId': exerciseInputId,
+            },
+          );
+        },
+        child: Container(
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.all(16),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(200),
+                      child: Container(
+                        width: 42.w,
+                        height: 42.h,
+                        padding: EdgeInsets.all(8),
+                        color: R.color.main_1.withOpacity(0.8),
+                        child: NetWorkImageWidget(
+                          imageUrl: exercise.imageUrl.url ?? '',
                           width: 42.w,
                           height: 42.h,
-                          padding: EdgeInsets.all(8),
-                          color: R.color.main_1.withOpacity(0.8),
-                          child: NetWorkImageWidget(
-                            imageUrl: e.imageUrl.url ?? '',
-                            width: 42.w,
-                            height: 42.h,
-                            isSelected: true,
-                            fit: BoxFit.contain,
-                          ),
+                          isSelected: true,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          e.category ?? '',
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 18,
-                            fontFamily: 'SFPro',
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Icon(Icons.fiber_manual_record,
-                            size: 10, color: R.color.primaryGreyColor),
-                      ),
-                      Text(
-                        '${formatNumber(e.burnedCalorie)} ${R.string.kcal.tr()}',
+                    ),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        exercise.category ?? '',
                         style: TextStyle(
-                          color: R.color.primaryGreyColor,
-                          fontSize: 14,
+                          color: R.color.textDark,
+                          fontSize: 18,
                           fontFamily: 'SFPro',
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Icon(Icons.fiber_manual_record,
+                          size: 10, color: R.color.primaryGreyColor),
+                    ),
+                    Text(
+                      '${formatNumber(exercise.burnedCalorie)} ${R.string.kcal.tr()}',
+                      style: TextStyle(
+                        color: R.color.primaryGreyColor,
+                        fontSize: 14,
+                        fontFamily: 'SFPro',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 8),
-                Text(
-                  formatNumber(e.duration),
-                  style: TextStyle(
-                    color: R.color.greenGradientBottom,
-                    fontSize: 18,
-                    fontFamily: 'SFPro',
-                    fontWeight: FontWeight.w900,
-                  ),
+              ),
+              SizedBox(width: 8),
+              Text(
+                formatNumber(exercise.duration),
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 18,
+                  fontFamily: 'SFPro',
+                  fontWeight: FontWeight.w900,
                 ),
-                SizedBox(width: 8),
-                Text(
-                  R.string.minute.tr(),
-                  style: TextStyle(
-                    color: R.color.primaryGreyColor,
-                    fontSize: 14,
-                    fontFamily: 'SFPro',
-                    fontWeight: FontWeight.w600,
-                  ),
+              ),
+              SizedBox(width: 8),
+              Text(
+                R.string.minute.tr(),
+                style: TextStyle(
+                  color: R.color.primaryGreyColor,
+                  fontSize: 14,
+                  fontFamily: 'SFPro',
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-          ));
-    }).toList();
+              ),
+            ],
+          ),
+        ));
   }
 }
