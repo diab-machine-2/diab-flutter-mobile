@@ -56,6 +56,7 @@ import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../app.dart';
+import '../../repo/home/home_client.dart';
 import '../../service/rating_service.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
@@ -97,6 +98,8 @@ class _HomeControllerState extends State<HomeController>
   // trigger reload when complete lesson
   bool _isReloadLesson = false;
 
+  bool _hasExerciseData = false;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -113,6 +116,9 @@ class _HomeControllerState extends State<HomeController>
     }
     _firebaseSetup();
     _initHealthApp();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkExerciseData();
+    });
   }
 
   @override
@@ -120,6 +126,17 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance.removeObserver(this);
     _debouncer.dispose();
     super.dispose();
+  }
+
+  Future<void> checkExerciseData() async {
+    final client = HomeClient();
+    final exerciseData = await client.fetchHomes();
+    bool isChecked = false;
+    if (exerciseData.exercise != null) {
+      isChecked = exerciseData.exercise!.isDataNotEmpty!;
+      _hasExerciseData = isChecked;
+    }
+    setState(() {});
   }
 
   void _initHealthApp() async {
@@ -999,10 +1016,7 @@ class _HomeControllerState extends State<HomeController>
         // others
         // CHEAT CODE : Vận Động -> Vận Động Bước 1
         if (item.title == "Vận động") {
-          String? lastOpenedGlucoseInputType =
-          await AppSettings.getLastOpenedExerciseInputType();
-          if (lastOpenedGlucoseInputType == 'manual' ||
-              lastOpenedGlucoseInputType == 'auto') {
+          if (_hasExerciseData) {
             // disable diablog if user has already input exercise
             Navigator.pushNamed(
                 navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
@@ -1077,7 +1091,7 @@ class _HomeControllerState extends State<HomeController>
     if (routeName == NavigatorName.exercrise_add_v2 ||
         routeName == NavigatorName.detail_exercrises ||
         routeName == NavigatorName.add_exercrises) {
-      showActivityInputMethodSelection();
+      showActivityInputMethodSelection(_hasExerciseData);
       return false;
     }
     return true;

@@ -25,6 +25,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../app_setting/firebase_tracking/activity_list_tracking.dart';
 import '../../repo/exercrises/exercrises_client.dart';
+import '../../repo/home/home_client.dart';
 import '../../utils/navigation_util.dart';
 import '../BloodSugar/bloodSugar_table_distribution.dart';
 import '../helper/tracking_manager.dart';
@@ -40,6 +41,7 @@ class ExercriseOnboarding extends StatefulWidget {
 class _ExercriseOnboardingState extends State<ExercriseOnboarding>
     with WidgetsBindingObserver {
   bool _isLoading = true;
+  bool _hasExerciseData = false;
   GlobalKey<ExercrisesLessonSectionState> exercrisesLessonKey = GlobalKey();
 
   @override
@@ -48,6 +50,20 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
     WidgetsBinding.instance.addObserver(this);
     firebaseSetup();
     subpabaseInit();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkExerciseData();
+    });
+  }
+
+  Future<void> checkExerciseData() async {
+    final client = HomeClient();
+    final exerciseData = await client.fetchHomes();
+    bool isChecked = false;
+    if (exerciseData.exercise != null) {
+      isChecked = exerciseData.exercise!.isDataNotEmpty!;
+      _hasExerciseData = isChecked;
+    }
+    setState(() {});
   }
 
   @override
@@ -245,7 +261,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
           // Button
           ButtonWidget(
               title: R.string.exercrise_step_onboarding_input_step_btn.tr(),
-              onPressed: (() => {showActivityInputMethodSelection()}))
+              onPressed: (() => {showActivityInputMethodSelection(_hasExerciseData)}))
         ]),
       )
     ]);
@@ -334,7 +350,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
   }
 }
 
-showActivityInputMethodSelection() async {
+showActivityInputMethodSelection(bool hasExerciseData) async {
   if (AppSettings.userInfo!.weight == null ||
       AppSettings.userInfo!.weight == 0) {
     showPopupWeight();
@@ -342,8 +358,7 @@ showActivityInputMethodSelection() async {
     // Logic navigate to glucose input page (saved before)
     String? lastOpenedGlucoseInputType =
         await AppSettings.getLastOpenedExerciseInputType();
-    if (lastOpenedGlucoseInputType == 'manual' ||
-        lastOpenedGlucoseInputType == 'auto') {
+    if (hasExerciseData) {
       // disable diablog if user has already input exercise
       Navigator.pushNamed(
           navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
