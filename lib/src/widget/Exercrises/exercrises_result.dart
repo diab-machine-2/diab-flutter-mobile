@@ -559,7 +559,6 @@ class _ExercisesResultState extends State<ExercisesResult>
               timeStr,
               exerciseInputId!,
               time,
-              inputDataExercrises.length == 1,
             );
           }));
         }));
@@ -572,7 +571,6 @@ class _ExercisesResultState extends State<ExercisesResult>
     String timeStr,
     String exerciseInputId,
     DateTime exerciseInputDate,
-    bool isOnlyOne,
   ) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 0.w),
@@ -655,7 +653,6 @@ class _ExercisesResultState extends State<ExercisesResult>
                 arguments: {
                   'isUpdate': true,
                   'exerciseInputId': exerciseInputId,
-                  'isOnlyOne': isOnlyOne,
                 },
               );
             },

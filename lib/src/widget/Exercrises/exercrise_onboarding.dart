@@ -48,25 +48,12 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
     WidgetsBinding.instance.addObserver(this);
     firebaseSetup();
     subpabaseInit();
-    // checkExerciseListEmpty();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  Future<void> checkExerciseListEmpty() async {
-    try {
-      var model = await ExercrisesClient()
-          .fetchInput(null, periodFilterType.toString(), 1);
-      if (model.inputs.isEmpty) {
-        AppSettings.clearLastOpenedExerciseInputType();
-      }
-    } catch (e) {
-      AppSettings.clearLastOpenedExerciseInputType();
-    }
   }
 
   Future subpabaseInit() async {

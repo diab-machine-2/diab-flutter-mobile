@@ -55,6 +55,7 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../app.dart';
 import '../../service/rating_service.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
@@ -998,7 +999,17 @@ class _HomeControllerState extends State<HomeController>
         // others
         // CHEAT CODE : Vận Động -> Vận Động Bước 1
         if (item.title == "Vận động") {
-          Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
+          String? lastOpenedGlucoseInputType =
+          await AppSettings.getLastOpenedExerciseInputType();
+          if (lastOpenedGlucoseInputType == 'manual' ||
+              lastOpenedGlucoseInputType == 'auto') {
+            // disable diablog if user has already input exercise
+            Navigator.pushNamed(
+                navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
+            return;
+          } else {
+            Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
+          }
         } else {
           Navigator.pushNamed(context, item.navigatorName,
               arguments: item.args);

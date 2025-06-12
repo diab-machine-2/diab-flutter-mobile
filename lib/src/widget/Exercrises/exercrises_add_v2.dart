@@ -29,18 +29,17 @@ import 'package:medical/src/modal/error/error_model.dart';
 
 import '../../modal/exercrises/exercrise_Input_detail_model.dart';
 import '../../modal/glucose/glucose_timeFrame.dart';
+import '../../repo/home/home_client.dart';
 import '../../utils/app_storages.dart';
 import 'widget/date_multi_picker.dart';
 
 class ExercrisesAddV2 extends StatefulWidget {
   final bool? isUpdate;
   final String? exerciseInputId;
-  final bool? isOnlyOne;
   ExercrisesAddV2({
     Key? key,
     this.isUpdate,
     this.exerciseInputId,
-    this.isOnlyOne,
   }) : super(key: key);
 
   ExercrisesAddV2State createState() => ExercrisesAddV2State();
@@ -65,6 +64,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   InputDetailExercriseModel? model;
   TimeFrameModel? selectedTimeFrame;
   bool isConnectHealthApp = false;
+  bool hasExerciseData = false;
 
   @override
   void initState() {
@@ -73,6 +73,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
     selectedDate = DateTime.now();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkConnectHealthApp();
+      checkExerciseData();
     });
     // selectedCategory = [];
     if (widget.isUpdate == true) {
@@ -80,6 +81,17 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         loadDetail();
       });
     }
+  }
+
+  Future<void> checkExerciseData() async {
+    final client = HomeClient();
+    final exerciseData = await client.fetchHomes();
+    bool isChecked = false;
+    if (exerciseData.exercise != null) {
+      isChecked = exerciseData.exercise!.isDataNotEmpty!;
+      hasExerciseData = isChecked;
+    }
+    setState(() {});
   }
 
   Future<void> checkConnectHealthApp() async {
@@ -141,6 +153,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'active_change_data_v2') {
       checkConnectHealthApp();
+      checkExerciseData();
       // overViewKey.currentState!.reloadData(periodFilterType);
     }
   }
@@ -481,44 +494,44 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           ),
           const SizedBox(height: 16),
           // add divider vertical with label 'hello' in the middle
-          if(!isConnectHealthApp)
-          Container(
-              width: MediaQuery.of(context).size.width / 2,
-              margin: EdgeInsets.only(bottom: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: R.color.greenGradientBottom,
+          if (!isConnectHealthApp)
+            Container(
+                width: MediaQuery.of(context).size.width / 2,
+                margin: EdgeInsets.only(bottom: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: R.color.greenGradientBottom,
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(R.string.or.tr(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: R.color.greenGradientBottom,
-                            fontWeight: FontWeight.w500)),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 1,
-                      color: R.color.greenGradientBottom,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(R.string.or.tr(),
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: R.color.greenGradientBottom,
+                              fontWeight: FontWeight.w500)),
                     ),
-                  ),
-                ],
-              )),
+                    Expanded(
+                      child: Container(
+                        height: 1,
+                        color: R.color.greenGradientBottom,
+                      ),
+                    ),
+                  ],
+                )),
           // add button to connect to health app / apple health
-          if(!isConnectHealthApp)
-          HealthConnectButton(
-            margin: const EdgeInsets.all(0),
-            callback: () {
-              checkConnectHealthApp();
-              print('HealthConnectButton pressed');
-            },
-          ),
+          if (!isConnectHealthApp)
+            HealthConnectButton(
+              margin: const EdgeInsets.all(0),
+              callback: () {
+                checkConnectHealthApp();
+                print('HealthConnectButton pressed');
+              },
+            ),
           const SizedBox(height: 60),
         ],
       ),
@@ -646,10 +659,11 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       if (result == true) {
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data_v2");
+        await checkExerciseData();
       }
       // if(result.)
       BotToast.closeAllLoading();
-      if (widget.isOnlyOne == true) {
+      if (!hasExerciseData) {
         AppSettings.clearLastOpenedExerciseInputType();
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -747,7 +761,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
 
   _submitData() async {
     if (_controllerDuration.text == "0") {
-      Message.showToastMessage(context, R.string.invalid_duration_exercise.tr());
+      Message.showToastMessage(
+          context, R.string.invalid_duration_exercise.tr());
       return;
     }
     if (selectedCategory == null) {
@@ -794,9 +809,6 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
               context, R.string.add_exercise_successfully.tr());
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data_v2");
-          if (widget.isOnlyOne == true) {
-            AppSettings.clearLastOpenedExerciseInputType();
-          }
           Navigator.pushNamed(context, NavigatorName.exercrise_result,
               arguments: {
                 'date': selectedDate,
