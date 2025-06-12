@@ -246,343 +246,352 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
             ),
           ),
           body: _buildContainer(),
-          bottomNavigationBar:
-              // add animation face in/out (opacity) when keyboard show / hide
-              KeyboardVisibilityProvider(
-            child: KeyboardVisibilityBuilder(
-              builder: (context, isKeyboardVisible) {
-                return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    height: isKeyboardVisible ? 0 : 60,
-                    width: double.infinity,
-                    child: Container(
-                      // height: 60,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: R.color.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: widget.isUpdate == true
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: ButtonWidget(
-                                    title: R.string.delete.tr(),
-                                    backgroundColor: R.color.white,
-                                    borderColor: R.color.redAccent,
-                                    textColor: R.color.redAccent,
-                                    onPressed: () {
-                                      _showDialogDelete(context);
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  flex: 1,
-                                  child: ButtonWidget(
-                                    title: R.string.confirm.tr(),
-                                    backgroundColor: R.color.greenGradientMid,
-                                    textColor: R.color.white,
-                                    onPressed: () {
-                                      if (widget.exerciseInputId != null) {
-                                        editData();
-                                      }
-                                    },
-                                  ),
-                                )
-                              ],
-                            )
-                          : ButtonWidget(
-                              title: R.string.confirm.tr(),
-                              onPressed: _submitData,
-                            ),
-                    ));
-              },
-            ),
-          ),
         ),
       ),
     );
   }
 
   Widget _buildContainer() {
-    return SingleChildScrollView(
-      controller: scrollController,
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Column(
-        children: [
-          Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: R.color.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: EdgeInsets.all(16),
-              child: Column(children: [
-                GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                      context: context,
-                      builder: (_) => DateMultiPicker(
-                        initDate: selectedDate,
-                        callback: (date) {
-                          setState(() {
-                            selectedDate = date;
-                            if (widget.isUpdate == true) {
-                              selectedTimeFrame = null;
-                            }
-                          });
-                        },
-                      ),
-                    );
-                  },
-                  child: Container(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            controller: scrollController,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              children: [
+                Container(
+                    width: double.infinity,
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(200),
-                        border: Border.all(color: R.color.color0xffDFE4E4),
-                        color: R.color.white),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                              convertToUTC(
-                                  (selectedDate?.millisecondsSinceEpoch ?? 0) ~/
-                                      1000,
-                                  'HH:mm - dd/MM/yyyy'),
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w400)),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.expand_more,
-                            color: R.color.primaryGreyColor,
-                            size: 24,
-                          ),
-                        ]),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: _controllerDuration,
-                        textAlign: TextAlign.right,
-                        cursorColor: _controllerDuration.text.isNotEmpty
-                            ? R.color.greenGradientBottom
-                            : R.color.color0xff636A6B,
-                        cursorHeight: 36,
-                        cursorWidth: 3,
-                        autofocus: true,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(3),
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        style: TextStyle(
-                          fontSize: 48,
-                          color: R.color.textDark,
-                          fontWeight: FontWeight.w700,
-                          height: 0.95,
-                        ),
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
-                          hintText: '00',
-                          hintStyle: TextStyle(
-                            fontSize: 48,
-                            color: R.color.color0xff636A6B,
-                            fontWeight: FontWeight.w700,
-                            height: 0.95,
-                          ),
-                          // set border bottom only
-                          border: UnderlineInputBorder(
-                            borderSide: BorderSide.lerp(
-                              BorderSide(
-                                  color: R.color.primaryGreyColor, width: 1),
-                              BorderSide(
-                                  color: R.color.primaryGreyColor, width: 1),
-                              0.5,
-                            ),
-                          ),
-                          errorText: null,
-                          errorStyle: TextStyle(height: 0),
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.only(
-                              top: 22,
-                              right: 95.w,
-                              left: 10.w,
-                            ),
-                            child: Text(
-                              R.string.minute_upper_case_first.tr(),
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: R.color.color0xff636A6B,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            hasErrorNotifier.value = false;
-                            _controllerDuration.text = value;
-                            _controllerDuration.selection =
-                                TextSelection.fromPosition(TextPosition(
-                                    offset: _controllerDuration.text.length));
-                          }
-                          setState(() {});
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            hasErrorNotifier.value = true;
-                            return '';
-                          }
-
-                          ///check if value is number
-                          if (double.tryParse(value) == null) {
-                            hasErrorNotifier.value = true;
-                            return '';
-                          }
-                          hasErrorNotifier.value = false;
-                          return null;
-                        },
-                      ),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: hasErrorNotifier,
-                        builder: (context, hasError, _) {
-                          if (!hasError) return const SizedBox.shrink();
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Image.asset(
-                                  R.drawable.ic_error_input_duration_exercise,
-                                  width: 16,
-                                  height: 16,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  R.string.please_enter_exercise_duration.tr(),
-                                  style: TextStyle(
-                                    color: R.color.red_2,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
+                      color: R.color.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    padding: EdgeInsets.all(16),
+                    child: Column(children: [
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            barrierColor:
+                                R.color.color0xff003F38.withOpacity(0.5),
+                            context: context,
+                            builder: (_) => DateMultiPicker(
+                              initDate: selectedDate,
+                              callback: (date) {
+                                setState(() {
+                                  selectedDate = date;
+                                  if (widget.isUpdate == true) {
+                                    selectedTimeFrame = null;
+                                  }
+                                });
+                              },
                             ),
                           );
                         },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(200),
+                              border:
+                                  Border.all(color: R.color.color0xffDFE4E4),
+                              color: R.color.white),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                    convertToUTC(
+                                        (selectedDate?.millisecondsSinceEpoch ??
+                                                0) ~/
+                                            1000,
+                                        'HH:mm - dd/MM/yyyy'),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400)),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.expand_more,
+                                  color: R.color.primaryGreyColor,
+                                  size: 24,
+                                ),
+                              ]),
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ExerxisesIntensity(
-                  selectedIntensity: intensity,
-                  onIntensityChanged: (newIntensity) {
+                      const SizedBox(height: 16),
+                      Form(
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextFormField(
+                              keyboardType: TextInputType.number,
+                              controller: _controllerDuration,
+                              textAlign: TextAlign.right,
+                              cursorColor: _controllerDuration.text.isNotEmpty
+                                  ? R.color.greenGradientBottom
+                                  : R.color.color0xff636A6B,
+                              cursorHeight: 36,
+                              cursorWidth: 3,
+                              autofocus: true,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(3),
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              style: TextStyle(
+                                fontSize: 48,
+                                color: R.color.textDark,
+                                fontWeight: FontWeight.w700,
+                                height: 0.95,
+                              ),
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                hintText: '00',
+                                hintStyle: TextStyle(
+                                  fontSize: 48,
+                                  color: R.color.color0xff636A6B,
+                                  fontWeight: FontWeight.w700,
+                                  height: 0.95,
+                                ),
+                                // set border bottom only
+                                border: UnderlineInputBorder(
+                                  borderSide: BorderSide.lerp(
+                                    BorderSide(
+                                        color: R.color.primaryGreyColor,
+                                        width: 1),
+                                    BorderSide(
+                                        color: R.color.primaryGreyColor,
+                                        width: 1),
+                                    0.5,
+                                  ),
+                                ),
+                                errorText: null,
+                                errorStyle: TextStyle(height: 0),
+                                suffixIcon: Padding(
+                                  padding: EdgeInsets.only(
+                                    top: 22,
+                                    right: 95.w,
+                                    left: 10.w,
+                                  ),
+                                  child: Text(
+                                    R.string.minute_upper_case_first.tr(),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: R.color.color0xff636A6B,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                if (value.isNotEmpty) {
+                                  hasErrorNotifier.value = false;
+                                  _controllerDuration.text = value;
+                                  _controllerDuration.selection =
+                                      TextSelection.fromPosition(TextPosition(
+                                          offset:
+                                              _controllerDuration.text.length));
+                                }
+                                setState(() {});
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  hasErrorNotifier.value = true;
+                                  return '';
+                                }
+
+                                ///check if value is number
+                                if (double.tryParse(value) == null) {
+                                  hasErrorNotifier.value = true;
+                                  return '';
+                                }
+                                hasErrorNotifier.value = false;
+                                return null;
+                              },
+                            ),
+                            ValueListenableBuilder<bool>(
+                              valueListenable: hasErrorNotifier,
+                              builder: (context, hasError, _) {
+                                if (!hasError) return const SizedBox.shrink();
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Image.asset(
+                                        R.drawable
+                                            .ic_error_input_duration_exercise,
+                                        width: 16,
+                                        height: 16,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        R.string.please_enter_exercise_duration
+                                            .tr(),
+                                        style: TextStyle(
+                                          color: R.color.red_2,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ExerxisesIntensity(
+                        selectedIntensity: intensity,
+                        onIntensityChanged: (newIntensity) {
+                          setState(() {
+                            intensity = newIntensity;
+                          });
+                        },
+                      )
+                    ])),
+                const SizedBox(height: 16),
+                ExercisesCategories(
+                  selected: selectedCategory,
+                  onChanged: (ExercrisesCategoryModel? item) {
                     setState(() {
-                      intensity = newIntensity;
+                      selectedCategory = item;
                     });
                   },
-                )
-              ])),
-          const SizedBox(height: 16),
-          ExercisesCategories(
-            selected: selectedCategory,
-            onChanged: (ExercrisesCategoryModel? item) {
-              setState(() {
-                selectedCategory = item;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          ExercisesNoteWithMedia(
-            mediaUrls: files,
-            maxMedia: maxMedia,
-            note: note,
-            onChangedNote: (String notes) {
-              setState(() {
-                this.note = notes;
-              });
-            },
-            onChangedMediaUrls: (mediaUrls) {
-              setState(() {
-                this.files = mediaUrls;
-              });
-            },
-            onFileRemoved: (fileId) {
-              if (fileId.isNotEmpty) {
-                setState(() {
-                  removeFileIds.add(fileId);
-                });
-              }
-            },
-          ),
-          const SizedBox(height: 16),
-          // add divider vertical with label 'hello' in the middle
-          if (!isConnectHealthApp)
-            Container(
-                width: MediaQuery.of(context).size.width / 2,
-                margin: EdgeInsets.only(bottom: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        color: R.color.greenGradientBottom,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(R.string.or.tr(),
-                          style: TextStyle(
-                              fontSize: 14,
+                ),
+                const SizedBox(height: 16),
+                ExercisesNoteWithMedia(
+                  mediaUrls: files,
+                  maxMedia: maxMedia,
+                  note: note,
+                  onChangedNote: (String notes) {
+                    setState(() {
+                      this.note = notes;
+                    });
+                  },
+                  onChangedMediaUrls: (mediaUrls) {
+                    setState(() {
+                      this.files = mediaUrls;
+                    });
+                  },
+                  onFileRemoved: (fileId) {
+                    if (fileId.isNotEmpty) {
+                      setState(() {
+                        removeFileIds.add(fileId);
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                // add divider vertical with label 'hello' in the middle
+                if (!isConnectHealthApp)
+                  Container(
+                      width: MediaQuery.of(context).size.width / 2,
+                      margin: EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 1,
                               color: R.color.greenGradientBottom,
-                              fontWeight: FontWeight.w500)),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        color: R.color.greenGradientBottom,
-                      ),
-                    ),
-                  ],
-                )),
-          // add button to connect to health app / apple health
-          if (!isConnectHealthApp)
-            HealthConnectButton(
-              margin: const EdgeInsets.all(0),
-              callback: () {
-                checkConnectHealthApp();
-                print('HealthConnectButton pressed');
-              },
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: Text(R.string.or.tr(),
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: R.color.greenGradientBottom,
+                                    fontWeight: FontWeight.w500)),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: R.color.greenGradientBottom,
+                            ),
+                          ),
+                        ],
+                      )),
+                // add button to connect to health app / apple health
+                if (!isConnectHealthApp)
+                  HealthConnectButton(
+                    margin: const EdgeInsets.all(0),
+                    callback: () {
+                      checkConnectHealthApp();
+                      print('HealthConnectButton pressed');
+                    },
+                  ),
+                const SizedBox(height: 60),
+              ],
             ),
-          const SizedBox(height: 60),
-        ],
-      ),
+          ),
+        ),
+        // add animation face in/out (opacity) when keyboard show / hide
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          height: 60,
+          width: double.infinity,
+          child: Container(
+            // height: 60,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: R.color.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: widget.isUpdate == true
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: ButtonWidget(
+                          title: R.string.delete.tr(),
+                          backgroundColor: R.color.white,
+                          borderColor: R.color.redAccent,
+                          textColor: R.color.redAccent,
+                          onPressed: () {
+                            _showDialogDelete(context);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: ButtonWidget(
+                          title: R.string.confirm.tr(),
+                          backgroundColor: R.color.greenGradientMid,
+                          textColor: R.color.white,
+                          onPressed: () {
+                            if (widget.exerciseInputId != null) {
+                              editData();
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  )
+                : ButtonWidget(
+                    title: R.string.confirm.tr(),
+                    onPressed: _submitData,
+                  ),
+          ),
+        ),
+      ],
     );
   }
 
