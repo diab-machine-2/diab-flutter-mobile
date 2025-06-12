@@ -48,8 +48,11 @@ class AppRoutes {
         }
       case NavigatorName.food_menu:
         {
+          final data = settings.arguments as Map<String, dynamic>?;
           // empty goal
-          page = FoodMenuPage();
+          page = FoodMenuPage(
+            smartGoal: data?['smartGoal'],
+          );
           break;
         }
       case NavigatorName.utilities:

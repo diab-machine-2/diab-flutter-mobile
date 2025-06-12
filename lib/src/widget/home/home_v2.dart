@@ -1247,13 +1247,20 @@ class _HomeControllerState extends State<HomeController>
             arguments: {'type': 'input'});
         break;
       case ScheduleType.schedule_glucose_recommend:
-        await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
+        await Navigator.pushNamed(context, NavigatorName.schedule_glucose, arguments: {
+          'smartGoal': smartGoal,
+        });
         break;
       case ScheduleType.food_menu:
-        await Navigator.pushNamed(context, NavigatorName.food_menu);
+        await Navigator.pushNamed(context, NavigatorName.food_menu, arguments: {
+          'smartGoal': smartGoal,
+        });
         break;
       case ScheduleType.goal_setting_recommend:
-        await Navigator.pushNamed(context, NavigatorName.goal_setting);
+        await Navigator.pushNamed(context, NavigatorName.goal_setting,
+            arguments: {
+              'smartGoal': smartGoal,
+            });
         break;
       case ScheduleType.schedule_recommend:
         await Navigator.pushNamed(context, NavigatorName.reminder);

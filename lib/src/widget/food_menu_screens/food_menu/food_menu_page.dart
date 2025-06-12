@@ -9,6 +9,7 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/model/response/menu_response.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Food/widget/food_info.dart';
@@ -26,9 +27,10 @@ import '../kcal_parameter/kcal_parameter.dart';
 import 'food_menu.dart';
 
 class FoodMenuPage extends StatefulWidget {
-  const FoodMenuPage({this.createMenuRequest});
+  const FoodMenuPage({this.createMenuRequest, this.smartGoal});
 
   final CreateMenuRequest? createMenuRequest;
+  final SmartGoalList? smartGoal;
 
   @override
   _FoodMenuPageState createState() => _FoodMenuPageState();
@@ -77,8 +79,13 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             if (state is FoodMenuFailure) {
               Message.showToastMessage(context, state.error);
             }
-            if (state is FoodMenuEmpty && _cubit.userInfo?.hasFoodMenu != true) {
-              NavigationUtil.replace(context, const IntroSampleMenuPage());
+            if (state is FoodMenuEmpty &&
+                _cubit.userInfo?.hasFoodMenu != true) {
+              NavigationUtil.replace(
+                  context,
+                  IntroSampleMenuPage(
+                    smartGoal: widget.smartGoal,
+                  ));
             }
           },
           builder: (context, state) {
@@ -94,12 +101,12 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
               appBarAction: GestureDetector(
                 onTap: () async {
                   showDialog(
-                  barrierColor: R.color.color0xff003F38.withOpacity(0.8),
-                  useSafeArea: false,
-                  context: context,
-                  builder: (_) => DetailDescription(
+                    barrierColor: R.color.color0xff003F38.withOpacity(0.8),
+                    useSafeArea: false,
+                    context: context,
+                    builder: (_) => DetailDescription(
                       input: false, isShowTitle: true, titleFontSize: 18, data: ShortGuiModel(content1: "", content2: "", content3: "", 
-                      content4: """<p></p>
+                            content4: """<p></p>
 <ul style="list-style-type:disc">
     <li style="margin-left: 0in;"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;color: rgb(0, 26, 51);'>Hướng dẫn chẩn đo&aacute;n v&agrave; điều trị đ&aacute;i th&aacute;o đường t&iacute;p 2- Bộ Y tế (5481/QĐ-BYT)</span></li>
     <li style="margin-left: 0in;"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;color: rgb(0, 26, 51);'>Standards of Medical Care in Diabetes (2021). Diabetes Care 1 January 2021; 44 (Supplement_1): S1&ndash;S2. <a data-saferedirecturl="https://www.google.com/url?q=https://doi.org/10.2337/dc21-Sint&source=gmail&ust=1651830131900000&usg=AOvVaw1M_UQEFpp5Naj8xOf9mDd-" href="https://doi.org/10.2337/dc21-Sint" style='color: rgb(17, 85, 204);font-family: "Segoe UI", sans-serif;' target="_blank">https://doi.org/10.2337/dc21-Sint</a></span></li>
@@ -112,7 +119,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     <li style="margin-left: 0in; color: rgb(0, 26, 51);"><span style='font-size:15px;font-family: "Segoe UI", sans-serif;'>Kiến thức chuy&ecirc;n gia của BS CKI &amp; chuy&ecirc;n gia dinh dưỡng Trần Vũ Lan Hương v&agrave; c&aacute;c cộng sự.</span></li>
 </ul>"""
                     ), title: "Thực đơn mẫu của chúng tôi được xây dựng dựa trên cơ sở"),
-                );
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 12.0),
@@ -341,66 +348,66 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     Function(MenuResponseListdayfoodTimeGroupsDefaultFood? foodDetail)? onChangeFood,
   }) {
     return Container(
-        margin: const EdgeInsets.only(top: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: R.color.white,
-          boxShadow: [
-            BoxShadow(
-              color: R.color.greenGradientBottom.withOpacity(0.08),
-              spreadRadius: 3,
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      mealData?.mealName ?? '',
-                      style: TextStyle(
-                        color: R.color.greenGradientBottom,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
+      margin: const EdgeInsets.only(top: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: R.color.white,
+        boxShadow: [
+          BoxShadow(
+            color: R.color.greenGradientBottom.withOpacity(0.08),
+            spreadRadius: 3,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    mealData?.mealName ?? '',
+                    style: TextStyle(
+                      color: R.color.greenGradientBottom,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  Text(
+                ),
+                Text(
                     R.string.total_kcals.tr(args: ['${num.parse(mealData?.totalKcal?.toStringAsFixed(1) ?? '0')}']),
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Icon(Icons.brightness_1, size: 4, color: R.color.greenGradientBottom),
-                  ),
-                  Text(
+                ),
+                Text(
                     R.string.total_starch.tr(args: ['${num.parse(mealData?.totalGlucose?.toStringAsFixed(1) ?? '0')}']),
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Visibility(
-              visible: mealData?.defaultFood?.isNotEmpty ?? false,
+          ),
+          Visibility(
+            visible: mealData?.defaultFood?.isNotEmpty ?? false,
               child:
                   Container(margin: const EdgeInsets.symmetric(horizontal: 16), height: 1, color: R.color.notActiveGreen),
-            ),
+          ),
             ..._buildListFoodWidget(foods: mealData?.defaultFood, onChangeFood: onChangeFood),
-          ],
-        ),
+        ],
+      ),
     );
   }
 
@@ -430,153 +437,153 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
   }) {
     return GestureDetector(
       onTap: () async {
-   //     showFoodInfo(context, foodDetail?.foodModel);
+        //     showFoodInfo(context, foodDetail?.foodModel);
       },
       child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: NetWorkImageWidget(
-                    imageUrl: foodDetail?.image?.url,
-                    width: 50,
-                    height: 50,
-                  )),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Visibility(
-                      visible: foodDetail?.isDessert ?? false,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Text(
-                          R.string.dessert.tr(),
-                          style: TextStyle(
-                            color: R.color.green,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: NetWorkImageWidget(
+                      imageUrl: foodDetail?.image?.url,
+                      width: 50,
+                      height: 50,
+                    )),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Visibility(
+                        visible: foodDetail?.isDessert ?? false,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Text(
+                            R.string.dessert.tr(),
+                            style: TextStyle(
+                              color: R.color.green,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
+                      Text(
+                        foodDetail?.foodName ?? '',
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Visibility(
+                        visible: isSingleFoodMeal,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
+                            style: TextStyle(
+                              color: R.color.grey_1,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (onChangeFood != null) {
+                      onChangeFood(foodDetail);
+                    }
+                  },
+                  child: Image.asset(
+                    R.drawable.ic_refresh,
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Visibility(
+              visible: !isSingleFoodMeal,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Text(
+                      '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
+                      style: TextStyle(
+                        color: R.color.grey_1,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.brightness_1, size: 4, color: R.color.greenGradientBottom),
                     ),
                     Text(
-                      foodDetail?.foodName ?? '',
+                      R.string.total_kcals.tr(args: [
+                        '${num.parse(((foodDetail?.calorie ?? 0.0) * (foodDetail?.portion ?? 0.0)).toStringAsFixed(1))}'
+                      ]),
                       style: TextStyle(
-                        color: R.color.textDark,
+                        color: R.color.grey_1,
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
-                    Visibility(
-                      visible: isSingleFoodMeal,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
-                          style: TextStyle(
-                            color: R.color.grey_1,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.brightness_1, size: 4, color: R.color.greenGradientBottom),
+                    ),
+                    Text(
+                      R.string.total_starch.tr(args: [
+                        '${num.parse(((foodDetail?.glucose ?? 0.0) * (foodDetail?.portion ?? 0.0)).toStringAsFixed(1))}'
+                      ]),
+                      style: TextStyle(
+                        color: R.color.grey_1,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
                       ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Visibility(
+              visible: foodDetail?.note?.isNotEmpty ?? false,
+              child: RichText(
+                text: TextSpan(
+                  text: '${R.string.attention.tr()} ',
+                  style: TextStyle(
+                      color: R.color.attentionText,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      fontStyle: FontStyle.italic),
+                  children: [
+                    TextSpan(
+                      text: foodDetail?.note,
+                      style: TextStyle(
+                        color: R.color.grey_1, fontSize: 14, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
                     )
                   ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  if (onChangeFood != null) {
-                    onChangeFood(foodDetail);
-                  }
-                },
-                child: Image.asset(
-                  R.drawable.ic_refresh,
-                  width: 20,
-                  height: 20,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Visibility(
-            visible: !isSingleFoodMeal,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Text(
-                    '${foodDetail?.portion?.toStringAsFixed(1)} ${foodDetail?.foodUnitName}',
-                    style: TextStyle(
-                      color: R.color.grey_1,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Icon(Icons.brightness_1, size: 4, color: R.color.greenGradientBottom),
-                  ),
-                  Text(
-                    R.string.total_kcals.tr(args: [
-                      '${num.parse(((foodDetail?.calorie ?? 0.0) * (foodDetail?.portion ?? 0.0)).toStringAsFixed(1))}'
-                    ]),
-                    style: TextStyle(
-                      color: R.color.grey_1,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Icon(Icons.brightness_1, size: 4, color: R.color.greenGradientBottom),
-                  ),
-                  Text(
-                    R.string.total_starch.tr(args: [
-                      '${num.parse(((foodDetail?.glucose ?? 0.0) * (foodDetail?.portion ?? 0.0)).toStringAsFixed(1))}'
-                    ]),
-                    style: TextStyle(
-                      color: R.color.grey_1,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Visibility(
-            visible: foodDetail?.note?.isNotEmpty ?? false,
-            child: RichText(
-              text: TextSpan(
-                text: '${R.string.attention.tr()} ',
-                style: TextStyle(
-                    color: R.color.attentionText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    fontStyle: FontStyle.italic),
-                children: [
-                  TextSpan(
-                    text: foodDetail?.note,
-                    style: TextStyle(
-                        color: R.color.grey_1, fontSize: 14, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -586,11 +593,11 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodInfo(
-          model: model,
+        model: model,
         //  selectedModel: selectedModel,
-          callback: (value) {},
-          kcalLeft: null,
-          ),
+        callback: (value) {},
+        kcalLeft: null,
+      ),
     );
   }
 

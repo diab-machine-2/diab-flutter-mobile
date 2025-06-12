@@ -486,7 +486,12 @@ class App extends StatelessWidget {
                             periodFilterType: data?['periodFilterType']),
                         isPresent: true);
                   case NavigatorName.goal_setting:
-                    return _buildRoute(settings, GoalSettingController());
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        GoalSettingController(
+                          smartGoal: data?['smartGoal'],
+                        ));
                   case NavigatorName.notification:
                     return _buildRoute(
                         settings, NotificationTabbarController());
@@ -513,8 +518,12 @@ class App extends StatelessWidget {
                         AddReminderController(
                             type: data?['type'], id: data?['id']));
                   case NavigatorName.schedule_glucose:
+                    final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
-                        settings, const ScheduleGlucoseController());
+                        settings,
+                        ScheduleGlucoseController(
+                          smartGoal: data?['smartGoal'],
+                        ));
                   case NavigatorName.setting_schedule_glucose:
                     return _buildRoute(
                         settings, SettingScheduleGlucoseController());
@@ -612,7 +621,8 @@ class App extends StatelessWidget {
                         CalendarBookingController(
                           courseId: arguments?['courseId'] as String? ?? '',
                           endTime: arguments?['endTime'] as String? ?? '',
-                          interviewType: arguments?['interviewType'] as int? ?? 30,
+                          interviewType:
+                              arguments?['interviewType'] as int? ?? 30,
                         ),
                       );
                     }
