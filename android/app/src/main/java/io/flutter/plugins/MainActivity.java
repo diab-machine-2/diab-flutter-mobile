@@ -590,6 +590,13 @@ public class MainActivity extends FlutterFragmentActivity {
             Log.d(TAG, "[VNPAY] handleVNPayAppSchemeReturn data:  " + data);;
             String responseCode = uri.getQueryParameter("vnp_ResponseCode") != null ? 
                                 uri.getQueryParameter("vnp_ResponseCode") : "";
+
+                                
+            String txnRef = uri.getQueryParameter("vnp_TxnRef");
+            if (txnRef == null || txnRef.isEmpty()) {
+                Log.d(TAG, "[VNPAY] Ignoring scheme call without transaction reference");
+                return;
+            }
             
             Map<String, Object> extras = extractAllVNPayParams(uri);
             

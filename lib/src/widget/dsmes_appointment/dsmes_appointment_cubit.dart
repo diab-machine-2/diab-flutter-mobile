@@ -109,7 +109,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     final email = AppSettings.userInfo?.email ?? '';
     final request = RegisterDocosanUserRequest(
       phoneNumber: Utils.formatPhoneNumber(phoneNumber),
-      displayName: displayName,
+      displayName: displayName.length <= 6 ? "$displayName-$phoneNumber" : displayName,
       gender: gender,
       isGetCaresOrderInfo: '0',
       email: email,
