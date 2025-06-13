@@ -138,7 +138,12 @@ class SmartGoalItem extends StatelessWidget {
                                   type == ScheduleType.io_evaluate ||
                                   type == ScheduleType.output_assessment ||
                                   type == ScheduleType.book_1_1 ||
-                                  type == ScheduleType.book_1_n)
+                                  type == ScheduleType.book_1_n ||
+                                  type == ScheduleType.goal_setting_recommend ||
+                                  type == ScheduleType.food_menu ||
+                                  type ==
+                                      ScheduleType.schedule_glucose_recommend ||
+                                  type == ScheduleType.booking_solo)
                               ? name
                               : type.title,
                           style: TextStyle(
