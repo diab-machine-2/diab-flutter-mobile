@@ -1276,4 +1276,5 @@ basic_program_confirm,"Bạn có muốn xác nhận chọn mục tiêu sức kho
 booking_screening_interview,"Đặt lịch phỏng vấn đầu vào","Booking screening interview",
 booking_evaluate_interview,"Đặt lịch phỏng vấn đầu ra","Booking evaluate interview",
 screening_interview,"Phỏng vấn đầu vào","Screening interview",
-evaluate_interview,"Phỏng vấn đầu ra","Evaluate interview"
+evaluate_interview,"Phỏng vấn đầu ra","Evaluate interview",
+booking_solo,"Đặt lịch","Booking"

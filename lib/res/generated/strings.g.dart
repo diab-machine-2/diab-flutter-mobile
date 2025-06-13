@@ -1315,4 +1315,5 @@ class Strings {
   String get evaluate_interview => 'evaluate_interview';
   String get booking_screening_interview => 'booking_screening_interview';
   String get booking_evaluate_interview => 'booking_evaluate_interview';
+  String get booking_solo => 'booking_solo'; 
 }

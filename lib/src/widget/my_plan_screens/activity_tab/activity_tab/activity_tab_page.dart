@@ -798,6 +798,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       case ScheduleType.evaluate_interview:
         await _handleInterviewNavigation(interviewType: 31);
         break;
+      case ScheduleType.booking_solo:
+        await _handleInterviewNavigation(interviewType: 32);
+        break;
     }
   }
 

@@ -540,6 +540,7 @@ class Utils {
       case ScheduleType.output_assessment:
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
+      case ScheduleType.booking_solo:
         return R.string.event.tr();
       case ScheduleType.survey:
       case ScheduleType.update_profile:

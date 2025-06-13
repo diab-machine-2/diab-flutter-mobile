@@ -35,7 +35,8 @@ enum ScheduleType {
   peripheral_recommend,
   completed,
   screening_interview,
-  evaluate_interview
+  evaluate_interview,
+  booking_solo
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -61,6 +62,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.book_1_n:
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
+      case ScheduleType.booking_solo:
         return R.drawable.ic_schedule_book_1_1;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
@@ -143,6 +145,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.string.booking_screening_interview.tr();
       case ScheduleType.evaluate_interview:
         return R.string.booking_evaluate_interview.tr();
+      case ScheduleType.booking_solo:
+        return R.string.booking_solo.tr();
 
       // New Recommend : NOT USE
       case ScheduleType.lesson_recommend:
@@ -269,6 +273,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return 30;
       case ScheduleType.evaluate_interview:
         return 31;
+      case ScheduleType.booking_solo:
+        return 32;
     }
   }
 
@@ -366,6 +372,8 @@ extension ScheduleTypeExtend on ScheduleType {
       return ScheduleType.screening_interview;
     if (index == ScheduleType.evaluate_interview.typeIndex)
       return ScheduleType.evaluate_interview;
+    if (index == ScheduleType.booking_solo.typeIndex)
+      return ScheduleType.booking_solo;
 
     return ScheduleType.custom;
   }
