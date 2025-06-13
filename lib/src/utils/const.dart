@@ -178,6 +178,7 @@ class Const {
   static const String NAVIGATE_TO_ACTIVITY_DETAIL =
       'Navigate_to_activity_detail';
   static const String LANGUAGE_CHANGED = 'language_changed';
+  static const String UPDATE_SUBSCRIPTION = 'Update_subscription';
 
   static const List<int> hourList = [
     0,

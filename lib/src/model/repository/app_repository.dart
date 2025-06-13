@@ -1219,4 +1219,14 @@ class AppRepository {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
+
+  Future<ApiResult<CommonResponse>> subscriptionActivePackage(
+      String accountId) async {
+    try {
+      final response = await appClient.subscriptionActivePackage(accountId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }

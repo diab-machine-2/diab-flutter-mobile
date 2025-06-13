@@ -2008,6 +2008,29 @@ class _AppApi implements AppApi {
     return value;
   }
 
+  @override
+  Future<CommonResponse> subscriptionActivePackage(accountId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'accountId': accountId};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/PackageAccountTransaction/SubscriptionActivePackage',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
     if (T != dynamic &&
         !(requestOptions.responseType == ResponseType.bytes ||

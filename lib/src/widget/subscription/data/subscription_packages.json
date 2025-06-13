@@ -1,13 +1,73 @@
 {
     "packages": [
       {
+        "id": "co_ban",
+        "title": "Cơ bản",
+        "subtitle": "Kiến thức chăm sóc sức khoẻ",
+        "price": "200.000đ",
+        "duration": "12 tháng",
+        "backgroundImagePath": "assets/images/bg_co_ban.png",
+        "isRecommended": true,
+        "features": [
+          {
+            "text": "Lộ trình sống khoẻ theo thể trạng, mục tiêu cá nhân",
+            "richText": [
+              {"text": "Lộ trình sống khoẻ ", "isBold": true},
+              {"text": "theo thể trạng, mục tiêu cá nhân", "isBold": false}
+            ]
+          },
+          {
+            "text": "Kho tàng kiến thức bệnh lý, dinh dưỡng, vận động, tâm lý đa dạng",
+            "richText": [
+              {"text": "Kho tàng kiến thức ", "isBold": true},
+              {"text": "bệnh lý, dinh dưỡng, vận động, tâm lý đa dạng", "isBold": false}
+            ]
+          },
+          {
+            "text": "Sử dụng toàn bộ tính năng cao cấp của ứng dụng DiaB",
+            "richText": [
+              {"text": "Sử dụng toàn bộ tính năng cao cấp ", "isBold": true},
+              {"text": "của ứng dụng DiaB", "isBold": false}
+            ]
+          },
+          {
+            "text": "Hỗ trợ 24/7 bởi trợ lý sức khoẻ DiaB",
+            "richText": [
+              {"text": "Hỗ trợ 24/7 ", "isBold": true},
+              {"text": "bởi trợ lý sức khoẻ DiaB", "isBold": false}
+            ]
+          },
+          {
+            "text": "Giảm 10% khi mua sản phẩm tại cửa hàng DiaB",
+            "richText": [
+              {"text": "Giảm 10% ", "isBold": true},
+              {"text": "khi mua sản phẩm tại cửa hàng DiaB", "isBold": false}
+            ]
+          },
+          {
+            "text": "Ưu tiên khi đặt lịch khám, tư vấn sức khoẻ tại ứng dụng DiaB",
+            "richText": [
+              {"text": "Ưu tiên ", "isBold": true},
+              {"text": "khi đặt lịch khám, tư vấn sức khoẻ tại ứng dụng DiaB", "isBold": false}
+            ]
+          },
+          {
+            "text": "12 buổi cung cấp kiến thức, hướng dẫn thực hành",
+            "richText": [
+              {"text": "12 buổi", "isBold": true},
+              {"text": " cung cấp kiến thức, hướng dẫn thực hành", "isBold": false}
+            ]
+          }
+        ]
+      },
+      {
         "id": "dong_hanh",
         "title": "Đồng hành",
         "subtitle": "Kiểm soát vững vàng, chẳng màng biến chứng",
         "price": "4.100.000đ",
         "duration": "3 tháng",
         "backgroundImagePath": "assets/images/bg_dong_hanh.png",
-        "isRecommended": true,
+        "isRecommended": false,
         "features": [
           {
             "text": "6 buổi tư vấn bởi chuyên gia đầu ngành",

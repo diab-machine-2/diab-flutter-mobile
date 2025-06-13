@@ -22,7 +22,6 @@ import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 import 'request/complete_exercise_request.dart';
@@ -468,4 +467,9 @@ abstract class AppApi {
   //GET {{url}}/app/chat/conversations/me
   @GET('/App/Chat/conversations/me')
   Future<ConversationListResponse> getMyConversation();
+
+   @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
+  Future<CommonResponse> subscriptionActivePackage(
+    @Query("accountId") String accountId,
+  );
 }

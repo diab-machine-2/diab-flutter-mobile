@@ -69,6 +69,19 @@ class ProgramService {
     }
   }
 
+  static String getProgramImageFull(String programId) {
+    switch (programId) {
+      case "program1":
+        return R.drawable.subscription_program_full_1;
+      case "program2":
+        return R.drawable.subscription_program_full_2;
+      case "program3":
+        return R.drawable.subscription_program_full_3;
+      default:
+        return "";
+    }
+  }
+
   /// Maps program item IDs to their corresponding drawable resources
   /// @param itemId The ID of the program item
   /// @return Resource drawable path in R.drawable.subscription_[id] format
@@ -497,6 +510,7 @@ class ProgramService {
                       children: [
                         InkWell(
                           onTap: () {
+                            Navigator.pop(context);
                             onConfirm.call();
                           },
                           child: Container(
