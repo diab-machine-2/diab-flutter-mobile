@@ -179,7 +179,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _fetchActivities() async* {
     // load today target
     final repository = AppRepository();
-    final currentDay = DateUtil.getCurrentDayInMillis();
+    final dateTime0 = DateTime.utc(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    final currentDay = DateUtil.getDayInMillis(dateTime0);
     final apiResult =
         await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
     HomeLoaded currentState = state as HomeLoaded;
@@ -347,7 +349,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final currentState = state as HomeLoaded;
     yield currentState.copyWith(lessons: lessonsResponse);
   }
-
 
   Future<void> shareLesson(String lessonId, BuildContext context) async {
     try {

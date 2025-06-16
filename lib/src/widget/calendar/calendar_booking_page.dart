@@ -7,6 +7,8 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -26,11 +28,13 @@ class CalendarBookingController extends StatefulWidget {
   final String courseId;
   final String endTime;
   final int interviewType;
+  final SmartGoalList? smartGoal;
   const CalendarBookingController(
       {Key? key,
       required this.courseId,
       required this.endTime,
-      required this.interviewType})
+      required this.interviewType,
+      this.smartGoal})
       : super(key: key);
   @override
   _CalendarBookingControllerState createState() =>
@@ -360,10 +364,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       accountId: AppSettings.userInfo!.accountId!,
       modelStatus: 3, // ModelStatusEnum => 3  is New
     );
-    final title =
-        widget.interviewType == ScheduleType.screening_interview.typeIndex
-            ? R.string.screening_interview.tr()
-            : R.string.evaluate_interview.tr();
+    final title = getGoalTitle(widget.interviewType);
     CreateCalendarRequest request = new CreateCalendarRequest(
       name: "${Utils.capitalize(title)} - ${AppSettings.userInfo!.fullName}",
       startTime: pickSlot!.startTime,
@@ -384,7 +385,28 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       trainingGroupIds: [],
       userId: pickSlot!.zoomUserId,
     );
-    _cubit.createCalendar(request);
+
+    _cubit.createCalendar(request).then((value) async {
+      // Mark complete smart goal when create calendar success
+      if (value == false) return;
+
+      if (widget.smartGoal?.id == null) return;
+
+      await HomeClient().completeSmartGoal(
+          DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);
+    });
+  }
+
+  String getGoalTitle(int type) {
+    if (type == ScheduleType.screening_interview.typeIndex) {
+      return R.string.screening_interview.tr();
+    } else if (type == ScheduleType.evaluate_interview.typeIndex) {
+      return R.string.evaluate_interview.tr();
+    } else if (type == ScheduleType.booking_solo.typeIndex) {
+      return R.string.booking_solo.tr();
+    } else {
+      return "";
+    }
   }
 
   Widget _buildButton(String text, VoidCallback onTap) {

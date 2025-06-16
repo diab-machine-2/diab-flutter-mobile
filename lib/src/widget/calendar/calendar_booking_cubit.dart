@@ -116,14 +116,16 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     });
   }
 
-  Future<void> createCalendar(
+  Future<bool> createCalendar(
     CreateCalendarRequest request,
   ) async {
+    bool result = false;
     emit(CalendarBookingLoading());
     final ApiResult<CreateCalendarResponse> apiResult =
         await repository.createCalendar(request);
     apiResult.when(success: (CreateCalendarResponse response) async {
       myCalendar = response;
+      result = true;
 
       // final email = AppSettings.userInfo!.email ?? '';
       // final topic = "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}";
@@ -147,10 +149,11 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
 
       emit(CreateCalendarSuccess(response));
       emit(CalendarBookingCloseLoading());
-      return apiResult;
+      // return apiResult;
     }, failure: (NetworkExceptions error) {
       emit(CalendarBookingFailure("Lịch này đã có người đặt trước"));
     });
+    return result;
   }
 
   Future<String?> getZoomLink(

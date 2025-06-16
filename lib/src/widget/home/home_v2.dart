@@ -5,6 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,6 +26,7 @@ import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
@@ -1248,9 +1250,10 @@ class _HomeControllerState extends State<HomeController>
             arguments: {'type': 'input'});
         break;
       case ScheduleType.schedule_glucose_recommend:
-        await Navigator.pushNamed(context, NavigatorName.schedule_glucose, arguments: {
-          'smartGoal': smartGoal,
-        });
+        await Navigator.pushNamed(context, NavigatorName.schedule_glucose,
+            arguments: {
+              'smartGoal': smartGoal,
+            });
         break;
       case ScheduleType.food_menu:
         await Navigator.pushNamed(context, NavigatorName.food_menu, arguments: {
@@ -1273,13 +1276,16 @@ class _HomeControllerState extends State<HomeController>
         // Do nothing
         break;
       case ScheduleType.screening_interview:
-        await _handleInterviewNavigation(interviewType: 30);
+        await _handleInterviewNavigation(
+            interviewType: 30, smartGoal: smartGoal);
         break;
       case ScheduleType.evaluate_interview:
-        await _handleInterviewNavigation(interviewType: 31);
+        await _handleInterviewNavigation(
+            interviewType: 31, smartGoal: smartGoal);
         break;
       case ScheduleType.booking_solo:
-        await _handleInterviewNavigation(interviewType: 32);
+        await _handleInterviewNavigation(
+            interviewType: 32, smartGoal: smartGoal);
         break;
     }
   }
@@ -1466,6 +1472,9 @@ class _HomeControllerState extends State<HomeController>
       onTap: () async {
         Navigator.pop(context);
         if (smartGoal?.calendar?.meetingLink != null) {
+          await HomeClient().completeSmartGoal(
+              DateTime.now(), smartGoal?.id, 1, smartGoal?.type);
+              
           PermissionStatus statusMicrophone =
               await Permission.microphone.status;
           if (statusMicrophone.isDenied) {
@@ -1476,14 +1485,24 @@ class _HomeControllerState extends State<HomeController>
           if (statusCamera.isDenied) {
             await Permission.camera.request();
           }
-          Navigator.pushNamed(context, NavigatorName.zoom, arguments: {
-            'id': smartGoal?.calendarId,
-            'isCompleted': smartGoal?.isCompleted,
-          });
-          //   await canLaunch(smartGoal!.calendar!.meetingLink!)
-          //       ? await launch(smartGoal.calendar!.meetingLink!,
-          //           forceSafariVC: false, forceWebView: false)
-          //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
+          // Navigator.pushNamed(context, NavigatorName.zoom, arguments: {
+          //   'id': smartGoal?.calendarId,
+          //   'isCompleted': smartGoal?.isCompleted,
+          // });
+
+          final meetingLink = smartGoal?.calendar?.meetingLink ?? '';
+          if (await canLaunch(meetingLink)) {
+            FlutterBranchSdk.handleDeepLink(meetingLink);
+
+            await launch(
+              meetingLink,
+              forceSafariVC: false,
+              forceWebView: false,
+              headers: <String, String>{'my_header_key': 'my_header_value'},
+            );
+          } else {
+            throw 'Could not launch $meetingLink';
+          }
         } else {
           // await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         }
@@ -1802,7 +1821,8 @@ class _HomeControllerState extends State<HomeController>
     );
   }
 
-  Future<void> _handleInterviewNavigation({required int interviewType}) async {
+  Future<void> _handleInterviewNavigation(
+      {required int interviewType, SmartGoalList? smartGoal}) async {
     final courseId = '350a3050-c0f7-11ef-b57a-03ea338ae610';
     try {
       // Check if course exists (using temp courseId for now)
@@ -1852,7 +1872,8 @@ class _HomeControllerState extends State<HomeController>
                 arguments: {
                   'courseId': courseId,
                   'endTime': '',
-                  'interviewType': interviewType
+                  'interviewType': interviewType,
+                  'smartGoal': smartGoal
                 });
           }
         },
@@ -1864,7 +1885,8 @@ class _HomeControllerState extends State<HomeController>
               arguments: {
                 'courseId': courseId,
                 'endTime': '',
-                'interviewType': interviewType
+                'interviewType': interviewType,
+                'smartGoal': smartGoal
               });
         },
       );

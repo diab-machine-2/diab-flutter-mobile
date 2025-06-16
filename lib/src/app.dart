@@ -623,6 +623,7 @@ class App extends StatelessWidget {
                           endTime: arguments?['endTime'] as String? ?? '',
                           interviewType:
                               arguments?['interviewType'] as int? ?? 30,
+                          smartGoal: arguments?['smartGoal'],
                         ),
                       );
                     }
