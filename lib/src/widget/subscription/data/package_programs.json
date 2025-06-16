@@ -1,7 +1,8 @@
 {
     "programs": [
       {
-        "id": "program1",
+        "id": "588a6319-9e1f-4c98-821a-26efec1c9100",
+        "code": "SUBS",
         "title": "Sống khỏe cùng đái tháo đường",
         "isRecommended": true,
         "color": "#0FB4A5",
@@ -71,7 +72,8 @@
         ]
       },
       {
-        "id": "program2",
+        "id": "f19023ec-49f5-4c38-b039-b59a79e9e4e9",
+        "code": "SUBSPREVENT",
         "title": "Phòng ngừa bệnh mạn tính",
         "isRecommended": false,
         "color": "#E49D6E",
@@ -157,7 +159,8 @@
         ]
       },
       {
-        "id": "program3",
+        "id": "e930578a-d71d-49d6-b088-c737ad1fb315",
+        "code": "SUBSMOM",
         "title": "Ổn định đường huyết thai kì",
         "isRecommended": false,
         "color": "#F8A084",

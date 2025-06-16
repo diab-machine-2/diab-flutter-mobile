@@ -314,7 +314,7 @@ class ProgramCard extends StatelessWidget {
         GapH(8),
 
         // Content row with items and image side by side
-        if (ProgramService.getProgramImage(program.id).isNotEmpty)
+        if (ProgramService.getProgramImage(program.code).isNotEmpty)
           LayoutBuilder(builder: (context, constraints) {
             double totalContentHeight = program.items.length *
                 ((15 * 1.2 * 1.5) +
@@ -347,7 +347,7 @@ class ProgramCard extends StatelessWidget {
                           totalContentHeight, // Square constraint for 1:1 ratio
                     ),
                     child: Image.asset(
-                      ProgramService.getProgramImage(program.id),
+                      ProgramService.getProgramImage(program.code),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -508,7 +508,7 @@ class ProgramCard extends StatelessWidget {
 
   Widget _buildTabletLayout(BuildContext context, bool isBasicPackage) {
     // If no image, just return the content column
-    if (ProgramService.getProgramImage(program.id).isEmpty) {
+    if (ProgramService.getProgramImage(program.code).isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -545,7 +545,7 @@ class ProgramCard extends StatelessWidget {
                 width: imageWidth,
                 height: imageWidth,
                 child: Image.asset(
-                  ProgramService.getProgramImage(program.id),
+                  ProgramService.getProgramImage(program.code),
                   fit: BoxFit.contain,
                 ),
               ),

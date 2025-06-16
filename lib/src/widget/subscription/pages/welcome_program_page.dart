@@ -49,9 +49,15 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
       return;
     }
 
+    final packageId = widget.program.id;
+
+    if (packageId == null) {
+      return;
+    }
+
     // Use new subscription service for improved UX
     final result = await _subscriptionActivateService.activateSubscription(
-        accountId, context);
+        accountId, packageId, context);
 
     if (result) {
       setState(() {
@@ -161,7 +167,7 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
             ),
             child: Center(
               child: Text(
-               R.string.explore_program.tr(),
+                R.string.explore_program.tr(),
                 style: TextStyle(
                   color: R.color.white,
                   fontSize: 15,
@@ -294,7 +300,7 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
       width: double.infinity,
       height: double.infinity,
       child: Image.asset(
-        ProgramService.getProgramImageFull(widget.program.id),
+        ProgramService.getProgramImageFull(widget.program.code),
         fit: BoxFit.cover,
       ),
     );

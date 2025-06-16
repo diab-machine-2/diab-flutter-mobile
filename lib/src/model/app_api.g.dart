@@ -2009,9 +2009,15 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CommonResponse> subscriptionActivePackage(accountId) async {
+  Future<CommonResponse> subscriptionActivePackage({
+    required accountId,
+    required packageId,
+  }) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'accountId': accountId};
+    final queryParameters = <String, dynamic>{
+      r'accountId': accountId,
+      r'packageId': packageId,
+    };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio
