@@ -1080,7 +1080,10 @@ class _HomeControllerState extends State<HomeController>
         routeName == NavigatorName.add_blood_sugar) {
       // check first time open glucose intro
       if (!_haveInputGlucoseAlready) {
-        Navigator.of(context).pushNamed(NavigatorName.glucose_intro_1st_page);
+        Navigator.of(context)
+            .pushNamed(NavigatorName.glucose_intro_1st_page, arguments: {
+          'goalId': smartGoalId,
+        });
         return false;
       }
       if (!AppSettings.isRegionAllowInputDevice) {
@@ -1135,8 +1138,9 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.blood_pressure_recommend:
         // check first time open blood pressure intro
         if (!_haveInputBloodpressureAlready) {
-          Navigator.of(context)
-              .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+          Navigator.of(context).pushNamed(
+              NavigatorName.blood_pressure_intro_1st_page,
+              arguments: {'goalId': smartGoal?.id});
           return;
         }
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
@@ -1474,7 +1478,7 @@ class _HomeControllerState extends State<HomeController>
         if (smartGoal?.calendar?.meetingLink != null) {
           await HomeClient().completeSmartGoal(
               DateTime.now(), smartGoal?.id, 1, smartGoal?.type);
-              
+
           PermissionStatus statusMicrophone =
               await Permission.microphone.status;
           if (statusMicrophone.isDenied) {
