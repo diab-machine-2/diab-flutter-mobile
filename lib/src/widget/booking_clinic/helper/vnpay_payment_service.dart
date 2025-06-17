@@ -95,10 +95,11 @@ class VNPayService {
 
     var uuid = Uuid();
     var txnRef = uuid.v4();
+    txnRef = txnRef.replaceAll('-', '');
     currentTxnRef = txnRef; // Store the transaction reference
 
     var orderInfo =
-        'Payment for booking $bookingType $serviceType - Account: $accountId';
+        'Payment for booking $bookingType $serviceType';
     paymentUrl = VNPAYFlutter.instance.generatePaymentUrl(
       url: vnpayIntegratedInfoMap['vnp_Url'] ?? '',
       version: '2.1.0',
