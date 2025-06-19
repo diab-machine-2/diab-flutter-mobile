@@ -170,8 +170,7 @@ class _LessonTabPageState extends State<LessonTabPage>
               AppBarBottom(
                 child: Column(
                   children: [
-                    if (AppSettings.userInfo?.ownPackage?.code != 'BHT2')
-                      _buildWeekListWidget(),
+                    // _buildWeekListWidget(),
                     Row(children: [
                       ...List.generate(
                         _cubit.lessonTypeList.length,
