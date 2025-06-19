@@ -13,10 +13,11 @@ class SubscriptionActivateService {
 
   /// Activate package with improved UX
   Future<bool> activateSubscription(
-      String accountId, BuildContext context) async {
+      String accountId, String packageId, BuildContext context) async {
     try {
       // Call API to activate subscription
-      final result = await _startActivation(accountId);
+      final result =
+          await _startActivation(accountId: accountId, packageId: packageId);
       BranchioLinkConfig.instance.isActivatedSubscription = result;
 
       return result;
@@ -28,7 +29,8 @@ class SubscriptionActivateService {
   }
 
   /// Start the actual subscription activation API call
-  Future<bool> _startActivation(String accountId) async {
+  Future<bool> _startActivation(
+      {required String accountId, required String packageId}) async {
     try {
       // BotToast.showCustomLoading(
       //   toastBuilder: (cancelFunc) {
@@ -59,8 +61,8 @@ class SubscriptionActivateService {
       //   allowClick: false,
       // );
 
-      final apiResult =
-          await AppRepository().subscriptionActivePackage(accountId);
+      final apiResult = await AppRepository().subscriptionActivePackage(
+          accountId: accountId, packageId: packageId);
 
       return await apiResult.when(success: (response) async {
         BotToast.closeAllLoading();

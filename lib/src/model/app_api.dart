@@ -440,8 +440,9 @@ abstract class AppApi {
   Future<GetSubscriptionBannersResponse> getSubscriptionBanners();
 
   @POST("/App/Notification/Subscription")
-  Future<CommonResponse> notifySubscription(@Body() NotifySubscriptionRequest request);
-  
+  Future<CommonResponse> notifySubscription(
+      @Body() NotifySubscriptionRequest request);
+
   // ## 1. Lấy Cấu hình Supabase
   @GET('/App/Chat/config/supabase')
   Future<SupabaseConfigResponse> getSupabaseConfig();
@@ -468,8 +469,9 @@ abstract class AppApi {
   @GET('/App/Chat/conversations/me')
   Future<ConversationListResponse> getMyConversation();
 
-   @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
-  Future<CommonResponse> subscriptionActivePackage(
-    @Query("accountId") String accountId,
-  );
+  @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
+  Future<CommonResponse> subscriptionActivePackage({
+    @Query("accountId") required String accountId,
+    @Query("packageId") required String packageId,
+  });
 }
