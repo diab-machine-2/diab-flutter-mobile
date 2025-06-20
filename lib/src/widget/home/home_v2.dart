@@ -400,8 +400,8 @@ class _HomeControllerState extends State<HomeController>
     _isDisplayedWelcome = false;
 
     // Set state tabbar in order to rebuild data of program tab if have activated new package
-    Observable.instance
-        .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
+    Observable.instance.notifyObservers([],
+        notifyName: Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM);
 
     return true;
   }
@@ -642,8 +642,10 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // check first time open blood pressure intro
-                              if (routeName == "/add_blood_pressure" && !_haveInputBloodpressureAlready) {
-                                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                              if (routeName == "/add_blood_pressure" &&
+                                  !_haveInputBloodpressureAlready) {
+                                Navigator.of(context).pushNamed(NavigatorName
+                                    .blood_pressure_intro_1st_page);
                                 return;
                               }
                               // others

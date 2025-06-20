@@ -83,10 +83,10 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
         lessonType: 1,
         lessonId: '43b767c7-4088-477f-e4cd-08d9ec6038bc',
         onComplete: (lessonId, percentComplete) {
-          Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-            NavigatorName.tabbar,
-            (route) => false, // This removes all routes from stack
-          );
+          // Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+          //   NavigatorName.tabbar,
+          //   (route) => false, // This removes all routes from stack
+          // );
         },
       ),
     );

@@ -292,7 +292,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _jumpTo(TabBarType.home.index);
     }
     if (notifyName == Const.NAVIGATE_TO_CHAT_TAB) {
-      Navigator.of(context).popUntil((route) => route.isFirst || route.settings.name == NavigatorName.tabbar);
+      Navigator.of(context).popUntil((route) =>
+          route.isFirst || route.settings.name == NavigatorName.tabbar);
       _onChatWithAI();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
@@ -305,6 +306,9 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       NavigationUtil.popToFirst(context);
+
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
 
       final user = await UserClient().fetchUser().then((value) {
         // Rebuild tabs with updated user info
@@ -323,6 +327,25 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
       // _jumpTo(TabBarType.home.index);
       // _bottomTabbarKey.currentState?.setPage(TabBarType.home.index);
+    }
+
+    if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
+      NavigationUtil.popToFirst(context);
+
+      final user = await UserClient().fetchUser().then((value) {
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+
+        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      });
     }
 
     if (notifyName == Const.LANGUAGE_CHANGED) {
