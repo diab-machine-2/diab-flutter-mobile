@@ -186,7 +186,7 @@ abstract class AppApi {
       @Body() SyncIndexFromZaloToPhoneRequest request);
 
   //My Plan
-  @POST("App/Lesson/MyLessonsOptimizedAndCacheLessonPercent")
+  @POST("App/Lesson/MyLessonsOptimizedRemoveWeek")
   Future<MyLessonResponse> getLessonsList(
     @Body() LessonFilterRequest request,
   );

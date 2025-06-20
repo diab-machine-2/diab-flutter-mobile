@@ -555,7 +555,7 @@ class _AppApi implements AppApi {
     )
             .compose(
               _dio.options,
-              'App/Lesson/MyLessonsOptimizedAndCacheLessonPercent',
+              'App/Lesson/MyLessonsOptimizedRemoveWeek',
               queryParameters: queryParameters,
               data: _data,
             )
