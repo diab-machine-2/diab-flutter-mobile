@@ -1277,4 +1277,5 @@ booking_screening_interview,"Đặt lịch phỏng vấn đầu vào","Booking s
 booking_evaluate_interview,"Đặt lịch phỏng vấn đầu ra","Booking evaluate interview",
 screening_interview,"Phỏng vấn đầu vào","Screening interview",
 evaluate_interview,"Phỏng vấn đầu ra","Evaluate interview",
-booking_solo,"Phỏng vấn cá nhân","Personal interview"
+booking_solo,"Phỏng vấn cá nhân","Personal interview",
+infographic,"Thông tin","Infographic"

@@ -1214,6 +1214,7 @@ class _HomeControllerState extends State<HomeController>
             .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
         break;
       case ScheduleType.lesson:
+      case ScheduleType.infographic:
         final LessonSectionListResponseData? lessonDetail =
             smartGoal?.lessonData;
         if (smartGoal?.state == Const.LESSON_LOCKED) {

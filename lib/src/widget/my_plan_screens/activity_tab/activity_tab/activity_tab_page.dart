@@ -759,6 +759,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _showSurveyPopup(survey: smartGoal);
         break;
       case ScheduleType.lesson:
+      case ScheduleType.infographic:
         final LessonSectionListResponseData? lessonDetail =
             smartGoal?.lessonData;
         if (smartGoal?.state == Const.LESSON_LOCKED) {

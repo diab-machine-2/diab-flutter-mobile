@@ -759,4 +759,5 @@ class Drawables {
   String get co_ban_bg => "lib/res/drawables/co_ban_bg.png";
   String get co_ban_badge => "lib/res/drawables/co_ban_badge.png";
   String get ic_dialog_failed => "lib/res/drawables/ic_dialog_failed.png";
+  String get ic_infographic => "lib/res/drawables/ic_infographic.png";
 }
