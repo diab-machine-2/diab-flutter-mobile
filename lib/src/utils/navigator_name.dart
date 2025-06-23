@@ -118,6 +118,7 @@ class NavigatorName {
   static const String paywall_screen = '/paywall_screen';
   static const String package_program_list = '/package_program_list';
   static const String package_program_detail = '/package_program_detail';
+  static const String welcome_program = '/welcome_program';
   // New Blood Pressure
   static const String blood_pressure_intro_1st_page = '/blood_pressure_intro_1st_page';
   static const String blood_pressure_intro_2nd_page = '/blood_pressure_intro_2nd_page';

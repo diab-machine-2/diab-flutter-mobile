@@ -81,13 +81,13 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           ProgramService.showPopupConfirmBasicSubscription(
                               title: widget.program.title,
                               subtitle: R.string.basic_program_confirm.tr(),
-                              onConfirm: () {
-                                // Navigator.of(context, rootNavigator: true)
-                                //     .pushNamedAndRemoveUntil(
-                                //   NavigatorName.tabbar,
-                                //   (route) =>
-                                //       false, // This removes all routes from stack
-                                // );
+                              onConfirm: () async {
+                                await SubscriptionNavigationMixin
+                                    .navigationKey.currentState
+                                    ?.pushNamed(
+                                  NavigatorName.welcome_program,
+                                  arguments: {'program': widget.program},
+                                );
                               },
                               context: context);
                           return;

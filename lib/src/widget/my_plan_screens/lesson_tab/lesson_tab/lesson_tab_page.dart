@@ -6,6 +6,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
@@ -169,7 +170,7 @@ class _LessonTabPageState extends State<LessonTabPage>
               AppBarBottom(
                 child: Column(
                   children: [
-                    _buildWeekListWidget(),
+                    // _buildWeekListWidget(),
                     Row(children: [
                       ...List.generate(
                         _cubit.lessonTypeList.length,

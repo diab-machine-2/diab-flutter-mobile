@@ -1272,4 +1272,10 @@ subscription_subtitle,"Chương trình Giáo dục, Hỗ trợ tự quản lý, 
 tiet_kiem_nhat,"Tiết kiệm nhất","Best saving",
 begin_program,"Bắt đầu chương trình","Start program",
 loading_subscription_packages,"Đang tải các gói đăng ký","Loading subscription packages",
-basic_program_confirm,"Bạn có muốn xác nhận chọn mục tiêu sức khoẻ này không?","Are you sure you want to confirm this health goal?"
+basic_program_confirm,"Bạn có muốn xác nhận chọn mục tiêu sức khoẻ này không?","Are you sure you want to confirm this health goal?",
+welcome_program,"Chào mừng bạn đến với chương trình","Welcome to the program",
+subscription_already_active,"Gói đăng ký đã được kích hoạt","Subscription is already active"
+subscription_already_active_content,"Tài khoản Google hiện tại của bạn đã kích hoạt gói đăng ký","Your Google account is already activated subscription",
+waiting_active_subscription_content_1,"Đang kích hoạt gói dịch vụ.\n Vui lòng đợi trong ít phút...","Activating service package.\nPlease wait a few minutes...",
+waiting_active_subscription_content_2,"Vui lòng chờ trong giây lát. Chương trình\n dành cho bạn đang được chuẩn bị!","Please wait for a moment. The program\n for you is being prepared!",
+explore_program,"Tìm hiểu thêm về Chương trình","Explore the program"
