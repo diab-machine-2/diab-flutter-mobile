@@ -1311,4 +1311,10 @@ class Strings {
   String get begin_program => 'begin_program';
   String get loading_subscription_packages => 'loading_subscription_packages';
   String get basic_program_confirm => 'basic_program_confirm';
+  String get welcome_program => 'welcome_program';
+  String get subscription_already_active => 'subscription_already_active';
+  String get subscription_already_active_content => 'subscription_already_active_content';
+  String get waiting_active_subscription_content_1 => 'waiting_active_subscription_content_1';
+  String get waiting_active_subscription_content_2 => 'waiting_active_subscription_content_2';
+  String get explore_program => 'explore_program';
 }

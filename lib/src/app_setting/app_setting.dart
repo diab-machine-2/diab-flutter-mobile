@@ -477,6 +477,7 @@ class AppSettings {
       }
       userInfo = null;
       await FetchClient().checkNetwork();
+      await RevenueCatService.logout();
       await LoginClient().logout();
       await deleteHomeData();
       await clearToken();
@@ -496,7 +497,6 @@ class AppSettings {
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
       await clearZaloGroup();
-      await RevenueCatService.logout();
       return true;
     } catch (_) {
       return false;

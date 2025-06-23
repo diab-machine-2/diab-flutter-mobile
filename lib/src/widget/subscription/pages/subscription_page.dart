@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -89,10 +91,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
 
     try {
       // Login to RevenueCat with the user's accountId
+      log('[SUBSCRIPTION] revenueCate login accountId: $accountId');
       await RevenueCatService.login(accountId);
 
       // Get the latest customer info
       customerInfo = await RevenueCatService.getCustomerInfo();
+      log('[SUBSCRIPTION] customerInfo: $customerInfo');
 
       // Check subscription state
       subscriptionState = await checkSubscriptionPaymentState();
@@ -103,6 +107,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         packageTitle = await getActiveSubscriptionDescription();
         if (mounted) setState(() {});
       }
+
+      log('[SUBSCRIPTION] customerInfo activeSubscriptions: ${customerInfo?.activeSubscriptions}');
+      log('[SUBSCRIPTION] customerInfo entitlements: ${customerInfo?.entitlements}');
+      log('[SUBSCRIPTION] subscriptionState: ${subscriptionState?.expirationDate?.toLocal()}');
 
       // Set up a listener for subscription changes
       Purchases.addCustomerInfoUpdateListener((info) {
@@ -425,7 +433,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                       ),
                     ),
                     GapH(contentSpacing),
-              
+
                     // Subtitle
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -441,7 +449,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                       ),
                     ),
                     GapH(contentSpacing),
-              
+
                     // Carousel Container with fixed aspect ratio
                     Container(
                       constraints: BoxConstraints(
@@ -495,7 +503,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                               ),
                             ),
                           ),
-              
+
                           // Title, subtitle, and indicators in remaining space
                           Expanded(
                             child: Padding(
@@ -543,8 +551,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                                       dotColor: Color(0xFFDFE4E4),
                                     ),
                                     onDotClicked: (index) {
-                                      _carouselController
-                                          .animateToPage(index);
+                                      _carouselController.animateToPage(index);
                                     },
                                   ),
                                 ],
@@ -566,7 +573,11 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                 right: 0,
                 bottom: 24,
                 child: Center(
-                  child: GestureDetector(
+                  child:
+                      // subscriptionState != null && subscriptionState!.isActive
+                      //     ? _buildSubscriptionStatusWidget()
+                      //     :
+                      GestureDetector(
                     onTap: () {
                       SubscriptionTracking.programExplore(
                           _currentCarouselIndex + 1);
