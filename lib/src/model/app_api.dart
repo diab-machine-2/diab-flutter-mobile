@@ -22,7 +22,6 @@ import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 import 'request/complete_exercise_request.dart';
@@ -187,7 +186,7 @@ abstract class AppApi {
       @Body() SyncIndexFromZaloToPhoneRequest request);
 
   //My Plan
-  @POST("App/Lesson/MyLessonsOptimizedAndCacheLessonPercent")
+  @POST("App/Lesson/MyLessonsOptimizedRemoveWeek")
   Future<MyLessonResponse> getLessonsList(
     @Body() LessonFilterRequest request,
   );
@@ -442,8 +441,9 @@ abstract class AppApi {
   Future<GetSubscriptionBannersResponse> getSubscriptionBanners();
 
   @POST("/App/Notification/Subscription")
-  Future<CommonResponse> notifySubscription(@Body() NotifySubscriptionRequest request);
-  
+  Future<CommonResponse> notifySubscription(
+      @Body() NotifySubscriptionRequest request);
+
   // ## 1. Lấy Cấu hình Supabase
   @GET('/App/Chat/config/supabase')
   Future<SupabaseConfigResponse> getSupabaseConfig();
@@ -469,4 +469,10 @@ abstract class AppApi {
   //GET {{url}}/app/chat/conversations/me
   @GET('/App/Chat/conversations/me')
   Future<ConversationListResponse> getMyConversation();
+
+  @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
+  Future<CommonResponse> subscriptionActivePackage({
+    @Query("accountId") required String accountId,
+    @Query("packageId") required String packageId,
+  });
 }

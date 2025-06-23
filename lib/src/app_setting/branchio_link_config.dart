@@ -12,6 +12,7 @@ import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -64,6 +65,8 @@ class BranchioLinkConfig {
     'doctor': false
   };
 
+  bool isActivatedSubscription = false;
+
   void setUpHandleDeepLink() {
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       log('listenDynamicLinks - Branchio DeepLink Data: $data');
@@ -87,6 +90,16 @@ class BranchioLinkConfig {
         if (AppSettings.splashScreenInitDone) {
           executeLoginDeeplinkNavigation();
         }
+        return;
+      }
+
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$subscription")) {
+        // Process reload program tab and home (api /currentToken)
+        // to fetch User with activated package
+        isActivatedSubscription = true;
+        Observable.instance
+            .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
         return;
       }
 

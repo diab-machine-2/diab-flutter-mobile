@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -403,8 +404,12 @@ class _HomeControllerState extends State<HomeController>
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
 
-    // For case re-activate new package
     _isDisplayedWelcome = false;
+
+    // Set state tabbar in order to rebuild data of program tab if have activated new package
+    Observable.instance.notifyObservers([],
+        notifyName: Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM);
+
     return true;
   }
 

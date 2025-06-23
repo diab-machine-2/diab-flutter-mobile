@@ -51,7 +51,8 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
     return Scaffold(
       body: BlocProvider(
         create: (context) => _cubit,
-        child: BlocListener<WelcomePackageScreenCubit, WelcomePackageScreenState>(
+        child:
+            BlocListener<WelcomePackageScreenCubit, WelcomePackageScreenState>(
           listener: (context, state) {
             if (state is WelcomePackageScreenLoading) {
               BotToast.showLoading();
@@ -59,7 +60,8 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
               BotToast.closeAllLoading();
             }
           },
-          child: BlocBuilder<WelcomePackageScreenCubit, WelcomePackageScreenState>(
+          child:
+              BlocBuilder<WelcomePackageScreenCubit, WelcomePackageScreenState>(
             builder: (context, state) {
               return _buildPage(context, state);
             },
@@ -88,10 +90,17 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                    Image.asset(widget.icon!, width: 220, height: 220,),
+                      Image.asset(
+                        widget.icon!,
+                        width: 220,
+                        height: 220,
+                      ),
                       SizedBox(height: 30),
                       Text(widget.title ?? '',
-                        style: TextStyle(color: R.color.mainColor, fontSize: 24, fontWeight: FontWeight.w700)),
+                          style: TextStyle(
+                              color: R.color.mainColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700)),
                       SizedBox(height: 16),
                       Padding(
                         padding: EdgeInsets.only(left: 8, right: 8),
@@ -100,7 +109,8 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                             //     style: TextStyle(color: R.color.color0xff333333, fontSize: 16, fontWeight: FontWeight.w400),
                             //     textAlign: TextAlign.center),
                             Html(
-                        data: '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;line-height: 1">Ch&agrave;o mừng <strong>${_cubit.content?.fullName ?? ''}</strong> đ&atilde; đăng k&yacute; th&agrave;nh c&ocirc;ng g&oacute;i dịch vụ <strong>${_cubit.content?.packageName ?? ''}</strong> của diaB.</span></p>
+                          data:
+                              '''<p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;line-height: 1">Ch&agrave;o mừng <strong>${_cubit.content?.fullName ?? ''}</strong> đ&atilde; đăng k&yacute; th&agrave;nh c&ocirc;ng g&oacute;i dịch vụ <strong>${_cubit.content?.packageName ?? ''}</strong> của diaB.</span></p>
                             <p style="line-height: 1;"><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Để chuẩn bị tốt nhất cho chương tr&igrave;nh của m&igrave;nh, <strong>${_cubit.getGender(_cubit.content?.gender)}</strong> h&atilde;y theo c&aacute;c hướng dẫn sau:</span></p>
                             <ul>
                                 <li style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Ho&agrave;n th&agrave;nh c&aacute;c việc trong &quot;Lịch tr&igrave;nh của t&ocirc;i&quot;.</li>
@@ -112,10 +122,15 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                                 <li style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1;">Email: <a href="mailto:lienhe@diab.com.vn">lienhe@diab.com.vn</a></li>
                             </ul>
                             <p><br></p>''',
-                        style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                          style: {
+                            "body": Style(
+                                padding: EdgeInsets.zero,
+                                margin: EdgeInsets.zero),
+                          },
                           onLinkTap: (url, context, attributes, element) async {
                             await canLaunch(url!)
-                              ? await launch(url, forceSafariVC: false, forceWebView: false)
+                                ? await launch(url,
+                                    forceSafariVC: false, forceWebView: false)
                                 : throw 'Could not launch $url';
                           },
                         ),
@@ -233,6 +248,8 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
     await _cubit.markDisplayedWelcome();
     isClickSkip = false;
     Navigator.pop(context);
+    Observable.instance
+        .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
     return true;
   }
 }

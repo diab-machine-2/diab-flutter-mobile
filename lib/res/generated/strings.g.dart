@@ -1317,4 +1317,10 @@ class Strings {
   String get booking_evaluate_interview => 'booking_evaluate_interview';
   String get booking_solo => 'booking_solo';
   String get infographic => 'infographic';
+  String get welcome_program => 'welcome_program';
+  String get subscription_already_active => 'subscription_already_active';
+  String get subscription_already_active_content => 'subscription_already_active_content';
+  String get waiting_active_subscription_content_1 => 'waiting_active_subscription_content_1';
+  String get waiting_active_subscription_content_2 => 'waiting_active_subscription_content_2';
+  String get explore_program => 'explore_program';
 }

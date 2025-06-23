@@ -6,6 +6,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class RevenueCatService {
+  static String? _currentAppUserId;
   // Step 3: Initialize RevenueCat with your API keys
   static Future<void> initialize() async {
     await Purchases.setLogLevel(
@@ -95,7 +96,14 @@ class RevenueCatService {
 
   // Step 8: Identify user (for user management)
   static Future<void> login(String userId) async {
+    if (userId.isEmpty) {
+      print("Warning: Attempted to login with empty userId");
+      return;
+    }
+
     try {
+      _currentAppUserId = userId;
+
       final result = await Purchases.logIn(userId);
       log('[SUBSCRIPTION] User logged in: ${result.customerInfo}');
     } on PlatformException catch (e) {
@@ -106,6 +114,8 @@ class RevenueCatService {
   // Step 9: Log out user
   static Future<void> logout() async {
     try {
+      _currentAppUserId = null;
+      
       await Purchases.logOut();
     } on PlatformException catch (e) {
       debugPrint('[SUBSCRIPTION] Error logging out: ${e.message}');
@@ -131,6 +141,37 @@ class RevenueCatService {
       return customerInfo.entitlements.active.isNotEmpty;
     } catch (e) {
       return false;
+    }
+  }
+
+  // Check if a different user has active subscriptions before allowing purchase
+  static Future<bool> validateNoOtherUserHasActiveSubscription() async {
+    try {
+      // First, sync purchases from the store
+      log('[SUBSCRIPTION] Syncing purchases to check for existing subscriptions');
+      await Purchases.syncPurchases();
+
+      // Get the current customer info to check active subscriptions
+      final customerInfo = await Purchases.getCustomerInfo();
+
+      // If there are active entitlements
+      if (customerInfo.entitlements.active.isNotEmpty) {
+        // Check if the original app user ID matches our current user
+        final originalUserId = customerInfo.originalAppUserId;
+        log('[SUBSCRIPTION] Found active subscriptions for user: $originalUserId');
+
+        // If the subscription belongs to a different user (not our current user), block purchase
+        if (originalUserId != _currentAppUserId && _currentAppUserId != null) {
+          log('[SUBSCRIPTION] Warning: Found subscription belonging to a different user');
+          return false; // Block the purchase
+        }
+      }
+
+      // No active subscriptions or subscription belongs to current user
+      return true;
+    } catch (e) {
+      log('[SUBSCRIPTION] Error validating subscription ownership: $e');
+      return true; // Allow purchase by default if validation fails
     }
   }
 }
