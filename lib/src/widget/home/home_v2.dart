@@ -1222,6 +1222,8 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.infographic:
         final LessonSectionListResponseData? lessonDetail =
             smartGoal?.lessonData;
+        if (lessonDetail == null) return;
+        
         if (smartGoal?.state == Const.LESSON_LOCKED) {
           // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
           _showLockedDialog(

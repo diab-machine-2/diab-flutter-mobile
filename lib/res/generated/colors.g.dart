@@ -188,4 +188,5 @@ class Colors {
   Color get conversation_typing_broder => Color(0xffD4D4D8);
   Color get conversation_bubble_author_broder => Color(0xff8FEBE0);
   Color get conversation_bubble_bot_broder => Color(0xffDFE4E4);
+  Color get infographic_color => Color(0xff23C559);
 }

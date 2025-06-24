@@ -140,8 +140,9 @@ class SmartGoalItem extends StatelessWidget {
                               fontSize: 16,
                               fontWeight: FontWeight.w700),
                         ),
-                      if (type == ScheduleType.lesson ||
-                          type == ScheduleType.survey)
+                      if ((type == ScheduleType.lesson ||
+                              type == ScheduleType.survey) &&
+                          frequency.isNotEmpty)
                         Text(
                           frequency,
                           style: TextStyle(
@@ -151,8 +152,9 @@ class SmartGoalItem extends StatelessWidget {
                           ),
                           maxLines: 2,
                         ),
-                      if (frequency.isNotEmpty) const SizedBox(height: 4),
-                      if (frequency.isNotEmpty)
+                      if (frequency.isNotEmpty && subject.isNotEmpty)
+                        const SizedBox(height: 4),
+                      if (frequency.isNotEmpty && subject.isNotEmpty)
                         Text(
                           getSubtitle(type),
                           style: TextStyle(

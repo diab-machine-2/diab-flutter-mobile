@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,6 +40,7 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/pdf_viewer_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import '../../../../model/response/report_model.dart';
 import '../../../helper/helper.dart';
@@ -775,6 +777,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               lessonType: lessonDetail?.type,
               lessonId: lessonDetail?.id ?? '',
               onComplete: (String, int) {},
+              smartGoal: smartGoal,
             ));
         _cubit.refreshData(isRefresh: true);
         Observable.instance
@@ -960,14 +963,24 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (statusCamera.isDenied) {
             await Permission.camera.request();
           }
-          Navigator.pushNamed(context, NavigatorName.zoom, arguments: {
-            'id': smartGoal?.calendarId,
-            'isCompleted': smartGoal?.isCompleted,
-          });
-          //   await canLaunch(smartGoal!.calendar!.meetingLink!)
-          //       ? await launch(smartGoal.calendar!.meetingLink!,
-          //           forceSafariVC: false, forceWebView: false)
-          //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
+          // Navigator.pushNamed(context, NavigatorName.zoom, arguments: {
+          //   'id': smartGoal?.calendarId,
+          //   'isCompleted': smartGoal?.isCompleted,
+          // });
+
+          final meetingLink = smartGoal?.calendar?.meetingLink ?? '';
+          if (await canLaunch(meetingLink)) {
+            FlutterBranchSdk.handleDeepLink(meetingLink);
+
+            await launch(
+              meetingLink,
+              forceSafariVC: false,
+              forceWebView: false,
+              headers: <String, String>{'my_header_key': 'my_header_value'},
+            );
+          } else {
+            throw 'Could not launch $meetingLink';
+          }
         } else {
           // await _cubit.markCompletedCalendar(smartGoal?.calendarId);
         }
