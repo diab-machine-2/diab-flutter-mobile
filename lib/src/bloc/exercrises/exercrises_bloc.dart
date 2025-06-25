@@ -175,8 +175,8 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
 
   Stream<ExercrisesState> fetchInputExercrises(
       String? currentDateTime, String? periodFilterType, int? page) async* {
-    periodFilterType =
-        await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
+    // periodFilterType =
+    //     await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index);
     final client = ExercrisesClient();
     final ExercrisesState currenState = state;
     var model =

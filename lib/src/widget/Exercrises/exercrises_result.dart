@@ -78,7 +78,7 @@ class _ExercisesResultState extends State<ExercisesResult>
     // Lấy dữ liệu cho activity list
     BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchInputExercrises(
         currentDateTime: dateString,
-        periodFilterType: periodFilterType.toString(),
+        periodFilterType: "0",
         page: 1));
 
     // Lấy dữ liệu cho progress section
