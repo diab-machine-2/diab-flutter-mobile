@@ -127,37 +127,42 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
 
   Stream<ExercrisesState> searchCategory(String? key) async* {
     try {
-      final ExercrisesState currenState = state;
-      ExercrisesListCategoryModel? categories;
-      ExercrisesListCategoryModel? categorySearch;
-      List<ExercrisesCategoryModel> selectedCategories = [];
-      if (currenState is ExercrisesCategoryModelLoaded) {
-        selectedCategories = currenState.selectedModel ?? [];
-        categories = currenState.category;
-        categorySearch = ExercrisesListCategoryModel(
-            exerciseCategories: currenState.category!.exerciseCategories
-                .where((element) => element.category!
-                    .toLowerCase()
-                    .contains(key!.toLowerCase()))
-                .toList(),
-            exerciseCategoryCommons: currenState
-                .category!.exerciseCategoryCommons
-                .where((element) => element.category!
-                    .toLowerCase()
-                    .contains(key!.toLowerCase()))
-                .toList(),
-            exerciseCategoryRegularlies: currenState
-                .category!.exerciseCategoryRegularlies
-                .where((element) => element.category!
-                    .toLowerCase()
-                    .contains(key!.toLowerCase()))
-                .toList());
+      final currentState = state;
+
+      if (currentState is! ExercrisesCategoryModelLoaded || key == null) return;
+
+      final lowerKey = key.toLowerCase();
+      final categories = currentState.category!;
+      final selectedCategories = currentState.selectedModel ?? [];
+
+      List<ExercrisesCategoryModel> _filterOrFallback(
+          List<ExercrisesCategoryModel> source,
+          ) {
+        final result = source
+            .where((e) => e.category?.toLowerCase().contains(lowerKey) ?? false)
+            .toList();
+
+        return result.isNotEmpty
+            ? result
+            : source
+            .where((e) => e.category?.toLowerCase().contains('khác') ?? false)
+            .toList();
       }
 
+      final categorySearch = ExercrisesListCategoryModel(
+        exerciseCategories:
+        _filterOrFallback(categories.exerciseCategories),
+        exerciseCategoryCommons:
+        _filterOrFallback(categories.exerciseCategoryCommons),
+        exerciseCategoryRegularlies:
+        _filterOrFallback(categories.exerciseCategoryRegularlies),
+      );
+
       yield ExercrisesCategoryModelLoaded(
-          category: categories,
-          categorySearch: categorySearch,
-          selectedModel: selectedCategories);
+        category: categories,
+        categorySearch: categorySearch,
+        selectedModel: selectedCategories,
+      );
     } catch (e, _) {
       if (e is Error) {
         yield ExercrisesError(message: e.message);
