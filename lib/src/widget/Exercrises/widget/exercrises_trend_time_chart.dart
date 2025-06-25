@@ -17,8 +17,6 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-import '../../../repo/user/user_client.dart';
-
 class ExercrisesTrendTimeChart extends StatefulWidget {
   const ExercrisesTrendTimeChart({
     Key? key,
@@ -122,7 +120,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
             trends = model.trendItems.items
                 .where((item) => item.duration != null && item.duration! > 0)
                 .toList();
-
           }
 
           if (model == null) {
@@ -214,16 +211,17 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     });
     int totalItems = trends.length;
 
-    if (totalItems < _breakingTypeNumber) {
-      return _sectionTrendingLess(model.targetUnit, AppSettings.targetDuration);
-    } else {
-      return _sectionTrendingMany(
-          DateTime.now().microsecondsSinceEpoch,
-          DateTime.now().microsecondsSinceEpoch,
-          mostAppearType,
-          mostAppearTypeColor,
-          model.targetUnit);
-    }
+    return _sectionTrendingLess(model.targetUnit, AppSettings.targetDuration);
+    // if (totalItems < _breakingTypeNumber) {
+    //   return _sectionTrendingLess(model.targetUnit, AppSettings.targetDuration);
+    // } else {
+    //   return _sectionTrendingMany(
+    //       DateTime.now().microsecondsSinceEpoch,
+    //       DateTime.now().microsecondsSinceEpoch,
+    //       mostAppearType,
+    //       mostAppearTypeColor,
+    //       model.targetUnit);
+    // }
   }
 
   Widget _sectionTrendingLess(String? unit, double? target) {
@@ -256,12 +254,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
       // } else {
       //  selectedDate = convertToSectionTicketDate(selectedTrend.date!, '');
       // }
-      if (selectedTrend.firstDateOfWeek != null &&
-          selectedTrend.lastDateOfWeek != null) {
-        selectedDate = DateFormat('dd/MM/yyyy', 'vi_VN').format(DateTime.now());
-      } else {
-       selectedDate = convertToSectionTicketDate(selectedTrend.date!, '');
-      }
+      selectedDate = convertToSectionTicketDate(selectedTrend.date!, '');
       selectedColor = selectedTrend.targetColor ?? '';
       selectedType = selectedTrend.targetDescription ?? '';
     }
