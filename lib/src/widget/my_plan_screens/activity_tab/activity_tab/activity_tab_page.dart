@@ -797,13 +797,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.screening_interview:
-        await _handleInterviewNavigation(interviewType: 30);
+        await _handleInterviewNavigation(
+            interviewType: 30, smartGoal: smartGoal);
         break;
       case ScheduleType.evaluate_interview:
-        await _handleInterviewNavigation(interviewType: 31);
+        await _handleInterviewNavigation(
+            interviewType: 31, smartGoal: smartGoal);
         break;
       case ScheduleType.booking_solo:
-        await _handleInterviewNavigation(interviewType: 32);
+        await _handleInterviewNavigation(
+            interviewType: 32, smartGoal: smartGoal);
         break;
     }
   }
@@ -1343,7 +1346,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  Future<void> _handleInterviewNavigation({required int interviewType}) async {
+  Future<void> _handleInterviewNavigation(
+      {required int interviewType, SmartGoalList? smartGoal}) async {
     final courseId = '350a3050-c0f7-11ef-b57a-03ea338ae610';
     try {
       // Check if course exists (using temp courseId for now)
@@ -1393,7 +1397,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 arguments: {
                   'courseId': courseId,
                   'endTime': '',
-                  'interviewType': interviewType
+                  'interviewType': interviewType,
+                  'smartGoal': smartGoal
                 });
           }
         },
@@ -1405,7 +1410,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               arguments: {
                 'courseId': courseId,
                 'endTime': '',
-                'interviewType': interviewType
+                'interviewType': interviewType,
+                'smartGoal': smartGoal
               });
         },
       );
