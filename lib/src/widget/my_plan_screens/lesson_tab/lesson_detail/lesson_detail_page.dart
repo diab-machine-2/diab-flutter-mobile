@@ -356,7 +356,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         SizedBox(height: 8),
                                         Padding(
                                           padding:
-                                              const EdgeInsets.only(bottom: 24),
+                                              const EdgeInsets.only(bottom: 12),
                                           child: WidgetHtmlText(_cubit
                                                   .currentSectionDetail
                                                   ?.firstContent ??
@@ -371,7 +371,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 bottom: 24),
                                             child: _buildTitleWidget(
                                               child: CachedNetworkImage(
-                                                  height: 90,
+                                                  // height: 90,
                                                   imageUrl: _cubit
                                                       .currentSectionDetail!
                                                       .image!
