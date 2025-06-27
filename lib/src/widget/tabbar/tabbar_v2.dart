@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -290,7 +292,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _jumpTo(TabBarType.home.index);
     }
     if (notifyName == Const.NAVIGATE_TO_CHAT_TAB) {
-      Navigator.of(context).popUntil((route) => route.isFirst || route.settings.name == NavigatorName.tabbar);
+      Navigator.of(context).popUntil((route) =>
+          route.isFirst || route.settings.name == NavigatorName.tabbar);
       _onChatWithAI();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
@@ -301,6 +304,50 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
     }
+    if (notifyName == Const.UPDATE_SUBSCRIPTION) {
+      NavigationUtil.popToFirst(context);
+
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+
+      final user = await UserClient().fetchUser().then((value) {
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+
+        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      });
+
+      // _jumpTo(TabBarType.home.index);
+      // _bottomTabbarKey.currentState?.setPage(TabBarType.home.index);
+    }
+
+    if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
+      NavigationUtil.popToFirst(context);
+
+      final user = await UserClient().fetchUser().then((value) {
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+
+        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      });
+    }
+
     if (notifyName == Const.LANGUAGE_CHANGED) {
       setState(() {
         tabs = [
@@ -364,6 +411,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   Widget _buildProgramTab() {
+    log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
+    print(
+        '[SUBSCRIPTION] userPackageType: ${AppSettings.userInfo?.packageType}');
+    print('[ACTIVE] ownPackage: ${AppSettings.userInfo?.ownPackage}');
+    print('[ACTIVE] isOwnPackage: ${AppSettings.isOwnPackage}');
     if (AppSettings.userInfo?.packageType == PackageType.free) {
       return MultiBlocProvider(
         providers: [

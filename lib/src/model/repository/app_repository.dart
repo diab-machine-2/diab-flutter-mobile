@@ -1168,7 +1168,7 @@ class AppRepository {
     }
   }
 
-    Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyList(
+  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyList(
       {String? top}) async {
     try {
       final response = await docosanClient.getCLinicSpecialtyList(
@@ -1214,6 +1214,17 @@ class AppRepository {
       NotifySubscriptionRequest request) async {
     try {
       final response = await appClient.notifySubscription(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> subscriptionActivePackage(
+      {required String accountId, required String packageId}) async {
+    try {
+      final response = await appClient.subscriptionActivePackage(
+          accountId: accountId, packageId: packageId);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
