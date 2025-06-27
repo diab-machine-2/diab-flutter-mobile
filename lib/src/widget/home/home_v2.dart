@@ -1006,14 +1006,15 @@ class _HomeControllerState extends State<HomeController>
       context,
       WelcomePackageScreenPage(
         icon: isRoadmap
+
             ? R.drawable.ic_package_roadmap
             : R.drawable.ic_package_experience,
-        title: isRoadmap
-            ? R.string.package_roadmap.tr()
-            : R.string.package_experience.tr(),
-        subTitle: isRoadmap
-            ? R.string.package_roadmap_subtitle.tr()
-            : R.string.package_experience_subtitle.tr(),
+        // title: isRoadmap
+        //     ? R.string.package_roadmap.tr()
+        //     : R.string.package_experience.tr(),
+        // subTitle: isRoadmap
+        //     ? R.string.package_roadmap_subtitle.tr()
+        //     : R.string.package_experience_subtitle.tr(),
         onSkip: () async {},
         onNavigateToMyPlan: () async {},
         zaloGroup: zaloGroup,

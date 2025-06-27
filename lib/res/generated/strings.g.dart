@@ -1323,4 +1323,9 @@ class Strings {
   String get waiting_active_subscription_content_1 => 'waiting_active_subscription_content_1';
   String get waiting_active_subscription_content_2 => 'waiting_active_subscription_content_2';
   String get explore_program => 'explore_program';
+  String get welcome_dialog_title_1 => 'welcome_dialog_title_1';
+  String get welcome_dialog_title_2 => 'welcome_dialog_title_2';
+  String get welcome_dialog_subtitle_1 => 'welcome_dialog_subtitle_1';
+  String get welcome_dialog_subtitle_2 => 'welcome_dialog_subtitle_2';
+  String get booking_consult => 'booking_consult';
 }

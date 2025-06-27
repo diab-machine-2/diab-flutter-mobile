@@ -18,6 +18,7 @@ import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_state.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
 import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
@@ -54,11 +55,13 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
   late DateTime seletedDate = DateTime.now();
   final AppRepository repository = AppRepository();
+  late WelcomePackageScreenCubit _welcomPackageCubit;
 
   @override
   void initState() {
     super.initState();
     _cubit = CalendarBookingCubit(repository);
+    _welcomPackageCubit = WelcomePackageScreenCubit(repository);
     setUpCalendar();
   }
 
@@ -394,6 +397,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
       await HomeClient().completeSmartGoal(
           DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);
+
+      await _welcomPackageCubit.markDisplayedWelcome();
     });
   }
 

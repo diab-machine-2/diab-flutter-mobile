@@ -150,4 +150,5 @@ class AppColors {
   static const color0xffBC8550 = Color(0xffBC8550);
   static const color0xffFFE5E5 = Color(0xffFFE5E5);
   static const infographic_color = Color(0xff23C559);
+  static const color0xffB4802D = Color(0xffB4802D);
 }
