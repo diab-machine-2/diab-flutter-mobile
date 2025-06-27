@@ -14,6 +14,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/service/zoom_service.dart';
@@ -33,9 +34,14 @@ class BranchioLinkConfig {
   String? _meetingId;
   String? _meetingPassword;
   String? _referalCode;
+  String? _lessonId;
+  String? _activityId;
+  
   String? get meetingId => _meetingId;
   String? get meetingPassword => _meetingPassword;
   String? get referalCode => _referalCode;
+  String? get lessonId => _lessonId;
+  String? get activityId => _activityId;
 
   DateTime? lastMeetingEndTime;
 
@@ -90,6 +96,32 @@ class BranchioLinkConfig {
         if (AppSettings.splashScreenInitDone) {
           executeLoginDeeplinkNavigation();
         }
+        return;
+      }
+
+      // Handle lesson deeplink
+      if (data['+clicked_branch_link'] == true && data.containsKey("\$lessonId")) {
+        _lessonId = data['\$lessonId'] as String;
+        print('[ROUTE] Lesson deeplink detected: $_lessonId');
+        
+        // Navigate immediately if app is initialized and user is logged in
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+        }
+        // Otherwise navigation will happen after app initialization
+        return;
+      }
+
+      // Handle activity deeplink
+      if (data['+clicked_branch_link'] == true && data.containsKey("\$activityId")) {
+        _activityId = data['\$activityId'] as String;
+        print('[ROUTE] Activity deeplink detected: $_activityId');
+        
+        // Navigate immediately if app is initialized and user is logged in
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
+        }
+        // Otherwise navigation will happen after app initialization
         return;
       }
 
@@ -227,6 +259,19 @@ class BranchioLinkConfig {
     } catch (e) {
       print('[ROUTE] Error executing login deeplink navigation: $e');
       clearPendingLoginData();
+    }
+  }
+
+  // Check and handle pending lesson/activity navigation after app initialization
+  void checkPendingContentNavigation() {
+    if (_lessonId != null && AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+      print('[ROUTE] Executing pending lesson navigation: $_lessonId');
+      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+    }
+    
+    if (_activityId != null && AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+      print('[ROUTE] Executing pending activity navigation: $_activityId');
+      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
     }
   }
 
@@ -487,6 +532,9 @@ class BranchioLinkConfig {
       if (_hasPendingDeeplink) {
         executeDeeplinkNavigation();
       }
+      
+      // Also check for pending content navigation
+      checkPendingContentNavigation();
     });
   }
 
@@ -578,8 +626,9 @@ class BranchioLinkConfig {
     }
   }
 
+  // Methods for creating share links (migrated from DynamicLinkConfig)
   Future<void> createShareReferralLink() async {
-    // TODO:
+    // TODO: Implement Branch.io referral link creation
   }
 
   Future<String> createShareLessonLink({
@@ -587,8 +636,20 @@ class BranchioLinkConfig {
     required String? featureImage,
     required String? lessonDescription,
   }) async {
-    // TODO:
+    // TODO: Implement Branch.io lesson link creation
     return '';
+  }
+
+  static Future<String?> createShareNewsLink(
+      LearningPostModel newsDetail) async {
+    // TODO: Implement Branch.io news link creation
+    return '';
+  }
+
+  // Clear methods for lesson and activity
+  void removeLessonId() {
+    _lessonId = null;
+    print('[ROUTE] Lesson ID cleared');
   }
 
   void removeMeetingId() {
@@ -596,13 +657,8 @@ class BranchioLinkConfig {
   }
 
   void removeActivityId() {
-    _courseId = null;
-  }
-
-  static Future<String?> createShareNewsLink(
-      LearningPostModel newsDetail) async {
-    // TODO:
-    return '';
+    _activityId = null;
+    print('[ROUTE] Activity ID cleared');
   }
 
   void _processBookingCourseLink(

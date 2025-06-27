@@ -99,8 +99,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    final String? activityId = DynamicLinkConfig.instance.activityId;
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
 
     if (activityId != null || meetingId != null) {
@@ -209,8 +209,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkExistLessonId() async {
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? activityId = DynamicLinkConfig.instance.activityId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
     if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
@@ -221,7 +221,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         NavigationUtil.navigatePage(navigatorKey.currentState!.context,
             IntroduceSurveyPage(survey: smartGoal));
         Future.delayed(Duration(seconds: 1), () {
-          DynamicLinkConfig.instance.removeActivityId();
+          BranchioLinkConfig.instance.removeActivityId();
         });
       } else {
         _jumpTo(TabBarType.program.index);
