@@ -15,12 +15,14 @@ class ConfirmGeneratedFood extends StatefulWidget {
   final List<FoodModel> generatedFoods;
   final DateTime selectedDate;
   final double totalKcal;
+  final String timeframe;
 
   const ConfirmGeneratedFood({
     Key? key,
     required this.generatedFoods,
     required this.selectedDate,
     required this.totalKcal,
+    required this.timeframe,
   }) : super(key: key);
 
   @override
@@ -128,10 +130,16 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                     ],
                                   ),
                                 ),
-                                _mealSummarySection(),
-                                const SizedBox(height: 16),
-                                _notesSection(),
-                                const SizedBox(height: 16),
+                                Transform.translate(
+                                  offset: Offset(0, -70),
+                                  child: Column(
+                                    children: [
+                                      _mealSummarySection(),
+                                      const SizedBox(height: 16),
+                                      _notesSection(),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -142,8 +150,9 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                     // Sticky date time picker overlay
                     Positioned(
                       top: 16,
-                      left: 95.5,
-                      child: _dateTimePickerOverlay(),
+                      left: 0,
+                      right: 0,
+                      child: Center(child: _dateTimePickerOverlay()),
                     ),
                   ],
                 ),
@@ -186,7 +195,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
-                  R.string.tab_notification.tr(),
+                  R.string.huong_dan.tr(),
                   style: TextStyle(color: R.color.white, fontSize: 15),
                 ),
               ),
@@ -340,17 +349,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                               ],
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            child: Icon(
-                              Icons.edit,
-                              size: 18,
-                              color: R.color.mainColor,
-                            ),
+                          Image.asset(
+                            R.drawable.ic_food_edit,
+                            width: 32,
+                            height: 32,
                           ),
                         ],
                       ),
