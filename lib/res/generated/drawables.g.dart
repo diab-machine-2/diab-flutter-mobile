@@ -486,6 +486,13 @@ class Drawables {
   String get ic_bloodpressure_warning =>
       "lib/res/drawables/bloodpressure/ic_bloodpressure_warning.png";
 
+  String get ic_food_plus => "lib/res/drawables/food/ic_food_plus.png";
+  String get im_food_breakfast => "lib/res/drawables/food/im_food_breakfast.png";
+  String get im_food_lunch => "lib/res/drawables/food/im_food_lunch.png";
+  String get im_food_dinner => "lib/res/drawables/food/im_food_dinner.png";
+  String get im_food_snack => "lib/res/drawables/food/im_food_snack.png";
+  String get im_food_capture => "lib/res/drawables/food/im_food_capture.png";
+
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
   String get ic_lesson_comment => "lib/res/drawables/ic_lesson_comment.png";
