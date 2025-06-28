@@ -169,34 +169,32 @@ class _FoodPopupItemModel {
   });
 
   // Static method to get the list of food popup items
-  // TODO:
   static List<_FoodPopupItemModel> getFoodPopupItems() {
     return [
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_breakfast,
         name: 'Bữa sáng',
         backgroundColor: const Color(0xFFEAFFEC),
-        timeframeId: '1',
+        timeframeId: 'b770d23f-8444-4a36-9621-58cc24a39906',
       ),
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_lunch,
         name: 'Bữa trưa',
         backgroundColor: const Color(0xFFFEEDDC),
-        timeframeId: '2',
+        timeframeId: '9a4c53ca-7c5e-4d3c-9452-07fe19fc2aff',
       ),
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_dinner,
         name: 'Bữa tối',
         backgroundColor: const Color(0xFFFFFAEB),
-        timeframeId: '3',
+        timeframeId: '95faf80c-a6cb-4796-8d65-7478eb875833',
       ),
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_snack,
         name: 'Bữa phụ',
         backgroundColor: const Color(0xFFF1F6FF),
-        timeframeId: '4',
+        timeframeId: '6b0684ea-5e03-45ef-a5be-03c9aa4a9c03',
       ),
     ];
   }
-  
 }

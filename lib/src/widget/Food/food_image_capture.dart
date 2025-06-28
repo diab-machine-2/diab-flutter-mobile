@@ -236,16 +236,30 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
       // Save to photo album
       String imageName = "DiaB_Food_${DateTime.now().millisecondsSinceEpoch}";
-      final result = await SaverGallery.saveImage(
-        imageBytes,
-        quality: 100,
-        name: imageName,
-        androidRelativePath: "Pictures/DiaB",
-      );
+      
+      var result;
+      
+      if (Platform.isIOS) {
+        // For iOS, don't use androidRelativePath
+        result = await SaverGallery.saveImage(
+          imageBytes,
+          quality: 100,
+          name: imageName,
+        );
+      } else {
+        // For Android, use androidRelativePath
+        result = await SaverGallery.saveImage(
+          imageBytes,
+          quality: 100,
+          name: imageName,
+          androidRelativePath: "Pictures/DiaB",
+        );
+      }
+      
       print('Image saved to gallery: $result');
 
       if (result.isSuccess) {
-        print('Image saved successfully: ${result.errorMessage}');
+        print('Image saved successfully to path: ${result.errorMessage}');
         // Show success message briefly
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -257,11 +271,30 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           );
         }
       } else {
-        print('Failed to save image: $result');
+        print('Failed to save image: ${result.errorMessage}');
+        // Show error message for debugging
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Lỗi lưu ảnh: ${result.errorMessage}'),
+              duration: const Duration(seconds: 3),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } catch (e) {
       print('Error saving to photo album: $e');
-      // Don't show error dialog as this is a secondary feature
+      // Show error for debugging
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi lưu ảnh: $e'),
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -348,7 +381,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           _buildTopOverlay(),
 
           // Bottom controls
-          _buildBottomControls(),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _buildBottomControls(),
+          ),
 
           // Capture animation overlay
           if (_showCaptureAnimation) _buildCaptureAnimationOverlay(),
@@ -365,25 +401,27 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Widget _buildCameraPreview() {
     if (!_isInitialized || _controller?.value == null) {
-      return Container(
-        color: Colors.black,
-        child: const Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
         ),
       );
-      // return const Center(
-      //   child: CircularProgressIndicator(
-      //     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      //   ),
-      // );
     }
 
+    double paddingBottom = 150 + MediaQuery.of(context).viewInsets.bottom / 2;
+
     return Positioned.fill(
-      child: AspectRatio(
-        aspectRatio: _controller!.value.aspectRatio,
-        child: CameraPreview(_controller!),
+      bottom: paddingBottom,
+      child: OverflowBox(
+        alignment: Alignment.center,
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: _controller!.value.previewSize?.height ?? MediaQuery.of(context).size.width,
+            height: _controller!.value.previewSize?.width ?? MediaQuery.of(context).size.height,
+            child: CameraPreview(_controller!),
+          ),
+        ),
       ),
     );
   }
@@ -393,7 +431,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       child: Container(
         height: 82,
         margin: const EdgeInsets.symmetric(horizontal: 12),
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.95),
           borderRadius: BorderRadius.circular(16),
@@ -421,7 +459,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               ),
             ),
 
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
 
             // Maximum 5 photos section
             // Good lighting section
@@ -444,7 +482,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               ),
             ),
 
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
 
             // One dish at a time section
             // Good lighting section
@@ -473,33 +511,28 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Widget _buildBottomControls() {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 38),
-        color: Colors.white,
-        child: SafeArea(
-          bottom: true,
-          top: false,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // Gallery button with preview
-              _buildGalleryPreviewButton(),
-
-              // Capture button
-              _buildCaptureButton(),
-
-              // Rotate button
-              _buildControlButton(
-                icon: R.drawable.im_food_capture_rotate,
-                onTap: _cameras.length > 1 ? _switchCamera : null,
-                size: 56,
-              ),
-            ],
-          ),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 38),
+      color: Colors.white,
+      child: SafeArea(
+        bottom: true,
+        top: false,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // Gallery button with preview
+            _buildGalleryPreviewButton(),
+    
+            // Capture button
+            _buildCaptureButton(),
+    
+            // Rotate button
+            _buildControlButton(
+              icon: R.drawable.im_food_capture_rotate,
+              onTap: _cameras.length > 1 ? _switchCamera : null,
+              size: 56,
+            ),
+          ],
         ),
       ),
     );
@@ -723,21 +756,31 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       PermissionStatus status;
 
       if (Platform.isAndroid) {
-        // For Android, check and request storage permission
-        status = await Permission.storage.status;
+        // For Android 13+ (API 33), use photos permission instead of storage
+        status = await Permission.photos.status;
+        if (!status.isGranted) {
+          status = await Permission.photos.request();
+        }
+        
+        // Fallback to storage permission for older Android versions
         if (!status.isGranted) {
           status = await Permission.storage.request();
         }
-        // For Android, check and request photos permission
+      } else if (Platform.isIOS) {
+        // For iOS, request photos permission which is required for saving to Photos
         status = await Permission.photos.status;
         if (!status.isGranted) {
           status = await Permission.photos.request();
         }
-      } else if (Platform.isIOS) {
-        // For iOS, check and request photos permission
-        status = await Permission.photos.status;
+        
+        // Also check photoLibrary permission as a fallback
         if (!status.isGranted) {
-          status = await Permission.photos.request();
+          final photoLibraryStatus = await Permission.photosAddOnly.status;
+          if (!photoLibraryStatus.isGranted) {
+            status = await Permission.photosAddOnly.request();
+          } else {
+            status = photoLibraryStatus;
+          }
         }
       } else {
         return false;
