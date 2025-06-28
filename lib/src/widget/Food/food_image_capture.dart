@@ -15,7 +15,8 @@ class FoodImageCapture extends StatefulWidget {
   State<FoodImageCapture> createState() => _FoodImageCaptureState();
 }
 
-class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBindingObserver, TickerProviderStateMixin {
+class _FoodImageCaptureState extends State<FoodImageCapture>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   final String _refImagePathKey = 'last_captured_food_image';
   CameraController? _controller;
   List<CameraDescription> _cameras = [];
@@ -24,7 +25,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
   bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
   File? _lastCapturedImage;
-  
+
   // Animation properties
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -39,13 +40,13 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
     WidgetsBinding.instance.addObserver(this);
     _initializeCamera();
     _loadLastCapturedImage();
-    
+
     // Initialize animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     // Scale animation: starts at 1.0 (full size) and ends at 0.1 (small size)
     _scaleAnimation = Tween<double>(
       begin: 1.0,
@@ -54,16 +55,16 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     // Position animation: moves from center to bottom left
     _positionAnimation = Tween<Offset>(
       begin: const Offset(0.0, 0.0), // Center of screen
-      end: const Offset(-0.7, 0.8),  // Bottom left area where preview button is
+      end: const Offset(-0.7, 0.8), // Bottom left area where preview button is
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     // Listen for animation completion
     _animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -298,7 +299,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
               child: const Text('Đóng'),
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
+                // Navigator.pop(context);
               },
             ),
           ],
@@ -342,19 +343,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
         children: [
           // Camera Preview
           _buildCameraPreview(),
-          
+
           // Top overlay guide
           _buildTopOverlay(),
-          
+
           // Bottom controls
           _buildBottomControls(),
-          
+
           // Capture animation overlay
           if (_showCaptureAnimation) _buildCaptureAnimationOverlay(),
-          
+
           // Flash effect
           if (_showFlashEffect) _buildFlashEffect(),
-          
+
           // Loading indicator
           if (_isLoading) _buildLoadingOverlay(),
         ],
@@ -364,11 +365,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
 
   Widget _buildCameraPreview() {
     if (!_isInitialized || _controller?.value == null) {
-      return const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      return Container(
+        color: Colors.black,
+        child: const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
         ),
       );
+      // return const Center(
+      //   child: CircularProgressIndicator(
+      //     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      //   ),
+      // );
     }
 
     return Positioned.fill(
@@ -381,133 +390,84 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
 
   Widget _buildTopOverlay() {
     return SafeArea(
-      child: Column(
-        children: [
-          // App bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 24,
+      child: Container(
+        height: 82,
+        margin: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.95),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // Good lighting section
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(R.drawable.ic_sunny, width: 24, height: 24),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Ánh sáng tốt',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
-                const Spacer(),
-                Text(
-                  'Chụp ảnh món ăn',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        offset: const Offset(0, 1),
-                        blurRadius: 3,
-                        color: Colors.black.withOpacity(0.5),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                const SizedBox(width: 40), // Balance the close button
-              ],
+                ],
+              ),
             ),
-          ),
 
-          // Guide overlay
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(12),
+            const SizedBox(width: 16),
+
+            // Maximum 5 photos section
+            // Good lighting section
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(R.drawable.ic_image_placeholder, width: 24, height: 24),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tối đa 5 ảnh',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
+
+            const SizedBox(width: 16),
+
+            // One dish at a time section
+            // Good lighting section
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(R.drawable.ic_food_bowl, width: 24, height: 24),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Mỗi lần 1 món',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Đặt món ăn vào giữa khung hình',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Đảm bảo ánh sáng đủ và hình ảnh rõ nét',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Chụp toàn bộ món ăn trong đĩa/bát',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -517,9 +477,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
       bottom: 0,
       left: 0,
       right: 0,
-      child: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 38),
+        color: Colors.white,
+        child: SafeArea(
+          bottom: true,
+          top: false,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -529,9 +492,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
               // Capture button
               _buildCaptureButton(),
 
-              // Switch camera button
+              // Rotate button
               _buildControlButton(
-                icon: R.drawable.ic_refresh,
+                icon: R.drawable.im_food_capture_rotate,
                 onTap: _cameras.length > 1 ? _switchCamera : null,
                 size: 56,
               ),
@@ -549,25 +512,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(size / 2),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.3),
-            width: 2,
-          ),
-        ),
-        child: Center(
-          child: Image.asset(
-            icon,
-            width: 24,
-            height: 24,
-            color: onTap != null ? Colors.white : Colors.white.withOpacity(0.5),
-          ),
-        ),
+      child: Image.asset(
+        icon,
+        width: 51,
+        height: 51,
       ),
     );
   }
@@ -576,34 +524,13 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
     return GestureDetector(
       onTap: _captureImage,
       child: Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.white,
-            width: 4,
-          ),
-        ),
-        child: Container(
-          margin: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.centerRight,
-              colors: [
-                R.color.greenGradientTop,
-                R.color.greenGradientBottom,
-              ],
-            ),
-          ),
-          child: const Icon(
-            Icons.camera_alt,
-            color: Colors.white,
-            size: 32,
-          ),
+        width: 68,
+        height: 68,
+        child: Image.asset(
+          R.drawable.im_food_capture,
+          width: 68,
+          height: 68,
+          fit: BoxFit.contain,
         ),
       ),
     );
@@ -612,7 +539,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
   Widget _buildGalleryPreviewButton() {
     if (_lastCapturedImage == null) {
       return _buildControlButton(
-        icon: R.drawable.ic_photo,
+        icon: R.drawable.im_food_snack,
         onTap: _openGallery,
         size: 56,
       );
@@ -693,7 +620,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
               Container(
                 color: Colors.black.withOpacity(0.3),
               ),
-              
+
               // Animated captured image
               Center(
                 child: Transform.scale(
@@ -800,13 +727,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture> with WidgetsBinding
         status = await Permission.storage.status;
         if (!status.isGranted) {
           status = await Permission.storage.request();
-        } 
+        }
         // For Android, check and request photos permission
         status = await Permission.photos.status;
         if (!status.isGranted) {
           status = await Permission.photos.request();
         }
-
       } else if (Platform.isIOS) {
         // For iOS, check and request photos permission
         status = await Permission.photos.status;

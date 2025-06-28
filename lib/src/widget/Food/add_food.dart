@@ -27,7 +27,6 @@ import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -121,7 +120,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     setState(() {});
   }
 
-  _loadTimeFrame() async {
+  void _loadTimeFrame() async {
     BotToast.showLoading();
     final timeFrames = await FoodClient()
         .fetchFoodTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000);
@@ -956,7 +955,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     }
   }
 
-  _submitData() async {
+  void _submitData() async {
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text;
 

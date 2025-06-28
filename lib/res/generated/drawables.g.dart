@@ -491,7 +491,12 @@ class Drawables {
   String get im_food_lunch => "lib/res/drawables/food/im_food_lunch.png";
   String get im_food_dinner => "lib/res/drawables/food/im_food_dinner.png";
   String get im_food_snack => "lib/res/drawables/food/im_food_snack.png";
+  String get im_food_method_capture => "lib/res/drawables/food/im_food_method_capture.png";
   String get im_food_capture => "lib/res/drawables/food/im_food_capture.png";
+  String get im_food_capture_rotate => "lib/res/drawables/food/im_food_capture_rotate.png";
+  String get ic_image_placeholder => "lib/res/drawables/food/ic_image_placeholder.png";
+  String get ic_sunny => "lib/res/drawables/food/ic_sunny.png";
+  String get ic_food_bowl => "lib/res/drawables/food/ic_food_bowl.png";
 
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";

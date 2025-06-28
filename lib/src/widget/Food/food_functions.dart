@@ -125,7 +125,7 @@ class FoodFunctions {
                   buildContentItem(
                     'Chụp ảnh bữa ăn',
                     'Chụp ảnh bữa ăn để có thể tự động lưu một cách nhanh chóng và chính xác',
-                    R.drawable.im_food_capture,
+                    R.drawable.im_food_method_capture,
                     () async {
                       // if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
                       //   AppSettings.setLastOpenedGlucoseInputType('device');
