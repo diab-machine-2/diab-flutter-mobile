@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/Food/food_functions.dart';
 
 class FoodActionPopup extends StatelessWidget {
-  final Function()? onDismiss;
-
   const FoodActionPopup({
     Key? key,
-    this.onDismiss,
   }) : super(key: key);
 
-  void _handleItemTap(String timeframeId) {
-    // TODO:
+  void _handleItemTap(BuildContext context, String timeframeId, String timeframe) {
+    Navigator.pop(context);
+    FoodFunctions.showModalAddData(
+      context,
+      timeframe: timeframe,
+      timeframeId: timeframeId,
+    );
   }
 
   @override
@@ -87,7 +90,7 @@ class FoodActionPopup extends StatelessWidget {
   Widget _buildActionItem(BuildContext context, _FoodPopupItemModel item) {
     double heightAndIconSize = 80;
     return GestureDetector(
-      onTap: () => _handleItemTap(item.timeframeId),
+      onTap: () => _handleItemTap(context, item.timeframeId, item.name),
       child: Container(
         height: heightAndIconSize,
         decoration: BoxDecoration(
@@ -137,7 +140,7 @@ class FoodActionPopup extends StatelessWidget {
   }
 
   // Static method to show the popup
-  static void show(BuildContext context, {Function()? onDismiss}) {
+  static void show(BuildContext context) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
@@ -149,7 +152,7 @@ class FoodActionPopup extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
-        child: FoodActionPopup(onDismiss: onDismiss),
+        child: FoodActionPopup(),
       ),
     );
   }

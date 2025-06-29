@@ -1,12 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 class FoodFunctions {
-  static void showModalAddData(BuildContext context,
-      {bool popPrevious = false}) {
-    Widget buildContentItem(String title, String subtitle, String iconPath,
-        VoidCallback onPressed) {
+  static void showModalAddData(
+    BuildContext context, {
+    required String timeframe,
+    required String timeframeId,
+  }) {
+    Widget buildContentItem(
+        String title, String subtitle, String iconPath, VoidCallback onPressed) {
       return InkWell(
         onTap: onPressed,
         child: Container(
@@ -52,8 +56,7 @@ class FoodFunctions {
                 ),
               ),
               const SizedBox(width: 12),
-              Icon(Icons.chevron_right,
-                  size: 24, color: R.color.primaryGreyColor),
+              Icon(Icons.chevron_right, size: 24, color: R.color.primaryGreyColor),
             ],
           ),
         ),
@@ -70,8 +73,7 @@ class FoodFunctions {
     // );
 
     showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       backgroundColor: Colors.white,
       context: context,
       isScrollControlled: true,
@@ -127,9 +129,6 @@ class FoodFunctions {
                     'Chụp ảnh bữa ăn để có thể tự động lưu một cách nhanh chóng và chính xác',
                     R.drawable.im_food_method_capture,
                     () async {
-                      // if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
-                      //   AppSettings.setLastOpenedGlucoseInputType('device');
-                      // }
                       // TODO: add tracking event
                       // TrackingManager.trackEvent(
                       //   'glucose_select_method',
@@ -138,22 +137,17 @@ class FoodFunctions {
                       //     'method': 'device',
                       //   },
                       // );
-                      // Navigator.pop(context);
-                      // if (popPrevious) {
-                      //   Navigator.pop(context);
-                      // }
-                      // BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, NavigatorName.food_image_capture,
+                          arguments: {'timeframe': timeframe, 'timeframeId': timeframeId});
                     },
                   ),
                   const SizedBox(height: 16),
                   buildContentItem(
-                    'Nhập thủ công đơn thuốc',
+                    'Nhập thủ công bữa ăn',
                     'Nhập thủ công các thông tin từ bữa ăn thực tế của bạn',
                     R.drawable.im_glucose_input_manual,
                     () async {
-                      // if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
-                      //   AppSettings.setLastOpenedGlucoseInputType('manual');
-                      // }
                       // TODO: add tracking event
                       // TrackingManager.trackEvent(
                       //   'glucose_select_method',
@@ -162,13 +156,9 @@ class FoodFunctions {
                       //     'method': 'manual',
                       //   },
                       // );
-                      // Navigator.pop(context);
-                      // if (popPrevious) {
-                      //   Navigator.pop(context);
-                      // }
-                      // Navigator.pushNamed(
-                      //     context, NavigatorName.add_blood_sugar_new,
-                      //     arguments: {'type': 'input'});
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.pushNamed(context, NavigatorName.add_food,
+                          arguments: {'type': 'input'});
                     },
                   ),
                 ],

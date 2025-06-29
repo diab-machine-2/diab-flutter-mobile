@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -233,7 +234,55 @@ class FetchClient {
     Console.logJson('Request', params);
 
     for (final file in files ?? []) {
-      final value = await http.MultipartFile.fromPath('images', file);
+      final value = await http.MultipartFile.fromPath('images', file, contentType: MediaType('image', 'jpeg'));
+      request.files.add(value);
+    }
+
+    request.headers.addAll(headers);
+
+    return request.send();
+  }
+
+  Future<http.StreamedResponse> postHttpWithCustomImageKey(
+      {bool baseIdentify = false,
+      required String path,
+      required dynamic params,
+      String imageKey = 'files',
+      List<String>? files}) async {
+    final token = await AppSettings.getToken();
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
+    Uri uri = Uri.parse(
+        'https://' + (baseIdentify ? identifyBaseURL : baseURL) + path);
+    final request = http.MultipartRequest('POST', uri);
+    request.fields.addAll(params);
+    Console.log('token', token);
+    Console.log('uri', uri);
+    Console.logJson('Request', params);
+
+    // Add files with custom image key
+    for (final file in files ?? []) {
+      final fileExtension = file.split('.').last.toLowerCase();
+      
+      // Determine content type based on file extension
+      MediaType contentType;
+      if (['jpg', 'jpeg'].contains(fileExtension)) {
+        contentType = MediaType('image', 'jpeg');
+      } else if (fileExtension == 'png') {
+        contentType = MediaType('image', 'png');
+      } else if (fileExtension == 'gif') {
+        contentType = MediaType('image', 'gif');
+      } else if (fileExtension == 'webp') {
+        contentType = MediaType('image', 'webp');
+      } else {
+        // Default to jpeg for unknown image types
+        contentType = MediaType('image', 'jpeg');
+      }
+      
+      final value = await http.MultipartFile.fromPath(
+        imageKey, // Use the custom image key
+        file,
+        contentType: contentType,
+      );
       request.files.add(value);
     }
 

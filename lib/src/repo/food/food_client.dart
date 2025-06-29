@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
@@ -218,6 +220,44 @@ class FoodClient extends FetchClient {
   }
 
   //nhập chỉ số dinh duỡng
+  Future<List<FoodModel>> postFoodImages(List<String> files) async {
+    try {
+      // Validate input files
+      if (files.isEmpty) {
+        throw 'No files provided for upload';
+      }
+
+      final Map<String, String> params = {};
+      final response = await super.postHttpWithCustomImageKey(
+        path: '/App/Image/UploadAI',
+        params: params,
+        imageKey: 'files',
+        files: files,
+      );
+      
+      final data = await response.stream.bytesToString();
+      
+      // Log response for debugging
+      print('Upload response status: ${response.statusCode}');
+      print('Upload response data: $data');
+      
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(data);
+        if (jsonData['data'] != null && jsonData['data']['items'] != null) {
+          return FoodModel.toList(jsonData['data']['items']);
+        }
+        return [];
+      } else {
+        // Include response body in error for better debugging
+        throw 'Upload failed with status ${response.statusCode}: ${response.reasonPhrase}\nResponse: $data';
+      }
+    } catch (e) {
+      print('Error in postFoodImages: $e');
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  //nhập chỉ số dinh duỡng
   Future<bool> postIndexFood(int date, String? timeFrameId, String note,
       List<FoodModel> foods, List<String> files) async {
     try {
@@ -233,6 +273,8 @@ class FoodClient extends FetchClient {
       }
       final response = await super
           .postHttp(path: '/App/Diet/Input', params: params, files: files);
+      final data = await response.stream.bytesToString();
+      print('Upload response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -335,7 +377,7 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lấy biểu đồ dinh duỡng đã nạp theo ngày
+  // lấy biểu đồ dinh duong đã nạp theo ngày
   Future<FoodDietModel> fetchStatisticDetail(
       String? currentDateTime, String? periodFilterType) async {
     try {
@@ -358,7 +400,7 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lấy biểu đồ xu huớng dinh duỡng
+  // lấy biểu đồ xu huớng dinh duong
   Future<FoodTrendModel> fetchStatisticTrend(
       String? currentDateTime, String? periodFilterType) async {
     try {

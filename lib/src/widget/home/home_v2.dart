@@ -33,6 +33,7 @@ import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -87,6 +88,7 @@ class _HomeControllerState extends State<HomeController>
   String _urlPopup = '';
   bool _haveInputGlucoseAlready = false;
   bool _haveInputBloodpressureAlready = false;
+  bool _haveInputFoodAlready = false;
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
@@ -467,6 +469,13 @@ class _HomeControllerState extends State<HomeController>
               _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
+
+              List<HomeMeasurementData> dinduongs =
+                  state.model.measurements!.where((e) => e.title.toLowerCase() == "dinh dưỡng").toList();
+              _haveInputFoodAlready = dinduongs.isNotEmpty &&
+                  dinduongs.first.value1?.isNotEmpty == true &&
+                  dinduongs.first.value1 != "--";
+
             }
           }
 
@@ -637,8 +646,15 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // check first time open blood pressure intro
-                              if (routeName == "/add_blood_pressure" && !_haveInputBloodpressureAlready) {
-                                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                              if (routeName == NavigatorName.add_blood_pressure &&
+                                  !_haveInputBloodpressureAlready) {
+                                Navigator.of(context)
+                                    .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                                return;
+                              }
+                              // check first time open dinh duong
+                              if (routeName == NavigatorName.add_food && !_haveInputFoodAlready) {
+                                FoodActionPopup.show(context);
                                 return;
                               }
                               // others

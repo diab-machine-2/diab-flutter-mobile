@@ -13,6 +13,7 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/service/zoom_service.dart';
@@ -258,6 +259,11 @@ class BranchioLinkConfig {
     // If the screen value is in our map, navigate to it
     if (measurementRoutes.containsKey(screenValue)) {
       final routeInfo = measurementRoutes[screenValue]!;
+
+      if (routeInfo['route'] == NavigatorName.add_food) {
+        FoodActionPopup.show(navigatorKey.currentContext!);
+        return;
+      }
 
       // For all other measurements, navigate directly
       navigatorKey.currentState?.pushNamedAndRemoveUntil(

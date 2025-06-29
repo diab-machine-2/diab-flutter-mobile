@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:saver_gallery/saver_gallery.dart';
@@ -62,6 +65,34 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       _controller = null;
     } else if (state == AppLifecycleState.resumed) {
       _initializeCamera();
+    }
+  }
+
+  Future<void> _syncFood() async {
+    final paths = await _selectImageToPost();
+    if (paths.isEmpty) {
+      return;
+    }
+    try {
+      BotToast.showLoading();
+      final result = await FoodClient().postFoodImages(paths);
+
+      // Navigate to the food detail page with the new food ID
+      if (result.isNotEmpty) {
+        Navigator.pushReplacementNamed(context, NavigatorName.confirm_food, arguments: {
+          'timeframe': widget.timeframe,
+          'timeframeId': widget.timeframeId,
+          'foods': result,
+          'files': paths,
+        });
+      } else {
+        BotToast.closeAllLoading();
+        BotToast.showText(text: 'Không tìm thấy thực phẩm nào để đồng bộ');
+      }
+    } catch (e) {
+      BotToast.showText(text: 'Lỗi khi đồng bộ thực phẩm: $e');
+    } finally {
+      BotToast.closeAllLoading();
     }
   }
 
@@ -252,7 +283,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Future<void> _openGallery() async {
+  Future<List<String>> _selectImageToPost() async {
     try {
       final List<XFile> pickedFiles = await _picker.pickMultiImage(
         maxWidth: 1024,
@@ -261,17 +292,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       );
 
       if (pickedFiles.isNotEmpty) {
-        for (var file in pickedFiles) {
-          // Process picked files if needed
-          print('Picked file: ${file.path}');
-        }
-
-        // Navigator.pop(context, pickedFiles);
-        // TODO: handle picked files
+        return pickedFiles.map((e) => e.path).toList();
       }
     } catch (e) {
       _showPermissionDialog();
     }
+    return [];
   }
 
   void _showErrorDialog(String message) {
@@ -286,8 +312,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               child: const Text('Đóng'),
               onPressed: () {
                 Navigator.pop(context);
-                // TODO: handle error dialog close action
-                // Navigator.pop(context);
+                Navigator.pop(context);
               },
             ),
           ],
@@ -323,9 +348,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     );
   }
 
-  void _onRightButtonPressed() {
-    // TODO: Implement right button functionality
-    
+  void _manualInputSelect() {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.pushNamed(context, NavigatorName.add_food, arguments: {'type': 'input'});
   }
 
   @override
@@ -340,10 +365,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               children: [
                 // Camera Preview
                 _buildCameraPreview(),
-            
+
                 // Top overlay guide
                 _buildTopOverlay(),
-            
+
                 // Bottom controls
                 Align(
                   alignment: Alignment.bottomCenter,
@@ -352,7 +377,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
                 // Flash effect
                 if (_showFlashEffect) _buildFlashEffect(),
-            
+
                 // Loading indicator
                 if (_isLoading) _buildLoadingOverlay(),
               ],
@@ -382,7 +407,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           child: Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: GestureDetector(
-              onTap: _onRightButtonPressed,
+              onTap: _manualInputSelect,
               child: Container(
                 width: 145,
                 height: 40,
@@ -481,9 +506,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               ],
             ),
           ),
-    
+
           const SizedBox(width: 8),
-    
+
           // Maximum 5 photos section
           // Good lighting section
           Expanded(
@@ -504,9 +529,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               ],
             ),
           ),
-    
+
           const SizedBox(width: 8),
-    
+
           // One dish at a time section
           // Good lighting section
           Expanded(
@@ -595,12 +620,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     if (_lastCapturedImage == null) {
       return _buildControlButton(
         icon: R.drawable.im_food_snack,
-        onTap: _openGallery,
+        onTap: _syncFood,
         size: 56,
       );
     } else {
       return GestureDetector(
-        onTap: _openGallery,
+        onTap: _syncFood,
         child: Container(
           width: 56,
           height: 56,

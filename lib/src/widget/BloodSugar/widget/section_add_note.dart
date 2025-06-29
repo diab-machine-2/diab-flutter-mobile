@@ -171,7 +171,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
                             width: 56,
                             height: 56,
                             clipBehavior: Clip.hardEdge,
-                            child: _files[index] is PickedFile
+                            child: _files[index] is PickedFile || _files[index] is File
                                 ? Image.file(
                                     File(_files[index].path),
                                     fit: BoxFit.cover,

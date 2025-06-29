@@ -1,28 +1,36 @@
+import 'dart:io';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
+import 'food_detail_tabbar.dart';
 import 'search_food_controller.dart';
 
 class ConfirmGeneratedFood extends StatefulWidget {
   final List<FoodModel> generatedFoods;
-  final DateTime selectedDate;
-  final double totalKcal;
   final String timeframe;
+  final String timeframeId;
+  final List<String> files;
 
   const ConfirmGeneratedFood({
     Key? key,
     required this.generatedFoods,
-    required this.selectedDate,
-    required this.totalKcal,
     required this.timeframe,
+    required this.timeframeId,
+    required this.files,
   }) : super(key: key);
 
   @override
@@ -34,33 +42,25 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   List<FoodModel> selectedFoods = [];
   List<dynamic> files = [];
   int maxMedia = 5;
-  double totalKcal = 0;
   DateTime selectedDate = DateTime.now();
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
 
+  double get totalKcal => selectedFoods.fold(
+      0, (sum, food) => sum + (food.calorie ?? 0) * (food.portion?.toDouble() ?? 0));
+
   @override
   void initState() {
     super.initState();
     selectedFoods = [...widget.generatedFoods];
-    totalKcal = widget.totalKcal;
-    selectedDate = widget.selectedDate;
-    calculatorCalo();
+    _files.addAll(widget.files.map((e) => File(e)).toList());
   }
 
   @override
   void dispose() {
     _controllerNote.dispose();
     super.dispose();
-  }
-
-  void calculatorCalo() {
-    totalKcal = 0;
-    selectedFoods.forEach((element) {
-      totalKcal += (element.calorie ?? 0) * (element.portion ?? 0);
-    });
-    setState(() {});
   }
 
   void _onTapDateTime() async {
@@ -108,10 +108,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                   child: Stack(
                                     children: [
                                       Positioned.fill(
-                                        child: Image.asset(
-                                          R.drawable.img_food_person,
+                                        child: widget.files.length > 0 ? Image.file(
+                                          File(widget.files.first),
                                           fit: BoxFit.cover,
-                                        ),
+                                        ) : SizedBox(),
                                       ),
                                       Container(
                                         width: double.infinity,
@@ -169,7 +169,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       backgroundColor: R.color.greenGradientBottom,
       centerTitle: false,
       title: Text(
-        R.string.dinh_duong.tr(),
+        widget.timeframe,
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
@@ -239,8 +239,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           ],
         ),
       ),
-         );
-   }
+    );
+  }
 
   Widget _mealSummarySection() {
     return Container(
@@ -467,7 +467,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
             callback: (foods) {
               setState(() {
                 selectedFoods = foods;
-                calculatorCalo();
               });
             },
           );
@@ -476,19 +475,43 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
     );
   }
 
+  // Logic lib/src/widget/Food/add_food.dart function [_submitData]
   void _submitData() async {
-    final note = _controllerNote.text;
+    BotToast.showLoading();
 
-    if (selectedFoods.isEmpty) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_mon_an.tr());
-      return;
+    try {
+      List<String> paths = [];
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in (data.files)) {
+        if (file is String) {
+          // If the file is a path, add it directly
+          paths.add(file);
+        } else {
+          // If the file is a File object, convert it to a path
+          paths.add(file.path);
+        }
+      }
+      final note = data.note;
+      final result = await FoodClient().postIndexFood(
+          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          widget.timeframeId,
+          note,
+          selectedFoods, paths);
+      if (result == true) {
+        Observable.instance.notifyObservers([], notifyName: "food_change_data");
+        Navigator.pop(context);
+        NavigationUtil.navigatePage(context, FoodDetailTabbarController());
+      }
+      print("[KPI] close all loading.");
+      BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
     }
-
-    // TODO: Implement submit logic similar to the existing food submission
-    // This would typically involve calling the food client to save the meal
-    
-    Message.showToastMessage(context, R.string.save.tr());
-    Navigator.pop(context);
   }
 
   void _showDialogSave() {
@@ -621,6 +644,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
 }
 
 typedef TimeCallback = Function(DateTime?);
+
 class DateMultiPicker extends StatefulWidget {
   final DateTime? initDate;
   final TimeCallback? callback;
@@ -828,8 +852,7 @@ class CustomTimePickerState extends State<CustomTimePicker> {
   // Check if a time is in the future
   bool _isTimeInFuture(int hour, int minute) {
     final now = DateTime.now();
-    if (selectedDate != null &&
-        selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
+    if (selectedDate != null && selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
       return false;
     }
     return now.hour < hour || (now.hour == hour && now.minute < minute);
@@ -908,4 +931,4 @@ class CustomTimePickerState extends State<CustomTimePicker> {
       ],
     );
   }
-} 
+}
