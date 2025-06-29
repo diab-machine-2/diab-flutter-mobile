@@ -4,12 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodImageCapture extends StatefulWidget {
-  const FoodImageCapture({Key? key}) : super(key: key);
+  const FoodImageCapture({Key? key, required this.timeframe, required this.timeframeId})
+      : super(key: key);
+
+  final String timeframe;
+  final String timeframeId;
 
   @override
   State<FoodImageCapture> createState() => _FoodImageCaptureState();
@@ -27,11 +32,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   File? _lastCapturedImage;
 
   // Animation properties
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  late Animation<Offset> _positionAnimation;
-  bool _showCaptureAnimation = false;
-  File? _captureAnimationImage;
   bool _showFlashEffect = false;
 
   @override
@@ -40,40 +40,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     WidgetsBinding.instance.addObserver(this);
     _initializeCamera();
     _loadLastCapturedImage();
-
-    // Initialize animation controller
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    // Scale animation: starts at 1.0 (full size) and ends at 0.1 (small size)
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.15,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    // Position animation: moves from center to bottom left
-    _positionAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.0), // Center of screen
-      end: const Offset(-0.7, 0.8), // Bottom left area where preview button is
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-
-    // Listen for animation completion
-    _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        setState(() {
-          _showCaptureAnimation = false;
-          _captureAnimationImage = null;
-        });
-      }
-    });
   }
 
   @override
@@ -81,7 +47,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     _controller = null;
-    _animationController.dispose();
     super.dispose();
   }
 
@@ -172,8 +137,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Future<void> _captureImage() async {
-    if (_controller?.value == null || 
-        !_controller!.value.isInitialized || 
+    if (_controller?.value == null ||
+        !_controller!.value.isInitialized ||
         _controller!.value.isStreamingImages) return;
 
     try {
@@ -219,20 +184,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
     setState(() {
       _showFlashEffect = false;
-      _captureAnimationImage = imageFile;
-      _showCaptureAnimation = true;
-    });
-
-    // Start animation
-    await _animationController.forward();
-
-    // Update the actual preview after animation completes
-    setState(() {
       _lastCapturedImage = imageFile;
     });
-
-    // Reset animation for next capture
-    _animationController.reset();
   }
 
   Future<void> _saveToPhotoAlbum(File imageFile) async {
@@ -249,14 +202,14 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
       // Save to photo album
       String imageName = "DiaB_Food_${DateTime.now().millisecondsSinceEpoch}";
-      
+
       var result = await SaverGallery.saveImage(
         imageBytes,
         quality: 100,
         name: imageName,
         androidRelativePath: "Pictures/DiaB",
       );
-      
+
       print('Image saved to gallery: $result');
 
       if (result.isSuccess) {
@@ -333,6 +286,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               child: const Text('Đóng'),
               onPressed: () {
                 Navigator.pop(context);
+                // TODO: handle error dialog close action
                 // Navigator.pop(context);
               },
             ),
@@ -369,34 +323,102 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     );
   }
 
+  void _onRightButtonPressed() {
+    // TODO: Implement right button functionality
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
+      // backgroundColor: Colors.black,
+      body: Column(
         children: [
-          // Camera Preview
-          _buildCameraPreview(),
+          _appBarSection(),
+          Expanded(
+            child: Stack(
+              children: [
+                // Camera Preview
+                _buildCameraPreview(),
+            
+                // Top overlay guide
+                _buildTopOverlay(),
+            
+                // Bottom controls
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: _buildBottomControls(),
+                ),
 
-          // Top overlay guide
-          _buildTopOverlay(),
-
-          // Bottom controls
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildBottomControls(),
+                // Flash effect
+                if (_showFlashEffect) _buildFlashEffect(),
+            
+                // Loading indicator
+                if (_isLoading) _buildLoadingOverlay(),
+              ],
+            ),
           ),
-
-          // Capture animation overlay
-          if (_showCaptureAnimation) _buildCaptureAnimationOverlay(),
-
-          // Flash effect
-          if (_showFlashEffect) _buildFlashEffect(),
-
-          // Loading indicator
-          if (_isLoading) _buildLoadingOverlay(),
         ],
       ),
+    );
+  }
+
+  Widget _appBarSection() {
+    return CustomAppBar(
+      backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
+      title: Text(
+        widget.timeframe,
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.white),
+      ),
+      leadingIcon: IconButton(
+        splashColor: R.color.transparent,
+        highlightColor: R.color.transparent,
+        icon: Icon(Icons.arrow_back, color: R.color.white),
+        onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: _onRightButtonPressed,
+              child: Container(
+                width: 145,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Color(0xFFCAFAF5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Color(0xFF8FEBE0),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      R.drawable.ic_food_edit_raw,
+                      width: 24,
+                      height: 24,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Nhập món ăn',
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -414,7 +436,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     return Positioned.fill(
       bottom: paddingBottom,
       child: OverflowBox(
-        alignment: Alignment.center,
+        maxHeight: MediaQuery.of(context).size.height - paddingBottom,
+        alignment: Alignment.topCenter,
         child: FittedBox(
           fit: BoxFit.cover,
           child: SizedBox(
@@ -428,85 +451,83 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Widget _buildTopOverlay() {
-    return SafeArea(
-      child: Container(
-        height: 82,
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.95),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            // Good lighting section
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(R.drawable.ic_sunny, width: 24, height: 24),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Ánh sáng tốt',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey.shade800,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+    return Container(
+      height: 82,
+      margin: EdgeInsets.symmetric(horizontal: 12).copyWith(top: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // Good lighting section
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(R.drawable.ic_sunny, width: 24, height: 24),
+                const SizedBox(height: 4),
+                Text(
+                  'Ánh sáng tốt',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-
-            const SizedBox(width: 8),
-
-            // Maximum 5 photos section
-            // Good lighting section
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(R.drawable.ic_image_placeholder, width: 24, height: 24),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Tối đa 5 ảnh',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey.shade800,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+          ),
+    
+          const SizedBox(width: 8),
+    
+          // Maximum 5 photos section
+          // Good lighting section
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(R.drawable.ic_image_placeholder, width: 24, height: 24),
+                const SizedBox(height: 4),
+                Text(
+                  'Tối đa 5 ảnh',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-
-            const SizedBox(width: 8),
-
-            // One dish at a time section
-            // Good lighting section
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(R.drawable.ic_food_bowl, width: 24, height: 24),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Mỗi lần 1 món',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey.shade800,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
+          ),
+    
+          const SizedBox(width: 8),
+    
+          // One dish at a time section
+          // Good lighting section
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(R.drawable.ic_food_bowl, width: 24, height: 24),
+                const SizedBox(height: 4),
+                Text(
+                  'Mỗi lần 1 món',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey.shade800,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -523,10 +544,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           children: [
             // Gallery button with preview
             _buildGalleryPreviewButton(),
-    
+
             // Capture button
             _buildCaptureButton(),
-    
+
             // Rotate button
             _buildControlButton(
               icon: R.drawable.im_food_capture_rotate,
@@ -643,51 +664,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     );
   }
 
-  Widget _buildCaptureAnimationOverlay() {
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return Positioned.fill(
-          child: Stack(
-            children: [
-              // Semi-transparent background
-              Container(
-                color: Colors.black.withOpacity(0.3),
-              ),
-
-              // Animated captured image
-              Center(
-                child: Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: Transform.translate(
-                    offset: Offset(
-                      _positionAnimation.value.dx * MediaQuery.of(context).size.width,
-                      _positionAnimation.value.dy * MediaQuery.of(context).size.height,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        _scaleAnimation.value < 0.5 ? 28 * (1 - _scaleAnimation.value) : 0,
-                      ),
-                      child: AspectRatio(
-                        aspectRatio: _controller?.value.aspectRatio ?? 1.0,
-                        child: _captureAnimationImage != null ? Image.file(
-                          _captureAnimationImage!,
-                          fit: BoxFit.cover,
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
-                        ) : Container(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildFlashEffect() {
     return Positioned.fill(
       child: Container(
@@ -762,7 +738,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         if (!status.isGranted) {
           status = await Permission.photos.request();
         }
-        
+
         // Fallback to storage permission for older Android versions
         if (!status.isGranted) {
           status = await Permission.storage.request();
@@ -773,7 +749,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         if (!status.isGranted) {
           status = await Permission.photos.request();
         }
-        
+
         // Also check photoLibrary permission as a fallback
         if (!status.isGranted) {
           final photoLibraryStatus = await Permission.photosAddOnly.status;
