@@ -80,6 +80,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
+    _controller = null;
     _animationController.dispose();
     super.dispose();
   }
@@ -88,12 +89,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final CameraController? cameraController = _controller;
 
-    if (cameraController == null || !cameraController.value.isInitialized) {
-      return;
-    }
-
     if (state == AppLifecycleState.inactive) {
-      cameraController.dispose();
+      setState(() {
+        _isInitialized = false;
+      });
+      cameraController?.dispose();
+      _controller = null;
     } else if (state == AppLifecycleState.resumed) {
       _initializeCamera();
     }
@@ -125,6 +126,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   Future<void> _setupCamera(int cameraIndex) async {
     if (_controller != null) {
       await _controller!.dispose();
+      _controller = null;
+      setState(() {
+        _isInitialized = false;
+      });
     }
 
     _controller = CameraController(
@@ -141,7 +146,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         });
       }
     } catch (e) {
-      _showErrorDialog('Lỗi khi khởi tạo camera: $e');
+      if (mounted) {
+        _showErrorDialog('Lỗi khi khởi tạo camera: $e');
+      }
     }
   }
 
@@ -165,7 +172,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Future<void> _captureImage() async {
-    if (_controller?.value == null || !_controller!.value.isInitialized) return;
+    if (_controller?.value == null || 
+        !_controller!.value.isInitialized || 
+        _controller!.value.isStreamingImages) return;
 
     try {
       setState(() {
@@ -187,11 +196,15 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       // Haptic feedback
       HapticFeedback.mediumImpact();
     } catch (e) {
-      _showErrorDialog('Lỗi khi chụp ảnh: $e');
+      if (mounted) {
+        _showErrorDialog('Lỗi khi chụp ảnh: $e');
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -237,24 +250,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       // Save to photo album
       String imageName = "DiaB_Food_${DateTime.now().millisecondsSinceEpoch}";
       
-      var result;
-      
-      if (Platform.isIOS) {
-        // For iOS, don't use androidRelativePath
-        result = await SaverGallery.saveImage(
-          imageBytes,
-          quality: 100,
-          name: imageName,
-        );
-      } else {
-        // For Android, use androidRelativePath
-        result = await SaverGallery.saveImage(
-          imageBytes,
-          quality: 100,
-          name: imageName,
-          androidRelativePath: "Pictures/DiaB",
-        );
-      }
+      var result = await SaverGallery.saveImage(
+        imageBytes,
+        quality: 100,
+        name: imageName,
+        androidRelativePath: "Pictures/DiaB",
+      );
       
       print('Image saved to gallery: $result');
 
@@ -400,7 +401,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Widget _buildCameraPreview() {
-    if (!_isInitialized || _controller?.value == null) {
+    if (!_isInitialized || _controller == null || !_controller!.value.isInitialized) {
       return const Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -529,7 +530,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
             // Rotate button
             _buildControlButton(
               icon: R.drawable.im_food_capture_rotate,
-              onTap: _cameras.length > 1 ? _switchCamera : null,
+              onTap: _cameras.length > 1 && _isInitialized ? _switchCamera : null,
               size: 56,
             ),
           ],
@@ -555,7 +556,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Widget _buildCaptureButton() {
     return GestureDetector(
-      onTap: _captureImage,
+      onTap: _isInitialized ? _captureImage : null,
       child: Container(
         width: 68,
         height: 68,
@@ -669,12 +670,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                       ),
                       child: AspectRatio(
                         aspectRatio: _controller?.value.aspectRatio ?? 1.0,
-                        child: Image.file(
+                        child: _captureAnimationImage != null ? Image.file(
                           _captureAnimationImage!,
                           fit: BoxFit.cover,
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height,
-                        ),
+                        ) : Container(),
                       ),
                     ),
                   ),
