@@ -349,6 +349,10 @@ class _HomeControllerState extends State<HomeController>
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
     }
+
+    if (notifyName == 'reload_user_info') {
+      _fetchUser();
+    }
   }
 
   Future<String> _chooseUrl() async {
@@ -430,6 +434,15 @@ class _HomeControllerState extends State<HomeController>
     return '';
   }
 
+  Future<void> _fetchUser() async {
+    try {
+      user = await UserClient().fetchUser();
+      AppSettings.isReloadCurrentUserInfo = true;
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -462,13 +475,15 @@ class _HomeControllerState extends State<HomeController>
               });
             }
             //
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty == true
-              && state.model.measurements?.first.value1?.isNotEmpty == true
-              && state.model.measurements?.first.value1 != "--";
+            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
+                    true &&
+                state.model.measurements?.first.value1?.isNotEmpty == true &&
+                state.model.measurements?.first.value1 != "--";
             //
             if (state.model.measurements?.isNotEmpty == true) {
-              List<HomeMeasurementData> huyetAps =
-                  state.model.measurements!.where((e) => e.title.toLowerCase() == "huyết áp").toList();
+              List<HomeMeasurementData> huyetAps = state.model.measurements!
+                  .where((e) => e.title.toLowerCase() == "huyết áp")
+                  .toList();
               _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
@@ -1129,7 +1144,8 @@ class _HomeControllerState extends State<HomeController>
       case ScheduleType.blood_pressure_recommend:
         // check first time open blood pressure intro
         if (!_haveInputBloodpressureAlready) {
-          Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+          Navigator.of(context)
+              .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
           return;
         }
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,

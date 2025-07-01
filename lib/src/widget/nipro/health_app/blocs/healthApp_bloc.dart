@@ -531,11 +531,11 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           lastestSummaryModel.inputs.first.date! * 1000);
       // Nếu ngày sync gần nhất nhỏ hơn ngày Release thì lấy ngày release làm mốc
       if (dateTime.difference(releaseDate).inDays > 0) {
-        dateFrom = dateTime;
+        dateFrom = dateTime.add(Duration(seconds: 1));
       }
     }
 
-    dateFrom = dateFrom.add(Duration(milliseconds: 1));
+    // dateFrom = dateFrom.add(Duration(milliseconds: 1));
 
     if (dateFrom.difference(dateTo).inDays.abs() > 90) {
       DateTime targetDate = dateTo.add(Duration(days: -90));
@@ -571,14 +571,20 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
           }
 
           if (heightData != null) {
-            height = roundDouble(heightData.value) * 100;
+            height = roundDouble((heightData.value as NumericHealthValue)
+                    .numericValue
+                    .toDouble()) *
+                100;
           } else {
             height = userInfo.height;
           }
           if (height != null) {
             syncData.add({
               "date": weightData.dateFrom.millisecondsSinceEpoch ~/ 1000,
-              "weight": roundDouble(weightData.value).toString(),
+              "weight": roundDouble((weightData.value as NumericHealthValue)
+                      .numericValue
+                      .toDouble())
+                  .toString(),
               "height": height != null
                   ? height.toString()
                   : userInfo.height.toString(),
@@ -596,13 +602,20 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
       if (heightList.isNotEmpty || userInfo.height != null) {
         try {
+          final parsedHeight = roundDouble(
+              (heightList.last.value as NumericHealthValue)
+                      .numericValue
+                      .toDouble() *
+                  100);
+          final parseWeight = roundDouble(
+              (weightList.last.value as NumericHealthValue)
+                  .numericValue
+                  .toDouble());
           await UserClient().updateUserInfo(
             AppSettings.userInfo!.id,
             userInfo.copyWith(
-              weight: roundDouble(weightList.first.value),
-              height: heightList.isNotEmpty
-                  ? roundDouble(heightList.first.value) * 100
-                  : userInfo.height,
+              weight: parseWeight,
+              height: heightList.isNotEmpty ? parsedHeight : userInfo.height,
             ),
           );
         } catch (e, stackTrace) {
@@ -613,6 +626,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
         }
         result = true;
       }
+      Observable.instance
+              .notifyObservers([], notifyName: "reload_user_info");
     }
 
     responseSyncData['syncWeight'] = result;
