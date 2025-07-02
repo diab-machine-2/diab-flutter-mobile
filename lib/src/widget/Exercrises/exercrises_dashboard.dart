@@ -24,6 +24,7 @@ import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/less
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widget/Exercrises/widget/filter_segment_button.dart';
 import '../../../../../res/R.dart';
+import '../../utils/app_storages.dart';
 
 class ExercriseDashboard extends StatefulWidget {
   const ExercriseDashboard({Key? key}) : super(key: key);
@@ -41,11 +42,15 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
   GlobalKey<ExercrisesLessonSectionState> exercrisesLessonKey = GlobalKey();
   bool _isLoading = true;
   int periodFilterType = 0;
+  bool isConnectHealthApp = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkConnectHealthApp();
+    });
     firebaseSetup();
     _initPeriodFilterType();
   }
@@ -72,6 +77,16 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
     }).whenComplete(() {
       super.dispose();
     });
+  }
+
+  Future<void> checkConnectHealthApp() async {
+    bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
+    if (hasHealthConnection == true) {
+      isConnectHealthApp = true;
+    } else {
+      isConnectHealthApp = false;
+    }
+    setState(() {});
   }
 
   void _goBack() {
@@ -241,9 +256,11 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
                     lesson.id, lesson.name == 'exercise' ? 1 : 2),
               ),
             ),
+            if (!isConnectHealthApp)
             HealthConnectButton(
               callback: () {
                 print('HealthConnectButton pressed');
+                checkConnectHealthApp();
               },
             ),
           ],
