@@ -90,8 +90,9 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
     // Calculate the number of visible items (excluding the hidden item)
     int visibleItemCount = dataFilter.length - _visibleStartIndex;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      color: R.color.backgroundColorNew,
       child: CustomSlidingSegmentedControl<int>(
         fixedWidth: (MediaQuery.of(context).size.width - 32) / visibleItemCount,
         children: {
