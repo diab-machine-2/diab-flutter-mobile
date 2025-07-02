@@ -219,7 +219,7 @@ class ExercrisesClient extends FetchClient {
       String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
-          await super.fetchData(url: '/App/Exercise/Trend/Duration', params: {
+          await super.fetchData(url: '/App/Exercise/Trend/Duration/v2', params: {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
         'takeAll': 'true',
@@ -291,7 +291,7 @@ class ExercrisesClient extends FetchClient {
       String? currentDateTime, String? periodFilterType) async {
     try {
       final Response response =
-          await super.fetchData(url: '/App/Exercise/Trend/Calorie', params: {
+          await super.fetchData(url: '/App/Exercise/Trend/Calorie/v2', params: {
         'currentDateTime': '$currentDateTime',
         'periodFilterType': '$periodFilterType',
         'takeAll': 'true',
