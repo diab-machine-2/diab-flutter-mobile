@@ -103,6 +103,7 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
               Container(
                 width: double.infinity,
                 child: Stack(
+                  clipBehavior: Clip.none,
                   children: [
                     TextFormField(
                       controller: _controllerNote,
@@ -114,6 +115,7 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                       maxLengthEnforcement: MaxLengthEnforcement.enforced,
                       onChanged: (value) => widget.onChangedNote(value),
                       decoration: InputDecoration(
+                        counterText: "",
                         contentPadding: const EdgeInsets.only(
                           right: 48, // chừa khoảng cho icon
                           top: 8,
@@ -149,10 +151,21 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                         },
                       ),
                     ),
+                    Positioned(
+                      bottom: -21,
+                      right: 0,
+                      child: Text(
+                        '${_controllerNote.text.length}/250',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: R.color.primaryGreyColor,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: files.isNotEmpty ? 26.5 : 16),
               files.isEmpty
                   ? Container()
                   : Container(
