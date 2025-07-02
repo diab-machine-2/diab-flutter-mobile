@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -127,9 +126,41 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
                           color: R.color.primaryGreyColor,
                           fontWeight: FontWeight.normal,
                         ),
+                        // Set border khi không focus
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: R.color.color0xffDFE4E4,
+                            width: 1,
+                          ),
+                        ),
+
+                        // Set border khi focus
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: R.color.color0xffDFE4E4,
+                            width: 1,
+                          ),
+                        ),
+
+                        // Set border khi có lỗi
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: R.color.color0xffDFE4E4,
+                            width: 1,
+                          ),
+                        ),
+
+                        // Set border khi có lỗi và đang focus
+                        focusedErrorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: R.color.color0xffDFE4E4,
+                            width: 1,
+                          ),
+                        ),
+                        // set border bottom only
                         border: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: R.color.primaryGreyColor,
+                            color: R.color.color0xffDFE4E4,
                             width: 1,
                           ),
                         ),

@@ -358,16 +358,42 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
                                   fontWeight: FontWeight.w700,
                                   height: 0.95,
                                 ),
+                                // Set border khi không focus
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: R.color.color0xffDFE4E4,
+                                    width: 1,
+                                  ),
+                                ),
+
+                                // Set border khi focus
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: R.color.color0xffDFE4E4,
+                                    width: 1,
+                                  ),
+                                ),
+
+                                // Set border khi có lỗi
+                                errorBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: R.color.color0xffDFE4E4,
+                                    width: 1,
+                                  ),
+                                ),
+
+                                // Set border khi có lỗi và đang focus
+                                focusedErrorBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: R.color.color0xffDFE4E4,
+                                    width: 1,
+                                  ),
+                                ),
                                 // set border bottom only
                                 border: UnderlineInputBorder(
-                                  borderSide: BorderSide.lerp(
-                                    BorderSide(
-                                        color: R.color.primaryGreyColor,
-                                        width: 1),
-                                    BorderSide(
-                                        color: R.color.primaryGreyColor,
-                                        width: 1),
-                                    0.5,
+                                  borderSide: BorderSide(
+                                    color: R.color.color0xffDFE4E4,
+                                    width: 1,
                                   ),
                                 ),
                                 errorText: null,
