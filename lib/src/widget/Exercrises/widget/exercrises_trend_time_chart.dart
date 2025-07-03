@@ -512,139 +512,198 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
   }
 
   Widget _buildChart({double padding = 0, double target = 0}) {
-    double minY = trends.map<double>((e) => e.duration ?? 0).reduce(min);
-    minY = (minY * (trends.length == 1 ? 0.53 : 0.8)).roundToDouble();
-    double maxY = trends.map<double>((e) => e.duration ?? 0).reduce(max);
-    maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
+    const double chartPaddingTop = 8.0;
+    const double chartPaddingBottom = 8.0;
+    const double chartFixedHeight = 140.0;
+
+    final screenWidth = MediaQuery.of(context).size.width - padding * 2;
+
+    final bool shouldScroll = trends.length >= 11;
+
+    const double maxSpacing = 60.0;
+    const double minSpacing = 25.0;
+
+    double pointSpacing = shouldScroll
+        ? max(minSpacing, maxSpacing - (trends.length - 11) * 2.5)
+        : screenWidth / max(1, (trends.length - 1));
+
+    double chartWidth = shouldScroll
+        ? pointSpacing * (trends.length - 1)
+        : screenWidth;
+
     double minX = trends.length == 1 ? -1 : 0;
     double maxX = trends.length == 1 ? 1 : trends.length.toDouble() - 1;
-    double avgY = (maxY + minY) / 2;
-    _focusIndex = (trends.length == 1) ? 0 : _focusIndex;
 
-    // const leftReservedSize = 70.0;
-    // khoản cách giữa 2 điểm
-    const double pointSpacing = 100.0;
-    // chiều rộng = min of [screen width, pointSpacing * trends.length]
-    double screenWidth = MediaQuery.of(context).size.width - padding * 2;
-    // chiều rộng của biểu đồ tối đa là screen width
-    double chartWidth = trends.length == 1
-        ? MediaQuery.of(context).size.width
-        : pointSpacing * trends.length;
+    final spots = trends.asMap().entries.map((e) {
+      return FlSpot(e.key.toDouble(), e.value.duration?.toDouble() ?? 0);
+    }).toList();
 
-    double chartHeight = 140;
+    double getSafeMinY(List<FlSpot> spots, double target) {
+      final all = [...spots.map((e) => e.y), target];
+      final minValue = all.reduce(min);
+      final maxValue = all.reduce(max);
+      final range = maxValue - minValue;
+      return minValue - range * 0.1;
+    }
 
-    return Stack(
-      alignment: Alignment.center,
-      fit: StackFit.expand,
-      children: [
-        Container(
-            width: chartWidth,
-            height: chartHeight,
-            padding: EdgeInsets.only(left: 55, top: 8),
-            alignment: Alignment.center,
-            child: LineChart(
-                LineChartData(
-                  minX: minX,
-                  maxX: maxX,
-                  maxY: max(target.toDouble(), maxY),
-                  minY: minY,
-                  lineBarsData: _linesBarData(trends),
-                  titlesData: FlTitlesData(
-                    show: false,
-                    // leftTitles: SideTitles(
-                    //     checkToShowTitle: (minValue, maxValue, sideTitles,
-                    //             appliedInterval, value) =>
-                    //         false,
-                    //     showTitles: true,
-                    //     reservedSize: leftReservedSize),
-                    bottomTitles: SideTitles(showTitles: false),
-                    topTitles: SideTitles(showTitles: false),
-                    // rightTitles: SideTitles(
-                    //     checkToShowTitle: (minValue, maxValue, sideTitles,
-                    //             appliedInterval, value) =>
-                    //         false,
-                    //     showTitles: true,
-                    //     reservedSize: leftReservedSize),
-                  ),
-                  gridData: FlGridData(show: false),
-                  borderData: FlBorderData(show: false),
-                  extraLinesData:
-                      ExtraLinesData(extraLinesOnTop: true, horizontalLines: [
-                    HorizontalLine(
-                      label: HorizontalLineLabel(
-                        show: true,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400),
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(left: -60),
-                        labelResolver: (value) {
-                          return '${target.toInt()} ${R.string.minute.tr()}';
-                        },
+    double getSafeMaxY(List<FlSpot> spots, double target) {
+      final all = [...spots.map((e) => e.y), target];
+      final minValue = all.reduce(min);
+      final maxValue = all.reduce(max);
+      final range = maxValue - minValue;
+      return maxValue + range * 0.1;
+    }
+
+    double minY = getSafeMinY(spots, target);
+    double maxY = getSafeMaxY(spots, target);
+
+    if (minY == maxY) {
+      minY -= 5;
+      maxY += 5;
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final chartHeight = constraints.maxHeight - chartPaddingTop;
+        final usableHeight = chartHeight - chartPaddingBottom;
+
+        final yRatio = (target - minY) / (maxY - minY);
+        final targetPixel = (1 - yRatio) * usableHeight + chartPaddingTop;
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Label bên trái
+            Container(
+              width: 55,
+              height: constraints.maxHeight,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: targetPixel - 8,
+                    left: 0,
+                    right: 0,
+                    child: Text(
+                      '${target.toInt()} ${R.string.minute.tr()}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black,
                       ),
-                      // Adjusted to align with the chart's data range
-                      y: target,
-                      color: R.color.textDark,
-                      strokeWidth: 1,
-                      dashArray: [8, 4],
+                      textAlign: TextAlign.left,
                     ),
-                  ]),
-                  lineTouchData: LineTouchData(
-                    getTouchLineStart: (barData, index) => -double.infinity,
-                    getTouchLineEnd: (barData, index) => double.infinity,
-                    getTouchedSpotIndicator:
-                        (LineChartBarData barData, List<int> spotIndexes) {
-                      return spotIndexes.map((index) {
-                        return TouchedSpotIndicatorData(
-                          FlLine(
-                              color: toColor(trends[index].targetColor),
-                              strokeWidth: 0.5),
-                          FlDotData(
-                            show: true,
-                            getDotPainter:
-                                (spot, percent, barData, index) =>
-                                    FlDotCirclePainter(
-                              radius: 6.5,
-                              color: toColor(trends[index].targetColor),
-                              strokeWidth: 18,
-                              strokeColor:
-                                  toColor(trends[index].targetColor)
-                                      .withOpacity(0.3),
-                            ),
-                          ),
-                        );
-                      }).toList();
-                    },
-                    touchTooltipData: LineTouchTooltipData(
-                      showOnTopOfTheChartBoxArea: true,
-                      fitInsideHorizontally: true,
-                      fitInsideVertically: true,
-                      tooltipBgColor: R.color.transparent,
-                      tooltipRoundedRadius: 8,
-                      getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                        return lineBarsSpot.map((lineBarSpot) {
-                          return LineTooltipItem(
-                            roundNumber(lineBarSpot.y),
-                            TextStyle(
-                                color: toColor(trends[lineBarSpot.spotIndex]
-                                    .targetColor),
-                                fontWeight: FontWeight.bold),
-                          );
-                        }).toList();
-                      },
-                      tooltipPadding: EdgeInsets.only(bottom: 50),
-                    ),
-                    touchCallback:
-                        (FlTouchEvent event, LineTouchResponse? lineTouch) {
-                      if (event is FlTapUpEvent) {
-                        _touchCallback(event, lineTouch);
-                      }
-                    },
                   ),
+                ],
+              ),
+            ),
+
+            // Chart bên phải
+            Expanded(
+              child: shouldScroll
+                  ? SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                child: Container(
+                  width: chartWidth,
+                  height: chartFixedHeight,
+                  padding: const EdgeInsets.only(
+                    top: chartPaddingTop,
+                    left: 8,
+                    right: 8,
+                    bottom: chartPaddingBottom,
+                  ),
+                  alignment: Alignment.center,
+                  child: _buildLineChart(minX, maxX, minY, maxY, target),
                 ),
-                swapAnimationDuration: Duration(milliseconds: 250))),
-      ],
+              )
+                  : Container(
+                width: chartWidth,
+                height: chartFixedHeight,
+                padding: const EdgeInsets.only(
+                  top: chartPaddingTop,
+                  left: 8,
+                  right: 8,
+                  bottom: chartPaddingBottom,
+                ),
+                alignment: Alignment.center,
+                child: _buildLineChart(minX, maxX, minY, maxY, target),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLineChart(double minX, double maxX, double minY, double maxY, double target) {
+    return LineChart(
+      LineChartData(
+        minX: minX,
+        maxX: maxX,
+        minY: minY,
+        maxY: maxY,
+        lineBarsData: _linesBarData(trends),
+        titlesData: FlTitlesData(show: false),
+        gridData: FlGridData(show: false),
+        borderData: FlBorderData(show: false),
+        extraLinesData: ExtraLinesData(
+          extraLinesOnTop: true,
+          horizontalLines: [
+            HorizontalLine(
+              y: target,
+              color: R.color.textDark.withOpacity(0.3),
+              strokeWidth: 1,
+              dashArray: [8, 4],
+            ),
+          ],
+        ),
+        lineTouchData: LineTouchData(
+          getTouchLineStart: (barData, index) => -double.infinity,
+          getTouchLineEnd: (barData, index) => double.infinity,
+          getTouchedSpotIndicator: (barData, indexes) => indexes.map((index) {
+            return TouchedSpotIndicatorData(
+              FlLine(
+                color: toColor(trends[index].targetColor),
+                strokeWidth: 0.5,
+              ),
+              FlDotData(
+                show: true,
+                getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
+                  radius: 6.5,
+                  color: toColor(trends[index].targetColor),
+                  strokeWidth: 18,
+                  strokeColor: toColor(trends[index].targetColor).withOpacity(0.3),
+                ),
+              ),
+            );
+          }).toList(),
+          touchTooltipData: LineTouchTooltipData(
+            showOnTopOfTheChartBoxArea: true,
+            fitInsideHorizontally: true,
+            fitInsideVertically: true,
+            tooltipBgColor: R.color.transparent,
+            tooltipRoundedRadius: 8,
+            tooltipPadding: const EdgeInsets.only(bottom: 50),
+            getTooltipItems: (lineBarsSpot) {
+              return lineBarsSpot.map((spot) {
+                return LineTooltipItem(
+                  roundNumber(spot.y),
+                  TextStyle(
+                    color: toColor(trends[spot.spotIndex].targetColor),
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }).toList();
+            },
+          ),
+          touchCallback: (event, response) {
+            if (event is FlTapUpEvent) {
+              _touchCallback(event, response);
+            }
+          },
+        ),
+      ),
+      swapAnimationDuration: const Duration(milliseconds: 250),
     );
   }
 
@@ -660,12 +719,11 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
       if (lineTouch?.lineBarSpots != null &&
           lineTouch!.lineBarSpots!.isNotEmpty) {
         final touchedSpot = lineTouch.lineBarSpots!.first;
-        final date =
-        trends[lineTouch.lineBarSpots!.first.spotIndex]
-            .date != null
+        final date = trends[lineTouch.lineBarSpots!.first.spotIndex].date !=
+                null
             ? DateTime.fromMillisecondsSinceEpoch(
-            trends[lineTouch.lineBarSpots!.first.spotIndex]
-                .date!* 1000, isUtc: true)
+                trends[lineTouch.lineBarSpots!.first.spotIndex].date! * 1000,
+                isUtc: true)
             : DateTime.now();
         print('Double press on spot: ${touchedSpot.x}, ${touchedSpot.y}');
         // Thực hiện hành động khi double press
@@ -747,78 +805,113 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
   List<LineChartBarData> _linesBarData(List<SubTrendItemModel> trends) {
     if (trends.length == 0) return [];
-    if (trends.length < _breakingTypeNumber) {
-      // can change focus
-      return [
-        LineChartBarData(
-          spots: List.generate(trends.length, (index) {
-            return FlSpot((index).toDouble(), trends[index].duration!);
-          }),
-          isCurved: false,
-          colors: [Color(0xFF008479)],
-          barWidth: 1.5,
-          isStrokeCapRound: false,
-          dotData: FlDotData(
-            show: true,
-            checkToShowDot: (spot, barData) => true,
-            getDotPainter: (spot, percent, barData, index) {
-              return FlDotCirclePainter(
-                radius: 3,
-                color: toColor(trends[index].targetColor),
-                strokeWidth: index == _focusIndex ? 6 : 0,
-                strokeColor: index == _focusIndex
-                    ? toColor(trends[index].targetColor).withOpacity(0.3)
-                    : null,
-              );
-            },
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            colors: [
-              R.color.greenGradientMid.withOpacity(0.2),
-              R.color.greenGradientMid.withOpacity(0.0),
-            ],
-            gradientColorStops: const [0.5, 1.0],
-            gradientFrom: const Offset(0.5, 0),
-            gradientTo: const Offset(0.5, 1),
-          ),
-        ),
-      ];
-    }
     return [
       LineChartBarData(
         spots: List.generate(trends.length, (index) {
           return FlSpot((index).toDouble(), trends[index].duration!);
         }),
-        isCurved: true,
+        isCurved: false,
         colors: [Color(0xFF008479)],
         barWidth: 1.5,
-        isStrokeCapRound: true,
+        isStrokeCapRound: false,
         dotData: FlDotData(
           show: true,
-          checkToShowDot: (spot, barData) =>
-              spot.x == minXIndex || spot.x == maxXIndex,
+          checkToShowDot: (spot, barData) => true,
           getDotPainter: (spot, percent, barData, index) {
             return FlDotCirclePainter(
               radius: 3,
-              color: index == maxXIndex ? Color(0xFFC82221) : Color(0xFFF9C239),
-              strokeWidth: 6,
-              strokeColor: index == maxXIndex
-                  ? Color(0xFFC82221).withOpacity(0.3)
-                  : Color(0xFFF9C239).withOpacity(0.3),
+              color: toColor(trends[index].targetColor),
+              strokeWidth: index == _focusIndex ? 6 : 0,
+              strokeColor: index == _focusIndex
+                  ? toColor(trends[index].targetColor).withOpacity(0.3)
+                  : null,
             );
           },
         ),
         belowBarData: BarAreaData(
           show: true,
           colors: [
-            Color(0xFFE7FDFB),
-            Color(0xFFFFFFFF),
+            R.color.greenGradientMid.withOpacity(0.2),
+            R.color.greenGradientMid.withOpacity(0.0),
           ],
-          gradientFrom: Offset(0.5, 0),
-          gradientTo: Offset(0.5, 1.2),
+          gradientColorStops: const [0.5, 1.0],
+          gradientFrom: const Offset(0.5, 0),
+          gradientTo: const Offset(0.5, 1),
         ),
       ),
     ];
+    // if (trends.length < _breakingTypeNumber) {
+    //   // can change focus
+    //   return [
+    //     LineChartBarData(
+    //       spots: List.generate(trends.length, (index) {
+    //         return FlSpot((index).toDouble(), trends[index].duration!);
+    //       }),
+    //       isCurved: false,
+    //       colors: [Color(0xFF008479)],
+    //       barWidth: 1.5,
+    //       isStrokeCapRound: false,
+    //       dotData: FlDotData(
+    //         show: true,
+    //         checkToShowDot: (spot, barData) => true,
+    //         getDotPainter: (spot, percent, barData, index) {
+    //           return FlDotCirclePainter(
+    //             radius: 3,
+    //             color: toColor(trends[index].targetColor),
+    //             strokeWidth: index == _focusIndex ? 6 : 0,
+    //             strokeColor: index == _focusIndex
+    //                 ? toColor(trends[index].targetColor).withOpacity(0.3)
+    //                 : null,
+    //           );
+    //         },
+    //       ),
+    //       belowBarData: BarAreaData(
+    //         show: true,
+    //         colors: [
+    //           R.color.greenGradientMid.withOpacity(0.2),
+    //           R.color.greenGradientMid.withOpacity(0.0),
+    //         ],
+    //         gradientColorStops: const [0.5, 1.0],
+    //         gradientFrom: const Offset(0.5, 0),
+    //         gradientTo: const Offset(0.5, 1),
+    //       ),
+    //     ),
+    //   ];
+    // }
+    // return [
+    //   LineChartBarData(
+    //     spots: List.generate(trends.length, (index) {
+    //       return FlSpot((index).toDouble(), trends[index].duration!);
+    //     }),
+    //     isCurved: true,
+    //     colors: [Color(0xFF008479)],
+    //     barWidth: 1.5,
+    //     isStrokeCapRound: true,
+    //     dotData: FlDotData(
+    //       show: true,
+    //       checkToShowDot: (spot, barData) =>
+    //           spot.x == minXIndex || spot.x == maxXIndex,
+    //       getDotPainter: (spot, percent, barData, index) {
+    //         return FlDotCirclePainter(
+    //           radius: 3,
+    //           color: index == maxXIndex ? Color(0xFFC82221) : Color(0xFFF9C239),
+    //           strokeWidth: 6,
+    //           strokeColor: index == maxXIndex
+    //               ? Color(0xFFC82221).withOpacity(0.3)
+    //               : Color(0xFFF9C239).withOpacity(0.3),
+    //         );
+    //       },
+    //     ),
+    //     belowBarData: BarAreaData(
+    //       show: true,
+    //       colors: [
+    //         Color(0xFFE7FDFB),
+    //         Color(0xFFFFFFFF),
+    //       ],
+    //       gradientFrom: Offset(0.5, 0),
+    //       gradientTo: Offset(0.5, 1.2),
+    //     ),
+    //   ),
+    // ];
   }
 }
