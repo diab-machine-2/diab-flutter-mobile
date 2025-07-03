@@ -1253,7 +1253,7 @@ class _HomeControllerState extends State<HomeController>
         await Navigator.pushNamed(context, NavigatorName.profile_info,
             arguments: {
               'id': smartGoal?.state != 1 ? smartGoal?.id : null,
-            });
+            }); 
         break;
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);

@@ -807,6 +807,16 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         await _handleInterviewNavigation(
             interviewType: 32, smartGoal: smartGoal);
         break;
+      case ScheduleType.hba1c_recommend:
+        await Navigator.pushNamed(context, NavigatorName.add_hba1c,
+            arguments: {'type': 'input', 'goalId': smartGoal?.id});
+        break;
+      case ScheduleType.schedule_glucose_recommend:
+        await Navigator.pushNamed(context, NavigatorName.schedule_glucose,
+            arguments: {
+              'smartGoal': smartGoal,
+            });
+        break;
     }
   }
 

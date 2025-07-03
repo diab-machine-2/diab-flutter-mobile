@@ -267,6 +267,7 @@ class App extends StatelessWidget {
                         AddHBA1CController(
                           type: data?['type'],
                           id: data?['id'],
+                          goalId: data?['goalId'],
                         ));
                   case NavigatorName.detail_hba1c:
                     return _buildRoute(settings, Hba1cDetailTabbarController(),

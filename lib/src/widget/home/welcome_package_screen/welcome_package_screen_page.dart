@@ -98,128 +98,137 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
                         ),
                         child: IntrinsicHeight(
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               _buildHeader(),
-                              GapH(40),
-                              _buildHeaderTitle(),
-                              GapH(16),
-                              Image.asset(
-                                widget.icon!,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
+                              Column(
+                                children: [
+                                  _buildHeaderTitle(),
+                                  GapH(16),
+                                  Image.asset(
+                                    widget.icon!,
                                   ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      RichText(
-                                        textAlign: TextAlign.center,
-                                        text: TextSpan(
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600,
-                                            height: 1.4,
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20)),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600,
+                                              height: 1.4,
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: R.string
+                                                    .welcome_dialog_subtitle_1
+                                                    .tr(),
+                                                style: TextStyle(
+                                                    color: Color(0xFF111515)),
+                                              ),
+                                              TextSpan(
+                                                text: R.string
+                                                    .welcome_dialog_subtitle_2
+                                                    .tr(),
+                                                style: TextStyle(
+                                                    color: Color(0xFF111515)),
+                                              ),
+                                              TextSpan(
+                                                text: _cubit
+                                                        .content?.packageName ??
+                                                    '',
+                                                style: TextStyle(
+                                                    color: Color(0xFFB4802D)),
+                                              ),
+                                            ],
                                           ),
-                                          children: [
-                                            TextSpan(
-                                              text: R.string
-                                                  .welcome_dialog_subtitle_1
-                                                  .tr(),
-                                              style: TextStyle(
-                                                  color: Color(0xFF111515)),
-                                            ),
-                                            TextSpan(
-                                              text: R.string
-                                                  .welcome_dialog_subtitle_2
-                                                  .tr(),
-                                              style: TextStyle(
-                                                  color: Color(0xFF111515)),
-                                            ),
-                                            TextSpan(
-                                              text:
-                                                  _cubit.content?.packageName ??
-                                                      '',
-                                              style: TextStyle(
-                                                  color: Color(0xFFB4802D)),
-                                            ),
-                                          ],
                                         ),
-                                      ),
-                                      GapH(40),
-                                      GestureDetector(
-                                        onTap: () => _handleButtonPress(),
-                                        child: SafeArea(
-                                          top: false,
+                                        GapH(40),
+                                        GestureDetector(
+                                          onTap: () => _handleButtonPress(),
+                                          child: SafeArea(
+                                            top: false,
+                                            child: Container(
+                                              height: 48,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                  color: R.color.mainColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          200),
+                                                  gradient: LinearGradient(
+                                                      begin: Alignment.topLeft,
+                                                      end:
+                                                          Alignment.centerRight,
+                                                      colors: [
+                                                        R.color
+                                                            .greenGradientTop,
+                                                        R.color
+                                                            .greenGradientBottom
+                                                      ])),
+                                              child: Center(
+                                                child: Text(
+                                                  widget.zaloGroup != null &&
+                                                          widget.zaloGroup!
+                                                              .isNotEmpty
+                                                      ? R.string.join_zalo_group
+                                                          .tr()
+                                                      : R.string.my_plan.tr(),
+                                                  style: TextStyle(
+                                                      color: R.color.white,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        GapH(16),
+                                        GestureDetector(
+                                          onTap: () =>
+                                              _handleButtonBookingConsultPress(
+                                                  EVALUATING_INTERVIEW_LINK),
                                           child: Container(
                                             height: 48,
-                                            width: double.infinity,
                                             decoration: BoxDecoration(
-                                                color: R.color.mainColor,
-                                                borderRadius:
-                                                    BorderRadius.circular(200),
-                                                gradient: LinearGradient(
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.centerRight,
-                                                    colors: [
-                                                      R.color.greenGradientTop,
-                                                      R.color
-                                                          .greenGradientBottom
-                                                    ])),
-                                            child: Center(
-                                              child: Text(
-                                                widget.zaloGroup != null &&
-                                                        widget.zaloGroup!
-                                                            .isNotEmpty
-                                                    ? R.string.join_zalo_group
-                                                        .tr()
-                                                    : R.string.my_plan.tr(),
-                                                style: TextStyle(
-                                                    color: R.color.white,
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      GapH(16),
-                                      GestureDetector(
-                                        onTap: () =>
-                                            _handleButtonBookingConsultPress(
-                                                EVALUATING_INTERVIEW_LINK),
-                                        child: Container(
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: R.color.white,
-                                            borderRadius:
-                                                BorderRadius.circular(200),
-                                            border: Border.all(
-                                              color:
-                                                  R.color.greenGradientBottom,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              R.string.booking_consult.tr(),
-                                              style: TextStyle(
+                                              color: R.color.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(200),
+                                              border: Border.all(
                                                 color:
                                                     R.color.greenGradientBottom,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                R.string.booking_consult.tr(),
+                                                style: TextStyle(
+                                                  color: R.color
+                                                      .greenGradientBottom,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        GapH(16),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
@@ -361,7 +370,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
           R.string.welcome_dialog_title_1.tr(),
           style: TextStyle(
             color: R.color.color0xffB4802D,
-            fontSize: 32,
+            fontSize: 35,
             fontWeight: FontWeight.w700,
           ),
           textAlign: TextAlign.center,
@@ -370,7 +379,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
           R.string.welcome_dialog_title_2.tr(),
           style: TextStyle(
             color: R.color.greenGradientBottom,
-            fontSize: 32,
+            fontSize: 40,
             fontWeight: FontWeight.w700,
           ),
           textAlign: TextAlign.center,

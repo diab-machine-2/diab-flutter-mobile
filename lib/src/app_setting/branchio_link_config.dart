@@ -970,8 +970,8 @@ class BranchioLinkConfig {
         _showCoachingPopup(smartGoal);
         break;
       case ScheduleType.hba1c_recommend:
-        await navigatorKey.currentState
-            ?.pushNamed(NavigatorName.add_hba1c, arguments: {'type': 'input'});
+        await navigatorKey.currentState?.pushNamed(NavigatorName.add_hba1c,
+            arguments: {'type': 'input', 'goalId': smartGoal?.id});
         break;
       case ScheduleType.schedule_glucose_recommend:
         await navigatorKey.currentState
