@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
@@ -26,8 +23,6 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
@@ -84,6 +79,9 @@ class BranchioLinkConfig {
 
   int? _pendingTargetType;
   String? _pendingSmartGoalId;
+  String? _pendingSurveyId;
+  String? _pendingLessonId;
+  String? _pendingLessonType;
 
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
@@ -131,7 +129,8 @@ class BranchioLinkConfig {
 
       // Handle lesson deeplink
       if (data['+clicked_branch_link'] == true &&
-          data.containsKey("\$lessonId")) {
+          data.containsKey("\$lessonId") &&
+          !data.containsKey("\$smartGoalId")) {
         _lessonId = data['\$lessonId'] as String;
         print('[ROUTE] Lesson deeplink detected: $_lessonId');
 
@@ -264,27 +263,54 @@ class BranchioLinkConfig {
           data.containsKey('\$smartGoalId')) {
         final smartGoalId = data['\$smartGoalId'] as String?;
         final targetType = data['\$targetType'] as String?;
+        final surveyId = data['\$surveyId'] as String?;
+        final lessonId = data['\$lessonId'] as String?;
+        final lessonType = data['\$lessonType'] as String?;
 
         if (targetType == null || smartGoalId == null) {
           return;
         }
 
         final targetTypeNum = int.tryParse(targetType);
-
         if (targetTypeNum == null) {
           return;
         }
 
         print(
-            '[ROUTE] TargetType and SmartGoalId deeplink detected: targetType=$targetType, smartGoalId=$smartGoalId');
+            '[ROUTE] Handling targetType deeplink: $targetTypeNum with smartGoalId: $smartGoalId, lessonId: $lessonId, surveyId: $surveyId');
+
+        // Create a SmartGoalList object with the provided data
+        SmartGoalList smartGoal = SmartGoalList(
+          id: smartGoalId,
+          surveyId: surveyId,
+          type: targetTypeNum,
+        );
+
+        // Handle lesson data if lessonId and lessonType are provided
+        if (lessonId != null && lessonType != null) {
+          final lessonTypeNum = int.tryParse(lessonType);
+          if (lessonTypeNum != null) {
+            // Create lesson data with the actual lesson ID
+            final lessonData = LessonSectionListResponseData(
+              id: lessonId,
+              type: lessonTypeNum,
+            );
+
+            // Set the lesson data to the smartGoal
+            smartGoal.data = lessonData;
+          }
+        }
 
         // Navigate immediately if app is initialized and user is logged in
         if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
-          await _handleTargetTypeDeeplink(targetTypeNum, smartGoalId);
+          await _handleTargetTypeDeeplink(targetTypeNum, smartGoal);
         } else {
           // Store for later execution
           _pendingTargetType = targetTypeNum;
           _pendingSmartGoalId = smartGoalId;
+          _pendingSurveyId = surveyId;
+          _pendingLessonId = lessonId;
+          _pendingLessonType = lessonType;
         }
         return;
       }
@@ -564,6 +590,9 @@ class BranchioLinkConfig {
     _hasPendingDeeplink = false;
     _pendingTargetType = null;
     _pendingSmartGoalId = null;
+    _pendingSurveyId = null;
+    _pendingLessonId = null;
+    _pendingLessonType = null;
   }
 
   void resetPageTracking() {
@@ -747,17 +776,11 @@ class BranchioLinkConfig {
   }
 
   Future<void> _handleTargetTypeDeeplink(
-      int targetType, String smartGoalId) async {
+      int targetType, SmartGoalList smartGoal) async {
     try {
-      print(
-          '[ROUTE] Handling targetType deeplink: $targetType with smartGoalId: $smartGoalId');
-
       // Convert targetType string to ScheduleType enum
       ScheduleType scheduleType =
           ScheduleTypeExtend.getTypeFromIndex(targetType);
-
-      // Create a SmartGoalList object with the provided smartGoalId
-      SmartGoalList smartGoal = SmartGoalList(id: smartGoalId);
 
       // Call the existing _onSelectGoal function
       await _onSelectGoal(scheduleType, smartGoal: smartGoal);
@@ -784,16 +807,38 @@ class BranchioLinkConfig {
           .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
     }
 
-    // Handle pending targetType and smartGoalId
     if (_pendingTargetType != null &&
         _pendingSmartGoalId != null &&
         AppSettings.splashScreenInitDone &&
         AppSettings.userInfo != null) {
       print(
           '[ROUTE] Executing pending targetType navigation: $_pendingTargetType with smartGoalId: $_pendingSmartGoalId');
-      _handleTargetTypeDeeplink(_pendingTargetType!, _pendingSmartGoalId!);
+
+      SmartGoalList smartGoal = SmartGoalList(
+        id: _pendingSmartGoalId,
+        surveyId: _pendingSurveyId,
+        type: _pendingTargetType,
+      );
+
+      // Handle lesson data if available
+      if (_pendingLessonId != null && _pendingLessonType != null) {
+        final lessonTypeNum = int.tryParse(_pendingLessonType!);
+        if (lessonTypeNum != null) {
+          final lessonData = LessonSectionListResponseData(
+            id: _pendingLessonId!, // Use the actual lessonId
+            type: lessonTypeNum,
+          );
+          smartGoal.data = lessonData;
+        }
+      }
+
+      _handleTargetTypeDeeplink(_pendingTargetType!, smartGoal);
+
       _pendingTargetType = null;
       _pendingSmartGoalId = null;
+      _pendingSurveyId = null;
+      _pendingLessonId = null;
+      _pendingLessonType = null;
     }
   }
 
@@ -887,7 +932,9 @@ class BranchioLinkConfig {
       case ScheduleType.lesson:
       case ScheduleType.infographic:
         final LessonSectionListResponseData? lessonDetail =
-            smartGoal?.lessonData;
+            LessonSectionListResponseData(
+                id: (smartGoal?.data as LessonSectionListResponseData).id,
+                type: (smartGoal?.data as LessonSectionListResponseData).type);
         if (lessonDetail == null) return;
 
         if (smartGoal?.state == Const.LESSON_LOCKED) {
@@ -1384,30 +1431,8 @@ class BranchioLinkConfig {
       {String? smartGoalId}) async {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
-      // check first time open glucose intro
-      // if (!_haveInputGlucoseAlready) {
-      //   navigatorKey.currentState
-      //       ?.pushNamed(NavigatorName.glucose_intro_1st_page, arguments: {
-      //     'goalId': smartGoalId,
-      //   });
-      //   return false;
-      // }
-      if (!AppSettings.isRegionAllowInputDevice) {
-        return true;
-      }
-      // Logic navigate to glucose input page (saved before)
-      String? lastOpenedGlucoseInputType =
-          await AppSettings.getLastOpenedGlucoseInputType();
-      if (lastOpenedGlucoseInputType == null) {
-        BloodSugarFunctions.showModalAddData(navigatorKey.currentContext!);
-      } else if (lastOpenedGlucoseInputType == 'device') {
-        BlocProvider.of<NiproBloc>(navigatorKey.currentContext!)
-            .tryAutoConnect();
-      } else if (lastOpenedGlucoseInputType == 'manual') {
-        navigatorKey.currentState?.pushNamed(NavigatorName.add_blood_sugar_new,
-            arguments: {'type': 'input', 'goalId': smartGoalId});
-        // or can return "true" to next page
-      }
+      navigatorKey.currentState?.pushNamed(NavigatorName.add_blood_sugar_new,
+          arguments: {'type': 'input', 'goalId': smartGoalId});
       return false;
     }
     return true;
