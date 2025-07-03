@@ -1025,12 +1025,11 @@ class _HomeControllerState extends State<HomeController>
         if (item.title == "Vận động") {
           if (_hasExerciseData) {
             // disable diablog if user has already input exercise
-            Navigator.pushNamed(
-                navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
-            return;
+            showActivityInputMethodSelection();
           } else {
             Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
           }
+          return;
         } else {
           Navigator.pushNamed(context, item.navigatorName,
               arguments: item.args);
@@ -1098,7 +1097,11 @@ class _HomeControllerState extends State<HomeController>
     if (routeName == NavigatorName.exercrise_add_v2 ||
         routeName == NavigatorName.detail_exercrises ||
         routeName == NavigatorName.add_exercrises) {
-      showActivityInputMethodSelection(_hasExerciseData);
+      if (_hasExerciseData) {
+        Navigator.pushNamed(context, NavigatorName.exercrise_dashboard);
+      } else {
+        Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
+      }
       return false;
     }
     return true;

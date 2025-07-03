@@ -752,8 +752,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         AppSettings.clearLastOpenedExerciseInputType();
         Navigator.pushNamedAndRemoveUntil(
           context,
-          NavigatorName.exercrise_onboarding,
-          (route) => false,
+          NavigatorName.tabbar,
+              (route) => false,
         );
       } else {
         Navigator.pop(context);

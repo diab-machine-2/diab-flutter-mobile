@@ -91,7 +91,11 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
 
   void _goBack() {
     if (Navigator.canPop(context)) {
-      Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        NavigatorName.tabbar,
+            (route) => false,
+      );
     } else {
       BotToast.showText(
         text: 'Opps! You can not go back',

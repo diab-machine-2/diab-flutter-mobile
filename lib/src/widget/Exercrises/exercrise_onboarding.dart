@@ -261,7 +261,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
           // Button
           ButtonWidget(
               title: R.string.exercrise_step_onboarding_input_step_btn.tr(),
-              onPressed: (() => {showActivityInputMethodSelection(_hasExerciseData)}))
+              onPressed: (() => {showActivityInputMethodSelection(hasExerciseData: _hasExerciseData)}))
         ]),
       )
     ]);
@@ -350,7 +350,7 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
   }
 }
 
-showActivityInputMethodSelection(bool hasExerciseData) async {
+showActivityInputMethodSelection({bool? hasExerciseData}) async {
   if (AppSettings.userInfo!.weight == null ||
       AppSettings.userInfo!.weight == 0) {
     showPopupWeight();
@@ -358,7 +358,7 @@ showActivityInputMethodSelection(bool hasExerciseData) async {
     // Logic navigate to glucose input page (saved before)
     String? lastOpenedGlucoseInputType =
         await AppSettings.getLastOpenedExerciseInputType();
-    if (hasExerciseData) {
+    if (hasExerciseData != null && hasExerciseData) {
       // disable diablog if user has already input exercise
       Navigator.pushNamed(
           navigatorKey.currentContext!, NavigatorName.exercrise_dashboard);
