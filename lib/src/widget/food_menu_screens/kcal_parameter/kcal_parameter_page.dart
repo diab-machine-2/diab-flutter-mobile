@@ -191,7 +191,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                 ),
                 const SizedBox(width: 5),
                 Icon(
-                  CupertinoIcons.arrow_right,
+                  Icons.arrow_forward,
                   size: 20,
                   color: R.color.accentColor,
                 )

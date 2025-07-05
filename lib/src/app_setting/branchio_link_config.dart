@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
@@ -16,30 +12,14 @@ import 'package:medical/src/model/response/create_calendar_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/date_utils.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
-import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
-import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_detail_page.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widget/profile/user_info.dart';
-import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
-import 'package:medical/src/widgets/button_widget.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../model/response/lesson_section_list_response.dart';
 
@@ -102,6 +82,14 @@ class BranchioLinkConfig {
   bool isActivatedSubscription = false;
 
   void setUpHandleDeepLink() {
+    SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
+      screenName: 'deeplink',
+      trackingEnabled: false, // Disable tracking for deeplinks
+      showGlucoseBottomSheet: false,
+      showBloodPressureIntro: false, // Skip intro for deeplinks
+      hasInputBloodPressure: true,
+      hasInputGlucose: true,
+    ));
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       log('listenDynamicLinks - Branchio DeepLink Data: $data');
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
@@ -842,599 +830,187 @@ class BranchioLinkConfig {
     }
   }
 
+  // Future<void> _onSelectGoal(ScheduleType type,
+  //     {SmartGoalList? smartGoal}) async {
+  //   switch (type) {
+  //     case ScheduleType.blood_sugar:
+  //     case ScheduleType.blood_sugar_recommend:
+  //       _showGlucoseAddBottomSheet(NavigatorName.add_blood_sugar_new,
+  //           smartGoalId: smartGoal?.id);
+  //       break;
+  //     case ScheduleType.blood_pressure:
+  //     case ScheduleType.blood_pressure_recommend:
+  //       // check first time open blood pressure intro
+  //       // if (!_haveInputBloodpressureAlready) {
+  //       //   navigatorKey.currentState?.pushNamed(
+  //       //       NavigatorName.blood_pressure_intro_1st_page,
+  //       //       arguments: {'goalId': smartGoal?.id});
+  //       //   return;
+  //       // }
+  //       await navigatorKey.currentState?.pushNamed(
+  //           NavigatorName.add_blood_pressure,
+  //           arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.weight_recommend:
+  //       _showInputWeightDialog();
+  //       break;
+  //     case ScheduleType.height_recommend:
+  //       _showInputHeightDialog();
+  //       break;
+  //     case ScheduleType.weight:
+  //       await navigatorKey.currentState?.pushNamed(NavigatorName.add_bmi,
+  //           arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.emotion:
+  //       // await Navigator.pushNamed(context, NavigatorName.add_emo,
+  //       //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       //    _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.food:
+  //     case ScheduleType.food_recommend:
+  //       await navigatorKey.currentState?.push(
+  //         MaterialPageRoute(
+  //             builder: (context) => DailyNutritionPage(
+  //                 type: 'input', id: null, goalId: smartGoal?.id)),
+  //       );
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.exercise:
+  //     case ScheduleType.exercise_recommend:
+  //       await navigatorKey.currentState?.pushNamed(NavigatorName.add_exercrises,
+  //           arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.exercise_movement:
+  //       if (smartGoal?.exerciseData == null) break;
+  //       if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
+  //           smartGoal?.state == Const.LESSON_LOCKED) {
+  //         _showLockedDialog(
+  //           title: R.string.exercise_lesson_locked.tr(),
+  //           description: R.string.exercise_lesson_locked_warning.tr(),
+  //         );
+  //         break;
+  //       }
+  //       await navigatorKey.currentState?.push(MaterialPageRoute(
+  //           builder: (context) =>
+  //               ExerciseDetail(exerciseData: smartGoal?.exerciseData)));
+  //       // _cubit.refreshData(isRefresh: true);
+  //       Observable.instance
+  //           .notifyObservers([], notifyName: "refresh_exercise_tab");
+  //       Observable.instance.notifyObservers([], notifyName: "refresh_home");
+  //       break;
+  //     case ScheduleType.custom:
+  //       break;
+  //     case ScheduleType.book_1_1:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.book_1_n:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.survey:
+  //       //_showCoachingPopup();
+  //       _showSurveyPopup(survey: smartGoal);
+  //       break;
+  //     case ScheduleType.lesson_recommend:
+  //       Observable.instance
+  //           .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+  //       break;
+  //     case ScheduleType.lesson:
+  //     case ScheduleType.infographic:
+  //       final LessonSectionListResponseData? lessonDetail =
+  //           LessonSectionListResponseData(
+  //               id: (smartGoal?.data as LessonSectionListResponseData).id,
+  //               type: (smartGoal?.data as LessonSectionListResponseData).type);
+  //       if (lessonDetail == null) return;
+
+  //       if (smartGoal?.state == Const.LESSON_LOCKED) {
+  //         // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
+  //         _showLockedDialog(
+  //             title: R.string.lesson_locked.tr(),
+  //             description: R.string.lesson_locked_warning.tr());
+  //         return;
+  //       }
+  //       await navigatorKey.currentState?.push(MaterialPageRoute(
+  //           builder: (context) => LessonDetailPage(
+  //                 lessonType: lessonDetail.type,
+  //                 lessonId: lessonDetail.id ?? '',
+  //                 onComplete: (string, int) {},
+  //                 smartGoal: smartGoal,
+  //               )));
+  //       // _cubit.refreshData(isRefresh: true);
+  //       Observable.instance
+  //           .notifyObservers([], notifyName: "refresh_lesson_tab");
+  //       Observable.instance.notifyObservers([], notifyName: "refresh_home");
+  //       break;
+  //     case ScheduleType.io_evaluate:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.update_profile:
+  //     case ScheduleType.update_profile_recommend:
+  //       await navigatorKey.currentState
+  //           ?.pushNamed(NavigatorName.profile_info, arguments: {
+  //         'id': smartGoal?.state != 1 ? smartGoal?.id : null,
+  //       });
+  //       break;
+  //     case ScheduleType.output_assessment:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.hba1c_recommend:
+  //       await navigatorKey.currentState?.pushNamed(NavigatorName.add_hba1c,
+  //           arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       break;
+  //     case ScheduleType.schedule_glucose_recommend:
+  //       await navigatorKey.currentState
+  //           ?.pushNamed(NavigatorName.schedule_glucose, arguments: {
+  //         'smartGoal': smartGoal,
+  //       });
+  //       break;
+  //     case ScheduleType.food_menu:
+  //       await navigatorKey.currentState
+  //           ?.pushNamed(NavigatorName.food_menu, arguments: {
+  //         'smartGoal': smartGoal,
+  //       });
+  //       break;
+  //     case ScheduleType.goal_setting_recommend:
+  //       await navigatorKey.currentState
+  //           ?.pushNamed(NavigatorName.goal_setting, arguments: {
+  //         'smartGoal': smartGoal,
+  //       });
+  //       break;
+  //     case ScheduleType.schedule_recommend:
+  //       await navigatorKey.currentState?.pushNamed(NavigatorName.reminder);
+  //       break;
+  //     case ScheduleType.peripheral_recommend:
+  //       await navigatorKey.currentState
+  //           ?.pushNamed(NavigatorName.connect_device_app);
+  //       break;
+  //     case ScheduleType.completed:
+  //       // Do nothing
+  //       break;
+  //     case ScheduleType.screening_interview:
+  //       await _handleInterviewNavigation(
+  //           interviewType: 30, smartGoal: smartGoal);
+  //       break;
+  //     case ScheduleType.evaluate_interview:
+  //       await _handleInterviewNavigation(
+  //           interviewType: 31, smartGoal: smartGoal);
+  //       break;
+  //     case ScheduleType.booking_solo:
+  //       await _handleInterviewNavigation(
+  //           interviewType: 32, smartGoal: smartGoal);
+  //       break;
+  //   }
+  // }
+
   Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalList? smartGoal}) async {
-    switch (type) {
-      case ScheduleType.blood_sugar:
-      case ScheduleType.blood_sugar_recommend:
-        _showGlucoseAddBottomSheet(NavigatorName.add_blood_sugar_new,
-            smartGoalId: smartGoal?.id);
-        break;
-      case ScheduleType.blood_pressure:
-      case ScheduleType.blood_pressure_recommend:
-        // check first time open blood pressure intro
-        // if (!_haveInputBloodpressureAlready) {
-        //   navigatorKey.currentState?.pushNamed(
-        //       NavigatorName.blood_pressure_intro_1st_page,
-        //       arguments: {'goalId': smartGoal?.id});
-        //   return;
-        // }
-        await navigatorKey.currentState?.pushNamed(
-            NavigatorName.add_blood_pressure,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.weight_recommend:
-        _showInputWeightDialog();
-        break;
-      case ScheduleType.height_recommend:
-        _showInputHeightDialog();
-        break;
-      case ScheduleType.weight:
-        await navigatorKey.currentState?.pushNamed(NavigatorName.add_bmi,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.emotion:
-        // await Navigator.pushNamed(context, NavigatorName.add_emo,
-        //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        //    _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.food:
-      case ScheduleType.food_recommend:
-        await navigatorKey.currentState?.push(
-          MaterialPageRoute(
-              builder: (context) => DailyNutritionPage(
-                  type: 'input', id: null, goalId: smartGoal?.id)),
-        );
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.exercise:
-      case ScheduleType.exercise_recommend:
-        await navigatorKey.currentState?.pushNamed(NavigatorName.add_exercrises,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.exercise_movement:
-        if (smartGoal?.exerciseData == null) break;
-        if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
-            smartGoal?.state == Const.LESSON_LOCKED) {
-          _showLockedDialog(
-            title: R.string.exercise_lesson_locked.tr(),
-            description: R.string.exercise_lesson_locked_warning.tr(),
-          );
-          break;
-        }
-        await navigatorKey.currentState?.push(MaterialPageRoute(
-            builder: (context) =>
-                ExerciseDetail(exerciseData: smartGoal?.exerciseData)));
-        // _cubit.refreshData(isRefresh: true);
-        Observable.instance
-            .notifyObservers([], notifyName: "refresh_exercise_tab");
-        Observable.instance.notifyObservers([], notifyName: "refresh_home");
-        break;
-      case ScheduleType.custom:
-        break;
-      case ScheduleType.book_1_1:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.book_1_n:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.survey:
-        //_showCoachingPopup();
-        _showSurveyPopup(survey: smartGoal);
-        break;
-      case ScheduleType.lesson_recommend:
-        Observable.instance
-            .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
-        break;
-      case ScheduleType.lesson:
-      case ScheduleType.infographic:
-        final LessonSectionListResponseData? lessonDetail =
-            LessonSectionListResponseData(
-                id: (smartGoal?.data as LessonSectionListResponseData).id,
-                type: (smartGoal?.data as LessonSectionListResponseData).type);
-        if (lessonDetail == null) return;
-
-        if (smartGoal?.state == Const.LESSON_LOCKED) {
-          // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
-          _showLockedDialog(
-              title: R.string.lesson_locked.tr(),
-              description: R.string.lesson_locked_warning.tr());
-          return;
-        }
-        await navigatorKey.currentState?.push(MaterialPageRoute(
-            builder: (context) => LessonDetailPage(
-                  lessonType: lessonDetail.type,
-                  lessonId: lessonDetail.id ?? '',
-                  onComplete: (string, int) {},
-                  smartGoal: smartGoal,
-                )));
-        // _cubit.refreshData(isRefresh: true);
-        Observable.instance
-            .notifyObservers([], notifyName: "refresh_lesson_tab");
-        Observable.instance.notifyObservers([], notifyName: "refresh_home");
-        break;
-      case ScheduleType.io_evaluate:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.update_profile:
-      case ScheduleType.update_profile_recommend:
-        await navigatorKey.currentState
-            ?.pushNamed(NavigatorName.profile_info, arguments: {
-          'id': smartGoal?.state != 1 ? smartGoal?.id : null,
-        });
-        break;
-      case ScheduleType.output_assessment:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.hba1c_recommend:
-        await navigatorKey.currentState?.pushNamed(NavigatorName.add_hba1c,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        break;
-      case ScheduleType.schedule_glucose_recommend:
-        await navigatorKey.currentState
-            ?.pushNamed(NavigatorName.schedule_glucose, arguments: {
-          'smartGoal': smartGoal,
-        });
-        break;
-      case ScheduleType.food_menu:
-        await navigatorKey.currentState
-            ?.pushNamed(NavigatorName.food_menu, arguments: {
-          'smartGoal': smartGoal,
-        });
-        break;
-      case ScheduleType.goal_setting_recommend:
-        await navigatorKey.currentState
-            ?.pushNamed(NavigatorName.goal_setting, arguments: {
-          'smartGoal': smartGoal,
-        });
-        break;
-      case ScheduleType.schedule_recommend:
-        await navigatorKey.currentState?.pushNamed(NavigatorName.reminder);
-        break;
-      case ScheduleType.peripheral_recommend:
-        await navigatorKey.currentState
-            ?.pushNamed(NavigatorName.connect_device_app);
-        break;
-      case ScheduleType.completed:
-        // Do nothing
-        break;
-      case ScheduleType.screening_interview:
-        await _handleInterviewNavigation(
-            interviewType: 30, smartGoal: smartGoal);
-        break;
-      case ScheduleType.evaluate_interview:
-        await _handleInterviewNavigation(
-            interviewType: 31, smartGoal: smartGoal);
-        break;
-      case ScheduleType.booking_solo:
-        await _handleInterviewNavigation(
-            interviewType: 32, smartGoal: smartGoal);
-        break;
-    }
-  }
-
-  _showSurveyPopup({SmartGoalList? survey}) {
-    navigatorKey.currentState?.push(MaterialPageRoute(
-        builder: (context) => IntroduceSurveyPage(survey: survey)));
-  }
-
-  _showCoachingPopup(SmartGoalList? smartGoal) {
-    if (smartGoal?.calendar == null) return;
-    return _showPopup(
-      context: navigatorKey.currentContext!,
-      buttonTitle: R.string.join.tr(),
-      isDisableCompleteButton: !DateUtil.isSameDay(
-          DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          smartGoal?.appointmentDate),
-      onTap: () async {
-        Navigator.pop(navigatorKey.currentContext!);
-        if (smartGoal?.calendar?.meetingLink != null) {
-          await HomeClient().completeSmartGoal(
-              DateTime.now(), smartGoal?.id, 1, smartGoal?.type);
-
-          PermissionStatus statusMicrophone =
-              await Permission.microphone.status;
-          if (statusMicrophone.isDenied) {
-            await Permission.microphone.request();
-          }
-          PermissionStatus statusCamera = await Permission.camera.request();
-          Console.log('PHUONG statusCamera', statusCamera);
-          if (statusCamera.isDenied) {
-            await Permission.camera.request();
-          }
-          // Navigator.pushNamed(context, NavigatorName.zoom, arguments: {
-          //   'id': smartGoal?.calendarId,
-          //   'isCompleted': smartGoal?.isCompleted,
-          // });
-
-          final meetingLink = smartGoal?.calendar?.meetingLink ?? '';
-          if (await canLaunch(meetingLink)) {
-            FlutterBranchSdk.handleDeepLink(meetingLink);
-
-            await launch(
-              meetingLink,
-              forceSafariVC: false,
-              forceWebView: false,
-              headers: <String, String>{'my_header_key': 'my_header_value'},
-            );
-          } else {
-            throw 'Could not launch $meetingLink';
-          }
-        } else {
-          // await _cubit.markCompletedCalendar(smartGoal?.calendarId);
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "${getWeekDay(smartGoal?.appointmentDate ?? 0)}, ${convertToUTC(smartGoal?.appointmentDate ?? 0, "dd/MM/yyyy")}",
-            style: TextStyle(
-                color: R.color.main_1,
-                fontSize: 20,
-                fontWeight: FontWeight.w700),
-          ),
-          SizedBox(height: 4),
-          if ((smartGoal?.description != null &&
-              smartGoal!.description!.isNotEmpty))
-            Text(
-              smartGoal.description ?? "",
-              style: TextStyle(
-                  color: R.color.main_1,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700),
-            ),
-          if (smartGoal?.description != null &&
-              smartGoal!.description!.isNotEmpty)
-            const SizedBox(height: 12),
-          if ((smartGoal?.calendar?.goal != null &&
-              smartGoal!.calendar!.goal!.isNotEmpty))
-            Text(
-              smartGoal.calendar?.goal ?? "",
-              style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400),
-            ),
-          if ((smartGoal?.calendar?.goal != null &&
-              smartGoal!.calendar!.goal!.isNotEmpty))
-            const SizedBox(height: 16),
-          if (smartGoal?.calendar?.performer != null)
-            Row(
-              children: [
-                NetWorkImageWidget(
-                    imageUrl: smartGoal!.calendar!.performer!.avatar?.url ?? "",
-                    width: 44,
-                    height: 44),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Coach',
-                      style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      smartGoal.calendar!.performer!.fullName ?? "",
-                      style: TextStyle(
-                          color: R.color.main_1,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                )
-              ],
-            ),
-        ],
-      ),
+    await SmartGoalNavigationUtil.onSelectGoal(
+      navigatorKey.currentContext!,
+      type,
+      smartGoal: smartGoal,
+      // No refresh callback needed for deeplinks
     );
-  }
-
-  void _showLockedDialog({required String title, required String description}) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      barrierDismissible: true,
-      context: navigatorKey.currentContext!,
-      builder: (_) => Scaffold(
-        backgroundColor: R.color.transparent,
-        body: Center(
-          child: GestureDetector(
-            child: Container(
-              width: 344,
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    R.color.white,
-                    R.color.main_6,
-                  ],
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(84.w, 0, 84.w, 20),
-                    child: Image.asset(
-                      R.drawable.img_lesson_locked,
-                    ),
-                  ),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    description,
-                    textAlign: TextAlign.center,
-                    style: R.style.normalTextStyle,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 24),
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: ButtonWidget(
-                      height: 43,
-                      title: R.string.agree.tr(),
-                      onPressed: () {
-                        NavigationUtil.pop(navigatorKey.currentContext!);
-                      },
-                      textSize: 14,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showInputHeightDialog() {
-    showDialog(
-      //   barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: navigatorKey.currentContext!,
-      barrierDismissible: true,
-      builder: (_) => CustomNumPicker(
-          callback: (data) {
-            if (data == null || data <= 0) {
-              Message.showToastMessage(navigatorKey.currentContext!,
-                  R.string.mes_height_must_greater_than_zero.tr());
-              return;
-            }
-            final userInfo = AppSettings.userInfo!;
-            ProfileInfoController.updateUserInfo(
-              navigatorKey.currentContext!,
-              userInfo.copyWith(
-                height: data.toDouble(),
-              ),
-            );
-          },
-          title: R.string.enter_height.tr(),
-          max: 250,
-          numberDefault: (AppSettings.userInfo!.height == null ||
-                      AppSettings.userInfo!.height == 0
-                  ? 150
-                  : AppSettings.userInfo!.height)!
-              .toInt(),
-          unit: ''),
-    );
-  }
-
-  void _showInputWeightDialog() {
-    showDialog(
-      barrierDismissible: true,
-      context: navigatorKey.currentContext!,
-      builder: (_) => CustomWeightPicker(
-          callback: (weight) {
-            if (weight <= 0) {
-              Message.showToastMessage(navigatorKey.currentContext!,
-                  R.string.mes_weight_must_greater_than_zero.tr());
-              return;
-            }
-            final userInfo = AppSettings.userInfo!;
-            ProfileInfoController.updateUserInfo(
-              navigatorKey.currentContext!,
-              userInfo.copyWith(
-                weight: weight.toDouble(),
-              ),
-            );
-          },
-          title: R.string.enter_weight.tr(),
-          max: 180,
-          numberDefault: (AppSettings.userInfo!.weight == null ||
-                      AppSettings.userInfo!.weight == 0
-                  ? 50
-                  : AppSettings.userInfo!.weight)!
-              .toInt(),
-          unit: ''),
-    );
-  }
-
-  Future<void> _handleInterviewNavigation(
-      {required int interviewType, SmartGoalList? smartGoal}) async {
-    final courseId = '350a3050-c0f7-11ef-b57a-03ea338ae610';
-    try {
-      // Check if course exists (using temp courseId for now)
-      bool isExist = await UserClient().IsExistCourse(courseId);
-      if (!isExist) {
-        Console.log("Course does not exist for interviewType: $interviewType");
-        return;
-      }
-
-      final startDate = DateTime.now().add(Duration(days: 0));
-      final endDate = DateTime.now().add(Duration(days: 21));
-      int bookingQuantity = 0;
-
-      final request = CalendarFilter(
-        accountPatientId: AppSettings.userInfo!.accountId,
-        courseId: courseId,
-        fromDate: startDate,
-        toDate: endDate,
-        calendarType: interviewType,
-      );
-
-      final ApiResult<List<CreateCalendarResponse>> apiResult =
-          await AppRepository().getMyCalendar(request);
-
-      apiResult.when(
-        success: (List<CreateCalendarResponse> response) {
-          if (response.length > 0) {
-            bookingQuantity = response.length;
-            if (bookingQuantity >= 1) {
-              // Navigate to existing calendar
-              navigatorKey.currentState
-                  ?.pushNamed(NavigatorName.calendar, arguments: {
-                "pickSlot": response.firstWhere(
-                    (element) => element.isDeleted == false,
-                    orElse: () => response.first),
-                "courseId": courseId,
-                "endTime": '',
-                "bookingQuantity": bookingQuantity,
-                "interviewType": interviewType,
-              });
-              return;
-            }
-          }
-
-          // If no existing bookings, navigate to booking page
-          if (bookingQuantity == 0) {
-            navigatorKey.currentState
-                ?.pushNamed(NavigatorName.calendar_booking, arguments: {
-              'courseId': courseId,
-              'endTime': '',
-              'interviewType': interviewType,
-              'smartGoal': smartGoal
-            });
-          }
-        },
-        failure: (NetworkExceptions error) {
-          log("Error fetching calendar for interviewType $interviewType: $error");
-          TrackingManager.recordError(error, null);
-          // Still navigate to booking page on error
-          navigatorKey.currentState
-              ?.pushNamed(NavigatorName.calendar_booking, arguments: {
-            'courseId': courseId,
-            'endTime': '',
-            'interviewType': interviewType,
-            'smartGoal': smartGoal
-          });
-        },
-      );
-    } catch (e, s) {
-      TrackingManager.recordError(e, s);
-      log("Exception in _handleInterviewNavigation: $e");
-    }
-  }
-
-  void _showPopup({
-    required BuildContext context,
-    required Widget child,
-    String? buttonTitle,
-    VoidCallback? onTap,
-    bool isDisableCompleteButton = false,
-  }) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          NavigationUtil.pop(context);
-        },
-        child: Scaffold(
-          backgroundColor: R.color.transparent,
-          body: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 24),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          R.color.white,
-                          R.color.main_6,
-                        ],
-                      ),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          child,
-                          Visibility(
-                            visible: onTap != null,
-                            child: SizedBox(height: 16),
-                          ),
-                          Visibility(
-                            visible: onTap != null,
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 16),
-                              child: ButtonWidget(
-                                backgroundColor: isDisableCompleteButton
-                                    ? R.color.white
-                                    : R.color.accentColor,
-                                title: buttonTitle ?? '',
-                                textSize: 14,
-                                onPressed:
-                                    isDisableCompleteButton ? null : onTap,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                      top: 4,
-                      right: 24,
-                      child: IconButton(
-                        icon: const Icon(Icons.close),
-                        iconSize: 24,
-                        onPressed: () {
-                          NavigationUtil.pop(context);
-                        },
-                      ))
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<bool> _showGlucoseAddBottomSheet(String? routeName,
-      {String? smartGoalId}) async {
-    if (routeName == NavigatorName.add_blood_sugar_new ||
-        routeName == NavigatorName.add_blood_sugar) {
-      navigatorKey.currentState?.pushNamed(NavigatorName.add_blood_sugar_new,
-          arguments: {'type': 'input', 'goalId': smartGoalId});
-      return false;
-    }
-    return true;
   }
 }

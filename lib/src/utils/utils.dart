@@ -551,6 +551,7 @@ class Utils {
       case ScheduleType.lesson_recommend:
         return R.string.knowledge.tr();
       case ScheduleType.custom:
+        return R.string.target.tr();
       case ScheduleType.emotion:
         return R.string.cam_xuc.tr();
       case ScheduleType.schedule_recommend:

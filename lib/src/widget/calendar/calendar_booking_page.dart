@@ -393,12 +393,13 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       // Mark complete smart goal when create calendar success
       if (value == false) return;
 
-      if (widget.smartGoal?.id == null) return;
-
-      await HomeClient().completeSmartGoal(
-          DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);
-
       await _welcomPackageCubit.markDisplayedWelcome();
+      
+      if (widget.smartGoal?.id != null) {
+        await HomeClient().completeSmartGoal(
+            DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);
+      }
+      ;
     });
   }
 
