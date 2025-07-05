@@ -527,9 +527,8 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
         ? max(minSpacing, maxSpacing - (trends.length - 11) * 2.5)
         : screenWidth / max(1, (trends.length - 1));
 
-    double chartWidth = shouldScroll
-        ? pointSpacing * (trends.length - 1)
-        : screenWidth;
+    double chartWidth =
+        shouldScroll ? pointSpacing * (trends.length - 1) : screenWidth;
 
     double minX = trends.length == 1 ? -1 : 0;
     double maxX = trends.length == 1 ? 1 : trends.length.toDouble() - 1;
@@ -538,37 +537,25 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
       return FlSpot(e.key.toDouble(), e.value.duration?.toDouble() ?? 0);
     }).toList();
 
-    double getSafeMinY(List<FlSpot> spots, double target) {
-      final all = [...spots.map((e) => e.y), target];
-      final minValue = all.reduce(min);
-      final maxValue = all.reduce(max);
-      final range = maxValue - minValue;
-      return minValue - range * 0.1;
+    /// Tính range để target nằm giữa
+    double getSymmetricRange(List<FlSpot> spots, double target) {
+      final dataYs = spots.map((e) => e.y).toList();
+      final diffs = dataYs.map((y) => (y - target).abs());
+      final maxDiff = diffs.isNotEmpty ? diffs.reduce(max) : 5;
+      return maxDiff + 5; // cộng thêm margin
     }
 
-    double getSafeMaxY(List<FlSpot> spots, double target) {
-      final all = [...spots.map((e) => e.y), target];
-      final minValue = all.reduce(min);
-      final maxValue = all.reduce(max);
-      final range = maxValue - minValue;
-      return maxValue + range * 0.1;
-    }
-
-    double minY = getSafeMinY(spots, target);
-    double maxY = getSafeMaxY(spots, target);
-
-    if (minY == maxY) {
-      minY -= 5;
-      maxY += 5;
-    }
+    final range = getSymmetricRange(spots, target);
+    final double minY = target - range;
+    final double maxY = target + range;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final chartHeight = constraints.maxHeight - chartPaddingTop;
         final usableHeight = chartHeight - chartPaddingBottom;
 
-        final yRatio = (target - minY) / (maxY - minY);
-        final targetPixel = (1 - yRatio) * usableHeight + chartPaddingTop;
+        // Đường benchmark luôn nằm giữa chart
+        final targetPixel = chartPaddingTop + usableHeight / 2;
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -601,33 +588,33 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
             Expanded(
               child: shouldScroll
                   ? SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: _scrollController,
-                child: Container(
-                  width: chartWidth,
-                  height: chartFixedHeight,
-                  padding: const EdgeInsets.only(
-                    top: chartPaddingTop,
-                    left: 8,
-                    right: 8,
-                    bottom: chartPaddingBottom,
-                  ),
-                  alignment: Alignment.center,
-                  child: _buildLineChart(minX, maxX, minY, maxY, target),
-                ),
-              )
+                      scrollDirection: Axis.horizontal,
+                      controller: _scrollController,
+                      child: Container(
+                        width: chartWidth,
+                        height: chartFixedHeight,
+                        padding: const EdgeInsets.only(
+                          top: chartPaddingTop,
+                          left: 8,
+                          right: 8,
+                          bottom: chartPaddingBottom,
+                        ),
+                        alignment: Alignment.center,
+                        child: _buildLineChart(minX, maxX, minY, maxY, target),
+                      ),
+                    )
                   : Container(
-                width: chartWidth,
-                height: chartFixedHeight,
-                padding: const EdgeInsets.only(
-                  top: chartPaddingTop,
-                  left: 8,
-                  right: 8,
-                  bottom: chartPaddingBottom,
-                ),
-                alignment: Alignment.center,
-                child: _buildLineChart(minX, maxX, minY, maxY, target),
-              ),
+                      width: chartWidth,
+                      height: chartFixedHeight,
+                      padding: const EdgeInsets.only(
+                        top: chartPaddingTop,
+                        left: 8,
+                        right: 8,
+                        bottom: chartPaddingBottom,
+                      ),
+                      alignment: Alignment.center,
+                      child: _buildLineChart(minX, maxX, minY, maxY, target),
+                    ),
             ),
           ],
         );
@@ -635,7 +622,13 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     );
   }
 
-  Widget _buildLineChart(double minX, double maxX, double minY, double maxY, double target) {
+  Widget _buildLineChart(
+    double minX,
+    double maxX,
+    double minY,
+    double maxY,
+    double target,
+  ) {
     return LineChart(
       LineChartData(
         minX: minX,
@@ -668,11 +661,13 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
               ),
               FlDotData(
                 show: true,
-                getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
+                getDotPainter: (spot, percent, barData, index) =>
+                    FlDotCirclePainter(
                   radius: 6.5,
                   color: toColor(trends[index].targetColor),
                   strokeWidth: 18,
-                  strokeColor: toColor(trends[index].targetColor).withOpacity(0.3),
+                  strokeColor:
+                      toColor(trends[index].targetColor).withOpacity(0.3),
                 ),
               ),
             );
