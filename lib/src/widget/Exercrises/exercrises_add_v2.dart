@@ -687,6 +687,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   editData() async {
     FocusScope.of(context).unfocus();
 
+    await Future.delayed(const Duration(milliseconds: 300));
+
     if (selectedDate == null) {
       Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
       return;
@@ -694,6 +696,15 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
     if (selectedCategory == null) {
       Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
       return;
+    }
+
+    if (_controllerDuration.text.isNotEmpty) {
+      int duration = int.parse(_controllerDuration.text);
+      if (duration == 0) {
+        Message.showToastMessage(
+            context, R.string.invalid_duration_exercise.tr());
+        return;
+      }
     }
 
     BotToast.showLoading();
@@ -847,17 +858,25 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   }
 
   _submitData() async {
-    if (_controllerDuration.text == "0") {
-      Message.showToastMessage(
-          context, R.string.invalid_duration_exercise.tr());
-      return;
-    }
-    if (selectedCategory == null) {
-      Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
-      return;
-    }
     if (_formKey.currentState?.validate() ?? false) {
       FocusScope.of(context).unfocus();
+
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      if (_controllerDuration.text.isNotEmpty) {
+        int duration = int.parse(_controllerDuration.text);
+        if (duration == 0) {
+          Message.showToastMessage(
+              context, R.string.invalid_duration_exercise.tr());
+          return;
+        }
+      }
+
+      if (selectedCategory == null) {
+        Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
+        return;
+      }
+
       try {
         // Hiển thị loading
         BotToast.showLoading();
