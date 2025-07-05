@@ -123,8 +123,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
   void _loadTimeFrame() async {
     BotToast.showLoading();
-    final timeFrames = await FoodClient()
-        .fetchFoodTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000);
+    int? time = selectedDate.millisecondsSinceEpoch ~/ 1000;
+    if (widget.timeframeId != null) {
+      time = null;
+    }
+    final timeFrames = await FoodClient().fetchFoodTimeFrame(time: time);
     if (widget.timeframeId != null) {
       if (timeFrames.length > 0 && timeFrames.any((e) => e.id == widget.timeframeId)) {
         selectedTimeFrame = timeFrames.firstWhere((e) => e.id == widget.timeframeId);
