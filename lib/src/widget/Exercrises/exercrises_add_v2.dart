@@ -687,7 +687,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   editData() async {
     FocusScope.of(context).unfocus();
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    while (MediaQuery.of(context).viewInsets.bottom != 0.0) {
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
 
     if (selectedDate == null) {
       Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
@@ -861,7 +863,9 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
     if (_formKey.currentState?.validate() ?? false) {
       FocusScope.of(context).unfocus();
 
-      await Future.delayed(const Duration(milliseconds: 300));
+      while (MediaQuery.of(context).viewInsets.bottom != 0.0) {
+        await Future.delayed(const Duration(milliseconds: 50));
+      }
 
       if (_controllerDuration.text.isNotEmpty) {
         int duration = int.parse(_controllerDuration.text);
