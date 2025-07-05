@@ -36,6 +36,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   // Animation properties
   bool _showFlashEffect = false;
+  bool _requestingPermission = false;
 
   @override
   void initState() {
@@ -74,6 +75,13 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       return;
     }
     try {
+      // stop camera
+      setState(() {
+        _isInitialized = false;
+      });
+      await _controller?.dispose();
+      _controller = null;
+
       BotToast.showLoading();
       final result = await FoodClient().postFoodImages(paths);
 
@@ -91,14 +99,26 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       }
     } catch (e) {
       BotToast.showText(text: 'Lỗi khi đồng bộ thực phẩm: $e');
+      // restart camera
+      _initializeCamera();
     } finally {
       BotToast.closeAllLoading();
     }
   }
 
   Future<void> _initializeCamera() async {
+    if (_requestingPermission) {
+      return;
+    }
     try {
-      _cameras = await availableCameras();
+      // request permission
+      if (!(await Permission.camera.isGranted)) {
+        _requestingPermission = true;
+        await Permission.camera.request();
+      }
+      final granted = await Permission.camera.isGranted;
+      _requestingPermission = false;
+      _cameras = !granted ? [] : await availableCameras();
       if (_cameras.isEmpty) {
         _showErrorDialog('Không tìm thấy camera nào');
         return;
@@ -142,9 +162,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         });
       }
     } catch (e) {
-      if (mounted) {
-        _showErrorDialog('Lỗi khi khởi tạo camera: $e');
-      }
+      // if (mounted) {
+      //   _showErrorDialog('Lỗi khi khởi tạo camera: $e');
+      // }
     }
   }
 

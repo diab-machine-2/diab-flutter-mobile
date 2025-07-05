@@ -140,6 +140,7 @@ class AppRoutes {
           generatedFoods: (data?['foods'] ?? []) as List<FoodModel>,
           timeframe: data?['timeframe'] ?? '-',
           timeframeId: data?['timeframeId'] ?? '-',
+          files: data?['files'] != null ? List<String>.from(data!['files']) : [],
         );
         break;
       case NavigatorName.food_image_capture:

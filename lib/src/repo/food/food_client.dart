@@ -228,18 +228,13 @@ class FoodClient extends FetchClient {
       }
 
       final Map<String, String> params = {};
-      final response = await super.postHttpWithCustomImageKey(
+      final response = await super.postHttp(
         path: '/App/Image/UploadAI',
         params: params,
-        imageKey: 'files',
         files: files,
       );
       
       final data = await response.stream.bytesToString();
-      
-      // Log response for debugging
-      print('Upload response status: ${response.statusCode}');
-      print('Upload response data: $data');
       
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(data);
