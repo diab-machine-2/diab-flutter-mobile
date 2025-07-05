@@ -35,7 +35,8 @@ import 'package:permission_handler/permission_handler.dart';
 class AddFoodController extends StatefulWidget {
   final String type;
   final String? id;
-  AddFoodController({required this.type, this.id});
+  final String? timeframeId;
+  AddFoodController({required this.type, this.id,this.timeframeId});
 
   @override
   _AddFoodControllerState createState() => _AddFoodControllerState();
@@ -124,7 +125,14 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     BotToast.showLoading();
     final timeFrames = await FoodClient()
         .fetchFoodTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000);
-    selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+    if (widget.timeframeId != null) {
+      if (timeFrames.length > 0 && timeFrames.any((e) => e.id == widget.timeframeId)) {
+        selectedTimeFrame = timeFrames.firstWhere((e) => e.id == widget.timeframeId);
+      }
+    }
+    if (selectedTimeFrame == null) {
+      selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+    }
     BotToast.closeAllLoading();
     setState(() {});
   }

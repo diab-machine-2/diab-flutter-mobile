@@ -475,6 +475,7 @@ class App extends StatelessWidget {
                         AddFoodController(
                           type: data?['type'],
                           id: data?['id'],
+                          timeframeId: data?['timeframeId'],
                         ));
                   case NavigatorName.emotion_table:
                     final data = settings.arguments as Map<String, dynamic>?;

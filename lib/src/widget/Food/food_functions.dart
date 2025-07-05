@@ -157,8 +157,14 @@ class FoodFunctions {
                       //   },
                       // );
                       Navigator.of(context).popUntil((route) => route.isFirst);
-                      Navigator.pushNamed(context, NavigatorName.add_food,
-                          arguments: {'type': 'input'});
+                      Navigator.pushNamed(
+                        context,
+                        NavigatorName.add_food,
+                        arguments: {
+                          'type': 'input',
+                          'timeframeId': timeframeId
+                        },
+                      );
                     },
                   ),
                 ],
