@@ -5,7 +5,10 @@ import 'package:medical/src/widget/Food/food_functions.dart';
 class FoodActionPopup extends StatelessWidget {
   const FoodActionPopup({
     Key? key,
+    this.fromDashboard = false,
   }) : super(key: key);
+
+  final bool fromDashboard;
 
   void _handleItemTap(BuildContext context, String timeframeId, String timeframe) {
     Navigator.pop(context);
@@ -13,6 +16,7 @@ class FoodActionPopup extends StatelessWidget {
       context,
       timeframe: timeframe,
       timeframeId: timeframeId,
+      fromDashboard: fromDashboard,
     );
   }
 
@@ -140,7 +144,7 @@ class FoodActionPopup extends StatelessWidget {
   }
 
   // Static method to show the popup
-  static void show(BuildContext context) {
+  static void show(BuildContext context, {bool fromDashboard = false}) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
@@ -152,7 +156,7 @@ class FoodActionPopup extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
-        child: FoodActionPopup(),
+        child: FoodActionPopup(fromDashboard: fromDashboard),
       ),
     );
   }

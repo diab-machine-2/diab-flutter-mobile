@@ -1047,6 +1047,11 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
+        // case dinh duong
+        if (item.navigatorName == NavigatorName.add_food) {
+          FoodActionPopup.show(context);
+          return;
+        }
         // others
         Navigator.pushNamed(context, item.navigatorName, arguments: item.args);
       },
@@ -1163,10 +1168,11 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.food:
       case ScheduleType.food_recommend:
-        await NavigationUtil.navigatePage(
-          context,
-          DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
-        );
+        FoodActionPopup.show(context);
+        // await NavigationUtil.navigatePage(
+        //   context,
+        //   DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
+        // );
         // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:

@@ -8,6 +8,7 @@ class FoodFunctions {
     BuildContext context, {
     required String timeframe,
     required String timeframeId,
+    bool fromDashboard = false,
   }) {
     Widget buildContentItem(
         String title, String subtitle, String iconPath, VoidCallback onPressed) {
@@ -156,14 +157,15 @@ class FoodFunctions {
                       //     'method': 'manual',
                       //   },
                       // );
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      if (fromDashboard) {
+                        Navigator.of(context).pop();
+                      } else {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      }
                       Navigator.pushNamed(
                         context,
                         NavigatorName.add_food,
-                        arguments: {
-                          'type': 'input',
-                          'timeframeId': timeframeId
-                        },
+                        arguments: {'type': 'input', 'timeframeId': timeframeId},
                       );
                     },
                   ),
