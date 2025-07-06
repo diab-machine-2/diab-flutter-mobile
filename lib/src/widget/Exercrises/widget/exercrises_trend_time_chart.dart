@@ -64,6 +64,8 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
   List<SubTrendItemModel> trends = [];
 
+  int? _selectedDateTimestamp; // lưu timestamp của dot được chọn
+
   @override
   void initState() {
     super.initState();
@@ -74,25 +76,53 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
         _subscription?.cancel();
         _subscription = null;
 
-        // Cập nhật trends
-        trends = state.trend.trendItems.items
+        final newTrends = state.trend.trendItems.items
             .where((item) => item.duration != null && item.duration! > 0)
             .toList();
 
-        if (trends.isEmpty) {
-          await Future.delayed(Duration(milliseconds: 500));
-          Message.showToastMessage(context, R.string.no_data.tr());
-        }
-
-        // Đặt focus index nếu cần
-        if (_focusIndex == -1 && trends.isNotEmpty) {
-          setState(() {
-            _focusIndex = (trends.length - 1) ~/ 2;
-          });
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _updateFocusIndexWithFallback(newTrends);
+        });
       }
     });
   }
+
+  void _updateFocusIndexWithFallback(List<SubTrendItemModel> newTrends) {
+    setState(() {
+      trends = newTrends;
+
+      if (trends.isEmpty) {
+        _focusIndex = -1;
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Message.showToastMessage(context, R.string.no_data.tr());
+        });
+        return;
+      }
+
+      // Nếu đã lưu timestamp của ngày được chọn
+      if (_selectedDateTimestamp != null) {
+        final matchedIndex = trends.indexWhere(
+              (item) => item.date == _selectedDateTimestamp,
+        );
+        if (matchedIndex != -1) {
+          _focusIndex = matchedIndex;
+        } else {
+          // không tìm thấy ngày cũ => chọn dot cuối cùng (gần nhất)
+          _focusIndex = trends.length - 1;
+          _selectedDateTimestamp = trends.last.date;
+        }
+      } else {
+        // fallback nếu chưa có chọn gì
+        _focusIndex = trends.length - 1;
+        _selectedDateTimestamp = trends.last.date;
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToSelectd();
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,11 +145,13 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
           }
           if (state is TimeTrendTrendLoaded) {
             model = state.model;
-
-            // Cập nhật trends mà không gọi setState()
-            trends = model.trendItems.items
+            final newTrends = model.trendItems.items
                 .where((item) => item.duration != null && item.duration! > 0)
                 .toList();
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _updateFocusIndexWithFallback(newTrends); // ✅ safe để gọi setState
+            });
           }
 
           if (model == null) {
@@ -740,6 +772,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
         if (touchedSpot.spotIndex != _focusIndex) {
           setState(() {
             _focusIndex = touchedSpot.spotIndex;
+            _selectedDateTimestamp = trends[_focusIndex].date;
           });
           _scrollToSelectd();
         }
@@ -749,21 +782,16 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
   }
 
   void _scrollToSelectd() {
-    if (_focusIndex != -1 && trends.isNotEmpty) {
-      // Lấy chiều rộng của biểu đồ
+    if (_scrollController.hasClients && _focusIndex != -1 && trends.isNotEmpty) {
       final chartWidth = _scrollController.position.maxScrollExtent +
           _scrollController.position.viewportDimension;
 
-      // Tính khoảng cách giữa các điểm
       final pointSpacing = chartWidth / trends.length;
-
-      // Tính vị trí cuộn
       final scrollPosition = _focusIndex * pointSpacing - (pointSpacing / 2);
 
-      // Cuộn đến vị trí
       _scrollController.animateTo(
         scrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
@@ -773,6 +801,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     if (_focusIndex < length - 1) {
       setState(() {
         _focusIndex = min(length - 1, _focusIndex + 1);
+        _selectedDateTimestamp = trends[_focusIndex].date;
       });
     }
     _scrollToSelectd();
@@ -782,6 +811,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     if (_focusIndex > 0) {
       setState(() {
         _focusIndex = max(0, _focusIndex - 1);
+        _selectedDateTimestamp = trends[_focusIndex].date;
       });
     }
     _scrollToSelectd();
@@ -789,13 +819,10 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
   void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
-    setState(() {
-      _focusIndex = -1;
-    });
     BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchTimeTrend(
-        currentDateTime:
-            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-        periodFilterType: periodFilterType.toString()));
+      currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      periodFilterType: periodFilterType.toString(),
+    ));
   }
 
   List<LineChartBarData> _linesBarData(List<SubTrendItemModel> trends) {
