@@ -1251,3 +1251,5 @@ roadmap_for_beginners,"Lộ trình vận động cho người mới","Roadmap fo
 invalid_duration_exercise,"Số phút phải lớn hơn 0",The number of duration must be greater than 0,
 steps,"bước chân",steps,
 please_enter_exercise_duration,"Vui lòng nhập thời gian vận động","Please enter your exercise duration",
+enter_manually_details,"Nhập chỉ số vận động của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn.","Enter your movement index manually from an existing measurement result.",
+enter_healt_connect_details,"Tự động nhập chỉ số một cách nhanh chóng và chính xác.","Automatically enter indexes quickly and accurately.",

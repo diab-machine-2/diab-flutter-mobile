@@ -1294,4 +1294,6 @@ class Strings {
   String get invalid_duration_exercise => 'invalid_duration_exercise';
   String get steps => 'steps';
   String get please_enter_exercise_duration => 'please_enter_exercise_duration';
+  String get enter_manually_details => 'enter_manually_details';
+  String get enter_healt_connect_details => 'enter_healt_connect_details';
 }

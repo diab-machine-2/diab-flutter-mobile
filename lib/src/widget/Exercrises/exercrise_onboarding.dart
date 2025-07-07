@@ -471,7 +471,7 @@ showActivityInputMethodSelection({bool? hasExerciseData}) async {
                 children: [
                   _buildItemMaterialDialog(
                     healthTitle,
-                    'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
+                    R.string.enter_healt_connect_details.tr(),
                     healthIcon,
                     () {
                       AppSettings.setLastOpenedExerciseInputType('auto');
@@ -484,7 +484,7 @@ showActivityInputMethodSelection({bool? hasExerciseData}) async {
                   const SizedBox(height: 16),
                   _buildItemMaterialDialog(
                     R.string.enter_manually.tr(),
-                    'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn.',
+                    R.string.enter_manually_details.tr(),
                     R.drawable.ic_manual_input_btn,
                     () {
                       AppSettings.setLastOpenedExerciseInputType('manual');
