@@ -400,7 +400,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
   }
 
   Future<void> _handleButtonBookingConsultPress(String url) async {
-    Navigator.pop(context);
+    // Navigator.pop(context);
     if (await canLaunch(url)) {
       FlutterBranchSdk.handleDeepLink(url);
 

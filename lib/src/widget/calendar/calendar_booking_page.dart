@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
@@ -216,6 +217,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   onPressed: () {
                     CalendarBookingCubit.myCalendar = null;
                     CalendarBookingCubit.updateCount = 0;
+                    Observable.instance
+                        .notifyObservers([], notifyName: 'pull_to_refresh');
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   }),
             ),
@@ -394,7 +397,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       if (value == false) return;
 
       await _welcomPackageCubit.markDisplayedWelcome();
-      
+
       if (widget.smartGoal?.id != null) {
         await HomeClient().completeSmartGoal(
             DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);

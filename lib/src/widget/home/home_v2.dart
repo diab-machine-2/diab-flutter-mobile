@@ -348,6 +348,10 @@ class _HomeControllerState extends State<HomeController>
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
     }
+
+    if (notifyName == 'pull_to_refresh') {
+      _pullToRefresh();
+    }
   }
 
   Future<String> _chooseUrl() async {
