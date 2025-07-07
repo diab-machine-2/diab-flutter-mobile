@@ -236,17 +236,17 @@ class _ExercisesResultState extends State<ExercisesResult>
                                     MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: ButtonWidget(
-                                      title: R.string.share.tr(),
-                                      backgroundColor: R.color.white,
-                                      borderColor: R.color.greenGradientBottom,
-                                      textColor: R.color.textDark,
-                                      onPressed: () {},
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
+                                  // Expanded(
+                                  //   flex: 1,
+                                  //   child: ButtonWidget(
+                                  //     title: R.string.share.tr(),
+                                  //     backgroundColor: R.color.white,
+                                  //     borderColor: R.color.greenGradientBottom,
+                                  //     textColor: R.color.textDark,
+                                  //     onPressed: () {},
+                                  //   ),
+                                  // ),
+                                  // const SizedBox(width: 16),
                                   Expanded(
                                     flex: 1,
                                     child: ButtonWidget(
