@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,13 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
   bool isLoading = false;
   int periodFilterType = 0;
 
+  List<InputDataExercriseModel> _groupedData = [];
+
+  // Cache để tránh tính toán lại
+  Map<int, String> _dateCache = {};
+  bool _isDataDirty = false;
+  Timer? _debounceTimer;
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +70,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     Observable.instance.removeObserver(this); // Hủy đăng ký observer
     scrollController.dispose(); // Hủy ScrollController nếu có
     super.dispose(); // Gọi super.dispose() để giải phóng tài nguyên
@@ -73,7 +82,22 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
           .jumpTo(0); // Chỉ gọi jumpTo nếu ScrollController đã được gắn
     }
     periodFilterType = periodFilter;
+    // Reset grouped data khi reload
+    _groupedData.clear();
+    _dateCache.clear();
+    _isDataDirty = false;
     _refresh();
+  }
+
+  // Debounced filter change để tránh quá nhiều requests
+  void _onFilterChanged(int newFilterType) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(Duration(milliseconds: 300), () {
+      setState(() {
+        periodFilterType = newFilterType;
+        reloadData(periodFilterType);
+      });
+    });
   }
 
   void _goBack() {
@@ -106,6 +130,10 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
 
   Future<bool> _refresh() async {
     page = 1;
+    // Reset grouped data khi refresh
+    _groupedData.clear();
+    _dateCache.clear();
+    _isDataDirty = false;
     BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchInputExercrises(
       page: 1,
       currentDateTime:
@@ -113,6 +141,92 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
       periodFilterType: periodFilterType.toString(),
     ));
     return true;
+  }
+
+  // Merge data by date - optimized
+  void _mergeDataByDate(List<InputDataExercriseModel> newData) {
+    if (newData.isEmpty) return;
+
+    // Tạo map từ date để lookup nhanh hơn
+    var dateToIndexMap = <int, int>{};
+    for (int i = 0; i < _groupedData.length; i++) {
+      var date = _groupedData[i].date ?? 0;
+      if (date > 0) {
+        dateToIndexMap[_getDateKey(date)] = i;
+      }
+    }
+
+    var itemsToAdd = <InputDataExercriseModel>[];
+    var hasChanges = false;
+
+    for (var newItem in newData) {
+      var newItemDateKey = _getDateKey(newItem.date ?? 0);
+      var existingIndex = dateToIndexMap[newItemDateKey];
+
+      if (existingIndex != null) {
+        // Merge với item hiện tại
+        var existingItem = _groupedData[existingIndex];
+        var mergedExerciseInput =
+            List<InputExercriseModel>.from(existingItem.exerciseInput);
+        mergedExerciseInput.addAll(newItem.exerciseInput);
+
+        var updatedCalorie = (existingItem.sumBurnedCalorie ?? 0) +
+            (newItem.sumBurnedCalorie ?? 0);
+        var updatedItem = InputDataExercriseModel(
+          date: existingItem.date,
+          sumBurnedCalorie: updatedCalorie,
+          exerciseInput: mergedExerciseInput,
+        );
+
+        _groupedData[existingIndex] = updatedItem;
+        hasChanges = true;
+      } else {
+        //  item mới vào batch
+        itemsToAdd.add(newItem);
+        dateToIndexMap[newItemDateKey] =
+            _groupedData.length + itemsToAdd.length - 1;
+      }
+    }
+
+    // Batch add items mới
+    if (itemsToAdd.isNotEmpty) {
+      _groupedData.addAll(itemsToAdd);
+      hasChanges = true;
+    }
+
+    // Chỉ sort nếu có thay đổi
+    if (hasChanges) {
+      _groupedData.sort((a, b) => (b.date ?? 0).compareTo(a.date ?? 0));
+      _isDataDirty = true;
+    }
+  }
+
+  // Helper method để kiểm tra 2 timestamp có cùng ngày không
+  bool _isSameDate(int timestamp1, int timestamp2) {
+    var date1 = DateTime.fromMillisecondsSinceEpoch(timestamp1 * 1000);
+    var date2 = DateTime.fromMillisecondsSinceEpoch(timestamp2 * 1000);
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  // Tạo key unique cho mỗi ngày để lookup nhanh
+  int _getDateKey(int timestamp) {
+    if (timestamp <= 0) return 0;
+    var date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    return date.year * 10000 + date.month * 100 + date.day;
+  }
+
+  // Cache formatted date để tránh tính toán lại
+  String _getFormattedDate(int timestamp) {
+    if (timestamp <= 0) return '';
+
+    var cached = _dateCache[timestamp];
+    if (cached != null) return cached;
+
+    var formatted = convertToSectionTicketDate(timestamp, '');
+    _dateCache[timestamp] = formatted;
+    return formatted;
   }
 
   @override
@@ -192,12 +306,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
         // Thêm FilterSegmentButton ở đây
         FilterSegmentButton(
           initialFilterType: periodFilterType,
-          onFilterChanged: (newFilterType) {
-            setState(() {
-              periodFilterType = newFilterType;
-              reloadData(periodFilterType);
-            });
-          },
+          onFilterChanged: _onFilterChanged,
         ),
         Expanded(
           child: BlocProvider<ExercrisesBloc>(
@@ -205,7 +314,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
             child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
                 builder: (BuildContext context, ExercrisesState state) {
               currentContext = context;
-              List<InputDataExercriseModel>? model;
               if (state is ExercrisesInitial) {
                 BlocProvider.of<ExercrisesBloc>(context).add(
                     FetchInputExercrises(
@@ -222,14 +330,17 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                 return Center(child: CircularProgressIndicator());
               }
               if (state is ExercrisesDataLoaded) {
-                model = state.inputExercrisesModel;
+                // Gộp dữ liệu mới với dữ liệu đã có
+                _mergeDataByDate(state.inputExercrisesModel);
                 hasMore = state.hasMore;
                 if (hasMore!) {
                   page += 1;
                 }
                 isLoading = false;
               }
-              if (model == null || model.isEmpty) {
+
+              // Sử dụng _groupedData thay vì model từ state
+              if (_groupedData.isEmpty) {
                 return Center(
                   child: Text(
                     R.string.no_data_available.tr(),
@@ -243,11 +354,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                   child: Container(
                     color: R.color.transparent,
                     child: Container(
-                        // decoration: BoxDecoration(
-                        //     image: DecorationImage(
-                        //   image: AssetImage(R.drawable.bg_detail),
-                        //   fit: BoxFit.cover,
-                        // )),
                         child: LoadMore(
                             onLoadMore: _loadMore,
                             isFinish: !hasMore!,
@@ -258,11 +364,10 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                               controller: scrollController,
                               physics: AlwaysScrollableScrollPhysics(),
                               padding: EdgeInsets.only(bottom: 80, top: 10),
-                              itemCount: model.length,
+                              itemCount: _groupedData.length,
                               itemBuilder: (BuildContext context, int index) {
-                                if (model == null ||
-                                    model.isEmpty ||
-                                    model[index].exerciseInput.isEmpty) {
+                                final item = _groupedData[index];
+                                if (item.exerciseInput.isEmpty) {
                                   return Center(
                                     child: Text(
                                       R.string.no_data_available.tr(),
@@ -272,7 +377,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                     ),
                                   );
                                 }
-                                final item = model[index];
+
                                 List<ListExercriseModel> exercises = [];
                                 for (var item in item.exerciseInput) {
                                   exercises.addAll(item.exercise);
@@ -296,9 +401,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                          convertToSectionTicketDate(
-                                              item.date ?? 0, ''),
+                                      Text(_getFormattedDate(item.date ?? 0),
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 20,
