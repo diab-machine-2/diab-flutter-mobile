@@ -203,11 +203,11 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                 children: [
                   _buildDoYouKnow(),
                   const SizedBox(height: 16),
-                  Container(
-                    padding: EdgeInsets.only(bottom: 16),
-                    alignment: Alignment.centerLeft,
-                    child: _buildSupportDoYouNeed(),
-                  ),
+                  // Container(
+                  //   padding: EdgeInsets.only(bottom: 16),
+                  //   alignment: Alignment.centerLeft,
+                  //   child: _buildSupportDoYouNeed(),
+                  // ),
                   ExercrisesLessonSection(
                     key: exercrisesLessonKey,
                     onLessonTap: (lesson) => _navigateToLessonDetail(

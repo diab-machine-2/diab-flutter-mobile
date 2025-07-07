@@ -131,7 +131,8 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              _buildSupportDoYouNeed(),
+              // _buildSupportDoYouNeed(),
+              SizedBox(height: 12),
               _inputTarget(),
               Padding(
                 padding: const EdgeInsets.only(left: 5, right: 2.5),
