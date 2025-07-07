@@ -66,6 +66,11 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
   int? _selectedDateTimestamp; // lưu timestamp của dot được chọn
 
+  bool _isChartReady = false;
+
+  bool _shouldAutoScroll = true; // ✅ Mặc định scroll 1 lần khi có data mới
+
+
   @override
   void initState() {
     super.initState();
@@ -88,39 +93,35 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
   }
 
   void _updateFocusIndexWithFallback(List<SubTrendItemModel> newTrends) {
-    setState(() {
-      trends = newTrends;
+    trends = newTrends;
 
-      if (trends.isEmpty) {
-        _focusIndex = -1;
-        Future.delayed(const Duration(milliseconds: 500), () {
-          Message.showToastMessage(context, R.string.no_data.tr());
-        });
-        return;
-      }
+    if (trends.isEmpty) {
+      _focusIndex = -1;
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Message.showToastMessage(context, R.string.no_data.tr());
+      });
+      return;
+    }
 
-      // Nếu đã lưu timestamp của ngày được chọn
-      if (_selectedDateTimestamp != null) {
-        final matchedIndex = trends.indexWhere(
-              (item) => item.date == _selectedDateTimestamp,
-        );
-        if (matchedIndex != -1) {
-          _focusIndex = matchedIndex;
-        } else {
-          // không tìm thấy ngày cũ => chọn dot cuối cùng (gần nhất)
-          _focusIndex = trends.length - 1;
-          _selectedDateTimestamp = trends.last.date;
-        }
+    if (_selectedDateTimestamp != null) {
+      final matchedIndex =
+      trends.indexWhere((item) => item.date == _selectedDateTimestamp);
+      if (matchedIndex != -1) {
+        _focusIndex = matchedIndex;
       } else {
-        // fallback nếu chưa có chọn gì
         _focusIndex = trends.length - 1;
         _selectedDateTimestamp = trends.last.date;
       }
+    } else {
+      _focusIndex = trends.length - 1;
+      _selectedDateTimestamp = trends.last.date;
+    }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToSelectd();
-      });
-    });
+    if (_isChartReady) {
+      _shouldAutoScroll = true;
+    }
+
+    setState(() {});
   }
 
 
@@ -585,14 +586,26 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
       builder: (context, constraints) {
         final chartHeight = constraints.maxHeight - chartPaddingTop;
         final usableHeight = chartHeight - chartPaddingBottom;
-
-        // Đường benchmark luôn nằm giữa chart
         final targetPixel = chartPaddingTop + usableHeight / 2;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!_isChartReady) {
+            setState(() {
+              _isChartReady = true;
+            });
+
+            // ✅ Nếu có focus index hợp lệ thì scroll luôn
+            if (_focusIndex >= 0 &&
+                _focusIndex < trends.length &&
+                _shouldAutoScroll) {
+              _scrollToSelectd();
+            }
+          }
+        });
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Label bên trái
             Container(
               width: 55,
               height: constraints.maxHeight,
@@ -615,8 +628,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                 ],
               ),
             ),
-
-            // Chart bên phải
             Expanded(
               child: shouldScroll
                   ? SingleChildScrollView(
@@ -774,28 +785,40 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
             _focusIndex = touchedSpot.spotIndex;
             _selectedDateTimestamp = trends[_focusIndex].date;
           });
-          _scrollToSelectd();
+          _shouldAutoScroll = true; // ✅ Cho phép scroll đúng dot sau khi tap
         }
       }
     }
     _lastTapTime = now;
   }
 
-  void _scrollToSelectd() {
-    if (_scrollController.hasClients && _focusIndex != -1 && trends.isNotEmpty) {
-      final chartWidth = _scrollController.position.maxScrollExtent +
-          _scrollController.position.viewportDimension;
+  void _scrollToSelectd({bool animated = true}) {
+    if (!_shouldAutoScroll || !mounted) return;
 
-      final pointSpacing = chartWidth / trends.length;
-      final scrollPosition = _focusIndex * pointSpacing - (pointSpacing / 2);
+    _shouldAutoScroll = false; // ✅ Tắt tự scroll sau 1 lần
 
-      _scrollController.animateTo(
-        scrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+    if (_scrollController.hasClients &&
+        _scrollController.position.hasContentDimensions &&
+        _focusIndex >= 0 &&
+        _focusIndex < trends.length) {
+      const double pointSpacing = 60.0;
+      final double scrollPosition = (_focusIndex * pointSpacing) - 100;
+
+      if (animated) {
+        _scrollController.animateTo(
+          scrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        _scrollController.jumpTo(
+          scrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
+        );
+      }
     }
   }
+
+
 
   void _goNextNode(int length) {
     if (_focusIndex < length - 1) {
