@@ -506,6 +506,10 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                         }
 
                         data = data.toList();
+                        data.removeWhere((element) =>
+                            element.category?.toLowerCase() ==
+                            'đi bộ (health app)');
+
                         if (data.length == 0 || data.isEmpty) {
                           return Center(
                             child: Text(R.string.no_data.tr()),
@@ -515,7 +519,7 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
                           gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                              SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 4,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
