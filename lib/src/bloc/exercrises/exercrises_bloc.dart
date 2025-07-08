@@ -136,8 +136,8 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
       final selectedCategories = currentState.selectedModel ?? [];
 
       List<ExercrisesCategoryModel> _filterOrFallback(
-          List<ExercrisesCategoryModel> source,
-          ) {
+        List<ExercrisesCategoryModel> source,
+      ) {
         final result = source
             .where((e) => e.category?.toLowerCase().contains(lowerKey) ?? false)
             .toList();
@@ -145,17 +145,17 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
         return result.isNotEmpty
             ? result
             : source
-            .where((e) => e.category?.toLowerCase().contains('khác') ?? false)
-            .toList();
+                .where(
+                    (e) => e.category?.toLowerCase().contains('khác') ?? false)
+                .toList();
       }
 
       final categorySearch = ExercrisesListCategoryModel(
-        exerciseCategories:
-        _filterOrFallback(categories.exerciseCategories),
+        exerciseCategories: _filterOrFallback(categories.exerciseCategories),
         exerciseCategoryCommons:
-        _filterOrFallback(categories.exerciseCategoryCommons),
+            _filterOrFallback(categories.exerciseCategoryCommons),
         exerciseCategoryRegularlies:
-        _filterOrFallback(categories.exerciseCategoryRegularlies),
+            _filterOrFallback(categories.exerciseCategoryRegularlies),
       );
 
       yield ExercrisesCategoryModelLoaded(
@@ -182,13 +182,65 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     var model =
         await client.fetchInput(currentDateTime, periodFilterType, page);
 
+    List<InputDataExercriseModel> finalData = model.inputs;
+
     if (currenState is ExercrisesDataLoaded) {
       if (page != 1) {
-        model.inputs.insertAll(0, currenState.inputExercrisesModel);
+        // Merge dữ liệu cùng ngày lại với nhau
+        finalData = _mergeExercisesByDate(
+          currenState.inputExercrisesModel,
+          model.inputs,
+        );
       }
     }
     yield ExercrisesDataLoaded(
-        inputExercrisesModel: model.inputs, hasMore: model.hasMore);
+        inputExercrisesModel: finalData, hasMore: model.hasMore);
+  }
+
+  /// Merge dữ liệu exercises cùng ngày lại với nhau
+  List<InputDataExercriseModel> _mergeExercisesByDate(
+    List<InputDataExercriseModel> existingData,
+    List<InputDataExercriseModel> newData,
+  ) {
+    // Tạo một map để group theo ngày
+    Map<int, InputDataExercriseModel> dateMap = {};
+
+    // Thêm dữ liệu hiện tại vào map
+    for (var item in existingData) {
+      if (item.date != null) {
+        dateMap[item.date!] = item;
+      }
+    }
+
+    // Merge dữ liệu mới vào map
+    for (var newItem in newData) {
+      if (newItem.date != null) {
+        final existingItem = dateMap[newItem.date!];
+        if (existingItem != null) {
+          // Merge exerciseInput và sumBurnedCalorie
+          final mergedExerciseInput = <InputExercriseModel>[];
+          mergedExerciseInput.addAll(existingItem.exerciseInput);
+          mergedExerciseInput.addAll(newItem.exerciseInput);
+
+          final mergedSumBurnedCalorie = (existingItem.sumBurnedCalorie ?? 0) +
+              (newItem.sumBurnedCalorie ?? 0);
+
+          dateMap[newItem.date!] = InputDataExercriseModel(
+            date: newItem.date,
+            sumBurnedCalorie: mergedSumBurnedCalorie,
+            exerciseInput: mergedExerciseInput,
+          );
+        } else {
+          dateMap[newItem.date!] = newItem;
+        }
+      }
+    }
+
+    // Convert map thành list và sort theo ngày (desc)
+    final result = dateMap.values.toList();
+    result.sort((a, b) => (b.date ?? 0).compareTo(a.date ?? 0));
+
+    return result;
   }
 
   Stream<ExercrisesState> fetchDataDaily(
