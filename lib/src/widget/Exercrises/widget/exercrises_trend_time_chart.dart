@@ -235,7 +235,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
                     periodFilterType: periodFilterType,
                     date: selectedTrend.date != null
                         ? DateTime.fromMillisecondsSinceEpoch(
-                            selectedTrend.date ?? 0)
+                            selectedTrend.date! * 1000)
                         : DateTime.now(),
                     titleButton: R.string.chat_with_AI.tr(),
                   ),
@@ -785,8 +785,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
         final date = trends[lineTouch.lineBarSpots!.first.spotIndex].date !=
                 null
             ? DateTime.fromMillisecondsSinceEpoch(
-                trends[lineTouch.lineBarSpots!.first.spotIndex].date! * 1000,
-                isUtc: true)
+                trends[lineTouch.lineBarSpots!.first.spotIndex].date! * 1000)
             : DateTime.now();
         // Thực hiện hành động khi double press
         if (touchedSpot.spotIndex == _focusIndex) {
