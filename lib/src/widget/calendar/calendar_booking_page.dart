@@ -218,7 +218,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                     CalendarBookingCubit.myCalendar = null;
                     CalendarBookingCubit.updateCount = 0;
                     Observable.instance
-                        .notifyObservers([], notifyName: 'pull_to_refresh');
+                        .notifyObservers([], notifyName: 'refresh_home');
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   }),
             ),
@@ -398,11 +398,12 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
       await _welcomPackageCubit.markDisplayedWelcome();
 
+      Observable.instance.notifyObservers([], notifyName: 'refresh_home'); 
+
       if (widget.smartGoal?.id != null) {
         await HomeClient().completeSmartGoal(
             DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);
       }
-      ;
     });
   }
 

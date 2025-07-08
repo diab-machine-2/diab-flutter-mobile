@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -151,6 +153,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
       emit(CalendarBookingCloseLoading());
       // return apiResult;
     }, failure: (NetworkExceptions error) {
+      log('[BOOKING] error ${error.toString()}');
       emit(CalendarBookingFailure("Lịch này đã có người đặt trước"));
     });
     return result;
