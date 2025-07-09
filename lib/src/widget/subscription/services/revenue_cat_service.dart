@@ -174,4 +174,121 @@ class RevenueCatService {
       return true; // Allow purchase by default if validation fails
     }
   }
+
+  // Debug method to verify iOS setup
+  // static Future<void> debugiOSSetup() async {
+  //   if (!Platform.isIOS) return;
+    
+  //   try {
+  //     log('[SUBSCRIPTION] [iOS Debug] Checking RevenueCat configuration...');
+      
+  //     // Check if RevenueCat is configured
+  //     final customerInfo = await Purchases.getCustomerInfo();
+  //     log('[SUBSCRIPTION] [iOS Debug] Customer info retrieved: ${customerInfo.originalAppUserId}');
+      
+  //     // Check available offerings
+  //     final offerings = await Purchases.getOfferings();
+  //     log('[SUBSCRIPTION] [iOS Debug] Available offerings: ${offerings.all.keys.toList()}');
+      
+  //     if (offerings.current != null) {
+  //       log('[SUBSCRIPTION] [iOS Debug] Current offering packages: ${offerings.current!.availablePackages.length}');
+  //       for (var package in offerings.current!.availablePackages) {
+  //         log('[SUBSCRIPTION] [iOS Debug] Package: ${package.storeProduct.identifier} - ${package.storeProduct.title}');
+  //       }
+  //     }
+      
+  //     // Check App Store connection
+  //     try {
+  //       await Purchases.syncPurchases();
+  //       log('[SUBSCRIPTION] [iOS Debug] Successfully synced with App Store');
+  //     } catch (e) {
+  //       log('[SUBSCRIPTION] [iOS Debug] Failed to sync with App Store: $e');
+  //     }
+      
+  //   } catch (e) {
+  //     log('[SUBSCRIPTION] [iOS Debug] Error during setup verification: $e');
+  //   }
+  // }
+
+  // Enhanced purchase method with iOS-specific handling
+  static Future<bool> purchasePackageWithiOSHandling(Package package) async {
+    // if (Platform.isIOS) {
+    //   await debugiOSSetup();
+    // }
+    
+    try {
+      // log('[SUBSCRIPTION] Starting purchase for package: ${package.storeProduct.identifier}');
+      // log('[SUBSCRIPTION] Package price: ${package.storeProduct.priceString}');
+      
+      // On iOS, ensure we're logged in first
+      if (Platform.isIOS && _currentAppUserId != null) {
+        // log('[SUBSCRIPTION] [iOS] Ensuring user is logged in: $_currentAppUserId');
+        await login(_currentAppUserId!);
+      }
+      
+      final customerInfo = await Purchases.purchasePackage(package);
+      
+      // log('[SUBSCRIPTION] Purchase completed. CustomerInfo: ${customerInfo.toString()}');
+      // log('[SUBSCRIPTION] Active entitlements: ${customerInfo.entitlements.active.keys.toList()}');
+      
+      // On iOS, double-check the purchase by getting fresh customer info
+      if (Platform.isIOS) {
+        await Future.delayed(Duration(milliseconds: 500)); // Brief delay for processing
+        final freshCustomerInfo = await Purchases.getCustomerInfo();
+        // log('[SUBSCRIPTION] [iOS] Fresh customer info after purchase: ${freshCustomerInfo.entitlements.active.keys.toList()}');
+        // log('[SUBSCRIPTION] [iOS] Active subscriptions: ${freshCustomerInfo.activeSubscriptions}');
+        // log('[SUBSCRIPTION] [iOS] All purchased products: ${freshCustomerInfo.allPurchasedProductIdentifiers}');
+        
+        // Enhanced validation for iOS
+        final hasActiveEntitlements = freshCustomerInfo.entitlements.active.isNotEmpty;
+        final hasActiveSubscriptions = freshCustomerInfo.activeSubscriptions.isNotEmpty;
+        final hasPurchasedProduct = freshCustomerInfo.allPurchasedProductIdentifiers.contains(package.storeProduct.identifier);
+        
+        // log('[SUBSCRIPTION] [iOS] Has active entitlements: $hasActiveEntitlements');
+        // log('[SUBSCRIPTION] [iOS] Has active subscriptions: $hasActiveSubscriptions');
+        // log('[SUBSCRIPTION] [iOS] Has purchased product: $hasPurchasedProduct');
+        
+        // For iOS, consider purchase successful if we have active entitlements OR active subscriptions OR the product was purchased
+        // This handles cases where entitlements might not be set up correctly but the subscription is active
+        final isSuccessful = hasActiveEntitlements || hasActiveSubscriptions || hasPurchasedProduct;
+        // log('[SUBSCRIPTION] [iOS] Purchase validation result: $isSuccessful');
+        
+        return isSuccessful;
+      }
+      
+      final hasActiveSubscription = customerInfo.entitlements.active.isNotEmpty;
+      // log('[SUBSCRIPTION] Has active subscription: $hasActiveSubscription');
+      
+      return hasActiveSubscription;
+    } on PlatformException catch (e) {
+      log('[SUBSCRIPTION] PlatformException during purchase: ${e.code} - ${e.message}');
+      log('[SUBSCRIPTION] PlatformException details: ${e.details}');
+      
+      if (e.code == 'purchase_cancelled') {
+        log('[SUBSCRIPTION] User cancelled the purchase');
+      } else if (e.code == 'user_cancelled') {
+        log('[SUBSCRIPTION] User cancelled the purchase (alternative code)');
+      } else if (e.code == 'payment_pending') {
+        log('[SUBSCRIPTION] Payment is pending approval');
+        // On iOS, some payments might be pending (like Ask to Buy)
+        return false;
+      } else if (e.code == 'product_already_purchased') {
+        log('[SUBSCRIPTION] Product already purchased, checking entitlements');
+        // Product already purchased, check current entitlements
+        try {
+          final customerInfo = await Purchases.getCustomerInfo();
+          return customerInfo.entitlements.active.isNotEmpty;
+        } catch (innerE) {
+          log('[SUBSCRIPTION] Error checking entitlements after already purchased: $innerE');
+          return false;
+        }
+      } else {
+        log('[SUBSCRIPTION] Unexpected error making purchase: ${e.message}');
+      }
+      return false;
+    } catch (e) {
+      log('[SUBSCRIPTION] Unexpected error during purchase: $e');
+      return false;
+    }
+  }
 }
