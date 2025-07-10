@@ -1,9 +1,11 @@
-// screens/programs_list_page.dart
+// Updated package_program_list_page.dart with phone validation
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -11,12 +13,16 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
+import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+
+// Import the phone validation helper
+// import 'phone_validation_helper.dart';
 
 class ProgramsListPage extends StatefulWidget {
   const ProgramsListPage({Key? key}) : super(key: key);
@@ -101,13 +107,6 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                         onTap: () async {
                           SubscriptionTracking.supportClick(
                               screenName: 'program_listing');
-                          // final launchUri =
-                          //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                          // if (await canLaunchUrl(launchUri)) {
-                          //   await launchUrl(launchUri);
-                          // } else {
-                          //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                          // }
                           HomeSupportFunctions.showModalAddData(context);
                         },
                         child: Container(
@@ -206,7 +205,8 @@ class ProgramCard extends StatelessWidget {
     return shortestSide;
   }
 
-  notifySubscriptionSuccess(BuildContext context) async {
+  notifySubscriptionSuccess(BuildContext context,
+      {required String phoneNumber}) async {
     final subscriptionCubit = BlocProvider.of<SubscriptionCubit>(context);
 
     if (subscriptionCubit.selectedPackage == null) return;
@@ -214,7 +214,32 @@ class ProgramCard extends StatelessWidget {
     final request = NotifySubscriptionRequest(
         servicePackage: subscriptionCubit.selectedPackage!.title,
         programName: program.title);
-    await subscriptionCubit.notifySubscriptionSuccess(request);
+    await subscriptionCubit.notifySubscriptionSuccess(
+        phoneNumber: phoneNumber, request: request);
+  }
+
+  Future<String> _validatePhoneAndShowDialog(BuildContext context) async {
+    var phoneNumber = AppSettings.userInfo?.phoneNumber;
+
+    // Check if phone number is empty or invalid
+    if (phoneNumber == null ||
+        phoneNumber.isEmpty ||
+        !phoneNumber.startsWith('+84') ||
+        !_isValidPhoneNumber(phoneNumber)) {
+      phoneNumber = await PhoneValidationHelper.showDialogUpdatePhone(context);
+    }
+
+    return phoneNumber;
+  }
+
+  bool _isValidPhoneNumber(String phoneNumber) {
+    if (phoneNumber.startsWith('+84')) {
+      phoneNumber = '0${phoneNumber.substring(3)}';
+    }
+    const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+    final RegExp regExp = RegExp(pattern);
+    return regExp.hasMatch(phoneNumber) &&
+        (phoneNumber.length == 9 || phoneNumber.length == 10);
   }
 
   @override
@@ -414,6 +439,13 @@ class ProgramCard extends StatelessWidget {
                       screenName: 'program_listing',
                       objectTitle: program.title);
 
+                  String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
+
+                  if (!isBasicPackage) {
+                    phoneNumber = await _validatePhoneAndShowDialog(context);
+                    if (phoneNumber.isEmpty) return;
+                  }
+
                   if (isBasicPackage) {
                     ProgramService.showPopupConfirmBasicSubscription(
                         title: program.title,
@@ -430,7 +462,8 @@ class ProgramCard extends StatelessWidget {
                     return;
                   }
 
-                  await notifySubscriptionSuccess(context);
+                  await notifySubscriptionSuccess(context,
+                      phoneNumber: phoneNumber);
                   ProgramService.showPopupRequestConsultSubscription(
                     context: context,
                     title: R.string.receive_consult_request_title.tr(),
@@ -452,13 +485,6 @@ class ProgramCard extends StatelessWidget {
                       SubscriptionTracking.supportClick(
                           screenName: 'program_listing');
 
-                      // final launchUri =
-                      //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                      // if (await canLaunchUrl(launchUri)) {
-                      //   await launchUrl(launchUri);
-                      // } else {
-                      //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                      // }
                       HomeSupportFunctions.showModalAddData(context);
                     },
                   );
@@ -675,6 +701,14 @@ class ProgramCard extends StatelessWidget {
                         screenName: 'program_listing',
                         objectTitle: program.title);
 
+                    String phoneNumber =
+                        AppSettings.userInfo?.phoneNumber ?? '';
+
+                    if (!isBasicPackage) {
+                      phoneNumber = await _validatePhoneAndShowDialog(context);
+                      if (phoneNumber.isEmpty) return;
+                    }
+
                     if (isBasicPackage) {
                       ProgramService.showPopupConfirmBasicSubscription(
                           title: program.title,
@@ -691,7 +725,8 @@ class ProgramCard extends StatelessWidget {
                       return;
                     }
 
-                    await notifySubscriptionSuccess(context);
+                    await notifySubscriptionSuccess(context,
+                        phoneNumber: phoneNumber);
                     ProgramService.showPopupRequestConsultSubscription(
                       context: context,
                       title: R.string.receive_consult_request_title.tr(),
@@ -714,13 +749,6 @@ class ProgramCard extends StatelessWidget {
                         SubscriptionTracking.supportClick(
                             screenName: 'program_listing');
 
-                        // final launchUri =
-                        //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                        // if (await canLaunchUrl(launchUri)) {
-                        //   await launchUrl(launchUri);
-                        // } else {
-                        //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                        // }
                         HomeSupportFunctions.showModalAddData(context);
                       },
                     );

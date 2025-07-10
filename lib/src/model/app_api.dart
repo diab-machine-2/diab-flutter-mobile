@@ -441,6 +441,7 @@ abstract class AppApi {
 
   @POST("/App/Notification/Subscription")
   Future<CommonResponse> notifySubscription(
+      @Query('phoneNumberInput') String? phoneNumberInput,
       @Body() NotifySubscriptionRequest request);
 
   // ## 1. Lấy Cấu hình Supabase
