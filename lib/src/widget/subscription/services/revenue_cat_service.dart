@@ -60,7 +60,7 @@ class RevenueCatService {
   static Future<bool> purchasePackage(Package package) async {
     try {
       final customerInfo = await Purchases.purchasePackage(package);
-      return customerInfo.entitlements.active.isNotEmpty;
+      return customerInfo.isActivelySubscribed;
     } on PlatformException catch (e) {
       if (e.code == 'purchase_cancelled') {
         debugPrint('[SUBSCRIPTION] User cancelled the purchase');
@@ -75,7 +75,7 @@ class RevenueCatService {
   static Future<bool> isSubscribed(String entitlementId) async {
     try {
       final customerInfo = await Purchases.getCustomerInfo();
-      return customerInfo.entitlements.active.containsKey(entitlementId);
+      return customerInfo.entitlements.active.containsKey(entitlementId) || customerInfo.isActivelySubscribed;
     } on PlatformException catch (e) {
       debugPrint(
           '[SUBSCRIPTION] Error checking subscription status: ${e.message}');
@@ -87,7 +87,7 @@ class RevenueCatService {
   static Future<bool> restorePurchases() async {
     try {
       final customerInfo = await Purchases.restorePurchases();
-      return customerInfo.entitlements.active.isNotEmpty;
+      return customerInfo.entitlements.active.isNotEmpty || customerInfo.isActivelySubscribed;
     } on PlatformException catch (e) {
       debugPrint('[SUBSCRIPTION] Error restoring purchases: ${e.message}');
       return false;
@@ -138,7 +138,7 @@ class RevenueCatService {
   static Future<bool> hasActiveSubscription() async {
     try {
       final customerInfo = await Purchases.getCustomerInfo();
-      return customerInfo.entitlements.active.isNotEmpty;
+      return customerInfo.entitlements.active.isNotEmpty || customerInfo.isActivelySubscribed;
     } catch (e) {
       return false;
     }
@@ -155,7 +155,7 @@ class RevenueCatService {
       final customerInfo = await Purchases.getCustomerInfo();
 
       // If there are active entitlements
-      if (customerInfo.entitlements.active.isNotEmpty) {
+      if (customerInfo.isActivelySubscribed) {
         // Check if the original app user ID matches our current user
         final originalUserId = customerInfo.originalAppUserId;
         log('[SUBSCRIPTION] Found active subscriptions for user: $originalUserId');
@@ -290,5 +290,14 @@ class RevenueCatService {
       log('[SUBSCRIPTION] Unexpected error during purchase: $e');
       return false;
     }
+  }
+}
+
+extension CustomerInfoApp on CustomerInfo {
+  bool get isActivelySubscribed {
+    final hasActiveEntitlements = this.entitlements.active.isNotEmpty;
+    final hasActiveSubscriptions = this.activeSubscriptions.isNotEmpty;
+    final hasPurchasedProduct = this.allPurchasedProductIdentifiers.isNotEmpty;
+    return hasActiveEntitlements || hasActiveSubscriptions || hasPurchasedProduct;
   }
 }
