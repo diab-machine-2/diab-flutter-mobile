@@ -1053,7 +1053,7 @@ class _HomeControllerState extends State<HomeController>
 
   // return allow next route
   bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
-    if (routeName == NavigatorName.exercrise_add_v2) {
+    if (routeName == NavigatorName.exercrise_onboarding) {
       if (AppSettings.userInfo?.weight == null ||
           AppSettings.userInfo!.weight == 0) {
         showPopupWeight(nextRoute: routeName, args: args);
