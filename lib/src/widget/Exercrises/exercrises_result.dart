@@ -77,9 +77,7 @@ class _ExercisesResultState extends State<ExercisesResult>
     debugPrint('dateString: $dateString');
     // Lấy dữ liệu cho activity list
     BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchInputExercrises(
-        currentDateTime: dateString,
-        periodFilterType: "0",
-        page: 1));
+        currentDateTime: dateString, periodFilterType: "0", page: 1));
 
     // Lấy dữ liệu cho progress section
     BlocProvider.of<ExercrisesBloc>(currentContext)
@@ -487,7 +485,9 @@ class _ExercisesResultState extends State<ExercisesResult>
                     alignment: Alignment.centerLeft,
                     child: Container(
                       width: (MediaQuery.of(context).size.width) *
-                          (targetCalories > 0 ? completedCalories / targetCalories : 0),
+                          (targetCalories > 0
+                              ? completedCalories / targetCalories
+                              : 0),
                       decoration: BoxDecoration(
                         color: R.color.yellow,
                         borderRadius: BorderRadius.circular(6.r),
@@ -572,6 +572,8 @@ class _ExercisesResultState extends State<ExercisesResult>
     String exerciseInputId,
     DateTime exerciseInputDate,
   ) {
+    bool isItemFromHealthApp =
+        exercise.category?.contains('(health app)') ?? false;
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4.h, horizontal: 0.w),
       padding: EdgeInsets.all(16.w),
@@ -647,6 +649,8 @@ class _ExercisesResultState extends State<ExercisesResult>
           ),
           InkWell(
             onTap: () {
+              if (isItemFromHealthApp) return;
+
               Navigator.pushNamed(
                 context,
                 NavigatorName.exercrise_add_v2,
@@ -656,16 +660,19 @@ class _ExercisesResultState extends State<ExercisesResult>
                 },
               );
             },
-            child: Container(
-              padding: EdgeInsets.all(8.w),
-              decoration: BoxDecoration(
-                color: R.color.greenGradientBottom.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(24.r),
-              ),
-              child: Image.asset(
-                R.drawable.ic_edit,
-                width: 16.w,
-                height: 16.h,
+            child: Visibility(
+              visible: !isItemFromHealthApp,
+              child: Container(
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  color: R.color.greenGradientBottom.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(24.r),
+                ),
+                child: Image.asset(
+                  R.drawable.ic_edit,
+                  width: 16.w,
+                  height: 16.h,
+                ),
               ),
             ),
           ),

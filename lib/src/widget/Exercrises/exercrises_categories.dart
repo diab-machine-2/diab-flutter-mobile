@@ -152,6 +152,10 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                             return 0;
                           });
                         }
+                        data.removeWhere((element) =>
+                            element.category?.toLowerCase() ==
+                            'đi bộ (health app)');
+                            
                         data = data.take(3).toList();
                         if (data.length == 0 || data.isEmpty) {
                           return Center(
