@@ -380,6 +380,7 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
         exercise.category?.contains('(health app)') ?? false;
     return InkWell(
         onTap: () {
+          if (isItemFromHealthApp) return;
           Navigator.pushNamed(
             context,
             NavigatorName.exercrise_add_v2,
