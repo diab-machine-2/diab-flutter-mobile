@@ -16,7 +16,21 @@ class SubscriptionPaymentState {
   factory SubscriptionPaymentState.none() {
     return SubscriptionPaymentState._(isActive: false, willRenew: false);
   }
-  
+
+  factory SubscriptionPaymentState.active({
+    required String entitlementId,
+    required DateTime expirationDate,
+    required String productId,
+  }) {
+    return SubscriptionPaymentState._(
+      isActive: true,
+      willRenew: false,
+      entitlementId: entitlementId,
+      expirationDate: expirationDate,
+      productId: productId,
+    );
+  }
+
   factory SubscriptionPaymentState.activeRenewing({
     required String entitlementId,
     required DateTime expirationDate,
