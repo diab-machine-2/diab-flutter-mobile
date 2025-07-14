@@ -107,9 +107,9 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
   }
 
   Future<String> _getPeriodType() async {
-    return widget.periodFilterType == 0
+    return periodFilterType == 0
         ? await AppSettings.getPeriodByScreen(ScreenList.EXERCISE.index)
-        : widget.periodFilterType.toString();
+        : periodFilterType.toString();
   }
 
   Future<void> _initializeData() async {
