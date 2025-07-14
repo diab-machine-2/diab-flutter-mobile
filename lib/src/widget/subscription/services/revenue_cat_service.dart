@@ -235,25 +235,7 @@ class RevenueCatService {
       if (Platform.isIOS) {
         await Future.delayed(Duration(milliseconds: 500)); // Brief delay for processing
         final freshCustomerInfo = await Purchases.getCustomerInfo();
-        // log('[SUBSCRIPTION] [iOS] Fresh customer info after purchase: ${freshCustomerInfo.entitlements.active.keys.toList()}');
-        // log('[SUBSCRIPTION] [iOS] Active subscriptions: ${freshCustomerInfo.activeSubscriptions}');
-        // log('[SUBSCRIPTION] [iOS] All purchased products: ${freshCustomerInfo.allPurchasedProductIdentifiers}');
-        
-        // Enhanced validation for iOS
-        final hasActiveEntitlements = freshCustomerInfo.entitlements.active.isNotEmpty;
-        final hasActiveSubscriptions = freshCustomerInfo.activeSubscriptions.isNotEmpty;
-        final hasPurchasedProduct = freshCustomerInfo.allPurchasedProductIdentifiers.contains(package.storeProduct.identifier);
-        
-        // log('[SUBSCRIPTION] [iOS] Has active entitlements: $hasActiveEntitlements');
-        // log('[SUBSCRIPTION] [iOS] Has active subscriptions: $hasActiveSubscriptions');
-        // log('[SUBSCRIPTION] [iOS] Has purchased product: $hasPurchasedProduct');
-        
-        // For iOS, consider purchase successful if we have active entitlements OR active subscriptions OR the product was purchased
-        // This handles cases where entitlements might not be set up correctly but the subscription is active
-        final isSuccessful = hasActiveEntitlements || hasActiveSubscriptions || hasPurchasedProduct;
-        // log('[SUBSCRIPTION] [iOS] Purchase validation result: $isSuccessful');
-        
-        return isSuccessful;
+        return freshCustomerInfo.isActivelySubscribed;
       }
       
       final hasActiveSubscription = customerInfo.entitlements.active.isNotEmpty;
@@ -294,10 +276,26 @@ class RevenueCatService {
 }
 
 extension CustomerInfoApp on CustomerInfo {
+  List<String> get productIdentifiers {
+    return [
+      'subscription_basic_06m',
+      'subscription_basic_12m',
+    ];
+  }
+
+  String? get purchasedProductIdentifier {
+    if (this.allPurchasedProductIdentifiers.isNotEmpty) {
+      return this.allPurchasedProductIdentifiers.any(
+        (identifier) => productIdentifiers.contains(identifier),
+      ) ? this.allPurchasedProductIdentifiers.first : null;
+    }
+    return null;
+  }
+
   bool get isActivelySubscribed {
     final hasActiveEntitlements = this.entitlements.active.isNotEmpty;
     final hasActiveSubscriptions = this.activeSubscriptions.isNotEmpty;
-    final hasPurchasedProduct = this.allPurchasedProductIdentifiers.isNotEmpty;
+    bool hasPurchasedProduct = this.purchasedProductIdentifier != null;
     return hasActiveEntitlements || hasActiveSubscriptions || hasPurchasedProduct;
   }
 }
