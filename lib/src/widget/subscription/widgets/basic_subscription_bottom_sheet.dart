@@ -298,10 +298,14 @@ class _SubscriptionOptionsBottomSheetState
 
   void _showPaymentSuccessDialog(BuildContext context) {
     // Get the price from the selected package
+
     String price = _selectedOptionIndex == 0
-        ? Utils.formatMoney(_sixMonthPackage?.storeProduct.price) ?? '150.000đ'
-        : Utils.formatMoney(_twelveMonthPackage?.storeProduct.price) ??
-            '200.000đ';
+        ? Utils.formatMoney(_sixMonthPackage?.storeProduct.price,
+                currency: _sixMonthPackage?.storeProduct.currencyCode) ??
+            '150.000₫'
+        : Utils.formatMoney(_twelveMonthPackage?.storeProduct.price,
+                currency: _sixMonthPackage?.storeProduct.currencyCode) ??
+            '200.000₫';
 
     showDialog(
       context: context,
@@ -607,52 +611,52 @@ class _SubscriptionOptionsBottomSheetState
   // Future<void> _debugIOSPurchaseResult(Package packageToPurchase) async {
   //   try {
   //     log('[SUBSCRIPTION] [DEBUG] Starting detailed iOS purchase analysis...');
-      
+
   //     // Get customer info
   //     final customerInfo = await Purchases.getCustomerInfo();
-      
+
   //     log('[SUBSCRIPTION] [DEBUG] === CUSTOMER INFO ANALYSIS ===');
   //     log('[SUBSCRIPTION] [DEBUG] Original App User ID: ${customerInfo.originalAppUserId}');
   //     log('[SUBSCRIPTION] [DEBUG] Request Date: ${customerInfo.requestDate}');
   //     log('[SUBSCRIPTION] [DEBUG] First Seen: ${customerInfo.firstSeen}');
   //     log('[SUBSCRIPTION] [DEBUG] Original Purchase Date: ${customerInfo.originalPurchaseDate}');
   //     log('[SUBSCRIPTION] [DEBUG] Management URL: ${customerInfo.managementURL}');
-      
+
   //     log('[SUBSCRIPTION] [DEBUG] === ENTITLEMENTS ===');
   //     log('[SUBSCRIPTION] [DEBUG] All Entitlements: ${customerInfo.entitlements.all.keys.toList()}');
   //     log('[SUBSCRIPTION] [DEBUG] Active Entitlements: ${customerInfo.entitlements.active.keys.toList()}');
-      
+
   //     log('[SUBSCRIPTION] [DEBUG] === SUBSCRIPTIONS ===');
   //     log('[SUBSCRIPTION] [DEBUG] Active Subscriptions: ${customerInfo.activeSubscriptions}');
   //     log('[SUBSCRIPTION] [DEBUG] All Purchase Dates: ${customerInfo.allPurchaseDates}');
   //     log('[SUBSCRIPTION] [DEBUG] All Expiration Dates: ${customerInfo.allExpirationDates}');
   //     log('[SUBSCRIPTION] [DEBUG] Latest Expiration Date: ${customerInfo.latestExpirationDate}');
-      
+
   //     log('[SUBSCRIPTION] [DEBUG] === TRANSACTIONS ===');
   //     log('[SUBSCRIPTION] [DEBUG] All Purchased Product IDs: ${customerInfo.allPurchasedProductIdentifiers}');
   //     log('[SUBSCRIPTION] [DEBUG] Non-Subscription Transactions: ${customerInfo.nonSubscriptionTransactions.length}');
-      
+
   //     // Check specific product
   //     final productId = packageToPurchase.storeProduct.identifier;
   //     final hasProduct = customerInfo.allPurchasedProductIdentifiers.contains(productId);
   //     final hasExpiration = customerInfo.allExpirationDates.containsKey(productId);
   //     final expirationDate = customerInfo.allExpirationDates[productId];
   //     final purchaseDate = customerInfo.allPurchaseDates[productId];
-      
+
   //     log('[SUBSCRIPTION] [DEBUG] === SPECIFIC PRODUCT ANALYSIS ===');
   //     log('[SUBSCRIPTION] [DEBUG] Product ID: $productId');
   //     log('[SUBSCRIPTION] [DEBUG] Has Product: $hasProduct');
   //     log('[SUBSCRIPTION] [DEBUG] Has Expiration Entry: $hasExpiration');
   //     log('[SUBSCRIPTION] [DEBUG] Expiration Date: $expirationDate');
   //     log('[SUBSCRIPTION] [DEBUG] Purchase Date: $purchaseDate');
-      
+
   //     // Check if this is a subscription vs non-consumable
   //     if (expirationDate == null && hasProduct) {
   //       log('[SUBSCRIPTION] [DEBUG] ⚠️  POTENTIAL ISSUE: Product has null expiration date');
   //       log('[SUBSCRIPTION] [DEBUG] ⚠️  This suggests the product might be configured as non-consumable instead of subscription');
   //       log('[SUBSCRIPTION] [DEBUG] ⚠️  Check App Store Connect product configuration');
   //     }
-      
+
   //     // Check for any non-subscription transactions for this product
   //     for (final transaction in customerInfo.nonSubscriptionTransactions) {
   //       if (transaction.productIdentifier == productId) {
@@ -662,25 +666,25 @@ class _SubscriptionOptionsBottomSheetState
   //         log('[SUBSCRIPTION] [DEBUG] - Purchase Date: ${transaction.purchaseDate}');
   //       }
   //     }
-      
+
   //     log('[SUBSCRIPTION] [DEBUG] === VALIDATION RESULTS ===');
   //     final hasActiveEntitlements = customerInfo.entitlements.active.isNotEmpty;
   //     final hasActiveSubscriptions = customerInfo.activeSubscriptions.isNotEmpty;
   //     final hasPurchasedProduct = customerInfo.allPurchasedProductIdentifiers.contains(productId);
-      
+
   //     log('[SUBSCRIPTION] [DEBUG] Has Active Entitlements: $hasActiveEntitlements');
   //     log('[SUBSCRIPTION] [DEBUG] Has Active Subscriptions: $hasActiveSubscriptions');
   //     log('[SUBSCRIPTION] [DEBUG] Has Purchased Product: $hasPurchasedProduct');
-      
+
   //     final shouldBeSuccessful = hasActiveEntitlements || hasActiveSubscriptions || hasPurchasedProduct;
   //     log('[SUBSCRIPTION] [DEBUG] Should Be Successful: $shouldBeSuccessful');
-      
+
   //     if (!shouldBeSuccessful) {
   //       log('[SUBSCRIPTION] [DEBUG] ❌ Purchase validation would fail');
   //     } else {
   //       log('[SUBSCRIPTION] [DEBUG] ✅ Purchase validation should pass');
   //     }
-      
+
   //   } catch (e) {
   //     log('[SUBSCRIPTION] [DEBUG] Error during iOS debug analysis: $e');
   //   }
@@ -808,7 +812,8 @@ class _SubscriptionOptionsBottomSheetState
     String duration = index == 0 ? '6 THÁNG' : '12 THÁNG';
 
     // Get price text
-    String price = Utils.formatMoney(package?.storeProduct.price) ??
+    String price = Utils.formatMoney(package?.storeProduct.price,
+            currency: package?.storeProduct.currencyCode) ??
         (index == 0 ? '150.000đ' : '200.000đ');
 
     // Calculate monthly price for 12-month option
@@ -817,7 +822,8 @@ class _SubscriptionOptionsBottomSheetState
       try {
         final totalPrice = package.storeProduct.price;
         final monthly = totalPrice / 12;
-        monthlyPrice = '16.700đ/ 1 tháng';
+        monthlyPrice =
+            '${Utils.formatMoney(monthly, currency: package.storeProduct.currencyCode)}/ 1 tháng';
       } catch (e) {
         print('Error calculating monthly price: $e');
         monthlyPrice = '16.700đ/ 1 tháng';
