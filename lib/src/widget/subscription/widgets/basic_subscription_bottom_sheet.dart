@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -132,8 +133,9 @@ class _SubscriptionOptionsBottomSheetState
         log('[SUBSCRIPTION] Package price: ${packageToPurchase.storeProduct.priceString}');
 
         // First validate that no other user has active subscriptions
+        // iOS package is non-subscription, so we can purchase it as much as we want
         final canPurchase =
-            await RevenueCatService.validateNoOtherUserHasActiveSubscription();
+          Platform.isIOS || await RevenueCatService.validateNoOtherUserHasActiveSubscription();
 
         if (!canPurchase) {
           setState(() {
