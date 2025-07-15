@@ -94,7 +94,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
       Navigator.pushNamedAndRemoveUntil(
         context,
         NavigatorName.tabbar,
-            (route) => false,
+        (route) => false,
       );
     } else {
       BotToast.showText(
@@ -152,40 +152,38 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
           resizeToAvoidBottomInset: false,
           backgroundColor: R.color.backgroundColorNew,
           appBar: AppBar(
+            leadingWidth: 30,
             leading: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,
                 icon: Icon(Icons.arrow_back, color: R.color.white),
                 onPressed: _goBack),
-            title: Transform(
-              transform: Matrix4.translationValues(-20, 0.0, 0.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  R.string.exercise.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 20 * 0.002,
-                    fontFamily: 'SFPro',
-                  ),
+            title: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                R.string.exercise.tr(),
+                style: TextStyle(
+                  color: R.color.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 20 * 0.002,
                 ),
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                      context, NavigatorName.exercrise_guide);
-                },
-                child: Text(
-                  R.string.exercrise_step_onboarding_action_btn.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'SFPro',
+              Container(
+                margin: EdgeInsets.only(right: 8),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, NavigatorName.exercrise_guide);
+                  },
+                  child: Text(
+                    R.string.exercrise_step_onboarding_action_btn.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -231,8 +229,8 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
       children: [
         ListView(
           physics: const ClampingScrollPhysics(),
-          padding:
-              const EdgeInsets.only(bottom: 80, top: 70), // Add padding for the button
+          padding: const EdgeInsets.only(
+              bottom: 80, top: 70), // Add padding for the button
           children: [
             periodFilterType > 0
                 ? ExercrisesTrendTimeChart(
@@ -261,12 +259,12 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
               ),
             ),
             if (!isConnectHealthApp)
-            HealthConnectButton(
-              callback: () {
-                print('HealthConnectButton pressed');
-                checkConnectHealthApp();
-              },
-            ),
+              HealthConnectButton(
+                callback: () {
+                  print('HealthConnectButton pressed');
+                  checkConnectHealthApp();
+                },
+              ),
           ],
         ),
         Positioned(

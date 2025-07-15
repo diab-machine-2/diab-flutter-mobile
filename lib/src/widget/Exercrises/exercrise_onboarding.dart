@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
@@ -17,17 +14,13 @@ import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_lesson_section.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_detail_page.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../app_setting/firebase_tracking/activity_list_tracking.dart';
-import '../../repo/exercrises/exercrises_client.dart';
 import '../../repo/home/home_client.dart';
 import '../../utils/navigation_util.dart';
-import '../BloodSugar/bloodSugar_table_distribution.dart';
 import '../helper/tracking_manager.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 
@@ -120,39 +113,38 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
           resizeToAvoidBottomInset: false,
           backgroundColor: R.color.backgroundColorNew,
           appBar: AppBar(
+            leadingWidth: 30,
             leading: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,
                 icon: Icon(Icons.arrow_back, color: R.color.white),
                 onPressed: _goBack),
-            title: Transform(
-              transform: Matrix4.translationValues(-20, 0.0, 0.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  R.string.exercrise_step_onboarding_title.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 20 * 0.002,
-                    fontFamily: 'SFPro',
-                  ),
+            title: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                R.string.exercrise_step_onboarding_title.tr(),
+                style: TextStyle(
+                  color: R.color.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 20 * 0.002,
                 ),
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, NavigatorName.exercrise_guide);
-                },
-                child: Text(
-                  R.string.exercrise_step_onboarding_action_btn.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'SFPro',
+              Container(
+                margin: EdgeInsets.only(right: 8),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, NavigatorName.exercrise_guide);
+                  },
+                  child: Text(
+                    R.string.exercrise_step_onboarding_action_btn.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -247,7 +239,6 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  fontFamily: 'SFPro',
                   color: R.color.black)),
           const SizedBox(height: 8.0),
           Text(
@@ -255,13 +246,15 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  fontFamily: 'SFPro',
                   color: R.color.color0xff636A6B)),
           const SizedBox(height: 16.0),
           // Button
           ButtonWidget(
               title: R.string.exercrise_step_onboarding_input_step_btn.tr(),
-              onPressed: (() => {showActivityInputMethodSelection(hasExerciseData: _hasExerciseData)}))
+              onPressed: (() => {
+                    showActivityInputMethodSelection(
+                        hasExerciseData: _hasExerciseData)
+                  }))
         ]),
       )
     ]);
@@ -276,7 +269,6 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
-            fontFamily: 'SFPro',
             color: R.color.black,
           ),
         ),
@@ -338,7 +330,6 @@ class _ExercriseOnboardingState extends State<ExercriseOnboarding>
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  fontFamily: 'SFPro',
                   color: R.color.black,
                 ),
               ),
@@ -407,14 +398,12 @@ showActivityInputMethodSelection({bool? hasExerciseData}) async {
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    fontFamily: 'SFPro',
                     color: R.color.textDark),
               ),
               subtitle: Text(subTitle,
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      fontFamily: 'SFPro',
                       color: R.color.primaryGreyColor)),
               trailing: Icon(Icons.arrow_forward_ios,
                   color: R.color.primaryGreyColor),

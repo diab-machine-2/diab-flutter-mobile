@@ -709,6 +709,7 @@ class App extends StatelessWidget {
                     return _buildRoute(settings, ExercrisesAddV2(
                       isUpdate: args?['isUpdate'],
                       exerciseInputId: args?['exerciseInputId'],
+                      datetime: args?['datetime'],
                     ));
                   case NavigatorName.exercrise_select_category:
                     final args = settings.arguments as Map<String, dynamic>;

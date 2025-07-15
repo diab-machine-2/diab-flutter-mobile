@@ -156,38 +156,37 @@ class _ExercisesResultState extends State<ExercisesResult>
                   resizeToAvoidBottomInset: false,
                   backgroundColor: R.color.backgroundColorNew,
                   appBar: AppBar(
+                    centerTitle: false,
+                    leadingWidth: 30,
                     leading: IconButton(
                         splashColor: R.color.transparent,
                         highlightColor: R.color.transparent,
                         icon: Icon(Icons.arrow_back, color: R.color.white),
                         onPressed: _goBack),
-                    title: Transform(
-                      transform: Matrix4.translationValues(-30, 0.0, 0.0),
-                      child: Text(
-                        formatVietnameseDate(date),
-                        style: TextStyle(
-                          color: R.color.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 20 * 0.002,
-                          fontFamily: 'SFPro',
-                        ),
+                    title: Text(
+                      formatVietnameseDate(date),
+                      style: TextStyle(
+                        color: R.color.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 20 * 0.002,
                       ),
                     ),
-                    centerTitle: true,
                     actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                              context, NavigatorName.exercrise_guide);
-                        },
-                        child: Text(
-                          R.string.exercrise_step_onboarding_action_btn.tr(),
-                          style: TextStyle(
-                            color: R.color.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'SFPro',
+                      Container(
+                        margin: EdgeInsets.only(right: 8),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, NavigatorName.exercrise_guide);
+                          },
+                          child: Text(
+                            R.string.exercrise_step_onboarding_action_btn.tr(),
+                            style: TextStyle(
+                              color: R.color.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
                       ),
@@ -305,7 +304,10 @@ class _ExercisesResultState extends State<ExercisesResult>
                   color: R.color.greenGradientBottom,
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, NavigatorName.exercrise_add_v2);
+                  Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
+                      arguments: {
+                        'datetime': date,
+                      });
                 },
               ),
             ),
@@ -413,7 +415,6 @@ class _ExercisesResultState extends State<ExercisesResult>
                         '$completedMinutes',
                         style: TextStyle(
                           fontSize: 55.sp,
-                          fontFamily: 'SFPro',
                           fontWeight: FontWeight.bold,
                           color: R.color.textDark,
                         ),
@@ -426,7 +427,6 @@ class _ExercisesResultState extends State<ExercisesResult>
                           'Phút',
                           style: TextStyle(
                             fontSize: 18.sp,
-                            fontFamily: 'SFPro',
                             color: R.color.textDark,
                           ),
                         ),

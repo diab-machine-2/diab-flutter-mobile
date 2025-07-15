@@ -155,7 +155,7 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                         data.removeWhere((element) =>
                             element.category?.toLowerCase() ==
                             'đi bộ (health app)');
-                            
+
                         data = data.take(3).toList();
                         if (data.length == 0 || data.isEmpty) {
                           return Center(
@@ -221,7 +221,6 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                             ? R.color.greenGradientBottom
                             : R.color.textDark,
                         fontSize: 14,
-                        fontFamily: 'sfpro',
                         fontWeight:
                             isSelected ? FontWeight.w500 : FontWeight.normal,
                       ),
@@ -268,7 +267,6 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                 style: TextStyle(
                   color: R.color.textDark,
                   fontSize: 14,
-                  fontFamily: 'sfpro',
                   fontWeight: FontWeight.normal,
                 ),
               ),
@@ -374,24 +372,21 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
             resizeToAvoidBottomInset: false,
             backgroundColor: Colors.white,
             appBar: AppBar(
+              leadingWidth: 30,
               leading: IconButton(
                   splashColor: R.color.transparent,
                   highlightColor: R.color.transparent,
                   icon: Icon(Icons.arrow_back, color: R.color.white),
                   onPressed: _goBack),
-              title: Transform(
-                transform: Matrix4.translationValues(-20, 0.0, 0.0),
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    R.string.them_hoat_dong.tr(),
-                    style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 20 * 0.002,
-                      fontFamily: 'SFPro',
-                    ),
+              title: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  R.string.them_hoat_dong.tr(),
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 20 * 0.002,
                   ),
                 ),
               ),

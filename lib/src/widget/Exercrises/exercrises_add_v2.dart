@@ -36,10 +36,12 @@ import 'widget/date_multi_picker.dart';
 class ExercrisesAddV2 extends StatefulWidget {
   final bool? isUpdate;
   final String? exerciseInputId;
+  final DateTime? datetime;
   ExercrisesAddV2({
     Key? key,
     this.isUpdate,
     this.exerciseInputId,
+    this.datetime,
   }) : super(key: key);
 
   ExercrisesAddV2State createState() => ExercrisesAddV2State();
@@ -72,7 +74,19 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    selectedDate = DateTime.now();
+    if (widget.datetime != null) {
+      final now = DateTime.now();
+      selectedDate = DateTime(
+        widget.datetime!.year,
+        widget.datetime!.month,
+        widget.datetime!.day,
+        now.hour,
+        now.minute,
+        now.second,
+      );
+    } else {
+      selectedDate = DateTime.now();
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkConnectHealthApp();
       checkExerciseData();
@@ -196,39 +210,38 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           resizeToAvoidBottomInset: true,
           backgroundColor: R.color.backgroundColorNew,
           appBar: AppBar(
+            leadingWidth: 30,
             leading: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,
                 icon: Icon(Icons.arrow_back, color: R.color.white),
                 onPressed: _goBack),
-            title: Transform(
-              transform: Matrix4.translationValues(-20, 0.0, 0.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  R.string.title_exercise.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 20 * 0.002,
-                    fontFamily: 'SFPro',
-                  ),
+            title: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                R.string.title_exercise.tr(),
+                style: TextStyle(
+                  color: R.color.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 20 * 0.002,
                 ),
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, NavigatorName.exercrise_guide);
-                },
-                child: Text(
-                  R.string.exercrise_step_onboarding_action_btn.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'SFPro',
+              Container(
+                margin: EdgeInsets.only(right: 8),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, NavigatorName.exercrise_guide);
+                  },
+                  child: Text(
+                    R.string.exercrise_step_onboarding_action_btn.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -766,7 +779,7 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         Navigator.pushNamedAndRemoveUntil(
           context,
           NavigatorName.tabbar,
-              (route) => false,
+          (route) => false,
         );
       } else {
         Navigator.pop(context);
@@ -877,7 +890,8 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
       }
 
       if (selectedCategory == null) {
-        Message.showToastMessage(context, R.string.ban_chua_chon_hoat_dong.tr());
+        Message.showToastMessage(
+            context, R.string.ban_chua_chon_hoat_dong.tr());
         return;
       }
 

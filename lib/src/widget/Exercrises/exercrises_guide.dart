@@ -91,6 +91,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
         resizeToAvoidBottomInset: false,
         backgroundColor: R.color.backgroundColorNew,
         appBar: AppBar(
+          leadingWidth: 30,
           leading: IconButton(
             splashColor: R.color.transparent,
             highlightColor: R.color.transparent,
@@ -99,19 +100,15 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
               Navigator.pop(context);
             },
           ),
-          title: Transform(
-            transform: Matrix4.translationValues(-20, 0.0, 0.0),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                R.string.exercrise_step_onboarding_action_btn.tr(),
-                style: TextStyle(
-                  color: R.color.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 20 * 0.002,
-                  fontFamily: 'SFPro',
-                ),
+          title: Align(
+            alignment: Alignment.topLeft,
+            child: Text(
+              R.string.exercrise_step_onboarding_action_btn.tr(),
+              style: TextStyle(
+                color: R.color.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 20 * 0.002,
               ),
             ),
           ),
@@ -159,7 +156,6 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              fontFamily: 'SFPro',
               color: R.color.black,
             ),
           ),
@@ -222,7 +218,6 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  fontFamily: 'SFPro',
                   color: R.color.black,
                 ),
               ),
@@ -250,7 +245,6 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
             style: TextStyle(
               color: R.color.textDark,
               fontSize: 18,
-              fontFamily: 'SFPro',
               fontWeight: FontWeight.w900,
             ),
           ),

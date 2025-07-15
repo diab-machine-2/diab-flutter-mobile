@@ -424,6 +424,7 @@ class _HomeControllerState extends State<HomeController>
     // _homeBloc.add(FetchHome());
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
+    checkExerciseData(); // To update hasExerciseData after sync from health connnect then pull to refresh
     return true;
   }
 

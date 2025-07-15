@@ -146,24 +146,21 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
           resizeToAvoidBottomInset: false,
           backgroundColor: R.color.backgroundColorNew,
           appBar: AppBar(
+            leadingWidth: 30,
             leading: IconButton(
                 splashColor: R.color.transparent,
                 highlightColor: R.color.transparent,
                 icon: Icon(Icons.arrow_back, color: R.color.white),
                 onPressed: _goBack),
-            title: Transform(
-              transform: Matrix4.translationValues(-20, 0.0, 0.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  R.string.exercrise_detail_v2_title.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 20 * 0.002,
-                    fontFamily: 'SFPro',
-                  ),
+            title: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                R.string.exercrise_detail_v2_title.tr(),
+                style: TextStyle(
+                  color: R.color.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 20 * 0.002,
                 ),
               ),
             ),
@@ -180,17 +177,19 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                   ])),
             ),
             actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, NavigatorName.exercrise_guide);
-                },
-                child: Text(
-                  R.string.exercrise_step_onboarding_action_btn.tr(),
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'SFPro',
+              Container(
+                margin: EdgeInsets.only(right: 8),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, NavigatorName.exercrise_guide);
+                  },
+                  child: Text(
+                    R.string.exercrise_step_onboarding_action_btn.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ),
@@ -314,7 +313,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                                           style: TextStyle(
                                               color: R.color.textDark,
                                               fontSize: 20,
-                                              fontFamily: 'SFPro',
                                               fontWeight: FontWeight.w700)),
                                       SizedBox(height: 16),
                                       _buildExerciseGroupContainer(
@@ -435,7 +433,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                               style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
-                                fontFamily: 'SFPro',
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -452,7 +449,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                         style: TextStyle(
                           color: R.color.primaryGreyColor,
                           fontSize: 13,
-                          fontFamily: 'SFPro',
                           fontWeight: FontWeight.w400,
                         ),
                       ),
@@ -470,7 +466,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                       style: TextStyle(
                         color: R.color.greenGradientBottom,
                         fontSize: 18,
-                        fontFamily: 'SFPro',
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -484,7 +479,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
                     style: TextStyle(
                       color: R.color.primaryGreyColor,
                       fontSize: 12,
-                      fontFamily: 'SFPro',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -508,7 +502,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 16,
-                fontFamily: 'SFPro',
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -517,7 +510,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 12,
-                fontFamily: 'SFPro',
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -529,7 +521,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
           style: TextStyle(
             color: R.color.primaryGreyColor,
             fontSize: 13,
-            fontFamily: 'SFPro',
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -551,7 +542,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
               style: TextStyle(
                 color: R.color.greenGradientBottom,
                 fontSize: 18,
-                fontFamily: 'SFPro',
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -563,7 +553,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
               style: TextStyle(
                 color: R.color.primaryGreyColor,
                 fontSize: 12,
-                fontFamily: 'SFPro',
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -575,7 +564,6 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
           style: TextStyle(
             color: R.color.primaryGreyColor,
             fontSize: 13,
-            fontFamily: 'SFPro',
             fontWeight: FontWeight.w400,
           ),
         ),
