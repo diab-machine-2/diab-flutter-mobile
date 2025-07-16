@@ -7,6 +7,7 @@ import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
+import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
@@ -21,13 +22,14 @@ import 'package:medical/src/model/response/exercise_intensity_response.dart';
 import 'package:medical/src/model/response/exercise_lesson_response.dart';
 import 'package:medical/src/model/response/exercise_summary_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
+import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
+import 'package:medical/src/model/response/get_subscription_banners_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
-import 'package:medical/src/utils/app_log.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
 import 'request/complete_exercise_request.dart';
@@ -192,7 +194,7 @@ abstract class AppApi {
       @Body() SyncIndexFromZaloToPhoneRequest request);
 
   //My Plan
-  @POST("App/Lesson/MyLessonsOptimizedAndCacheLessonPercent")
+  @POST("App/Lesson/MyLessonsOptimizedRemoveWeek")
   Future<MyLessonResponse> getLessonsList(
     @Body() LessonFilterRequest request,
   );
@@ -289,6 +291,10 @@ abstract class AppApi {
 
   @POST("App/Home/MarkDisplayedWelcome")
   Future<CommonResponse> markDisplayedWelcome();
+
+  @GET("App/CustomerReceives/user")
+  Future<GetCustomerReceivesUserResponse> getCustomerReceivesUser(
+      @Query('PhoneNumber') String phoneNumber);
 
   @GET("App/MyProgress/Reports")
   Future<ReportListResponse> getReports();
@@ -438,6 +444,13 @@ abstract class AppApi {
   @PUT("/App/CustomerReceives/interview/{courseId}")
   Future<void> updateDoneInterview(String courseId);
 
+  @GET("/App/Image/Banner/Subscription")
+  Future<GetSubscriptionBannersResponse> getSubscriptionBanners();
+
+  @POST("/App/Notification/Subscription")
+  Future<CommonResponse> notifySubscription(
+      @Body() NotifySubscriptionRequest request);
+
   // ## 1. Lấy Cấu hình Supabase
   @GET('/App/Chat/config/supabase')
   Future<SupabaseConfigResponse> getSupabaseConfig();
@@ -493,4 +506,10 @@ abstract class AppApi {
     @Query('CurrentDateTime') String currentDateTime,
     @Query('PeriodFilterType') int periodFilterType,
   );
+  
+  @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
+  Future<CommonResponse> subscriptionActivePackage({
+    @Query("accountId") required String accountId,
+    @Query("packageId") required String packageId,
+  });
 }

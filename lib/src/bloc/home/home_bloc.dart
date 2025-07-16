@@ -24,6 +24,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -141,6 +142,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           print(e);
           return true;
         });
+
+        // // load customer receives user
+        // yield* _fetchCustomerReceivesUser();
 
         // load banners
         yield* _fetchBanners();
@@ -299,7 +303,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       currentState =
           currentState.copyWith(reminders: reminders, reminderLoading: false);
     } else {
-      currentState = currentState.copyWith(reminders: [], reminderLoading: false);
+      currentState =
+          currentState.copyWith(reminders: [], reminderLoading: false);
     }
     yield currentState;
   }
@@ -442,9 +447,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // ),
       HomeUtilityData(
         icon: R.drawable.ic_home_doctor_consult,
-        title: "Tư vấn sức khoẻ",
-        slug: "tu-van-suc-khoe",
+        title: "Tư vấn sống khoẻ",
+        slug: "tu-van-song-khoe",
         navigatorName: NavigatorName.dsmes_booking,
+      ),
+      HomeUtilityData(
+        icon: R.drawable.ic_booking_clinic,
+        title: "Đặt lịch khám bệnh",
+        slug: "dat-lich-kham-benh",
+        navigatorName: NavigatorName.booking_clinic,
       ),
     ];
 
@@ -649,7 +660,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: null,
       unit: model?.exercise?.unit ?? "kcal",
       navigatorName: haveExercise
-          ? NavigatorName.detail_exercrises
+          ? NavigatorName.exercrise_dashboard
           : NavigatorName.exercrise_onboarding,
       args: haveExercise ? null : {'type': 'input'},
     );

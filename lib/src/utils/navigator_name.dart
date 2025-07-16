@@ -116,4 +116,21 @@ class NavigatorName {
   static const String exercrise_select_category = '/exercrise_select_category';
   static const String exercrise_result = '/exercrise_result';
   static const String exercrise_guide = '/exercrise_guide';
+  // BOOKING CLINIC
+  static const String booking_clinic = '/booking_clinic';
+  static const String other_diseases = '/other_diseases';
+  static const String clinic_providers = '/clinic_providers';
+  static const String clinic_select_service = '/clinic_select_service';
+  static const String clinic_payment = '/clinic_payment';
+  // SUBSCRIPTION
+  static const String subscription_page = '/subscription_page';
+  static const String paywall_screen = '/paywall_screen';
+  static const String package_program_list = '/package_program_list';
+  static const String package_program_detail = '/package_program_detail';
+  static const String welcome_program = '/welcome_program';
+  // New Blood Pressure
+  static const String blood_pressure_intro_1st_page = '/blood_pressure_intro_1st_page';
+  static const String blood_pressure_intro_2nd_page = '/blood_pressure_intro_2nd_page';
+  static const String add_bloodpressure_result = '/add_bloodpressure_result';
+  static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
 }

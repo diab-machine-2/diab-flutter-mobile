@@ -16,19 +16,22 @@ import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
 import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesCalendarSection extends StatefulWidget {
-  final String serviceType;
+  final String? serviceType;
   final String action; // 'create' or 'reschedule'
   final int? appointmentId;
   final bool isMergedSchedule;
+  final String bookingType; // 'clinic' or 'center' or 'doctor'
 
   const DsmesCalendarSection({
     Key? key,
-    required this.serviceType,
+    this.serviceType,
     this.action = 'create',
     this.appointmentId,
     this.isMergedSchedule = false,
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
   }) : super(key: key);
 
   @override
@@ -41,6 +44,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   bool isMorningSelected = true;
   BookingSchedule? selectedBookingSchedule;
   bool _isProcessing = false;
+  Map<String, bool> isProcessingClinic = {
+    'telemedicine': false,
+    'atClnic': false,
+  };
   bool isAllowReschedule = false;
 
   late List<BookingSchedule> availableBookingSchedule = [];
@@ -194,9 +201,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState?.pop(
-                            DsmesNavigationMixin
-                                .navigationKey.currentState?.context);
+                        DsmesNavigationMixin.getNavigationKey()
+                            .currentState
+                            ?.pop(DsmesNavigationMixin.getNavigationKey()
+                                .currentState
+                                ?.context);
                       },
                     ),
                   ),
@@ -226,135 +235,441 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   color: R.color.white,
                   boxShadow: [Utils.getBoxShadowDropButton()],
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildButton(R.string.tiep_tuc.tr(), () async {
-                        if (_isProcessing) return;
-
-                        if (selectedBookingSchedule == null) {
-                          Message.showToastMessage(
-                              context, R.string.vui_long_chon_gio_kham.tr());
-                          return;
-                        }
-
-                        // When selected booking schedule is before active dates
-                        if (DateTime.parse(selectedBookingSchedule!.startTime)
-                            .isBefore(activeDates.first)) {
-                          Message.showToastMessage(
-                              context, R.string.vui_long_chon_gio_kham.tr());
-                          return;
-                        }
-
-                        // Prevent user from reschedule the same time
-                        if (widget.action == 'reschedule') {
-                          final selectedDateTime = DateTime.parse(
-                              selectedBookingSchedule!.startTime);
-                          final existingDateTime = DateTime.parse(
-                              _cubit.createDsmesBookingRequest!.startTime);
-
-                          if (selectedDateTime
-                                  .isSameDayWith(existingDateTime) &&
-                              selectedDateTime.hour == existingDateTime.hour &&
-                              selectedDateTime.minute ==
-                                  existingDateTime.minute) {
-                            Message.showToastMessage(
-                                context, R.string.exist_appointment.tr());
-                            return;
-                          }
-                        }
-
-                        setState(() => _isProcessing = true);
-
-                        try {
-                          _cubit.updateCreateDsmesBookingRequestTime(
-                              startTime: selectedBookingSchedule!.startTime,
-                              endTime: selectedBookingSchedule!.endTime);
-
-                          final route = ModalRoute.of(context)?.settings;
-                          final args =
-                              route?.arguments as Map<String, dynamic>?;
-                          final isEditing = args?['isEditing'] ?? false;
-
-                          if (isEditing) {
-                            if (widget.serviceType ==
-                                DsmesAppointmentMode.telemedicine.toString()) {
-                              // Pop until select_service to rebuild stack with new state
-                              DsmesNavigationMixin.navigationKey.currentState
-                                  ?.popUntil((route) =>
-                                      route.settings.name ==
-                                      NavigatorName.dsmes_select_service);
-
-                              // Replace select_service
-                              DsmesNavigationMixin.navigationKey.currentState
-                                  ?.pushReplacementNamed(
-                                      NavigatorName.dsmes_select_service,
-                                      arguments: {
-                                    'serviceType': widget.serviceType,
-                                    'action': widget.action,
-                                    'clinic': _cubit.selectedClinic,
-                                  });
-
-                              // Push new select_date with updated state
-                              DsmesNavigationMixin.navigationKey.currentState
-                                  ?.pushNamed(
-                                      NavigatorName.dsmes_booking_select_date,
-                                      arguments: {
-                                    'serviceType': widget.serviceType,
-                                    'action': widget.action,
-                                  });
-                            } else {
-                              // First pop the current select_date page
-                              DsmesNavigationMixin.navigationKey.currentState
-                                  ?.pop();
-                              DsmesNavigationMixin.navigationKey.currentState
-                                  ?.popUntil((route) =>
-                                      route.settings.name ==
-                                      NavigatorName.dsmes_booking_select_date);
-
-                              DsmesNavigationMixin.navigationKey.currentState
-                                  ?.pushReplacementNamed(
-                                      NavigatorName.dsmes_booking_select_date,
-                                      arguments: {
-                                    'serviceType': widget.serviceType,
-                                    'action': widget.action,
-                                  });
-                            }
-
-                            // Push confirm info
-                            DsmesNavigationMixin.navigationKey.currentState
-                                ?.pushNamed(
-                                    NavigatorName.dsmes_confirm_information,
-                                    arguments: {
-                                  'serviceType': widget.serviceType,
-                                  'action': widget.action,
-                                  'appointmentId': widget.appointmentId,
-                                  'isMergedSchedule': widget.isMergedSchedule,
-                                });
-                          } else {
-                            // Normal flow
-                            DsmesNavigationMixin.navigationKey.currentState
-                                ?.pushNamed(
-                                    NavigatorName.dsmes_confirm_information,
-                                    arguments: {
-                                  'serviceType': widget.serviceType,
-                                  'action': widget.action,
-                                  'appointmentId': widget.appointmentId,
-                                  'isMergedSchedule': widget.isMergedSchedule,
-                                });
-                          }
-                        } finally {
-                          setState(() => _isProcessing = false);
-                        }
-                      }, isDisabled: !isAllowReschedule),
-                    ),
-                  ],
-                ),
+                child: widget.bookingType == Const.BOOKING_TYPE_CENTER
+                    ? _buildBookingDsmesActionButtons()
+                    : _buildBookingClinicActionButtons(),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  List<ServiceAvailable> getFilteredServiceTypes() {
+    final listServiceTypes =
+        List<ServiceAvailable>.from(_cubit.selectedClinic?.svAvailable ?? []);
+    listServiceTypes.removeWhere((element) => element.key == 'at_home');
+
+    if (_cubit.selectedClinic?.profileType == 'premium') {
+      return listServiceTypes
+          .where((element) => element.key == 'at_clinic')
+          .toList();
+    }
+
+    return listServiceTypes;
+  }
+
+  Widget _buildBookingClinicActionButtons() {
+    final listServiceTypes = getFilteredServiceTypes();
+
+    final route = ModalRoute.of(context)?.settings;
+    final args = route?.arguments as Map<String, dynamic>?;
+    final isEditing = args?['isEditing'] ?? false;
+
+    if (widget.action == 'reschedule' || isEditing) {
+      return _buildButton(R.string.tiep_tuc.tr(), () {
+        _handleClinicContinueButton();
+      }, isDisabled: !isAllowReschedule);
+    }
+
+    if (listServiceTypes.length == 2) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _handleBookingClinicTelemedicine();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            R.color.greenGradientTop02,
+                            R.color.greenGradientBottom
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(200),
+                      ),
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        R.string.kham_tu_xa.tr(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            GapH(8),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _handleBookingClinicAtClinic();
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: R.color.color0xffE7FDFB,
+                        borderRadius: BorderRadius.circular(200),
+                      ),
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        R.string.kham_tai_phong_kham.tr(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.greenGradientBottom,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    } else if (listServiceTypes.length == 1) {
+      final serviceType = listServiceTypes.first;
+      final title = serviceType.key == DsmesAppointmentMode.atClinic.toString()
+          ? R.string.kham_tai_phong_kham.tr()
+          : R.string.kham_tu_xa.tr();
+
+      return Container(
+        color: R.color.white,
+        padding: EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: GestureDetector(
+          onTap: () {
+            serviceType.key == DsmesAppointmentMode.atClinic.toString()
+                ? _handleBookingClinicAtClinic()
+                : _handleBookingClinicTelemedicine();
+          },
+          child: Container(
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  R.color.greenGradientTop02,
+                  R.color.greenGradientBottom
+                ],
+              ),
+              borderRadius: BorderRadius.circular(200),
+            ),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: R.color.white,
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
+  _handleBookingClinicAtClinic() {
+    if (isProcessingClinic['atClinic'] == true) return;
+
+    if (selectedBookingSchedule == null) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // When selected booking schedule is before active dates
+    if (DateTime.parse(selectedBookingSchedule!.startTime)
+        .isBefore(activeDates.first)) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+    setState(() => isProcessingClinic['atClinic'] = true);
+
+    try {
+      _cubit.updateCreateDsmesBookingRequestTime(
+          startTime: selectedBookingSchedule!.startTime,
+          endTime: selectedBookingSchedule!.endTime);
+
+      // Normal flow
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
+          ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
+        'serviceType': DsmesAppointmentMode.atClinic.toString(),
+        'action': widget.action,
+        'appointmentId': widget.appointmentId,
+        'isMergedSchedule': widget.isMergedSchedule,
+        'bookingType': widget.bookingType,
+      });
+    } finally {
+      setState(() => isProcessingClinic['atClinic'] = false);
+    }
+  }
+
+  _handleBookingClinicTelemedicine() {
+    if (isProcessingClinic['telemedicine'] == true) return;
+
+    if (selectedBookingSchedule == null) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // When selected booking schedule is before active dates
+    if (DateTime.parse(selectedBookingSchedule!.startTime)
+        .isBefore(activeDates.first)) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+    setState(() => isProcessingClinic['telemedicine'] = true);
+
+    try {
+      _cubit.updateCreateDsmesBookingRequestTime(
+          startTime: selectedBookingSchedule!.startTime,
+          endTime: selectedBookingSchedule!.endTime);
+
+      // Normal flow
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
+          ?.pushNamed(NavigatorName.clinic_select_service, arguments: {
+        'clinic': _cubit.selectedClinic,
+        'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+        'action': widget.action,
+        'bookingType': widget.bookingType,
+      });
+    } finally {
+      setState(() => isProcessingClinic['telemedicine'] = false);
+    }
+  }
+
+  _handleClinicContinueButton() {
+    if (selectedBookingSchedule == null) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // When selected booking schedule is before active dates
+    if (DateTime.parse(selectedBookingSchedule!.startTime)
+        .isBefore(activeDates.first)) {
+      Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
+      return;
+    }
+
+    // Prevent user from reschedule the same time
+    if (widget.action == 'reschedule') {
+      final selectedDateTime =
+          DateTime.parse(selectedBookingSchedule!.startTime);
+      final existingDateTime =
+          DateTime.parse(_cubit.createDsmesBookingRequest!.startTime);
+
+      if (selectedDateTime.isSameDayWith(existingDateTime) &&
+          selectedDateTime.hour == existingDateTime.hour &&
+          selectedDateTime.minute == existingDateTime.minute) {
+        Message.showToastMessage(context, R.string.exist_appointment.tr());
+        return;
+      }
+    }
+
+    setState(() => _isProcessing = true);
+
+    try {
+      _cubit.updateCreateDsmesBookingRequestTime(
+          startTime: selectedBookingSchedule!.startTime,
+          endTime: selectedBookingSchedule!.endTime);
+
+      final route = ModalRoute.of(context)?.settings;
+      final args = route?.arguments as Map<String, dynamic>?;
+      final isEditing = args?['isEditing'] ?? false;
+      final bookingType = args?['bookingType'] ?? widget.bookingType;
+      final previousRoute =
+          args?['previousRoute'] ?? NavigatorName.dsmes_confirm_information;
+
+      if (isEditing) {
+        // First pop the current select_date page
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+        DsmesNavigationMixin.getNavigationKey().currentState?.popUntil(
+            (route) =>
+                route.settings.name == NavigatorName.dsmes_booking_select_date);
+
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushReplacementNamed(NavigatorName.dsmes_booking_select_date,
+                arguments: {
+              'serviceType': widget.serviceType,
+              'action': widget.action,
+              'previousRoute': previousRoute,
+              'bookingType': bookingType,
+              'isEditing': isEditing,
+            });
+
+        // Push confirm info
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
+          'serviceType': widget.serviceType,
+          'action': widget.action,
+          'appointmentId': widget.appointmentId,
+          'isMergedSchedule': widget.isMergedSchedule,
+          'bookingType': widget.bookingType,
+        });
+      } else {
+        // Normal flow
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushNamed(NavigatorName.dsmes_confirm_information, arguments: {
+          'serviceType': widget.serviceType,
+          'action': widget.action,
+          'appointmentId': widget.appointmentId,
+          'isMergedSchedule': widget.isMergedSchedule,
+          'bookingType': widget.bookingType,
+        });
+      }
+    } finally {
+      setState(() => _isProcessing = false);
+    }
+  }
+
+  _buildBookingDsmesActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildButton(R.string.tiep_tuc.tr(), () async {
+            if (_isProcessing) return;
+
+            if (selectedBookingSchedule == null) {
+              Message.showToastMessage(
+                  context, R.string.vui_long_chon_gio_kham.tr());
+              return;
+            }
+
+            // When selected booking schedule is before active dates
+            if (DateTime.parse(selectedBookingSchedule!.startTime)
+                .isBefore(activeDates.first)) {
+              Message.showToastMessage(
+                  context, R.string.vui_long_chon_gio_kham.tr());
+              return;
+            }
+
+            // Prevent user from reschedule the same time
+            if (widget.action == 'reschedule') {
+              final selectedDateTime =
+                  DateTime.parse(selectedBookingSchedule!.startTime);
+              final existingDateTime =
+                  DateTime.parse(_cubit.createDsmesBookingRequest!.startTime);
+
+              if (selectedDateTime.isSameDayWith(existingDateTime) &&
+                  selectedDateTime.hour == existingDateTime.hour &&
+                  selectedDateTime.minute == existingDateTime.minute) {
+                Message.showToastMessage(
+                    context, R.string.exist_appointment.tr());
+                return;
+              }
+            }
+
+            setState(() => _isProcessing = true);
+
+            try {
+              _cubit.updateCreateDsmesBookingRequestTime(
+                  startTime: selectedBookingSchedule!.startTime,
+                  endTime: selectedBookingSchedule!.endTime);
+
+              final route = ModalRoute.of(context)?.settings;
+              final args = route?.arguments as Map<String, dynamic>?;
+              final isEditing = args?['isEditing'] ?? false;
+
+              if (isEditing) {
+                if (widget.serviceType ==
+                    DsmesAppointmentMode.telemedicine.toString()) {
+                  // Pop until select_service to rebuild stack with new state
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.popUntil((route) =>
+                          route.settings.name ==
+                          NavigatorName.dsmes_select_service);
+
+                  // Replace select_service
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushReplacementNamed(NavigatorName.dsmes_select_service,
+                          arguments: {
+                        'serviceType': widget.serviceType,
+                        'action': widget.action,
+                        'clinic': _cubit.selectedClinic,
+                      });
+
+                  // Push new select_date with updated state
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                          arguments: {
+                        'serviceType': widget.serviceType,
+                        'action': widget.action,
+                      });
+                } else {
+                  // First pop the current select_date page
+                  DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.popUntil((route) =>
+                          route.settings.name ==
+                          NavigatorName.dsmes_booking_select_date);
+
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushReplacementNamed(
+                          NavigatorName.dsmes_booking_select_date,
+                          arguments: {
+                        'serviceType': widget.serviceType,
+                        'action': widget.action,
+                      });
+                }
+
+                // Push confirm info
+                DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+                    NavigatorName.dsmes_confirm_information,
+                    arguments: {
+                      'serviceType': widget.serviceType,
+                      'action': widget.action,
+                      'appointmentId': widget.appointmentId,
+                      'isMergedSchedule': widget.isMergedSchedule,
+                    });
+              } else {
+                // Normal flow
+                DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+                    NavigatorName.dsmes_confirm_information,
+                    arguments: {
+                      'serviceType': widget.serviceType,
+                      'action': widget.action,
+                      'appointmentId': widget.appointmentId,
+                      'isMergedSchedule': widget.isMergedSchedule,
+                    });
+              }
+            } finally {
+              setState(() => _isProcessing = false);
+            }
+          }, isDisabled: !isAllowReschedule),
+        ),
+      ],
     );
   }
 
@@ -537,24 +852,26 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   availableBookingSchedule[i].startTime,
                   availableBookingSchedule[i].endTime,
                 ),
-                Text(
-                  "-",
-                  style: TextStyle(
-                      fontSize: 14.0,
-                      fontFamily: 'sfpro',
-                      fontWeight: PickerHelper.getTextFontWeightByState(
-                        isSelected: isSlotPicked,
-                      ),
-                      color: PickerHelper.getTextColorByState(
-                        isSelected: isSlotPicked,
-                        hasSlot: true,
-                      )),
-                ),
-                _buildItemTimeFrame(
-                  endTime,
-                  availableBookingSchedule[i].startTime,
-                  availableBookingSchedule[i].endTime,
-                ),
+                if (widget.bookingType == Const.BOOKING_TYPE_CENTER)
+                  Text(
+                    "-",
+                    style: TextStyle(
+                        fontSize: 14.0,
+                        fontFamily: 'sfpro',
+                        fontWeight: PickerHelper.getTextFontWeightByState(
+                          isSelected: isSlotPicked,
+                        ),
+                        color: PickerHelper.getTextColorByState(
+                          isSelected: isSlotPicked,
+                          hasSlot: true,
+                        )),
+                  ),
+                if (widget.bookingType == Const.BOOKING_TYPE_CENTER)
+                  _buildItemTimeFrame(
+                    endTime,
+                    availableBookingSchedule[i].startTime,
+                    availableBookingSchedule[i].endTime,
+                  ),
               ],
             ),
           ),

@@ -36,6 +36,7 @@ class Drawables {
   String get bg_hba1c => "lib/res/drawables/bg_hba1c.png";
   String get bg_hba1c_high => "lib/res/drawables/bg_hba1c_high.png";
   String get bg_home => "lib/res/drawables/bg_home.jpg";
+  String get bg_bloodpressure => "lib/res/drawables/bg_bloodpressure.png";
   String get bg_lesson_detail => "lib/res/drawables/bg_lesson_detail.png";
   String get bg_glucose => "lib/res/drawables/bg_glucose.jpg";
   String get bg_popup => "lib/res/drawables/bg_popup.png";
@@ -476,6 +477,15 @@ class Drawables {
   String get im_glucose_input_manual =>
       "lib/res/drawables/glucose/im_glucose_input_manual.png";
 
+  String get im_bloodpressure_intro =>
+      "lib/res/drawables/bloodpressure/im_bloodpressure_intro.png";
+  String get im_bloodpressure_input_manual =>
+      "lib/res/drawables/bloodpressure/im_bloodpressure_input_manual.png";
+  String get ic_bloodpressure_pulse =>
+      "lib/res/drawables/bloodpressure/ic_bloodpressure_pulse.png";
+  String get ic_bloodpressure_warning =>
+      "lib/res/drawables/bloodpressure/ic_bloodpressure_warning.png";
+
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
   String get ic_lesson_comment => "lib/res/drawables/ic_lesson_comment.png";
@@ -486,6 +496,8 @@ class Drawables {
   String get ic_home_weight => "lib/res/drawables/home/ic_home_weight.png";
   String get ic_home_doctor_consult =>
       "lib/res/drawables/home/ic_home_doctor_consult.png";
+  String get ic_booking_clinic =>
+      "lib/res/drawables/home/ic_booking_clinic.png";
   String get ic_home_glucose_calendar =>
       "lib/res/drawables/home/ic_home_glucose_calendar.png";
   String get ic_home_goal => "lib/res/drawables/home/ic_home_goal.png";
@@ -610,6 +622,129 @@ class Drawables {
       "lib/res/drawables/dsmes_service/van-dong-va-tinh-than.png";
   String get ic_khac => "lib/res/drawables/dsmes_service/khac.png";
   String get dsmes_empty => "lib/res/drawables/dsmes_empty.png";
+  String get banner_cao_huyet_ap => "lib/res/drawables/clinic_specialty/cao-huyet-ap.png";
+  String get banner_suc_khoe_tim_mach => "lib/res/drawables/clinic_specialty/suc-khoe-tim-mach.png";
+  String get banner_suy_than_man => "lib/res/drawables/clinic_specialty/suy-than-man.png";
+  String get banner_tieu_duong => "lib/res/drawables/clinic_specialty/tieu-duong.png";
+  String get banner_benh_khac => "lib/res/drawables/clinic_specialty/benh-khac.png";
+  String get bg_empty_clinic => "lib/res/drawables/bg_empty_clinic.png";
+  String get ic_money => "lib/res/drawables/ic_money.png";
+  String get ic_dialog_fail => "lib/res/drawables/ic_dialog_fail.png";
+  String get subscription_image_1 =>
+      "lib/res/drawables/subscription_image_1.png";
+  String get subscription_image_2 =>
+      "lib/res/drawables/subscription_image_2.png";
+  String get subscription_image_3 =>
+      "lib/res/drawables/subscription_image_3.png";
+  String get dong_hanh_bg => "lib/res/drawables/dong_hanh_bg.png";
+  String get thau_cam_bg => "lib/res/drawables/thau_cam_bg.png";
+  String get ic_subscription_bullet =>
+      "lib/res/drawables/ic_subscription_bullet.png";
+  String get dong_hanh_badge => "lib/res/drawables/dong_hanh_badge.png";
+  String get thau_cam_badge => "lib/res/drawables/thau_cam_badge.png";
+  // Subscription Program Images
+  String get subscription_bullet =>
+      "lib/res/drawables/subscription/subscription_bullet.png";
+  String get subscription_blood_sugar =>
+      "lib/res/drawables/subscription/subscription_blood_sugar.png";
+  String get subscription_reduce_hba1c =>
+      "lib/res/drawables/subscription/subscription_reduce_hba1c.png";
+  String get subscription_exercise_diet =>
+      "lib/res/drawables/subscription/subscription_exercise_diet.png";
+  String get subscription_weight_loss =>
+      "lib/res/drawables/subscription/subscription_weight_loss.png";
+  String get subscription_increase_exercise =>
+      "lib/res/drawables/subscription/subscription_increase_exercise.png";
+  String get subscription_blood_pressure =>
+      "lib/res/drawables/subscription/subscription_blood_pressure.png";
+  String get subscription_postpartum =>
+      "lib/res/drawables/subscription/subscription_postpartum.png";
+  String get subscription_fetal_complications =>
+      "lib/res/drawables/subscription/subscription_fetal_complications.png";
+  String get subscription_pregnancy_health =>
+      "lib/res/drawables/subscription/subscription_pregnancy_health.png";
+  String get subscription_program_1 =>
+      "lib/res/drawables/subscription/subscription_program_1.png";
+  String get subscription_program_2 =>
+      "lib/res/drawables/subscription/subscription_program_2.png";
+  String get subscription_program_3 =>
+      "lib/res/drawables/subscription/subscription_program_3.png";
+  String get subscription_family_member =>
+      "lib/res/drawables/subscription/subscription_family_member.png";
+  String get subscription_diabetic_patient =>
+      "lib/res/drawables/subscription/subscription_diabetic_patient.png";
+  String get subscription_overweight =>
+      "lib/res/drawables/subscription/subscription_overweight.png";
+  String get subscription_prediabetes =>
+      "lib/res/drawables/subscription/subscription_prediabetes.png";
+  String get subscription_hypertension =>
+      "lib/res/drawables/subscription/subscription_hypertension.png";
+  String get subscription_pregnant_women =>
+      "lib/res/drawables/subscription/subscription_pregnant_women.png";
+  String get subscription_family_pregnant =>
+      "lib/res/drawables/subscription/subscription_family_pregnant.png";
+  String get subscription_quality_life =>
+      "lib/res/drawables/subscription/subscription_quality_life.png";
+  String get subscription_prevent_fetal_complications =>
+      "lib/res/drawables/subscription/subscription_prevent_fetal_complications.png";
+  String get subscription_ensure_nutrition =>
+      "lib/res/drawables/subscription/subscription_ensure_nutrition.png";
+  String get subscription_prevent_diabetes =>
+      "lib/res/drawables/subscription/subscription_prevent_diabetes.png";
+  String get subscription_safe_exercise_plan =>
+      "lib/res/drawables/subscription/subscription_safe_exercise_plan.png";
+  String get subscription_stress_management =>
+      "lib/res/drawables/subscription/subscription_stress_management.png";
+  String get subscription_blood_sugar_control =>
+      "lib/res/drawables/subscription/subscription_blood_sugar_control.png";
+  String get subscription_weight_loss_5 =>
+      "lib/res/drawables/subscription/subscription_weight_loss_5.png";
+  String get subscription_stabilize_blood_pressure =>
+      "lib/res/drawables/subscription/subscription_stabilize_blood_pressure.png";
+  String get subscription_exercise_150 =>
+      "lib/res/drawables/subscription/subscription_exercise_150.png";
+  String get subscription_prevent_diabetes_2 =>
+      "lib/res/drawables/subscription/subscription_prevent_diabetes_2.png";
+  String get subscription_improve_overall_health =>
+      "lib/res/drawables/subscription/subscription_improve_overall_health.png";
+  String get subscription_chronic_disease_knowledge =>
+      "lib/res/drawables/subscription/subscription_chronic_disease_knowledge.png";
+  String get subscription_medication_1 =>
+      "lib/res/drawables/subscription/subscription_medication_1.png";
+  String get subscription_healthy_diet =>
+      "lib/res/drawables/subscription/subscription_healthy_diet.png";
+  String get subscription_exercise =>
+      "lib/res/drawables/subscription/subscription_exercise.png";
+  String get subscription_anxiety_1 =>
+      "lib/res/drawables/subscription/subscription_anxiety_1.png";
+  String get subscription_monitoring =>
+      "lib/res/drawables/subscription/subscription_monitoring.png";
+  String get subscription_prevent_complications =>
+      "lib/res/drawables/subscription/subscription_prevent_complications.png";
+  String get subscription_medication_2 =>
+      "lib/res/drawables/subscription/subscription_medication_2.png";
+  String get subscription_balanced_diet =>
+      "lib/res/drawables/subscription/subscription_balanced_diet.png";
+  String get subscription_safe_exercise =>
+      "lib/res/drawables/subscription/subscription_safe_exercise.png";
+  String get subscription_anxiety_2 =>
+      "lib/res/drawables/subscription/subscription_anxiety_2.png";
+  String get subscription_monitor_regimen =>
+      "lib/res/drawables/subscription/subscription_monitor_regimen.png";
+  String get subscription_medical_knowledge =>
+      "lib/res/drawables/subscription/subscription_medical_knowledge.png";
+  String get subscription_medication_3 =>
+      "lib/res/drawables/subscription/subscription_medication_3.png";
+  String get subscription_pregnancy_nutrition =>
+      "lib/res/drawables/subscription/subscription_pregnancy_nutrition.png";
+  String get subscription_prenatal_yoga =>
+      "lib/res/drawables/subscription/subscription_prenatal_yoga.png";
+  String get subscription_anxiety_3 =>
+      "lib/res/drawables/subscription/subscription_anxiety_3.png";
+  String get subscription_health_assessment =>
+      "lib/res/drawables/subscription/subscription_health_assessment.png";
+  String get subscription_support_24_7 =>
+      "lib/res/drawables/subscription/subscription_support_24_7.png";
   String get chat_avatar_chatbot_ai =>
       "lib/res/drawables/chat/avatar_chatbot_ai.png";
   String get chat_banner_family => "lib/res/drawables/chat/banner_family.png";
@@ -642,4 +777,13 @@ class Drawables {
       "lib/res/drawables/ic_upload_images_disable.png";
   String get error_AI => "lib/res/drawables/ic_error_AI.png";
   String get ic_error_input_duration_exercise => "lib/res/drawables/ic_error_input_duration_exercise.png";
+  String get co_ban_bg => "lib/res/drawables/co_ban_bg.png";
+  String get co_ban_badge => "lib/res/drawables/co_ban_badge.png";
+  String get ic_dialog_failed => "lib/res/drawables/ic_dialog_failed.png";
+  String get subscription_program_full_1 =>
+      "lib/res/drawables/subscription/subscription_program_full_1.png";
+  String get subscription_program_full_2 =>
+      "lib/res/drawables/subscription/subscription_program_full_2.png";
+  String get subscription_program_full_3 =>
+      "lib/res/drawables/subscription/subscription_program_full_3.png";
 }

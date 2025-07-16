@@ -4,14 +4,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/booking_clinic/helper/vnpay_payment_service.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
@@ -24,12 +26,14 @@ class DsmesConfirmCreateInformation extends StatefulWidget {
   final String serviceType;
   final String action;
   final int? appointmentId;
+  final String bookingType; // 'clinic' or 'center' or 'doctor'
 
   const DsmesConfirmCreateInformation({
     Key? key,
     required this.serviceType,
     this.action = 'create',
     this.appointmentId,
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
   }) : super(key: key);
 
   @override
@@ -166,7 +170,8 @@ class _DsmesConfirmCreateInformationState
                         color: R.color.white,
                       ),
                       onPressed: () {
-                        DsmesNavigationMixin.navigationKey.currentState
+                        DsmesNavigationMixin.getNavigationKey()
+                            .currentState
                             ?.pop(context);
                       },
                     ),
@@ -186,7 +191,9 @@ class _DsmesConfirmCreateInformationState
                             GapH(12),
                           if (widget.serviceType ==
                               DsmesAppointmentMode.telemedicine.toString())
-                            _buildSelectedServiceInformation(),
+                            widget.bookingType == Const.BOOKING_TYPE_CENTER
+                                ? _buildSelectedServiceInformation()
+                                : _buildBookingClinicSelectedServicesInformation(),
                           GapH(12),
                           // _buildNoticeSymptom(),
                           _selectImageSection(),
@@ -215,11 +222,25 @@ class _DsmesConfirmCreateInformationState
                   setState(() => isProcessing['confirmBooking'] = true);
 
                   try {
+                    // Check if it's telemedicine clinic booking
+                    bool isTelemedicineClinic = widget.serviceType ==
+                            DsmesAppointmentMode.telemedicine.toString() &&
+                        widget.bookingType == Const.BOOKING_TYPE_CLINIC;
+
+                    // Handle reschedule case
                     if (widget.action == 'reschedule' &&
                         widget.appointmentId != null) {
                       _handleRescheduleBooking();
+                      return;
                     }
 
+                    // Handle telemedicine clinic booking
+                    if (isTelemedicineClinic) {
+                      _handleTelemedicineClinicBooking();
+                      return;
+                    }
+
+                    // Handle create/edit case
                     if (widget.action == 'create' || widget.action == 'edit') {
                       final phoneNumber = AppSettings.userInfo?.phoneNumber ??
                           phoneController.text;
@@ -231,6 +252,8 @@ class _DsmesConfirmCreateInformationState
 
                       _handleCreateBooking();
                     }
+
+                    // Helper method to calculate total price
                   } finally {
                     setState(() => isProcessing['confirmBooking'] = false);
                   }
@@ -241,6 +264,61 @@ class _DsmesConfirmCreateInformationState
         ),
       ],
     );
+  }
+
+  Future<void> _handleTelemedicineClinicBooking() async {
+    setState(() => isProcessing['confirmBooking'] = true);
+
+    try {
+      final phoneNumber =
+          AppSettings.userInfo?.phoneNumber ?? phoneController.text;
+
+      final token = await AppSettings.getDocosanToken();
+      if (token.isEmpty) {
+        await _cubit.registerDocosanUser(phoneNumber: phoneNumber);
+        await AppSettings.clearOrganizationApiKey();
+      }
+
+      // Update symptom and attachments
+      final data = _sectionAddSymptomKey.currentState?.getNote();
+      _cubit.updateCreateDsmesBookingRequestSymptom(symptom: data?.note ?? '');
+      _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+          symptomAttachments: data?.fileNetworkName ?? []);
+
+      // // Calculate total price
+      // int totalPrice = _calculateTotalPrice();
+
+      // // Initialize VNPay service
+      // VNPayService paymentService = VNPayService(
+      //   context: context,
+      //   totalPrice: totalPrice,
+      //   bookingType: widget.bookingType,
+      //   serviceType: widget.serviceType,
+      //   cubit: _cubit,
+      // );
+
+      // bool initialized = await paymentService.initializePayment();
+
+      // if (initialized) {
+      //   // Process payment directly
+      //   await paymentService.openVNPaySDK();
+      // }
+      _handleCreateBooking();
+    } finally {
+      setState(() => isProcessing['confirmBooking'] = false);
+    }
+  }
+
+  int _calculateTotalPrice() {
+    final services = _cubit.createDsmesBookingRequest!.paymentInfo!.services;
+    int totalPrice = 0;
+    for (var e in services) {
+      final service = _cubit.selectedClinic?.serviceList.categories
+          .expand((category) => category.data)
+          .firstWhere((service) => service.id == e.id);
+      totalPrice += service?.fromPrice ?? 0;
+    }
+    return totalPrice;
   }
 
   _handleCreateBooking() async {
@@ -285,6 +363,7 @@ class _DsmesConfirmCreateInformationState
       primaryButtonTitle: R.string.back_home_page.tr(),
       secondaryButtonTitle: R.string.recheck_information.tr(),
       onNavigateHome: () {
+        BranchioLinkConfig.instance.resetPageTracking();
         // Back to homepage
         Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
           NavigatorName.tabbar,
@@ -298,11 +377,12 @@ class _DsmesConfirmCreateInformationState
 
         if (myAppointment == null) return;
 
-        DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+        DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
           NavigatorName.dsmes_booking_detail,
           arguments: {
             'serviceType': widget.serviceType,
             'appointment': myAppointment,
+            'bookingType': widget.bookingType,
           },
         );
       },
@@ -323,11 +403,12 @@ class _DsmesConfirmCreateInformationState
 
     if (myAppointment == null) return;
 
-    DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
       NavigatorName.dsmes_booking_detail,
       arguments: {
         'serviceType': widget.serviceType,
         'appointment': myAppointment,
+        'bookingType': widget.bookingType,
       },
     );
   }
@@ -409,17 +490,17 @@ class _DsmesConfirmCreateInformationState
                 Text(
                   R.string.name.tr(),
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    color: R.color.color0xff777E90,
+                    color: R.color.color0xff636A6B,
                   ),
                 ),
                 Text(
                   requesterName,
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.color0xff141416,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.color0xff111515,
                   ),
                 ),
               ],
@@ -431,17 +512,17 @@ class _DsmesConfirmCreateInformationState
                 Text(
                   R.string.so_dien_thoai.tr(),
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    color: R.color.color0xff777E90,
+                    color: R.color.color0xff636A6B,
                   ),
                 ),
                 Text(
                   requesterPhone,
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.color0xff141416,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.color0xff111515,
                   ),
                 ),
               ],
@@ -473,11 +554,11 @@ class _DsmesConfirmCreateInformationState
                 Text(
                   widget.serviceType == DsmesAppointmentMode.atClinic.toString()
                       ? R.string.consult_at_clinic.tr()
-                      : R.string.consult_online.tr(),
+                      : R.string.kham_tu_xa.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: R.color.color0xff141416,
+                    color: R.color.color0xff111515,
                   ),
                 ),
                 Visibility(
@@ -500,7 +581,8 @@ class _DsmesConfirmCreateInformationState
                         final args = route?.arguments as Map<String, dynamic>?;
                         final isMergedSchedule =
                             args?['isMergedSchedule'] ?? false;
-                        await DsmesNavigationMixin.navigationKey.currentState
+                        await DsmesNavigationMixin.getNavigationKey()
+                            .currentState
                             ?.pushNamed(NavigatorName.dsmes_booking_select_date,
                                 arguments: {
                               'serviceType': widget.serviceType,
@@ -509,6 +591,7 @@ class _DsmesConfirmCreateInformationState
                               'previousRoute':
                                   NavigatorName.dsmes_confirm_information,
                               'isMergedSchedule': isMergedSchedule,
+                              'bookingType': widget.bookingType,
                             });
                       } finally {
                         setState(() => isProcessing['editConsultInfo'] = false);
@@ -538,9 +621,9 @@ class _DsmesConfirmCreateInformationState
                 Text(
                   R.string.consult_time.tr(),
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    color: R.color.color0xff777E90,
+                    color: R.color.color0xff636A6B,
                   ),
                 ),
                 Column(
@@ -550,7 +633,7 @@ class _DsmesConfirmCreateInformationState
                       getTimeRange(_cubit.createDsmesBookingRequest!.startTime,
                           _cubit.createDsmesBookingRequest!.endTime),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: R.color.greenGradientBottom,
                       ),
@@ -559,7 +642,7 @@ class _DsmesConfirmCreateInformationState
                       getFormattedDate(
                           _cubit.createDsmesBookingRequest!.startTime),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: R.color.greenGradientBottom,
                       ),
@@ -568,9 +651,13 @@ class _DsmesConfirmCreateInformationState
                 ),
               ],
             ),
-            if (widget.serviceType == DsmesAppointmentMode.atClinic.toString())
+            if (widget.serviceType !=
+                    DsmesAppointmentMode.telemedicine.toString() ||
+                widget.bookingType != Const.BOOKING_TYPE_CENTER)
               GapH(4),
-            if (widget.serviceType == DsmesAppointmentMode.atClinic.toString())
+            if (widget.serviceType !=
+                    DsmesAppointmentMode.telemedicine.toString() ||
+                widget.bookingType != Const.BOOKING_TYPE_CENTER)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,9 +667,9 @@ class _DsmesConfirmCreateInformationState
                     child: Text(
                       R.string.center_name.tr(),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w400,
-                        color: R.color.color0xff777E90,
+                        color: R.color.color0xff636A6B,
                       ),
                     ),
                   ),
@@ -594,9 +681,9 @@ class _DsmesConfirmCreateInformationState
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: R.color.color0xff141416,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff111515,
                       ),
                     ),
                   ),
@@ -614,9 +701,9 @@ class _DsmesConfirmCreateInformationState
                     child: Text(
                       R.string.address.tr(),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.w400,
-                        color: R.color.color0xff777E90,
+                        color: R.color.color0xff636A6B,
                       ),
                     ),
                   ),
@@ -628,9 +715,9 @@ class _DsmesConfirmCreateInformationState
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: R.color.color0xff141416,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff111515,
                       ),
                     ),
                   ),
@@ -684,7 +771,8 @@ class _DsmesConfirmCreateInformationState
                       _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
                           symptomAttachments: data?.fileNetworkName ?? []);
 
-                      await DsmesNavigationMixin.navigationKey.currentState
+                      await DsmesNavigationMixin.getNavigationKey()
+                          .currentState
                           ?.pushNamed(NavigatorName.dsmes_select_service,
                               arguments: {
                             'serviceType': widget.serviceType,
@@ -754,6 +842,155 @@ class _DsmesConfirmCreateInformationState
                 }),
               ],
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  _buildBookingClinicSelectedServicesInformation() {
+    if (_cubit.createDsmesBookingRequest == null) return SizedBox.shrink();
+    if (_cubit.createDsmesBookingRequest!.paymentInfo == null) {
+      return SizedBox.shrink();
+    }
+
+    final services = _cubit.createDsmesBookingRequest!.paymentInfo!.services;
+    int totalPrice = 0;
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
+      ),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  R.string.service_type.tr(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff141416,
+                  ),
+                ),
+                InkWell(
+                  onTap: () async {
+                    if (isProcessing['editServiceInfo']!) return;
+                    setState(() => isProcessing['editServiceInfo'] = true);
+                    try {
+                      final data =
+                          _sectionAddSymptomKey.currentState?.getNote();
+                      _cubit.updateCreateDsmesBookingRequestSymptom(
+                          symptom: data?.note ?? symptomController.text);
+                      _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
+                          symptomAttachments: data?.fileNetworkName ?? []);
+
+                      await DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.pushNamed(NavigatorName.clinic_select_service,
+                              arguments: {
+                            'serviceType': widget.serviceType,
+                            'action': widget.action,
+                            'clinic': _cubit.selectedClinic,
+                            'isEditing': true,
+                            'previousRoute':
+                                NavigatorName.dsmes_confirm_information,
+                            'bookingType': widget.bookingType,
+                          });
+                    } finally {
+                      setState(() => isProcessing['editServiceInfo'] = false);
+                    }
+                  },
+                  child: Visibility(
+                    visible: !isReschedule,
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 20,
+                      child: Text(
+                        R.string.chinh_sua.tr(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: R.color.color0xff95682E,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            GapH(12),
+            ...services.map((e) {
+              final service = _cubit.selectedClinic?.serviceList.categories
+                  .expand((category) => category.data)
+                  .firstWhere((service) => service.id == e.id);
+
+              totalPrice += service?.fromPrice ?? 0;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        service?.name ?? '',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff636A6B,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 8),
+                      child: Text(
+                        Utils.formatMoney(service?.fromPrice ?? 0) ?? '',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff111515,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            Divider(color: R.color.color0xffE6E8EC),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    R.string.estimated_cost.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                  Text(
+                    Utils.formatMoney(totalPrice) ?? '',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -1,0 +1,245 @@
+{
+    "programs": [
+      {
+        "id": "588a6319-9e1f-4c98-821a-26efec1c9100",
+        "code": "SUBS",
+        "title": "Sống khỏe cùng đái tháo đường",
+        "isRecommended": true,
+        "color": "#0FB4A5",
+        "items": [
+          {
+            "id": "blood_sugar",
+            "description": "Ổn định đường huyết"
+          },
+          {
+            "id": "reduce_hba1c",
+            "description": "Giảm HbA1c, phòng biến chứng"
+          },
+          {
+            "id": "exercise_diet",
+            "description": "Vận động, ăn uống an toàn"
+          }
+        ],
+        "audiences": [
+          {
+            "id": "diabetic_patient",
+            "title": "Người bệnh đái tháo đường típ 2"
+          },
+          {
+            "id": "family_member",
+            "title": "Người có người thân bệnh đái tháo đường"
+          }
+        ],
+        "targets": [
+          {
+            "id": "weight_loss",
+            "title": "Giảm 3-5% cân nặng"
+          },
+          {
+            "id": "reduce_hba1c",
+            "title": "Giảm 1,2% HbA1c"
+          },
+          {
+            "id": "quality_life",
+            "title": "Cải thiện chất lượng cuộc sống"
+          }
+        ],
+        "actions": [
+          {
+            "id": "medication_1",
+            "title": "Dùng thuốc \nđúng cách"
+          },
+          {
+            "id": "healthy_diet",
+            "title": "Ăn uống \nlành mạnh"
+          },
+          {
+            "id": "exercise",
+            "title": "Vận động \nan toàn"
+          },
+          {
+            "id": "anxiety_1",
+            "title": "Kiểm soát \nlo âu"
+          },
+          {
+            "id": "monitoring",
+            "title": "Theo dõi \nsức khỏe"
+          },
+          {
+            "id": "prevent_complications",
+            "title": "Phòng tránh \nbiến chứng"
+          }
+        ]
+      },
+      {
+        "id": "f19023ec-49f5-4c38-b039-b59a79e9e4e9",
+        "code": "SUBSPREVENT",
+        "title": "Phòng ngừa bệnh mạn tính",
+        "isRecommended": false,
+        "color": "#E49D6E",
+        "items": [
+          {
+            "id": "weight_loss",
+            "description": "Giảm 3-5% cân nặng"
+          },
+          {
+            "id": "increase_exercise",
+            "description": "Tăng cường vận động"
+          },
+          {
+            "id": "blood_pressure",
+            "description": "Giảm mỡ máu, ổn định huyết áp"
+          }
+        ],
+        "audiences": [
+          {
+            "id": "overweight",
+            "title": "Thừa cân béo phì"
+          },
+          {
+            "id": "prediabetes",
+            "title": "Tiền đái tháo đường"
+          },
+          {
+            "id": "hypertension",
+            "title": "Tăng huyết áp, mỡ máu"
+          }
+        ],
+        "targets": [
+          {
+            "id": "weight_loss_5",
+            "title": "Giảm 5% cân nặng"
+          },
+          {
+            "id": "stabilize_blood_pressure",
+            "title": "Giảm mỡ máu ổn định huyết áp"
+          },
+          {
+            "id": "exercise_150_min",
+            "title": "Vận động ít nhất 150 phút/tuần"
+          },
+          {
+            "id": "prevent_diabetes_2",
+            "title": "Phòng đái tháo đường típ 2"
+          },
+          {
+            "id": "improve_overall_health",
+            "title": "Cải thiện sức khoẻ toàn diện"
+          },
+          {
+            "id": "chronic_disease_knowledge",
+            "title": "Kiến thức bệnh mãn tính"
+          }
+        ],
+        "actions": [
+          {
+            "id": "medication_2",
+            "title": "Dùng thuốc \nđúng cách"
+          },
+          {
+            "id": "balanced_diet",
+            "title": "Ăn uống \nhợp lý"
+          },
+          {
+            "id": "safe_exercise",
+            "title": "Vận động \nan toàn"
+          },
+          {
+            "id": "anxiety_2",
+            "title": "Kiểm soát \nlo âu"
+          },
+          {
+            "id": "monitor_regimen",
+            "title": "Theo dõi \nchỉ số"
+          },
+          {
+            "id": "medical_knowledge",
+            "title": "Kiến thức \nbệnh lý"
+          }
+        ]
+      },
+      {
+        "id": "e930578a-d71d-49d6-b088-c737ad1fb315",
+        "code": "SUBSMOM",
+        "title": "Ổn định đường huyết thai kì",
+        "isRecommended": false,
+        "color": "#F8A084",
+        "items": [
+          {
+            "id": "postpartum",
+            "description": "Ngừa đái tháo đường sau sinh"
+          },
+          {
+            "id": "fetal_complications",
+            "description": "Phòng biến chứng thai nhi"
+          },
+          {
+            "id": "pregnancy_health",
+            "description": "Vận động, dinh dưỡng, an toàn"
+          }
+        ],
+        "audiences": [
+          {
+            "id": "pregnant_women",
+            "title": "Mẹ bầu, phụ nữ có kế hoạch mang thai"
+          },
+          {
+            "id": "family_pregnant",
+            "title": "Người có người thân đang mang thai"
+          }
+        ],
+        "targets": [
+          {
+            "id": "prevent_diabetes",
+            "title": "Phòng đái tháo đường tuýp 2"
+          },
+          {
+            "id": "prevent_fetal_complications",
+            "title": "Phòng biến chứng thai nhi"
+          },
+          {
+            "id": "ensure_nutrition",
+            "title": "Đảm bảo dinh dưỡng"
+          },
+          {
+            "id": "safe_exercise_plan",
+            "title": "Lộ trình vận động an toàn"
+          },
+          {
+            "id": "stress_management",
+            "title": "Nhận biết, kiểm soát stress"
+          },
+          {
+            "id": "blood_sugar_control",
+            "title": "Kiểm soát, ổn định đường huyết"
+          }
+        ],
+        "actions": [
+          {
+            "id": "medication_3",
+            "title": "Dùng thuốc \nđúng cách"
+          },
+          {
+            "id": "pregnancy_nutrition",
+            "title": "Dinh dưỡng \nthai phụ"
+          },
+          {
+            "id": "prenatal_yoga",
+            "title": "Yoga \nthai kỳ"
+          },
+          {
+            "id": "anxiety_3",
+            "title": "Kiểm soát \nlo âu"
+          },
+          {
+            "id": "health_assessment",
+            "title": "Đánh giá \nsức khỏe"
+          },
+          {
+            "id": "support_24_7",
+            "title": "Hỗ trợ \n24/7"
+          }
+        ]
+      }
+    ]
+  }

@@ -34,20 +34,27 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   bool isNavigateToStepList = false;
   SecureModel? secureModel;
   AppVersionResponse? appVersion;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _initStateAsync();
     _getCountryCode();
+    print('[ROUTE] _FlashScreenControllerState initState');
   }
 
   void _initStateAsync() async {
+    // Setup deeplink handlers
     BranchioLinkConfig.instance.setUpHandleDeepLink();
     await DynamicLinkConfig.instance.setUpHandleDeepLink();
+
+    // Initialize app configurations
     await getSecuredModel();
     await getVersion();
     BlocProvider.of<NiproBloc>(context).add(NiproEventFetchSavedDevice());
+
+    // Continue with normal app initialization
     await getData(context);
   }
 
@@ -92,7 +99,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       );
     }
 
-    // if(appVersion == null){
     appVersion = AppVersionResponse(
       id: "cb110991-eb73-4dc7-92ce-50157c3ee359",
       code: "123",
@@ -100,7 +106,6 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
       enviroment: Const.ENVIRONMENT_DEFAULT,
       version: "1.1.6",
     );
-    // }
 
     await AppSettings.saveEnvironment(appVersion.enviroment);
     AppSettings.environment = appVersion.enviroment ?? "";
@@ -116,20 +121,19 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     }
+
     try {
       final token = await AppSettings.getToken();
       final clickedBranchLink = await AppSettings.getClickedBranchLink();
       print('flashScreen clickedBranchLink: $clickedBranchLink');
       AppSettings.environment = await AppSettings.getEnvironment();
-      if (token.isNotEmpty) {
-        // final refreshToken = await AppSettings.getRefreshToken();
 
-        // await LoginClient().login({
-        //   "client_id": Const.CLIENT_ID,
-        //   "client_secret": Const.CLIENT_SECRET,
-        //   "grant_type": "refresh_token",
-        //   "refresh_token": refreshToken
-        // });
+      // Mark splash screen initialization as complete
+      AppSettings.setSplashScreenInitDone(true);
+      _isInitialized = true;
+
+      // Normal flow - navigate to tabbar or login screen
+      if (token.isNotEmpty) {
         var user = await UserClient().getUserPreferences();
         AppSettings.userInfo = user;
         if (user == null) {
@@ -143,11 +147,16 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
               arguments: sharedCode,
             );
             isNavigateToStepList = true;
+
+            // After navigating to step_list, check if we need to navigate to login screen
+            await handleDeeplinkLogin();
           }
         } else {
           await AppSettings.loadPrecachedHome().catchError((e) {
             TrackingManager.recordError(e, null);
           });
+
+          // Navigate to tabbar (TabbarController will handle any pending deeplinks)
           await Navigator.pushReplacementNamed(
             context,
             NavigatorName.tabbar,
@@ -160,6 +169,9 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
           NavigatorName.step_list,
           arguments: sharedCode,
         );
+
+        // After navigating to step_list, check if we need to navigate to login screen
+        await handleDeeplinkLogin();
       }
     } catch (e, s) {
       TrackingManager.recordError(e, s);
@@ -176,7 +188,18 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
             R.string.phien_dang_nhap_het_han_vui_long_dang_nhap_lai.tr());
         AppSettings.logout();
         isNavigateToStepList = true;
+
+        // After navigating to step_list, check if we need to navigate to login screen
+        await handleDeeplinkLogin();
       }
+    }
+  }
+
+  handleDeeplinkLogin() async {
+    // After navigating to step_list, check if we need to navigate to login screen
+    if (BranchioLinkConfig.instance.hasPendingLoginDeeplink) {
+      await Future.delayed(Duration(milliseconds: 100));
+      await BranchioLinkConfig.instance.executeLoginDeeplinkNavigation();
     }
   }
 

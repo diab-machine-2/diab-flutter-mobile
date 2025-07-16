@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
+import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
@@ -70,6 +71,8 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
   bool _shouldAutoScroll = true; // ✅ Mặc định scroll 1 lần khi có data mới
 
+  final Debouncer _toastDebouncer = Debouncer(milliseconds: 1000);
+
   void _scrollToSelectd({bool animated = true, int retry = 0}) {
     if (!_shouldAutoScroll || !mounted) return;
 
@@ -118,15 +121,18 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
     if (trends.isEmpty) {
       _focusIndex = -1;
-      Future.delayed(const Duration(milliseconds: 500), () {
-        Message.showToastMessage(context, R.string.no_data.tr());
+      _toastDebouncer.run(() {
+        if (mounted) {
+          Message.showToastMessage(context, R.string.no_data.tr());
+        }
       });
       return;
     }
 
     int? matchedIndex;
     if (_selectedDateTimestamp != null) {
-      matchedIndex = trends.indexWhere((item) => item.date == _selectedDateTimestamp);
+      matchedIndex =
+          trends.indexWhere((item) => item.date == _selectedDateTimestamp);
       if (matchedIndex == -1) {
         // Nếu không tìm thấy, chọn dot mới nhất
         matchedIndex = trends.length - 1;
@@ -152,6 +158,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
       value: _bloc,
       child: BlocBuilder<ExercrisesBloc, ExercrisesState>(
         builder: (BuildContext context, ExercrisesState state) {
+          if (!mounted) return const SizedBox.shrink();
           currentContext = context;
           ExercriseTrendTimeModel? model;
 
@@ -164,14 +171,18 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
           if (state is ExercrisesError) {
             Message.showToastMessage(context, state.message);
           }
-          if (state is TimeTrendTrendLoaded) {
+          if (state is TimeTrendTrendLoaded && mounted) {
+            // Only process if mounted
             model = state.model;
             final newTrends = model.trendItems.items
                 .where((item) => item.duration != null && item.duration! > 0)
                 .toList();
 
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              _updateFocusIndexWithFallback(newTrends); // ✅ safe để gọi setState
+              if (mounted) {
+                _updateFocusIndexWithFallback(
+                    newTrends); // ✅ safe để gọi setState
+              }
             });
           }
 
@@ -203,10 +214,12 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
               var visiblePercentage = visibilityInfo.visibleFraction * 100;
               if (visiblePercentage == 0) {
                 previousDate = 0;
-              } else if (visiblePercentage > 0) {
+              } else if (visiblePercentage > 0 && mounted) {
                 // Khi tab quay lại, scroll tới dot đang chọn
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToSelectd();
+                  if (mounted) {
+                    _scrollToSelectd();
+                  }
                 });
               }
             },
@@ -842,7 +855,8 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
   void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
     BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchTimeTrend(
-      currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      currentDateTime:
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
     ));
   }

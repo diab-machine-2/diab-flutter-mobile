@@ -190,7 +190,7 @@ class _BloodSugarDetailTabbarControllerState
             FloatingActionButton(
               backgroundColor: R.color.transparent,
               onPressed: () {
-                if (AppSettings.isUS) {
+                if (!AppSettings.isRegionAllowInputDevice) {
                   Navigator.pushNamed(
                       context, NavigatorName.add_blood_sugar_new,
                       arguments: {'type': 'input'});

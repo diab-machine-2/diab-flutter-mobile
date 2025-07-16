@@ -10,8 +10,8 @@ import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/widget/BloodPressure/add_bloodPressure.dart';
-import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar.dart';
+import 'package:medical/src/widget/BloodPressure/add_bloodpressure_v2.dart';
+import 'package:medical/src/widget/BloodPressure/bloodPressure_detail_tabbar_v2.dart';
 import 'package:medical/src/widget/BloodPressure/widget/bloodPressure_table.dart';
 import 'package:medical/src/widget/BloodSugar/add_bloodSugar.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar_v2.dart';
@@ -84,6 +84,7 @@ import 'package:medical/src/widget/profile/setting_schedule_glucose.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/question_answer/make_question/make_question_page.dart';
 import 'package:medical/src/widget/question_answer/question_detail/question_detail_page.dart';
+import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
@@ -678,7 +679,17 @@ class App extends StatelessWidget {
                     final args = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(
                       settings,
-                      DsmesAppointmentPage(),
+                      DsmesAppointmentPage(
+                        pendingOnlineDeeplink: args['pendingOnlineDeeplink'],
+                        pendingClinicId: args['pendingClinicId'],
+                        pendingMode: args['pendingMode'],
+                      ),
+                    );
+                  case NavigatorName.paywall_screen:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                      settings,
+                      PaywallScreen(),
                     );
                   // case NavigatorName.conversation_chatbot_ai:
                   case NavigatorName.conversation_chatbot_ai:

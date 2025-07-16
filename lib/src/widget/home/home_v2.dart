@@ -58,6 +58,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../app.dart';
 import '../../repo/home/home_client.dart';
 import '../../service/rating_service.dart';
+import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
 
@@ -90,6 +91,7 @@ class _HomeControllerState extends State<HomeController>
   String _urlPopup = '';
   bool _haveInputGlucoseAlready = false;
   bool _haveInputExerciseAlready = false;
+  bool _haveInputBloodpressureAlready = false;
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
@@ -351,7 +353,8 @@ class _HomeControllerState extends State<HomeController>
     // After add exercise
     if (notifyName == 'active_change_data') {
       _refresh();
-      _checkScreen(NavigatorName.detail_exercrises);
+      // _checkScreen(NavigatorName.detail_exercrises);
+      _checkScreen(NavigatorName.exercrise_dashboard);
     }
     if (notifyName == 'active_change_data_v2') {
       _refresh();
@@ -377,6 +380,10 @@ class _HomeControllerState extends State<HomeController>
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
+    }
+
+    if (notifyName == 'reload_user_info') {
+      _fetchUser();
     }
   }
 
@@ -415,6 +422,7 @@ class _HomeControllerState extends State<HomeController>
   Future<bool> _refresh() async {
     page = 1;
     _homeBloc.add(FetchHome());
+
     return true;
   }
 
@@ -425,7 +433,47 @@ class _HomeControllerState extends State<HomeController>
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
     checkExerciseData(); // To update hasExerciseData after sync from health connnect then pull to refresh
+
+    _isDisplayedWelcome = false;
+
+    // Set state tabbar in order to rebuild data of program tab if have activated new package
+    Observable.instance.notifyObservers([],
+        notifyName: Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM);
+
     return true;
+  }
+
+  Future<String> _fetchCustomerReceivesUser() async {
+    try {
+      // Create cubit instance with repository
+      final repository = AppRepository();
+      final welcomeCubit = WelcomePackageScreenCubit(repository);
+
+      // Call the API and get zaloGroup
+      String? zaloGroup = await welcomeCubit.getCustomerReceivesUser();
+
+      // Save to AppPreference if not null
+      if (zaloGroup != null) {
+        await AppSettings.saveZaloGroup(zaloGroup);
+      }
+
+      print(
+          '[ONBOARDING] fetchCustomerReceivesUserAndWait completed: $zaloGroup');
+      return zaloGroup ?? '';
+    } catch (e, s) {
+      // Log error but don't disrupt the UI flow
+      TrackingManager.recordError(e, s);
+    }
+    return '';
+  }
+
+  Future<void> _fetchUser() async {
+    try {
+      user = await UserClient().fetchUser();
+      AppSettings.isReloadCurrentUserInfo = true;
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   @override
@@ -449,11 +497,29 @@ class _HomeControllerState extends State<HomeController>
             if (false == model?.packageAccount?.isDisplayedWelcome &&
                 !_isDisplayedWelcome) {
               _isDisplayedWelcome = true;
-              if (AppSettings.isDisplayedWelcome == false) {
-                Future.delayed(Duration.zero, () async {
-                  _showWelcomeDialog(model?.packageAccount);
-                });
-              } else {}
+              // Important: Changed to handle zaloGroup retrieval properly
+              Future.delayed(Duration.zero, () async {
+                // Now get the latest zaloGroup
+                String? zaloGroup = await _fetchCustomerReceivesUser();
+                print(
+                    '[ONBOARDING] before showWelcomeDialog zaloGroup: $zaloGroup');
+
+                _showWelcomeDialog(model?.packageAccount, zaloGroup);
+              });
+            }
+            //
+            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
+                    true &&
+                state.model.measurements?.first.value1?.isNotEmpty == true &&
+                state.model.measurements?.first.value1 != "--";
+            //
+            if (state.model.measurements?.isNotEmpty == true) {
+              List<HomeMeasurementData> huyetAps = state.model.measurements!
+                  .where((e) => e.title.toLowerCase() == "huyết áp")
+                  .toList();
+              _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
+                  huyetAps.first.value1?.isNotEmpty == true &&
+                  huyetAps.first.value1 != "--";
             }
             //
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
@@ -628,6 +694,13 @@ class _HomeControllerState extends State<HomeController>
                               // case input glucose
                               if (await _showGlucoseAddBottomSheet(routeName) ==
                                   false) {
+                                return;
+                              }
+                              // check first time open blood pressure intro
+                              if (routeName == "/add_blood_pressure" &&
+                                  !_haveInputBloodpressureAlready) {
+                                Navigator.of(context).pushNamed(NavigatorName
+                                    .blood_pressure_intro_1st_page);
                                 return;
                               }
                               // case input exercise
@@ -975,8 +1048,12 @@ class _HomeControllerState extends State<HomeController>
         }));
   }
 
-  void _showWelcomeDialog(PackageAccountHomeModel? packageAccount) async {
+  void _showWelcomeDialog(
+      PackageAccountHomeModel? packageAccount, String? zaloGroup) async {
     bool isRoadmap = packageAccount?.package?.isRoadmap ?? false;
+
+    print('[ONBOARDING] _showWelcomeDialog with zaloGroup: $zaloGroup');
+
     final _ = await NavigationUtil.navigatePage(
       context,
       WelcomePackageScreenPage(
@@ -991,6 +1068,7 @@ class _HomeControllerState extends State<HomeController>
             : R.string.package_experience_subtitle.tr(),
         onSkip: () async {},
         onNavigateToMyPlan: () async {},
+        zaloGroup: zaloGroup,
       ),
     );
   }
@@ -1054,7 +1132,9 @@ class _HomeControllerState extends State<HomeController>
 
   // return allow next route
   bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
-    if (routeName == NavigatorName.exercrise_onboarding) {
+    if (routeName == NavigatorName.exercrise_onboarding ||
+        routeName == NavigatorName.exercrise_add_v2 ||
+        routeName == NavigatorName.exercrise_dashboard) {
       if (AppSettings.userInfo?.weight == null ||
           AppSettings.userInfo!.weight == 0) {
         showPopupWeight(nextRoute: routeName, args: args);
@@ -1073,7 +1153,7 @@ class _HomeControllerState extends State<HomeController>
         Navigator.of(context).pushNamed(NavigatorName.glucose_intro_1st_page);
         return false;
       }
-      if (AppSettings.isUS) {
+      if (!AppSettings.isRegionAllowInputDevice) {
         return true;
       }
       // Logic navigate to glucose input page (saved before)
@@ -1096,7 +1176,7 @@ class _HomeControllerState extends State<HomeController>
   // show _showMaterialDialog
   Future<bool> _showExercriseAddBottomSheet(String? routeName) async {
     if (routeName == NavigatorName.exercrise_add_v2 ||
-        routeName == NavigatorName.detail_exercrises ||
+        routeName == NavigatorName.exercrise_dashboard ||
         routeName == NavigatorName.add_exercrises) {
       if (_hasExerciseData) {
         Navigator.pushNamed(context, NavigatorName.exercrise_dashboard);
@@ -1138,6 +1218,12 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.blood_pressure:
       case ScheduleType.blood_pressure_recommend:
+        // check first time open blood pressure intro
+        if (!_haveInputBloodpressureAlready) {
+          Navigator.of(context)
+              .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+          return;
+        }
         await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         // _cubit.refreshData(isRefresh: true);

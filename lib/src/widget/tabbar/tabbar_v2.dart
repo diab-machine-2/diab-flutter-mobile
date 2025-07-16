@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -19,6 +21,8 @@ import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/app_storages.dart';
@@ -33,6 +37,9 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/home_v2.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/activity_tab.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
+import 'package:medical/src/widget/subscription/pages/subscription_page.dart';
+import 'package:medical/src/widget/subscription/subscription_cubit.dart';
+import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 // import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
@@ -59,19 +66,24 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   // final _checker = AppVersionChecker();
   final GlobalKey<CurvedNavigationBarState> _bottomTabbarKey = GlobalKey();
 
+  final SubscriptionCubit _subscriptionCubit =
+      SubscriptionCubit(AppRepository());
+
   final List<TabBarType> _bottomTabs = [
     TabBarType.home,
     TabBarType.program,
     TabBarType.library,
     TabBarType.chat,
-    TabBarType.store,
+    // TabBarType.store,
   ];
 
   int _initialPage = 0;
   late int _lastIndex = _initialPage;
+  bool _initComplete = false;
 
   @override
   void initState() {
+    print('[ROUTE] TabbarController initState');
     initData();
     super.initState();
   }
@@ -83,7 +95,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _buildProgramTab(),
       MyPlanPage(index: 0),
       Conversations(),
-      _buildStoreTab(),
+      // _buildStoreTab(),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
@@ -102,55 +114,89 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       await _getNewVersion();
     }
 
+    if (AppSettings.userInfo?.packageType == PackageType.free) {
+      await _subscriptionCubit.getSubscriptionBanners();
+
+      final activityId = DynamicLinkConfig.instance.activityId ?? '';
+      if (activityId.isNotEmpty) {
+        _checkExistLessonId();
+      }
+    }
+
     Future.delayed(Duration(seconds: 1), () async {
       FlutterNativeSplash.remove();
     });
     _checkUserReferralCode();
     _checkExistZoomId();
     BranchioLinkConfig.instance.tryNavigateBooking(initial: true);
+
+    // Mark initialization as complete
+    _initComplete = true;
+    print('[ROUTE] TabbarController initialization complete');
+
+    // Check if we have any pending deeplinks to navigate to
+    _checkPendingDeeplinks();
+    BranchioLinkConfig.instance.checkPendingMeasurementScreen();
+  }
+
+  // Check for pending deeplinks after initialization
+  void _checkPendingDeeplinks() {
+    if (BranchioLinkConfig.instance.hasPendingDeeplink) {
+      print(
+          "[ROUTE] TabbarController found pending deeplink, scheduling navigation");
+      BranchioLinkConfig.instance.scheduleDeeplinkNavigation();
+    }
   }
 
   void _trackUserVisit() async {
     final clickedBranchLink = await AppSettings.getClickedBranchLink();
     print('[TRACKING] ${clickedBranchLink == true ? 'deeplink' : 'organic'}');
-    FirebaseAnalytics.instance.logEvent(
-      name: 'home_app_open',
-      parameters: {
-        "screen_name": 'home',
+    TrackingManager.trackEvent(
+      'home_app_open',
+      'home',
+      params: {
         'source': clickedBranchLink == true ? 'deeplink' : 'organic',
       },
     );
   }
 
-  void _onBottomNavigationBarTap(int index) {
+  String getComponentName(int index) {
+    return _bottomTabs.elementAt(index).title;
+  }
+
+  void _onBottomNavigationBarTap(int index) async {
+    await TrackingManager.trackEvent(
+      'home_select_tabbar',
+      'home',
+      params: {
+        'component_name': getComponentName(index),
+      },
+    );
     if (index == TabBarType.store.index) {
       BotToast.showLoading();
       Future.delayed(Duration(seconds: 1), () async {
-        FirebaseAnalytics.instance.logEvent(
-          name: 'component_clicked',
-          parameters: {
-            "screen_name": 'StoreInApp',
+        TrackingManager.trackEvent(
+          'component_clicked',
+          'StoreInApp',
+          params: {
             'cta_button_name': 'cta_btn_store',
           },
         );
       });
       _jumpTo(index);
     } else if (index == TabBarType.chat.index) {
-      FirebaseAnalytics.instance.logEvent(
-        name: 'component_clicked',
-        parameters: {
-          "screen_name": 'BottomTabBarV2',
-          'cta_button_name': 'Go to Chatbot AI',
-        },
-      );
       // _jumpTo(index);
       // _lastIndex = index;
-      Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
+      _onChatWithAI();
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
       _jumpTo(index);
     }
+  }
+
+  void _onChatWithAI() {
+    Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
   }
 
   void _checkExistZoomId() async {
@@ -169,8 +215,18 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
     } else if (activityId != null) {
-      _jumpTo(TabBarType.program.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      if (AppSettings.userInfo?.packageType == PackageType.free) {
+        SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
+        await Future.delayed(Duration(milliseconds: 500));
+        NavigationUtil.navigatePage(navigatorKey.currentState!.context,
+            IntroduceSurveyPage(survey: smartGoal));
+        Future.delayed(Duration(seconds: 1), () {
+          DynamicLinkConfig.instance.removeActivityId();
+        });
+      } else {
+        _jumpTo(TabBarType.program.index);
+        _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      }
     }
   }
 
@@ -235,6 +291,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _jumpTo(TabBarType.home.index);
     }
+    if (notifyName == Const.NAVIGATE_TO_CHAT_TAB) {
+      Navigator.of(context).popUntil((route) =>
+          route.isFirst || route.settings.name == NavigatorName.tabbar);
+      _onChatWithAI();
+    }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
         notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
       _checkExistLessonId();
@@ -243,6 +304,50 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
     }
+    if (notifyName == Const.UPDATE_SUBSCRIPTION) {
+      NavigationUtil.popToFirst(context);
+
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+
+      final user = await UserClient().fetchUser().then((value) {
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+
+        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      });
+
+      // _jumpTo(TabBarType.home.index);
+      // _bottomTabbarKey.currentState?.setPage(TabBarType.home.index);
+    }
+
+    if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
+      NavigationUtil.popToFirst(context);
+
+      final user = await UserClient().fetchUser().then((value) {
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+
+        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      });
+    }
+
     if (notifyName == Const.LANGUAGE_CHANGED) {
       setState(() {
         tabs = [
@@ -250,7 +355,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           _buildProgramTab(),
           MyPlanPage(index: 0),
           Conversations(),
-          _buildStoreTab(),
+          // _buildStoreTab(),
         ];
       });
     }
@@ -306,20 +411,39 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   Widget _buildProgramTab() {
-    return BlocProvider(
-      create: (context) => MyPlanCubit(AppRepository(), 0),
-      child: BlocBuilder<MyPlanCubit, MyPlanState>(
-        builder: (context, state) {
-          return CommonPage(
-            title: R.string.title_activity.tr(),
-            background: R.drawable.bg_welcome,
-            appbarColor: R.color.white,
-            hideAllBackButton: true,
-            child: ActivityTabPage(extendTabbar: true),
-          );
-        },
-      ),
-    );
+    log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
+    print(
+        '[SUBSCRIPTION] userPackageType: ${AppSettings.userInfo?.packageType}');
+    print('[ACTIVE] ownPackage: ${AppSettings.userInfo?.ownPackage}');
+    print('[ACTIVE] isOwnPackage: ${AppSettings.isOwnPackage}');
+    if (AppSettings.userInfo?.packageType == PackageType.free) {
+      return MultiBlocProvider(
+        providers: [
+          BlocProvider<MyPlanCubit>(
+            create: (context) => MyPlanCubit(AppRepository(), 0),
+          ),
+          BlocProvider<SubscriptionCubit>.value(
+            value: _subscriptionCubit,
+          ),
+        ],
+        child: SubscriptionPage(),
+      );
+    } else {
+      return BlocProvider(
+        create: (context) => MyPlanCubit(AppRepository(), 0),
+        child: BlocBuilder<MyPlanCubit, MyPlanState>(
+          builder: (context, state) {
+            return CommonPage(
+              title: R.string.title_activity.tr(),
+              background: R.drawable.bg_welcome,
+              appbarColor: R.color.white,
+              hideAllBackButton: true,
+              child: ActivityTabPage(extendTabbar: true),
+            );
+          },
+        ),
+      );
+    }
   }
 
   Widget _buildStoreTab() {

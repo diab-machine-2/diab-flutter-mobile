@@ -164,7 +164,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
                 R.string.exercise.tr(),
                 style: TextStyle(
                   color: R.color.white,
-                  fontSize: 20,
+                fontSize: 20,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 20 * 0.002,
                 ),

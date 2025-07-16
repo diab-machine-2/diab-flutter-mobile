@@ -14,9 +14,11 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class DsmesBookingOfflinePage extends StatefulWidget {
   final String serviceType;
+  final int? pendingClinicId;
   const DsmesBookingOfflinePage({
     Key? key,
     required this.serviceType,
+    this.pendingClinicId,
   }) : super(key: key);
 
   @override
@@ -36,6 +38,29 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+
+    if (widget.pendingClinicId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handlePendingClinicId();
+      });
+    }
+  }
+
+  Future<void> _handlePendingClinicId() async {
+    try {
+      final detailSuccess =
+          await _cubit.getClinicDetail(id: widget.pendingClinicId!);
+
+      if (!detailSuccess || _cubit.selectedClinic == null) {
+        return;
+      }
+      await _cubit.getClinicRate(id: widget.pendingClinicId!);
+      DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+          NavigatorName.dsmes_clinic_detail,
+          arguments: {'clinicId': widget.pendingClinicId});
+    } catch (e) {
+      print('[ROUTE] Error handling pending clinic ID: $e');
+    }
   }
 
   @override
@@ -43,7 +68,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
     return WillPopScope(
       onWillPop: () async {
         print('[POP] offline clinics pop');
-        DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
         return false;
       },
       child: Scaffold(
@@ -82,7 +107,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
             actions: [
               // GestureDetector(
               //   onTap: () async {
-              //     DsmesNavigationMixin.navigationKey.currentState
+              //     DsmesNavigationMixin.getNavigationKey().currentState
               //         ?.pushNamed(NavigatorName.dsmes_booking_history);
               //   },
               //   child: Container(
@@ -131,7 +156,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.navigationKey.currentState?.pop(context);
+                DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
               },
             ),
           ),
@@ -173,13 +198,13 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
         if (isProcessing['clinicDetail']!) return;
         isProcessing['clinicDetail'] = true;
         try {
-          final detailSuccess = await _cubit.getClinicDetail(id: data.id);
+          final detailSuccess = await _cubit.getClinicDetail(id: data.clinicId);
 
           if (!detailSuccess || _cubit.selectedClinic == null) {
             return;
           }
           await _cubit.getClinicRate(id: data.id);
-          DsmesNavigationMixin.navigationKey.currentState?.pushNamed(
+          DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
               NavigatorName.dsmes_clinic_detail,
               arguments: {'clinicId': data.id});
         } finally {
@@ -289,7 +314,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                   isProcessing['onlineConsult'] = true;
                                   try {
                                     final detailSuccess = await _cubit
-                                        .getClinicDetail(id: data.id);
+                                        .getClinicDetail(id: data.clinicId);
 
                                     if (!detailSuccess ||
                                         _cubit.selectedClinic == null) {
@@ -299,7 +324,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                         locale: context.locale.languageCode);
 
                                     DsmesNavigationMixin
-                                        .navigationKey.currentState
+                                        .getNavigationKey().currentState
                                         ?.pushNamed(
                                             NavigatorName.dsmes_select_service,
                                             arguments: {
@@ -317,7 +342,20 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                   alignment: Alignment.center,
                                   padding: EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: R.color.color0xffE7FDFB,
+                                    // Change color based on whether it's the only button
+                                    color: hasAtClinic
+                                        ? R.color.color0xffE7FDFB
+                                        : null,
+                                    gradient: !hasAtClinic
+                                        ? LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              R.color.greenGradientTop02,
+                                              R.color.greenGradientBottom
+                                            ],
+                                          )
+                                        : null,
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Text(
@@ -325,7 +363,10 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
-                                      color: R.color.greenGradientBottom,
+                                      // Change text color based on whether it's the only button
+                                      color: hasAtClinic
+                                          ? R.color.greenGradientBottom
+                                          : R.color.white,
                                     ),
                                   ),
                                 ),
@@ -349,7 +390,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                   isProcessing['clinicConsult'] = true;
                                   try {
                                     final detailSuccess = await _cubit
-                                        .getClinicDetail(id: data.id);
+                                        .getClinicDetail(id: data.clinicId);
 
                                     if (!detailSuccess ||
                                         _cubit.selectedClinic == null) {
@@ -358,7 +399,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                                     _cubit.initCreateDsmesBookingRequest(
                                         locale: context.locale.languageCode);
                                     await DsmesNavigationMixin
-                                        .navigationKey.currentState
+                                        .getNavigationKey().currentState
                                         ?.pushNamed(
                                             NavigatorName
                                                 .dsmes_booking_select_date,
@@ -400,7 +441,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                       ),
                     ),
                 ],
-              ),
+              )
             ],
           ),
         ),

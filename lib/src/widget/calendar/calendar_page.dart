@@ -11,6 +11,8 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/navigator_name.dart';
@@ -62,13 +64,18 @@ class _CalendarControllerState extends State<CalendarController> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await Navigator.pushNamed(context, NavigatorName.calendar_booking,
-            arguments: {
-              "updateSlot": widget.pickSlot,
-              'courseId': widget.courseId,
-              'endTime': widget.endTime
-            });
-        return false;
+        print('[ONBOARDING] on pop scope calendar page');
+        if (Navigator.of(context).canPop()) {
+          print('[ONBOARDING] pop scope calendar page');
+          Navigator.of(context).pop();
+        }
+        // await Navigator.pushNamed(context, NavigatorName.calendar_booking,
+        //     arguments: {
+        //       "updateSlot": widget.pickSlot,
+        //       'courseId': widget.courseId,
+        //       'endTime': widget.endTime
+        //     });
+        return true;
       },
       child: GestureDetector(
         onTap: () {
@@ -97,13 +104,15 @@ class _CalendarControllerState extends State<CalendarController> {
                       actions: [
                         InkWell(
                           onTap: () async {
-                            final launchUri =
-                                Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                            if (await canLaunchUrl(launchUri)) {
-                              await launchUrl(launchUri);
-                            } else {
-                              throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                            }
+                            // final launchUri =
+                            //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+                            // if (await canLaunchUrl(launchUri)) {
+                            //   await launchUrl(launchUri);
+                            // } else {
+                            //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+                            // }
+
+                            HomeSupportFunctions.showModalAddData(context);
                           },
                           child: Container(
                             width: 85,
@@ -128,16 +137,17 @@ class _CalendarControllerState extends State<CalendarController> {
                                   color: R.color.ho_so_color,
                                   fit: BoxFit.scaleDown,
                                 ),
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                Text(
-                                  R.string.contact.tr(),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: 'sfpro',
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.ho_so_color,
+                                GapW(4),
+                                Expanded(
+                                  child: Text(
+                                    R.string.contact.tr(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'sfpro',
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.ho_so_color,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -153,9 +163,12 @@ class _CalendarControllerState extends State<CalendarController> {
                           color: R.color.textDark,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, NavigatorName.tabbar);
                           CalendarBookingCubit.myCalendar = null;
                           CalendarBookingCubit.updateCount = 0;
+
+                          if (Navigator.of(context).canPop()) {
+                            Navigator.of(context).pop();
+                          }
                         },
                       ),
                     ),
@@ -243,8 +256,12 @@ class _CalendarControllerState extends State<CalendarController> {
                   Expanded(
                     child: InkWell(
                       onTap: (() => {
-                            // _cubit.completedCalendar(widget.pickSlot.id, widget.courseId),
-                            Navigator.pushNamed(context, NavigatorName.tabbar)
+                            Navigator.of(context, rootNavigator: true)
+                                .pushNamedAndRemoveUntil(
+                              NavigatorName.tabbar,
+                              (route) =>
+                                  false, // This removes all routes from stack
+                            )
                           }),
                       child: Container(
                         margin:
@@ -290,7 +307,7 @@ class _CalendarControllerState extends State<CalendarController> {
                         height: 44,
                         decoration: BoxDecoration(
                           color:
-                              isAbleToJoinRoom ? null : R.color.color0xffd0f1ef,
+                              isAbleToJoinRoom ? null : R.color.color0xffBFC6C6,
                           gradient: isAbleToJoinRoom
                               ? LinearGradient(
                                   begin: Alignment.centerLeft,

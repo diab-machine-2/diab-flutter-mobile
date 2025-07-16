@@ -1,5 +1,5 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT = "dev"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -174,9 +174,13 @@ class Const {
   static const String NAVIGATE_TO_PROFILE_TAB = 'Navigate_to_profile_tab';
   static const String NAVIGATE_TO_LESSON_DETAIL = 'Navigate_to_lesson_detail';
   static const String NAVIGATE_TO_REGISTER = 'Navigate_to_register';
+  static const String NAVIGATE_TO_CHAT_TAB = 'Navigate_to_chat_tab';
   static const String NAVIGATE_TO_ACTIVITY_DETAIL =
       'Navigate_to_activity_detail';
   static const String LANGUAGE_CHANGED = 'language_changed';
+  static const String UPDATE_SUBSCRIPTION = 'Update_subscription';
+  static const String UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM =
+      'Update_subscription_without_navigate_program';
 
   static const List<int> hourList = [
     0,
@@ -215,4 +219,38 @@ class Const {
   static const String ORGANIZATION_API_KEY_VALUE =
       'diab-heath-center-9a3cefac-136caaef';
   static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 30; // In minutes
+  static const String CLINIC_TYPE_CLINIC = 'clinic';
+  static const String CLINIC_TYPE_HOSPITAL = 'hospital';
+  static const String CLINIC_TYPE_LAB = 'lab';
+  static const String CLINIC_TYPE_PUBLIC_HOSPITAL = 'public_hospital';
+  static const List<String> CLINIC_TYPES = [
+    CLINIC_TYPE_CLINIC,
+    CLINIC_TYPE_HOSPITAL,
+    // CLINIC_TYPE_LAB,
+    CLINIC_TYPE_PUBLIC_HOSPITAL
+  ];
+  static const String CLINIC_TIMEFRAME_WEEKEND = 'weekend';
+  static const String CLINIC_TIMEFRAME_WEEKDAY = 'weekday';
+  static const String CLINIC_TIMEFRAME_AFTER_HOURS = 'after_hours';
+  static const List<String> CLINIC_TIMEFRAMES = [
+    CLINIC_TIMEFRAME_WEEKEND,
+    CLINIC_TIMEFRAME_WEEKDAY,
+    CLINIC_TIMEFRAME_AFTER_HOURS,
+  ];
+
+  static const String BOOKING_TYPE_CENTER = 'center';
+  static const String BOOKING_TYPE_CLINIC = 'clinic';
+  static const String BOOKING_TYPE_DOCTOR = 'doctor';
+  static const List<String> BOOKING_TYPES = const [
+    BOOKING_TYPE_CENTER,
+    BOOKING_TYPE_CLINIC,
+    BOOKING_TYPE_DOCTOR,
+  ];
+  static const TABLET_BREAKPOINT = 540;
+  static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
+  static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
+  static const REGION_ALLOW_CONNECT_DEVICE = [
+    "VN",
+    "KR"
+  ];
 }
