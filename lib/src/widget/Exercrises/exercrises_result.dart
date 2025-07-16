@@ -512,7 +512,7 @@ class _ExercisesResultState extends State<ExercisesResult>
       child: ExercrisesAISuggestion(
         periodFilterType: periodFilterType,
         date: DateTime.now().subtract(Duration(days: 1)),
-        titleButton: R.string.roadmap_for_beginners.tr(),
+        titleButton: R.string.chat_with_AI.tr(),
       ),
     );
   }

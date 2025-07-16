@@ -342,9 +342,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                  onPressed: () {
-                    // Respond to button press
-                  },
+                  onPressed: null,
                   style: TextButton.styleFrom(
                     backgroundColor: R.color.white,
                     shape: RoundedRectangleBorder(

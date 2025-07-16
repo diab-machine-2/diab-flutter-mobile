@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 
 class ExercrisesAISuggestion extends StatefulWidget {
@@ -121,8 +123,12 @@ class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
           const SizedBox(height: 8),
           _buildContent(),
           if (!isLoading)
-            GestureDetector(
-              onTap: _fetchExerciseHealthTrend,
+            InkWell(
+              onTap: () async {
+                // await _fetchExerciseHealthTrend();
+                Observable.instance.notifyObservers([],
+                    notifyName: Const.NAVIGATE_TO_CHAT_TAB);
+              },
               child: Container(
                 width: double.infinity,
                 height: 42.h,
