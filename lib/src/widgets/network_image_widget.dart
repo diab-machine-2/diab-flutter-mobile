@@ -11,6 +11,7 @@ class NetWorkImageWidget extends StatelessWidget {
     this.width,
     this.height,
     this.fit = BoxFit.fill,
+    this.isSelected = false,
   });
 
   final String? imageUrl;
@@ -18,6 +19,7 @@ class NetWorkImageWidget extends StatelessWidget {
   final double? height;
   final bool showLoading;
   final BoxFit fit;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,9 @@ class NetWorkImageWidget extends StatelessWidget {
               width: width,
               height: height,
               imageUrl: imageUrl!,
+              color: isSelected
+                  ? Colors.white
+                  : null,
               fit: fit,
               placeholder: showLoading
                   ? (_, __) {

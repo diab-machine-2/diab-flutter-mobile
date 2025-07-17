@@ -6,12 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_calo.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
@@ -25,7 +27,15 @@ import 'package:medical/src/widgets/empty_data_box.dart';
 import '../../../widgets/network_image_widget.dart';
 
 class ExercrisesTrendCaloChart extends StatefulWidget {
-  ExercrisesTrendCaloChart({Key? key}) : super(key: key);
+  ExercrisesTrendCaloChart(
+      {Key? key,
+      this.showAddButton = true,
+      this.gutterGhost = false,
+      this.periodFilterType = 1})
+      : super(key: key);
+  final bool showAddButton;
+  final bool gutterGhost;
+  final int periodFilterType;
 
   @override
   ExercrisesTrendCaloChartState createState() =>
@@ -37,28 +47,57 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
-  int periodFilterType = 1;
+  late int periodFilterType;
 
   int? touchIndex;
 
+  late bool showAddButton;
+  late bool gutterGhost;
+
   @override
   void initState() {
-    periodFilterType =
-        ExercrisesDetailTabbarController.of(context)!.periodFilterType;
+    periodFilterType = widget.periodFilterType;
+    showAddButton = widget.showAddButton;
+    gutterGhost = widget.gutterGhost;
+
+    final controller = ExercrisesDetailTabbarController.of(context);
+    if (controller != null) {
+      if (controller.periodFilterType != periodFilterType) {
+        periodFilterType = controller.periodFilterType;
+      }
+    } else {
+      Console.log('ExercrisesDetailTabbarController is null');
+    }
+
     super.initState();
   }
 
+  @override
+  void didUpdateWidget(ExercrisesTrendCaloChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.periodFilterType != widget.periodFilterType) {
+      periodFilterType = widget.periodFilterType;
+      _refresh();
+    }
+  }
+
   reloadData(int periodFilter) {
-    periodFilterType = periodFilter;
-    _refresh();
+    if (periodFilterType != periodFilter) {
+      setState(() {
+        periodFilterType = periodFilter;
+        _refresh();
+      });
+    }
   }
 
   Future<bool> _refresh() async {
-    BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchCaloTrend(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-      periodFilterType: periodFilterType.toString(),
-    ));
+    if (currentContext != null) {
+      BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchCaloTrend(
+        currentDateTime:
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        periodFilterType: periodFilterType.toString(),
+      ));
+    }
 
     return true;
   }
@@ -102,44 +141,47 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                             Text(R.string.xu_huong_dot_calo.tr(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w700)),
-                            GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                    barrierColor: R.color.color0xff003F38
-                                        .withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => InputCalo(
-                                        title: periodFilterType == 1 ||
-                                                periodFilterType == 2
-                                            ? R.string
-                                                .nang_luong_dot_chay_tren_ngay
-                                                .tr()
-                                            : R.string
-                                                .nang_luong_dot_chay_tren_tuan
-                                                .tr(),
-                                        callback: (number) {
-                                          submitTarget(double.parse(number));
-                                        }));
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      R.drawable.ic_circle_plus_exe,
-                                      width: 24,
-                                      height: 24,
+                            showAddButton
+                                ? GestureDetector(
+                                    onTap: () {
+                                      showDialog(
+                                          barrierColor: R.color.color0xff003F38
+                                              .withOpacity(0.5),
+                                          context: context,
+                                          builder: (_) => InputCalo(
+                                              title: periodFilterType == 1 ||
+                                                      periodFilterType == 2
+                                                  ? R.string
+                                                      .nang_luong_dot_chay_tren_ngay
+                                                      .tr()
+                                                  : R.string
+                                                      .nang_luong_dot_chay_tren_tuan
+                                                      .tr(),
+                                              callback: (number) {
+                                                submitTarget(
+                                                    double.parse(number));
+                                              }));
+                                    },
+                                    child: Container(
+                                      color: R.color.transparent,
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            R.drawable.ic_circle_plus_exe,
+                                            width: 24,
+                                            height: 24,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(R.string.muc_tieu_moi.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.mainColor,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w700)),
+                                        ],
+                                      ),
                                     ),
-                                    SizedBox(width: 4),
-                                    Text(R.string.muc_tieu_moi.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ],
-                                ),
-                              ),
-                            ),
+                                  )
+                                : SizedBox(),
                           ],
                         ),
                         SizedBox(height: 20),
@@ -234,10 +276,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                             showPopupWeight();
                                           } else {
                                             Navigator.pushNamed(context,
-                                                NavigatorName.add_exercrises,
-                                                arguments: {
-                                                  'type': 'input',
-                                                });
+                                                NavigatorName.exercrise_add_v2);
                                           }
                                         },
                                       )
@@ -300,7 +339,7 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                       ])
                               ],
                             )),
-                        SizedBox(height: 16),
+                        gutterGhost ? SizedBox() : SizedBox(height: 16)
                       ]),
                 );
         }));
@@ -368,13 +407,14 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
-        width: 36,
         height: 200,
+        margin: EdgeInsets.only(right: 5),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(number.length, (index) {
               return Text(formatNumber(number[index]),
+                  maxLines: 1,
                   style: TextStyle(
                       fontSize: 14,
                       color: R.color.black,

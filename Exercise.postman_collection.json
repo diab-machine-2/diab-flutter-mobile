@@ -1,0 +1,415 @@
+{
+	"info": {
+		"_postman_id": "3ca746e8-b739-4014-b545-9bb414ceb90f",
+		"name": "Exercise",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17232120",
+		"_collection_link": "https://speeding-satellite-641077.postman.co/workspace/ATDS~14549178-b4f8-4a92-a7ee-571654061a13/collection/17232120-3ca746e8-b739-4014-b545-9bb414ceb90f?action=share&source=collection_link&creator=17232120"
+	},
+	"item": [
+		{
+			"name": "Exercise",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "date",
+							"value": "1745294677",
+							"type": "text"
+						},
+						{
+							"key": "note",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].exerciseId",
+							"value": "c1c19897-750c-48ee-a21d-e46588e94d41",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].seq",
+							"value": "16",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].description",
+							"value": "Cường độ cao",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].duration",
+							"value": "60.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].burnedCalorie",
+							"value": "783.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[1].exerciseId",
+							"value": "27e0fa89-bd5e-4a02-8fe5-4bf54c221b3b",
+							"type": "text"
+						},
+						{
+							"key": "exercises[1].seq",
+							"value": "5",
+							"type": "text"
+						},
+						{
+							"key": "exercises[1].description",
+							"value": "Cường độ trung bình",
+							"type": "text"
+						},
+						{
+							"key": "exercises[1].duration",
+							"value": "60.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[1].burnedCalorie",
+							"value": "485.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[2].exerciseId",
+							"value": "71113cba-bc60-42c1-8b69-70879acb62f1",
+							"type": "text"
+						},
+						{
+							"key": "exercises[2].seq",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "exercises[2].description",
+							"value": "Cường độ trung bình",
+							"type": "text"
+						},
+						{
+							"key": "exercises[2].duration",
+							"value": "60.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[2].burnedCalorie",
+							"value": "367.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].IntensityId",
+							"value": "3f29e372-1179-477e-b183-33356a28ece5",
+							"type": "text"
+						},
+						{
+							"key": "exercises[1].IntensityId",
+							"value": "c13b3b3d-4b25-41a6-bb0a-54770a1f6123",
+							"type": "text"
+						},
+						{
+							"key": "exercises[2].IntensityId",
+							"value": "d79b986e-82cf-48ff-aac2-d77cc0c77012",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/App/Exercise/Input",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Exercise",
+						"Input"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Exercise",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "exercises[0].exerciseId",
+							"value": "c1c19897-750c-48ee-a21d-e46588e94d41",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].seq",
+							"value": "16",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].description",
+							"value": "Cường độ cao",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].duration",
+							"value": "60.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].burnedCalorie",
+							"value": "783.0",
+							"type": "text"
+						},
+						{
+							"key": "exercises[0].IntensityId",
+							"value": "c13b3b3d-4b25-41a6-bb0a-54770a1f6123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/App/Exercise/Input/621f81eb-05f2-40e4-d0fc-08dd81550395",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Exercise",
+						"Input",
+						"621f81eb-05f2-40e4-d0fc-08dd81550395"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Intensity",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/App/Exercise/Intensity",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Exercise",
+						"Intensity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lessson",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/App/Lesson/Support/Exercise",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Lesson",
+						"Support",
+						"Exercise"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Category",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/App/Exercise/Category?takeAll=true",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Exercise",
+						"Category"
+					],
+					"query": [
+						{
+							"key": "takeAll",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Summary",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/App/Exercise/Summary?currentDateTime=1745307916",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Exercise",
+						"Summary"
+					],
+					"query": [
+						{
+							"key": "currentDateTime",
+							"value": "1745307916"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Index",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/App/Exercise/Analysis/Index?id=00349dec-7826-438a-97a0-44f339cce267",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Exercise",
+						"Analysis",
+						"Index"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "00349dec-7826-438a-97a0-44f339cce267"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "HealthTrend",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/App/Exercise/Analysis/HealthTrend?CurrentDateTime=1745307916&PeriodFilterType=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"App",
+						"Exercise",
+						"Analysis",
+						"HealthTrend"
+					],
+					"query": [
+						{
+							"key": "CurrentDateTime",
+							"value": "1745307916"
+						},
+						{
+							"key": "PeriodFilterType",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
