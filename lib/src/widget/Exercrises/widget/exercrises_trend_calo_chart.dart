@@ -91,6 +91,9 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
   }
 
   Future<bool> _refresh() async {
+    // Reset touchIndex when refreshing to avoid out of bounds access
+    touchIndex = null;
+
     if (currentContext != null) {
       BlocProvider.of<ExercrisesBloc>(currentContext).add(FetchCaloTrend(
         currentDateTime:
@@ -294,7 +297,10 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                           child: Row(
                                             children: [
                                               NetWorkImageWidget(
-                                                imageUrl: touchIndex == null
+                                                imageUrl: touchIndex == null ||
+                                                        touchIndex! >=
+                                                            model.trendItems
+                                                                .items.length
                                                     ? model
                                                             .trendItems
                                                             .items[model
@@ -318,7 +324,10 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                                 width: 8,
                                               ),
                                               Text(
-                                                  touchIndex == null
+                                                  touchIndex == null ||
+                                                          touchIndex! >=
+                                                              model.trendItems
+                                                                  .items.length
                                                       ? model
                                                           .trendItems
                                                           .items[model
@@ -466,7 +475,8 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                           touchTooltipData: BarTouchTooltipData(
                             fitInsideHorizontally: true,
                             fitInsideVertically: true,
-                            tooltipBgColor: touchIndex == null
+                            tooltipBgColor: touchIndex == null ||
+                                    touchIndex! >= model.trendItems.items.length
                                 ? toColor(model
                                     .trendItems
                                     .items[model.trendItems.items.length - 1]
@@ -506,7 +516,13 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
                                 event is! FlPanEndEvent) {
                               final value =
                                   barTouch!.spot!.touchedBarGroupIndex;
-                              touchIndex = value.toInt();
+                              final newTouchIndex = value.toInt();
+                              // Only set touchIndex if it's within bounds
+                              if (newTouchIndex >= 0 &&
+                                  newTouchIndex <
+                                      model.trendItems.items.length) {
+                                touchIndex = newTouchIndex;
+                              }
                             }
                             setState(() {});
                           }),
@@ -599,7 +615,9 @@ class ExercrisesTrendCaloChartState extends State<ExercrisesTrendCaloChart>
     // final color = toColor(model.trendItems.items[index].color);
     return BarChartGroupData(
       x: index,
-      showingTooltipIndicators: touchIndex == index ||
+      showingTooltipIndicators: (touchIndex != null &&
+                  touchIndex! < model.trendItems.items.length &&
+                  touchIndex == index) ||
               (touchIndex == null && index == model.trendItems.items.length - 1)
           ? [0]
           : [],
