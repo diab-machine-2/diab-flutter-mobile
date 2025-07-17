@@ -102,9 +102,9 @@ class RevenueCatService {
     }
 
     try {
-      _currentAppUserId = userId;
+      _currentAppUserId = Platform.isIOS ? "ios-$userId" : "android-$userId";
 
-      final result = await Purchases.logIn(userId);
+      final result = await Purchases.logIn(_currentAppUserId!);
       log('[SUBSCRIPTION] User logged in: ${result.customerInfo}');
     } on PlatformException catch (e) {
       debugPrint('[SUBSCRIPTION] Error logging in: ${e.message}');
