@@ -49,6 +49,7 @@ class Colors {
   Color get greenLight => Color(0xff9CD9B8);
   Color get redLight => Color(0xffFFCDD2);
   Color get red => Color(0xffE53935);
+  Color get red_2 => Color(0xffD02424);
   Color get greenbg => Color(0xffE6F6ED);
   Color get gray => Color(0xffA1A3A6);
   Color get gray_btn => Color(0xffE4E4E7);

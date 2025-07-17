@@ -182,7 +182,7 @@ class _ExercrisesDetailTabbarControllerState
     } else {
       bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
       if (hasHealthConnection == true) {
-        Navigator.pushNamed(context, NavigatorName.add_exercrises,
+        Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
             arguments: {'type': 'input'});
       } else {
         String healthIcon = Platform.isIOS
@@ -240,7 +240,7 @@ class _ExercrisesDetailTabbarControllerState
                         textColor: Color(0xff249B92),
                         title: 'Nhập thủ công',
                         onPressed: () => Navigator.pushNamed(
-                            context, NavigatorName.add_exercrises,
+                            context, NavigatorName.exercrise_add_v2,
                             arguments: {'type': 'input'}),
                       ),
                       SizedBox(height: 15),

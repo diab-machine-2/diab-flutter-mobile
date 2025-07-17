@@ -147,7 +147,7 @@ class Utils {
       String? contentText,
       String? submitText,
       VoidCallback? submitCallback,
-      bool dismissible: false}) {
+      bool dismissible = false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
@@ -180,7 +180,7 @@ class Utils {
       Widget? contentWidget,
       String? submitText,
       VoidCallback? submitCallback,
-      bool dismissible: false}) {
+      bool dismissible = false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,

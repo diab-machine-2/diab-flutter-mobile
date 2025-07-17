@@ -256,7 +256,7 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                                             showPopupWeight();
                                           } else {
                                             Navigator.pushNamed(context,
-                                                NavigatorName.add_exercrises,
+                                                NavigatorName.exercrise_add_v2,
                                                 arguments: {
                                                   'type': 'input',
                                                 });

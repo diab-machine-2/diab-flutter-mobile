@@ -492,7 +492,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 }
 
-void showPopupWeight({String? nextRoute, dynamic args}) {
+void showPopupWeight({String? nextRoute, dynamic args, bool? hasExerciseData}) {
   showDialog(
     barrierColor: R.color.color0xff003F38.withOpacity(0.5),
     context: navigatorKey.currentContext!,
@@ -505,9 +505,15 @@ void showPopupWeight({String? nextRoute, dynamic args}) {
             await UserClient()
                 .updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
-            Navigator.pushNamed(navigatorKey.currentContext!,
-                nextRoute ?? NavigatorName.add_exercrises,
-                arguments: args ?? {'type': 'input'});
+
+            if (hasExerciseData != null && hasExerciseData) {
+              Navigator.pushNamed(navigatorKey.currentContext!,
+                  NavigatorName.exercrise_dashboard);
+            } else {
+              Navigator.pushNamed(navigatorKey.currentContext!,
+                  nextRoute ?? NavigatorName.exercrise_add_v2,
+                  arguments: args ?? {'type': 'input'});
+            }
             BotToast.closeAllLoading();
           } catch (e, _) {
             BotToast.closeAllLoading();
