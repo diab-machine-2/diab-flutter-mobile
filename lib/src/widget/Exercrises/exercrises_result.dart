@@ -609,12 +609,16 @@ class _ExercisesResultState extends State<ExercisesResult>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Text(
-                      exercise.category ?? 'Hoạt động',
-                      style: TextStyle(
-                        color: R.color.greenGradientBottom,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        exercise.category ?? 'Hoạt động',
+                        style: TextStyle(
+                          color: R.color.greenGradientBottom,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     Padding(
