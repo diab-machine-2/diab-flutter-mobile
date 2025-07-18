@@ -15,6 +15,7 @@ class HomeLesson extends StatelessWidget {
     required this.onLike,
     required this.onComment,
     required this.onShare,
+    this.showGutter = false,
   });
 
   final List<LessonModel> lessons;
@@ -23,6 +24,7 @@ class HomeLesson extends StatelessWidget {
   final OnLessonTap onLike;
   final OnLessonTap onComment;
   final OnLessonTap onShare;
+  final bool showGutter;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,23 @@ class HomeLesson extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           final lesson = lessons[index];
+          if (showGutter) {
+            // Add padding to the first and last items
+            // to create a gutter effect
+            if (index == 0) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: _buildLessonItem(lesson, extraTitleHeight),
+              );
+            }
+            if (index == lessons.length - 1) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: _buildLessonItem(lesson, extraTitleHeight),
+              );
+            }
+          }
+          // For all other items, no padding
           return _buildLessonItem(lesson, textScaleFactor);
         },
         separatorBuilder: (context, index) {

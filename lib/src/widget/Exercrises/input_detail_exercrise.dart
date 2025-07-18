@@ -501,7 +501,7 @@ class _InputDetailExercrisesControllerState
       final duration = selectedHour * 60 + selectedMinute;
       BotToast.showLoading();
       final response = await ExercrisesClient()
-          .fetchCalories(categoryId, intensityId, activeId, duration);
+          .fetchCalories(categoryId, intensityId, duration);
       BotToast.closeAllLoading();
       setState(() {
         calorisesNumber = response['calories'];

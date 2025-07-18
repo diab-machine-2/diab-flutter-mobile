@@ -181,11 +181,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       isLoading = false;
     });
     if (result) {
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
-      Navigator.of(context)
-          .popUntil((route) => route.settings.name == NavigatorName.tabbar);
-      Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
+      // Observable.instance
+      //     .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
+      // Navigator.of(context)
+      //     .popUntil((route) => route.settings.name == NavigatorName.tabbar);
+      // Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
       Message.showToastMessage(
           context, "Đồng bộ chỉ số đường huyết thành công!");
       Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
