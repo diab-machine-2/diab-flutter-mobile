@@ -71,8 +71,44 @@ class ExercrisesBloc extends Bloc<ExercrisesEvent, ExercrisesState> {
     }
   }
 
+  bool _isFetchingCategories = false;
+  ExercrisesListCategoryModel? _cachedCategories;
+
   Stream<ExercrisesState> fetchCategory(
       int? page, List<ExercrisesCategoryModel>? selectedModel) async* {
+    if (_isFetchingCategories) {
+      return;
+    }
+
+    // Return cached data if available and it's the first page
+    if (page == 1 && _cachedCategories != null) {
+      yield ExercrisesCategoryModelLoaded(
+          category: _cachedCategories!, selectedModel: selectedModel ?? []);
+      return;
+    }
+
+    try {
+      _isFetchingCategories = true;
+      final client = ExercrisesClient();
+      var model = await client.fetchCategory(page);
+
+      // Cache the result for first page
+      if (page == 1) {
+        _cachedCategories = model.inputs;
+      }
+
+      yield ExercrisesCategoryModelLoaded(
+          category: model.inputs, selectedModel: selectedModel ?? []);
+    } catch (e, _) {
+      if (e is Error) {
+        yield ExercrisesError(message: e.message);
+      } else {
+        yield ExercrisesError(
+            message: R.string.error_can_not_connect_to_server.tr());
+      }
+    } finally {
+      _isFetchingCategories = false;
+    }
     try {
       final client = ExercrisesClient();
       var model = await client.fetchCategory(page);
