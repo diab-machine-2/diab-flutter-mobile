@@ -644,31 +644,23 @@ class _SubscriptionOptionsBottomSheetState
   //     final hasExpiration = customerInfo.allExpirationDates.containsKey(productId);
   //     final expirationDate = customerInfo.allExpirationDates[productId];
   //     final purchaseDate = customerInfo.allPurchaseDates[productId];
-
   //     log('[SUBSCRIPTION] [DEBUG] === SPECIFIC PRODUCT ANALYSIS ===');
   //     log('[SUBSCRIPTION] [DEBUG] Product ID: $productId');
   //     log('[SUBSCRIPTION] [DEBUG] Has Product: $hasProduct');
   //     log('[SUBSCRIPTION] [DEBUG] Has Expiration Entry: $hasExpiration');
   //     log('[SUBSCRIPTION] [DEBUG] Expiration Date: $expirationDate');
   //     log('[SUBSCRIPTION] [DEBUG] Purchase Date: $purchaseDate');
-
   //     // Check if this is a subscription vs non-consumable
   //     if (expirationDate == null && hasProduct) {
   //       log('[SUBSCRIPTION] [DEBUG] ⚠️  POTENTIAL ISSUE: Product has null expiration date');
   //       log('[SUBSCRIPTION] [DEBUG] ⚠️  This suggests the product might be configured as non-consumable instead of subscription');
   //       log('[SUBSCRIPTION] [DEBUG] ⚠️  Check App Store Connect product configuration');
   //     }
-
-  //     // Check for any non-subscription transactions for this product
   //     for (final transaction in customerInfo.nonSubscriptionTransactions) {
-  //       if (transaction.productIdentifier == productId) {
-  //         log('[SUBSCRIPTION] [DEBUG] Found non-subscription transaction for $productId:');
-  //         log('[SUBSCRIPTION] [DEBUG] - Transaction ID: ${transaction.transactionIdentifier}');
   //         log('[SUBSCRIPTION] [DEBUG] - Revenue Cat ID: ${transaction.revenueCatIdentifier}');
   //         log('[SUBSCRIPTION] [DEBUG] - Purchase Date: ${transaction.purchaseDate}');
   //       }
   //     }
-
   //     log('[SUBSCRIPTION] [DEBUG] === VALIDATION RESULTS ===');
   //     final hasActiveEntitlements = customerInfo.entitlements.active.isNotEmpty;
   //     final hasActiveSubscriptions = customerInfo.activeSubscriptions.isNotEmpty;
@@ -686,7 +678,6 @@ class _SubscriptionOptionsBottomSheetState
   //     } else {
   //       log('[SUBSCRIPTION] [DEBUG] ✅ Purchase validation should pass');
   //     }
-
   //   } catch (e) {
   //     log('[SUBSCRIPTION] [DEBUG] Error during iOS debug analysis: $e');
   //   }
