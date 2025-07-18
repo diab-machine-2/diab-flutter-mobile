@@ -20,11 +20,13 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   DateTime? selectedDate = DateTime.now();
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
+  ValueNotifier<DateTime> selectedDateNotifier = ValueNotifier(DateTime.now());
 
   @override
   void initState() {
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
+      selectedDateNotifier.value = widget.initDate!;
       selectedHour = widget.initDate!.hour;
       selectedMinute = widget.initDate!.minute;
     }
@@ -78,6 +80,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
                           selectedDate = datetime;
+                          selectedDateNotifier.value = datetime!;
                         }),
                     Row(
                       children: [
@@ -92,13 +95,20 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       ],
                     ),
                     SizedBox(height: 20),
-                    CustomTimePicker(
-                        selectedHour: selectedHour,
-                        selectedMinute: selectedMinute,
-                        callback: (hour, minute) {
-                          selectedHour = hour ?? DateTime.now().hour;
-                          selectedMinute = minute ?? DateTime.now().minute;
-                        }),
+                    ValueListenableBuilder<DateTime>(
+                      valueListenable: selectedDateNotifier,
+                      builder: (context, selectedDate, _) {
+                        return CustomTimePicker(
+                          selectedHour: selectedHour,
+                          selectedMinute: selectedMinute,
+                          selectedDate: selectedDate,
+                          callback: (hour, minute) {
+                            selectedHour = hour ?? DateTime.now().hour;
+                            selectedMinute = minute ?? DateTime.now().minute;
+                          },
+                        );
+                      },
+                    ),
                     SizedBox(height: 20),
                     Row(children: [
                       SizedBox(width: 16),
@@ -130,6 +140,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 selectedDate!.day,
                                 selectedHour,
                                 selectedMinute);
+
+                            selectedDateNotifier.value = selectedDate!;
 
                             widget.callback!(selectedDate);
 
@@ -167,9 +179,15 @@ typedef TimeHourCallback = Function(int?, int?);
 class CustomTimePicker extends StatefulWidget {
   final int? selectedHour;
   final int? selectedMinute;
+  final DateTime selectedDate;
   final TimeHourCallback? callback;
 
-  CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
+  CustomTimePicker({
+    this.selectedHour,
+    this.selectedMinute,
+    required this.selectedDate,
+    this.callback,
+  });
 
   @override
   _CustomTimePickerState createState() => _CustomTimePickerState();
@@ -180,22 +198,96 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   FixedExtentScrollController? minuteController;
   int? selectedHour = 1;
   int? selectedMinute = 1;
+  List<int> availableHours = [];
+  List<int> availableMinutes = [];
 
   @override
   void initState() {
     super.initState();
+    _updateAvailableTimes();
+  }
+
+  @override
+  void didUpdateWidget(covariant CustomTimePicker oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!isSameDate(oldWidget.selectedDate, widget.selectedDate)) {
+      _updateAvailableTimes();
+    }
+  }
+
+  bool isSameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  void _updateAvailableTimes() {
     final now = DateTime.now();
-    selectedHour = now.hour;
-    selectedMinute = now.minute;
-    if (widget.selectedHour != null) {
-      selectedHour = widget.selectedHour;
+    final isToday = isSameDate(widget.selectedDate, now);
+
+    // Giờ khả dụng
+    availableHours = List.generate(isToday ? now.hour + 1 : 24, (i) => i);
+
+    int newSelectedHour = widget.selectedHour ?? (isToday ? now.hour : 0);
+    if (!availableHours.contains(newSelectedHour)) {
+      newSelectedHour = availableHours.last;
     }
-    if (widget.selectedMinute != null) {
-      selectedMinute = widget.selectedMinute;
+
+    // Phút khả dụng
+    final isCurrentHour = isToday && newSelectedHour == now.hour;
+    availableMinutes = List.generate(isCurrentHour ? now.minute + 1 : 60, (i) => i);
+
+    int newSelectedMinute = widget.selectedMinute ?? (isCurrentHour ? now.minute : 0);
+    if (!availableMinutes.contains(newSelectedMinute)) {
+      newSelectedMinute = availableMinutes.last;
     }
-    hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController =
-        FixedExtentScrollController(initialItem: selectedMinute!);
+
+    // Cập nhật giá trị đã chọn
+    selectedHour = newSelectedHour;
+    selectedMinute = newSelectedMinute;
+
+    // Tạo controller mới đúng vị trí
+    hourController?.dispose();
+    minuteController?.dispose();
+
+    hourController = FixedExtentScrollController(
+      initialItem: availableHours.indexOf(selectedHour!),
+    );
+    hourController!.jumpToItem(availableHours.indexOf(selectedHour!));
+    minuteController = FixedExtentScrollController(
+      initialItem: availableMinutes.indexOf(selectedMinute!),
+    );
+    minuteController!.jumpToItem(availableMinutes.indexOf(selectedMinute!));
+
+    // Gọi callback để thông báo thay đổi
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.callback?.call(selectedHour, selectedMinute);
+    });
+
+    setState(() {});
+  }
+
+
+  void _updateMinutesBasedOnHour() {
+    final now = DateTime.now();
+    final isToday = isSameDate(widget.selectedDate, now);
+    final isCurrentHour = isToday && selectedHour == now.hour;
+
+    availableMinutes =
+        List.generate(isCurrentHour ? now.minute + 1 : 60, (i) => i);
+    if (!availableMinutes.contains(selectedMinute)) {
+      selectedMinute = availableMinutes.last;
+    }
+
+    minuteController?.dispose();
+    minuteController = FixedExtentScrollController(
+      initialItem: availableMinutes.indexOf(selectedMinute!),
+    );
+  }
+
+  @override
+  void dispose() {
+    hourController?.dispose();
+    minuteController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -210,13 +302,15 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 scrollController: hourController,
                 selectionOverlay: null,
                 onSelectedItemChanged: (value) {
+                  if (value >= availableHours.length) return;
                   setState(() {
-                    selectedHour = value;
-                    widget.callback!(selectedHour, selectedMinute);
+                    selectedHour = availableHours[value];
+                    _updateMinutesBasedOnHour();
+                    widget.callback?.call(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
-                children: List<int>.generate(24, (i) => i)
+                children: availableHours
                     .map((e) => Center(
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
@@ -235,13 +329,14 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 scrollController: minuteController,
                 selectionOverlay: null,
                 onSelectedItemChanged: (value) {
+                  if (value >= availableMinutes.length) return;
                   setState(() {
-                    selectedMinute = value;
-                    widget.callback!(selectedHour, selectedMinute);
+                    selectedMinute = availableMinutes[value];
+                    widget.callback?.call(selectedHour, selectedMinute);
                   });
                 },
                 itemExtent: 47.0,
-                children: List<int>.generate(60, (i) => i)
+                children: availableMinutes
                     .map((e) => Center(
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(

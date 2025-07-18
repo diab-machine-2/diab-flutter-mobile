@@ -127,7 +127,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'Emotion_change_data' ||
         notifyName == 'food_change_data' ||
         notifyName == 'hba1c_change_data' ||
-        notifyName == 'goal_calo_changed') {
+        notifyName == 'goal_calo_changed' ||
+        notifyName == 'active_change_data_v2') {
       _controller.requestRefresh();
     }
   }
@@ -715,7 +716,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:
-        await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+        await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;
@@ -784,6 +785,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         break;
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);
+        break;
+      default:
         break;
     }
   }

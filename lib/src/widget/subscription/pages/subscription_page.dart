@@ -186,13 +186,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
       log('[SUBSCRIPTION] customerInfo.allPurchasedProductIdentifiers: ${customerInfo.allPurchasedProductIdentifiers}');
       // log expiration date
       log('[SUBSCRIPTION] customerInfo.allExpirationDates: ${customerInfo.allExpirationDates}');
-      return SubscriptionPaymentState.active(
-        entitlementId: '-',
-        expirationDate: DateTime.now().add(Duration(days: 30)),
-        productId: customerInfo.allPurchasedProductIdentifiers.isNotEmpty
-            ? customerInfo.allPurchasedProductIdentifiers.first
-            : '-',
-      );
+      if (customerInfo.purchasedProductIdentifier != null) {
+        return SubscriptionPaymentState.active(
+          entitlementId: '-',
+          expirationDate: DateTime.now().add(Duration(days: 180)),
+          productId: customerInfo.purchasedProductIdentifier!,
+        );
+      }
     }
 
     // No active subscriptions
@@ -216,6 +216,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         (package) => package.storeProduct.identifier == identifier,
       );
 
+      if (package != null) {
+        return package.storeProduct.title;
+      }
+    }
+    if (customerInfo?.allPurchasedProductIdentifiers.isNotEmpty ?? false) {
+      final productId = customerInfo?.allPurchasedProductIdentifiers.first;
+      final package = offering?.availablePackages.firstWhereOrNull(
+        (package) => package.storeProduct.identifier == productId,
+      );
       if (package != null) {
         return package.storeProduct.title;
       }
