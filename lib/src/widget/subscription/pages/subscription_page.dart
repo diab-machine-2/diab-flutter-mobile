@@ -229,6 +229,15 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         return package.storeProduct.title;
       }
     }
+    if (customerInfo?.allPurchasedProductIdentifiers.isNotEmpty ?? false) {
+      final productId = customerInfo?.allPurchasedProductIdentifiers.first;
+      final package = offering?.availablePackages.firstWhereOrNull(
+        (package) => package.storeProduct.identifier == productId,
+      );
+      if (package != null) {
+        return package.storeProduct.title;
+      }
+    }
     return '';
   }
 
