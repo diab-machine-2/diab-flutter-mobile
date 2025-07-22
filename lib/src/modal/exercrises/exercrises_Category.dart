@@ -1,5 +1,7 @@
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/model/request/add_exercise_request.dart';
 import 'package:meta/meta.dart';
+
 @immutable
 class ExercrisesListCategoryModel {
   final List<ExercrisesCategoryModel> exerciseCategories;
@@ -38,6 +40,7 @@ class ExercrisesCategoryModel {
   final String? description;
   final int? order;
   final ImagesModel? cover;
+  final List<ExerciseDetail> exercises;
 
   ExercrisesCategoryModel({
     required this.categoryId,
@@ -51,6 +54,7 @@ class ExercrisesCategoryModel {
     required this.description,
     required this.order,
     required this.cover,
+    this.exercises = const [],
   });
   @override
   factory ExercrisesCategoryModel.fromJson(Map<String, dynamic> json) {
@@ -68,6 +72,9 @@ class ExercrisesCategoryModel {
         unit: json['unit'],
         description: json['description'],
         order: json['order'],
+        exercises: json['exercises'] == null
+            ? []
+            : ExerciseDetail.toList(json['exercises']),
         cover: json['cover'] == null
             ? (json['imageUrl'] == null
                 ? null

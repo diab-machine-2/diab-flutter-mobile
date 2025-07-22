@@ -127,7 +127,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         notifyName == 'Emotion_change_data' ||
         notifyName == 'food_change_data' ||
         notifyName == 'hba1c_change_data' ||
-        notifyName == 'goal_calo_changed') {
+        notifyName == 'goal_calo_changed' ||
+        notifyName == 'active_change_data_v2') {
       _controller.requestRefresh();
     }
   }
@@ -267,53 +268,53 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                             ..._buildSmartGoalWeekList(
                                 smartGoalList: _cubit.smartGoalWeekList),
                             const SizedBox(height: 16),
-                            SizedBox(
-                              width: 195.w,
-                              child: ButtonWidget(
-                                  title: R.string.create_smart_goal.tr(),
-                                  height: 48.w,
-                                  textSize: 16,
-                                  textColor: R.color.greenGradientBottom,
-                                  borderColor: R.color.greenGradientBottom,
-                                  backgroundColor: R.color.white,
-                                  onPressed: () async {
-                                    await TrackingManager.analytics.logEvent(
-                                      name: 'cta_button_clicked',
-                                      parameters: {
-                                        "screen_name": 'my_schedule',
-                                        'cta_button_name': 'cta_add_target',
-                                      },
-                                    );
-                                    if (DateUtil.isSameDay(
-                                        _cubit.currentDay,
-                                        DateTime.now().millisecondsSinceEpoch ~/
-                                            1000)) {
-                                      Observable.instance.notifyObservers([],
-                                          notifyName: Const.HIDE_OVERLAY_KEY);
-                                      await NavigationUtil.navigatePage(
-                                          context,
-                                          CreateGoalPage(
-                                              _cubit.smartGoalDayList));
-                                      //     _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
-                                    } else {
-                                      _showDialogConfirmCreateGoal(
-                                        context,
-                                        'Mục tiêu sẽ hiệu lực từ ngày ${convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')}, bạn có muốn tiếp tục?',
-                                        () async {
-                                          Observable.instance.notifyObservers(
-                                              [],
-                                              notifyName:
-                                                  Const.HIDE_OVERLAY_KEY);
-                                          await NavigationUtil.navigatePage(
-                                              context,
-                                              CreateGoalPage(
-                                                  _cubit.smartGoalDayList));
-                                          //         _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
-                                        },
-                                      );
-                                    }
-                                  }),
-                            ),
+                            // SizedBox(
+                            //   width: 195.w,
+                            //   child: ButtonWidget(
+                            //       title: R.string.create_smart_goal.tr(),
+                            //       height: 48.w,
+                            //       textSize: 16,
+                            //       textColor: R.color.greenGradientBottom,
+                            //       borderColor: R.color.greenGradientBottom,
+                            //       backgroundColor: R.color.white,
+                            //       onPressed: () async {
+                            //         await TrackingManager.analytics.logEvent(
+                            //           name: 'cta_button_clicked',
+                            //           parameters: {
+                            //             "screen_name": 'my_schedule',
+                            //             'cta_button_name': 'cta_add_target',
+                            //           },
+                            //         );
+                            //         if (DateUtil.isSameDay(
+                            //             _cubit.currentDay,
+                            //             DateTime.now().millisecondsSinceEpoch ~/
+                            //                 1000)) {
+                            //           Observable.instance.notifyObservers([],
+                            //               notifyName: Const.HIDE_OVERLAY_KEY);
+                            //           await NavigationUtil.navigatePage(
+                            //               context,
+                            //               CreateGoalPage(
+                            //                   _cubit.smartGoalDayList));
+                            //           //     _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
+                            //         } else {
+                            //           _showDialogConfirmCreateGoal(
+                            //             context,
+                            //             'Mục tiêu sẽ hiệu lực từ ngày ${convertToUTC(DateTime.now().millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy')}, bạn có muốn tiếp tục?',
+                            //             () async {
+                            //               Observable.instance.notifyObservers(
+                            //                   [],
+                            //                   notifyName:
+                            //                       Const.HIDE_OVERLAY_KEY);
+                            //               await NavigationUtil.navigatePage(
+                            //                   context,
+                            //                   CreateGoalPage(
+                            //                       _cubit.smartGoalDayList));
+                            //               //         _cubit.refreshData(isRefresh: true, keepCurrentDay: false);
+                            //             },
+                            //           );
+                            //         }
+                            //       }),
+                            // ),
                             if (widget.extendTabbar) SizedBox(height: 56.0),
                           ],
                         ),
@@ -715,7 +716,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise:
-        await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+        await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
         _cubit.refreshData(isRefresh: true);
         break;
@@ -784,6 +785,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         break;
       case ScheduleType.output_assessment:
         _showCoachingPopup(smartGoal);
+        break;
+      default:
         break;
     }
   }

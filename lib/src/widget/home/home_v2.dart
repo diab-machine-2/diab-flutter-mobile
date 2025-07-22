@@ -33,6 +33,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
+import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -54,6 +55,8 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../app.dart';
+import '../../repo/home/home_client.dart';
 import '../../service/rating_service.dart';
 import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -87,6 +90,7 @@ class _HomeControllerState extends State<HomeController>
   HomeModel? model;
   String _urlPopup = '';
   bool _haveInputGlucoseAlready = false;
+  bool _haveInputExerciseAlready = false;
   bool _haveInputBloodpressureAlready = false;
 
   bool _isActivityExpanded = false;
@@ -95,6 +99,8 @@ class _HomeControllerState extends State<HomeController>
 
   // trigger reload when complete lesson
   bool _isReloadLesson = false;
+
+  bool _hasExerciseData = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -112,6 +118,10 @@ class _HomeControllerState extends State<HomeController>
     }
     _firebaseSetup();
     _initHealthApp();
+    initTarget();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkExerciseData();
+    });
   }
 
   @override
@@ -119,6 +129,24 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance.removeObserver(this);
     _debouncer.dispose();
     super.dispose();
+  }
+
+  Future<void> initTarget() async {
+    var model = await UserClient().fetchGoalInfo();
+    if (model == null) return;
+    AppSettings.targetDuration = model.dailyTargetDuration ?? 0.0;
+    AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
+  }
+
+  Future<void> checkExerciseData() async {
+    final client = HomeClient();
+    final exerciseData = await client.fetchHomes();
+    bool isChecked = false;
+    if (exerciseData.exercise != null) {
+      isChecked = exerciseData.exercise!.isDataNotEmpty!;
+      _hasExerciseData = isChecked;
+    }
+    setState(() {});
   }
 
   void _initHealthApp() async {
@@ -326,7 +354,12 @@ class _HomeControllerState extends State<HomeController>
     // After add exercise
     if (notifyName == 'active_change_data') {
       _refresh();
-      _checkScreen(NavigatorName.detail_exercrises);
+      // _checkScreen(NavigatorName.detail_exercrises);
+      _checkScreen(NavigatorName.exercrise_dashboard);
+    }
+    if (notifyName == 'active_change_data_v2') {
+      _refresh();
+      // _checkScreen(NavigatorName.exercrise_result);
     }
     if (notifyName == 'food_change_data') {
       _refresh();
@@ -400,6 +433,7 @@ class _HomeControllerState extends State<HomeController>
     // _homeBloc.add(FetchHome());
     user = await UserClient().fetchUser();
     AppSettings.isReloadCurrentUserInfo = true;
+    checkExerciseData(); // To update hasExerciseData after sync from health connnect then pull to refresh
 
     _isDisplayedWelcome = false;
 
@@ -488,6 +522,13 @@ class _HomeControllerState extends State<HomeController>
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
             }
+            //
+            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
+                    true &&
+                state.model.measurements?.first.value1?.isNotEmpty == true &&
+                state.model.measurements?.first.value1 != "--";
+            _haveInputExerciseAlready =
+                state.model.activities?.isNotEmpty == true;
           }
 
           Widget activitiesW = HomeActivity(
@@ -661,6 +702,12 @@ class _HomeControllerState extends State<HomeController>
                                   !_haveInputBloodpressureAlready) {
                                 Navigator.of(context).pushNamed(NavigatorName
                                     .blood_pressure_intro_1st_page);
+                                return;
+                              }
+                              // case input exercise
+                              if (await _showExercriseAddBottomSheet(
+                                      routeName) ==
+                                  false) {
                                 return;
                               }
                               // others
@@ -1054,7 +1101,19 @@ class _HomeControllerState extends State<HomeController>
           return;
         }
         // others
-        Navigator.pushNamed(context, item.navigatorName, arguments: item.args);
+        // CHEAT CODE : Vận Động -> Vận Động Bước 1
+        if (item.title == "Vận động") {
+          if (_hasExerciseData) {
+            // disable diablog if user has already input exercise
+            showActivityInputMethodSelection();
+          } else {
+            Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
+          }
+          return;
+        } else {
+          Navigator.pushNamed(context, item.navigatorName,
+              arguments: item.args);
+        }
       },
     );
     showModalBottomSheet(
@@ -1074,7 +1133,9 @@ class _HomeControllerState extends State<HomeController>
 
   // return allow next route
   bool _checkWeightInputDialog(String? routeName, {dynamic args}) {
-    if (routeName == NavigatorName.add_exercrises) {
+    if (routeName == NavigatorName.exercrise_onboarding ||
+        routeName == NavigatorName.exercrise_add_v2 ||
+        routeName == NavigatorName.exercrise_dashboard) {
       if (AppSettings.userInfo?.weight == null ||
           AppSettings.userInfo!.weight == 0) {
         showPopupWeight(nextRoute: routeName, args: args);
@@ -1113,6 +1174,21 @@ class _HomeControllerState extends State<HomeController>
     return true;
   }
 
+  // show _showMaterialDialog
+  Future<bool> _showExercriseAddBottomSheet(String? routeName) async {
+    if (routeName == NavigatorName.exercrise_add_v2 ||
+        routeName == NavigatorName.exercrise_dashboard ||
+        routeName == NavigatorName.add_exercrises) {
+      if (_hasExerciseData) {
+        Navigator.pushNamed(context, NavigatorName.exercrise_dashboard);
+      } else {
+        Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
+      }
+      return false;
+    }
+    return true;
+  }
+
   void _launchInBrowser(String url) async {
     final uri = Uri.tryParse(url);
     if (uri == null) return;
@@ -1126,6 +1202,7 @@ class _HomeControllerState extends State<HomeController>
   Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalList? smartGoal, required String title}) async {
     // track event
+    Console.log('home_select_activity', title);
     final String eventName = "home_select_activity";
     TrackingManager.trackEvent(eventName, _screenName, params: {
       "object_title": title,
@@ -1178,9 +1255,8 @@ class _HomeControllerState extends State<HomeController>
         break;
       case ScheduleType.exercise:
       case ScheduleType.exercise_recommend:
-        await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+        await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
             arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
         break;
       case ScheduleType.exercise_movement:
         if (smartGoal?.exerciseData == null) break;

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
+import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -33,7 +34,12 @@ class FoodChartState extends State<FoodChart>
 
   @override
   void initState() {
-    periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
+    final controller = FoodDetailTabbarController.of(context);
+    if (controller != null) {
+      periodFilterType = controller.periodFilterType;
+    } else {
+      Console.log('FoodDetailTabbarController is null');
+    }
     super.initState();
   }
 

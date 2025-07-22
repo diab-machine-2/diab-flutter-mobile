@@ -138,7 +138,7 @@ class RequestHealthConnect extends StatelessWidget {
                         AppStorages.setHealthAppPermission(_hasPermission);
                         if (_hasPermission == true) {
                           Navigator.pop(context);
-                          callback();
+                          callback.call();
                           Message.showToastMessage(
                               context, "Đã hoàn thành kết nối với $appTitle");
                           Observable.instance.notifyObservers([],

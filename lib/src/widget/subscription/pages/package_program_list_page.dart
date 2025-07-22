@@ -1,7 +1,8 @@
 // Updated package_program_list_page.dart with phone validation
+// screens/programs_list_page.dart
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
@@ -11,10 +12,12 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/services/subscription_activate_service.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
@@ -194,9 +197,9 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
 class ProgramCard extends StatelessWidget {
   final PackageProgram program;
   final bool isBasicPackage;
+  final _subscriptionActivateService = SubscriptionActivateService();
 
-  const ProgramCard(
-      {Key? key, required this.program, required this.isBasicPackage})
+  ProgramCard({Key? key, required this.program, required this.isBasicPackage})
       : super(key: key);
 
   // Helper function to determine if we're on a mobile device
@@ -216,6 +219,28 @@ class ProgramCard extends StatelessWidget {
         programName: program.title);
     await subscriptionCubit.notifySubscriptionSuccess(
         phoneNumber: phoneNumber, request: request);
+  }
+
+  Future<bool> _activateSubscription(BuildContext context) async {
+    final accountId = AppSettings.userInfo?.accountId ?? '';
+    if (accountId.isEmpty) {
+      return false;
+    }
+
+    final packageId = program.id;
+
+    if (packageId == null) {
+      return false;
+    }
+
+    BotToast.showLoading();
+
+    // Use new subscription service for improved UX
+    final isActivated = await _subscriptionActivateService.activateSubscription(
+        accountId, packageId, context);
+
+    BotToast.closeAllLoading();
+    return isActivated;
   }
 
   Future<String> _validatePhoneAndShowDialog(BuildContext context) async {
@@ -451,6 +476,13 @@ class ProgramCard extends StatelessWidget {
                         title: program.title,
                         subtitle: R.string.basic_program_confirm.tr(),
                         onConfirm: () async {
+                          final isActivated =
+                              await _activateSubscription(context);
+                          if (isActivated == false) {
+                            Message.showToastMessage(
+                                context, R.string.activate_program_failed.tr());
+                            return;
+                          }
                           await SubscriptionNavigationMixin
                               .navigationKey.currentState
                               ?.pushNamed(
@@ -714,6 +746,13 @@ class ProgramCard extends StatelessWidget {
                           title: program.title,
                           subtitle: R.string.basic_program_confirm.tr(),
                           onConfirm: () async {
+                            final isActivated =
+                                await _activateSubscription(context);
+                            if (isActivated == false) {
+                              Message.showToastMessage(context,
+                                  R.string.activate_program_failed.tr());
+                              return;
+                            }
                             await SubscriptionNavigationMixin
                                 .navigationKey.currentState
                                 ?.pushNamed(

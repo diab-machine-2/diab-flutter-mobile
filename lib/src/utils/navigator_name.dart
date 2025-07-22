@@ -107,6 +107,15 @@ class NavigatorName {
   // New Glucose
   static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
   static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
+
+  // Exercrise Step Onboarding
+  static const String exercrise_onboarding = '/exercrise_onboarding';
+  static const String exercrise_dashboard = '/exercrise_dashboard';
+  static const String exercrise_step_detail_v2 = '/exercrise_step_detail_v2';
+  static const String exercrise_add_v2 = '/exercrise_add_v2';
+  static const String exercrise_select_category = '/exercrise_select_category';
+  static const String exercrise_result = '/exercrise_result';
+  static const String exercrise_guide = '/exercrise_guide';
   // BOOKING CLINIC
   static const String booking_clinic = '/booking_clinic';
   static const String other_diseases = '/other_diseases';
