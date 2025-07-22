@@ -1354,4 +1354,5 @@ class Strings {
   String get waiting_active_subscription_content_1 => 'waiting_active_subscription_content_1';
   String get waiting_active_subscription_content_2 => 'waiting_active_subscription_content_2';
   String get explore_program => 'explore_program';
+  String get activate_program_failed => 'activate_program_failed';
 }

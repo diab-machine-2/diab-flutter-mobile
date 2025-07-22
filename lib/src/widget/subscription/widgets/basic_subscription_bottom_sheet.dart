@@ -134,8 +134,8 @@ class _SubscriptionOptionsBottomSheetState
 
         // First validate that no other user has active subscriptions
         // iOS package is non-subscription, so we can purchase it as much as we want
-        final canPurchase =
-          Platform.isIOS || await RevenueCatService.validateNoOtherUserHasActiveSubscription();
+        final canPurchase = Platform.isIOS ||
+            await RevenueCatService.validateNoOtherUserHasActiveSubscription();
 
         if (!canPurchase) {
           setState(() {
