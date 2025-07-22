@@ -135,6 +135,7 @@ class _HomeControllerState extends State<HomeController>
     var model = await UserClient().fetchGoalInfo();
     if (model == null) return;
     AppSettings.targetDuration = model.dailyTargetDuration ?? 0.0;
+    AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
   }
 
   Future<void> checkExerciseData() async {

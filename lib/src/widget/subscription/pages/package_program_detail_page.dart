@@ -1,16 +1,20 @@
 // screens/package_program_detail_page.dart
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/services/subscription_activate_service.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
@@ -31,11 +35,34 @@ class ProgramDetailPage extends StatefulWidget {
 
 class _ProgramDetailPageState extends State<ProgramDetailPage> {
   late SubscriptionCubit _cubit;
+  final _subscriptionActivateService = SubscriptionActivateService();
 
   @override
   void initState() {
     super.initState();
     _cubit = context.read<SubscriptionCubit>();
+  }
+
+  Future<bool> _activateSubscription(BuildContext context) async {
+    final accountId = AppSettings.userInfo?.accountId ?? '';
+    if (accountId.isEmpty) {
+      return false;
+    }
+
+    final packageId = widget.program.id;
+
+    if (packageId == null) {
+      return false;
+    }
+
+    BotToast.showLoading();
+
+    // Use new subscription service for improved UX
+    final isActivated = await _subscriptionActivateService.activateSubscription(
+        accountId, packageId, context);
+
+    BotToast.closeAllLoading();
+    return isActivated;
   }
 
   @override
@@ -82,6 +109,13 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                               title: widget.program.title,
                               subtitle: R.string.basic_program_confirm.tr(),
                               onConfirm: () async {
+                                final isActivated =
+                                    await _activateSubscription(context);
+                                if (isActivated == false) {
+                                  Message.showToastMessage(context,
+                                      R.string.activate_program_failed.tr());
+                                  return;
+                                }
                                 await SubscriptionNavigationMixin
                                     .navigationKey.currentState
                                     ?.pushNamed(
