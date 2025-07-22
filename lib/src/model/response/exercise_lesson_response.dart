@@ -40,6 +40,9 @@ class ExerciseLesson {
   @JsonKey(name: "caloriesBurned")
   final double? caloriesBurned;
 
+  @JsonKey(name: "image")
+  final ExerciseImage? image;
+
   ExerciseLesson({
     this.id,
     this.name,
@@ -48,10 +51,30 @@ class ExerciseLesson {
     this.thumbnailUrl,
     this.duration,
     this.caloriesBurned,
+    this.image,
   });
 
   factory ExerciseLesson.fromJson(Map<String, dynamic> json) =>
       _$ExerciseLessonFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExerciseLessonToJson(this);
+}
+
+@JsonSerializable()
+class ExerciseImage {
+  @JsonKey(name: "id")
+  final String? id;
+
+  @JsonKey(name: "url")
+  final String? url;
+
+  ExerciseImage({
+    this.id,
+    this.url,
+  });
+
+  factory ExerciseImage.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseImageFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExerciseImageToJson(this);
 }
