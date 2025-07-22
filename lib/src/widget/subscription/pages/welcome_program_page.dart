@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -12,8 +10,6 @@ import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
-import 'package:medical/src/widget/subscription/services/subscription_activate_service.dart';
-import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class WelcomeProgramPage extends StatefulWidget {
@@ -29,43 +25,13 @@ class WelcomeProgramPage extends StatefulWidget {
 }
 
 class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
-  late SubscriptionCubit _cubit;
-  final _subscriptionActivateService = SubscriptionActivateService();
-  bool _isActivated = false;
-
   @override
   void initState() {
     super.initState();
-    _cubit = context.read<SubscriptionCubit>();
   }
 
   void dispose() {
     super.dispose();
-  }
-
-  Future<void> _activateSubscription() async {
-    final accountId = AppSettings.userInfo?.accountId ?? '';
-    if (accountId.isEmpty) {
-      return;
-    }
-
-    final packageId = widget.program.id;
-
-    if (packageId == null) {
-      return;
-    }
-
-    // Use new subscription service for improved UX
-    final result = await _subscriptionActivateService.activateSubscription(
-        accountId, packageId, context);
-
-    if (result) {
-      setState(() {
-        _isActivated = true;
-      });
-    } else {
-      // Handle activation failure if needed
-    }
   }
 
   void _navigateToHomeScreen() {
@@ -77,7 +43,7 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
 
   void _learnMoreAboutProgram() async {
     // Implement navigation to program details or info page
-    var result = await NavigationUtil.navigatePage(
+    await NavigationUtil.navigatePage(
       context,
       LessonDetailPage(
         lessonType: 1,
@@ -89,49 +55,6 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
           // );
         },
       ),
-    );
-  }
-
-  Widget _buildStartButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        InkWell(
-          onTap: () async {
-            await _activateSubscription();
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: R.color.white,
-            ),
-            child: Container(
-              height: 43,
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    R.color.greenGradientTop02,
-                    R.color.greenGradientBottom,
-                    R.color.greenGradientBottom,
-                  ],
-                ),
-              ),
-              child: Text(
-                R.string.start.tr(),
-                style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -356,7 +279,7 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
               ),
             ),
             GapH(24),
-            _isActivated ? _buildActivatedContent() : _buildStartButton(),
+            _buildActivatedContent()
           ],
         ),
       ),

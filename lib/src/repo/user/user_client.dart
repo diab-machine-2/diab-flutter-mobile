@@ -415,6 +415,7 @@ class UserClient extends FetchClient {
         'goalWeight': model.goalWeight
       });
       if (response.statusCode == 200) {
+        AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
         return true;
       } else {
         final error = Error.fromJson(response);

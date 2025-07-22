@@ -341,7 +341,7 @@ class _ExercisesResultState extends State<ExercisesResult>
       completedMinutes = exerciseSummary?.factDuration?.toInt() ?? 0;
       targetMinutes = exerciseSummary?.targetDuration?.toInt() ?? 0;
       completedCalories = exerciseSummary?.burnedCalories?.toInt() ?? 0;
-      targetCalories = AppSettings.userInfo?.energyGoal?.toInt() ?? 0;
+      targetCalories = AppSettings.targetBurnedCalorie.toInt();
 
       // Tính phần trăm hoàn thành (đảm bảo không vượt quá 100%)
       progressPercentage =
