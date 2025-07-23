@@ -43,6 +43,9 @@ class ExerciseLesson {
   @JsonKey(name: "image")
   final ExerciseImage? image;
 
+  @JsonKey(name: "lessonModule")
+  final ExerciseLessonModule? lessonModule;
+
   ExerciseLesson({
     this.id,
     this.name,
@@ -52,6 +55,7 @@ class ExerciseLesson {
     this.duration,
     this.caloriesBurned,
     this.image,
+    this.lessonModule,
   });
 
   factory ExerciseLesson.fromJson(Map<String, dynamic> json) =>
@@ -77,4 +81,27 @@ class ExerciseImage {
       _$ExerciseImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExerciseImageToJson(this);
+}
+
+@JsonSerializable()
+class ExerciseLessonModule {
+  @JsonKey(name: "id")
+  final String? id;
+
+  @JsonKey(name: "code")
+  final String? code;
+
+  @JsonKey(name: "name")
+  final String? name;
+
+  ExerciseLessonModule({
+    this.id,
+    this.code,
+    this.name,
+  });
+
+  factory ExerciseLessonModule.fromJson(Map<String, dynamic> json) =>
+      _$ExerciseLessonModuleFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExerciseLessonModuleToJson(this);
 }

@@ -7,6 +7,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
@@ -247,6 +248,14 @@ class _SubscriptionOptionsBottomSheetState
         // }
 
         if (purchased) {
+          await TrackingManager.trackEvent(
+            'program_subscribe',
+            'program_service',
+            params: {
+              'object_title': packageToPurchase.storeProduct.title,
+              'status': 'success',
+            },
+          );
           // Close the bottom sheet
           Navigator.pop(context);
 
@@ -266,6 +275,14 @@ class _SubscriptionOptionsBottomSheetState
           Observable.instance
               .notifyObservers([], notifyName: "refresh_subscription");
         } else {
+          await TrackingManager.trackEvent(
+            'program_subscribe',
+            'program_service',
+            params: {
+              'object_title': packageToPurchase.storeProduct.title,
+              'status': 'fail',
+            },
+          );
           // Show error
           _showPaymentFailedDialog(context);
         }
