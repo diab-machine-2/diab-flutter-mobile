@@ -1,3 +1,4 @@
+// Updated package_program_detail_page.dart with phone validation
 // screens/package_program_detail_page.dart
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -13,6 +14,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
+import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
 import 'package:medical/src/widget/subscription/services/subscription_activate_service.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
@@ -43,6 +45,19 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
     _cubit = context.read<SubscriptionCubit>();
   }
 
+  Future<String> _validatePhoneAndShowDialog() async {
+    var phoneNumber = AppSettings.userInfo?.phoneNumber;
+
+    // Check if phone number is empty or invalid
+    if (phoneNumber == null ||
+        phoneNumber.isEmpty ||
+        !_isValidPhoneNumber(phoneNumber)) {
+      phoneNumber = await PhoneValidationHelper.showDialogUpdatePhone(context);
+    }
+
+    return phoneNumber;
+  }
+
   Future<bool> _activateSubscription(BuildContext context) async {
     final accountId = AppSettings.userInfo?.accountId ?? '';
     if (accountId.isEmpty) {
@@ -63,6 +78,13 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
 
     BotToast.closeAllLoading();
     return isActivated;
+  }
+
+  bool _isValidPhoneNumber(String phoneNumber) {
+    const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+    final RegExp regExp = RegExp(pattern);
+    return regExp.hasMatch(phoneNumber) &&
+        (phoneNumber.length == 9 || phoneNumber.length == 10);
   }
 
   @override
@@ -103,6 +125,10 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           ? R.string.join_now.tr()
                           : R.string.consult_request.tr(),
                       onTap: () async {
+                        // Add phone validation before proceeding
+                        String phoneValid = await _validatePhoneAndShowDialog();
+                        if (phoneValid.isEmpty) return;
+
                         if (SubscriptionService.isBasicPackage(
                             _cubit.selectedPackage)) {
                           ProgramService.showPopupConfirmBasicSubscription(
@@ -140,8 +166,8 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                             servicePackage:
                                 subscriptionCubit.selectedPackage!.title,
                             programName: widget.program.title);
-                        await subscriptionCubit
-                            .notifySubscriptionSuccess(request);
+                        await subscriptionCubit.notifySubscriptionSuccess(
+                            phoneNumber: phoneValid, request: request);
 
                         ProgramService.showPopupRequestConsultSubscription(
                           context: context,
@@ -165,13 +191,6 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           onContact: () async {
                             SubscriptionTracking.supportClick(
                                 screenName: 'program_detail');
-                            // final launchUri =
-                            //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                            // if (await canLaunchUrl(launchUri)) {
-                            //   await launchUrl(launchUri);
-                            // } else {
-                            //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                            // }
                             HomeSupportFunctions.showModalAddData(context);
                           },
                         );
