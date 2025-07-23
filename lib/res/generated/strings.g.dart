@@ -1354,4 +1354,12 @@ class Strings {
   String get waiting_active_subscription_content_1 => 'waiting_active_subscription_content_1';
   String get waiting_active_subscription_content_2 => 'waiting_active_subscription_content_2';
   String get explore_program => 'explore_program';
+  String get schedule_medicine => 'schedule_medicine';
+  String get do_you_know => 'do_you_know';
+  String get do_you_know_content => 'do_you_know_content';
+  String get add_schedule_medicine => 'add_schedule_medicine';
+  String get what_need_support => 'what_need_support';
+  String get use_schedule_medicine => 'use_schedule_medicine';
+  String get why_schedule_medicine => 'why_schedule_medicine';
+  String get knowledge_from_expert => 'knowledge_from_expert';
 }

@@ -54,6 +54,7 @@ class NavigatorName {
   static const String contact = '/contact';
   static const String motivation = '/motivation';
   static const String reminder = '/reminder';
+  static const String medicine = '/medicine';
   static const String add_reminder = '/add_reminder';
   static const String schedule_glucose = '/schedule_glucose';
   static const String setting_schedule_glucose = '/setting_schedule_glucose';

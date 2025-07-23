@@ -21,6 +21,7 @@ import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/glucose_intro/glucose_intro_1st_page.dart';
 import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
 import 'widget/home/schema/home_schema.dart';
+import 'widget/medicine/onboarding/onboarding_page.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
 class AppRoutes {
@@ -129,6 +130,13 @@ class AppRoutes {
         );
         break;
       // ~ END: Huyet Ap (mới) ~
+      // Lịch dùng thuốc
+        case NavigatorName.medicine:
+          page = OnboardingPage();
+          break;
+
+      // ~ END: Lịch dùng thuốc ~
+
       default:
         break;
     }

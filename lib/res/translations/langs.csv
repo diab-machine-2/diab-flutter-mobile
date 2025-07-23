@@ -1309,4 +1309,13 @@ subscription_already_active,"Gói đăng ký đã được kích hoạt","Subscr
 subscription_already_active_content,"Tài khoản Google hiện tại của bạn đã kích hoạt gói đăng ký","Your Google account is already activated subscription",
 waiting_active_subscription_content_1,"Đang kích hoạt gói dịch vụ.\n Vui lòng đợi trong ít phút...","Activating service package.\nPlease wait a few minutes...",
 waiting_active_subscription_content_2,"Vui lòng chờ trong giây lát. Chương trình\n dành cho bạn đang được chuẩn bị!","Please wait for a moment. The program\n for you is being prepared!",
-explore_program,"Tìm hiểu thêm về Chương trình","Explore the program"
+explore_program,"Tìm hiểu thêm về Chương trình","Explore the program",
+schedule_medicine,"Lịch dùng thuốc","Schedule use medicine",
+do_you_know,"Bạn có biết?","Do you know?",
+do_you_know_content,"Tính năng “Lịch dùng thuốc” giúp bạn dễ dàng thêm lịch nhắc, nhận thông báo đúng giờ và theo dõi quá trình dùng thuốc một cách tiện lợi.","The “Medication Schedule” feature makes it easy to add reminders, receive timely notifications, and conveniently track your medication progress.",
+add_schedule_medicine,"Thêm lịch dùng thuốc","Add schedule medicine",
+what_need_support,"Bạn cần hỗ trợ gì?","What support do you need?",
+use_schedule_medicine,"Sử dụng tính năng Lịch dùng thuốc","Use feature Schedule medicine",
+why_schedule_medicine,"Tại sao cần dùng thuốc đúng giờ?","Why do we need to use medicine on time?",
+knowledge_from_expert,"Kiến thức từ Chuyên gia DiaB","Knowledge from DiaB Experts",
+tutorial,"Hướng dẫn","Tutorial"
