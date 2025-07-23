@@ -1219,9 +1219,10 @@ class AppRepository {
   }
 
   Future<ApiResult<CommonResponse>> notifySubscription(
-      NotifySubscriptionRequest request) async {
+      {required String phoneNumber,
+      required NotifySubscriptionRequest request}) async {
     try {
-      final response = await appClient.notifySubscription(request);
+      final response = await appClient.notifySubscription(phoneNumber, request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

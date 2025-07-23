@@ -148,7 +148,7 @@ class ExercrisesLessonSectionState extends State<ExercrisesLessonSection> {
 
   Widget _buildLessonItem(ExerciseLesson lesson) {
     return SizedBox(
-      height: 252.0,
+      height: 242.0,
       width: _lessonItemWidth,
       child: InkWell(
         onTap: () => widget.onLessonTap(lesson),
@@ -170,7 +170,7 @@ class ExercrisesLessonSectionState extends State<ExercrisesLessonSection> {
                   topRight: Radius.circular(12.0),
                 ),
                 child: NetWorkImageWidget(
-                  imageUrl: lesson.thumbnailUrl,
+                  imageUrl: lesson.image?.url ?? lesson.thumbnailUrl ?? '',
                   fit: BoxFit.cover,
                   height: 174.0,
                   width: double.infinity,
@@ -197,31 +197,32 @@ class ExercrisesLessonSectionState extends State<ExercrisesLessonSection> {
                       ),
                       const SizedBox(height: 4.0),
                       // Category
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Image.asset(
-                            R.drawable.ic_lesson_category,
-                            width: 16.0,
-                            height: 16.0,
-                          ),
-                          const SizedBox(width: 6.0),
-                          Text(
-                            '${lesson.duration?.toInt() ?? 0} phút',
-                            style: TextStyle(
-                              color: R.color.color0xff666666,
-                              fontSize: 12.0,
+                      if (lesson.lessonModule?.name != null)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              R.drawable.ic_lesson_category,
+                              width: 16.0,
+                              height: 16.0,
                             ),
-                          ),
-                        ],
-                      ),
+                            const SizedBox(width: 6.0),
+                            Text(
+                              '${lesson.lessonModule?.name ?? ''}',
+                              style: TextStyle(
+                                color: R.color.color0xff666666,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
               ),
 
-              const SizedBox(height: 12.0),
+              // const SizedBox(height: 12.0),
               Divider(
                 height: 1,
                 color: R.color.color0xffE5E5E5,
