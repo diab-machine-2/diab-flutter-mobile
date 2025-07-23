@@ -148,7 +148,7 @@ class ExercrisesLessonSectionState extends State<ExercrisesLessonSection> {
 
   Widget _buildLessonItem(ExerciseLesson lesson) {
     return SizedBox(
-      height: 252.0,
+      height: 242.0,
       width: _lessonItemWidth,
       child: InkWell(
         onTap: () => widget.onLessonTap(lesson),
@@ -195,27 +195,28 @@ class ExercrisesLessonSectionState extends State<ExercrisesLessonSection> {
                           height: 24.0 / 15.0,
                         ),
                       ),
-                      // const SizedBox(height: 4.0),
+                      const SizedBox(height: 4.0),
                       // Category
-                      // Row(
-                      //   mainAxisSize: MainAxisSize.min,
-                      //   mainAxisAlignment: MainAxisAlignment.start,
-                      //   children: [
-                      //     Image.asset(
-                      //       R.drawable.ic_lesson_category,
-                      //       width: 16.0,
-                      //       height: 16.0,
-                      //     ),
-                      //     const SizedBox(width: 6.0),
-                      //     Text(
-                      //       '${lesson.duration?.toInt() ?? 0} phút',
-                      //       style: TextStyle(
-                      //         color: R.color.color0xff666666,
-                      //         fontSize: 12.0,
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
+                      if (lesson.lessonModule?.name != null)
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              R.drawable.ic_lesson_category,
+                              width: 16.0,
+                              height: 16.0,
+                            ),
+                            const SizedBox(width: 6.0),
+                            Text(
+                              '${lesson.lessonModule?.name ?? ''}',
+                              style: TextStyle(
+                                color: R.color.color0xff666666,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
