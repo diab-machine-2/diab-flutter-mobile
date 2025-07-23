@@ -36,6 +36,10 @@ ExerciseLesson _$ExerciseLessonFromJson(Map<String, dynamic> json) =>
       image: json['image'] == null
           ? null
           : ExerciseImage.fromJson(json['image'] as Map<String, dynamic>),
+      lessonModule: json['lessonModule'] == null
+          ? null
+          : ExerciseLessonModule.fromJson(
+              json['lessonModule'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ExerciseLessonToJson(ExerciseLesson instance) =>
@@ -48,6 +52,7 @@ Map<String, dynamic> _$ExerciseLessonToJson(ExerciseLesson instance) =>
       'duration': instance.duration,
       'caloriesBurned': instance.caloriesBurned,
       'image': instance.image,
+      'lessonModule': instance.lessonModule,
     };
 
 ExerciseImage _$ExerciseImageFromJson(Map<String, dynamic> json) =>
@@ -60,4 +65,20 @@ Map<String, dynamic> _$ExerciseImageToJson(ExerciseImage instance) =>
     <String, dynamic>{
       'id': instance.id,
       'url': instance.url,
+    };
+
+ExerciseLessonModule _$ExerciseLessonModuleFromJson(
+        Map<String, dynamic> json) =>
+    ExerciseLessonModule(
+      id: json['id'] as String?,
+      code: json['code'] as String?,
+      name: json['name'] as String?,
+    );
+
+Map<String, dynamic> _$ExerciseLessonModuleToJson(
+        ExerciseLessonModule instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'code': instance.code,
+      'name': instance.name,
     };

@@ -6,6 +6,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
@@ -34,7 +35,14 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
     super.dispose();
   }
 
-  void _navigateToHomeScreen() {
+  void _navigateToHomeScreen() async {
+    await TrackingManager.trackEvent(
+      'program_subs_welcome',
+      'program_activation',
+      params: {
+        'cta_button_name': R.string.back_home_page.tr(),
+      },
+    );
     Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
       NavigatorName.tabbar,
       (route) => false, // This removes all routes from stack
@@ -42,6 +50,13 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
   }
 
   void _learnMoreAboutProgram() async {
+    await TrackingManager.trackEvent(
+      'program_subs_welcome',
+      'program_activation',
+      params: {
+        'cta_button_name': R.string.explore_program.tr(),
+      },
+    );
     // Implement navigation to program details or info page
     await NavigationUtil.navigatePage(
       context,
