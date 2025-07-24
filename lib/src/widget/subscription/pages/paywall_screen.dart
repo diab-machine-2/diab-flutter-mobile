@@ -85,11 +85,24 @@ class _PaywallScreenState extends State<PaywallScreen> {
       builder: (context) => PackageDetailBottomSheet(
         package: package,
         onPurchase: () async {
+          Navigator.pop(context);
           _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
 
-          Navigator.pop(context);
-          SubscriptionNavigationMixin.navigationKey.currentState
-              ?.pushNamed(NavigatorName.package_program_list);
+          SubscriptionTracking.programServiceRegister(
+              screenName: 'program_service',
+              objectTitle: _localPackages[_selectedPackageIndex].title);
+
+          if (_localPackages[_selectedPackageIndex].id == 'co_ban' &&
+              _revenueCatPackages.isNotEmpty) {
+            // Show subscription options sheet only for "cơ bản" package
+            SubscriptionService.showSubscriptionOptionsSheet(context, package);
+
+            return;
+          } else {
+            // Navigate to package program list using the SubscriptionNavigationMixin for other packages
+            SubscriptionNavigationMixin.navigationKey.currentState
+                ?.pushNamed(NavigatorName.package_program_list);
+          }
         },
       ),
     );
