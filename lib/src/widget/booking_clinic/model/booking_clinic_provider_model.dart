@@ -165,7 +165,7 @@ class ClinicService {
       name: json['name'],
       type: json['type'],
       id: json['id'],
-      fromPrice: json['from_price'],
+      fromPrice: json['from_price'] ?? 0,
       price: json['price'],
     );
   }

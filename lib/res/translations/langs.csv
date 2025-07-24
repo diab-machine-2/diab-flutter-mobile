@@ -1318,4 +1318,5 @@ what_need_support,"Bạn cần hỗ trợ gì?","What support do you need?",
 use_schedule_medicine,"Sử dụng tính năng Lịch dùng thuốc","Use feature Schedule medicine",
 why_schedule_medicine,"Tại sao cần dùng thuốc đúng giờ?","Why do we need to use medicine on time?",
 knowledge_from_expert,"Kiến thức từ Chuyên gia DiaB","Knowledge from DiaB Experts",
-tutorial,"Hướng dẫn","Tutorial"
+tutorial,"Hướng dẫn","Tutorial",
+activate_program_failed,"Kích hoạt chương trình thất bại. Vui lòng thử lại sau.","Activating program failed. Please try again later."

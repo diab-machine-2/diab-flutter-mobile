@@ -1843,9 +1843,15 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CommonResponse> notifySubscription(request) async {
+  Future<CommonResponse> notifySubscription(
+    phoneNumberInput,
+    request,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'phoneNumberInput': phoneNumberInput
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());

@@ -1362,4 +1362,5 @@ class Strings {
   String get use_schedule_medicine => 'use_schedule_medicine';
   String get why_schedule_medicine => 'why_schedule_medicine';
   String get knowledge_from_expert => 'knowledge_from_expert';
+  String get activate_program_failed => 'activate_program_failed';
 }
