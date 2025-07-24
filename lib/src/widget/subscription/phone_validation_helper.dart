@@ -3,17 +3,34 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 class PhoneValidationHelper {
   static const String phonePattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
 
-  static bool isValidPhoneNumber(String? phoneNumber) {
-    if (phoneNumber == null || phoneNumber.isEmpty) return false;
-
-    final RegExp regExp = RegExp(phonePattern);
+  static bool isValidPhoneNumber(String phoneNumber) {
+    if (phoneNumber.startsWith('+84')) {
+      phoneNumber = '0${phoneNumber.substring(3)}';
+    }
+    const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
+    final RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(phoneNumber) &&
         (phoneNumber.length == 9 || phoneNumber.length == 10);
+  }
+
+  static Future<String> validatePhoneAndShowDialog(BuildContext context) async {
+    var phoneNumber = AppSettings.userInfo?.phoneNumber;
+
+    // Check if phone number is empty or invalid
+    if (phoneNumber == null ||
+        phoneNumber.isEmpty ||
+        !phoneNumber.startsWith('+84') ||
+        !isValidPhoneNumber(phoneNumber)) {
+      phoneNumber = await PhoneValidationHelper.showDialogUpdatePhone(context);
+    }
+
+    return phoneNumber;
   }
 
   static Future<String> showDialogUpdatePhone(BuildContext context) async {
@@ -82,7 +99,7 @@ class PhoneValidationHelper {
                       flex: 1,
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pop(context, false);
+                          Navigator.pop(context, '');
                         },
                         child: Container(
                             height: 48,
