@@ -243,30 +243,6 @@ class ProgramCard extends StatelessWidget {
     return isActivated;
   }
 
-  Future<String> _validatePhoneAndShowDialog(BuildContext context) async {
-    var phoneNumber = AppSettings.userInfo?.phoneNumber;
-
-    // Check if phone number is empty or invalid
-    if (phoneNumber == null ||
-        phoneNumber.isEmpty ||
-        !phoneNumber.startsWith('+84') ||
-        !_isValidPhoneNumber(phoneNumber)) {
-      phoneNumber = await PhoneValidationHelper.showDialogUpdatePhone(context);
-    }
-
-    return phoneNumber;
-  }
-
-  bool _isValidPhoneNumber(String phoneNumber) {
-    if (phoneNumber.startsWith('+84')) {
-      phoneNumber = '0${phoneNumber.substring(3)}';
-    }
-    const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
-    final RegExp regExp = RegExp(pattern);
-    return regExp.hasMatch(phoneNumber) &&
-        (phoneNumber.length == 9 || phoneNumber.length == 10);
-  }
-
   @override
   Widget build(BuildContext context) {
     // Determine if we're on a mobile device (shortestSide < 540)
@@ -467,7 +443,9 @@ class ProgramCard extends StatelessWidget {
                   String phoneNumber = AppSettings.userInfo?.phoneNumber ?? '';
 
                   if (!isBasicPackage) {
-                    phoneNumber = await _validatePhoneAndShowDialog(context);
+                    phoneNumber =
+                        await PhoneValidationHelper.validatePhoneAndShowDialog(
+                            context);
                     if (phoneNumber.isEmpty) return;
                   }
 
@@ -737,7 +715,8 @@ class ProgramCard extends StatelessWidget {
                         AppSettings.userInfo?.phoneNumber ?? '';
 
                     if (!isBasicPackage) {
-                      phoneNumber = await _validatePhoneAndShowDialog(context);
+                      phoneNumber = await PhoneValidationHelper
+                          .validatePhoneAndShowDialog(context);
                       if (phoneNumber.isEmpty) return;
                     }
 
