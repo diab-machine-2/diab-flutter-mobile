@@ -156,7 +156,7 @@ class FunkyOverlayState extends State<FunkyOverlay>
                               showPopupWeight();
                             } else {
                               Navigator.pushNamed(
-                                  context, NavigatorName.add_exercrises,
+                                  context, NavigatorName.exercrise_add_v2,
                                   arguments: {'type': 'input'});
                             }
                           }),

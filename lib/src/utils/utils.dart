@@ -147,7 +147,7 @@ class Utils {
       String? contentText,
       String? submitText,
       VoidCallback? submitCallback,
-      bool dismissible: false}) {
+      bool dismissible = false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
@@ -180,7 +180,7 @@ class Utils {
       Widget? contentWidget,
       String? submitText,
       VoidCallback? submitCallback,
-      bool dismissible: false}) {
+      bool dismissible = false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
@@ -255,15 +255,23 @@ class Utils {
     }
   }
 
-  static String? formatMoney(dynamic amount) {
+  static String? formatMoney(dynamic amount, {String? currency = 'đ'}) {
     if (amount == null) {
       return null;
+    }
+
+    if (currency == null || currency.isEmpty) {
+      currency = 'đ';
+    }
+
+    if (currency.contains('VND')) {
+      currency = 'đ';
     }
 
     if (amount is String) {
       amount = double.parse(amount);
     }
-    return NumberFormat("#,##0đ").format(amount);
+    return NumberFormat("#,##0$currency").format(amount);
   }
 
   static void showToast(String text) {
