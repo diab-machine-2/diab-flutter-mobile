@@ -313,6 +313,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 _cubit.setVideoManager(
                                                     videoManager);
                                               },
+                                              videoTitle: _cubit
+                                                  .currentSectionDetail?.name,
+                                              videoThumbnail: _cubit
+                                                  .currentSectionDetail
+                                                  ?.image
+                                                  ?.url,
                                             ),
                                             title: _cubit.currentSectionDetail
                                                 ?.videoDescription,

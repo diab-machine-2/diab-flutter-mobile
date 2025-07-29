@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubeVideoWidget extends StatefulWidget {
@@ -17,7 +18,8 @@ class YoutubeVideoWidget extends StatefulWidget {
   State<YoutubeVideoWidget> createState() => _YoutubeVideoWidgetState();
 }
 
-class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget> {
+class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
+    with WidgetsBindingObserver {
   late YoutubePlayerController _controller;
   bool _isPlayerReady = false;
   bool _isPlayerStarted = false;
@@ -27,6 +29,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget> {
   @override
   void initState() {
     super.initState();
+
     var id = YoutubePlayer.convertUrlToId(widget.videoUrl);
 
     _controller = YoutubePlayerController(
@@ -39,9 +42,32 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget> {
         isLive: false,
         forceHD: false,
         enableCaption: true,
+        hideThumbnail: false,
       ),
     )..addListener(listener);
     _videoMetaData = const YoutubeMetaData();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Don't auto-pause when app goes to background or device is locked
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        // Keep audio playing
+        debugPrint('YouTube: App paused/inactive - keeping audio playing');
+        break;
+      case AppLifecycleState.resumed:
+        debugPrint('YouTube: App resumed');
+        break;
+      case AppLifecycleState.detached:
+        _controller.pause();
+        break;
+      default:
+        break;
+    }
   }
 
   void listener() {
@@ -70,6 +96,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
     super.dispose();
   }
