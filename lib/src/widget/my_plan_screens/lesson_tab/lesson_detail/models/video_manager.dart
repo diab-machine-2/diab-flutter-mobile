@@ -87,6 +87,12 @@ class VideoManager {
           BetterPlayerDataSource(
             BetterPlayerDataSourceType.network,
             url,
+            notificationConfiguration: BetterPlayerNotificationConfiguration(
+              showNotification: true,
+              title: videoTitle ?? 'DiaB Lesson',
+              author: videoArtist ?? 'DiaB',
+              imageUrl: videoThumbnail ?? R.drawable.ic_app,
+            ),
           ),
         );
         await _controller?.retryDataSource();
@@ -338,6 +344,12 @@ class VideoManager {
         BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           _controller?.betterPlayerDataSource?.url ?? '',
+          notificationConfiguration: BetterPlayerNotificationConfiguration(
+            showNotification: true,
+            title: videoTitle ?? 'DiaB Lesson',
+            author: videoArtist ?? 'DiaB',
+            imageUrl: videoThumbnail ?? R.drawable.ic_app,
+          ),
         ),
       );
     } catch (e) {
