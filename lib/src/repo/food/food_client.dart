@@ -31,9 +31,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -57,9 +55,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -75,9 +71,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -94,9 +88,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -115,9 +107,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -135,9 +125,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -153,9 +141,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -177,9 +163,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -196,9 +180,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -213,9 +195,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -233,9 +213,9 @@ class FoodClient extends FetchClient {
         params: params,
         files: files,
       );
-      
+
       final data = await response.stream.bytesToString();
-      
+
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(data);
         if (jsonData['data'] != null && jsonData['data']['items'] != null) {
@@ -276,9 +256,52 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> postIndexFoodAI(int date, String? timeFrameId, String note,
+      List<FoodModel> foods, List<String> files) async {
+    try {
+      final Map<String, String> params = {
+        'date': date.toString(),
+        'mealId': timeFrameId ?? '',
+        'note': note,
+        'IsGptResult': 'true',
+      };
+      for (int i = 0; i < foods.length; i++) {
+        params['foods[$i].id'] = foods[i].id ?? '';
+        params['foods[$i].name'] = foods[i].name ?? '';
+        params['foods[$i].portion'] = foods[i].portion?.toString() ?? '';
+        params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
+        params['foods[$i].calorie'] = foods[i].calorie?.toString() ?? '';
+        params['foods[$i].glucose'] = foods[i].glucose?.toString() ?? '';
+        params['foods[$i].lipid'] = foods[i].lipid?.toString() ?? '';
+        params['foods[$i].protein'] = foods[i].protein?.toString() ?? '';
+        params['foods[$i].fibre'] = foods[i].fibre?.toString() ?? '';
+        params['foods[$i].liked'] = foods[i].liked?.toString() ?? '';
+        params['foods[$i].text'] = foods[i].text ?? '';
+        params['foods[$i].description'] = foods[i].description ?? '';
+        params['foods[$i].foodCategoryId'] = foods[i].foodCategoryId ?? '';
+        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '';
+        params['foods[$i].mealId'] = foods[i].mealId ?? '';
+        params['foods[$i].timeCode'] = foods[i].timeCode?.toString() ?? '';
+        params['foods[$i].foodMenuCode'] = foods[i].foodMenuCode ?? '';
+        // Handle image object - you might need to send image ID or URL
+        params['foods[$i].imageId'] = foods[i].image?.id ?? '';
+        params['foods[$i].imageUrl'] = foods[i].imageUrl ?? '';
+      }
+      final response = await super
+          .postHttp(path: '/App/Diet/InputAI', params: params, files: files);
+      final data = await response.stream.bytesToString();
+      print('Upload response status: ${response.statusCode}, data: $data');
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -313,9 +336,7 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -330,9 +351,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -348,9 +367,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -366,9 +383,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -389,9 +404,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -412,9 +425,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -435,9 +446,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -454,14 +463,12 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<double?> fetchTDEE(
-      double weight, int height, int yearOfBirth, String? activityLevelId) async {
+  Future<double?> fetchTDEE(double weight, int height, int yearOfBirth,
+      String? activityLevelId) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/TDEE', params: {
@@ -477,9 +484,7 @@ class FoodClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -493,9 +498,7 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

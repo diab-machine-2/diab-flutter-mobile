@@ -492,7 +492,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         }
       }
       final note = data.note;
-      final result = await FoodClient().postIndexFood(
+      final result = await FoodClient().postIndexFoodAI(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           widget.timeframeId,
           note,
