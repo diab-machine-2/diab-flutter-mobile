@@ -231,7 +231,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkUserReferralCode() async {
-    DynamicLinkConfig.instance.createShareReferralLink();
+    BranchioLinkConfig.instance.createShareReferralLink();
     ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
     if (referralCodeData != null) {
       AppStorages.removeReferralCode();

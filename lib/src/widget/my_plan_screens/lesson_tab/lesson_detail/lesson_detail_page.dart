@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -527,7 +528,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
-    String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+    String shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
         lesson: lesson,
         featureImage: _cubit.featureImage,
         lessonDescription: _cubit.lessonDescription);

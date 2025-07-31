@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -553,7 +554,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     BuildContext context, {
     required LessonSectionItem lesson,
   }) async {
-    String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+    String shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
         lesson: lesson,
         featureImage: _cubit.lessonDetail.image?.url,
         lessonDescription: _cubit.lessonDetail.description);
