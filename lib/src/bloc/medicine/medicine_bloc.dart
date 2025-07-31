@@ -29,5 +29,29 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/mod
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../modal/medicine/search_medicine_result_model.dart';
+import '../../repo/medicine/medicine_client.dart';
+
 part 'medicine_bloc_event.dart';
 part 'medicine_bloc_state.dart';
+
+class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
+  MedicineBloc() : super(MedicineInitial()) {
+    on<SearchMedicineEvent>(_onSearchMedicine);
+    // on<ClearSearchEvent>((event, emit) {
+    //   emit(MedicineInitial());
+    // });
+  }
+
+  Future<void> _onSearchMedicine(
+      SearchMedicineEvent event, Emitter<MedicineState> emit) async {
+    emit(MedicineLoading());
+    final client = MedicineClient();
+    try {
+      final result = await client.searchMedicine(searchText: event.searchText);
+      emit(MedicineSearchSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+}

@@ -3,6 +3,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
+import 'package:medical/src/widget/medicine/tutorial_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
@@ -21,7 +22,9 @@ import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/glucose_intro/glucose_intro_1st_page.dart';
 import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
 import 'widget/home/schema/home_schema.dart';
-import 'widget/medicine/onboarding/onboarding_page.dart';
+import 'widget/medicine/medicine_add_page.dart';
+import 'widget/medicine/medicine_search_page.dart';
+import 'widget/medicine/onboarding_page.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
 class AppRoutes {
@@ -131,9 +134,20 @@ class AppRoutes {
         break;
       // ~ END: Huyet Ap (mới) ~
       // Lịch dùng thuốc
-        case NavigatorName.medicine:
-          page = OnboardingPage();
-          break;
+      case NavigatorName.medicine:
+        page = OnboardingPage();
+        break;
+      case NavigatorName.medicine_tutorial:
+        page = TutorialPage();
+        break;
+      case NavigatorName.medicine_search:
+        page = MedicineSearchPage();
+        break;
+      case NavigatorName.medicine_add:
+        final data = settings.arguments as Map<String, dynamic>?;
+        final medicineItem = data?['medicineItem'];
+        page = MedicineAddPage(medicineItem: medicineItem);
+        break;
 
       // ~ END: Lịch dùng thuốc ~
 

@@ -1362,5 +1362,20 @@ class Strings {
   String get use_schedule_medicine => 'use_schedule_medicine';
   String get why_schedule_medicine => 'why_schedule_medicine';
   String get knowledge_from_expert => 'knowledge_from_expert';
+  String get tutorial => 'tutorial';
+  String get input_options => 'input_options';
+  String get input_by_camera => 'input_by_camera';
+  String get input_by_camera_description => 'input_by_camera_description';
+  String get input_by_hand => 'input_by_hand';
+  String get input_by_hand_description => 'input_by_hand_description';
+  String get add_medicine => 'add_medicine';
+  String get rule_safe_medicine => 'rule_safe_medicine';
+  String get should_do => 'should_do';
+  String get should_not_do => 'should_not_do';
+  String get should_do_1 => 'should_do_1';
+  String get should_do_1_description => 'should_do_1_description';
+  String get should_do_2 => 'should_do_2';
+  String get should_do_2_description => 'should_do_2_description';
+  String get should_do_3 => 'should_do_3';
   String get activate_program_failed => 'activate_program_failed';
 }

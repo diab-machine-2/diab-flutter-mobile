@@ -786,6 +786,12 @@ class Drawables {
       "lib/res/drawables/subscription/subscription_program_full_2.png";
   String get subscription_program_full_3 =>
       "lib/res/drawables/subscription/subscription_program_full_3.png";
-  String get medicine_banner =>
-      "lib/res/drawables/medicine_banner.png";
+  String get medicine_banner => "lib/res/drawables/medicine_banner.png";
+  String get ic_mobile => "lib/res/drawables/ic_mobile.png";
+  String get ic_medicine_calendar => "lib/res/drawables/ic_medicine_calendar.png";
+  String get ic_input_by_camera => "lib/res/drawables/ic_input_by_camera.png";
+  String get ic_input_by_hand => "lib/res/drawables/ic_input_by_hand.png";
+  String get ic_add => "lib/res/drawables/ic_add.png";
+  String get ic_should_do => "lib/res/drawables/ic_should_do.png";
+  String get ic_should_not_do => "lib/res/drawables/ic_should_not_do.png";
 }
