@@ -235,8 +235,8 @@ class _SubscriptionOptionsBottomSheetState
         }
 
         // Attempt to purchase the package
-        final purchased = true;
-        // await RevenueCatService.purchasePackageWithiOSHandling(packageToPurchase);
+        final purchased =
+            await RevenueCatService.purchasePackageWithiOSHandling(packageToPurchase);
 
         setState(() {
           _isLoading = false;
