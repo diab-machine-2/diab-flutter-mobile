@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,10 +11,8 @@
 		1BCA23DAEBB0C1898A7A8675 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B466A99A5D7A6746DF100D9F /* Pods_Runner.framework */; };
 		1F8F24182DB4C62B0040FAE5 /* CallAppSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F8F24172DB4C62B0040FAE5 /* CallAppSDK.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		5A88EF00294CC7160038A34F /* ibtFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; };
-		5A88EF01294CC7160038A34F /* ibtFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5A88EF04294CC71C0038A34F /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C731C1F270ABB8800B4BC5B /* StoreKit.framework */; };
-		5AE2ED6C294C759100013BFA /* BuildFile in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5AE2ED6C294C759100013BFA /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		600D316F28DB0B33000C7EE7 /* UIVIewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316528DB0B2A000C7EE7 /* UIVIewController+Extension.swift */; };
 		600D317028DB0B33000C7EE7 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316628DB0B2B000C7EE7 /* UIColor+Extension.swift */; };
 		600D317128DB0B33000C7EE7 /* iBTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600D316728DB0B2C000C7EE7 /* iBTManager.swift */; };
@@ -28,6 +26,8 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		C54EFD942E3B59A200AFA156 /* ibtFramework.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; };
+		C54EFD952E3B59A200AFA156 /* ibtFramework.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 600D316828DB0B2D000C7EE7 /* ibtFramework.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,8 +37,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				5A88EF01294CC7160038A34F /* ibtFramework.xcframework in Embed Frameworks */,
-				5AE2ED6C294C759100013BFA /* BuildFile in Embed Frameworks */,
+				C54EFD952E3B59A200AFA156 /* ibtFramework.xcframework in Embed Frameworks */,
+				5AE2ED6C294C759100013BFA /* (null) in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -93,8 +93,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C54EFD942E3B59A200AFA156 /* ibtFramework.xcframework in Frameworks */,
 				5A88EF04294CC71C0038A34F /* StoreKit.framework in Frameworks */,
-				5A88EF00294CC7160038A34F /* ibtFramework.xcframework in Frameworks */,
 				1BCA23DAEBB0C1898A7A8675 /* Pods_Runner.framework in Frameworks */,
 				1F8F24182DB4C62B0040FAE5 /* CallAppSDK.framework in Frameworks */,
 			);
@@ -347,9 +347,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -464,7 +468,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -477,7 +481,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 3.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -555,7 +559,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -568,7 +572,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 3.0.1;
 				OTHER_CODE_SIGN_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -649,7 +653,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -662,7 +666,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 3.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -795,7 +799,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -808,7 +812,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 3.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -834,7 +838,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q4KKVXCYN6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -847,7 +851,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 3.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cactusoftware.diab;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
