@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:better_player_plus/better_player_plus.dart';
@@ -91,7 +92,7 @@ class VideoManager {
               showNotification: true,
               title: videoTitle ?? 'DiaB Lesson',
               author: videoArtist ?? 'DiaB',
-              imageUrl: videoThumbnail ?? R.drawable.ic_app,
+              imageUrl: videoThumbnail,
             ),
           ),
         );
@@ -187,7 +188,7 @@ class VideoManager {
           showNotification: true,
           title: videoTitle ?? 'DiaB Lesson',
           author: videoArtist ?? 'DiaB',
-          imageUrl: videoThumbnail ?? R.drawable.ic_app,
+          imageUrl: videoThumbnail,
         ),
         headers: {
           'User-Agent': 'diaB Video Player',
@@ -348,7 +349,7 @@ class VideoManager {
             showNotification: true,
             title: videoTitle ?? 'DiaB Lesson',
             author: videoArtist ?? 'DiaB',
-            imageUrl: videoThumbnail ?? R.drawable.ic_app,
+            imageUrl: videoThumbnail,
           ),
         ),
       );

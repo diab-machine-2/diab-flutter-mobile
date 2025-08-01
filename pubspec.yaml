@@ -149,6 +149,7 @@ dependencies:
   carp_serializable: 1.2.0
   purchases_flutter: ^8.6.0
   purchases_ui_flutter: ^8.6.0
+  youtube_explode_dart: ^2.0.2
 
   # Social login
   # zalo_flutter: ^0.0.6

@@ -124,6 +124,9 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                               : const SizedBox.shrink()
                           : YoutubeVideoWidget(
                               videoUrl: _cubit.exerciseData.videoUrl ?? '',
+                              videoTitle:
+                                  _cubit.exerciseData.name ?? 'Exercise Video',
+                              videoThumbnail: _cubit.exerciseData.image?.url,
                               onPlay: ({meta}) {
                                 debugPrint(
                                     '[EXERCISE] onPlay youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');

@@ -317,7 +317,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               videoTitle: _cubit
                                                   .currentSectionDetail?.name,
                                               videoThumbnail: _cubit
-                                                  .currentSectionDetail
+                                                  .lessonDetail
                                                   ?.image
                                                   ?.url,
                                             ),
@@ -347,6 +347,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               _cubit.complete();
                                               _onTrackingVideoComplete();
                                             },
+                                            videoTitle: _cubit
+                                                .currentSectionDetail?.name,
+                                            videoThumbnail: _cubit
+                                                .currentSectionDetail
+                                                ?.image
+                                                ?.url,
                                           ),
                                         SizedBox(height: 8),
                                         Padding(
