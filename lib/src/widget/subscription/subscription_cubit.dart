@@ -138,9 +138,10 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   }
 
   Future<void> notifySubscriptionSuccess(
-      NotifySubscriptionRequest request) async {
-    final ApiResult<CommonResponse> apiResult =
-        await repository.notifySubscription(request);
+      {required String phoneNumber,
+      required NotifySubscriptionRequest request}) async {
+    final ApiResult<CommonResponse> apiResult = await repository
+        .notifySubscription(phoneNumber: phoneNumber, request: request);
     apiResult.when(success: (CommonResponse response) async {
       return;
     }, failure: (NetworkExceptions error) {

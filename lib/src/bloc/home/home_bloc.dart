@@ -498,8 +498,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeMeasurementIndex(
         title: R.string.van_dong.tr(),
         icon: R.drawable.ic_home_measurement_exercise,
-        navigatorName: NavigatorName.add_exercrises,
-        args: {'type': 'input'},
+        navigatorName: NavigatorName.exercrise_onboarding,
+        // args: {'type': 'input'},
       ),
       HomeMeasurementIndex(
         title: R.string.dinh_duong.tr(),
@@ -662,8 +662,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: null,
       unit: model?.exercise?.unit ?? "kcal",
       navigatorName: haveExercise
-          ? NavigatorName.detail_exercrises
-          : NavigatorName.add_exercrises,
+          ? NavigatorName.exercrise_dashboard
+          : NavigatorName.exercrise_onboarding,
       args: haveExercise ? null : {'type': 'input'},
     );
 
