@@ -288,6 +288,8 @@ class BranchioLinkConfig {
       contentDescription: lessonDescription ?? 'Bài học từ ứng dụng DiaB',
       imageUrl: lessonImage,
       contentMetadata: BranchContentMetaData()
+        ..addCustomMetadata('lessonName', lesson.name ?? 'Lesson Name')
+        ..addCustomMetadata('lessonCode', lesson.code ?? 'Lesson Code')
         ..addCustomMetadata('\$lessonId', lesson.lessonId)
         ..addCustomMetadata('\$referralCode', user.shareRefCode),
     );
@@ -296,6 +298,8 @@ class BranchioLinkConfig {
       feature: 'lesson_share',
       channel: 'app_share',
       campaign: 'lesson_share',
+      stage: lesson.code ?? 'missing_lesson_code',
+      tags: ['${user.accountId}'],
     );
 
     final BranchResponse response = await FlutterBranchSdk.getShortUrl(

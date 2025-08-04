@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 
 import '../../../../../model/response/lesson_section_list_response.dart';
 
@@ -58,8 +57,15 @@ class ShareLessonButton extends StatelessWidget {
   }
 
   _onShareLesson(BuildContext context) async {
-    String shareLink = await BranchioLinkConfig.instance
-        .createShareLessonLink(lesson: lesson, featureImage: featureImage, lessonDescription: lessonDescription);
+    String shareLink = lesson.linkShare ?? "";
+    if (shareLink.isEmpty) {
+      shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
+          lesson: lesson,
+          featureImage: featureImage,
+          lessonDescription: lessonDescription);
+    }
+    // String shareLink = await BranchioLinkConfig.instance
+    //     .createShareLessonLink(lesson: lesson, featureImage: featureImage, lessonDescription: lessonDescription);
     AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 }
