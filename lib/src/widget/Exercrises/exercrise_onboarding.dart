@@ -347,8 +347,8 @@ showActivityInputMethodSelection({bool? hasExerciseData}) async {
     showPopupWeight();
   } else {
     // Logic navigate to glucose input page (saved before)
-    String? lastOpenedGlucoseInputType =
-        await AppSettings.getLastOpenedExerciseInputType();
+    // String? lastOpenedGlucoseInputType =
+    //     await AppSettings.getLastOpenedExerciseInputType();
     if (hasExerciseData != null && hasExerciseData) {
       // disable diablog if user has already input exercise
       Navigator.pushNamed(

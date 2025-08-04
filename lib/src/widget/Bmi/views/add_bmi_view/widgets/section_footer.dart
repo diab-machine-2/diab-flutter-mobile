@@ -18,11 +18,11 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+      padding: EdgeInsets.fromLTRB(15, 15, 15, 30),
       width: double.infinity,
       decoration: BoxDecoration(color: Colors.white),
       child: SpacingColumn(
-        spacing: 15,
+        spacing: 0,
         children: [
           GestureDetector(
             onTap: () {
@@ -63,7 +63,7 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
           ),
           cubit.type == 'input'
               ? GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (cubit.selectedWeight == 0) {
                       Message.showToastMessage(
                           context, R.string.mes_weight_empty.tr());
@@ -84,7 +84,8 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
                         indexRange == cubit.rangeValue.length - 1) {
                       showDialogWarning(context, cubit: cubit);
                     } else {
-                      cubit.submitData();
+                      await cubit.submitData();
+                      // Navigator.pop(context);
                     }
                   },
                   child: Container(
