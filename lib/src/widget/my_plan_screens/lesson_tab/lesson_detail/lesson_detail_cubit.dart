@@ -7,9 +7,12 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 import 'lesson_detail.dart';
 import 'models/audio_manager.dart';
@@ -57,7 +60,7 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       isQuizLesson;
 
   void onChangeSection(BuildContext context, int newSection,
-      {bool isFromList = false}) {
+      {bool isFromList = false, SmartGoalList? smartGoal}) async {
     //Check can complete the lesson and make sure that user tapped next button
     if (isAllSectionCompleted &&
         newSection > currentSection &&
@@ -75,6 +78,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
 
     if (newSection < 0 || newSection >= sectionList.length) {
       if (Navigator.canPop(context)) {
+        if (smartGoal?.id != null) {
+          await HomeClient().completeSmartGoal(
+              DateTime.now(), smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
+        }
         Navigator.pop(context, 1);
       }
       return;

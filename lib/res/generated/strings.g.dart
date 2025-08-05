@@ -1348,11 +1348,22 @@ class Strings {
   String get begin_program => 'begin_program';
   String get loading_subscription_packages => 'loading_subscription_packages';
   String get basic_program_confirm => 'basic_program_confirm';
+  String get screening_interview => 'screening_interview';
+  String get evaluate_interview => 'evaluate_interview';
+  String get booking_screening_interview => 'booking_screening_interview';
+  String get booking_evaluate_interview => 'booking_evaluate_interview';
+  String get booking_solo => 'booking_solo';
+  String get infographic => 'infographic';
   String get welcome_program => 'welcome_program';
   String get subscription_already_active => 'subscription_already_active';
   String get subscription_already_active_content => 'subscription_already_active_content';
   String get waiting_active_subscription_content_1 => 'waiting_active_subscription_content_1';
   String get waiting_active_subscription_content_2 => 'waiting_active_subscription_content_2';
   String get explore_program => 'explore_program';
+  String get welcome_dialog_title_1 => 'welcome_dialog_title_1';
+  String get welcome_dialog_title_2 => 'welcome_dialog_title_2';
+  String get welcome_dialog_subtitle_1 => 'welcome_dialog_subtitle_1';
+  String get welcome_dialog_subtitle_2 => 'welcome_dialog_subtitle_2';
+  String get booking_consult => 'booking_consult';
   String get activate_program_failed => 'activate_program_failed';
 }

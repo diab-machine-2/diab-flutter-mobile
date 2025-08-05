@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -19,43 +18,30 @@ import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/request/complete_smart_goal_request.dart';
-import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
-import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
-import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_detail_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widget/profile/user_info.dart';
-import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../app.dart';
 import '../../repo/home/home_client.dart';
 import '../../service/rating_service.dart';
 import 'schema/home_schema.dart';
@@ -122,6 +108,18 @@ class _HomeControllerState extends State<HomeController>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       checkExerciseData();
     });
+
+    SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
+      screenName: 'home',
+      trackingEnabled: true,
+      showGlucoseBottomSheet: true, // Home screen has special glucose handling
+      showBloodPressureIntro: true,
+      hasInputBloodPressure: _haveInputBloodpressureAlready,
+      hasInputGlucose: _haveInputGlucoseAlready,
+      customGlucoseHandler: (routeName, smartGoalId) async {
+        await _showGlucoseAddBottomSheet(routeName, smartGoalId: smartGoalId);
+      },
+    ));
   }
 
   @override
@@ -381,6 +379,10 @@ class _HomeControllerState extends State<HomeController>
     }
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _refresh();
+    }
+
+    if (notifyName == 'pull_to_refresh') {
+      _pullToRefresh();
     }
 
     if (notifyName == 'reload_user_info') {
@@ -1061,12 +1063,12 @@ class _HomeControllerState extends State<HomeController>
         icon: isRoadmap
             ? R.drawable.ic_package_roadmap
             : R.drawable.ic_package_experience,
-        title: isRoadmap
-            ? R.string.package_roadmap.tr()
-            : R.string.package_experience.tr(),
-        subTitle: isRoadmap
-            ? R.string.package_roadmap_subtitle.tr()
-            : R.string.package_experience_subtitle.tr(),
+        // title: isRoadmap
+        //     ? R.string.package_roadmap.tr()
+        //     : R.string.package_experience.tr(),
+        // subTitle: isRoadmap
+        //     ? R.string.package_roadmap_subtitle.tr()
+        //     : R.string.package_experience_subtitle.tr(),
         onSkip: () async {},
         onNavigateToMyPlan: () async {},
         zaloGroup: zaloGroup,
@@ -1146,12 +1148,16 @@ class _HomeControllerState extends State<HomeController>
   }
 
   // return allow next route
-  Future<bool> _showGlucoseAddBottomSheet(String? routeName) async {
+  Future<bool> _showGlucoseAddBottomSheet(String? routeName,
+      {String? smartGoalId}) async {
     if (routeName == NavigatorName.add_blood_sugar_new ||
         routeName == NavigatorName.add_blood_sugar) {
       // check first time open glucose intro
       if (!_haveInputGlucoseAlready) {
-        Navigator.of(context).pushNamed(NavigatorName.glucose_intro_1st_page);
+        Navigator.of(context)
+            .pushNamed(NavigatorName.glucose_intro_1st_page, arguments: {
+          'goalId': smartGoalId,
+        });
         return false;
       }
       if (!AppSettings.isRegionAllowInputDevice) {
@@ -1166,7 +1172,7 @@ class _HomeControllerState extends State<HomeController>
         BlocProvider.of<NiproBloc>(context).tryAutoConnect();
       } else if (lastOpenedGlucoseInputType == 'manual') {
         Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-            arguments: {'type': 'input'});
+            arguments: {'type': 'input', 'goalId': smartGoalId});
         // or can return "true" to next page
       }
       return false;
@@ -1199,676 +1205,203 @@ class _HomeControllerState extends State<HomeController>
 
   // #region Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
   // Copy from lib\src\widget\my_plan_screens\activity_tab\activity_tab\activity_tab_page.dart
+  // Future<void> _onSelectGoal(ScheduleType type,
+  //     {SmartGoalList? smartGoal, required String title}) async {
+  //   // track event
+  //   final String eventName = "home_select_activity";
+  //   TrackingManager.trackEvent(eventName, _screenName, params: {
+  //     "object_title": title,
+  //   });
+  //   Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+  //   _isReloadLesson = type == ScheduleType.lesson_recommend;
+  //   switch (type) {
+  //     case ScheduleType.blood_sugar:
+  //     case ScheduleType.blood_sugar_recommend:
+  //       _showGlucoseAddBottomSheet(NavigatorName.add_blood_sugar_new,
+  //           smartGoalId: smartGoal?.id);
+  //       // await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+  //       //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.blood_pressure:
+  //     case ScheduleType.blood_pressure_recommend:
+  //       // check first time open blood pressure intro
+  //       if (!_haveInputBloodpressureAlready) {
+  //         Navigator.of(context).pushNamed(
+  //             NavigatorName.blood_pressure_intro_1st_page,
+  //             arguments: {'goalId': smartGoal?.id});
+  //         return;
+  //       }
+  //       await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+  //           arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.weight_recommend:
+  //       _showInputWeightDialog();
+  //       break;
+  //     case ScheduleType.height_recommend:
+  //       _showInputHeightDialog();
+  //       break;
+  //     case ScheduleType.weight:
+  //       await Navigator.pushNamed(context, NavigatorName.add_bmi,
+  //           arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.emotion:
+  //       // await Navigator.pushNamed(context, NavigatorName.add_emo,
+  //       //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       //    _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.food:
+  //     case ScheduleType.food_recommend:
+  //       await NavigationUtil.navigatePage(
+  //         context,
+  //         DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
+  //       );
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.exercise:
+  //     case ScheduleType.exercise_recommend:
+  //       await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+  //           arguments: {'type': 'input', 'goalId': smartGoal?.id});
+  //       // _cubit.refreshData(isRefresh: true);
+  //       break;
+  //     case ScheduleType.exercise_movement:
+  //       if (smartGoal?.exerciseData == null) break;
+  //       if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
+  //           smartGoal?.state == Const.LESSON_LOCKED) {
+  //         _showLockedDialog(
+  //           title: R.string.exercise_lesson_locked.tr(),
+  //           description: R.string.exercise_lesson_locked_warning.tr(),
+  //         );
+  //         break;
+  //       }
+  //       await NavigationUtil.navigatePage(
+  //           context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
+  //       // _cubit.refreshData(isRefresh: true);
+  //       Observable.instance
+  //           .notifyObservers([], notifyName: "refresh_exercise_tab");
+  //       Observable.instance.notifyObservers([], notifyName: "refresh_home");
+  //       break;
+  //     case ScheduleType.custom:
+  //       _showCustomGoalPopup(
+  //         smartGoal: smartGoal,
+  //       );
+  //       break;
+  //     case ScheduleType.book_1_1:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.book_1_n:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.survey:
+  //       //_showCoachingPopup();
+  //       _showSurveyPopup(survey: smartGoal);
+  //       break;
+  //     case ScheduleType.lesson_recommend:
+  //       Observable.instance
+  //           .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+  //       break;
+  //     case ScheduleType.lesson:
+  //     case ScheduleType.infographic:
+  //       final LessonSectionListResponseData? lessonDetail =
+  //           smartGoal?.lessonData;
+  //       if (lessonDetail == null) return;
+
+  //       if (smartGoal?.state == Const.LESSON_LOCKED) {
+  //         // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
+  //         _showLockedDialog(
+  //             title: R.string.lesson_locked.tr(),
+  //             description: R.string.lesson_locked_warning.tr());
+  //         return;
+  //       }
+  //       await NavigationUtil.navigatePage(
+  //           context,
+  //           LessonDetailPage(
+  //             lessonType: lessonDetail?.type,
+  //             lessonId: lessonDetail?.id ?? '',
+  //             onComplete: (String, int) {},
+  //             smartGoal: smartGoal,
+  //           ));
+  //       // _cubit.refreshData(isRefresh: true);
+  //       Observable.instance
+  //           .notifyObservers([], notifyName: "refresh_lesson_tab");
+  //       Observable.instance.notifyObservers([], notifyName: "refresh_home");
+  //       break;
+  //     case ScheduleType.io_evaluate:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.update_profile:
+  //     case ScheduleType.update_profile_recommend:
+  //       await Navigator.pushNamed(context, NavigatorName.profile_info,
+  //           arguments: {
+  //             'id': smartGoal?.state != 1 ? smartGoal?.id : null,
+  //           });
+  //       break;
+  //     case ScheduleType.output_assessment:
+  //       _showCoachingPopup(smartGoal);
+  //       break;
+  //     case ScheduleType.hba1c_recommend:
+  //       await Navigator.pushNamed(context, NavigatorName.add_hba1c,
+  //           arguments: {'type': 'input'});
+  //       break;
+  //     case ScheduleType.schedule_glucose_recommend:
+  //       await Navigator.pushNamed(context, NavigatorName.schedule_glucose,
+  //           arguments: {
+  //             'smartGoal': smartGoal,
+  //           });
+  //       break;
+  //     case ScheduleType.food_menu:
+  //       await Navigator.pushNamed(context, NavigatorName.food_menu, arguments: {
+  //         'smartGoal': smartGoal,
+  //       });
+  //       break;
+  //     case ScheduleType.goal_setting_recommend:
+  //       await Navigator.pushNamed(context, NavigatorName.goal_setting,
+  //           arguments: {
+  //             'smartGoal': smartGoal,
+  //           });
+  //       break;
+  //     case ScheduleType.schedule_recommend:
+  //       await Navigator.pushNamed(context, NavigatorName.reminder);
+  //       break;
+  //     case ScheduleType.peripheral_recommend:
+  //       await Navigator.pushNamed(context, NavigatorName.connect_device_app);
+  //       break;
+  //     case ScheduleType.completed:
+  //       // Do nothing
+  //       break;
+  //     case ScheduleType.screening_interview:
+  //       await _handleInterviewNavigation(
+  //           interviewType: 30, smartGoal: smartGoal);
+  //       break;
+  //     case ScheduleType.evaluate_interview:
+  //       await _handleInterviewNavigation(
+  //           interviewType: 31, smartGoal: smartGoal);
+  //       break;
+  //     case ScheduleType.booking_solo:
+  //       await _handleInterviewNavigation(
+  //           interviewType: 32, smartGoal: smartGoal);
+  //       break;
+  //   }
+  // }
+
   Future<void> _onSelectGoal(ScheduleType type,
       {SmartGoalList? smartGoal, required String title}) async {
-    // track event
-    Console.log('home_select_activity', title);
-    final String eventName = "home_select_activity";
-    TrackingManager.trackEvent(eventName, _screenName, params: {
-      "object_title": title,
-    });
-    Observable.instance.notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
-    _isReloadLesson = type == ScheduleType.lesson_recommend;
-    switch (type) {
-      case ScheduleType.blood_sugar:
-      case ScheduleType.blood_sugar_recommend:
-        _showGlucoseAddBottomSheet(NavigatorName.add_blood_sugar_new);
-        // await Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-        //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.blood_pressure:
-      case ScheduleType.blood_pressure_recommend:
-        // check first time open blood pressure intro
-        if (!_haveInputBloodpressureAlready) {
-          Navigator.of(context)
-              .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
-          return;
-        }
-        await Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.weight_recommend:
-        _showInputWeightDialog();
-        break;
-      case ScheduleType.height_recommend:
-        _showInputHeightDialog();
-        break;
-      case ScheduleType.weight:
-        await Navigator.pushNamed(context, NavigatorName.add_bmi,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.emotion:
-        // await Navigator.pushNamed(context, NavigatorName.add_emo,
-        //     arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        //    _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.food:
-      case ScheduleType.food_recommend:
-        await NavigationUtil.navigatePage(
-          context,
-          DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
-        );
-        // _cubit.refreshData(isRefresh: true);
-        break;
-      case ScheduleType.exercise:
-      case ScheduleType.exercise_recommend:
-        await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
-            arguments: {'type': 'input', 'goalId': smartGoal?.id});
-        break;
-      case ScheduleType.exercise_movement:
-        if (smartGoal?.exerciseData == null) break;
-        if (smartGoal?.exerciseData?.exerciseMovementStates == null ||
-            smartGoal?.state == Const.LESSON_LOCKED) {
-          _showLockedDialog(
-            title: R.string.exercise_lesson_locked.tr(),
-            description: R.string.exercise_lesson_locked_warning.tr(),
-          );
-          break;
-        }
-        await NavigationUtil.navigatePage(
-            context, ExerciseDetail(exerciseData: smartGoal?.exerciseData));
-        // _cubit.refreshData(isRefresh: true);
-        Observable.instance
-            .notifyObservers([], notifyName: "refresh_exercise_tab");
-        Observable.instance.notifyObservers([], notifyName: "refresh_home");
-        break;
-      case ScheduleType.custom:
-        _showCustomGoalPopup(
-          smartGoal: smartGoal,
-        );
-        break;
-      case ScheduleType.book_1_1:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.book_1_n:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.survey:
-        //_showCoachingPopup();
-        _showSurveyPopup(survey: smartGoal);
-        break;
-      case ScheduleType.lesson_recommend:
-        Observable.instance
-            .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
-        break;
-      case ScheduleType.lesson:
-        final LessonSectionListResponseData? lessonDetail =
-            smartGoal?.lessonData;
-        if (smartGoal?.state == Const.LESSON_LOCKED) {
-          // if (lessonDetail?.learningStatus == null || lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
-          _showLockedDialog(
-              title: R.string.lesson_locked.tr(),
-              description: R.string.lesson_locked_warning.tr());
-          return;
-        }
-        await NavigationUtil.navigatePage(
-            context,
-            LessonDetailPage(
-              lessonType: lessonDetail?.type,
-              lessonId: lessonDetail?.id ?? '',
-              onComplete: (String, int) {},
-            ));
-        // _cubit.refreshData(isRefresh: true);
-        Observable.instance
-            .notifyObservers([], notifyName: "refresh_lesson_tab");
-        Observable.instance.notifyObservers([], notifyName: "refresh_home");
-        break;
-      case ScheduleType.io_evaluate:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.update_profile:
-      case ScheduleType.update_profile_recommend:
-        await Navigator.pushNamed(context, NavigatorName.profile_info,
-            arguments: {
-              'id': smartGoal?.state != 1 ? smartGoal?.id : null,
-            });
-        break;
-      case ScheduleType.output_assessment:
-        _showCoachingPopup(smartGoal);
-        break;
-      case ScheduleType.hba1c_recommend:
-        await Navigator.pushNamed(context, NavigatorName.add_hba1c,
-            arguments: {'type': 'input'});
-        break;
-      case ScheduleType.schedule_glucose_recommend:
-        await Navigator.pushNamed(context, NavigatorName.schedule_glucose);
-        break;
-      case ScheduleType.food_menu:
-        await Navigator.pushNamed(context, NavigatorName.food_menu);
-        break;
-      case ScheduleType.goal_setting_recommend:
-        await Navigator.pushNamed(context, NavigatorName.goal_setting);
-        break;
-      case ScheduleType.schedule_recommend:
-        await Navigator.pushNamed(context, NavigatorName.reminder);
-        break;
-      case ScheduleType.peripheral_recommend:
-        await Navigator.pushNamed(context, NavigatorName.connect_device_app);
-        break;
-      case ScheduleType.completed:
-        // Do nothing
-        break;
-    }
+    await SmartGoalNavigationUtil.onSelectGoal(
+      context,
+      type,
+      smartGoal: smartGoal,
+      title: title,
+      onRefreshData: () {
+        _refresh();
+      },
+    );
   }
 
   void _viewMoreActivity() {
     Observable.instance
         .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
     Observable.instance.notifyObservers([], notifyName: "activity_tab_reload");
-  }
-
-  void _showPopup({
-    required BuildContext context,
-    required Widget child,
-    String? buttonTitle,
-    VoidCallback? onTap,
-    bool isDisableCompleteButton = false,
-  }) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          NavigationUtil.pop(context);
-        },
-        child: Scaffold(
-          backgroundColor: R.color.transparent,
-          body: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 24),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          R.color.white,
-                          R.color.main_6,
-                        ],
-                      ),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          child,
-                          Visibility(
-                            visible: onTap != null,
-                            child: SizedBox(height: 16),
-                          ),
-                          Visibility(
-                            visible: onTap != null,
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 16),
-                              child: ButtonWidget(
-                                backgroundColor: isDisableCompleteButton
-                                    ? R.color.white
-                                    : R.color.accentColor,
-                                title: buttonTitle ?? '',
-                                textSize: 14,
-                                onPressed:
-                                    isDisableCompleteButton ? null : onTap,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                      top: 4,
-                      right: 24,
-                      child: IconButton(
-                        icon: const Icon(Icons.close),
-                        iconSize: 24,
-                        onPressed: () {
-                          NavigationUtil.pop(context);
-                        },
-                      ))
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  _showCustomGoalPopup({SmartGoalList? smartGoal}) {
-    String description = '';
-    if (smartGoal?.executeType == 0) {
-      description = 'Thời gian: ${smartGoal?.executeDayTimes} phút';
-    } else if (smartGoal?.executeType == 1) {
-      description = 'Số lần: ${smartGoal?.executeDayTimes} lần';
-    }
-    return _showPopup(
-      context: context,
-      buttonTitle: R.string.complete_lesson.tr(),
-      isDisableCompleteButton: DateUtil.isAfter(
-              smartGoal?.appointmentDate, AppSettings.currentDateTime) ??
-          false,
-      onTap: smartGoal?.isCompleted == true
-          ? null
-          : () {
-              _completeSmartGoal(
-                smartGoal?.id,
-                smartGoal?.executeDayTimes,
-                smartGoal?.type,
-                smartGoal?.appointmentDate,
-              );
-              NavigationUtil.pop(context);
-            },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
-            child: Image.asset(R.drawable.img_custom_goal),
-          ),
-          Text(
-            smartGoal?.name ?? '',
-            style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 20,
-                fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            description,
-            style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 14,
-                fontWeight: FontWeight.w400),
-          ),
-        ],
-      ),
-    );
-  }
-
-  _showSurveyPopup({SmartGoalList? survey}) {
-    NavigationUtil.navigatePage(context, IntroduceSurveyPage(survey: survey));
-    // return _showPopup(
-    //   context: context,
-    //   buttonTitle: R.string.start_survey.tr(),
-    //   onTap: () {
-    //     NavigationUtil.pop(context);
-    //     NavigationUtil.navigatePage(context, IntroduceSurveyPage(survey: survey));
-    //   },
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.center,
-    //     children: [
-    //       Padding(
-    //         padding: const EdgeInsets.symmetric(horizontal: 57, vertical: 10),
-    //         child: Image.asset(R.drawable.img_survey_4),
-    //       ),
-    //       Text(
-    //         'Khảo sát',
-    //         style: TextStyle(color: R.color.textDark, fontSize: 20, fontWeight: FontWeight.w700),
-    //       ),
-    //       const SizedBox(height: 6),
-    //       Text(
-    //         'Tìm hiểu về thói quen sinh hoạt',
-    //         style: TextStyle(color: R.color.textDark, fontSize: 14, fontWeight: FontWeight.w400),
-    //       ),
-    //     ],
-    //   ),
-    // );
-  }
-
-  _showCoachingPopup(SmartGoalList? smartGoal) {
-    if (smartGoal?.calendar == null) return;
-    return _showPopup(
-      context: context,
-      buttonTitle: R.string.join.tr(),
-      isDisableCompleteButton: !DateUtil.isSameDay(
-          DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          smartGoal?.appointmentDate),
-      onTap: () async {
-        Navigator.pop(context);
-        if (smartGoal?.calendar?.meetingLink != null) {
-          PermissionStatus statusMicrophone =
-              await Permission.microphone.status;
-          if (statusMicrophone.isDenied) {
-            await Permission.microphone.request();
-          }
-          PermissionStatus statusCamera = await Permission.camera.request();
-          Console.log('PHUONG statusCamera', statusCamera);
-          if (statusCamera.isDenied) {
-            await Permission.camera.request();
-          }
-          Navigator.pushNamed(context, NavigatorName.zoom, arguments: {
-            'id': smartGoal?.calendarId,
-            'isCompleted': smartGoal?.isCompleted,
-          });
-          //   await canLaunch(smartGoal!.calendar!.meetingLink!)
-          //       ? await launch(smartGoal.calendar!.meetingLink!,
-          //           forceSafariVC: false, forceWebView: false)
-          //       : throw 'Could not launch ${smartGoal.calendar!.meetingLink!}';
-        } else {
-          // await _cubit.markCompletedCalendar(smartGoal?.calendarId);
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "${getWeekDay(smartGoal?.appointmentDate ?? 0)}, ${convertToUTC(smartGoal?.appointmentDate ?? 0, "dd/MM/yyyy")}",
-            style: TextStyle(
-                color: R.color.main_1,
-                fontSize: 20,
-                fontWeight: FontWeight.w700),
-          ),
-          SizedBox(height: 4),
-          if ((smartGoal?.description != null &&
-              smartGoal!.description!.isNotEmpty))
-            Text(
-              smartGoal.description ?? "",
-              style: TextStyle(
-                  color: R.color.main_1,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700),
-            ),
-          if (smartGoal?.description != null &&
-              smartGoal!.description!.isNotEmpty)
-            const SizedBox(height: 12),
-          if ((smartGoal?.calendar?.goal != null &&
-              smartGoal!.calendar!.goal!.isNotEmpty))
-            Text(
-              smartGoal.calendar?.goal ?? "",
-              style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400),
-            ),
-          if ((smartGoal?.calendar?.goal != null &&
-              smartGoal!.calendar!.goal!.isNotEmpty))
-            const SizedBox(height: 16),
-          if (smartGoal?.calendar?.performer != null)
-            Row(
-              children: [
-                NetWorkImageWidget(
-                    imageUrl: smartGoal!.calendar!.performer!.avatar?.url ?? "",
-                    width: 44,
-                    height: 44),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Coach',
-                      style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      smartGoal.calendar!.performer!.fullName ?? "",
-                      style: TextStyle(
-                          color: R.color.main_1,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                )
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _showLockedDialog({required String title, required String description}) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      barrierDismissible: true,
-      context: context,
-      builder: (_) => Scaffold(
-        backgroundColor: R.color.transparent,
-        body: Center(
-          child: GestureDetector(
-            child: Container(
-              width: 344,
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    R.color.white,
-                    R.color.main_6,
-                  ],
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(84.w, 0, 84.w, 20),
-                    child: Image.asset(
-                      R.drawable.img_lesson_locked,
-                    ),
-                  ),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    description,
-                    textAlign: TextAlign.center,
-                    style: R.style.normalTextStyle,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 24),
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: ButtonWidget(
-                      height: 43,
-                      title: R.string.agree.tr(),
-                      onPressed: () {
-                        NavigationUtil.pop(context);
-                      },
-                      textSize: 14,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  _showDialogConfirmCreateGoal(
-      BuildContext context, String title, VoidCallback onContinue) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-            contentPadding: EdgeInsets.all(0),
-            content: Stack(children: [
-              Container(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: 36.0, bottom: 10, left: 16, right: 16),
-                      child: Text(title,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600)),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 16),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                        color: R.color.grayBorder),
-                                    child: Center(
-                                      child: Text(R.string.back.tr(),
-                                          style: TextStyle(
-                                              color: R.color.textDark,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
-                                    )),
-                              ),
-                            ),
-                            SizedBox(width: 14),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () async {
-                                  Navigator.pop(context);
-                                  onContinue();
-                                },
-                                child: Container(
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: R.color.mainColor,
-                                    borderRadius: BorderRadius.circular(200),
-                                  ),
-                                  child: Center(
-                                    child: Text(R.string.tiep_tuc.tr(),
-                                        style: TextStyle(
-                                            color: R.color.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ]),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: IconButton(
-                    icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-              )
-            ]));
-      },
-    );
-  }
-  // #endregion
-
-  Future<void> _completeSmartGoal(String? smartGoalId, int? executeDayTimes,
-      int? type, int? appointmentDate) async {
-    if (smartGoalId == null) return;
-    try {
-      BotToast.showLoading();
-      final CompleteSmartGoalRequest request = CompleteSmartGoalRequest(
-          id: smartGoalId,
-          executeTimes: executeDayTimes,
-          type: type,
-          appointmentDate: appointmentDate);
-      final apiResult = await AppRepository().completeSmartGoal(request);
-      apiResult.when(success: (response) {
-        _refresh();
-      }, failure: (error) {
-        TrackingManager.recordError(error, null);
-      });
-    } catch (e, s) {
-      TrackingManager.recordError(e, s);
-    } finally {
-      BotToast.closeAllLoading();
-    }
-  }
-
-  void _showInputHeightDialog() {
-    showDialog(
-      //   barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      barrierDismissible: true,
-      builder: (_) => CustomNumPicker(
-          callback: (data) {
-            if (data == null || data <= 0) {
-              Message.showToastMessage(
-                  context, R.string.mes_height_must_greater_than_zero.tr());
-              return;
-            }
-            final userInfo = AppSettings.userInfo!;
-            ProfileInfoController.updateUserInfo(
-              context,
-              userInfo.copyWith(
-                height: data.toDouble(),
-              ),
-            );
-          },
-          title: R.string.enter_height.tr(),
-          max: 250,
-          numberDefault: (AppSettings.userInfo!.height == null ||
-                      AppSettings.userInfo!.height == 0
-                  ? 150
-                  : AppSettings.userInfo!.height)!
-              .toInt(),
-          unit: ''),
-    );
-  }
-
-  void _showInputWeightDialog() {
-    showDialog(
-      barrierDismissible: true,
-      context: context,
-      builder: (_) => CustomWeightPicker(
-          callback: (weight) {
-            if (weight <= 0) {
-              Message.showToastMessage(
-                  context, R.string.mes_weight_must_greater_than_zero.tr());
-              return;
-            }
-            final userInfo = AppSettings.userInfo!;
-            ProfileInfoController.updateUserInfo(
-              context,
-              userInfo.copyWith(
-                weight: weight.toDouble(),
-              ),
-            );
-          },
-          title: R.string.enter_weight.tr(),
-          max: 180,
-          numberDefault: (AppSettings.userInfo!.weight == null ||
-                      AppSettings.userInfo!.weight == 0
-                  ? 50
-                  : AppSettings.userInfo!.weight)!
-              .toInt(),
-          unit: ''),
-    );
   }
 }

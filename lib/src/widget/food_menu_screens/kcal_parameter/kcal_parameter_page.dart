@@ -7,10 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/create_menu_request.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/body_parameter/body_parameter.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -18,8 +21,10 @@ import 'kcal_parameter.dart';
 
 class KcalParameterPage extends StatefulWidget {
   final Function(CreateMenuRequest request)? callback;
+  final SmartGoalList? smartGoal;
 
-  const KcalParameterPage({Key? key, this.callback}) : super(key: key);
+  const KcalParameterPage({Key? key, this.callback, this.smartGoal})
+      : super(key: key);
 
   @override
   _KcalParameterPageState createState() => _KcalParameterPageState();
@@ -294,10 +299,19 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                 child: ButtonWidget(
                   title: R.string.agree.tr(),
                   height: 43,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (widget.smartGoal?.id != null) {
+                      await HomeClient().completeSmartGoal(
+                        DateTime.now(),
+                        widget.smartGoal!.id,
+                        1,
+                        ScheduleType.food_menu.typeIndex,
+                      );
+                    }
                     FocusScope.of(context).unfocus();
                     final String text = _controller.text.trim();
                     int? number;
+
                     if (!Utils.isEmpty(text)) {
                       number = int.parse(text);
                       showDialog(

@@ -30,12 +30,10 @@ class YoutubeVideoWidget extends StatefulWidget {
 class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     with WidgetsBindingObserver {
   BetterPlayerController? _controller;
-  bool _isPlayerReady = false;
-  bool _isPlayerStarted = false;
+  bool _isLoading = true;
+  bool _hasError = false;
   dynamic _videoMetaData;
   final YoutubeExplode _youtubeExplode = YoutubeExplode();
-  bool _isInitializing = true;
-  bool _hasError = false;
 
   @override
   void initState() {
@@ -45,12 +43,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   }
 
   Future<void> _initializePlayer() async {
-    if (mounted) {
-      setState(() {
-        _isInitializing = true;
-        _hasError = false;
-      });
-    }
+    if (!mounted) return;
 
     try {
       final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl) ??
@@ -119,40 +112,28 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       );
 
       _controller!.addEventsListener((event) async {
-        if (_isPlayerReady && mounted) {
+        if (mounted) {
           if (event.betterPlayerEventType == BetterPlayerEventType.play &&
-              !_isPlayerStarted) {
+              !_controller!.isPlaying()!) {
             widget.onPlay(meta: _videoMetaData);
-            _isPlayerStarted = true;
           }
-
           if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
             widget.onEnded(meta: _videoMetaData);
           }
         }
       });
 
-      // Wait for initialization
-      int attempts = 0;
-      while (attempts < 50 && !_controller!.isVideoInitialized()!) {
-        await Future.delayed(Duration(milliseconds: 100));
-        attempts++;
-      }
-
-      if (!_controller!.isVideoInitialized()!) {
-        throw Exception('Video not initialized after 50 attempts');
-      }
-
+      await _controller!.setupDataSource(_controller!.betterPlayerDataSource!);
+      if (!mounted) return;
       setState(() {
-        _isPlayerReady = true;
-        _isInitializing = false;
+        _isLoading = false;
       });
     } catch (e) {
       debugPrint('Error initializing YouTube video: $e');
       if (mounted) {
         setState(() {
+          _isLoading = false;
           _hasError = true;
-          _isInitializing = false;
         });
       }
     }
@@ -161,6 +142,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+    if (!mounted) return;
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
@@ -216,8 +198,8 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
             ElevatedButton(
               onPressed: () {
                 setState(() {
+                  _isLoading = true;
                   _hasError = false;
-                  _isInitializing = true;
                 });
                 _initializePlayer();
               },
@@ -235,7 +217,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       return _buildErrorWidget();
     }
 
-    if (_isInitializing || _controller == null) {
+    if (_isLoading || _controller == null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(12.0),

@@ -1,8 +1,7 @@
-import 'package:medical/src/app.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/widget/level_off_diabetes_rule_picker.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
-import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 
 import 'add_bmi_mixin.dart';
@@ -84,8 +83,7 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
                         indexRange == cubit.rangeValue.length - 1) {
                       showDialogWarning(context, cubit: cubit);
                     } else {
-                      await cubit.submitData();
-                      // Navigator.pop(context);
+                      cubit.submitData();
                     }
                   },
                   child: Container(

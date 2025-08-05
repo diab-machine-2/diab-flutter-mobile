@@ -234,7 +234,7 @@ class Drawables {
   String get ic_note_text => "lib/res/drawables/ic_note_text.png";
   String get ic_ok => "lib/res/drawables/ic_ok.png";
   String get ic_package_experience =>
-      "lib/res/drawables/ic_package_experience.png";
+    "lib/res/drawables/ic_package_experience.png";
   String get ic_package_premium => "lib/res/drawables/ic_package_premium.png";
   String get ic_package_pro => "lib/res/drawables/ic_package_pro.png";
   String get ic_package_roadmap => "lib/res/drawables/ic_package_roadmap.png";
@@ -780,6 +780,7 @@ class Drawables {
   String get co_ban_bg => "lib/res/drawables/co_ban_bg.png";
   String get co_ban_badge => "lib/res/drawables/co_ban_badge.png";
   String get ic_dialog_failed => "lib/res/drawables/ic_dialog_failed.png";
+  String get ic_infographic => "lib/res/drawables/ic_infographic.png";
   String get subscription_program_full_1 =>
       "lib/res/drawables/subscription/subscription_program_full_1.png";
   String get subscription_program_full_2 =>

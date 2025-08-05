@@ -1691,6 +1691,7 @@ class _AppApi implements AppApi {
     toDate,
     courseId,
     calendarType,
+    type,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -1699,6 +1700,7 @@ class _AppApi implements AppApi {
       r'toDate': toDate,
       r'courseId': courseId,
       r'calendarType': calendarType,
+      r'type': type,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

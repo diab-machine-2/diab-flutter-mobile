@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
@@ -14,7 +15,8 @@ import '../kcal_parameter/kcal_parameter.dart';
 import 'intro_sample_menu.dart';
 
 class IntroSampleMenuPage extends StatefulWidget {
-  const IntroSampleMenuPage();
+  final SmartGoalList? smartGoal;
+  const IntroSampleMenuPage({this.smartGoal});
   @override
   _IntroSampleMenuPageState createState() => _IntroSampleMenuPageState();
 }
@@ -170,8 +172,10 @@ class _IntroSampleMenuPageState extends State<IntroSampleMenuPage> {
                         barrierColor: R.color.color0xff003F38.withOpacity(0.5),
                         context: context,
                         builder: (_) => KcalParameterPage(
+                          smartGoal: widget.smartGoal,
                           callback: (request) {
-                            NavigationUtil.replace(context, FoodMenuPage(createMenuRequest: request));
+                            NavigationUtil.replace(context,
+                                FoodMenuPage(createMenuRequest: request));
                           },
                         ),
                       );

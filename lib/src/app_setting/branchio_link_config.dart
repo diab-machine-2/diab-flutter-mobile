@@ -10,6 +10,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -18,6 +19,8 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import '../model/response/lesson_section_list_response.dart';
 
 class BranchioLinkConfig {
@@ -25,17 +28,14 @@ class BranchioLinkConfig {
   static final BranchioLinkConfig instance =
       BranchioLinkConfig._privateConstructor();
 
-  static String _androidApplicationId = "com.vbhc.diab";
-  static String _iosBundleId = "com.cactusoftware.diab";
-  static String _appStoreId = "1569353448";
-
   StreamSubscription? _subLink;
+  String? _courseId;
+  String? _endTime;
+  int? _interviewType;
   String? _referalCode;
   String? _lessonId;
   String? _activityId;
   String? _zoomId;
-  String? _courseId;
-  String? _endTime;
   String? _meetingId;
   String? _meetingPassword;
   String? _shareLink;
@@ -58,6 +58,13 @@ class BranchioLinkConfig {
   String? get shareLink => _shareLink;
   String? get meetingId => _meetingId;
   String? get meetingPassword => _meetingPassword;
+  int? _pendingTargetType;
+  String? _pendingSmartGoalId;
+  String? _pendingSurveyId;
+  String? _pendingLessonId;
+  String? _pendingLessonType;
+
+  // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
   bool get hasPendingLoginDeeplink => _hasPendingLoginDeeplink;
   int? get pendingClinicId => _pendingClinicId;
@@ -74,6 +81,14 @@ class BranchioLinkConfig {
   bool isActivatedSubscription = false;
 
   void setUpHandleDeepLink() {
+    SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
+      screenName: 'deeplink',
+      trackingEnabled: false, // Disable tracking for deeplinks
+      showGlucoseBottomSheet: false,
+      showBloodPressureIntro: false, // Skip intro for deeplinks
+      hasInputBloodPressure: true,
+      hasInputGlucose: true,
+    ));
     _subLink = FlutterBranchSdk.listSession().listen((data) async {
       log('listenDynamicLinks - Branchio DeepLink Data: $data');
       AppSettings.saveClickedBranchLink(data['+clicked_branch_link']);
@@ -139,8 +154,8 @@ class BranchioLinkConfig {
       // Handle course deeplink
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$course")) {
-        _processBookingCourseLink(
-            data['\$course'] as String, data['\$end_time'] as String?);
+        _processBookingCourseLink(data['\$course'] as String,
+            data['\$end_time'] as String?, data['\$type'] as String?);
         return;
       }
 
@@ -218,7 +233,65 @@ class BranchioLinkConfig {
         return;
       }
 
-      // Handle old Firebase dynamic link referral code
+      // Handle targetType and smartGoalId deeplink
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey('\$targetType') &&
+          data.containsKey('\$smartGoalId')) {
+        final smartGoalId = data['\$smartGoalId'] as String?;
+        final targetType = data['\$targetType'] as String?;
+        final surveyId = data['\$surveyId'] as String?;
+        final lessonId = data['\$lessonId'] as String?;
+        final lessonType = data['\$lessonType'] as String?;
+
+        if (targetType == null || smartGoalId == null) {
+          return;
+        }
+
+        final targetTypeNum = int.tryParse(targetType);
+        if (targetTypeNum == null) {
+          return;
+        }
+
+        print(
+            '[ROUTE] Handling targetType deeplink: $targetTypeNum with smartGoalId: $smartGoalId, lessonId: $lessonId, surveyId: $surveyId');
+
+        // Create a SmartGoalList object with the provided data
+        SmartGoalList smartGoal = SmartGoalList(
+          id: smartGoalId,
+          surveyId: surveyId,
+          type: targetTypeNum,
+        );
+
+        // Handle lesson data if lessonId and lessonType are provided
+        if (lessonId != null && lessonType != null) {
+          final lessonTypeNum = int.tryParse(lessonType);
+          if (lessonTypeNum != null) {
+            // Create lesson data with the actual lesson ID
+            final lessonData = LessonSectionListResponseData(
+              id: lessonId,
+              type: lessonTypeNum,
+            );
+
+            // Set the lesson data to the smartGoal
+            smartGoal.data = lessonData;
+          }
+        }
+
+        // Navigate immediately if app is initialized and user is logged in
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          await _handleTargetTypeDeeplink(targetTypeNum, smartGoal);
+        } else {
+          // Store for later execution
+          _pendingTargetType = targetTypeNum;
+          _pendingSmartGoalId = smartGoalId;
+          _pendingSurveyId = surveyId;
+          _pendingLessonId = lessonId;
+          _pendingLessonType = lessonType;
+        }
+        return;
+      }
+
+      //Handle old dynamic link referral code
       if (data['+non_branch_link'] != null) {
         final urlString = data['+non_branch_link'] as String;
         AppSettings.saveClickedBranchLink(urlString.isNotEmpty);
@@ -248,7 +321,7 @@ class BranchioLinkConfig {
       imageUrl:
           'https://api.diab.com.vn/App/Image/a95ed12f-3880-4588-378f-08dbc2ecc277',
       contentMetadata: BranchContentMetaData()
-        ..addCustomMetadata('\$referralCode', user.shareRefCode),
+        ..addCustomMetadata('\$referralCode', user.shareRefCode ?? ''),
     );
 
     final BranchLinkProperties linkProperties = BranchLinkProperties(
@@ -290,8 +363,8 @@ class BranchioLinkConfig {
       contentMetadata: BranchContentMetaData()
         ..addCustomMetadata('lessonName', lesson.name ?? 'Lesson Name')
         ..addCustomMetadata('lessonCode', lesson.code ?? 'Lesson Code')
-        ..addCustomMetadata('\$lessonId', lesson.lessonId)
-        ..addCustomMetadata('\$referralCode', user.shareRefCode),
+        ..addCustomMetadata('\$lessonId', lesson.lessonId ?? '')
+        ..addCustomMetadata('\$referralCode', user.shareRefCode ?? ''),
     );
 
     final BranchLinkProperties linkProperties = BranchLinkProperties(
@@ -327,7 +400,7 @@ class BranchioLinkConfig {
       contentDescription: shareDescription,
       imageUrl: shareBanner,
       contentMetadata: BranchContentMetaData()
-        ..addCustomMetadata('\$newsDetail', newsDetail.id),
+        ..addCustomMetadata('\$newsDetail', newsDetail.id ?? ''),
     );
 
     final BranchLinkProperties linkProperties = BranchLinkProperties(
@@ -414,23 +487,6 @@ class BranchioLinkConfig {
     } catch (e) {
       print('[ROUTE] Error executing login deeplink navigation: $e');
       clearPendingLoginData();
-    }
-  }
-
-  void checkPendingContentNavigation() {
-    if (_lessonId != null &&
-        AppSettings.splashScreenInitDone &&
-        AppSettings.userInfo != null) {
-      print('[ROUTE] Executing pending lesson navigation: $_lessonId');
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
-    }
-    if (_activityId != null &&
-        AppSettings.splashScreenInitDone &&
-        AppSettings.userInfo != null) {
-      print('[ROUTE] Executing pending activity navigation: $_activityId');
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
     }
   }
 
@@ -549,6 +605,11 @@ class BranchioLinkConfig {
     _pendingMode = null;
     _pendingType = null;
     _hasPendingDeeplink = false;
+    _pendingTargetType = null;
+    _pendingSmartGoalId = null;
+    _pendingSurveyId = null;
+    _pendingLessonId = null;
+    _pendingLessonType = null;
   }
 
   void clearPendingLoginData() {
@@ -573,11 +634,12 @@ class BranchioLinkConfig {
     int bookingQuantity = 0;
 
     final request = CalendarFilter(
-        accountPatientId: AppSettings.userInfo!.accountId,
-        courseId: _courseId!,
-        fromDate: startDate,
-        toDate: endDate,
-        calendarType: 1);
+      accountPatientId: AppSettings.userInfo!.accountId,
+      courseId: _courseId!,
+      fromDate: startDate,
+      toDate: endDate,
+      calendarType: _interviewType ?? 30,
+    );
     final ApiResult<List<CreateCalendarResponse>> apiResult =
         await AppRepository().getMyCalendar(request);
     apiResult.when(success: (List<CreateCalendarResponse> response) {
@@ -594,6 +656,7 @@ class BranchioLinkConfig {
               "courseId": _courseId,
               "endTime": _endTime ?? '',
               "bookingQuantity": bookingQuantity,
+              "interviewType": _interviewType ?? 30,
             });
           } else {
             navigatorKey.currentState
@@ -604,15 +667,40 @@ class BranchioLinkConfig {
               "courseId": _courseId,
               "endTime": _endTime ?? '',
               "bookingQuantity": bookingQuantity,
+              "interviewType": _interviewType ?? 30,
             });
           }
           _resetDataLink();
           return;
         }
+        _resetDataLink();
+        return;
       }
     }, failure: (NetworkExceptions error) {
+      // emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
       return;
     });
+
+    if (bookingQuantity == 0) {
+      bool isCalendarBookingPage =
+          _isCurrentRoute(NavigatorName.calendar_booking);
+      if (isCalendarBookingPage) {
+        navigatorKey.currentState
+            ?.pushReplacementNamed(NavigatorName.calendar_booking, arguments: {
+          'courseId': _courseId,
+          'endTime': _endTime,
+          'interviewType': _interviewType
+        });
+      } else {
+        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
+            arguments: {
+              'courseId': _courseId,
+              'endTime': _endTime,
+              'interviewType': _interviewType
+            });
+      }
+      _resetDataLink();
+    }
 
     if (bookingQuantity == 0) {
       bool isCalendarBookingPage =
@@ -651,15 +739,18 @@ class BranchioLinkConfig {
     _zoomId = zoomId;
   }
 
-  void _processBookingCourseLink(String courseId, String? endTime) {
+  void _processBookingCourseLink(
+      String courseId, String? endTime, String? type) {
     _courseId = courseId;
     _endTime = endTime;
+    _interviewType = int.tryParse(type ?? '30');
     if (AppSettings.userInfo != null) tryNavigateBooking();
   }
 
   void _resetDataLink() {
     _courseId = null;
     _endTime = null;
+    _interviewType = null;
   }
 
   bool _isCurrentRoute(String routeName) {
@@ -671,8 +762,85 @@ class BranchioLinkConfig {
     return result;
   }
 
+  Future<void> _handleTargetTypeDeeplink(
+      int targetType, SmartGoalList smartGoal) async {
+    try {
+      // Convert targetType string to ScheduleType enum
+      ScheduleType scheduleType =
+          ScheduleTypeExtend.getTypeFromIndex(targetType);
+
+      // Call the existing _onSelectGoal function
+      await _onSelectGoal(scheduleType, smartGoal: smartGoal);
+    } catch (e) {
+      print('[ROUTE] Error handling targetType deeplink: $e');
+      TrackingManager.recordError(e, null);
+    }
+  }
+
+  void checkPendingContentNavigation() {
+    if (_lessonId != null &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      print('[ROUTE] Executing pending lesson navigation: $_lessonId');
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_DETAIL);
+    }
+
+    if (_activityId != null &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      print('[ROUTE] Executing pending activity navigation: $_activityId');
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
+    }
+
+    if (_pendingTargetType != null &&
+        _pendingSmartGoalId != null &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      print(
+          '[ROUTE] Executing pending targetType navigation: $_pendingTargetType with smartGoalId: $_pendingSmartGoalId');
+
+      SmartGoalList smartGoal = SmartGoalList(
+        id: _pendingSmartGoalId,
+        surveyId: _pendingSurveyId,
+        type: _pendingTargetType,
+      );
+
+      // Handle lesson data if available
+      if (_pendingLessonId != null && _pendingLessonType != null) {
+        final lessonTypeNum = int.tryParse(_pendingLessonType!);
+        if (lessonTypeNum != null) {
+          final lessonData = LessonSectionListResponseData(
+            id: _pendingLessonId!, // Use the actual lessonId
+            type: lessonTypeNum,
+          );
+          smartGoal.data = lessonData;
+        }
+      }
+
+      _handleTargetTypeDeeplink(_pendingTargetType!, smartGoal);
+
+      _pendingTargetType = null;
+      _pendingSmartGoalId = null;
+      _pendingSurveyId = null;
+      _pendingLessonId = null;
+      _pendingLessonType = null;
+    }
+  }
+
   void dispose() {
     _navigationTimer?.cancel();
     _subLink?.cancel();
+  }
+
+  Future<void> _onSelectGoal(ScheduleType type,
+      {SmartGoalList? smartGoal}) async {
+    await SmartGoalNavigationUtil.onSelectGoal(
+      navigatorKey.currentContext!,
+      type,
+      smartGoal: smartGoal,
+      // No refresh callback needed for deeplinks
+    );
   }
 }
