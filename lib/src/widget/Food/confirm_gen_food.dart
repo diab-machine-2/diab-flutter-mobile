@@ -349,10 +349,17 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                               ],
                             ),
                           ),
-                          Image.asset(
-                            R.drawable.ic_food_edit,
-                            width: 32,
-                            height: 32,
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedFoods.removeAt(index);
+                              });
+                            },
+                            child: Image.asset(
+                              R.drawable.ic_food_delete,
+                              width: 32,
+                              height: 32,
+                            ),
                           ),
                         ],
                       ),

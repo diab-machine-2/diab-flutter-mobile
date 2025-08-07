@@ -499,6 +499,7 @@ class Drawables {
   String get ic_food_bowl => "lib/res/drawables/food/ic_food_bowl.png";
   String get ic_food_edit => "lib/res/drawables/food/ic_food_edit.png";
   String get ic_food_edit_raw => "lib/res/drawables/food/ic_food_edit_raw.png";
+  String get ic_food_delete => "lib/res/drawables/food/ic_food_delete.png";
 
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
