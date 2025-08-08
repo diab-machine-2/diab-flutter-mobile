@@ -35,6 +35,7 @@ class FirebaseRemoteSetting {
   ];
   bool? _appDeveloperMode = false;
   String? _vnpayIntegratedInfo;
+  String? _subscriptionPackageInfo;
 
   String get appStoreVersion => _appStoreVersion;
   String get playStoreVersion => _playStoreVersion;
@@ -49,6 +50,7 @@ class FirebaseRemoteSetting {
   List<GlucoseFaq> get glucoseFaqs => _glucoseFaqs;
   String? get specialtyOrder => _specialtyOrder;
   String? get vnpayIntegratedInfo => _vnpayIntegratedInfo;
+  String? get subscriptionPackageInfo => _subscriptionPackageInfo;
 
   Future<void> init({Duration timeout = const Duration(seconds: 10)}) async {
     // Get local settings
@@ -73,7 +75,8 @@ class FirebaseRemoteSetting {
           jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
       "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ??
           "cao-huyet-ap,tieu-duong,suy-than-man,suc-khoe-tim-mach,benh-khac",
-      "VNPAY_INTEGRATED_INFO": localSetting["VNPAY_INTEGRATED_INFO"] ?? ''
+      "VNPAY_INTEGRATED_INFO": localSetting["VNPAY_INTEGRATED_INFO"] ?? '',
+      "SUBSCRIPTION_PACKAGE_INFO": localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? ''
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -118,5 +121,6 @@ class FirebaseRemoteSetting {
     }
     _specialtyOrder = remoteConfig.getString('SPECIALTIES_ORDER');
     _vnpayIntegratedInfo = remoteConfig.getString('VNPAY_INTEGRATED_INFO');
+    _subscriptionPackageInfo = remoteConfig.getString('SUBSCRIPTION_PACKAGE_INFO');
   }
 }

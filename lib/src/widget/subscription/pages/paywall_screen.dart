@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_detail_page.dart';
@@ -50,8 +53,20 @@ class _PaywallScreenState extends State<PaywallScreen> {
     });
 
     try {
-      // Always load local package data first
-      final localPackages = await SubscriptionService.getLocalPackages();
+      // Try to load from Firebase Remote Config first, fallback to local packages
+      List<SubscriptionPackage> localPackages = [];
+      try {
+        final packageInfo = FirebaseRemoteSetting.instance.subscriptionPackageInfo;
+        if (packageInfo != null && packageInfo.isNotEmpty) {
+          localPackages = SubscriptionPackage.fromList(jsonDecode(packageInfo)['packages']);
+        }
+        if (localPackages.isEmpty) {
+          localPackages = await SubscriptionService.getLocalPackages();
+        }
+      } catch (e) {
+        print('Error loading remote packages, falling back to local: $e');
+        localPackages = await SubscriptionService.getLocalPackages();
+      }
 
       _revenueCatPackages = await RevenueCatService.getOfferings();
 
