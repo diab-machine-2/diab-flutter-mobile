@@ -371,7 +371,7 @@ class BranchioLinkConfig {
       feature: 'lesson_share',
       channel: 'app_share',
       campaign: 'lesson_share',
-      stage: lesson.code ?? 'missing_lesson_code',
+      stage: "${Const.ENVIRONMENT_DEFAULT} ${lesson.code ?? 'missing_lesson_code'}",
       tags: ['${user.accountId}'],
     );
 

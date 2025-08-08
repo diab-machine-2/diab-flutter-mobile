@@ -249,8 +249,5 @@ class Const {
   static const TABLET_BREAKPOINT = 540;
   static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
-  static const REGION_ALLOW_CONNECT_DEVICE = [
-    "VN",
-    "KR"
-  ];
+  static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
 }

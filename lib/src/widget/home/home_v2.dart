@@ -612,7 +612,7 @@ class _HomeControllerState extends State<HomeController>
                 // special case for utilities
                 switch (routeName) {
                   case "share":
-                    String? shareLink = DynamicLinkConfig.instance.shareLink;
+                    String? shareLink = BranchioLinkConfig.instance.shareLink;
                     if (shareLink != null) {
                       AppShare.instance.userReferralCode(context, shareLink);
                     }

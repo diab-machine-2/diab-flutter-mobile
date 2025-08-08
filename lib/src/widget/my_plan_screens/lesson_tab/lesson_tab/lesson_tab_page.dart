@@ -349,12 +349,14 @@ class _LessonTabPageState extends State<LessonTabPage>
       index = _cubit.weekStatesList.length - 1;
       refresh = false;
     }
-    final double newPosition = index * 96 + (6 * index.toDouble());
-    _weekScrollController.animateTo(
-      newPosition,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.ease,
-    );
+    if (_weekScrollController.hasClients) {
+      final double newPosition = index * 96 + (6 * index.toDouble());
+      _weekScrollController.animateTo(
+        newPosition,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.ease,
+      );
+    }
     if (refresh) {
       _cubit.onSelectWeek(index);
     }

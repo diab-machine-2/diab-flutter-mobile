@@ -133,7 +133,9 @@ class App extends StatelessWidget {
                 //   child: child!,
                 // );
                 child = BotToastInit()(context, child);
-                return child;
+                return SafeArea(
+                  child: child,
+                );
               },
               navigatorKey: navigatorKey,
               navigatorObservers: [
@@ -730,12 +732,15 @@ class App extends StatelessWidget {
                           periodFilterType: args['periodFilterType'],
                         ));
                   case NavigatorName.exercrise_add_v2:
-                    Map<String, dynamic>? args = settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(settings, ExercrisesAddV2(
-                      isUpdate: args?['isUpdate'],
-                      exerciseInputId: args?['exerciseInputId'],
-                      datetime: args?['datetime'],
-                    ));
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        ExercrisesAddV2(
+                          isUpdate: args?['isUpdate'],
+                          exerciseInputId: args?['exerciseInputId'],
+                          datetime: args?['datetime'],
+                        ));
                   case NavigatorName.exercrise_select_category:
                     final args = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(
