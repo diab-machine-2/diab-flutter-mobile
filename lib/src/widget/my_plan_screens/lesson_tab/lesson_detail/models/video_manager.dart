@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -270,8 +268,10 @@ class VideoManager {
             controller.videoPlayerController!.value.duration?.inMilliseconds) {
           try {
             await controller.pause();
+            controller.exitFullScreen();
           } catch (e) {
-            print("Error pausing on iOS: ${e.toString()}");
+            print(
+                "Error pausing or exiting fullscreen on iOS: ${e.toString()}");
           }
         }
       }
@@ -293,8 +293,18 @@ class VideoManager {
           // Check for completion
           if (duration == position) {
             checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
+            try {
+              controller.exitFullScreen();
+              if (onExitFullScreen != null) {
+                await Future.delayed(const Duration(seconds: 1));
+                onExitFullScreen!.call();
+              }
+            } catch (e) {
+              print("Error exiting fullscreen on completion: ${e.toString()}");
+            }
             onCompleted?.call();
             finishedVideo = true;
+            
           }
 
           // Check for percentage callback

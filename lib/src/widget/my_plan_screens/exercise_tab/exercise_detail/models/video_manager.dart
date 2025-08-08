@@ -21,6 +21,7 @@ class VideoManager {
   CustomPlayerEventType? currentEventState;
   final Function(CustomPlayerEventType, Duration)? callbackEventListener;
   final Function(String, int)? onCompleteVideo;
+  final VoidCallback? onExitFullScreen;
   bool hasPlayed = false;
   bool finishedVideo = false;
   bool callbackByPercentVideoSuccess = false;
@@ -89,15 +90,16 @@ class VideoManager {
 
   VideoManager.fromExerciseData(
     BuildContext context,
-    ExerciseMovementResponseData exerciseData, {
+    ExerciseMovementResponseData? exerciseData, {
     this.callbackEventListener,
     this.onDone,
     this.onCompleteVideo,
+    this.onExitFullScreen,
   }) {
     sourceList.clear();
 
     for (final ExerciseMovementResponseDataSections? data
-        in exerciseData.sections ?? []) {
+        in exerciseData?.sections ?? []) {
       sourceList.add(VideoSourceData(
           url: data?.videoUrl ?? '',
           loopTimes: data?.replayTime ?? 1,
@@ -106,7 +108,7 @@ class VideoManager {
 
     if (sourceList.isEmpty) {
       sourceList.add(VideoSourceData(
-          url: exerciseData.videoUrl ?? '',
+          url: exerciseData?.videoUrl ?? '',
           loopTimes: 1,
           exerciseCategoryId: ''));
     }
@@ -117,7 +119,7 @@ class VideoManager {
     }
   }
 
-  void _initializeController(ExerciseMovementResponseData exerciseData) {
+  void _initializeController(ExerciseMovementResponseData? exerciseData) {
     final BetterPlayerController newController = BetterPlayerController(
       BetterPlayerConfiguration(
         placeholder: _buildVideoPlaceholder(),
@@ -126,7 +128,7 @@ class VideoManager {
         autoDispose: false,
         expandToFill: false,
         allowedScreenSleep: false,
-        fit: BoxFit.fitHeight,
+        fit: BoxFit.contain,
         deviceOrientationsAfterFullScreen: [
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
@@ -135,7 +137,7 @@ class VideoManager {
           SystemUiOverlay.top,
           SystemUiOverlay.bottom,
         ],
-        handleLifecycle: true,
+        handleLifecycle: false, // Align with lesson module
         autoPlay: false,
         startAt: Duration.zero,
         controlsConfiguration: BetterPlayerControlsConfiguration(
@@ -152,14 +154,40 @@ class VideoManager {
           progressBarHandleColor: R.color.greenGradientBottom,
         ),
       ),
-    );
+    )..addEventsListener((event) async {
+        if (event.betterPlayerEventType == BetterPlayerEventType.play) {
+          _placeholderStreamController.add(true);
+        }
+        if (currentEventState == null &&
+            event.betterPlayerEventType == BetterPlayerEventType.play &&
+            !isCompleted) {
+          checkCallbackEventListener(CustomPlayerEventType.videoPlay);
+        }
+        if (event.betterPlayerEventType == BetterPlayerEventType.play &&
+            isCompleted) {
+          checkCallbackEventListener(CustomPlayerEventType.videoReplay);
+          isCompleted = false;
+        }
+        if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
+          checkCallbackEventListener(CustomPlayerEventType.videoPause);
+        }
+        if (event.betterPlayerEventType == BetterPlayerEventType.progress &&
+            controller != null) {
+          currentMillisecond =
+              controller!.videoPlayerController!.value.position.inMilliseconds;
+        }
+        if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
+          if (currentMillisecond >
+              controller!
+                  .videoPlayerController!.value.position.inMilliseconds) {
+            checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
+          } else {
+            checkCallbackEventListener(CustomPlayerEventType.videoFoward);
+          }
+        }
+      });
 
-    // Add event listener
-    newController.addEventsListener((event) async {
-      await _handlePlayerEvent(event);
-    });
-
-    debugPrint(
+    print(
         '[EXERCISE] video manager init from exercise data url: ${sourceList[currentSourceIndex].url}');
 
     BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
@@ -167,9 +195,9 @@ class VideoManager {
       sourceList[currentSourceIndex].url,
       notificationConfiguration: BetterPlayerNotificationConfiguration(
         showNotification: true,
-        title: exerciseData.name ?? 'DiaB Exercise',
+        title: exerciseData?.name ?? 'DiaB Exercise',
         author: 'DiaB',
-        imageUrl: exerciseData.image?.url ?? R.drawable.ic_app,
+        imageUrl: exerciseData?.image?.url ?? R.drawable.ic_app,
       ),
       headers: {
         'User-Agent': 'diaB Exercise Player',
@@ -179,7 +207,63 @@ class VideoManager {
     newController.setupDataSource(betterPlayerDataSource);
 
     newController.videoPlayerController?.addListener(() async {
-      await _handleVideoPlayerEvents(newController);
+      // Wait until the video is properly initialized with a valid duration
+      if (newController.videoPlayerController?.value.duration != null &&
+          newController.videoPlayerController!.value.duration!.inMilliseconds >
+              0) {
+        // Update videoDuration only if it's not set or if the current value is invalid
+        if (videoDuration == null || videoDuration!.inMilliseconds <= 0) {
+          videoDuration = newController.videoPlayerController!.value.duration;
+          debugPrint(
+              '[EXERCISE] Video duration set: ${videoDuration?.inSeconds} seconds');
+        }
+
+        // Get current values
+        Duration? duration =
+            newController.videoPlayerController!.value.duration;
+        Duration? position =
+            newController.videoPlayerController!.value.position;
+
+        // Only process completion logic if we have valid duration and position
+        if (!isLocked &&
+            duration != null &&
+            position != null &&
+            duration.inMilliseconds > 0 &&
+            !newController.videoPlayerController!.value.isPlaying &&
+            newController.videoPlayerController!.value.initialized) {
+          // Add fullscreen check
+          // Check if video is within 1000ms of completion or past completion
+          bool isAtEnd =
+              duration.inMilliseconds - position.inMilliseconds <= 1000;
+          bool isExactEnd = duration == position;
+
+          if (isAtEnd || isExactEnd) {
+            debugPrint(
+                '[EXERCISE] Video reached end: position=${position.inSeconds}s, duration=${duration.inSeconds}s');
+            try {
+              if (newController.isFullScreen) {
+                newController.exitFullScreen();
+                if (onExitFullScreen != null) {
+                  await Future.delayed(const Duration(seconds: 1));
+                  onExitFullScreen!.call();
+                }
+              }
+            } catch (e) {
+              debugPrint(
+                  "Error exiting fullscreen on completion: ${e.toString()}");
+            }
+            checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
+            isCompleted = true;
+            _startTimer();
+            if (onCompleteVideo != null &&
+                sourceList[currentSourceIndex].exerciseCategoryId.isNotEmpty) {
+              onCompleteVideo!(
+                  sourceList[currentSourceIndex].exerciseCategoryId,
+                  videoDuration?.inSeconds ?? 0);
+            }
+          }
+        }
+      }
     });
 
     this.controller = newController;
@@ -231,7 +315,6 @@ class VideoManager {
   Future<void> _handleVideoPlayerEvents(
       BetterPlayerController newController) async {
     try {
-      // Handle iOS specific completion detection
       if (Platform.isIOS) {
         if ((newController
                 .videoPlayerController!.value.position.inMilliseconds) ==
@@ -239,6 +322,7 @@ class VideoManager {
                 .videoPlayerController!.value.duration?.inMilliseconds) {
           try {
             await newController.pause();
+            newController.exitFullScreen();
           } catch (e) {
             debugPrint("[EXERCISE] Error pausing on iOS: ${e.toString()}");
           }
@@ -270,16 +354,25 @@ class VideoManager {
             !newController.videoPlayerController!.value.isPlaying &&
             newController.videoPlayerController!.value.initialized) {
           // Check if video is within 500ms of completion or past completion
-          // This tolerance helps with iOS timing issues
           bool isAtEnd =
               duration.inMilliseconds - position.inMilliseconds <= 500;
-
-          // Also check for exact completion
           bool isExactEnd = duration == position;
 
-          if (isAtEnd || isExactEnd) {
+          if ((isAtEnd || isExactEnd)) {
+            // Add fullscreen check
             debugPrint(
                 '[EXERCISE] Video reached end: position=${position.inSeconds}s, duration=${duration.inSeconds}s');
+
+            // Only exit fullscreen if already in fullscreen and video is completed
+            try {
+              if (newController.isFullScreen) {
+                newController.exitFullScreen();
+              }
+            } catch (e) {
+              debugPrint(
+                  "Error exiting fullscreen on completion: ${e.toString()}");
+            }
+
             checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
             isCompleted = true;
             finishedVideo = true;
@@ -345,7 +438,7 @@ class VideoManager {
     }
   }
 
-  checkCallbackEventListener(CustomPlayerEventType type) {
+  void checkCallbackEventListener(CustomPlayerEventType type) {
     if ((callbackEventListener != null &&
             currentEventState != type &&
             isCompleted == false) ||

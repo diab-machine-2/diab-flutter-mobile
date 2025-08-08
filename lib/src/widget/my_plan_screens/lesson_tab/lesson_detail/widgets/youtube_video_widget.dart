@@ -45,96 +45,134 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   Future<void> _initializePlayer() async {
     if (!mounted) return;
 
-    try {
-      final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl) ??
-          widget.videoUrl.split('/').last;
-      final streamManifest =
-          await _youtubeExplode.videos.streamsClient.getManifest(videoId);
-      final streamInfo = streamManifest.muxed.bestQuality;
-      final streamUrl = streamInfo.url.toString();
+    const maxRetries = 3;
+    int retryCount = 0;
 
-      _videoMetaData = {'videoId': videoId};
+    while (retryCount < maxRetries) {
+      try {
+        final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
+        if (videoId == null) {
+          throw Exception('Invalid YouTube URL: ${widget.videoUrl}');
+        }
+        debugPrint('Video URL: ${widget.videoUrl}, Video ID: $videoId');
 
-      _controller = BetterPlayerController(
-        BetterPlayerConfiguration(
-          autoPlay: false,
-          handleLifecycle: true,
-          allowedScreenSleep: false,
-          fit: BoxFit.contain,
-          aspectRatio: 16 / 9,
-          autoDispose: false,
-          deviceOrientationsAfterFullScreen: [
-            DeviceOrientation.portraitUp,
-            DeviceOrientation.portraitDown,
+        final streamManifest =
+            await _youtubeExplode.videos.streamsClient.getManifest(
+          videoId,
+          ytClients: [
+            YoutubeApiClient.ios,
+            YoutubeApiClient.android,
           ],
-          systemOverlaysAfterFullScreen: [
-            SystemUiOverlay.top,
-            SystemUiOverlay.bottom,
-          ],
-          controlsConfiguration: BetterPlayerControlsConfiguration(
-            enableProgressText: true,
-            enableProgressBar: true,
-            enablePlayPause: true,
-            enableMute: true,
-            enableFullscreen: true,
-            enableSubtitles: false,
-            enableAudioTracks: false,
-            enableOverflowMenu: true,
-            enablePlaybackSpeed: true,
-            progressBarPlayedColor: R.color.greenGradientBottom,
-            progressBarHandleColor: R.color.greenGradientBottom,
-          ),
-          placeholder: Container(
-            color: Colors.black,
-            child: Center(
-              child: Image.asset(
-                R.drawable.ic_thumbnail1,
-                fit: BoxFit.cover,
+        ).timeout(Duration(seconds: 10), onTimeout: () {
+          throw Exception('Timed out fetching stream manifest');
+        });
+
+        // Prefer muxed streams, fallback to video-only streams (480p or highest bitrate)
+        final streamInfo = streamManifest.muxed.isNotEmpty
+            ? streamManifest.muxed.bestQuality
+            : streamManifest.videoOnly
+                    .where((info) =>
+                        info.container == StreamContainer.mp4 &&
+                        info.videoResolution == VideoResolution(640, 360))
+                    .firstOrNull ?? // 360p MP4
+                streamManifest.videoOnly
+                    .where((info) =>
+                        info.container == StreamContainer.mp4 &&
+                        info.videoResolution == VideoResolution(854, 480))
+                    .firstOrNull ?? // 480p MP4
+                streamManifest.videoOnly.withHighestBitrate();
+        final streamUrl = streamInfo.url.toString();
+
+        _videoMetaData = {'videoId': videoId};
+
+        _controller = BetterPlayerController(
+          BetterPlayerConfiguration(
+            autoPlay: false,
+            handleLifecycle: true,
+            allowedScreenSleep: false,
+            fit: BoxFit.contain,
+            aspectRatio: 16 / 9,
+            autoDispose: false,
+            deviceOrientationsAfterFullScreen: [
+              DeviceOrientation.portraitUp,
+              DeviceOrientation.portraitDown,
+            ],
+            systemOverlaysAfterFullScreen: [
+              SystemUiOverlay.top,
+              SystemUiOverlay.bottom,
+            ],
+            controlsConfiguration: BetterPlayerControlsConfiguration(
+              enableProgressText: true,
+              enableProgressBar: true,
+              enablePlayPause: true,
+              enableMute: true,
+              enableFullscreen: true,
+              enableSubtitles: false,
+              enableAudioTracks: false,
+              enableOverflowMenu: true,
+              enablePlaybackSpeed: true,
+              progressBarPlayedColor: R.color.greenGradientBottom,
+              progressBarHandleColor: R.color.greenGradientBottom,
+            ),
+            placeholder: Container(
+              color: Colors.black,
+              child: Center(
+                child: Image.asset(
+                  R.drawable.ic_thumbnail1,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
+            showPlaceholderUntilPlay: true,
           ),
-          showPlaceholderUntilPlay: true,
-        ),
-        betterPlayerDataSource: BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          streamUrl,
-          videoFormat: BetterPlayerVideoFormat.other,
-          notificationConfiguration: BetterPlayerNotificationConfiguration(
-            showNotification: true,
-            title: widget.videoTitle ?? 'DiaB Lesson',
-            author: widget.videoArtist ?? 'DiaB',
-            imageUrl: widget.videoThumbnail ?? R.drawable.ic_app,
+          betterPlayerDataSource: BetterPlayerDataSource(
+            BetterPlayerDataSourceType.network,
+            streamUrl,
+            videoFormat: BetterPlayerVideoFormat.other,
+            notificationConfiguration: BetterPlayerNotificationConfiguration(
+              showNotification: true,
+              title: widget.videoTitle ?? 'DiaB Lesson',
+              author: widget.videoArtist ?? 'DiaB',
+              imageUrl: widget.videoThumbnail ?? R.drawable.ic_app,
+            ),
+            headers: {
+              'User-Agent': 'diaB Video Player',
+            },
           ),
-          headers: {
-            'User-Agent': 'diaB Video Player',
-          },
-        ),
-      );
+        );
 
-      _controller!.addEventsListener((event) async {
-        if (mounted) {
-          if (event.betterPlayerEventType == BetterPlayerEventType.play &&
-              !_controller!.isPlaying()!) {
-            widget.onPlay(meta: _videoMetaData);
+        _controller!.addEventsListener((event) async {
+          if (mounted) {
+            if (event.betterPlayerEventType == BetterPlayerEventType.play &&
+                !_controller!.isPlaying()!) {
+              widget.onPlay(meta: _videoMetaData);
+            }
+            if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
+              widget.onEnded(meta: _videoMetaData);
+            }
           }
-          if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
-            widget.onEnded(meta: _videoMetaData);
-          }
-        }
-      });
+        });
 
-      await _controller!.setupDataSource(_controller!.betterPlayerDataSource!);
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      debugPrint('Error initializing YouTube video: $e');
-      if (mounted) {
+        await _controller!
+            .setupDataSource(_controller!.betterPlayerDataSource!);
+        if (!mounted) return;
         setState(() {
           _isLoading = false;
-          _hasError = true;
         });
+      } catch (e) {
+        retryCount++;
+        debugPrint(
+            'Error initializing YouTube video (attempt $retryCount/$maxRetries): $e');
+        if (retryCount >= maxRetries) {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+              _hasError = true;
+            });
+          }
+          return;
+        }
+        await Future.delayed(Duration(seconds: 2));
       }
     }
   }
