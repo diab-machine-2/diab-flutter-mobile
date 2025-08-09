@@ -1378,4 +1378,27 @@ class Strings {
   String get should_do_2_description => 'should_do_2_description';
   String get should_do_3 => 'should_do_3';
   String get activate_program_failed => 'activate_program_failed';
+
+  String get medicine_name => 'medicine_name';
+  String get medicine_unit => 'medicine_unit';
+  String get pill => 'pill';
+  String get package => 'package';
+  String get tube => 'tube';
+  String get other_unit => 'other_unit';
+  String get current_medicine_quantity => 'current_medicine_quantity';
+  String get dosage => 'dosage';
+  String get input => 'input';
+  String get during_meal => 'during_meal';
+  String get time_of_use => 'time_of_use';
+  String get frequency_of_use => 'frequency_of_use';
+  String get everyday => 'everyday';
+  String get every_other_day => 'every_other_day';
+
+  String get chip_monday => 'chip_monday';
+  String get chip_tuesday => 'chip_tuesday';
+  String get chip_wednesday => 'chip_wednesday';
+  String get chip_thursday => 'chip_thursday';
+  String get chip_friday => 'chip_friday';
+  String get chip_saturday => 'chip_saturday';
+  String get chip_sunday => 'chip_sunday';
 }

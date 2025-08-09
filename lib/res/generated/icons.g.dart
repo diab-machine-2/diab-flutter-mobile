@@ -23,4 +23,9 @@ class Icons {
   String get ic_health_app => "lib/res/icons/ic_health_app.svg";
   String get ic_telephone => "lib/res/icons/ic_telephone.svg";
   String get ic_clock => "lib/res/icons/ic_clock.svg";
+  String get ic_camera => "lib/res/icons/ic_camera.svg";
+  String get ic_morning => "lib/res/icons/ic_morning.svg";
+  String get ic_noon => "lib/res/icons/ic_noon.svg";
+  String get ic_afternoon => "lib/res/icons/ic_afternoon.svg";
+  String get ic_night => "lib/res/icons/ic_night.svg";
 }
