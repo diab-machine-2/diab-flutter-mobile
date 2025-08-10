@@ -30,4 +30,9 @@ class Icons {
   String get ic_night => "lib/res/icons/ic_night.svg";
   String get ic_minus => "lib/res/icons/ic_minus.svg";
   String get ic_plus => "lib/res/icons/ic_plus.svg";
+  String get ic_information => "lib/res/icons/ic_information.svg";
+  String get ic_calendar => "lib/res/icons/ic_calendar.svg";
+  String get ic_medicine => "lib/res/icons/ic_medicine.svg";
+  String get ic_delete => "lib/res/icons/ic_delete.svg";
+  String get ic_edit => "lib/res/icons/ic_edit.svg";
 }

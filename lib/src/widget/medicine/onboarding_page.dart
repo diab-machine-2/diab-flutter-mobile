@@ -224,6 +224,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               child: _buildNeedSupportItem(
                 imageAsset: R.drawable.ic_mobile,
                 text: R.string.use_schedule_medicine.tr(),
+                onTap: () => _navigateToLessonDetail('142c710d-8aed-463f-c86b-08d9f022ae7d', 1),
               ),
             ),
             const SizedBox(width: 11),
@@ -232,6 +233,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               child: _buildNeedSupportItem(
                 imageAsset: R.drawable.ic_medicine_calendar,
                 text: R.string.why_schedule_medicine.tr(),
+                onTap: () => _navigateToLessonDetail('c1bb1875-5d2e-43d3-6869-08d9ef854092', 1),
               ),
             ),
           ],

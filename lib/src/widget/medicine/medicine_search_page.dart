@@ -197,6 +197,7 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
                 Navigator.pushNamed(context, NavigatorName.medicine_add, arguments: {
                   'medicineItem': item,
                 });
+                // Navigator.pushNamed(context, NavigatorName.prescription_add);
               },
               child: Row(
                 children: [

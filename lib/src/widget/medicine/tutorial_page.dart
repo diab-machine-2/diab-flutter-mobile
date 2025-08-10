@@ -176,6 +176,45 @@ class TutorialPage extends StatelessWidget {
           _buildShouldDoItem(
             note: R.string.should_do_3.tr(),
           ),
+
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Image.asset(R.drawable.ic_should_not_do, width: 24,),
+              const SizedBox(height: 1),
+              Text(
+                R.string.should_not_do.tr(),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.color0xff9C632B,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          _buildShouldNotDoItem(
+            note: R.string.should_not_do_1.tr(),
+            description: R.string.should_not_do_1_description.tr(),
+          ),
+          const SizedBox(height: 8),
+          _buildShouldNotDoItem(
+            note: R.string.should_not_do_2.tr(),
+          ),
+          const SizedBox(height: 8),
+          _buildShouldNotDoItem(
+            note: R.string.should_not_do_3.tr(),
+          ),
+
+          const SizedBox(height: 16),
+          Text(
+            R.string.tutorial_reference.tr(),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: R.color.color0xffBFC6C6,
+            ),
+          ),
         ],
       ),
     );
@@ -189,6 +228,40 @@ class TutorialPage extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(8)),
         color: Color(0xFFEAFFEC),
         border: Border.all(color: const Color(0xFFC7F6D7), width: 1.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            note,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: R.color.color0xff111515,
+            ),
+          ),
+          const SizedBox(height: 7),
+          if (description != null) Text(
+            description,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: R.color.color0xff5E6566,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShouldNotDoItem({required String note, String? description}) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+        color: Color(0xFFFFE9B3),
+        border: Border.all(color: const Color(0xFFFFE9B3), width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

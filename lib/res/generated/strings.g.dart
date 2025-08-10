@@ -1377,6 +1377,20 @@ class Strings {
   String get should_do_2 => 'should_do_2';
   String get should_do_2_description => 'should_do_2_description';
   String get should_do_3 => 'should_do_3';
+  String get should_not_do_1 => 'should_not_do_1';
+  String get should_not_do_1_description => 'should_not_do_1_description';
+  String get should_not_do_2 => 'should_not_do_2';
+  String get should_not_do_3 => 'should_not_do_3';
+  String get tutorial_reference  => 'tutorial_reference';
+  String get add_prescription => 'add_prescription';
+  String get prescription_warning => 'prescription_warning';
+  String get prescription_name=> 'prescription_name';
+  String get start_date => 'start_date';
+  String get set_timer => 'set_timer';
+  String get reminder_get_more_medicine => 'reminder_get_more_medicine';
+  String get reminder_get_more_medicine_description => 'reminder_get_more_medicine_description';
+  String get enable_medicine_notification => 'enable_medicine_notification';
+  String get enable_medicine_notification_description => 'enable_medicine_notification_description';
   String get activate_program_failed => 'activate_program_failed';
 
   String get medicine_name => 'medicine_name';
