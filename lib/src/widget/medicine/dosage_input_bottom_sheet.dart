@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../res/R.dart';
 import 'medicine_add_model.dart';
@@ -15,15 +16,17 @@ class DosageInputBottomSheet extends StatefulWidget {
 
 class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   DraftPrescription _draftPrescription = DraftPrescription();
-  String _selectedTiming = R.string.truoc_an.tr();
+  String _selectedTimeOfUse = R.string.truoc_an.tr();
   String _selectedFrequency = R.string.everyday.tr();
-  int _morningDose = 1;
-  int _afternoonDose = 0;
-  int _eveningDose = 0;
-  int _nightDose = 0;
+
+  // Mỗi ngày states
+  TextEditingController _quantityInMorning = TextEditingController(text: "0.0");
+  TextEditingController _quantityInNoon = TextEditingController(text: "0.0");
+  TextEditingController _quantityInAfternoon = TextEditingController(text: "0.0");
+  TextEditingController _quantityInEvening = TextEditingController(text: "0.0");
 
   // Ngày trong tuần states
-  int _dayInWeekQuantity = 0;
+  double _quantityOnDayInWeek = 0;
   // List to hold the currently selected days
   final List<int> _selectedDayIndexes = [];
   // List of all available days
@@ -38,16 +41,11 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   ];
 
   // Cách ngày states
-  int _everyOtherDayCounter = 0;
-  int _everyOtherDayQuantity = 0;
+  int _everyOtherDayNumber = 0;
+  double _quantityOnEveryOtherDay = 0;
 
   // Confirm Button
   bool _submitBtnEnabled = false;
-
-  final TextEditingController _morningDosageController = TextEditingController();
-  final TextEditingController _noonDosageController = TextEditingController();
-  final TextEditingController _afternoonDosageController = TextEditingController();
-  final TextEditingController _nightDosageController = TextEditingController();
 
   void _updateCounter(VoidCallback updateFunction) {
     setState(() {
@@ -60,14 +58,16 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   void _checkEnableSubmitBtnState() {
     setState(() {
       if (_selectedFrequency == R.string.everyday.tr()) {
-        _submitBtnEnabled = _morningDosageController.text.isNotEmpty ||
-            _noonDosageController.text.isNotEmpty||
-            _afternoonDosageController.text.isNotEmpty ||
-            _nightDosageController.text.isNotEmpty;
+        final morningQuantity = double.tryParse(_quantityInMorning.text) ?? 0.0;
+        final noonQuantity = double.tryParse(_quantityInNoon.text) ?? 0.0;
+        final afternoonQuantity = double.tryParse(_quantityInAfternoon.text) ?? 0.0;
+        final eveningQuantity = double.tryParse(_quantityInEvening.text) ?? 0.0;
+
+        _submitBtnEnabled = morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0;
       } else if (_selectedFrequency == R.string.ngay_trong_tuan.tr()) {
-        _submitBtnEnabled = _selectedDayIndexes.isNotEmpty && _dayInWeekQuantity > 0;
+        _submitBtnEnabled = _selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0;
       } else {
-        _submitBtnEnabled = _everyOtherDayCounter > 0 && _everyOtherDayQuantity > 0;
+        _submitBtnEnabled = _everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0;
       }
     });
   }
@@ -136,7 +136,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                           _buildFrequencySelector(),
                           const SizedBox(height: 16),
                           if (_selectedFrequency == R.string.everyday.tr())
-                            ..._buildDosageController()
+                            ..._buildEveryDayController()
                           else if (_selectedFrequency == R.string.ngay_trong_tuan.tr())
                             ..._buildDayInWeekController()
                           else
@@ -198,14 +198,14 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       children: [
         const SizedBox(width: 8),
         ...[R.string.truoc_an.tr(), R.string.sau_an.tr(), R.string.during_meal.tr()].map((timing) {
-          final isSelected = _selectedTiming == timing;
+          final isSelected = _selectedTimeOfUse == timing;
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: GestureDetector(
                 onTap: () {
                   setState(() {
-                    _selectedTiming = timing;
+                    _selectedTimeOfUse = timing;
                   });
                 },
                 child: AnimatedContainer(
@@ -275,59 +275,127 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     );
   }
 
-  List<Widget> _buildDosageController() {
+  List<Widget> _buildEveryDayController() {
     return [
       _buildSectionTitle(R.string.dosage.tr()),
-      _buildDosageRow(R.string.morning.tr(), Icons.wb_sunny_outlined, Colors.orange, _morningDose, (value) => _morningDose = value),
-      _buildDosageRow(R.string.the_noon.tr(), Icons.sunny, Colors.amber, _afternoonDose, (value) => _afternoonDose = value),
-      _buildDosageRow(R.string.the_afternoon.tr(), Icons.nights_stay_outlined, Colors.blue, _eveningDose, (value) => _eveningDose = value),
-      _buildDosageRow(R.string.the_evening.tr(), Icons.cloud, Colors.blueGrey, _nightDose, (value) => _nightDose = value),
+      _buildDosageRow(R.string.the_morning.tr(), R.icons.ic_morning, _quantityInMorning, (value) => setState(() {
+        _quantityInMorning.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_noon.tr(), R.icons.ic_noon, _quantityInNoon, (value) => setState(() {
+        _quantityInNoon.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_afternoon.tr(), R.icons.ic_afternoon, _quantityInAfternoon, (value) => setState(() {
+        _quantityInAfternoon.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_evening.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
+        _quantityInEvening.text = value;
+        _checkEnableSubmitBtnState();
+      })),
     ];
   }
 
-  Widget _buildDosageRow(String title, IconData icon, Color iconColor, int value, Function(int) onValueChange) {
+  Widget _buildDosageRow(String title, String iconRes, TextEditingController controller, Function(String) onValueChange) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Row(
         children: [
-          Icon(icon, color: iconColor),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(title),
+          SvgPicture.asset(
+            iconRes,
+            width: 24,
+            height: 24,
           ),
-          _buildDosageCounter(value, onValueChange),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              height: 1.46,
+              letterSpacing: 0.4,
+              color: Color(0xFF111515),
+            ),
+          ),
+          const Spacer(),
+          ..._buildDosageCounter(controller, onValueChange),
         ],
       ),
     );
   }
 
-  Widget _buildDosageCounter(int value, Function(int) onValueChange) {
-    return Row(
-      children: [
-        IconButton(
-          icon: const Icon(Icons.remove_circle_outline, color: Colors.grey),
-          onPressed: () {
-            if (value > 0) {
-              setState(() {
-                onValueChange(value - 1);
-              });
-            }
-          },
-        ),
-        Text(
-          value.toStringAsFixed(0),
-          style: const TextStyle(fontSize: 16),
-        ),
-        IconButton(
-          icon: const Icon(Icons.add_circle_outline, color: Colors.grey),
-          onPressed: () {
+  List<Widget> _buildDosageCounter(TextEditingController controller, Function(String) onValueChange) {
+    return [
+      GestureDetector(
+        onTap: () {
+          double parseValue = double.tryParse(controller.text) ?? 0.0;
+          if (parseValue >= 1.0) {
             setState(() {
-              onValueChange(value + 1);
+              onValueChange((parseValue - 1.0).toString());
             });
-          },
+          } else {
+            onValueChange('0.0');
+          }
+        },
+        child: Container(
+          width: 34,
+          height: 32,
+          decoration: BoxDecoration(
+            color: Color(0xFFF4F7F7),
+            borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
+          ),
+          alignment: Alignment.center,
+          child: SvgPicture.asset(
+            R.icons.ic_minus,
+            width: 10,
+            height: 2,
+          ),
         ),
-      ],
-    );
+      ),
+      Container(
+        width: 60,
+        height: 36,
+        alignment: Alignment.center,
+        child: TextField(
+          controller: controller,
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: '0.0',
+            contentPadding: EdgeInsets.zero,
+            isDense: true,
+          ),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            height: 1.32,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ),
+      GestureDetector(
+        onTap: () {
+          double parseValue = double.tryParse(controller.text) ?? 0.0;
+          onValueChange((parseValue + 1.0).toString());
+        },
+        child: Container(
+          width: 34,
+          height: 32,
+          decoration: BoxDecoration(
+            color: Color(0xFFF4F7F7),
+            borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+          ),
+          alignment: Alignment.center,
+          child: SvgPicture.asset(
+            R.icons.ic_plus,
+            width: 12,
+            height: 12,
+          ),
+        ),
+      ),
+    ];
   }
 
   List<Widget> _buildDayInWeekController() {
@@ -336,7 +404,16 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       final bool isSelected = _selectedDayIndexes.contains(i);
       final day = _weekDays[i];
       final chip = ChoiceChip(
-        label: Text(day),
+        label: Text(
+          day,
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 15,
+            height: 1.46,
+            letterSpacing: 0.4,
+            color: isSelected ? Colors.white : Color(0xFF5E6566),
+          ),
+        ),
         selected: isSelected,
         selectedColor: Color(0xFF008479),
         onSelected: (bool selected) {
@@ -344,10 +421,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
             if (selected) {
               _selectedDayIndexes.add(i);
             } else {
-              _selectedDayIndexes.remove(day);
+              _selectedDayIndexes.remove(i);
             }
-            // Optional: Print selected days to console for debugging
-            print('Selected Days: $_selectedDayIndexes');
           });
         },
         // Optional styling to match the image
@@ -390,11 +465,16 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         endIndent: 12,
       ),
       const SizedBox(height: 20),
+
       _buildCounterController(
           R.string.current_medicine_quantity.tr(),
-          _dayInWeekQuantity,
-          () => _updateCounter(() => _dayInWeekQuantity++),
-          () => _updateCounter(() => _dayInWeekQuantity--),
+          _quantityOnDayInWeek,
+          '0.0',
+          () => _updateCounter(() => _quantityOnDayInWeek++),
+          () => _updateCounter(() => _quantityOnDayInWeek--),
+          (value) => _updateCounter(() {
+            _quantityOnDayInWeek = double.tryParse(value) ?? 0;
+          }),
       ),
     ];
   }
@@ -403,9 +483,19 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     return [
       _buildCounterController(
         R.string.every_other_day.tr(),
-        _everyOtherDayCounter,
-        () => _updateCounter(() => _everyOtherDayCounter++),
-        () => _updateCounter(() => _everyOtherDayCounter--),
+        _everyOtherDayNumber.toDouble(),
+        '00',
+        () => _updateCounter(() => _everyOtherDayNumber++),
+        () => _updateCounter(() => _everyOtherDayNumber--),
+        (value) => _updateCounter(() {
+          int validValue;
+          if (value.endsWith('.')) {
+            validValue = int.tryParse(value.substring(0, value.length - 1)) ?? 0;
+          } else {
+            validValue = int.tryParse(value) ?? 0;
+          }
+          _everyOtherDayNumber = validValue;
+        }),
       ),
       const SizedBox(height: 20),
       const Divider(
@@ -418,71 +508,104 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       const SizedBox(height: 20),
       _buildCounterController(
         R.string.current_medicine_quantity.tr(),
-        _everyOtherDayQuantity,
-        () => _updateCounter(() => _everyOtherDayQuantity++),
-        () => _updateCounter(() => _everyOtherDayQuantity--),
+        _quantityOnEveryOtherDay,
+        '0.0',
+        () => _updateCounter(() => _quantityOnEveryOtherDay++),
+        () => _updateCounter(() => _quantityOnEveryOtherDay--),
+        (value) => _updateCounter(() => _quantityOnEveryOtherDay = double.tryParse(value) ?? 0.0),
       ),
       const SizedBox(height: 20),
     ];
   }
 
-  Widget _buildCounterController(String label, int value, VoidCallback onIncrement, VoidCallback onDecrement) {
+  Widget _buildCounterController(
+    String label,
+    double value,
+    String hint,
+    VoidCallback onIncrement,
+    VoidCallback onDecrement,
+    Function(String) onValueChange,
+  ) {
     return Container(
-        height: 36,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(color: Color(0xFF008479), width: 1),
-        ),
-        child: Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  height: 1.46,
-                  color: Color(0xFF111515),
+      margin: EdgeInsets.symmetric(horizontal: 12.0),
+      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
+      height: 64,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: Color(0xFF008479), width: 1),
+      ),
+      child: Expanded(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                height: 1.46,
+                color: Color(0xFF111515),
+              ),
+            ),
+            const Spacer(),
+            GestureDetector(
+              onTap: onDecrement,
+              child: Container(
+                width: 34,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Color(0xFFF4F7F7),
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
                 ),
-              ),
-              const Spacer(),
-              // Decrement button
-              IconButton(
-                icon: const Icon(Icons.remove, size: 20),
-                color: Colors.black54,
-                onPressed: onDecrement,
-                splashRadius: 20,
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
-              ),
-              // Counter value text
-              Container(
-                width: 60,
-                height: 36,
                 alignment: Alignment.center,
-                child: Text(
-                  '$value',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+                child: SvgPicture.asset(
+                  R.icons.ic_minus,
+                  width: 10,
+                  height: 2,
                 ),
               ),
-              // Increment button
-              IconButton(
-                icon: const Icon(Icons.add, size: 20),
-                color: Colors.black54,
-                onPressed: onIncrement,
-                splashRadius: 20,
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
+            ),
+            // Counter value text
+            Container(
+              width: 60,
+              height: 36,
+              alignment: Alignment.center,
+              child: TextField(
+                controller: TextEditingController(text: value.toStringAsFixed(0)),
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: hint,
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true,
+                ),
+                onChanged: (value) {
+                  onValueChange(value);
+                },
+              )
+            ),
+            // Increment button
+            GestureDetector(
+              onTap: onIncrement,
+              child: Container(
+                width: 34,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Color(0xFFF4F7F7),
+                  borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+                ),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  R.icons.ic_plus,
+                  width: 12,
+                  height: 12,
+                ),
               ),
-            ],
-          ),
-        )
+            )
+          ],
+        ),
+      )
     );
   }
 
@@ -494,14 +617,33 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
       child: GestureDetector(
           onTap: () {
-            // Create a new Dosage object with the entered data
-            final newDosage = Dosage(
-              timeOfDay: DayTime.morning,
-              timing: _selectedTiming,
-              frequency: _selectedFrequency,
-              quantity: _morningDose.toDouble(), // This should be dynamic
-            );
-            Navigator.of(context).pop(newDosage);
+            Dosage dosage;
+            if (R.string.every_day.tr() == _selectedFrequency) {
+              dosage = Dosage(
+                timeOfUse: _selectedTimeOfUse,
+                frequency: _selectedFrequency,
+                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
+                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+              );
+            } else if (R.string.ngay_trong_tuan.tr == _selectedFrequency) {
+              dosage = Dosage(
+                timeOfUse: _selectedTimeOfUse,
+                frequency: _selectedFrequency,
+                selectedDaysInWeek: _selectedDayIndexes,
+                quantityForDaysInWeek: _quantityOnDayInWeek,
+              );
+            } else {
+              dosage = Dosage(
+                timeOfUse: _selectedTimeOfUse,
+                frequency: _selectedFrequency,
+                everyOtherDayNumber: _everyOtherDayNumber,
+                quantityForEveryOtherDay: _quantityOnEveryOtherDay,
+              );
+            }
+
+            Navigator.of(context).pop(dosage);
           },
           child: Container(
             width: double.infinity,

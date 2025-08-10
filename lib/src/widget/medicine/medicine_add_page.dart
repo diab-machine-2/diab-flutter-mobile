@@ -36,8 +36,15 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     MedicineUnit.other
   ];
 
-  // List<XFile> _selectedImages = [];
-  // final ImagePicker _picker = ImagePicker();
+  final List<String> _weekDays = [
+    R.string.chip_monday.tr(),
+    R.string.chip_tuesday.tr(),
+    R.string.chip_wednesday.tr(),
+    R.string.chip_thursday.tr(),
+    R.string.chip_friday.tr(),
+    R.string.chip_saturday.tr(),
+    R.string.chip_sunday.tr(),
+  ];
 
   @override
   void initState() {
@@ -86,7 +93,9 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     ).then((newDosage) {
       if (newDosage != null && newDosage is Dosage) {
         setState(() {
-          _draftPrescription.dosages.add(newDosage);
+          final List<Dosage> newList = List.from(_draftPrescription.dosages);
+          newList.add(newDosage);
+          _draftPrescription.dosages = newList;
         });
       }
     });
@@ -123,21 +132,6 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       _showErrorSnackBar('Failed to pick images: $e');
     }
   }
-
-  // Future<void> _takePhotoWithCamera() async {
-  //   try {
-  //     // pickImage() with ImageSource.camera returns a single XFile object.
-  //     final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-  //     if (photo != null) {
-  //       setState(() {
-  //         // Add the new photo to our list of images.
-  //         _selectedImages.add(photo);
-  //       });
-  //     }
-  //   } catch (e) {
-  //     _showErrorSnackBar('Failed to take photo: $e');
-  //   }
-  // }
 
   /// Removes an image from the list at a given index.
   void _removeImage(int index) {
@@ -229,7 +223,6 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             // Handle confirmation logic
             print(_draftPrescription.name);
             print(_draftPrescription.quantity);
-            print(_draftPrescription.dosages.first.quantity);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF008D67),
@@ -399,31 +392,37 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             child: Container(
               width: 34,
               height: 32,
-              color: Color(0xFFF4F7F7),
-              child: Icon(Icons.remove, color: Colors.grey),
+              decoration: BoxDecoration(
+                color: Color(0xFFF4F7F7),
+                borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
+              ),
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                width: 10,
+                height: 2,
+                R.icons.ic_minus,
+              ),
             ),
           ),
           Container(
             width: 60,
             height: 36,
             alignment: Alignment.center,
-            child: Center(
-              child: TextField(
-                controller: _quantityController,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  hintText: '0',
-                  contentPadding: EdgeInsets.zero,
-                  // isDense: true,
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _draftPrescription.quantity = double.tryParse(value) ?? 0.0;
-                  });
-                },
+            child: TextField(
+              controller: _quantityController,
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: '0.0',
+                contentPadding: EdgeInsets.zero,
+                isDense: true,
               ),
+              onChanged: (value) {
+                setState(() {
+                  _draftPrescription.quantity = double.tryParse(value) ?? 0.0;
+                });
+              },
             )
           ),
           GestureDetector(
@@ -431,10 +430,19 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             child: Container(
               width: 34,
               height: 32,
-              color: Color(0xFFF4F7F7),
-              child: const Icon(Icons.add, color: Colors.grey),
+              decoration: BoxDecoration(
+                color: Color(0xFFF4F7F7),
+                borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+              ),
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                R.icons.ic_plus,
+                width: 14,
+                height: 14,
+              ),
             ),
           ),
+          SizedBox(width: 12.0),
         ],
       )
     );
@@ -492,54 +500,272 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             SizedBox(width: 12),
           ],
         ),
-        if (_draftPrescription.dosages.isNotEmpty)
-          ..._draftPrescription.dosages.map((dosage) => Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: 12),
-                SvgPicture.asset(
-                  dosage.getIcon(),
-                  width: 24,
-                  height: 24,
-                ),
-                SizedBox(width: 8),
-                Column(
-                  children: [
-                    Text(
-                      dosage.getDayTimeName(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                        height: 1.46,
-                        letterSpacing: 0.4,
-                        color: R.color.primaryColor,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      '${dosage.timing} • ${dosage.frequency} • ${dosage.quantity.toStringAsFixed(0)} ${_draftPrescription.medicineUnit.name}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                        height: 1.46,
-                        letterSpacing: 0.4,
-                        color: Color(0xFF5E6566),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: 12),
-              ],
-            ),
-          )).toList(),
+        if (_draftPrescription.dosages.isNotEmpty) ..._buildDosage(_draftPrescription.dosages, _draftPrescription.medicineUnit),
         SizedBox(height: 16),
       ],
     );
   }
 
-  // Description
+  List<Widget> _buildDosage(List<Dosage> dosages, MedicineUnit medicineUnit) {
+    List<Widget> widgets = [];
+    for (final dosage in dosages) {
+      if (dosage.frequency == R.string.every_day.tr()) {
+        widgets.addAll(
+          _buildEveryDayDosage(
+            dosage.timeOfUse,
+            dosage.quantityInMorning,
+            dosage.quantityInNoon,
+            dosage.quantityInAfternoon,
+            dosage.quantityInNight,
+            medicineUnit.getName(),
+          )
+        );
+      } else if (dosage.frequency == R.string.day_in_week.tr()) {
+        widgets.addAll(
+          _buildDayInWeekDosage(
+            dosage.timeOfUse,
+            dosage.selectedDaysInWeek,
+            dosage.quantityForDaysInWeek,
+            medicineUnit.getName(),
+          )
+        );
+      } else {
+        // Cách ngày
+        widgets.addAll(
+          _buildEveryDayOtherDosage(
+            dosage.timeOfUse,
+            dosage.everyOtherDayNumber,
+            dosage.quantityForEveryOtherDay,
+            medicineUnit.getName(),
+          )
+        );
+      }
+    }
+    return widgets;
+  }
+
+  List<Widget> _buildEveryDayDosage(
+    String timeOfUse,
+    double quantityInMorning,
+    double quantityInNoon,
+    double quantityInAfternoon,
+    double quantityInNight,
+    String medicineUnit,
+  ) {
+    List<Widget> dosageWidgets = [];
+    if (quantityInMorning > 0) {
+      dosageWidgets.add(
+          _buildDosageRowItemForEveryDay(
+            R.icons.ic_morning,
+            R.string.the_morning.tr(),
+            timeOfUse,
+            quantityInMorning,
+            medicineUnit,
+          )
+      );
+    }
+    if (quantityInNoon > 0) {
+      dosageWidgets.add(
+          _buildDosageRowItemForEveryDay(
+            R.icons.ic_noon,
+            R.string.the_noon.tr(),
+            timeOfUse,
+            quantityInNoon,
+            medicineUnit,
+          )
+      );
+    }
+    if (quantityInAfternoon > 0) {
+      dosageWidgets.add(
+          _buildDosageRowItemForEveryDay(
+            R.icons.ic_afternoon,
+            R.string.the_afternoon.tr(),
+            timeOfUse,
+            quantityInAfternoon,
+            medicineUnit,
+          )
+      );
+    }
+    if (quantityInNight > 0) {
+      dosageWidgets.add(
+          _buildDosageRowItemForEveryDay(
+            R.icons.ic_night,
+            R.string.the_evening.tr(),
+            timeOfUse,
+            quantityInNight,
+            medicineUnit,
+          )
+      );
+    }
+    return dosageWidgets;
+  }
+
+  /**
+   * @param timeOfDay: "Buổi sáng", "Buổi trưa", "Buổi chiều", "Tối"
+   * @param timeOfUse: "Trước ăn", "Sau ăn", "Trong khi ăn"
+   */
+  Widget _buildDosageRowItemForEveryDay(
+      String iconRes,
+      String timeOfDay,
+      String timeOfUse,
+      double quantity,
+      String medicineUnit,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 12),
+            SvgPicture.asset(
+              iconRes,
+              height: 24,
+              width: 24,
+              semanticsLabel: timeOfDay,
+            ),
+            SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                    child: Text(
+                      timeOfDay,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                        height: 1.46,
+                        letterSpacing: 0.4,
+                        color: Color(0xFF111515),
+                      ),
+                    )
+                ),
+                SizedBox(height: 4),
+                _buildDosageContent(timeOfUse, timeOfDay, quantity, medicineUnit)
+              ],
+            ),
+            SizedBox(width: 12),
+          ]
+      ),
+    );
+  }
+
+  List<Widget> _buildDayInWeekDosage(String timeOfUse, List<int> daysInWeek, double quantity, String unit) {
+    List<Widget> widgets = [];
+    for (int day in daysInWeek) {
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+          child: Text(
+            _weekDays[day],
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 15,
+              height: 1.46,
+              letterSpacing: 0.4,
+              color: Color(0xFF111515),
+            ),
+          )
+        )
+      );
+      widgets.add(
+        SizedBox(height: 4)
+      );
+      widgets.add(
+          _buildDosageContent(timeOfUse, R.string.day_in_week.tr(), quantity, unit)
+      );
+    }
+    return widgets;
+  }
+
+  Widget _buildDosageContent(String timeOfUse, String timeFrequency, double quantity, String unit) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12, 4, 12, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            timeOfUse,
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 15,
+              height: 1.46,
+              letterSpacing: 0.4,
+              color: Color(0xFF5E6566),
+            ),
+          ),
+          SizedBox(width: 4),
+          // circle grey dot
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFFBFC6C6),
+            ),
+          ),
+          SizedBox(width: 4),
+          Text(
+            timeFrequency,
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 15,
+              height: 1.46,
+              letterSpacing: 0.4,
+              color: Color(0xFF5E6566),
+            ),
+          ),
+          SizedBox(width: 4),
+          // circle grey dot
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFFBFC6C6),
+            ),
+          ),
+          SizedBox(width: 4),
+          Text(
+            "$quantity $unit",
+            style: TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 15,
+              height: 1.46,
+              letterSpacing: 0.4,
+              color: Color(0xFF5E6566),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildEveryDayOtherDosage(String timeOfUse, int everyOtherDayNumber, double quantity, String medicineUnit) {
+    List<Widget> widgets = [];
+    widgets.add(
+        Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+            child: Text(
+              'Cách $everyOtherDayNumber ngày',
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 15,
+                height: 1.46,
+                letterSpacing: 0.4,
+                color: Color(0xFF111515),
+              ),
+            )
+        )
+    );
+    widgets.add(SizedBox(height: 4));
+    widgets.add(
+        _buildDosageContent(timeOfUse, R.string.every_other_day.tr(), quantity, medicineUnit)
+    );
+    return widgets;
+  }
+
+  // Description - Ghi chú
   Widget _buildDescriptionCard() {
     return Card(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 16),

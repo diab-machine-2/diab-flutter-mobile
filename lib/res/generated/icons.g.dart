@@ -28,4 +28,6 @@ class Icons {
   String get ic_noon => "lib/res/icons/ic_noon.svg";
   String get ic_afternoon => "lib/res/icons/ic_afternoon.svg";
   String get ic_night => "lib/res/icons/ic_night.svg";
+  String get ic_minus => "lib/res/icons/ic_minus.svg";
+  String get ic_plus => "lib/res/icons/ic_plus.svg";
 }

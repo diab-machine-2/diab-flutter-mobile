@@ -34,43 +34,40 @@ enum DayTime {
 }
 
 class Dosage {
-  final DayTime timeOfDay;
-  final String timing;
+  // E.g. "Trước ăn", "Sau ăn", "Trong khi ăn"
+  final String timeOfUse;
+  // E.g. "Mỗi ngày", "Ngày trong tuần", "Cách ngày"
   final String frequency;
-  final double quantity;
+
+  // Use for "Mỗi ngày"
+  final double quantityInMorning;
+  final double quantityInNoon;
+  final double quantityInAfternoon;
+  final double quantityInNight;
+
+  // Used for "Ngày trong tuần"
+  final List<int> selectedDaysInWeek;
+  final double quantityForDaysInWeek;
+
+  // Used for "Cách ngày"
+  final int everyOtherDayNumber;
+  final double quantityForEveryOtherDay;
 
   Dosage({
-    required this.timeOfDay,
-    required this.timing,
+    required this.timeOfUse,
     required this.frequency,
-    required this.quantity,
+
+    this.quantityInMorning = 0.0,
+    this.quantityInNoon = 0.0,
+    this.quantityInAfternoon = 0.0,
+    this.quantityInNight = 0.0,
+
+    this.selectedDaysInWeek = const [],
+    this.quantityForDaysInWeek = 0.0,
+
+    this.everyOtherDayNumber = 0,
+    this.quantityForEveryOtherDay = 0,
   });
-
-  String getIcon() {
-    switch (timeOfDay) {
-      case DayTime.morning:
-        return R.icons.ic_morning;
-      case DayTime.noon:
-        return R.icons.ic_noon;
-      case DayTime.afternoon:
-        return R.icons.ic_afternoon;
-      default:
-        return R.icons.ic_night;
-    }
-  }
-
-  String getDayTimeName() {
-    switch (timeOfDay) {
-      case DayTime.morning:
-        return R.string.the_morning.tr();
-      case DayTime.noon:
-        return R.string.the_noon.tr();
-      case DayTime.afternoon:
-        return R.string.the_afternoon.tr();
-      default:
-        return R.string.the_evening.tr();
-    }
-  }
 }
 
 class DraftPrescription {
