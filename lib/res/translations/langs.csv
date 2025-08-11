@@ -1368,4 +1368,5 @@ chip_wednesday,"T4", "We",
 chip_thursday,"T5", "Th",
 chip_friday,"T6", "Fr",
 chip_saturday,"T7", "Sa",
-chip_sunday,"CN", "Su"
+chip_sunday,"CN", "Su",
+please_input_dosage,"Vui lòng nhập Liều dùng thuốc", "Please input the Dosage"

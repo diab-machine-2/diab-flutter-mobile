@@ -49,7 +49,22 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   @override
   void initState() {
     super.initState();
-    _draftPrescription = DraftPrescription();
+    _draftPrescription = DraftPrescription(
+      // dosages: [
+      //   Dosage(
+      //     timeOfUse: R.string.truoc_an.tr(),
+      //     frequency: R.string.everyday.tr(),
+      //     quantityInMorning: 1.0,
+      //     quantityInNoon: 1.0,
+      //     quantityInAfternoon: 1.0,
+      //     quantityInNight: 1.0,
+      //     // selectedDaysInWeek: [],
+      //     // quantityForDaysInWeek: 0.0,
+      //     // everyOtherDayNumber: 0,
+      //     // quantityForEveryOtherDay: 0.0,
+      //   )
+      // ]
+    );
 
     _quantityController.text = _draftPrescription.quantity.toStringAsFixed(0);
     _descriptionController.text = _draftPrescription.description;
@@ -95,6 +110,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         setState(() {
           final List<Dosage> newList = List.from(_draftPrescription.dosages);
           newList.add(newDosage);
+          print("new dosage $newDosage");
           _draftPrescription.dosages = newList;
         });
       }
@@ -117,12 +133,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   Future<void> _pickImages() async {
     try {
       final ImagePicker picker = ImagePicker();
-      final List<XFile> pickedImages = await picker.pickMultiImage();
-      if (pickedImages.isNotEmpty) {
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
         final List<String> newPhotos = List.from(_draftPrescription.photos);
-        for (final image in pickedImages) {
-          newPhotos.add(image.path);
-        }
+        newPhotos.add(image.path);
         print("new photos $newPhotos");
         setState(() {
           _draftPrescription.photos = newPhotos;
@@ -216,8 +230,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             ),
           )
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
+      // Submit button
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
             // Handle confirmation logic
@@ -228,18 +244,25 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             backgroundColor: const Color(0xFF008D67),
             minimumSize: const Size.fromHeight(50),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(50),
             ),
           ),
-          child: const Text(
-            'Xác nhận',
-            style: TextStyle(color: Colors.white, fontSize: 16),
+          child: Text(
+            R.string.confirm.tr(),
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              height: 1.46,
+              letterSpacing: 0.4,
+              color: Colors.white,
+            ),
           ),
         ),
       ), // end bottomNavigationBar
     );
   }
 
+  // Prescription Card
   Widget _buildPrescriptionCard() {
     return Card(
         margin: const EdgeInsets.all(12.0),
@@ -448,7 +471,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     );
   }
 
-  // Dosage
+  // Dosage - Liều dùng
   Widget _buildDosageSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,16 +523,45 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             SizedBox(width: 12),
           ],
         ),
-        if (_draftPrescription.dosages.isNotEmpty) ..._buildDosage(_draftPrescription.dosages, _draftPrescription.medicineUnit),
+        if (_draftPrescription.dosages.isNotEmpty)
+          ..._buildDosageContentItems(_draftPrescription.dosages, _draftPrescription.medicineUnit)
+        else
+          Padding(
+            padding: EdgeInsets.fromLTRB(12, 4, 12, 0),
+            child: Row(
+                children: [
+                  SvgPicture.asset(
+                    R.icons.ic_information,
+                    width: 14,
+                    height: 14,
+                    semanticsLabel: 'caution',
+                  ),
+                  SizedBox(width: 3),
+                  Text(
+                    R.string.please_input_dosage.tr(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      height: 1.50,
+                      letterSpacing: 0.2,
+                      color: Color(0xFFAF0000),
+                    ),
+                  ),
+                ]
+            ),
+          ),
         SizedBox(height: 16),
       ],
     );
   }
 
-  List<Widget> _buildDosage(List<Dosage> dosages, MedicineUnit medicineUnit) {
+  List<Widget> _buildDosageContentItems(List<Dosage> dosages, MedicineUnit medicineUnit) {
     List<Widget> widgets = [];
+
     for (final dosage in dosages) {
-      if (dosage.frequency == R.string.every_day.tr()) {
+      print("Màn hình thêm thuốc - tần suất dùng thuốc: ${dosage.frequency} - ${dosage.timeOfUse}");
+      print("Màn hình thêm thuốc - tần suất dùng thuốc: morning: ${dosage.quantityInMorning} - noon: ${dosage.quantityInNoon} - afternoon: ${dosage.quantityInAfternoon} - night: ${dosage.quantityInNight}");
+      if (dosage.frequency == R.string.everyday.tr()) {
         widgets.addAll(
           _buildEveryDayDosage(
             dosage.timeOfUse,
@@ -520,7 +572,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             medicineUnit.getName(),
           )
         );
-      } else if (dosage.frequency == R.string.day_in_week.tr()) {
+      } else if (dosage.frequency == R.string.ngay_trong_tuan.tr()) {
         widgets.addAll(
           _buildDayInWeekDosage(
             dosage.timeOfUse,
@@ -552,6 +604,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     double quantityInNight,
     String medicineUnit,
   ) {
+    print("_buildEveryDayDosage");
     List<Widget> dosageWidgets = [];
     if (quantityInMorning > 0) {
       dosageWidgets.add(
@@ -627,18 +680,15 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-                    child: Text(
-                      timeOfDay,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 15,
-                        height: 1.46,
-                        letterSpacing: 0.4,
-                        color: Color(0xFF111515),
-                      ),
-                    )
+                Text(
+                  timeOfDay,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 15,
+                    height: 1.46,
+                    letterSpacing: 0.4,
+                    color: Color(0xFF111515),
+                  ),
                 ),
                 SizedBox(height: 4),
                 _buildDosageContent(timeOfUse, timeOfDay, quantity, medicineUnit)
@@ -679,65 +729,62 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   }
 
   Widget _buildDosageContent(String timeOfUse, String timeFrequency, double quantity, String unit) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 4, 12, 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            timeOfUse,
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 15,
-              height: 1.46,
-              letterSpacing: 0.4,
-              color: Color(0xFF5E6566),
-            ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          timeOfUse,
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 15,
+            height: 1.46,
+            letterSpacing: 0.4,
+            color: Color(0xFF5E6566),
           ),
-          SizedBox(width: 4),
-          // circle grey dot
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFBFC6C6),
-            ),
+        ),
+        SizedBox(width: 4),
+        // circle grey dot
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Color(0xFFBFC6C6),
           ),
-          SizedBox(width: 4),
-          Text(
-            timeFrequency,
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 15,
-              height: 1.46,
-              letterSpacing: 0.4,
-              color: Color(0xFF5E6566),
-            ),
+        ),
+        SizedBox(width: 4),
+        Text(
+          timeFrequency,
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 15,
+            height: 1.46,
+            letterSpacing: 0.4,
+            color: Color(0xFF5E6566),
           ),
-          SizedBox(width: 4),
-          // circle grey dot
-          Container(
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFBFC6C6),
-            ),
+        ),
+        SizedBox(width: 4),
+        // circle grey dot
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Color(0xFFBFC6C6),
           ),
-          SizedBox(width: 4),
-          Text(
-            "$quantity $unit",
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 15,
-              height: 1.46,
-              letterSpacing: 0.4,
-              color: Color(0xFF5E6566),
-            ),
+        ),
+        SizedBox(width: 4),
+        Text(
+          "$quantity $unit",
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 15,
+            height: 1.46,
+            letterSpacing: 0.4,
+            color: Color(0xFF5E6566),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -765,7 +812,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     return widgets;
   }
 
-  // Description - Ghi chú
+  // Description Card - Ghi chú
   Widget _buildDescriptionCard() {
     return Card(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 16),
@@ -780,10 +827,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
           children: [
             // Title "Ghi chú"
             Text(
-              "Ghi chú",
+              R.string.ghi_chu.tr(),
               style: const TextStyle(
-                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontSize: 18,
                 height: 1.32,
                 letterSpacing: 0.2,
                 color: Color(0xFF111515),
@@ -824,12 +871,16 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                 ),
                 // Select Image Image Button
                 GestureDetector(
-                  onTap: _checkPermissionAndPickImage,
+                  onTap: () {
+                    if (_draftPrescription.photos.isEmpty) {
+                      _checkPermissionAndPickImage();
+                    }
+                  },
                   child: SvgPicture.asset(
                     R.icons.ic_camera,
                     height: 24,
                     width: 24,
-                    // colorFilter: const ColorFilter.mode(Colors.blue, BlendMode.srcIn), // Change color
+                    color: _draftPrescription.photos.isEmpty ? Color(0xFF008479) : Color(0xFFBFC6C6),
                     semanticsLabel: 'Take Photo',
                   ),
                 ),

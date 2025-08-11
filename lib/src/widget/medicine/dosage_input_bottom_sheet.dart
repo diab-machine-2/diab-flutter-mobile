@@ -235,6 +235,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     );
   }
 
+  // Tần suất dùng
   Widget _buildFrequencySelector() {
     return Row(
       children: [
@@ -275,6 +276,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     );
   }
 
+  // Mỗi ngày counters
   List<Widget> _buildEveryDayController() {
     return [
       _buildSectionTitle(R.string.dosage.tr()),
@@ -294,7 +296,37 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         _quantityInEvening.text = value;
         _checkEnableSubmitBtnState();
       })),
+      if (getQuantity(_quantityInMorning) == 0.0 &&
+          getQuantity(_quantityInNoon) == 0.0 && getQuantity(_quantityInAfternoon) == 0.0 && getQuantity(_quantityInEvening) == 0.0)
+        Padding(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                R.icons.ic_information,
+                width: 14,
+                height: 14,
+                semanticsLabel: 'caution',
+              ),
+              SizedBox(width: 3),
+              Text(
+                R.string.please_input_dosage.tr(),
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  height: 1.50,
+                  letterSpacing: 0.2,
+                  color: Color(0xFFAF0000),
+                ),
+              ),
+            ]
+          ),
+        ),
     ];
+  }
+
+  double getQuantity(TextEditingController controller) {
+    return double.tryParse(controller.text) ?? 0.0;
   }
 
   Widget _buildDosageRow(String title, String iconRes, TextEditingController controller, Function(String) onValueChange) {
@@ -609,62 +641,82 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     );
   }
 
+  // Submit button
   Widget _buildConfirmButton() {
     return Container(
       width: double.infinity,
-      height: 76,
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
+      height: 90,
+      padding: const EdgeInsets.fromLTRB(12, 16, 12, 30),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          // Shadow on top
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 10,
+            offset: Offset(0, -1),
+          ),
+          // Glowing effect
+          BoxShadow(
+            color: Color(0xFF0DAB9C).withOpacity(0.6),
+            spreadRadius: 1,
+            blurRadius: 20,
+            offset: Offset(0, 12),
+          ),
+        ]
+      ),
       child: GestureDetector(
-          onTap: () {
-            Dosage dosage;
-            if (R.string.every_day.tr() == _selectedFrequency) {
-              dosage = Dosage(
-                timeOfUse: _selectedTimeOfUse,
-                frequency: _selectedFrequency,
-                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
-                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
-              );
-            } else if (R.string.ngay_trong_tuan.tr == _selectedFrequency) {
-              dosage = Dosage(
-                timeOfUse: _selectedTimeOfUse,
-                frequency: _selectedFrequency,
-                selectedDaysInWeek: _selectedDayIndexes,
-                quantityForDaysInWeek: _quantityOnDayInWeek,
-              );
-            } else {
-              dosage = Dosage(
-                timeOfUse: _selectedTimeOfUse,
-                frequency: _selectedFrequency,
-                everyOtherDayNumber: _everyOtherDayNumber,
-                quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-              );
-            }
-
-            Navigator.of(context).pop(dosage);
-          },
-          child: Container(
-            width: double.infinity,
-            height: 44,
-            decoration: BoxDecoration(
-              color: _submitBtnEnabled ? const Color(0xFF008D67) : Color(0xFFBFC6C6),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Center(
-              child: Text(
-                R.string.confirm.tr(),
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
-                  height: 1.46,
-                  letterSpacing: 0.4,
-                  color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
-                ),
+        onTap: () {
+          print("Bottom sheet - morning controller ${_quantityInMorning.text} - parse: ${double.tryParse(_quantityInMorning.text)}");
+          Dosage dosage;
+          if (R.string.everyday.tr() == _selectedFrequency) {
+            dosage = Dosage(
+              timeOfUse: _selectedTimeOfUse,
+              frequency: _selectedFrequency,
+              quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+              quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
+              quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+              quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+            );
+          } else if (R.string.ngay_trong_tuan.tr() == _selectedFrequency) {
+            dosage = Dosage(
+              timeOfUse: _selectedTimeOfUse,
+              frequency: _selectedFrequency,
+              selectedDaysInWeek: _selectedDayIndexes,
+              quantityForDaysInWeek: _quantityOnDayInWeek,
+            );
+          } else {
+            dosage = Dosage(
+              timeOfUse: _selectedTimeOfUse,
+              frequency: _selectedFrequency,
+              everyOtherDayNumber: _everyOtherDayNumber,
+              quantityForEveryOtherDay: _quantityOnEveryOtherDay,
+            );
+          }
+          print('Bottom sheet - dosage ${dosage.frequency} - morning ${dosage.quantityInMorning} - noon ${dosage.quantityInNoon} - afternoon ${dosage.quantityInAfternoon} - evening ${dosage.quantityInNight}');
+          Navigator.of(context).pop(dosage);
+        },
+        child: Container(
+          width: double.infinity,
+          height: 44,
+          decoration: BoxDecoration(
+            color: _submitBtnEnabled ? const Color(0xFF008D67) : Color(0xFFBFC6C6),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: Center(
+            child: Text(
+              R.string.confirm.tr(),
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                height: 1.46,
+                letterSpacing: 0.4,
+                color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
               ),
             ),
-          )
+          ),
+        )
       ),
     );
   }
