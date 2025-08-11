@@ -1331,7 +1331,8 @@ class Strings {
   String get add_exercise_successfully => 'add_exercise_successfully';
   String get add_exercise_failed => 'add_exercise_failed';
   String get kcal_burned_per_day => 'kcal_burned_per_day';
-  String get minute_upperCase_first_character => 'minute_upperCase_first_character';
+  String get minute_upperCase_first_character =>
+      'minute_upperCase_first_character';
   String get chat_with_AI => 'chat_with_AI';
   String get roadmap_for_beginners => 'roadmap_for_beginners';
   String get invalid_duration_exercise => 'invalid_duration_exercise';
@@ -1356,9 +1357,12 @@ class Strings {
   String get infographic => 'infographic';
   String get welcome_program => 'welcome_program';
   String get subscription_already_active => 'subscription_already_active';
-  String get subscription_already_active_content => 'subscription_already_active_content';
-  String get waiting_active_subscription_content_1 => 'waiting_active_subscription_content_1';
-  String get waiting_active_subscription_content_2 => 'waiting_active_subscription_content_2';
+  String get subscription_already_active_content =>
+      'subscription_already_active_content';
+  String get waiting_active_subscription_content_1 =>
+      'waiting_active_subscription_content_1';
+  String get waiting_active_subscription_content_2 =>
+      'waiting_active_subscription_content_2';
   String get explore_program => 'explore_program';
   String get welcome_dialog_title_1 => 'welcome_dialog_title_1';
   String get welcome_dialog_title_2 => 'welcome_dialog_title_2';
@@ -1366,4 +1370,7 @@ class Strings {
   String get welcome_dialog_subtitle_2 => 'welcome_dialog_subtitle_2';
   String get booking_consult => 'booking_consult';
   String get activate_program_failed => 'activate_program_failed';
+  String get unlock_advanced_lessons => 'unlock_advanced_lessons';
+  String get experience_full_lessons_with_premium => 'experience_full_lessons_with_premium';
+  String get membership_benefits => 'membership_benefits';
 }

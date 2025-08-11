@@ -359,6 +359,15 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         ];
       });
     }
+
+    if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB_AUTO_TRIGGER_SUBSCRIPTION) {
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Observable.instance
+            .notifyObservers([], notifyName: 'auto_trigger_paywall');
+      });
+    }
   }
 
   void _jumpTo(int index) {

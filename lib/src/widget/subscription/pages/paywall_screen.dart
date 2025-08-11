@@ -22,6 +22,10 @@ import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PaywallScreen extends StatefulWidget {
+  final bool autoTriggerBasicBottomSheet;
+  const PaywallScreen({Key? key, this.autoTriggerBasicBottomSheet = false})
+      : super(key: key);
+
   @override
   _PaywallScreenState createState() => _PaywallScreenState();
 }
@@ -34,11 +38,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
   String _currentRoute = '/';
   late SubscriptionCubit _cubit;
 
+  bool _autoTriggerBasicBottomSheet = false;
+
   @override
   void initState() {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = SubscriptionCubit(repository);
+    _autoTriggerBasicBottomSheet = widget.autoTriggerBasicBottomSheet;
     _loadPackages();
   }
 
@@ -47,18 +54,36 @@ class _PaywallScreenState extends State<PaywallScreen> {
     super.dispose();
   }
 
-  Future<void> _loadPackages() async {
+  void _triggerBasicBottomSheet() {
+    int basicIndex = _localPackages.indexWhere((p) => p.id == 'co_ban');
+    if (basicIndex == -1) return;
     setState(() {
-      _isLoading = true;
+      _selectedPackageIndex = basicIndex;
     });
+    final package = _localPackages[_selectedPackageIndex];
+    _cubit.setSelectedPackage(package);
+    SubscriptionTracking.programServiceRegister(
+      screenName: 'program_service',
+      objectTitle: package.title,
+    );
+    if (package.id == 'co_ban' && _revenueCatPackages.isNotEmpty) {
+      SubscriptionService.showSubscriptionOptionsSheet(context, package);
+    } else {
+      SubscriptionNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.package_program_list);
+    }
+  }
 
+  Future<void> _loadPackages() async {
     try {
       // Try to load from Firebase Remote Config first, fallback to local packages
       List<SubscriptionPackage> localPackages = [];
       try {
-        final packageInfo = FirebaseRemoteSetting.instance.subscriptionPackageInfo;
+        final packageInfo =
+            FirebaseRemoteSetting.instance.subscriptionPackageInfo;
         if (packageInfo != null && packageInfo.isNotEmpty) {
-          localPackages = SubscriptionPackage.fromList(jsonDecode(packageInfo)['packages']);
+          localPackages =
+              SubscriptionPackage.fromList(jsonDecode(packageInfo)['packages']);
         }
         if (localPackages.isEmpty) {
           localPackages = await SubscriptionService.getLocalPackages();
@@ -72,10 +97,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
       setState(() {
         _localPackages = localPackages;
-      });
-
-      setState(() {
         _isLoading = false;
+        if (_autoTriggerBasicBottomSheet) {
+          _autoTriggerBasicBottomSheet = false;
+          _triggerBasicBottomSheet();
+        }
       });
 
       if (_localPackages.isNotEmpty) {
@@ -245,7 +271,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
                   // Back arrow positioned at top
                   Positioned(
-                    top: 40,
+                    top: 16,
                     left: 16,
                     child: IconButton(
                       icon: Icon(Icons.arrow_back,

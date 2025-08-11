@@ -787,4 +787,5 @@ class Drawables {
       "lib/res/drawables/subscription/subscription_program_full_2.png";
   String get subscription_program_full_3 =>
       "lib/res/drawables/subscription/subscription_program_full_3.png";
+    String get img_upgrade_package_v2 => "lib/res/drawables/img_upgrade_package_v2.png";
 }

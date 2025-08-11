@@ -13,7 +13,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
@@ -335,6 +334,22 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
     if (notifyName == 'refresh_subscription') {
       _cubit.checkSubscriptionStatus();
       refreshSubscriptionStatus();
+    }
+
+    if (notifyName == 'auto_trigger_paywall') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        SubscriptionTracking.programExplore(_currentCarouselIndex + 1);
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+            builder: (context) => PaywallScreen(
+              autoTriggerBasicBottomSheet: true,
+            ),
+            fullscreenDialog: true,
+          ),
+        );
+        Observable.instance
+            .notifyObservers([], notifyName: 'auto_trigger_basic_subscription');
+      });
     }
   }
 

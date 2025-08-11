@@ -1321,4 +1321,7 @@ welcome_dialog_title_2,"cùng DiaB","with DiaB",
 welcome_dialog_subtitle_1,"Chúc mừng quý khách đăng ký\n","Congratulations on registering\n",
 welcome_dialog_subtitle_2,"thành công chương trình ","successfully to the program ",
 booking_consult,"Đặt lịch tư vấn","Booking consultation",
-activate_program_failed,"Kích hoạt chương trình thất bại. Vui lòng thử lại sau.","Activating program failed. Please try again later."
+activate_program_failed,"Kích hoạt chương trình thất bại. Vui lòng thử lại sau.","Activating program failed. Please try again later.",
+unlock_advanced_lessons,"Mở khóa bài năng cao","Unlock Advanced Lessons",
+experience_full_lessons_with_premium,"Trải nghiệm bài học với gói nâng cấp","Experience full lessons with premium package",
+membership_benefits,"Quyền lợi tham gia","Membership Benefits"

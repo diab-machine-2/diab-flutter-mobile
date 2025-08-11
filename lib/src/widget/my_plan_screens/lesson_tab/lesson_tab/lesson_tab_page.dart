@@ -18,6 +18,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -730,77 +731,196 @@ class _LessonTabPageState extends State<LessonTabPage>
   void showUpdateRequirePopup({
     required BuildContext context,
   }) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: true,
-      builder: (_) => GestureDetector(
-        onTap: () {
-          NavigationUtil.pop(context);
-        },
-        child: Scaffold(
-          backgroundColor: R.color.transparent,
-          body: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      R.color.white,
-                      R.color.main_6,
-                    ],
-                  ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext bc) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF008076),
+                Color(0xFF0DA99C),
+                Color(0xFFEAF9F7),
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                child: Image.asset(
+                  R.drawable.img_upgrade_package_v2,
+                  width: 35,
+                  height: 35,
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 30),
-                        child: Image.asset(R.drawable.img_upgrade_package),
-                      ),
-                      Text(
-                        'Bài học chưa mở khoá!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Vui lòng nâng cấp tài khoản để tiếp tục học!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.symmetric(horizontal: 50),
-                        child: ButtonWidget(
-                          height: 43,
-                          title: R.string.agree.tr(),
-                          onPressed: () {
-                            NavigationUtil.pop(context);
-                          },
-                          textSize: 14,
-                        ),
-                      ),
-                    ],
+              ),
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(
+                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                ),
+                child: Text(
+                  R.string.unlock_advanced_lessons.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
+              GapH(8),
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(
+                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                ),
+                child: Text(
+                  R.string.experience_full_lessons_with_premium.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              GapH(16),
+              Container(
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: TextScaler.linear(MediaQuery.of(context)
+                                .textScaleFactor
+                                .clamp(1.0, 1.3)),
+                          ),
+                          child: Text(
+                            R.string.membership_benefits.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.greenGradientBottom,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    GapH(12),
+                    _benefitRow(
+                        'Kho tàng kiến thức bệnh lý, dinh dưỡng, vận động, tâm lý đa dạng',
+                        'Kho tàng kiến thức'),
+                    _benefitRow('Lộ trình sống khỏe cận nhân hóa',
+                        'Lộ trình sống khỏe'),
+                    _benefitRow('Sử dụng toàn bộ tính năng cao cấp',
+                        'tính năng cao cấp'),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Observable.instance.notifyObservers(
+                          [],
+                          notifyName: Const
+                              .NAVIGATE_TO_MY_PLAN_TAB_AUTO_TRIGGER_SUBSCRIPTION,
+                        );
+                        Observable.instance.notifyObservers([],
+                            notifyName: 'auto_trigger_paywall');
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 8),
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: R.color.mainColor,
+                          borderRadius: BorderRadius.circular(200),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom,
+                              R.color.greenGradientBottom,
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                              textScaler: TextScaler.linear(
+                                  MediaQuery.of(context)
+                                      .textScaleFactor
+                                      .clamp(1.0, 1.3)),
+                            ),
+                            child: Text(
+                              R.string.tim_hieu_them.tr(),
+                              style: TextStyle(
+                                color: R.color.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _benefitRow(String text, String boldPart) {
+    final parts = text.split(boldPart);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Image.asset(
+            R.drawable.ic_subscription_bullet,
+            width: 20,
+            height: 20,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
+                children: [
+                  TextSpan(text: parts[0]),
+                  TextSpan(
+                    text: boldPart,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  if (parts.length > 1) TextSpan(text: parts[1]),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
