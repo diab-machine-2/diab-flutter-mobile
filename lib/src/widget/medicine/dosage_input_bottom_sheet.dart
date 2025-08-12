@@ -75,82 +75,94 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final maxHeight = screenHeight - 90;
+    double maxHeight = screenHeight - 90;
 
     return DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.5,
-        maxChildSize: maxHeight / screenHeight,
-        builder: (context, scrollController) => Container(
-          width: double.infinity,
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: 72,
-                child: GestureDetector(
-                  onVerticalDragUpdate: (details) {
-                    final newSize = scrollController.offset + (details.primaryDelta ?? 0);
-                    scrollController.jumpTo(
-                      newSize.clamp(0.2, maxHeight/screenHeight),
-                    );
-                    // scrollController.jumpTo(scrollController.offset + (details.primaryDelta ?? 0));
-                    // scrollController.animateTo(scrollController.offset + (details.primaryDelta ?? 0), duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-                    print('onVerticalDragUpdate: scrollController.offset ${scrollController.offset}');
-                    print('onVerticalDragUpdate: details.primaryDelta  ${details.primaryDelta ?? 0}');
-                  },
-                  child: Column(
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 56,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+      initialChildSize: 0.5,
+      minChildSize: 0.5,
+      maxChildSize: maxHeight / screenHeight,
+      builder: (context, scrollController) => Container(
+        width: double.infinity,
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 72,
+              child: GestureDetector(
+                onVerticalDragUpdate: (details) {
+                  // final newSize = scrollController.offset + (details.primaryDelta ?? 0);
+                  // scrollController.jumpTo(
+                  //   newSize.clamp(0.2, maxHeight/screenHeight),
+                  // );
+                  scrollController.jumpTo(200);
+
+                  // scrollController.animateTo(100, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                  // scrollController.jumpTo(scrollController.offset + (details.primaryDelta ?? 0));
+                  // scrollController.animateTo(scrollController.offset + (details.primaryDelta ?? 0), duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+                  print('onVerticalDragUpdate: scrollController.offset ${scrollController.offset}');
+                  print('onVerticalDragUpdate: details.primaryDelta  ${details.primaryDelta ?? 0}');
+                },
+                onVerticalDragStart: (details) {
+                  print('onVerticalDragStart: scrollController.offset ${scrollController.offset}');
+                },
+                onVerticalDragDown: (details) {
+                  print('onVerticalDragDown: scrollController.offset ${scrollController.offset}');
+                },
+                onVerticalDragEnd: (details) {
+                  print('onVerticalDragEnd: scrollController.offset ${scrollController.offset}');
+                },
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 56,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      SizedBox(height: 8),
-                      _buildHeader(),
-                    ],
-                  )
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 16),
-                          _buildSectionTitle(R.string.time_of_use.tr()),
-                          _buildTimingSelector(),
-                          const SizedBox(height: 16),
-                          _buildSectionTitle(R.string.frequency_of_use.tr()),
-                          _buildFrequencySelector(),
-                          const SizedBox(height: 16),
-                          if (_selectedFrequency == R.string.everyday.tr())
-                            ..._buildEveryDayController()
-                          else if (_selectedFrequency == R.string.ngay_trong_tuan.tr())
-                            ..._buildDayInWeekController()
-                          else
-                            ..._buildEveryOtherDayController(),
-                          const SizedBox(height: 24),
-                        ],
-                      )
-                  ),
+                    ),
+                    SizedBox(height: 8),
+                    _buildHeader(),
+                  ],
                 )
               ),
-              _buildConfirmButton(),
-            ],
-          ),
+            ),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        _buildSectionTitle(R.string.time_of_use.tr()),
+                        _buildTimingSelector(),
+                        const SizedBox(height: 16),
+                        _buildSectionTitle(R.string.frequency_of_use.tr()),
+                        _buildFrequencySelector(),
+                        const SizedBox(height: 16),
+                        if (_selectedFrequency == R.string.everyday.tr())
+                          ..._buildEveryDayController()
+                        else if (_selectedFrequency == R.string.ngay_trong_tuan.tr())
+                          ..._buildDayInWeekController()
+                        else
+                          ..._buildEveryOtherDayController(),
+                        const SizedBox(height: 24),
+                      ],
+                    )
+                ),
+              )
+            ),
+            _buildConfirmButton(),
+          ],
         ),
+      ),
     );
   }
 
@@ -694,7 +706,6 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
               quantityForEveryOtherDay: _quantityOnEveryOtherDay,
             );
           }
-          print('Bottom sheet - dosage ${dosage.frequency} - morning ${dosage.quantityInMorning} - noon ${dosage.quantityInNoon} - afternoon ${dosage.quantityInAfternoon} - evening ${dosage.quantityInNight}');
           Navigator.of(context).pop(dosage);
         },
         child: Container(

@@ -46,6 +46,16 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     R.string.chip_sunday.tr(),
   ];
 
+  bool _submitBtnEnabled = false;
+
+  void _checkSubmitBtnEnabled() {
+    setState(() {
+      _submitBtnEnabled = _draftPrescription.name.isNotEmpty &&
+          _draftPrescription.quantity > 0 &&
+          _draftPrescription.dosages.isNotEmpty;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -78,6 +88,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       final medicineItem = args['medicineItem'] as MedicineItemModel?;
       if (medicineItem != null) {
         _nameController.text = medicineItem.name;
+        _draftPrescription.name = medicineItem.name;
       }
     }
   }
@@ -87,6 +98,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       _draftPrescription.quantity++;
       _quantityController.text = _draftPrescription.quantity.toStringAsFixed(0);
     });
+    _checkSubmitBtnEnabled();
   }
 
   void _decrementQuantity() {
@@ -96,6 +108,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         _quantityController.text =
             _draftPrescription.quantity.toStringAsFixed(0);
       });
+      _checkSubmitBtnEnabled();
     }
   }
 
@@ -110,9 +123,9 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         setState(() {
           final List<Dosage> newList = List.from(_draftPrescription.dosages);
           newList.add(newDosage);
-          print("new dosage $newDosage");
           _draftPrescription.dosages = newList;
         });
+        _checkSubmitBtnEnabled();
       }
     });
   }
@@ -122,7 +135,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     final cameraStatus = await Permission.camera.request();
 
     if (permissionStatus.isGranted && cameraStatus.isGranted) {
-      _pickImages();
+      _pickImage();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Permissions are required to access photos and camera.')),
@@ -130,14 +143,13 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     }
   }
 
-  Future<void> _pickImages() async {
+  Future<void> _pickImage() async {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         final List<String> newPhotos = List.from(_draftPrescription.photos);
         newPhotos.add(image.path);
-        print("new photos $newPhotos");
         setState(() {
           _draftPrescription.photos = newPhotos;
         });
@@ -236,12 +248,14 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
-            // Handle confirmation logic
-            print(_draftPrescription.name);
-            print(_draftPrescription.quantity);
+            if (_submitBtnEnabled) {
+              // Navigator.pushNamed(context, NavigatorName.medicine_add, arguments: {
+              //   'medicineItem': item,
+              // });
+            }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF008D67),
+            backgroundColor: _submitBtnEnabled ? const Color(0xFF008D67) : const Color(0xFFBFC6C6),
             minimumSize: const Size.fromHeight(50),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(50),
@@ -254,7 +268,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
               fontSize: 16,
               height: 1.46,
               letterSpacing: 0.4,
-              color: Colors.white,
+              color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
             ),
           ),
         ),
@@ -277,6 +291,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
               children: [
                 _buildSectionTitle(R.string.medicine_name.tr()),
                 const SizedBox(height: 8.0),
+                // Tên thuốc
                 _buildNameTextField(),
                 const SizedBox(height: 20.0),
                 _buildSectionTitle(R.string.medicine_unit.tr()),
@@ -445,6 +460,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                 setState(() {
                   _draftPrescription.quantity = double.tryParse(value) ?? 0.0;
                 });
+                _checkSubmitBtnEnabled();
               },
             )
           ),
@@ -559,8 +575,6 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     List<Widget> widgets = [];
 
     for (final dosage in dosages) {
-      print("Màn hình thêm thuốc - tần suất dùng thuốc: ${dosage.frequency} - ${dosage.timeOfUse}");
-      print("Màn hình thêm thuốc - tần suất dùng thuốc: morning: ${dosage.quantityInMorning} - noon: ${dosage.quantityInNoon} - afternoon: ${dosage.quantityInAfternoon} - night: ${dosage.quantityInNight}");
       if (dosage.frequency == R.string.everyday.tr()) {
         widgets.addAll(
           _buildEveryDayDosage(
@@ -604,7 +618,6 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     double quantityInNight,
     String medicineUnit,
   ) {
-    print("_buildEveryDayDosage");
     List<Widget> dosageWidgets = [];
     if (quantityInMorning > 0) {
       dosageWidgets.add(
@@ -669,7 +682,6 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(width: 12),
             SvgPicture.asset(
               iconRes,
               height: 24,
@@ -694,7 +706,6 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                 _buildDosageContent(timeOfUse, timeOfDay, quantity, medicineUnit)
               ],
             ),
-            SizedBox(width: 12),
           ]
       ),
     );
@@ -722,7 +733,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         SizedBox(height: 4)
       );
       widgets.add(
-          _buildDosageContent(timeOfUse, R.string.day_in_week.tr(), quantity, unit)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+            child: _buildDosageContent(timeOfUse, R.string.ngay_trong_tuan.tr(), quantity, unit)
+          )
       );
     }
     return widgets;
@@ -775,7 +789,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         ),
         SizedBox(width: 4),
         Text(
-          "$quantity $unit",
+          quantity == quantity.truncateToDouble() ? "${quantity.toInt()} $unit" : "$quantity $unit",
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 15,
@@ -807,7 +821,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     );
     widgets.add(SizedBox(height: 4));
     widgets.add(
-        _buildDosageContent(timeOfUse, R.string.every_other_day.tr(), quantity, medicineUnit)
+        Padding(
+          padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+          child: _buildDosageContent(timeOfUse, R.string.every_other_day.tr(), quantity, medicineUnit),
+        )
     );
     return widgets;
   }
