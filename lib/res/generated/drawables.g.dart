@@ -207,7 +207,7 @@ class Drawables {
   String get ic_laughing => "lib/res/drawables/ic_laughing.png";
   String get ic_learning => "lib/res/drawables/ic_learning.png";
   String get ic_lesson_can_not_learn =>
-      "lib/res/drawables/ic_lesson_can_not_learn.png";
+    "lib/res/drawables/ic_lesson_can_not_learn.png";
   String get ic_lesson_lock => "lib/res/drawables/ic_lesson_lock.png";
   String get ic_lesson_not_learn => "lib/res/drawables/ic_lesson_not_learn.png";
   String get ic_lesson_section_audio =>
@@ -788,4 +788,5 @@ class Drawables {
   String get subscription_program_full_3 =>
       "lib/res/drawables/subscription/subscription_program_full_3.png";
     String get img_upgrade_package_v2 => "lib/res/drawables/img_upgrade_package_v2.png";
+    String get ic_lesson_can_not_learn_v2 => "lib/res/drawables/ic_lesson_can_not_learn_v2.png";
 }

@@ -199,9 +199,8 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
                         GapW(4),
                         MediaQuery(
                           data: MediaQuery.of(context).copyWith(
-                            textScaler: TextScaler.linear(MediaQuery.of(context)
-                                .textScaleFactor
-                                .clamp(1.0, 1.3)),
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
                           ),
                           child: Text(
                             R.string.contact.tr(),
@@ -263,8 +262,9 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
           children: [
             MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.linear(
-                    MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
               ),
               child: Text(
                 R.string.welcome_program.tr(),
@@ -279,8 +279,9 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
             GapH(12),
             MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.linear(
-                    MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
               ),
               child: Text(
                 widget.program.title.toUpperCase(),

@@ -624,15 +624,23 @@ class _LessonTabPageState extends State<LessonTabPage>
                                   )
                               ],
                             ),
-                          Text(
-                            lessonDetail?.name ?? '',
-                            style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                              textScaler: MediaQuery.of(context)
+                                  .textScaler
+                                  .clamp(
+                                      minScaleFactor: 1.0, maxScaleFactor: 1.3),
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                            child: Text(
+                              lessonDetail?.name ?? '',
+                              style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           LessonStatusWidget(
                             learningStatus: lessonDetail?.learningStatus,
@@ -765,8 +773,9 @@ class _LessonTabPageState extends State<LessonTabPage>
               ),
               MediaQuery(
                 data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(
-                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                 ),
                 child: Text(
                   R.string.unlock_advanced_lessons.tr(),
@@ -775,22 +784,6 @@ class _LessonTabPageState extends State<LessonTabPage>
                     color: R.color.white,
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              GapH(8),
-              MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(
-                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
-                ),
-                child: Text(
-                  R.string.experience_full_lessons_with_premium.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: R.color.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
@@ -808,9 +801,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                       children: [
                         MediaQuery(
                           data: MediaQuery.of(context).copyWith(
-                            textScaler: TextScaler.linear(MediaQuery.of(context)
-                                .textScaleFactor
-                                .clamp(1.0, 1.3)),
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
                           ),
                           child: Text(
                             R.string.membership_benefits.tr(),
@@ -862,10 +854,10 @@ class _LessonTabPageState extends State<LessonTabPage>
                         child: Center(
                           child: MediaQuery(
                             data: MediaQuery.of(context).copyWith(
-                              textScaler: TextScaler.linear(
-                                  MediaQuery.of(context)
-                                      .textScaleFactor
-                                      .clamp(1.0, 1.3)),
+                              textScaler: MediaQuery.of(context)
+                                  .textScaler
+                                  .clamp(
+                                      minScaleFactor: 1.0, maxScaleFactor: 1.3),
                             ),
                             child: Text(
                               R.string.tim_hieu_them.tr(),

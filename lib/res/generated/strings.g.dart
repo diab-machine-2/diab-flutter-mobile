@@ -1371,6 +1371,7 @@ class Strings {
   String get booking_consult => 'booking_consult';
   String get activate_program_failed => 'activate_program_failed';
   String get unlock_advanced_lessons => 'unlock_advanced_lessons';
-  String get experience_full_lessons_with_premium => 'experience_full_lessons_with_premium';
   String get membership_benefits => 'membership_benefits';
+  String get program => 'program';
+  String get premium_lesson => 'premium_lesson';
 }
