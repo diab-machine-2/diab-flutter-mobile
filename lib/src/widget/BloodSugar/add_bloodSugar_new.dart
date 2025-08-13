@@ -656,8 +656,10 @@ class _AddBloodSugarControllerNewState
             'method': fromNipro ? 'device' : 'manual',
           },
         );
-        await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
-            1, ScheduleType.blood_sugar.typeIndex);
+        if (widget.goalId != null && widget.goalId?.isNotEmpty == true) {
+          await HomeClient().completeSmartGoal(selectedDate,
+              widget.goalId ?? '', 1, ScheduleType.blood_sugar.typeIndex);
+        }
         _navigateAfterSuccess(result!.id, result.images);
       }
 
