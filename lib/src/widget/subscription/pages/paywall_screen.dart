@@ -7,6 +7,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_detail_page.dart';
 import 'package:medical/src/widget/subscription/pages/welcome_program_page.dart';
@@ -160,6 +161,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
           final NavigatorState? navigator =
               SubscriptionNavigationMixin.navigationKey.currentState;
 
+          if (widget.autoTriggerBasicBottomSheet) {
+            Observable.instance
+                .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+          }
+
           if (navigator != null && navigator.canPop()) {
             navigator.pop();
             return false;
@@ -277,9 +283,10 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       icon: Icon(Icons.arrow_back,
                           color: R.color.greenGradientTop02),
                       onPressed: () {
-                        // Make sure bottom bar shows when navigating back
-                        Observable.instance
-                            .notifyObservers([], notifyName: 'show_bottom_bar');
+                        if (widget.autoTriggerBasicBottomSheet) {
+                          Observable.instance.notifyObservers([],
+                              notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+                        }
                         Navigator.of(context).pop();
                       },
                     ),

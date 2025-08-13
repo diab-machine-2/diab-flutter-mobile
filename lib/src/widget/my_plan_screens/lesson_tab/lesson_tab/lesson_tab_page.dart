@@ -832,8 +832,6 @@ class _LessonTabPageState extends State<LessonTabPage>
                           notifyName: Const
                               .NAVIGATE_TO_MY_PLAN_TAB_AUTO_TRIGGER_SUBSCRIPTION,
                         );
-                        Observable.instance.notifyObservers([],
-                            notifyName: 'auto_trigger_paywall');
                       },
                       child: Container(
                         margin: EdgeInsets.symmetric(vertical: 8),

@@ -338,7 +338,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
 
     if (notifyName == 'auto_trigger_paywall') {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        SubscriptionTracking.programExplore(_currentCarouselIndex + 1);
         Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (context) => PaywallScreen(
@@ -347,8 +346,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
             fullscreenDialog: true,
           ),
         );
-        Observable.instance
-            .notifyObservers([], notifyName: 'auto_trigger_basic_subscription');
       });
     }
   }

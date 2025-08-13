@@ -301,8 +301,19 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _checkExistLessonId();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
-      _jumpTo(TabBarType.library.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
+      final targetIndex = TabBarType.library.index;
+
+      _jumpTo(targetIndex);
+
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (_bottomTabbarKey.currentState != null && mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _bottomTabbarKey.currentState != null) {
+              _bottomTabbarKey.currentState!.setPage(targetIndex);
+            }
+          });
+        }
+      });
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       NavigationUtil.popToFirst(context);
