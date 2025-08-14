@@ -62,10 +62,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             highlightColor: R.color.transparent,
             icon: Icon(Icons.arrow_back, color: R.color.white),
             onPressed: () {
-              Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-                NavigatorName.tabbar,
-                (route) => false,
-              );
+              Navigator.of(context, rootNavigator: true).pop();
             }),
         title: Transform(
           transform: Matrix4.translationValues(-20, 0.0, 0.0),
@@ -279,7 +276,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
       color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       child: GestureDetector(
-        // onTap: () => _showPopupInputOptions(context),
+        onTap: () => Navigator.pushNamed(context, NavigatorName.prescription_remind),
         child: Container(
           height: 48,
           decoration: BoxDecoration(
@@ -293,7 +290,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           ),
           child: Center(
             child: Text(
-              R.string.set_timer.tr(),
+              R.string.set_time.tr(),
               style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
             ),
           ),
@@ -406,7 +403,7 @@ class MedicineCard extends StatelessWidget {
                   child: IconButton(
                     icon: SvgPicture.asset(R.icons.ic_edit, width: 20),
                     onPressed: () {
-                      // TODO: Sửa thuốc
+
                     },
                   ),
                 ),

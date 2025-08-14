@@ -59,22 +59,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   @override
   void initState() {
     super.initState();
-    _draftPrescription = DraftPrescription(
-      // dosages: [
-      //   Dosage(
-      //     timeOfUse: R.string.truoc_an.tr(),
-      //     frequency: R.string.everyday.tr(),
-      //     quantityInMorning: 1.0,
-      //     quantityInNoon: 1.0,
-      //     quantityInAfternoon: 1.0,
-      //     quantityInNight: 1.0,
-      //     // selectedDaysInWeek: [],
-      //     // quantityForDaysInWeek: 0.0,
-      //     // everyOtherDayNumber: 0,
-      //     // quantityForEveryOtherDay: 0.0,
-      //   )
-      // ]
-    );
+    _draftPrescription = DraftPrescription();
 
     _quantityController.text = _draftPrescription.quantity.toStringAsFixed(0);
     _descriptionController.text = _draftPrescription.description;
@@ -249,9 +234,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         child: ElevatedButton(
           onPressed: () {
             if (_submitBtnEnabled) {
-              // Navigator.pushNamed(context, NavigatorName.medicine_add, arguments: {
-              //   'medicineItem': item,
-              // });
+              Navigator.pushNamed(context, NavigatorName.prescription_add);
             }
           },
           style: ElevatedButton.styleFrom(

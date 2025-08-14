@@ -26,6 +26,8 @@ import 'widget/home/schema/home_schema.dart';
 import 'widget/medicine/medicine_add_page.dart';
 import 'widget/medicine/medicine_search_page.dart';
 import 'widget/medicine/onboarding_page.dart';
+import 'widget/medicine/prescription_list_page.dart';
+import 'widget/medicine/prescription_remind_page.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
 class AppRoutes {
@@ -153,6 +155,14 @@ class AppRoutes {
         // final data = settings.arguments as Map<String, dynamic>?;
         // final medicineItem = data?['medicineItem'];
         page = PrescriptionAddPage();
+        break;
+      case NavigatorName.prescription_remind:
+      // final data = settings.arguments as Map<String, dynamic>?;
+      // final medicineItem = data?['medicineItem'];
+        page = PrescriptionRemindPage();
+        break;
+      case NavigatorName.prescription:
+        page = PrescriptionListPage();
         break;
 
       // ~ END: Lịch dùng thuốc ~

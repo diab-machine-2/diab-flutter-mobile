@@ -1,5 +1,6 @@
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 
 import '../../../res/R.dart';
 
@@ -87,5 +88,15 @@ class DraftPrescription {
     this.dosages = const [],
     this.description = '',
     this.photos = const [],
+  });
+}
+
+class DayTimeSchedule {
+  final DayTime dayTime;
+  final TimeOfDay time;
+
+  DayTimeSchedule({
+    required this.dayTime,
+    required this.time,
   });
 }

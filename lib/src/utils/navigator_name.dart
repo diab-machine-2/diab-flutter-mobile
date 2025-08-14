@@ -59,6 +59,8 @@ class NavigatorName {
   static const String medicine_search = '/medicine_find';
   static const String medicine_add = '/medicine_add';
   static const String prescription_add = '/prescription_add';
+  static const String prescription_remind = '/prescription_remind';
+  static const String prescription = '/prescription';
   static const String add_reminder = '/add_reminder';
   static const String schedule_glucose = '/schedule_glucose';
   static const String setting_schedule_glucose = '/setting_schedule_glucose';

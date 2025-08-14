@@ -1386,11 +1386,18 @@ class Strings {
   String get prescription_warning => 'prescription_warning';
   String get prescription_name=> 'prescription_name';
   String get start_date => 'start_date';
-  String get set_timer => 'set_timer';
+  String get set_time => 'set_time';
   String get reminder_get_more_medicine => 'reminder_get_more_medicine';
   String get reminder_get_more_medicine_description => 'reminder_get_more_medicine_description';
   String get enable_medicine_notification => 'enable_medicine_notification';
   String get enable_medicine_notification_description => 'enable_medicine_notification_description';
+  String get prescription => 'prescription';
+  String get prescription_using => 'prescription_using';
+  String get prescription_out => 'prescription_out';
+  String get stop_prescription => 'stop_prescription';
+  String get add_prescription_successfully => 'add_prescription_successfully';
+  String get schedule_use_medicine => 'schedule_use_medicine';
+
   String get activate_program_failed => 'activate_program_failed';
 
   String get medicine_name => 'medicine_name';
