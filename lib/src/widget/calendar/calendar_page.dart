@@ -22,8 +22,9 @@ class CalendarController extends StatefulWidget {
   final String courseId;
   final String endTime;
   final int bookingQuantity;
-  CalendarController(
-      this.pickSlot, this.courseId, this.endTime, this.bookingQuantity);
+  final int interviewType;
+  CalendarController(this.pickSlot, this.courseId, this.endTime,
+      this.bookingQuantity, this.interviewType);
 
   @override
   _CalendarControllerState createState() => _CalendarControllerState();
@@ -202,6 +203,11 @@ class _CalendarControllerState extends State<CalendarController> {
     final availableTime = _parseToDateTime(widget.pickSlot.appointmentDate)
         .subtract(Duration(minutes: 15));
 
+    final appointmentDatePlus2Weeks =
+        _parseToDateTime(widget.pickSlot.appointmentDate)
+            .add(Duration(days: 14));
+    bool isAppointmentTooOld = appointmentDatePlus2Weeks.isBefore(currentDate);
+
     bool isAbleToJoinRoom = currentDate.isAfter(availableTime);
     bool isCompleted = widget.pickSlot.complete;
 
@@ -216,7 +222,9 @@ class _CalendarControllerState extends State<CalendarController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.bookingQuantity < 2 && isAppointmentDate == false)
+                if (widget.bookingQuantity < 2 &&
+                    isAppointmentDate == false &&
+                    isAppointmentTooOld == false)
                   Expanded(
                     flex: 1,
                     child: InkWell(
@@ -226,7 +234,8 @@ class _CalendarControllerState extends State<CalendarController> {
                             arguments: {
                               "updateSlot": widget.pickSlot,
                               'courseId': widget.courseId,
-                              'endTime': widget.endTime
+                              'endTime': widget.endTime,
+                              'interviewType': widget.interviewType,
                             });
                       }),
                       child: Container(

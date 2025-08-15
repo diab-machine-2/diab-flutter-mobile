@@ -930,6 +930,7 @@ class LessonSectionItem {
   List<LessonSectionListResponseDataLessonSectionsLessonSectionTypes?>?
       lessonSectionTypes;
   ImagesModel? image;
+  String? linkShare;
 
   LessonSectionItem({
     this.id,
@@ -955,6 +956,7 @@ class LessonSectionItem {
     this.lessonSectionTypes,
     this.image,
     this.linkType = 0,
+    this.linkShare,
   });
 
   String get icon {
@@ -1038,6 +1040,7 @@ class LessonSectionItem {
     }
     image =
         (json['image'] != null) ? ImagesModel.fromJson(json['image']) : null;
+    linkShare = json['linkShare']?.toString();
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -1100,6 +1103,9 @@ class LessonSectionItem {
     }
     if (image != null) {
       data['image'] = image!.toJson();
+    }
+    if (linkShare != null) {
+      data['linkShare'] = linkShare;
     }
     return data;
   }

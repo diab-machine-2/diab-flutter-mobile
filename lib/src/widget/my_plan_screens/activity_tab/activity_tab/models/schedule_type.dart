@@ -34,6 +34,10 @@ enum ScheduleType {
   update_profile_recommend,
   peripheral_recommend,
   completed,
+  screening_interview,
+  evaluate_interview,
+  booking_solo,
+  infographic
 }
 
 extension ScheduleTypeExtend on ScheduleType {
@@ -56,9 +60,11 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.custom:
         return R.drawable.ic_schedule_custom;
       case ScheduleType.book_1_1:
-        return R.drawable.ic_schedule_book_1_1;
       case ScheduleType.book_1_n:
-        return R.drawable.ic_schedule_bool_1_1;
+      case ScheduleType.screening_interview:
+      case ScheduleType.evaluate_interview:
+      case ScheduleType.booking_solo:
+        return R.drawable.ic_schedule_book_1_1;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
       case ScheduleType.lesson:
@@ -69,6 +75,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.drawable.ic_schedule_update_profile;
       case ScheduleType.output_assessment:
         return R.drawable.ic_schedule_io_evaluate;
+      case ScheduleType.infographic:
+        return R.drawable.ic_infographic;
 
       // New Recommend
       case ScheduleType.lesson_recommend:
@@ -136,6 +144,14 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.string.update_profile_type.tr();
       case ScheduleType.output_assessment:
         return R.string.output_evaluate.tr();
+      case ScheduleType.screening_interview:
+        return R.string.booking_screening_interview.tr();
+      case ScheduleType.evaluate_interview:
+        return R.string.booking_evaluate_interview.tr();
+      case ScheduleType.booking_solo:
+        return R.string.booking_solo.tr();
+      case ScheduleType.infographic:
+        return R.string.infographic.tr();
 
       // New Recommend : NOT USE
       case ScheduleType.lesson_recommend:
@@ -258,6 +274,14 @@ extension ScheduleTypeExtend on ScheduleType {
         return 28;
       case ScheduleType.completed:
         return 29;
+      case ScheduleType.screening_interview:
+        return 30;
+      case ScheduleType.evaluate_interview:
+        return 31;
+      case ScheduleType.booking_solo:
+        return 32;
+      case ScheduleType.infographic:
+        return 33;
     }
   }
 
@@ -351,6 +375,14 @@ extension ScheduleTypeExtend on ScheduleType {
       return ScheduleType.peripheral_recommend;
     if (index == ScheduleType.completed.typeIndex)
       return ScheduleType.completed;
+    if (index == ScheduleType.screening_interview.typeIndex)
+      return ScheduleType.screening_interview;
+    if (index == ScheduleType.evaluate_interview.typeIndex)
+      return ScheduleType.evaluate_interview;
+    if (index == ScheduleType.booking_solo.typeIndex)
+      return ScheduleType.booking_solo;
+    if (index == ScheduleType.infographic.typeIndex)
+      return ScheduleType.infographic;
 
     return ScheduleType.custom;
   }

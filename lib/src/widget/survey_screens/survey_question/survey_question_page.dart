@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/list_quiz_lesson_response.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/survey_data.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -27,12 +28,14 @@ class SurveyQuestionPage extends StatefulWidget {
   final int index;
   final SurveyData surveyData;
   final List<String> listAnsweredQuestionId;
+  final SmartGoalList? smartGoal;
 
   SurveyQuestionPage({
     Key? key,
     required this.index,
     required this.surveyData,
     required this.listAnsweredQuestionId,
+    this.smartGoal,
   }) : super(key: key);
 
   @override
@@ -186,7 +189,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                           answerResult: listAnswer,
                           isTyping: listAnswer.isTyping,
                         );
-                        if(isAutoSubmit && _cubit.nextButtonEnable){
+                        if (isAutoSubmit && _cubit.nextButtonEnable) {
                           submitAnswerQuestion();
                         }
                       },
@@ -276,7 +279,11 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
           widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
       _cubit.emit(SurveyQuestionHideProgressMessage());
       if (isLastPart) {
-        NavigationUtil.navigatePage(context, SurveyResultPage());
+        NavigationUtil.navigatePage(
+            context,
+            SurveyResultPage(
+              smartGoal: widget.smartGoal,
+            ));
       } else {
         NavigationUtil.navigatePage(
             context,
@@ -284,6 +291,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               index: widget.index + 1,
               surveyData: widget.surveyData,
               listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
+              smartGoal: widget.smartGoal,
             ));
       }
     } else {
@@ -353,7 +361,11 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
           widget.index + 1 == (widget.surveyData.sections?.length ?? 0);
       _cubit.emit(SurveyQuestionHideProgressMessage());
       if (isLastPart) {
-        NavigationUtil.navigatePage(context, SurveyResultPage());
+        NavigationUtil.navigatePage(
+            context,
+            SurveyResultPage(
+              smartGoal: widget.smartGoal,
+            ));
       } else {
         NavigationUtil.navigatePage(
             context,
@@ -361,6 +373,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               index: widget.index + 1,
               surveyData: widget.surveyData,
               listAnsweredQuestionId: _cubit.listAnsweredQuestionId,
+              smartGoal: widget.smartGoal,
             ));
       }
     } else {

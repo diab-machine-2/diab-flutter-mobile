@@ -7,8 +7,7 @@ import 'package:medical/src/repo/learning/learning_client.dart';
 
 part 'bloodpressure_intro_lesson_bloc_state.dart';
 
-class BloodPressureIntroLessonBloc
-    extends Cubit<BloodPressureIntroLessonState> {
+class BloodPressureIntroLessonBloc extends Cubit<BloodPressureIntroLessonState> {
   BloodPressureIntroLessonBloc() : super(BloodPressureIntroLessonInitial()) {
     fetchBloodPressureIntroLesson();
   }
@@ -21,8 +20,7 @@ class BloodPressureIntroLessonBloc
       week = AppSettings.userInfo!.ownPackage!.ownRoadmap!.currentWeek!;
     }
     try {
-      final lessons = await LearningClient()
-          .fetchBloodPressureIntroLessons(type: type, week: week);
+      final lessons = await LearningClient().fetchBloodPressureIntroLessons(type: type, week: week);
       emit(BloodPressureIntroLessonLoaded(lessons: lessons));
     } catch (e) {
       emit(BloodPressureIntroLessonError());
