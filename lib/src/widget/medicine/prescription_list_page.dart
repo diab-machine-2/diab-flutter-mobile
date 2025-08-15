@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../res/R.dart';
 import '../../utils/navigator_name.dart';
@@ -14,6 +15,7 @@ class PrescriptionListPage extends StatefulWidget {
 
 class _PrescriptionListPageState extends State<PrescriptionListPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int bottomIndex = 1;
 
   @override
   void initState() {
@@ -94,30 +96,62 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
       body: _buildBody(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.transparent,
         onPressed: () {},
-        child: const Icon(Icons.add),
+        child: Image.asset(
+          width: 44,
+          height: 44,
+          R.drawable.ic_add_prescription,
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 6.0,
         child: SizedBox(
-          height: 60,
+          height: 80,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [
+            children: [
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Icon(Icons.calendar_today),
-                  Text("Lịch uống thuốc"),
+                  const SizedBox(height: 8),
+                  SvgPicture.asset(
+                    width: 24,
+                    height: 24,
+                    R.icons.ic_schedule_use_medicine,
+                    color: bottomIndex == 0 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    R.string.schedule_use_medicine.tr(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: bottomIndex == 0 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                    ),
+                  ),
                 ],
               ),
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Icon(Icons.receipt_long),
-                  Text("Đơn thuốc"),
+                  const SizedBox(height: 8),
+                  SvgPicture.asset(
+                    width: 24,
+                    height: 24,
+                    R.icons.ic_prescription,
+                    color: bottomIndex == 1 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    R.string.prescription.tr(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: bottomIndex == 1 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -139,13 +173,16 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
 
   Widget _buildMedicineList() {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: const Color(0xFFFFF4E5),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,21 +190,32 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
               Expanded(
                 child: Text(
                   "Bệnh đái tháo đường không...",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF95682E),
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               Text(
                 "21/02/2025",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF95682E),
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 8),
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+            ),
           ),
           child: Padding(
             padding: const EdgeInsets.all(12),
@@ -191,10 +239,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
+                    color: Color(0xFFF4F7F7),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +269,12 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.red,
+                          backgroundColor: Color(0xFFFFE9E9),
                           side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30), // bo tròn nhiều
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
                         onPressed: () {},
                         child: const Text("Ngừng thuốc"),
@@ -233,6 +286,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.teal,
                           side: const BorderSide(color: Colors.teal),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30), // bo tròn nhiều
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
                         onPressed: () {},
                         child: const Text("Chỉnh sửa"),

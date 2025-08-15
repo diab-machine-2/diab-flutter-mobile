@@ -794,4 +794,5 @@ class Drawables {
   String get ic_add => "lib/res/drawables/ic_add.png";
   String get ic_should_do => "lib/res/drawables/ic_should_do.png";
   String get ic_should_not_do => "lib/res/drawables/ic_should_not_do.png";
+  String get ic_add_prescription => "lib/res/drawables/ic_add_prescription.png";
 }
