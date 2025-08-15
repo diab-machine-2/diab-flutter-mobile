@@ -21,7 +21,7 @@ class HomeUtilities extends StatelessWidget {
     final isLargeFont = textScaleFactor > 1.25;
 
     List<HomeUtilityData> renderingUtilities = utilities;
-    if (isLargeFont) {
+    if (isLargeFont && utilities.length > 5) {
       renderingUtilities = utilities.take(5).toList()
         ..add(utilities[utilities.length - 1]);
     }

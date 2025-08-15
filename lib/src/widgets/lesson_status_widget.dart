@@ -69,8 +69,8 @@ class LessonStatusWidget extends StatelessWidget {
       return Row(
         children: [
           Container(
-            width: 20,
-            height: 20,
+            width: 18,
+            height: 18,
             child: Image.asset(R.drawable.ic_lesson_not_learn),
           ),
           const SizedBox(width: 8),
@@ -90,17 +90,17 @@ class LessonStatusWidget extends StatelessWidget {
       return Row(
         children: [
           Container(
-            width: 20,
-            height: 20,
+            width: 18,
+            height: 18,
             child: Image.asset(learningStatus == Const.LESSON_LOCKED
                 ? R.drawable.ic_lesson_lock
-                : R.drawable.ic_lesson_can_not_learn),
+                : R.drawable.ic_lesson_can_not_learn_v2),
           ),
           const SizedBox(width: 8),
           Text(
             learningStatus == Const.LESSON_LOCKED
                 ? R.string.lesson_not_unlock_yet.tr()
-                : R.string.lesson_can_not_learn.tr(),
+                : R.string.premium_lesson.tr(),
             style: TextStyle(
               color: R.color.captionColorGray,
               fontSize: 12.sp,

@@ -264,7 +264,7 @@ class _StepListControllerState extends State<StepListController>
               child: Stack(
                 children: [
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SpacingColumn(
                         spacing: 25.h,

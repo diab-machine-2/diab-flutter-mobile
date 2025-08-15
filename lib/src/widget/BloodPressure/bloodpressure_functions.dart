@@ -10,7 +10,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 
 class BloodPressureFunctions {
   static void showModalAddData(BuildContext context,
-      {bool popPrevious = false}) {
+      {bool popPrevious = false, String? goalId}) {
     Widget buildContentItem(String title, String subtitle, String iconPath,
         VoidCallback onPressed) {
       return InkWell(
@@ -180,7 +180,7 @@ class BloodPressureFunctions {
                       }
                       Navigator.pushNamed(
                           context, NavigatorName.add_blood_pressure,
-                          arguments: {'type': 'input'});
+                          arguments: {'type': 'input', 'goalId': goalId});
                     },
                   ),
                 ],

@@ -1,9 +1,9 @@
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class ShareAppDetail extends StatefulWidget {
@@ -287,7 +287,7 @@ class _ShareAppDetailState extends State<ShareAppDetail> {
   }
 
   _onShareApp(BuildContext context) {
-    String? shareLink = DynamicLinkConfig.instance.shareLink;
+    String? shareLink = BranchioLinkConfig.instance.shareLink;
     if (shareLink != null) {
       AppShare.instance.userReferralCode(context, shareLink);
     }

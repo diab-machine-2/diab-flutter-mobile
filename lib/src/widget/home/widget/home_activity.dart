@@ -209,7 +209,8 @@ class HomeActivity extends StatelessWidget {
                     ),
                     if ((activity.description ?? '').isNotEmpty)
                       const SizedBox(height: 4),
-                    if (activity.description != null)
+                    if (activity.description != null &&
+                        getSubtitle(activity).isNotEmpty)
                       Text(
                         getSubtitle(activity),
                         style: TextStyle(

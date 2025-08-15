@@ -141,13 +141,16 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
         //     'object_title': 'Chỉ số cân nặng'
         //   },
         // );
-        await HomeClient().completeSmartGoal(
-            selectedDate, goalId ?? '', 1, ScheduleType.weight.typeIndex);
+        if (goalId != null && goalId!.isNotEmpty) {
+          await HomeClient().completeSmartGoal(
+              selectedDate, goalId ?? '', 1, ScheduleType.weight.typeIndex);
+        }
+
         if (AppSettings.userInfo!.weight != selectedWeight) {
           await updateHeightProfile();
-          Observable.instance
-              .notifyObservers([], notifyName: "Weight_change_data");
         }
+        Observable.instance
+            .notifyObservers([], notifyName: "Weight_change_data");
         emit(DataLoadedState());
       }
     } catch (e) {

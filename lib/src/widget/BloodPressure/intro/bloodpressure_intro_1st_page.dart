@@ -17,10 +17,12 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'widgets/bloodpresure_lesson_section.dart';
 
 class BloodPressureIntro1stPage extends StatefulWidget {
-  const BloodPressureIntro1stPage({super.key});
+  final String? goalId;
+  const BloodPressureIntro1stPage({super.key, this.goalId});
 
   @override
-  State<BloodPressureIntro1stPage> createState() => _BloodPressureIntro1stPageState();
+  State<BloodPressureIntro1stPage> createState() =>
+      _BloodPressureIntro1stPageState();
 }
 
 class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
@@ -51,13 +53,15 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
     // Grant access to HealthKit already
     if (hasHealthConnection == true) {
       Navigator.pushNamed(
-        context, NavigatorName.add_blood_pressure,
-        arguments: {'type': 'input'},
+        context,
+        NavigatorName.add_blood_pressure,
+        arguments: {'type': 'input', 'goalId': widget.goalId},
       );
       return;
     }
     // Show the modal to choose methods
-    BloodPressureFunctions.showModalAddData(context, popPrevious: true);
+    BloodPressureFunctions.showModalAddData(context,
+        popPrevious: true, goalId: widget.goalId);
   }
 
   void _navigateToLessonDetail(String id, int type) async {
@@ -115,7 +119,8 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
             padding: const EdgeInsets.only(right: 8.0),
             child: InkWell(
               onTap: () {
-                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+                Navigator.of(context)
+                    .pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -266,7 +271,8 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: BloodPressureLessonSection(
-        onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+        onLessonTap: (lesson) =>
+            _navigateToLessonDetail(lesson.id, lesson.type),
       ),
     );
   }

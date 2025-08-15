@@ -127,6 +127,7 @@ class _IntroduceSurveyPageState extends State<IntroduceSurveyPage> {
                       index: 0,
                       surveyData: _cubit.surveyData!,
                       listAnsweredQuestionId: [],
+                      smartGoal: widget.survey,
                     ),
                   );
                 },

@@ -81,7 +81,7 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         } //Because endDateFirst is Sunday so we add 1 day
 
         dateTime = dateTime.add(Duration(days: (currentWeek! - 1) * 7));
-        dateTime = dateTime.toLocal();
+        // dateTime = dateTime.toLocal();
 
         final utcDatetime = DateTime.utc(dateTime.year, dateTime.month,
             dateTime.day, dateTime.hour, dateTime.minute, dateTime.second);

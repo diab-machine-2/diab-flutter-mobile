@@ -48,9 +48,9 @@ class PackageDetailBottomSheet extends StatelessWidget {
                     children: [
                       MediaQuery(
                         data: MediaQuery.of(context).copyWith(
-                          textScaler: TextScaler.linear(MediaQuery.of(context)
-                              .textScaleFactor
-                              .clamp(1.0, 1.3)),
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                         ),
                         child: Text(
                           package.title.toUpperCase(),
@@ -64,9 +64,9 @@ class PackageDetailBottomSheet extends StatelessWidget {
                       GapH(8),
                       MediaQuery(
                         data: MediaQuery.of(context).copyWith(
-                          textScaler: TextScaler.linear(MediaQuery.of(context)
-                              .textScaleFactor
-                              .clamp(1.0, 1.3)),
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                         ),
                         child: Text(
                           package.subtitle,
