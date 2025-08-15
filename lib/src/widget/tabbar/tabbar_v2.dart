@@ -99,8 +99,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    final String? activityId = DynamicLinkConfig.instance.activityId;
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
 
     if (activityId != null || meetingId != null) {
@@ -209,8 +209,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkExistLessonId() async {
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? activityId = DynamicLinkConfig.instance.activityId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
     if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
@@ -221,7 +221,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         NavigationUtil.navigatePage(navigatorKey.currentState!.context,
             IntroduceSurveyPage(survey: smartGoal));
         Future.delayed(Duration(seconds: 1), () {
-          DynamicLinkConfig.instance.removeActivityId();
+          BranchioLinkConfig.instance.removeActivityId();
         });
       } else {
         _jumpTo(TabBarType.program.index);
@@ -231,7 +231,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkUserReferralCode() async {
-    DynamicLinkConfig.instance.createShareReferralLink();
+    BranchioLinkConfig.instance.createShareReferralLink();
     ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
     if (referralCodeData != null) {
       AppStorages.removeReferralCode();
@@ -301,8 +301,19 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _checkExistLessonId();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
-      _jumpTo(TabBarType.library.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
+      final targetIndex = TabBarType.library.index;
+
+      _jumpTo(targetIndex);
+
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (_bottomTabbarKey.currentState != null && mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _bottomTabbarKey.currentState != null) {
+              _bottomTabbarKey.currentState!.setPage(targetIndex);
+            }
+          });
+        }
+      });
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       NavigationUtil.popToFirst(context);
@@ -357,6 +368,15 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           Conversations(),
           // _buildStoreTab(),
         ];
+      });
+    }
+
+    if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB_AUTO_TRIGGER_SUBSCRIPTION) {
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Observable.instance
+            .notifyObservers([], notifyName: 'auto_trigger_paywall');
       });
     }
   }

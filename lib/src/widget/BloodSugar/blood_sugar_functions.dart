@@ -14,7 +14,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
   static void showModalAddData(BuildContext context,
-      {bool popPrevious = false}) {
+      {bool popPrevious = false, String? goalId}) {
     Widget buildContentItem(String title, String subtitle, String iconPath,
         VoidCallback onPressed) {
       return InkWell(
@@ -177,7 +177,7 @@ class BloodSugarFunctions {
                       }
                       Navigator.pushNamed(
                           context, NavigatorName.add_blood_sugar_new,
-                          arguments: {'type': 'input'});
+                          arguments: {'type': 'input', 'goalId': goalId});
                     },
                   ),
                 ],

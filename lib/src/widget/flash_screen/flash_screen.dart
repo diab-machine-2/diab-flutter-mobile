@@ -47,7 +47,7 @@ class _FlashScreenControllerState extends State<FlashScreenController> {
   void _initStateAsync() async {
     // Setup deeplink handlers
     BranchioLinkConfig.instance.setUpHandleDeepLink();
-    await DynamicLinkConfig.instance.setUpHandleDeepLink();
+    // await DynamicLinkConfig.instance.setUpHandleDeepLink();
 
     // Initialize app configurations
     await getSecuredModel();

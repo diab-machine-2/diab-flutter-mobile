@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +26,6 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
   late List<CalendarCoachModel> calendarCoachs = [];
 
   static CreateCalendarResponse? myCalendar;
-  static String? courseId;
 
   static int updateCount = 1;
 
@@ -87,6 +88,7 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     required String courseId,
     DateTime? startDate,
     DateTime? endDate,
+    int interviewType = 30,
   }) async {
     startDate = DateTime.now().add(Duration(days: 0));
     endDate = DateTime.now()
@@ -94,11 +96,12 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     emit(CalendarBookingLoading());
 
     final request = CalendarFilter(
-        accountPatientId: AppSettings.userInfo!.accountId,
-        courseId: courseId,
-        fromDate: startDate,
-        toDate: endDate,
-        calendarType: 1);
+      accountPatientId: AppSettings.userInfo!.accountId,
+      courseId: courseId,
+      fromDate: startDate,
+      toDate: endDate,
+      calendarType: interviewType,
+    );
 
     final ApiResult<List<CreateCalendarResponse>> apiResult =
         await repository.getMyCalendar(request);
@@ -114,14 +117,16 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
     });
   }
 
-  Future<void> createCalendar(
+  Future<bool> createCalendar(
     CreateCalendarRequest request,
   ) async {
+    bool result = false;
     emit(CalendarBookingLoading());
     final ApiResult<CreateCalendarResponse> apiResult =
         await repository.createCalendar(request);
     apiResult.when(success: (CreateCalendarResponse response) async {
       myCalendar = response;
+      result = true;
 
       // final email = AppSettings.userInfo!.email ?? '';
       // final topic = "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}";
@@ -145,10 +150,12 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
 
       emit(CreateCalendarSuccess(response));
       emit(CalendarBookingCloseLoading());
-      return apiResult;
+      // return apiResult;
     }, failure: (NetworkExceptions error) {
+      log('[BOOKING] error ${error.toString()}');
       emit(CalendarBookingFailure("Lịch này đã có người đặt trước"));
     });
+    return result;
   }
 
   Future<String?> getZoomLink(

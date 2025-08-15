@@ -39,7 +39,7 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
   void initState() {
     super.initState();
     Observable.instance.addObserver(this);
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
     if (lessonId != null || user.isUserFree) {
       index = PlanType.lesson.index;
     } else {

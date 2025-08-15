@@ -86,4 +86,23 @@ class LearningClient extends FetchClient {
       statusCode: response.statusCode,
     );
   }
+
+  Future<List<LessonModel>> fetchBloodPressureIntroLessons(
+      {int type = 1, int week = 0}) async {
+    final Response response = await super.postUri(
+      url: '/App/Lesson/BloodPressureLesson',
+      baseOption: true,
+      params: {
+        'type': type,
+        'isNotCompleted': false,
+        "week": week,
+        "page": 1,
+        "size": 10
+      },
+    );
+    if (response.statusCode == 200) {
+      return LessonModel.toList(response.data['data']);
+    }
+    return [];
+  }
 }

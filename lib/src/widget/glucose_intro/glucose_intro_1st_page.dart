@@ -17,7 +17,8 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'widgets/glucose_lesson_section.dart';
 
 class GlucoseIntro1stPage extends StatefulWidget {
-  const GlucoseIntro1stPage({super.key});
+  final String? goalId;
+  const GlucoseIntro1stPage({super.key, this.goalId});
 
   @override
   State<GlucoseIntro1stPage> createState() => _GlucoseIntro1stPageState();
@@ -51,10 +52,11 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
       Navigator.of(context).pop();
       Navigator.of(context).pushNamed(
         NavigatorName.add_blood_sugar_new,
-        arguments: {'type': 'input'},
+        arguments: {'type': 'input', 'goalId': widget.goalId},
       );
     }
-    BloodSugarFunctions.showModalAddData(context, popPrevious: true);
+    BloodSugarFunctions.showModalAddData(context,
+        popPrevious: true, goalId: widget.goalId);
   }
 
   void _navigateToLessonDetail(String id, int type) async {
@@ -220,7 +222,8 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: GlucoseLessonSection(
-        onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+        onLessonTap: (lesson) =>
+            _navigateToLessonDetail(lesson.id, lesson.type),
       ),
     );
   }

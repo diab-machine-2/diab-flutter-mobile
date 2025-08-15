@@ -461,8 +461,9 @@ class AudienceCard extends StatelessWidget {
               alignment: Alignment.center,
               child: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(
-                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                 ),
                 child: Text(
                   audience.title,
@@ -574,9 +575,9 @@ class ActionCard extends StatelessWidget {
                 child: Center(
                   child: MediaQuery(
                     data: MediaQuery.of(context).copyWith(
-                      textScaler: TextScaler.linear(MediaQuery.of(context)
-                          .textScaleFactor
-                          .clamp(1.0, 1.3)),
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                     ),
                     child: Text(
                       action.title,
