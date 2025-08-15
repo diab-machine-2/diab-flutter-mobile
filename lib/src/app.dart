@@ -134,6 +134,7 @@ class App extends StatelessWidget {
                 // );
                 child = BotToastInit()(context, child);
                 return SafeArea(
+                  top: false,
                   child: child,
                 );
               },
