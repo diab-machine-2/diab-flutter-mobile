@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -625,7 +626,10 @@ class BranchioLinkConfig {
   }
 
   void tryNavigateBooking({bool initial = false}) async {
-    if (_courseId == null) return;
+    if (_courseId == null || _courseId!.isEmpty) {
+      return;
+    }
+
     bool isExist = await UserClient().IsExistCourse(_courseId!);
     if (!isExist) return;
 
@@ -698,20 +702,6 @@ class BranchioLinkConfig {
               'endTime': _endTime,
               'interviewType': _interviewType
             });
-      }
-      _resetDataLink();
-    }
-
-    if (bookingQuantity == 0) {
-      bool isCalendarBookingPage =
-          _isCurrentRoute(NavigatorName.calendar_booking);
-      if (isCalendarBookingPage) {
-        navigatorKey.currentState?.pushReplacementNamed(
-            NavigatorName.calendar_booking,
-            arguments: {'courseId': _courseId, 'endTime': _endTime});
-      } else {
-        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-            arguments: {'courseId': _courseId, 'endTime': _endTime});
       }
       _resetDataLink();
     }

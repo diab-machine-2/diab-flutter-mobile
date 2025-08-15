@@ -119,7 +119,7 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
               child: ButtonWidget(
                 title: R.string.completed.tr(),
                 onPressed: () async {
-                  if (widget.smartGoal != null) {
+                  if (widget.smartGoal?.id != null) {
                     await HomeClient().completeSmartGoal(
                       DateTime.now(),
                       widget.smartGoal!.id,

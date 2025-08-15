@@ -58,33 +58,50 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
   final AppRepository repository = AppRepository();
   late WelcomePackageScreenCubit _welcomPackageCubit;
 
+  bool _hasSetInitialSelectedDate = false;
+
   @override
   void initState() {
     super.initState();
     _cubit = CalendarBookingCubit(repository);
     _welcomPackageCubit = WelcomePackageScreenCubit(repository);
     setUpCalendar();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setInitialSelectedDate();
+    });
+  }
+
+  @override
+  void dispose() {
+    print('[CALENDAR] dispose called');
+    super.dispose();
   }
 
   Future<void> setUpCalendar() async {
-    await _cubit.initializeMyCalendar(
-      courseId: widget.courseId,
-      // endDate: DateTime.fromMillisecondsSinceEpoch(
-      //     int.parse(widget.endTime) * 1000)
-      interviewType: widget.interviewType,
-    );
+    try {
+      await _cubit.initializeMyCalendar(
+        courseId: widget.courseId,
+        interviewType: widget.interviewType,
+      );
 
-    myCalendar = CalendarBookingCubit.myCalendar;
-    seletedDate = myCalendar != null
-        ? _parseToDateTime(myCalendar!.appointmentDate)
-        : seletedDate;
+      myCalendar = CalendarBookingCubit.myCalendar;
+      seletedDate = myCalendar != null
+          ? _parseToDateTime(myCalendar!.appointmentDate)
+          : seletedDate;
 
-    if (myCalendar != null) {
-      // Khi đã có calendar rồi, back lại sẽ render lại slot lịch của calendar đó
-      initpickSlots();
-    } else {
-      // Chưa có calendar nào
-      await _cubit.getCalendarCoach(widget.courseId, widget.endTime);
+      if (myCalendar != null) {
+        print('[CALENDAR] myCalendar exists, calling initpickSlots');
+        initpickSlots();
+      } else {
+        print('[CALENDAR] myCalendar is null, calling getCalendarCoach');
+        if (widget.courseId.isNotEmpty) {
+          final _ =
+              await _cubit.getCalendarCoach(widget.courseId, widget.endTime);
+        }
+      }
+      print('[CALENDAR] setUpCalendar COMPLETED');
+    } catch (e) {
+      print('[CALENDAR] setUpCalendar ERROR: $e');
     }
   }
 
@@ -122,6 +139,69 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       final isMorning = _parseToDateTime(pickSlot!.startTime).hour < 12;
       isMorningSelected = isMorning;
     });
+  }
+
+    void _setInitialSelectedDate() {
+    if (_hasSetInitialSelectedDate) return;
+    
+    // Get active dates (same logic as in _buildSectionCalendarBooking)
+    List<DateTime> activeDates = _cubit.calendarCoachs
+        .map((model) => DateTime.fromMillisecondsSinceEpoch(
+              model.startTime * 1000,
+              isUtc: true,
+            ))
+        .where((date) {
+          DateTime today = DateTime.now();
+          DateTime startOfToday = DateTime(today.year, today.month, today.day);
+          DateTime endDate = startOfToday.add(Duration(days: 21));
+          return date.isAfter(startOfToday) && date.isBefore(endDate);
+        })
+        .map((dateTime) => DateTime(
+              dateTime.year,
+              dateTime.month,
+              dateTime.day,
+              dateTime.hour,
+              dateTime.minute,
+              dateTime.second,
+            ))
+        .toSet()
+        .toList();
+    
+    if (activeDates.isNotEmpty) {
+      activeDates.sort((a, b) {
+        int yearComparison = a.year.compareTo(b.year);
+        if (yearComparison != 0) return yearComparison;
+        int monthComparison = a.month.compareTo(b.month);
+        if (monthComparison != 0) return monthComparison;
+        return a.day.compareTo(b.day);
+      });
+      
+      setState(() {
+        seletedDate = activeDates.first;
+        _hasSetInitialSelectedDate = true;
+        
+        // Also update pickSlots for the selected date
+        var targets = _cubit.calendarCoachs
+            .where((model) => DateUtil.isSameDate(
+                  DateTime.fromMillisecondsSinceEpoch(
+                    model.startTime * 1000,
+                    isUtc: true,
+                  ),
+                  seletedDate,
+                ))
+            .toList();
+        pickSlots = targets;
+      });
+      
+      print('[CALENDAR] Initial selectedDate set to: $seletedDate');
+    } else {
+      // If no active dates yet, schedule another check
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (mounted && !_hasSetInitialSelectedDate) {
+          _setInitialSelectedDate();
+        }
+      });
+    }
   }
 
   @override
@@ -398,7 +478,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
       await _welcomPackageCubit.markDisplayedWelcome();
 
-      Observable.instance.notifyObservers([], notifyName: 'refresh_home'); 
+      Observable.instance.notifyObservers([], notifyName: 'refresh_home');
 
       if (widget.smartGoal?.id != null) {
         await HomeClient().completeSmartGoal(
@@ -819,7 +899,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             ),
           ),
           CustomHorizontalDatePicker(
-            initialDate: seletedDate,
+            initialDate:  seletedDate,
             firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
             activeDates: activeDates,
             datesRange: Const.MAX_DAY_RANGE_PRIMARY_SCREENING,

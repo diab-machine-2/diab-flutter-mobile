@@ -26,7 +26,6 @@ class CalendarBookingCubit extends Cubit<CalendarBookingState> {
   late List<CalendarCoachModel> calendarCoachs = [];
 
   static CreateCalendarResponse? myCalendar;
-  static String? courseId;
 
   static int updateCount = 1;
 
