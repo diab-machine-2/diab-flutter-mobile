@@ -10,6 +10,7 @@ import '../../utils/navigation_util.dart';
 import '../../utils/navigator_name.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'onboarding_model.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -23,6 +24,53 @@ class _OnboardingPageState extends State<OnboardingPage> {
   int _currentIndex = 0;
   final double _lessonItemWidth = 240.0;
   final ScrollController _scrollController = ScrollController();
+  // Tab Lịch uống thuốc
+  final List<MedicineScheduleItem> _medicineSchedules = [
+    MedicineScheduleItem(
+      dayInWeek: "T4",
+      date: "21/08",
+      isToday: true,
+      medicineSessions: [
+        MedicineSession(
+            name: "Buổi sáng",
+            sessionType: Session.MORNING,
+            time: "08:30",
+            dosages: [
+              DosageInSession(
+                  name: "Metformin (Metformin Stella 1000mg) 1000 mg",
+                  quantity: 1,
+                  unit: "viên",
+                  isUsed: false,
+                  timeOfUse: "Trước ăn"
+              )
+            ]
+        ),
+        MedicineSession(
+            name: "Buổi tối",
+            sessionType: Session.NIGHT,
+            time: "19:30",
+            dosages: [
+              DosageInSession(
+                  name: "Metformin (Metformin Stella 1000mg) 1000 mg",
+                  quantity: 1,
+                  unit: "viên",
+                  isUsed: false,
+                  timeOfUse: "Sau ăn"
+              ),
+              DosageInSession(
+                  name: "Fluvastatin (Autifan 40) 40mg",
+                  quantity: 1,
+                  unit: "viên",
+                  isUsed: false,
+                  timeOfUse: "Sau ăn"
+              ),
+            ]
+        ),
+      ]
+    )
+  ];
+  // Tab Đơn thuốc
+  final List<PrescriptionItem> _prescriptionItems = [];
 
   @override
   void initState() {
@@ -113,31 +161,52 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
           ),
           body: _buildContainer(),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.medication),
+                label: "Lịch uống thuốc",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add_circle, size: 32),
+                label: "",
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.history),
+                label: "Đơn thuốc",
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildContainer() {
-    return Container(
-      color: R.color.backgroundColorNew,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildBanner(),
-              _buildDoYouKnow(),
-              _buildNeedSupport(),
-              const SizedBox(height: 12),
-              _buildMedicineLessons(),
-              const SizedBox(height: 16),
-            ],
+    if (_medicineSchedules.isEmpty && _prescriptionItems.isEmpty) {
+      // UI no schedule of medicine
+      return Container(
+        color: R.color.backgroundColorNew,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildBanner(),
+                _buildDoYouKnow(),
+                _buildNeedSupport(),
+                const SizedBox(height: 12),
+                _buildMedicineLessons(),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      return _buildScheduleAndPrescription();
+    }
   }
 
   Widget _buildBanner() {
@@ -537,6 +606,185 @@ class _OnboardingPageState extends State<OnboardingPage> {
         lessonType: type,
         lessonId: id,
         onComplete: (_, __) {},
+      ),
+    );
+  }
+
+  /*-----------------UI Lịch uống thuốc và Đơn thuốc*/
+  Widget _buildScheduleAndPrescription() {
+    return Column(
+      children: [
+        _buildDateSelector(),
+        Expanded(
+          child: ListView(
+            children: [
+              _buildSession(
+                "Buổi sáng",
+                [
+                  MedicineCard(
+                    condition: "Bệnh đái tháo đường không phụ thuộc insulin",
+                    time: "08:30",
+                    medicineName: "Gliclazid (Glycinorm-80)",
+                    dosage: "80mg",
+                    instruction: "1 viên - Trước ăn",
+                    isTaken: false,
+                  ),
+                ],
+              ),
+              _buildSession(
+                "Buổi tối",
+                [
+                  MedicineCard(
+                    condition: "Bệnh đái tháo đường không phụ thuộc insulin",
+                    time: "19:30",
+                    medicineName: "Metformin (Metformin Stella 1000mg)",
+                    dosage: "1000mg",
+                    instruction: "1 viên - Sau ăn",
+                    isTaken: true,
+                  ),
+                  MedicineCard(
+                    condition: "",
+                    time: "",
+                    medicineName: "Fluvastatin (Autifan 40)",
+                    dosage: "40mg",
+                    instruction: "1 viên - Sau ăn",
+                    note: "Ghi chú: Uống lúc 20h",
+                    isTaken: true,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateSelector() {
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back_ios)),
+            const Text("Hôm nay - 21/08/2024"),
+            IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios)),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildDateItem("T2", "19/08", false),
+            _buildDateItem("T3", "20/08", false),
+            _buildDateItem("T4", "21/08", true),
+            _buildDateItem("T5", "22/08", false),
+            _buildDateItem("T6", "23/08", false),
+          ],
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildDateItem(String day, String date, bool selected) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: selected ? Colors.teal : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Text(day,
+              style: TextStyle(
+                  color: selected ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.bold)),
+          Text(date,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.black,
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSession(String title, List<Widget> medicines) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: ExpansionTile(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        children: medicines,
+      ),
+    );
+  }
+}
+
+class MedicineCard extends StatelessWidget {
+  final String condition;
+  final String time;
+  final String medicineName;
+  final String dosage;
+  final String instruction;
+  final String? note;
+  final bool isTaken;
+
+  const MedicineCard({
+    super.key,
+    required this.condition,
+    required this.time,
+    required this.medicineName,
+    required this.dosage,
+    required this.instruction,
+    this.note,
+    required this.isTaken,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (condition.isNotEmpty)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(condition, style: const TextStyle(color: Colors.orange)),
+                Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+          const SizedBox(height: 6),
+          Text("$medicineName $dosage",
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(instruction, style: const TextStyle(color: Colors.grey)),
+              Row(
+                children: [
+                  Icon(isTaken ? Icons.check_circle : Icons.radio_button_unchecked,
+                      color: isTaken ? Colors.teal : Colors.grey),
+                  const SizedBox(width: 4),
+                  Text(isTaken ? "Đã dùng" : "Chưa dùng",
+                      style: TextStyle(
+                          color: isTaken ? Colors.teal : Colors.grey)),
+                ],
+              )
+            ],
+          ),
+          if (note != null) ...[
+            const SizedBox(height: 6),
+            Text(note!, style: const TextStyle(color: Colors.grey)),
+          ]
+        ],
       ),
     );
   }
