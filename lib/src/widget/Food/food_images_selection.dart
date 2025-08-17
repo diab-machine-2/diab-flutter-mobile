@@ -411,7 +411,7 @@ class _FoodImagesSelectionState extends State<FoodImagesSelection> {
   void _openCamera() async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
         maxWidth: 1024,
         maxHeight: 1024,
         source: ImageSource.camera,
@@ -431,7 +431,7 @@ class _FoodImagesSelectionState extends State<FoodImagesSelection> {
   void _openGallery() async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
         maxWidth: 1024,
         maxHeight: 1024,
         source: ImageSource.gallery,
