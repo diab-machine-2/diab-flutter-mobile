@@ -309,6 +309,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 100,
+        limit: 5,
       );
 
       if (pickedFiles.isNotEmpty) {
@@ -520,7 +521,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -543,7 +544,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -566,7 +567,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                   style: TextStyle(
                     color: Colors.grey.shade800,
                     fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -588,16 +589,46 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             // Gallery button with preview
-            _buildGalleryPreviewButton(),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 13),
+                _buildGalleryPreviewButton(),
+                const SizedBox(height: 6),
+                Text(
+                  'Ảnh',
+                  style: TextStyle(
+                    color: Color(0xF636A6B),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
 
             // Capture button
             _buildCaptureButton(),
 
             // Rotate button
-            _buildControlButton(
-              icon: R.drawable.im_food_capture_rotate,
-              onTap: _cameras.length > 1 && _isInitialized ? _switchCamera : null,
-              size: 56,
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 13),
+                _buildControlButton(
+                  icon: R.drawable.im_food_capture_rotate,
+                  onTap: _cameras.length > 1 && _isInitialized ? _switchCamera : null,
+                  size: 56,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Xoay',
+                  style: TextStyle(
+                    color: Color(0xF636A6B),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

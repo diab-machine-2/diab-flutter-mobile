@@ -39,7 +39,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
 
 class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   final TextEditingController _controllerNote = TextEditingController();
-  List<FoodModel> selectedFoods = [];
+  final List<FoodModel> _selectedFoods = [];
   List<dynamic> files = [];
   int maxMedia = 5;
   DateTime selectedDate = DateTime.now();
@@ -47,13 +47,15 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
 
-  double get totalKcal => selectedFoods.fold(
+  bool get _haveFood => _selectedFoods.isNotEmpty;
+
+  double get totalKcal => _selectedFoods.fold(
       0, (sum, food) => sum + (food.calorie ?? 0) * (food.portion?.toDouble() ?? 0));
 
   @override
   void initState() {
     super.initState();
-    selectedFoods = [...widget.generatedFoods];
+    _selectedFoods.addAll(widget.generatedFoods);
     _files.addAll(widget.files.map((e) => File(e)).toList());
   }
 
@@ -127,6 +129,13 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                           ),
                                         ),
                                       ),
+                                      // Sticky date time picker overlay
+                                      Positioned(
+                                        top: 16,
+                                        left: 0,
+                                        right: 0,
+                                        child: Center(child: _dateTimePickerOverlay()),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -148,12 +157,12 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                       ],
                     ),
                     // Sticky date time picker overlay
-                    Positioned(
-                      top: 16,
-                      left: 0,
-                      right: 0,
-                      child: Center(child: _dateTimePickerOverlay()),
-                    ),
+                    // Positioned(
+                    //   top: 16,
+                    //   left: 0,
+                    //   right: 0,
+                    //   child: Center(child: _dateTimePickerOverlay()),
+                    // ),
                   ],
                 ),
               ),
@@ -257,7 +266,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                R.string.luong_calo_ban_da_nap.tr(),
+                R.string.bua_an_gom.tr(),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -290,7 +299,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           SizedBox(height: 20),
           // Food Items List
           Column(
-            children: selectedFoods
+            children: _selectedFoods
                 .asMap()
                 .map(
                   (index, food) => MapEntry(
@@ -352,7 +361,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                           GestureDetector(
                             onTap: () {
                               setState(() {
-                                selectedFoods.removeAt(index);
+                                _selectedFoods.removeAt(index);
                               });
                             },
                             child: Image.asset(
@@ -430,27 +439,23 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
     return Container(
       margin: EdgeInsets.only(top: 8, bottom: 8, left: 12, right: 12),
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom / 2 + 12),
-      height: 48,
+      height: 44,
       width: double.infinity,
+      constraints: BoxConstraints(
+        minHeight: 44,
+        maxHeight: 44,
+        maxWidth: 351,
+      ),
       child: GestureDetector(
-        onTap: () async {
-          _submitData();
-        },
+        onTap: _haveFood ? _submitData : null,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(200),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.centerRight,
-              colors: [
-                R.color.greenGradientTop,
-                R.color.greenGradientBottom,
-              ],
-            ),
+            color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
           ),
           child: Center(
             child: Text(
-              R.string.save.tr(),
+              R.string.confirm.tr(),
               style: TextStyle(
                 color: R.color.white,
                 fontWeight: FontWeight.w600,
@@ -470,10 +475,11 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         fullscreenDialog: true,
         builder: (context) {
           return SearchFoodController(
-            foods: selectedFoods,
+            foods: _selectedFoods,
             callback: (foods) {
               setState(() {
-                selectedFoods = foods;
+                _selectedFoods.clear();
+                _selectedFoods.addAll(foods);
               });
             },
           );
@@ -503,7 +509,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           widget.timeframeId,
           note,
-          selectedFoods, paths);
+          _selectedFoods, paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         Navigator.pop(context);
@@ -524,7 +530,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   void _showDialogSave() {
     final note = _controllerNote.text;
 
-    if (note.isEmpty && selectedFoods.isEmpty && files.isEmpty) {
+    if (note.isEmpty && _selectedFoods.isEmpty && files.isEmpty) {
       Navigator.pop(context);
       return;
     }

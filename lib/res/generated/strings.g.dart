@@ -387,6 +387,7 @@ class Strings {
   String get che_do_dinh_duong_benh_tieu_duong =>
       'che_do_dinh_duong_benh_tieu_duong';
   String get luong_calo_ban_da_nap => 'luong_calo_ban_da_nap';
+  String get bua_an_gom => 'bua_an_gom';
   String get them_mon_an => 'them_mon_an';
   String get ban_chua_chon_mon_an => 'ban_chua_chon_mon_an';
   String get food_advice => 'food_advice';
