@@ -179,7 +179,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                       _cubit.lessonDetail?.name,
                                                 },
                                               );
-                                              NavigationUtil.pop(context);
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback((_) {
+                                                NavigationUtil.pop(context);
+                                              });
                                             },
                                             child: Icon(
                                               Icons.clear_rounded,
