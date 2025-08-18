@@ -24,6 +24,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -142,6 +143,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           return true;
         });
 
+        // // load customer receives user
+        // yield* _fetchCustomerReceivesUser();
+
         // load banners
         yield* _fetchBanners();
 
@@ -175,7 +179,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _fetchActivities() async* {
     // load today target
     final repository = AppRepository();
-    final currentDay = DateUtil.getCurrentDayInMillis();
+    final dateTime0 = DateTime.utc(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    final currentDay = DateUtil.getDayInMillis(dateTime0);
     final apiResult =
         await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
     HomeLoaded currentState = state as HomeLoaded;
@@ -492,8 +498,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeMeasurementIndex(
         title: R.string.van_dong.tr(),
         icon: R.drawable.ic_home_measurement_exercise,
-        navigatorName: NavigatorName.add_exercrises,
-        args: {'type': 'input'},
+        navigatorName: NavigatorName.exercrise_onboarding,
+        // args: {'type': 'input'},
       ),
       HomeMeasurementIndex(
         title: R.string.dinh_duong.tr(),
@@ -656,8 +662,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: null,
       unit: model?.exercise?.unit ?? "kcal",
       navigatorName: haveExercise
-          ? NavigatorName.detail_exercrises
-          : NavigatorName.add_exercrises,
+          ? NavigatorName.exercrise_dashboard
+          : NavigatorName.exercrise_onboarding,
       args: haveExercise ? null : {'type': 'input'},
     );
 

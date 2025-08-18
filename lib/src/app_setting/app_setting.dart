@@ -26,6 +26,8 @@ import '../modal/user/secure.dart';
 class AppSettings {
   static UserModel? userInfo;
   static bool isGetUser = false;
+  static double targetDuration = 0.0;
+  static double targetBurnedCalorie = 0.0;
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
@@ -55,6 +57,9 @@ class AppSettings {
   static void setCountryCode(String code) {
     _countryCode = code;
   }
+
+  static bool get isRegionAllowInputDevice =>
+      Const.REGION_ALLOW_CONNECT_DEVICE.contains(countryCode);
 
   static bool _splashScreenInitDone = false;
   static bool get splashScreenInitDone => _splashScreenInitDone;
@@ -417,27 +422,64 @@ class AppSettings {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }
 
+  // Store exercise input method
+  static Future<String?> getLastOpenedExerciseInputType() async {
+    String? lastOpenedExerciseInputType =
+        appPreference.getData("lastOpenedExerciseInputType");
+    return lastOpenedExerciseInputType;
+  }
+
+  static void setLastOpenedExerciseInputType(String inputType) {
+    appPreference.setData("lastOpenedExerciseInputType", inputType);
+  }
+
+  static void clearLastOpenedExerciseInputType() {
+    appPreference.removeData("lastOpenedExerciseInputType");
+  }
+
+  static Future<void> saveZaloGroup(String? zaloGroup) async {
+    if (zaloGroup != null && zaloGroup.isNotEmpty) {
+      print('[ONBOARDING] saveZaloGroup: $zaloGroup');
+      appPreference.setData("zaloGroup", zaloGroup);
+    }
+  }
+
+  static Future<String?> getZaloGroup() async {
+    return appPreference.getData("zaloGroup");
+  }
+
+  static Future<void> clearZaloGroup() async {
+    appPreference.removeData("zaloGroup");
+  }
+
   // Check to show 1st page -> Blood Pressure
   static Future<String?> getLastOpenedBloodPressureInputType() async {
-    String? lastOpenedBloodPressureInputType = appPreference.getData("lastOpenedBloodPressureInputType");
+    String? lastOpenedBloodPressureInputType =
+        appPreference.getData("lastOpenedBloodPressureInputType");
     return lastOpenedBloodPressureInputType;
   }
+
   static void setLastOpenedBloodPressureInputType(String inputType) {
     appPreference.setData("lastOpenedBloodPressureInputType", inputType);
   }
+
   static void clearLastOpenedBloodPressureInputType() {
     appPreference.removeData("lastOpenedBloodPressureInputType");
   }
 
   // Check to show heart rate input with blood pressure
   static Future<bool?> getInputHeartRateWithBloodPressure() async {
-    String? inputHeartRateWithBloodPressure = appPreference.getData("inputHeartRateWithBloodPressure");
-    return inputHeartRateWithBloodPressure != null ?
-        inputHeartRateWithBloodPressure == "true" : null;
+    String? inputHeartRateWithBloodPressure =
+        appPreference.getData("inputHeartRateWithBloodPressure");
+    return inputHeartRateWithBloodPressure != null
+        ? inputHeartRateWithBloodPressure == "true"
+        : null;
   }
+
   static void setInputHeartRateWithBloodPressure(bool input) {
     appPreference.setData("inputHeartRateWithBloodPressure", input.toString());
   }
+
   static void clearInputHeartRateWithBloodPressure() {
     appPreference.removeData("inputHeartRateWithBloodPressure");
   }
@@ -452,6 +494,7 @@ class AppSettings {
       }
       userInfo = null;
       await FetchClient().checkNetwork();
+      await RevenueCatService.logout();
       await LoginClient().logout();
       await deleteHomeData();
       await clearToken();
@@ -470,7 +513,7 @@ class AppSettings {
       _googleSignIn.signOut();
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
-      await RevenueCatService.logout();
+      await clearZaloGroup();
       return true;
     } catch (_) {
       return false;

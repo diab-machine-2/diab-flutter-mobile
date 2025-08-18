@@ -6,14 +6,25 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/model/response/survey_data.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import 'survey_result.dart';
 
 class SurveyResultPage extends StatefulWidget {
+  final SmartGoalList? smartGoal;
+
+  SurveyResultPage({
+    Key? key,
+    this.smartGoal,
+  }) : super(key: key);
+
   @override
   _SurveyResultPageState createState() => _SurveyResultPageState();
 }
@@ -107,9 +118,18 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
               margin: const EdgeInsets.only(bottom: 20, top: 10),
               child: ButtonWidget(
                 title: R.string.completed.tr(),
-                onPressed: () {
+                onPressed: () async {
+                  if (widget.smartGoal?.id != null) {
+                    await HomeClient().completeSmartGoal(
+                      DateTime.now(),
+                      widget.smartGoal!.id,
+                      1,
+                      ScheduleType.survey.typeIndex,
+                    );
+                  }
                   NavigationUtil.popToFirst(context);
-                  Observable.instance.notifyObservers([], notifyName: "food_change_data");
+                  Observable.instance
+                      .notifyObservers([], notifyName: "food_change_data");
                 },
               ),
             ),

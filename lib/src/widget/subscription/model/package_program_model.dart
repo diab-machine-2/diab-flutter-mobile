@@ -3,6 +3,7 @@ import 'package:medical/res/R.dart';
 
 class PackageProgram {
   final String id;
+  final String code;
   final String title;
   final bool isRecommended;
   final String color;
@@ -13,6 +14,7 @@ class PackageProgram {
 
   PackageProgram({
     required this.id,
+    required this.code,
     required this.title,
     required this.isRecommended,
     required this.color,
@@ -32,6 +34,7 @@ class PackageProgram {
   factory PackageProgram.fromJson(Map<String, dynamic> json) {
     return PackageProgram(
       id: json['id'] as String,
+      code: json['code'] as String,
       title: json['title'] as String,
       isRecommended: json['isRecommended'] as bool,
       color: json['color'] as String,
@@ -57,6 +60,7 @@ class PackageProgram {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'code': code,
       'title': title,
       'isRecommended': isRecommended,
       'color': color,

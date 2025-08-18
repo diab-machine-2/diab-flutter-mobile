@@ -46,26 +46,52 @@ class PackageDetailBottomSheet extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        package.title.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.greenGradientTop02,
+                      MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                         ),
-                      ),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
                         child: Text(
-                          '${package.price}',
+                          package.title.toUpperCase(),
                           style: TextStyle(
-                            fontSize: 40,
+                            fontSize: 24,
                             fontWeight: FontWeight.w700,
-                            color: R.color.color0xff111515,
+                            color: R.color.greenGradientTop02,
                           ),
                         ),
                       ),
+                      GapH(8),
+                      MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                        ),
+                        child: Text(
+                          package.subtitle,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: R.color.color0xff111515,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          maxLines: 2,
+                        ),
+                      ),
+
+                      // FittedBox(
+                      //   fit: BoxFit.scaleDown,
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Text(
+                      //     '${package.price}',
+                      //     style: TextStyle(
+                      //       fontSize: 40,
+                      //       fontWeight: FontWeight.w700,
+                      //       color: R.color.color0xff111515,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -120,6 +121,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     if (resp != null) {
       updateCreateDsmesBookingRequestLanguage(language: resp.data.language);
       return;
+    } else {
+      BotToast.closeAllLoading();
     }
     return;
   }

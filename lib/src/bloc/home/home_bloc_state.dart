@@ -33,6 +33,7 @@ class HomeLoaded extends HomeState {
   final List<LearningPostModel>? news;
   final List<LessonModel>? lessons;
   final List<LearningPostModel>? banners;
+  final String zaloGroup;
 
   // Control loading state
   final bool measurementLoading;
@@ -50,6 +51,7 @@ class HomeLoaded extends HomeState {
     this.measurementLoading = true,
     this.activityLoading = true,
     this.reminderLoading = true,
+    this.zaloGroup = "",
   });
 
   @override
@@ -64,6 +66,7 @@ class HomeLoaded extends HomeState {
         if (news != null) news!,
         if (lessons != null) lessons!,
         if (banners != null) banners!,
+        zaloGroup,
       ];
 
   // copyWith method to create a new instance of HomeLoaded
@@ -80,6 +83,7 @@ class HomeLoaded extends HomeState {
     bool? measurementLoading,
     bool? activityLoading,
     bool? reminderLoading,
+    String? zaloGroup,
   }) {
     return HomeLoaded(
       model: model ?? this.model,
@@ -92,6 +96,7 @@ class HomeLoaded extends HomeState {
       measurementLoading: measurementLoading ?? this.measurementLoading,
       activityLoading: activityLoading ?? this.activityLoading,
       reminderLoading: reminderLoading ?? this.reminderLoading,
+      zaloGroup: zaloGroup ?? this.zaloGroup,
     );
   }
 }

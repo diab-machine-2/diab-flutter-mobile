@@ -1,8 +1,7 @@
-import 'package:medical/src/app.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/widget/level_off_diabetes_rule_picker.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/widgets/diabetes_status_picker.dart';
-import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 
 import 'add_bmi_mixin.dart';
@@ -18,11 +17,11 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(15, 15, 15, 15),
+      padding: EdgeInsets.fromLTRB(15, 15, 15, 30),
       width: double.infinity,
       decoration: BoxDecoration(color: Colors.white),
       child: SpacingColumn(
-        spacing: 15,
+        spacing: 0,
         children: [
           GestureDetector(
             onTap: () {
@@ -63,7 +62,7 @@ class SectionFooter extends StatelessWidget with AddBmiMixin {
           ),
           cubit.type == 'input'
               ? GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (cubit.selectedWeight == 0) {
                       Message.showToastMessage(
                           context, R.string.mes_weight_empty.tr());

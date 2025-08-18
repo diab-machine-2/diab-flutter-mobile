@@ -14,7 +14,7 @@ import 'package:medical/src/widgets/button_widget.dart';
 
 class BloodSugarFunctions {
   static void showModalAddData(BuildContext context,
-      {bool popPrevious = false}) {
+      {bool popPrevious = false, String? goalId}) {
     Widget buildContentItem(String title, String subtitle, String iconPath,
         VoidCallback onPressed) {
       return InkWell(
@@ -136,7 +136,8 @@ class BloodSugarFunctions {
                     'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
                     R.drawable.im_glucose_input_device,
                     () async {
-                      if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
+                      if (await AppSettings.getLastOpenedGlucoseInputType() ==
+                          null) {
                         AppSettings.setLastOpenedGlucoseInputType('device');
                       }
                       TrackingManager.trackEvent(
@@ -159,7 +160,8 @@ class BloodSugarFunctions {
                     'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
                     R.drawable.im_glucose_input_manual,
                     () async {
-                      if (await AppSettings.getLastOpenedGlucoseInputType() == null) {
+                      if (await AppSettings.getLastOpenedGlucoseInputType() ==
+                          null) {
                         AppSettings.setLastOpenedGlucoseInputType('manual');
                       }
                       TrackingManager.trackEvent(
@@ -175,7 +177,7 @@ class BloodSugarFunctions {
                       }
                       Navigator.pushNamed(
                           context, NavigatorName.add_blood_sugar_new,
-                          arguments: {'type': 'input'});
+                          arguments: {'type': 'input', 'goalId': goalId});
                     },
                   ),
                 ],

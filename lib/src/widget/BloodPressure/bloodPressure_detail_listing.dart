@@ -143,6 +143,7 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
       backgroundColor: R.color.glucose_bg_color,
       appBar: AppBar(
         backgroundColor: R.color.greenGradientBottom,
+        centerTitle: false,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.arrow_back, color: R.color.white),

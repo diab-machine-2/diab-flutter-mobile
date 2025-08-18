@@ -27,6 +27,10 @@ class HomeFetchBannersEvent extends HomeEvent {
   HomeFetchBannersEvent();
 }
 
+class HomeFetchCustomerReceivesUser extends HomeEvent {
+  HomeFetchCustomerReceivesUser();
+}
+
 // class SyncHealthApp extends HomeEvent {
 //   SyncHealthApp();
 // }

@@ -22,8 +22,9 @@ class CalendarController extends StatefulWidget {
   final String courseId;
   final String endTime;
   final int bookingQuantity;
-  CalendarController(
-      this.pickSlot, this.courseId, this.endTime, this.bookingQuantity);
+  final int interviewType;
+  CalendarController(this.pickSlot, this.courseId, this.endTime,
+      this.bookingQuantity, this.interviewType);
 
   @override
   _CalendarControllerState createState() => _CalendarControllerState();
@@ -64,13 +65,18 @@ class _CalendarControllerState extends State<CalendarController> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await Navigator.pushNamed(context, NavigatorName.calendar_booking,
-            arguments: {
-              "updateSlot": widget.pickSlot,
-              'courseId': widget.courseId,
-              'endTime': widget.endTime
-            });
-        return false;
+        print('[ONBOARDING] on pop scope calendar page');
+        if (Navigator.of(context).canPop()) {
+          print('[ONBOARDING] pop scope calendar page');
+          Navigator.of(context).pop();
+        }
+        // await Navigator.pushNamed(context, NavigatorName.calendar_booking,
+        //     arguments: {
+        //       "updateSlot": widget.pickSlot,
+        //       'courseId': widget.courseId,
+        //       'endTime': widget.endTime
+        //     });
+        return true;
       },
       child: GestureDetector(
         onTap: () {
@@ -158,9 +164,12 @@ class _CalendarControllerState extends State<CalendarController> {
                           color: R.color.textDark,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, NavigatorName.tabbar);
                           CalendarBookingCubit.myCalendar = null;
                           CalendarBookingCubit.updateCount = 0;
+
+                          if (Navigator.of(context).canPop()) {
+                            Navigator.of(context).pop();
+                          }
                         },
                       ),
                     ),
@@ -194,6 +203,11 @@ class _CalendarControllerState extends State<CalendarController> {
     final availableTime = _parseToDateTime(widget.pickSlot.appointmentDate)
         .subtract(Duration(minutes: 15));
 
+    final appointmentDatePlus2Weeks =
+        _parseToDateTime(widget.pickSlot.appointmentDate)
+            .add(Duration(days: 14));
+    bool isAppointmentTooOld = appointmentDatePlus2Weeks.isBefore(currentDate);
+
     bool isAbleToJoinRoom = currentDate.isAfter(availableTime);
     bool isCompleted = widget.pickSlot.complete;
 
@@ -208,7 +222,9 @@ class _CalendarControllerState extends State<CalendarController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.bookingQuantity < 2 && isAppointmentDate == false)
+                if (widget.bookingQuantity < 2 &&
+                    isAppointmentDate == false &&
+                    isAppointmentTooOld == false)
                   Expanded(
                     flex: 1,
                     child: InkWell(
@@ -218,7 +234,8 @@ class _CalendarControllerState extends State<CalendarController> {
                             arguments: {
                               "updateSlot": widget.pickSlot,
                               'courseId': widget.courseId,
-                              'endTime': widget.endTime
+                              'endTime': widget.endTime,
+                              'interviewType': widget.interviewType,
                             });
                       }),
                       child: Container(
@@ -248,8 +265,12 @@ class _CalendarControllerState extends State<CalendarController> {
                   Expanded(
                     child: InkWell(
                       onTap: (() => {
-                            // _cubit.completedCalendar(widget.pickSlot.id, widget.courseId),
-                            Navigator.pushNamed(context, NavigatorName.tabbar)
+                            Navigator.of(context, rootNavigator: true)
+                                .pushNamedAndRemoveUntil(
+                              NavigatorName.tabbar,
+                              (route) =>
+                                  false, // This removes all routes from stack
+                            )
                           }),
                       child: Container(
                         margin:
@@ -295,7 +316,7 @@ class _CalendarControllerState extends State<CalendarController> {
                         height: 44,
                         decoration: BoxDecoration(
                           color:
-                              isAbleToJoinRoom ? null : R.color.color0xffd0f1ef,
+                              isAbleToJoinRoom ? null : R.color.color0xffBFC6C6,
                           gradient: isAbleToJoinRoom
                               ? LinearGradient(
                                   begin: Alignment.centerLeft,

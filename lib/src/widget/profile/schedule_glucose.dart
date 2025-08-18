@@ -7,18 +7,22 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_model.dart';
 import 'package:medical/src/modal/user/schedule_glucose_time.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
 import '../../app_setting/app_setting.dart';
 import '../blood_sugar_survey_screens/blood_sugar_start_survey/blood_sugar_start_survey.dart';
 
 class ScheduleGlucoseController extends StatefulWidget {
-  const ScheduleGlucoseController();
+  final SmartGoalList? smartGoal;
+  const ScheduleGlucoseController({this.smartGoal});
   @override
   _ScheduleGlucoseControllerState createState() =>
       _ScheduleGlucoseControllerState();
@@ -641,6 +645,14 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
   submitData() async {
     try {
       BotToast.showLoading();
+      if (widget.smartGoal?.id != null) {
+        await HomeClient().completeSmartGoal(
+          DateTime.now(),
+          widget.smartGoal!.id,
+          1,
+          ScheduleType.schedule_glucose_recommend.typeIndex,
+        );
+      }
       DateTime dateTime0 = DateTime.utc(DateTime.now().year,
           DateTime.now().month, DateTime.now().day, 0, 0, 0);
       final localDateTime = dateTime0.toLocal();

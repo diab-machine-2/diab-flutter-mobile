@@ -477,8 +477,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                     NetWorkImageWidget(
                                                                   imageUrl: selectedFoods[
                                                                               index]
-                                                                          .image!
-                                                                          .url ??
+                                                                          .image
+                                                                          ?.url ??
                                                                       '',
                                                                   width: 50,
                                                                   height: 50,

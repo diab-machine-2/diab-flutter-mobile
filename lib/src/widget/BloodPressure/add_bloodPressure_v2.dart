@@ -75,10 +75,29 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     "Tăng huyết áp độ 2",
     "Tăng huyết áp độ 3",
   ];
+  // Range tâm thu (systolic): 30-300
+  // Range tâm trương (diastolic): 25-250
+  // Systolic phải lớn hơn diastolic
   bool get _isNotValidInput {
     if (_controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty) {
-      if ((double.tryParse(_controllerSystolic.text) ?? 0) == 0 ||
-          (double.tryParse(_controllerDiastolic.text) ?? 0) == 0) {
+      double systolic = double.tryParse(_controllerSystolic.text) ?? 0;
+      double diastolic = double.tryParse(_controllerDiastolic.text) ?? 0;
+      if (systolic < 30 ||
+          systolic > 300 ||
+          diastolic < 25 ||
+          diastolic > 250 ||
+          systolic < diastolic) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Range nhịp tim (pulse): 40-300
+  bool get _isNotValidHeartRate {
+    if (_controllerHeart.text.isNotEmpty) {
+      double pulse = double.tryParse(_controllerHeart.text) ?? 0;
+      if (pulse < 40 || pulse > 300) {
         return true;
       }
     }
@@ -87,17 +106,17 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   List<Color> _colorList = [
     // "Thấp"
-    Color(0xFFF99D1A),
+    Color(0xFFFFCD57),
     // "Bình thường"
-    Color(0xFF21A567),
+    Color(0xFF23C559),
     // "Bình thường cao"
-    Color(0xFF008479),
+    Color(0xFF64E18E),
     // "Tăng huyết áp độ 1"
-    Color(0xFFFF3C3C),
+    Color(0xFFF86F6F),
     // "Tăng huyết áp độ 2"
-    Color(0xFFC82221),
+    Color(0xFFD02424),
     // "Tăng huyết áp độ 3"
-    Color(0xFF880808),
+    Color(0xFFAF0000),
   ];
   bool isLoading = true;
   late AnimationController _controller;
@@ -114,12 +133,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   // UI affect
   bool get _isInputEnough {
-    if (!mounted) return false;
-    bool activating = _controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty;
-    if (_isInputHeartRate) {
-      activating = activating && _controllerHeart.text.isNotEmpty;
-    }
-    return activating;
+    return !_isNotValidInput && !_isNotValidHeartRate;
   }
 
   @override
@@ -201,7 +215,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     if (model != null) {
       _controllerSystolic.text = model!.systolic?.toInt().toString() ?? '';
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
-      _controllerHeart.text = model!.pulseRate?.toInt().toString() ?? '';
+      if (model!.pulseRate != null && model!.pulseRate! > 0) {
+        _controllerHeart.text = model!.pulseRate!.toInt().toString();
+      } else {
+        _controllerHeart.text = '';
+      }
       _controllerNote.text = model?.note ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       _files.addAll(model!.images);
@@ -371,7 +389,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       rangeColors: _colorList,
       diastolic: _valueOfDiastolic,
       systolic: _valueOfSystolic,
-      pulse: double.tryParse(_controllerHeart.text) ?? 0,
+      pulse: _isInputHeartRate ? (double.tryParse(_controllerHeart.text) ?? 0) : 0,
       pulseRateStatus: pulseRateStatus,
       reasons: reasons,
       note: _controllerNote.text,
@@ -380,6 +398,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       isFetchAnalysis: isDataChange,
       healthRecommendation: null, // TODO: fill healthRecommendation
       goalId: widget.goalId,
+      isNew: widget.type == 'update' ? false : true,
     );
     Navigator.of(context)
         .pushReplacementNamed(NavigatorName.add_bloodpressure_result, arguments: data);
@@ -462,13 +481,14 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   Widget _appBarSection() {
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
       title: Text(
         widget.type == 'update'
             ? R.string.update_blood_pressure.tr()
             : R.string.enter_blood_pressure.tr(),
         style: TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.bold,
           color: R.color.white,
         ),
       ),
@@ -482,7 +502,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       actions: [
         Center(
           child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 12.0),
             child: InkWell(
               onTap: () {
                 _doGuide();
@@ -621,13 +641,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
                   decoration: InputDecoration(
-                      hintText: '0',
-                      contentPadding: EdgeInsets.only(bottom: 8),
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                          color: R.color.captionColorGray,
-                          fontSize: 48,
-                          fontWeight: FontWeight.w500)),
+                    hintText: '0',
+                    contentPadding: EdgeInsets.only(bottom: 8),
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                        color: R.color.captionColorGray, fontSize: 48, fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
             ],
@@ -712,7 +731,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         if (_isNotValidInput)
           Text(
             'Chỉ số không hợp lệ!',
-            style: TextStyle(color: Color(0xFFFF3C3C), fontSize: 16, fontWeight: FontWeight.w400),
+            style: TextStyle(color: Color(0xFFFF3C3C), fontSize: 13, fontWeight: FontWeight.w400),
           )
         else if (_valueOfSystolic != 0 && _valueOfDiastolic != 0)
           RichText(
@@ -926,6 +945,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         flexes: List.generate(_times.length, (index) => 1),
         backgroundColor: Color(0xFFF2F6F9),
         selectedIndex: _lastTimeFrameIndex,
+        selectionTextStyle: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
         onChange: (index) async {
           _lastTimeFrameIndex = index;
           _selectedTimeFrame = _times[index];
@@ -963,7 +986,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   R.string.heart_rate.tr(),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
               CupertinoSwitch(
@@ -974,7 +997,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   });
                   AppSettings.setInputHeartRateWithBloodPressure(value);
                 },
-                activeColor: R.color.mainColor,
+                activeColor: R.color.greenGradientBottom,
               ),
             ],
           ),
@@ -1001,7 +1024,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         maxLength: 3,
                         keyboardType: TextInputType.number,
                         style: TextStyle(
-                            color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
+                            color: R.color.black, fontSize: 48, fontWeight: FontWeight.bold),
                         decoration: InputDecoration(
                           hintText: '0',
                           counterText: '',
@@ -1024,7 +1047,22 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
               ),
             ),
             SizedBox(height: 2),
-            Container(height: 1, width: double.infinity, color: R.color.color0xffE5E5E5)
+            Container(height: 1, width: double.infinity, color: R.color.color0xffE5E5E5),
+            if (_isNotValidHeartRate)
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Center(
+                  child: Text(
+                    'Chỉ số không hợp lệ!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFFFF3C3C),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+              )
           ],
           SizedBox(height: 8),
         ],
@@ -1041,6 +1079,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         maxMedia: 5,
         key: _sectionAddNoteKey,
         initialFiles: _files,
+        noteTitle: R.string.ghi_chu.tr(),
+        horizontalPadding: 12,
       ),
     );
   }
@@ -1142,7 +1182,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   height: 48,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      color: R.color.mainColor,
+                      color: R.color.greenGradientBottom,
                       borderRadius: BorderRadius.circular(200),
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
@@ -1185,7 +1225,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                       height: 48,
                       width: 164,
                       decoration: BoxDecoration(
-                          color: R.color.mainColor,
+                          color: R.color.greenGradientBottom,
                           borderRadius: BorderRadius.circular(200),
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
@@ -1363,7 +1403,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
     if (_isInputHeartRate) {
       int pulseRateValue = int.tryParse(pulseRate.replaceAll(',', '.')) ?? 0;
-      if (pulseRateValue < 40 || pulseRateValue > 300) {
+      if (pulseRateValue > 0 && (pulseRateValue < 40 || pulseRateValue > 300)) {
         Message.showToastMessage(context, R.string.mes_heart_rate_invalid.tr());
         return false;
       }
@@ -1378,6 +1418,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   void _editData() async {
     // prevent submit button
     if (_isNotValidInput) return;
+    if (_isInputHeartRate && _isNotValidHeartRate) return;
 
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
@@ -1394,7 +1435,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           paths.add(file.path);
         }
       }
-      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic);
+      
+    List<String> currentReason = model?.reason
+        ?.split("|")
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList() ?? [];
+      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic, currentReason);
       if (reasonsOrNull == false) {
         // request focus on systolic input
         _systolicFocus.requestFocus();
@@ -1405,7 +1452,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           widget.id,
           systolic,
           diastolic,
-          pulseRate,
+          pulseRate.isNotEmpty ? pulseRate : '0',
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           _selectedTimeFrame!.id,
           data.note, // updated to use data.note
@@ -1439,6 +1486,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   void _submitData() async {
     // prevent submit button
     if (_isNotValidInput) return;
+    if (_isInputHeartRate && _isNotValidHeartRate) return;
 
     FocusScope.of(context).unfocus();
     final systolic = _controllerSystolic.text;
@@ -1464,7 +1512,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       final result = await BloodPressureClient().postBloodPressureInput(
           systolic,
           diastolic,
-          pulseRate,
+          pulseRate.isNotEmpty ? pulseRate : '0',
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           _selectedTimeFrame!.id,
           data.note,
@@ -1501,7 +1549,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
   }
 
-  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic) async {
+  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic, [List<String>? initReason]) async {
+    initReason ??= [];   
     double systolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
     double diastolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
@@ -1517,11 +1566,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           builder: (context) {
             return BloodPressureWarningPopupWidget(
               reasons: reasons,
+              initValue: initReason,
             );
           });
     }
     return null;
-  }
+}
 
   void _showDialogDelete(BuildContext context) {
     showDialog(
@@ -1753,18 +1803,24 @@ class DateMultiPicker extends StatefulWidget {
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime? selectedDate = DateTime.now();
+  DateTime? selectedDate;
   int selectedHour = DateTime.now().hour;
   int selectedMinute = DateTime.now().minute;
+  final GlobalKey<CustomTimePickerState> _calendarDatePickerKey =
+      GlobalKey<CustomTimePickerState>();
 
   @override
   void initState() {
+    super.initState();
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
       selectedHour = widget.initDate!.hour;
       selectedMinute = widget.initDate!.minute;
+    } else {
+      selectedDate = DateTime.now();
+      selectedHour = DateTime.now().hour;
+      selectedMinute = DateTime.now().minute;
     }
-    super.initState();
   }
 
   @override
@@ -1807,6 +1863,9 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
                           selectedDate = datetime ?? DateTime.now();
+                          if (_calendarDatePickerKey.currentState != null) {
+                            _calendarDatePickerKey.currentState!.setSelectedDate(selectedDate!);
+                          }
                         }),
                     Row(
                       children: [
@@ -1820,6 +1879,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     ),
                     SizedBox(height: 20),
                     CustomTimePicker(
+                        key: _calendarDatePickerKey,
+                        initSelectedDate: selectedDate,
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) {
@@ -1835,16 +1896,19 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             Navigator.pop(context);
                           },
                           child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                  color: R.color.grayBorder,
-                                  borderRadius: BorderRadius.circular(21.5)),
-                              child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700)))),
+                            height: 43,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(21.5),
+                              border: Border.all(color: R.color.greenGradientBottom),
+                            ),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(
+                                      color: R.color.greenGradientBottom,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700)),
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(width: 16),
@@ -1861,7 +1925,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: R.color.mainColor,
+                                  color: R.color.greenGradientBottom,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text(R.string.yes.tr(),
@@ -1891,21 +1955,26 @@ class CustomTimePicker extends StatefulWidget {
   final int? selectedHour;
   final int? selectedMinute;
   final TimeHourCallback? callback;
-  CustomTimePicker({this.selectedHour, this.selectedMinute, this.callback});
+  final DateTime? initSelectedDate;
+  CustomTimePicker(
+      {Key? key, this.selectedHour, this.selectedMinute, this.callback, this.initSelectedDate})
+      : super(key: key);
   @override
-  _CustomTimePickerState createState() => _CustomTimePickerState();
+  CustomTimePickerState createState() => CustomTimePickerState();
 }
 
-class _CustomTimePickerState extends State<CustomTimePicker> {
+class CustomTimePickerState extends State<CustomTimePicker> {
   FixedExtentScrollController? hourController;
   FixedExtentScrollController? minuteController;
   int? selectedHour = 1;
   int? selectedMinute = 1;
   DateTime now = DateTime.now();
+  DateTime? selectedDate;
 
   @override
   void initState() {
     super.initState();
+    selectedDate = widget.initSelectedDate;
     selectedHour = now.hour;
     selectedMinute = now.minute;
     if (widget.selectedHour != null) {
@@ -1918,9 +1987,24 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
+  void setSelectedDate(DateTime date) {
+    selectedDate = date;
+    if (_isTimeInFuture(selectedHour!, selectedMinute!)) {
+      selectedHour = now.hour;
+      selectedMinute = now.minute;
+      hourController!.jumpToItem(selectedHour!);
+      minuteController!.jumpToItem(selectedMinute!);
+    }
+    setState(() {});
+  }
+
   // Check if a time is in the future
   bool _isTimeInFuture(int hour, int minute) {
     final now = DateTime.now();
+    if (selectedDate != null &&
+        selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
+      return false;
+    }
     return now.hour < hour || (now.hour == hour && now.minute < minute);
   }
 
@@ -1956,7 +2040,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedHour == e
-                                      ? R.color.mainColor
+                                      ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),
@@ -1988,7 +2072,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                           child: Text(e.toString().length == 1 ? '0$e' : '$e',
                               style: TextStyle(
                                   color: selectedMinute == e
-                                      ? R.color.mainColor
+                                      ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold)),

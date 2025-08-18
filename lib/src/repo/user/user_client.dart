@@ -106,13 +106,17 @@ class UserClient extends FetchClient {
               .millisecondsSinceEpoch ~/
           1000;
 
+      final params = <String, String?>{
+        "startTime": localTargetTime.toString(),
+        "accountId": AppSettings.userInfo?.accountId,
+      };
+
+      if (courseId.isNotEmpty) {
+        params["courseId"] = courseId;
+      }
+
       final Response response =
-          await super.fetchData(url: '/App/CalendarCoach/', params: {
-        "courseId": courseId,
-        "startTime": localTargetTime
-            .toString(), // only booking calendar after currentday + 24h
-        "endTime": endTime
-      });
+          await super.fetchData(url: '/App/CalendarCoach', params: params);
       if (response.statusCode == 200) {
         final data = response.data['data'];
         if (data == null) {
@@ -125,8 +129,10 @@ class UserClient extends FetchClient {
           return calendarCoaches;
         }
       } else {
-        final error = Error.fromJson(response.data);
-        throw error;
+        final errorMessage = response.data is String
+            ? Error(message: response.data, code: '', error: '')
+            : Error.fromJson(response.data);
+        throw errorMessage;
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
@@ -204,14 +210,13 @@ class UserClient extends FetchClient {
           DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
 
       TrackingManager.setUserId(user.id!);
-      TrackingManager
-          .setUserProperty(name: 'gender', value: user.gender ?? '');
-      TrackingManager
-          .setUserProperty(name: 'referral_code', value: user.shareRefCode ?? '');
+      TrackingManager.setUserProperty(name: 'gender', value: user.gender ?? '');
+      TrackingManager.setUserProperty(
+          name: 'referral_name',
+          value: user.nameOfAgency ?? user.nameOfDoctor ?? '');
       // TrackingManager.setUserProperty(
       //     name: 'interest', value: interestNameList.join('_'));
-      TrackingManager
-          .setUserProperty(name: 'age', value: "${user.age}");
+      TrackingManager.setUserProperty(name: 'age', value: "${user.age}");
       // TrackingManager.setUserProperty(
       //     name: 'date_of_birth',
       //     value: DateFormat('dd/MM/yyyy').format(dateOfBirth));
@@ -220,8 +225,8 @@ class UserClient extends FetchClient {
       TrackingManager.setUserProperty(
           name: 'pathological_year',
           value: DateFormat('yyyy').format(diabetesDate));
-      TrackingManager
-          .setUserProperty(name: 'membership', value: user.packageName ?? 'Free');
+      TrackingManager.setUserProperty(
+          name: 'membership', value: user.packageName ?? 'Free');
       // TrackingManager.setUserProperty(
       //     name: 'referral_agency',
       //     value: user.nameOfAgency ?? user.nameOfDoctor);
@@ -413,6 +418,7 @@ class UserClient extends FetchClient {
         'goalWeight': model.goalWeight
       });
       if (response.statusCode == 200) {
+        AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
         return true;
       } else {
         final error = Error.fromJson(response);

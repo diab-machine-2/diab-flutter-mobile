@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -19,6 +21,7 @@ import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zoom_service.dart';
@@ -36,6 +39,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/act
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/subscription/pages/subscription_page.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
+import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 // import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
@@ -70,7 +74,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     TabBarType.program,
     TabBarType.library,
     TabBarType.chat,
-    TabBarType.store,
+    // TabBarType.store,
   ];
 
   int _initialPage = 0;
@@ -91,12 +95,12 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       _buildProgramTab(),
       MyPlanPage(index: 0),
       Conversations(),
-      _buildStoreTab(),
+      // _buildStoreTab(),
     ];
     Observable.instance.addObserver(this);
     NotificationManager.instance.requestFirebaseToken(context);
-    final String? activityId = DynamicLinkConfig.instance.activityId;
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
     final String? meetingId = BranchioLinkConfig.instance.meetingId;
 
     if (activityId != null || meetingId != null) {
@@ -112,6 +116,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
     if (AppSettings.userInfo?.packageType == PackageType.free) {
       await _subscriptionCubit.getSubscriptionBanners();
+
+      final activityId = DynamicLinkConfig.instance.activityId ?? '';
+      if (activityId.isNotEmpty) {
+        _checkExistLessonId();
+      }
     }
 
     Future.delayed(Duration(seconds: 1), () async {
@@ -178,12 +187,16 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     } else if (index == TabBarType.chat.index) {
       // _jumpTo(index);
       // _lastIndex = index;
-      Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
+      _onChatWithAI();
     } else if (index == -1) {
       // _showMaterialDialog();
     } else {
       _jumpTo(index);
     }
+  }
+
+  void _onChatWithAI() {
+    Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
   }
 
   void _checkExistZoomId() async {
@@ -196,19 +209,29 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   void _checkExistLessonId() async {
-    final String? lessonId = DynamicLinkConfig.instance.lessonId;
-    final String? activityId = DynamicLinkConfig.instance.activityId;
+    final String? lessonId = BranchioLinkConfig.instance.lessonId;
+    final String? activityId = BranchioLinkConfig.instance.activityId;
     if (lessonId != null) {
       _jumpTo(TabBarType.library.index);
       _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
     } else if (activityId != null) {
-      _jumpTo(TabBarType.program.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      if (AppSettings.userInfo?.packageType == PackageType.free) {
+        SmartGoalList smartGoal = SmartGoalList(surveyId: activityId, state: 0);
+        await Future.delayed(Duration(milliseconds: 500));
+        NavigationUtil.navigatePage(navigatorKey.currentState!.context,
+            IntroduceSurveyPage(survey: smartGoal));
+        Future.delayed(Duration(seconds: 1), () {
+          BranchioLinkConfig.instance.removeActivityId();
+        });
+      } else {
+        _jumpTo(TabBarType.program.index);
+        _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      }
     }
   }
 
   void _checkUserReferralCode() async {
-    DynamicLinkConfig.instance.createShareReferralLink();
+    BranchioLinkConfig.instance.createShareReferralLink();
     ReferralCodeTemp? referralCodeData = await AppStorages.getReferralCode();
     if (referralCodeData != null) {
       AppStorages.removeReferralCode();
@@ -268,14 +291,74 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     if (notifyName == Const.NAVIGATE_TO_PROFILE_TAB) {
       _jumpTo(TabBarType.home.index);
     }
+    if (notifyName == Const.NAVIGATE_TO_CHAT_TAB) {
+      Navigator.of(context).popUntil((route) =>
+          route.isFirst || route.settings.name == NavigatorName.tabbar);
+      _onChatWithAI();
+    }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL ||
         notifyName == Const.NAVIGATE_TO_ACTIVITY_DETAIL) {
       _checkExistLessonId();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
-      _jumpTo(TabBarType.library.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.library.index);
+      final targetIndex = TabBarType.library.index;
+
+      _jumpTo(targetIndex);
+
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (_bottomTabbarKey.currentState != null && mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _bottomTabbarKey.currentState != null) {
+              _bottomTabbarKey.currentState!.setPage(targetIndex);
+            }
+          });
+        }
+      });
     }
+    if (notifyName == Const.UPDATE_SUBSCRIPTION) {
+      NavigationUtil.popToFirst(context);
+
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+
+      final user = await UserClient().fetchUser().then((value) {
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+
+        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      });
+
+      // _jumpTo(TabBarType.home.index);
+      // _bottomTabbarKey.currentState?.setPage(TabBarType.home.index);
+    }
+
+    if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
+      NavigationUtil.popToFirst(context);
+
+      final user = await UserClient().fetchUser().then((value) {
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+
+        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      });
+    }
+
     if (notifyName == Const.LANGUAGE_CHANGED) {
       setState(() {
         tabs = [
@@ -283,8 +366,17 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
           _buildProgramTab(),
           MyPlanPage(index: 0),
           Conversations(),
-          _buildStoreTab(),
+          // _buildStoreTab(),
         ];
+      });
+    }
+
+    if (notifyName == Const.NAVIGATE_TO_MY_PLAN_TAB_AUTO_TRIGGER_SUBSCRIPTION) {
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Observable.instance
+            .notifyObservers([], notifyName: 'auto_trigger_paywall');
       });
     }
   }
@@ -339,6 +431,11 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   Widget _buildProgramTab() {
+    log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
+    print(
+        '[SUBSCRIPTION] userPackageType: ${AppSettings.userInfo?.packageType}');
+    print('[ACTIVE] ownPackage: ${AppSettings.userInfo?.ownPackage}');
+    print('[ACTIVE] isOwnPackage: ${AppSettings.isOwnPackage}');
     if (AppSettings.userInfo?.packageType == PackageType.free) {
       return MultiBlocProvider(
         providers: [
@@ -415,7 +512,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 }
 
-void showPopupWeight({String? nextRoute, dynamic args}) {
+void showPopupWeight({String? nextRoute, dynamic args, bool? hasExerciseData}) {
   showDialog(
     barrierColor: R.color.color0xff003F38.withOpacity(0.5),
     context: navigatorKey.currentContext!,
@@ -428,9 +525,15 @@ void showPopupWeight({String? nextRoute, dynamic args}) {
             await UserClient()
                 .updateUserInfo(AppSettings.userInfo!.id, userInfo);
             await UserClient().fetchUser();
-            Navigator.pushNamed(navigatorKey.currentContext!,
-                nextRoute ?? NavigatorName.add_exercrises,
-                arguments: args ?? {'type': 'input'});
+
+            if (hasExerciseData != null && hasExerciseData) {
+              Navigator.pushNamed(navigatorKey.currentContext!,
+                  NavigatorName.exercrise_dashboard);
+            } else {
+              Navigator.pushNamed(navigatorKey.currentContext!,
+                  nextRoute ?? NavigatorName.exercrise_add_v2,
+                  arguments: args ?? {'type': 'input'});
+            }
             BotToast.closeAllLoading();
           } catch (e, _) {
             BotToast.closeAllLoading();

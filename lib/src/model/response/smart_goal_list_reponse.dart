@@ -183,7 +183,7 @@ class SmartGoalList {
   });
 
   double get progress {
-    if(state == 1) return 1;
+    if (state == 1) return 1;
     return 0;
     // if (actualExecuteDayTimes == null) return 0;
     // if (executeDayTimes == null || executeDayTimes == 0) return 1;
@@ -222,7 +222,9 @@ class SmartGoalList {
         type == ScheduleType.exercise_movement.typeIndex) {
       data = ExerciseMovementResponseData.fromJson(json['data']);
     }
-    if (json['data'] != null && type == ScheduleType.lesson.typeIndex) {
+    if (json['data'] != null &&
+        (type == ScheduleType.lesson.typeIndex ||
+            type == ScheduleType.infographic.typeIndex)) {
       if (json['data'] is Map<String, dynamic>) {
         data = LessonSectionListResponseData.fromJson(json['data']);
       } else {
@@ -234,8 +236,7 @@ class SmartGoalList {
             json['targetScheduler'])
         : null;
     calendar = (json['calendar'] != null)
-        ? CalendarTarget.fromJson(
-            json['calendar'])
+        ? CalendarTarget.fromJson(json['calendar'])
         : null;
   }
   Map<String, dynamic> toJson() {

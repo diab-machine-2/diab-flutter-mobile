@@ -13,9 +13,7 @@ import 'package:medical/src/modal/user/schedule_glucose_time.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -90,6 +88,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       device!.disconnect();
     }
     characteristicListener?.cancel();
+    secondsStreamController.close();
     _controller.dispose();
     super.dispose();
   }
@@ -98,17 +97,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      BotToast.showLoading();
-    } else {
-      BotToast.closeAllLoading();
-    }
-
     return BlocProvider(
       create: (context) => widget.cubit,
       child: Scaffold(
-        body: Builder(builder: (context) {
-          return Padding(
+        body: SafeArea(
+          child: Padding(
             padding: EdgeInsets.symmetric(
               vertical: AppMediaQuery.deviceSafeAreaTop,
               horizontal: 15,
@@ -133,8 +126,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                 }
               },
             ),
-          );
-        }),
+          ),
+        ),
       ),
     );
   }
@@ -181,11 +174,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       isLoading = false;
     });
     if (result) {
-      Observable.instance
-          .notifyObservers([], notifyName: Const.NAVIGATE_TO_PROFILE_TAB);
-      Navigator.of(context)
-          .popUntil((route) => route.settings.name == NavigatorName.tabbar);
-      Navigator.pushNamed(context, NavigatorName.detail_blood_sugar);
       Message.showToastMessage(
           context, "Đồng bộ chỉ số đường huyết thành công!");
       Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
@@ -564,10 +552,34 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           ],
         ),
         Container(
+          margin:
+              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
           width: double.infinity,
           child: ButtonWidget(
             title: 'Tôi đã hiểu',
-            onPressed: () => connectDevice(device!),
+            onPressed: () async {
+              if (device != null) {
+                try {
+                  setState(() {
+                    isLoading = true; // Show loading indicator
+                  });
+                  await device!.connect();
+                  await connectDevice(device!);
+                } catch (e, s) {
+                  setState(() {
+                    isLoading = false;
+                    appStatus = AppStatus.isNoDeviceFound;
+                  });
+                  TrackingManager.recordError(e, s);
+                  Message.showToastMessage(
+                      context, 'Kết nối thất bại, xin vui lòng thử lại.');
+                } finally {
+                  setState(() {
+                    isLoading = false;
+                  });
+                }
+              }
+            },
           ),
         )
       ],
@@ -582,30 +594,37 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         await device.disconnect();
       }
 
-      final timeout = const Duration(seconds: 25);
+      Timer? scanTimeout; // Add a Timer variable to manage the timeout
+      scanTimeout = Timer(Duration(seconds: 25), () {
+        if (!deviceFound || appStatus == AppStatus.isScanning) {
+          setState(() {
+            appStatus = AppStatus.isNoDeviceFound;
+          });
+          FlutterBluePlus.stopScan();
+        }
+      });
+
       FlutterBluePlus.startScan(
-        timeout: timeout,
+        timeout: Duration(seconds: 25),
         withServices: [
           Guid.fromString(GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID),
           Guid.fromString(GlucoseProfileConfiguration.ROCHE_SERVICE_UUID),
         ],
       );
+
       final scanResultSub =
           FlutterBluePlus.scanResults.listen((scanResultList) {
         if (!deviceFound && appStatus == AppStatus.isScanning) {
           connectToAvailableDevice(scanResultList);
+          scanTimeout?.cancel(); // Cancel the timeout when a device is found
         }
       });
       FlutterBluePlus.cancelWhenScanComplete(scanResultSub);
-
-      await Future.delayed(timeout);
-      if (!deviceFound || appStatus == AppStatus.isScanning) {
-        appStatus = AppStatus.isNoDeviceFound;
-        await FlutterBluePlus.stopScan();
-      }
     } catch (e, s) {
-      deviceFound = false;
-      appStatus = AppStatus.isNoDeviceFound;
+      setState(() {
+        deviceFound = false;
+        appStatus = AppStatus.isNoDeviceFound;
+      });
       TrackingManager.recordError(e, s);
     }
   }
@@ -614,13 +633,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     for (var i = 0; i < scanResultList.length; i++) {
       final result = scanResultList[i];
       if (result.device.platformName.contains('meter')) {
-        deviceFound = true;
-        await result.device.connect();
-        connectDevice(result.device);
-        device = result.device;
-        appStatus = AppStatus.isConnecting;
+        setState(() {
+          deviceFound = true;
+          device = result.device;
+          appStatus = AppStatus.isConnecting;
+        });
         await FlutterBluePlus.stopScan();
-        // return;
+        return;
       }
     }
   }
@@ -637,94 +656,117 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   Future<void> connectDevice(BluetoothDevice deviceFounded) async {
-    List<BluetoothService> services = await deviceFounded.discoverServices(
-      subscribeToServicesChanged: false,
-    );
+    try {
+      await deviceFounded.connect(timeout: Duration(seconds: 60)).timeout(
+        Duration(seconds: 60),
+        onTimeout: () {
+          throw TimeoutException('Connection timed out after 60 seconds');
+        },
+      );
 
-    // Tìm Service 0x1808
-    BluetoothService serviceGlucoseMeasurement = services.firstWhere((service) {
-      return service.serviceUuid.str128 ==
-          GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
-    });
+      List<BluetoothService> services = await deviceFounded.discoverServices(
+        subscribeToServicesChanged: false,
+      );
 
-    // Tim Characteristic 0x2A18
-    BluetoothCharacteristic charGlucoseMeasurement =
-        serviceGlucoseMeasurement.characteristics.firstWhere((characteristic) =>
-            characteristic.characteristicUuid.str128 ==
-            GlucoseProfileConfiguration
-                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
+      // Tìm Service 0x1808
+      BluetoothService serviceGlucoseMeasurement =
+          services.firstWhere((service) {
+        return service.serviceUuid.str128 ==
+            GlucoseProfileConfiguration.GLUCOSE_SERVICE_UUID;
+      });
 
-    // Bật noti cho 0x2A18
-    await charGlucoseMeasurement.setNotifyValue(true);
-    appStatus = AppStatus.isConnected;
+      // Tìm Characteristic 0x2A18
+      BluetoothCharacteristic charGlucoseMeasurement = serviceGlucoseMeasurement
+          .characteristics
+          .firstWhere((characteristic) =>
+              characteristic.characteristicUuid.str128 ==
+              GlucoseProfileConfiguration
+                  .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID);
 
-    BluetoothService rocheService = services.firstWhere((service) {
-      return service.serviceUuid.str128 ==
-          GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
-    });
+      // Bật noti cho 0x2A18
+      await charGlucoseMeasurement.setNotifyValue(true);
+      setState(() {
+        appStatus = AppStatus.isConnected;
+      });
 
-    for (BluetoothCharacteristic rocheCharacteristic
-        in rocheService.characteristics) {
-      if (rocheCharacteristic.characteristicUuid.str128 ==
-          GlucoseProfileConfiguration.MODEL_NUMBER_STRING_UUID) {
-        List<int> modelNumberStringValue = await rocheCharacteristic.read();
-        String modelNo = utf8.decode(modelNumberStringValue);
-        if (GlucoseProfileConfiguration.mgPerDLModels.contains(modelNo)) {
-          glucoseUnits = GlucoseUnitsFlag.mgPerDL;
-        } else {
-          glucoseUnits = GlucoseUnitsFlag.mmolPerL;
+      BluetoothService rocheService = services.firstWhere((service) {
+        return service.serviceUuid.str128 ==
+            GlucoseProfileConfiguration.ROCHE_SERVICE_UUID;
+      });
+
+      for (BluetoothCharacteristic rocheCharacteristic
+          in rocheService.characteristics) {
+        if (rocheCharacteristic.characteristicUuid.str128 ==
+            GlucoseProfileConfiguration.MODEL_NUMBER_STRING_UUID) {
+          List<int> modelNumberStringValue = await rocheCharacteristic.read();
+          String modelNo = utf8.decode(modelNumberStringValue);
+          if (GlucoseProfileConfiguration.mgPerDLModels.contains(modelNo)) {
+            glucoseUnits = GlucoseUnitsFlag.mgPerDL;
+          } else {
+            glucoseUnits = GlucoseUnitsFlag.mmolPerL;
+          }
+          String modelName = '';
+          GlucoseProfileConfiguration.rocheModels.forEach((name, values) {
+            if (values.contains(modelNo)) {
+              modelName = name;
+              return;
+            }
+          });
+          await updateGlucoseUnit(glucoseUnits,
+              modelNameParam: modelName, modelNoParam: modelNo);
         }
-        String modelName = '';
-        GlucoseProfileConfiguration.rocheModels.forEach((name, values) {
-          if (values.contains(modelNo)) {
-            modelName = name;
-            return;
-          }
-        });
-        updateGlucoseUnit(glucoseUnits,
-            modelNameParam: modelName, modelNoParam: modelNo);
-      }
-    }
-
-    for (BluetoothCharacteristic characteristic
-        in serviceGlucoseMeasurement.characteristics) {
-      // Tim Characteristic 0x2A18
-      if (characteristic.characteristicUuid.str128 ==
-          GlucoseProfileConfiguration.GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
-        await characteristic.setNotifyValue(true);
-        appStatus = AppStatus.isSyncing;
-        previousDataCount = 0;
-        glucoseMeasurementRecordList.clear();
-        characteristicListener =
-            characteristic.lastValueStream.listen((data) async {
-          if (data.isEmpty) {
-            return;
-          }
-          GlucoseMeasurementRecord glucoseMeasurementRecord =
-              GlucoseFunctions().readDataFrom2A18(data);
-          if (glucoseMeasurementRecord.isBloodGlucose) {
-            glucoseMeasurementRecordList.add(glucoseMeasurementRecord);
-          }
-        });
       }
 
-      // Tim Characteristic 0x2A52
-      if (characteristic.characteristicUuid.str128 ==
-          GlucoseProfileConfiguration
-              .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
-        await characteristic.setNotifyValue(true);
-        List<int> requestData = [0x01, 0x01];
-        await characteristic.write(requestData);
-        await Future.delayed(Duration(seconds: 5));
-        await TrackingManager.trackEvent(
-          'glucose_pair',
-          'kpi_glucose_device',
-          params: {
-            'status': 'success',
-          },
-        );
-        startCheckingData();
+      for (BluetoothCharacteristic characteristic
+          in serviceGlucoseMeasurement.characteristics) {
+        // Tìm Characteristic 0x2A18
+        if (characteristic.characteristicUuid.str128 ==
+            GlucoseProfileConfiguration
+                .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
+          await characteristic.setNotifyValue(true);
+          setState(() {
+            appStatus = AppStatus.isSyncing;
+          });
+          previousDataCount = 0;
+          glucoseMeasurementRecordList.clear();
+          characteristicListener =
+              characteristic.lastValueStream.listen((data) async {
+            if (data.isEmpty) {
+              return;
+            }
+            GlucoseMeasurementRecord glucoseMeasurementRecord =
+                GlucoseFunctions().readDataFrom2A18(data);
+            if (glucoseMeasurementRecord.isBloodGlucose) {
+              glucoseMeasurementRecordList.add(glucoseMeasurementRecord);
+            }
+          });
+        }
+
+        // Tìm Characteristic 0x2A52
+        if (characteristic.characteristicUuid.str128 ==
+            GlucoseProfileConfiguration
+                .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
+          await characteristic.setNotifyValue(true);
+          List<int> requestData = [0x01, 0x01];
+          await characteristic.write(requestData);
+          await Future.delayed(Duration(seconds: 5));
+          await TrackingManager.trackEvent(
+            'glucose_pair',
+            'kpi_glucose_device',
+            params: {
+              'status': 'success',
+            },
+          );
+          startCheckingData();
+        }
       }
+    } catch (e, s) {
+      setState(() {
+        appStatus = AppStatus.isNoDeviceFound;
+      });
+      TrackingManager.recordError(e, s);
+      Message.showToastMessage(
+          context, 'Không thể kết nối thiết bị, xin vui lòng thử lại.');
     }
   }
 
@@ -762,13 +804,10 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   void startCheckingData() {
     Timer.periodic(Duration(seconds: 1), (timer) {
-      // Kiểm tra số lượng dữ liệu sau mỗi khoảng thời gian
       if (glucoseMeasurementRecordList.length > previousDataCount) {
-        // Nếu dữ liệu đã tăng, cập nhật previousDataCount và tiếp tục đợi
         previousDataCount = glucoseMeasurementRecordList.length;
       } else {
-        // Nếu dữ liệu không tăng, ngưng lại và gọi hàm fetchGlucoseInputNotExist
-        timer.cancel(); // Ngưng timer
+        timer.cancel();
         fetchGlucoseInputNotExist();
       }
     });
@@ -804,12 +843,16 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         });
       });
 
-      selectAllData = true;
-      glucosedList = glucoseDataList;
-      appStatus = AppStatus.isSyncCompleted;
-      selectedGlucose = [...glucoseDataList];
+      setState(() {
+        selectAllData = true;
+        glucosedList = glucoseDataList;
+        appStatus = AppStatus.isSyncCompleted;
+        selectedGlucose = [...glucoseDataList];
+      });
     } else {
-      appStatus = AppStatus.isSyncCompleted;
+      setState(() {
+        appStatus = AppStatus.isSyncCompleted;
+      });
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -11,7 +13,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
@@ -89,10 +90,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
 
     try {
       // Login to RevenueCat with the user's accountId
+      log('[SUBSCRIPTION] revenueCate login accountId: $accountId');
       await RevenueCatService.login(accountId);
 
       // Get the latest customer info
       customerInfo = await RevenueCatService.getCustomerInfo();
+      log('[SUBSCRIPTION] customerInfo: $customerInfo');
 
       // Check subscription state
       subscriptionState = await checkSubscriptionPaymentState();
@@ -103,6 +106,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         packageTitle = await getActiveSubscriptionDescription();
         if (mounted) setState(() {});
       }
+
+      log('[SUBSCRIPTION] customerInfo activeSubscriptions: ${customerInfo?.activeSubscriptions}');
+      log('[SUBSCRIPTION] customerInfo entitlements: ${customerInfo?.entitlements}');
+      log('[SUBSCRIPTION] subscriptionState: ${subscriptionState?.expirationDate?.toLocal()}');
 
       // Set up a listener for subscription changes
       Purchases.addCustomerInfoUpdateListener((info) {
@@ -154,7 +161,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
     if (customerInfo == null) return SubscriptionPaymentState.none();
 
     // Check for active entitlements
-    if (customerInfo.entitlements.active.isNotEmpty) {
+    if (customerInfo.isActivelySubscribed) {
       // Check each active entitlement
       for (final entitlementId in customerInfo.entitlements.active.keys) {
         final entitlement = customerInfo.entitlements.active[entitlementId]!;
@@ -174,6 +181,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
               expirationDate: DateTime.parse(entitlement.expirationDate!),
               productId: entitlement.productIdentifier);
         }
+      }
+      log('[SUBSCRIPTION] customerInfo.allPurchasedProductIdentifiers: ${customerInfo.allPurchasedProductIdentifiers}');
+      // log expiration date
+      log('[SUBSCRIPTION] customerInfo.allExpirationDates: ${customerInfo.allExpirationDates}');
+      if (customerInfo.purchasedProductIdentifier != null) {
+        return SubscriptionPaymentState.active(
+          entitlementId: '-',
+          expirationDate: DateTime.now().add(Duration(days: 180)),
+          productId: customerInfo.purchasedProductIdentifier!,
+        );
       }
     }
 
@@ -198,6 +215,24 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
         (package) => package.storeProduct.identifier == identifier,
       );
 
+      if (package != null) {
+        return package.storeProduct.title;
+      }
+    }
+    if (customerInfo?.allPurchasedProductIdentifiers.isNotEmpty ?? false) {
+      final productId = customerInfo?.allPurchasedProductIdentifiers.first;
+      final package = offering?.availablePackages.firstWhereOrNull(
+        (package) => package.storeProduct.identifier == productId,
+      );
+      if (package != null) {
+        return package.storeProduct.title;
+      }
+    }
+    if (customerInfo?.allPurchasedProductIdentifiers.isNotEmpty ?? false) {
+      final productId = customerInfo?.allPurchasedProductIdentifiers.first;
+      final package = offering?.availablePackages.firstWhereOrNull(
+        (package) => package.storeProduct.identifier == productId,
+      );
       if (package != null) {
         return package.storeProduct.title;
       }
@@ -300,6 +335,19 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
       _cubit.checkSubscriptionStatus();
       refreshSubscriptionStatus();
     }
+
+    if (notifyName == 'auto_trigger_paywall') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+            builder: (context) => PaywallScreen(
+              autoTriggerBasicBottomSheet: true,
+            ),
+            fullscreenDialog: true,
+          ),
+        );
+      });
+    }
   }
 
   @override
@@ -394,9 +442,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                     // Title block
                     MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(MediaQuery.of(context)
-                            .textScaleFactor
-                            .clamp(1.0, 1.3)),
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                       ),
                       child: Text(
                         R.string.subscription_title_1.tr(),
@@ -410,9 +458,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                     ),
                     MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(MediaQuery.of(context)
-                            .textScaleFactor
-                            .clamp(1.0, 1.3)),
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                       ),
                       child: Text(
                         R.string.subscription_title_2.tr(),
@@ -425,23 +473,30 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                       ),
                     ),
                     GapH(contentSpacing),
-              
+
                     // Subtitle
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        R.string.subscription_subtitle.tr(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          height: 1.5,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.color0xff111515,
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                        ),
+                        child: Text(
+                          R.string.subscription_subtitle.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            height: 1.5,
+                            fontWeight: FontWeight.w400,
+                            color: R.color.color0xff111515,
+                          ),
                         ),
                       ),
                     ),
                     GapH(contentSpacing),
-              
+
                     // Carousel Container with fixed aspect ratio
                     Container(
                       constraints: BoxConstraints(
@@ -495,7 +550,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                               ),
                             ),
                           ),
-              
+
                           // Title, subtitle, and indicators in remaining space
                           Expanded(
                             child: Padding(
@@ -543,8 +598,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                                       dotColor: Color(0xFFDFE4E4),
                                     ),
                                     onDotClicked: (index) {
-                                      _carouselController
-                                          .animateToPage(index);
+                                      _carouselController.animateToPage(index);
                                     },
                                   ),
                                 ],
@@ -566,7 +620,11 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                 right: 0,
                 bottom: 24,
                 child: Center(
-                  child: GestureDetector(
+                  child:
+                      // subscriptionState != null && subscriptionState!.isActive
+                      //     ? _buildSubscriptionStatusWidget()
+                      //     :
+                      GestureDetector(
                     onTap: () {
                       SubscriptionTracking.programExplore(
                           _currentCarouselIndex + 1);
@@ -598,9 +656,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                       child: Center(
                         child: MediaQuery(
                           data: MediaQuery.of(context).copyWith(
-                            textScaler: TextScaler.linear(MediaQuery.of(context)
-                                .textScaleFactor
-                                .clamp(1.0, 1.3)),
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
                           ),
                           child: Text(
                             R.string.tim_hieu_them.tr(),

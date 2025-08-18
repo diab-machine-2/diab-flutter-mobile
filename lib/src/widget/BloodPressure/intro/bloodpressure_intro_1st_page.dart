@@ -9,18 +9,20 @@ import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 import 'widgets/bloodpresure_lesson_section.dart';
 
 class BloodPressureIntro1stPage extends StatefulWidget {
-  const BloodPressureIntro1stPage({super.key});
+  final String? goalId;
+  const BloodPressureIntro1stPage({super.key, this.goalId});
 
   @override
-  State<BloodPressureIntro1stPage> createState() => _BloodPressureIntro1stPageState();
+  State<BloodPressureIntro1stPage> createState() =>
+      _BloodPressureIntro1stPageState();
 }
 
 class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
@@ -51,13 +53,15 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
     // Grant access to HealthKit already
     if (hasHealthConnection == true) {
       Navigator.pushNamed(
-        context, NavigatorName.add_blood_pressure,
-        arguments: {'type': 'input'},
+        context,
+        NavigatorName.add_blood_pressure,
+        arguments: {'type': 'input', 'goalId': widget.goalId},
       );
       return;
     }
     // Show the modal to choose methods
-    BloodPressureFunctions.showModalAddData(context, popPrevious: true);
+    BloodPressureFunctions.showModalAddData(context,
+        popPrevious: true, goalId: widget.goalId);
   }
 
   void _navigateToLessonDetail(String id, int type) async {
@@ -80,11 +84,55 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CommonPage(
-        background: R.drawable.bg_glucose,
-        title: R.string.huyet_ap.tr(),
-        child: _composeLayout(),
+      backgroundColor: R.color.glucose_bg_color,
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          _appBarSection(),
+          Expanded(child: _composeLayout()),
+        ],
       ),
+    );
+  }
+
+  Widget _appBarSection() {
+    return CustomAppBar(
+      backgroundColor: R.color.greenGradientBottom,
+      title: Text(
+        R.string.huyet_ap.tr(),
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: R.color.white,
+        ),
+      ),
+      leadingIcon: IconButton(
+          splashColor: R.color.white,
+          highlightColor: R.color.white,
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+          onPressed: () {
+            NavigationUtil.pop(context);
+          }),
+      actions: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -223,7 +271,8 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: BloodPressureLessonSection(
-        onLessonTap: (lesson) => _navigateToLessonDetail(lesson.id, lesson.type),
+        onLessonTap: (lesson) =>
+            _navigateToLessonDetail(lesson.id, lesson.type),
       ),
     );
   }
