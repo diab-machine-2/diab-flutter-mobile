@@ -277,7 +277,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
                   // Back arrow positioned at top
                   Positioned(
-                    top: 16,
+                    top: 32,
                     left: 16,
                     child: IconButton(
                       icon: Icon(Icons.arrow_back,
