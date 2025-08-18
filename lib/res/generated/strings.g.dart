@@ -1374,4 +1374,10 @@ class Strings {
   String get membership_benefits => 'membership_benefits';
   String get program => 'program';
   String get premium_lesson => 'premium_lesson';
+  String get pathology_nutrition_exercise_psychology_knowledge_diverse => 'pathology_nutrition_exercise_psychology_knowledge_diverse';
+  String get pathology_nutrition_knowledge => 'pathology_nutrition_knowledge';
+  String get personalized_healthy_lifestyle_roadmap => 'personalized_healthy_lifestyle_roadmap';
+  String get healthy_lifestyle_roadmap => 'healthy_lifestyle_roadmap';
+  String get use_all_advanced_features => 'use_all_advanced_features';
+  String get advanced_features => 'advanced_features';
 }
