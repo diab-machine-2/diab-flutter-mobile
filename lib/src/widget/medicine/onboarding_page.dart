@@ -26,48 +26,48 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final ScrollController _scrollController = ScrollController();
   // Tab Lịch uống thuốc
   final List<MedicineScheduleItem> _medicineSchedules = [
-    MedicineScheduleItem(
-      dayInWeek: "T4",
-      date: "21/08",
-      isToday: true,
-      medicineSessions: [
-        MedicineSession(
-            name: "Buổi sáng",
-            sessionType: Session.MORNING,
-            time: "08:30",
-            dosages: [
-              DosageInSession(
-                  name: "Metformin (Metformin Stella 1000mg) 1000 mg",
-                  quantity: 1,
-                  unit: "viên",
-                  isUsed: false,
-                  timeOfUse: "Trước ăn"
-              )
-            ]
-        ),
-        MedicineSession(
-            name: "Buổi tối",
-            sessionType: Session.NIGHT,
-            time: "19:30",
-            dosages: [
-              DosageInSession(
-                  name: "Metformin (Metformin Stella 1000mg) 1000 mg",
-                  quantity: 1,
-                  unit: "viên",
-                  isUsed: false,
-                  timeOfUse: "Sau ăn"
-              ),
-              DosageInSession(
-                  name: "Fluvastatin (Autifan 40) 40mg",
-                  quantity: 1,
-                  unit: "viên",
-                  isUsed: false,
-                  timeOfUse: "Sau ăn"
-              ),
-            ]
-        ),
-      ]
-    )
+    // MedicineScheduleItem(
+    //   dayInWeek: "T4",
+    //   date: "21/08",
+    //   isToday: true,
+    //   medicineSessions: [
+    //     MedicineSession(
+    //         name: "Buổi sáng",
+    //         sessionType: Session.MORNING,
+    //         time: "08:30",
+    //         dosages: [
+    //           DosageInSession(
+    //               name: "Metformin (Metformin Stella 1000mg) 1000 mg",
+    //               quantity: 1,
+    //               unit: "viên",
+    //               isUsed: false,
+    //               timeOfUse: "Trước ăn"
+    //           )
+    //         ]
+    //     ),
+    //     MedicineSession(
+    //         name: "Buổi tối",
+    //         sessionType: Session.NIGHT,
+    //         time: "19:30",
+    //         dosages: [
+    //           DosageInSession(
+    //               name: "Metformin (Metformin Stella 1000mg) 1000 mg",
+    //               quantity: 1,
+    //               unit: "viên",
+    //               isUsed: false,
+    //               timeOfUse: "Sau ăn"
+    //           ),
+    //           DosageInSession(
+    //               name: "Fluvastatin (Autifan 40) 40mg",
+    //               quantity: 1,
+    //               unit: "viên",
+    //               isUsed: false,
+    //               timeOfUse: "Sau ăn"
+    //           ),
+    //         ]
+    //     ),
+    //   ]
+    // )
   ];
   // Tab Đơn thuốc
   final List<PrescriptionItem> _prescriptionItems = [];
@@ -618,7 +618,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
         Expanded(
           child: ListView(
             children: [
-              _buildSession(
+              SizedBox(height: 12),
+              _buildMedicationScheduleSession(
                 "Buổi sáng",
                 [
                   MedicineCard(
@@ -631,7 +632,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   ),
                 ],
               ),
-              _buildSession(
+              SizedBox(height: 8),
+              _buildMedicationScheduleSession(
                 "Buổi tối",
                 [
                   MedicineCard(
@@ -709,12 +711,40 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-  Widget _buildSession(String title, List<Widget> medicines) {
+  Widget _buildMedicationScheduleSession(String title, List<Widget> medicines) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: ExpansionTile(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        children: medicines,
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          width: double.infinity,
+          height: 53,
+          decoration: BoxDecoration(
+            color: Color(0xFF0FB4A5),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          alignment: Alignment.center,
+          child: ExpansionTile(
+            title: Container(
+              height: 53,
+              alignment: Alignment.center,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  height: 1.32,
+                  letterSpacing: 0.2,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            trailing: Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.white,
+              size: 24,
+            ),
+            children: medicines,
+          ),
       ),
     );
   }
