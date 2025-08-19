@@ -144,9 +144,13 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
           ),
           headers: {
             'User-Agent': 'diaB Video Player',
+            'Accept': 'video/mp4', // Hint for iOS compatibility
           },
         ),
       );
+
+      // Ensure video is initialized properly
+      await ensureVideoInitialized(videoDuration);
 
       _controller!.addEventsListener((event) async {
         if (mounted) {
@@ -155,6 +159,8 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
             final duration = _controller!.videoPlayerController?.value.duration;
             debugPrint(
                 'Player duration: ${duration?.inSeconds ?? 'unknown'} seconds');
+            debugPrint(
+                'Metadata duration: ${videoDuration ?? 'unknown'} seconds');
           }
           if (event.betterPlayerEventType == BetterPlayerEventType.play) {
             widget.onPlay(meta: _videoMetaData);
@@ -177,6 +183,72 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _hasError = true;
+        });
+      }
+    }
+  }
+
+  Future<void> ensureVideoInitialized(int? metadataDurationSeconds) async {
+    if (_controller == null) {
+      debugPrint('No player controller available');
+      return;
+    }
+
+    try {
+      int attempts = 0;
+      bool isInitialized = false;
+      final metadataDuration = metadataDurationSeconds != null
+          ? Duration(seconds: metadataDurationSeconds)
+          : null;
+
+      while (attempts < 100 && !isInitialized) {
+        // Poll for up to 10 seconds
+        if (_controller!.videoPlayerController?.value.initialized == true) {
+          final duration = _controller!.videoPlayerController!.value.duration;
+          debugPrint(
+              'Attempt $attempts: Player reported duration: ${duration?.inSeconds ?? 'unknown'} seconds');
+          if (duration != null && duration.inMilliseconds > 0) {
+            // Validate duration against metadata if available
+            if (metadataDuration != null &&
+                (duration.inSeconds == 0 ||
+                    duration.inSeconds < metadataDuration.inSeconds * 0.5 ||
+                    duration.inSeconds > metadataDuration.inSeconds * 2)) {
+              debugPrint(
+                  'Invalid duration detected: ${duration.inSeconds}s vs metadata: ${metadataDuration.inSeconds}s, retrying');
+              await _controller!.retryDataSource();
+              await Future.delayed(Duration(milliseconds: 500));
+            } else {
+              debugPrint(
+                  'Video successfully initialized with duration: ${duration.inSeconds}s');
+              isInitialized = true;
+              break;
+            }
+          }
+        }
+        await Future.delayed(Duration(milliseconds: 100));
+        attempts++;
+      }
+
+      if (!isInitialized) {
+        debugPrint(
+            'Video not properly initialized after 10 seconds, attempting reload');
+        try {
+          await _controller!.retryDataSource();
+          await Future.delayed(Duration(milliseconds: 1000));
+          // Final check after retry
+          final duration = _controller!.videoPlayerController?.value.duration;
+          debugPrint(
+              'Final duration after retry: ${duration?.inSeconds ?? 'unknown'} seconds');
+        } catch (e) {
+          debugPrint('Error during retry: $e');
+          throw e;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error ensuring video initialization: $e');
+      if (mounted) {
+        setState(() {
           _hasError = true;
         });
       }
