@@ -68,9 +68,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       objectId: _cubit.lessonDetail!.id!,
       objectTitle: _cubit.lessonDetail!.name!,
     );
-    super.dispose();
     _cubit.videoManager?.disposeAllVideo();
     _cubit.audioManager?.disposeAllAudio();
+    super.dispose();
   }
 
   @override
@@ -179,10 +179,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                       _cubit.lessonDetail?.name,
                                                 },
                                               );
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback((_) {
-                                                NavigationUtil.pop(context);
-                                              });
+                                              NavigationUtil.pop(context);
                                             },
                                             child: Icon(
                                               Icons.clear_rounded,

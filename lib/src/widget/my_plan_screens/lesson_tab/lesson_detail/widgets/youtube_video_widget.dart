@@ -55,44 +55,41 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       debugPrint('Video URL: ${widget.videoUrl}, Video ID: $videoId');
 
       // Fetch stream manifest
-      final streamManifest = await _youtubeExplode.videos.streamsClient
-          .getManifest(videoId)
-          .timeout(const Duration(seconds: 15), onTimeout: () {
+      final streamManifest =
+          await _youtubeExplode.videos.streamsClient.getManifest(
+        videoId,
+        ytClients: [
+          YoutubeApiClient.ios,
+          YoutubeApiClient.android,
+        ],
+      ).timeout(const Duration(seconds: 15), onTimeout: () {
         throw Exception('Timed out fetching stream manifest');
       });
+
+      // Fetch video metadata for duration
+      final videoMetadata = await _youtubeExplode.videos.get(videoId);
+      final videoDuration = videoMetadata.duration?.inSeconds;
+      debugPrint(
+          'Video metadata duration: ${videoDuration ?? 'unknown'} seconds');
 
       // Log available streams for debugging
       debugPrint('Muxed streams: ${streamManifest.muxed.length}');
       debugPrint('Video-only streams: ${streamManifest.videoOnly.length}');
       debugPrint('Audio-only streams: ${streamManifest.audioOnly.length}');
 
-      // Select stream: prefer muxed MP4, fallback to video-only MP4 (480p or higher)
-      String streamUrl;
-      BetterPlayerVideoFormat videoFormat = BetterPlayerVideoFormat.other;
-
-      if (streamManifest.muxed.isNotEmpty) {
-        // Use best quality muxed stream
-        final streamInfo = streamManifest.muxed.bestQuality;
-        streamUrl = streamInfo.url.toString();
-        debugPrint(
-            'Using muxed stream: $streamUrl (quality: ${streamInfo.videoQualityLabel})');
-      } else {
-        // Fallback to video-only stream (prefer MP4, 480p or higher)
-        final streamInfo = streamManifest.videoOnly
-                .where((info) =>
-                    info.container == StreamContainer.mp4 &&
-                    info.videoResolution.height >= 480)
-                .firstOrNull ??
-            streamManifest.videoOnly
-                .where((info) => info.container == StreamContainer.mp4)
-                .firstOrNull ??
-            streamManifest.videoOnly.withHighestBitrate();
-        streamUrl = streamInfo.url.toString();
-        debugPrint(
-            'Using video-only stream: $streamUrl (quality: ${streamInfo.videoQualityLabel})');
+      // Select a muxed MP4 stream to ensure both video and audio
+      final streamInfo = streamManifest.muxed
+              .where((info) => info.container == StreamContainer.mp4)
+              .firstOrNull ??
+          streamManifest.muxed.first;
+      if (streamInfo == null) {
+        throw Exception('No suitable muxed stream found');
       }
+      final streamUrl = streamInfo.url.toString();
+      debugPrint(
+          'Using muxed stream: $streamUrl (quality: ${streamInfo.videoQualityLabel})');
 
-      _videoMetaData = {'videoId': videoId};
+      _videoMetaData = {'videoId': videoId, 'duration': videoDuration};
 
       _controller = BetterPlayerController(
         BetterPlayerConfiguration(
@@ -137,7 +134,8 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         betterPlayerDataSource: BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           streamUrl,
-          videoFormat: videoFormat,
+          videoFormat:
+              BetterPlayerVideoFormat.other, // Use 'other' for MP4 muxed stream
           notificationConfiguration: BetterPlayerNotificationConfiguration(
             showNotification: true,
             title: widget.videoTitle ?? 'DiaB Lesson',
@@ -152,6 +150,12 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
 
       _controller!.addEventsListener((event) async {
         if (mounted) {
+          if (event.betterPlayerEventType ==
+              BetterPlayerEventType.initialized) {
+            final duration = _controller!.videoPlayerController?.value.duration;
+            debugPrint(
+                'Player duration: ${duration?.inSeconds ?? 'unknown'} seconds');
+          }
           if (event.betterPlayerEventType == BetterPlayerEventType.play) {
             widget.onPlay(meta: _videoMetaData);
           }
