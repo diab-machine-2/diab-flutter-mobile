@@ -316,11 +316,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       });
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
-      NavigationUtil.popToFirst(context);
-
-      _jumpTo(TabBarType.program.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
-
+      BotToast.showLoading();
       final user = await UserClient().fetchUser().then((value) {
         // Rebuild tabs with updated user info
         setState(() {
@@ -335,6 +331,12 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
         Observable.instance.notifyObservers([], notifyName: 'refresh_home');
       });
+      BotToast.closeAllLoading();
+
+      NavigationUtil.popToFirst(context);
+
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
 
       // _jumpTo(TabBarType.home.index);
       // _bottomTabbarKey.currentState?.setPage(TabBarType.home.index);
@@ -431,9 +433,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   Widget _buildProgramTab() {
-    log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
-    print(
-        '[SUBSCRIPTION] userPackageType: ${AppSettings.userInfo?.packageType}');
+    // log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
+    print('[ACTIVE] userPackageType: ${AppSettings.userInfo?.packageType}');
     print('[ACTIVE] ownPackage: ${AppSettings.userInfo?.ownPackage}');
     print('[ACTIVE] isOwnPackage: ${AppSettings.isOwnPackage}');
     if (AppSettings.userInfo?.packageType == PackageType.free) {
