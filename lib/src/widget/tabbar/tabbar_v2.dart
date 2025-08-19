@@ -317,7 +317,9 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       BotToast.showLoading();
-      final user = await UserClient().fetchUser().then((value) {
+      final user =
+          await UserClient().fetchUser(skipNotifiUI: true).then((value) {
+        BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
           tabs = [
@@ -328,10 +330,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
             _buildStoreTab(),
           ];
         });
-
-        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
       });
-      BotToast.closeAllLoading();
 
       NavigationUtil.popToFirst(context);
 
@@ -359,6 +358,29 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
         Observable.instance.notifyObservers([], notifyName: 'refresh_home');
       });
+    }
+
+    if (notifyName == 'subscription_back_to_home') {
+      BotToast.showLoading();
+      final user =
+          await UserClient().fetchUser(skipNotifiUI: true).then((value) {
+        BotToast.closeAllLoading();
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+      });
+
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+        NavigatorName.tabbar,
+        (route) => false, // This removes all routes from stack
+      );
     }
 
     if (notifyName == Const.LANGUAGE_CHANGED) {
