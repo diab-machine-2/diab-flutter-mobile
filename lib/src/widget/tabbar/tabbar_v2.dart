@@ -318,7 +318,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       BotToast.showLoading();
       final user =
-          await UserClient().fetchUser(skipNotifiUI: true).then((value) {
+          await UserClient().fetchUser().then((value) {
         BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
@@ -355,15 +355,13 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
             _buildStoreTab(),
           ];
         });
-
-        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
       });
     }
 
     if (notifyName == 'subscription_back_to_home') {
       BotToast.showLoading();
       final user =
-          await UserClient().fetchUser(skipNotifiUI: true).then((value) {
+          await UserClient().fetchUser().then((value) {
         BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
