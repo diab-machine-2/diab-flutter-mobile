@@ -8,6 +8,8 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -15,9 +17,12 @@ import 'package:medical/src/widget/components/horizontal_picker/horizontal_numbe
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 
 class GoalSettingController extends StatefulWidget {
+  final SmartGoalList? smartGoal;
+  const GoalSettingController({this.smartGoal});
   @override
   _GoalSettingControllerState createState() => _GoalSettingControllerState();
 }
@@ -46,9 +51,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "set_target", 
-      screenClass: "GoalSettingController"
-    );
+        screenName: "set_target", screenClass: "GoalSettingController");
     AppSettings.currentScreenName = 'set_target';
   }
 
@@ -285,6 +288,15 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
 
   submitData() async {
     if (model == null) return;
+    if (widget.smartGoal?.id != null) {
+      await HomeClient().completeSmartGoal(
+        DateTime.now(),
+        widget.smartGoal!.id,
+        1,
+        ScheduleType.goal_setting_recommend.typeIndex,
+      );
+    }
+
     try {
       if (initDailyKcal != weeklyTargetBurnedCalorie.text) {
         final result = await showDialog(

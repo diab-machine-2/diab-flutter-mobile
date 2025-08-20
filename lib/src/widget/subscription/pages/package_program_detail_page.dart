@@ -45,19 +45,6 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
     _cubit = context.read<SubscriptionCubit>();
   }
 
-  Future<String> _validatePhoneAndShowDialog() async {
-    var phoneNumber = AppSettings.userInfo?.phoneNumber;
-
-    // Check if phone number is empty or invalid
-    if (phoneNumber == null ||
-        phoneNumber.isEmpty ||
-        !_isValidPhoneNumber(phoneNumber)) {
-      phoneNumber = await PhoneValidationHelper.showDialogUpdatePhone(context);
-    }
-
-    return phoneNumber;
-  }
-
   Future<bool> _activateSubscription(BuildContext context) async {
     final accountId = AppSettings.userInfo?.accountId ?? '';
     if (accountId.isEmpty) {
@@ -78,13 +65,6 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
 
     BotToast.closeAllLoading();
     return isActivated;
-  }
-
-  bool _isValidPhoneNumber(String phoneNumber) {
-    const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
-    final RegExp regExp = RegExp(pattern);
-    return regExp.hasMatch(phoneNumber) &&
-        (phoneNumber.length == 9 || phoneNumber.length == 10);
   }
 
   @override
@@ -125,9 +105,22 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           ? R.string.join_now.tr()
                           : R.string.consult_request.tr(),
                       onTap: () async {
+                        final isBasicPackage =
+                            SubscriptionService.isBasicPackage(
+                                _cubit.selectedPackage);
                         // Add phone validation before proceeding
-                        String phoneValid = await _validatePhoneAndShowDialog();
-                        if (phoneValid.isEmpty) return;
+                        SubscriptionTracking.programRequest(
+                            screenName: 'program_detail',
+                            objectTitle: widget.program.title);
+
+                        String phoneNumber =
+                            AppSettings.userInfo?.phoneNumber ?? '';
+
+                        if (!isBasicPackage) {
+                          phoneNumber = await PhoneValidationHelper
+                              .validatePhoneAndShowDialog(context);
+                          if (phoneNumber.isEmpty) return;
+                        }
 
                         if (SubscriptionService.isBasicPackage(
                             _cubit.selectedPackage)) {
@@ -167,7 +160,7 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                                 subscriptionCubit.selectedPackage!.title,
                             programName: widget.program.title);
                         await subscriptionCubit.notifySubscriptionSuccess(
-                            phoneNumber: phoneValid, request: request);
+                            phoneNumber: phoneNumber, request: request);
 
                         ProgramService.showPopupRequestConsultSubscription(
                           context: context,
@@ -468,8 +461,9 @@ class AudienceCard extends StatelessWidget {
               alignment: Alignment.center,
               child: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(
-                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                 ),
                 child: Text(
                   audience.title,
@@ -581,9 +575,9 @@ class ActionCard extends StatelessWidget {
                 child: Center(
                   child: MediaQuery(
                     data: MediaQuery.of(context).copyWith(
-                      textScaler: TextScaler.linear(MediaQuery.of(context)
-                          .textScaleFactor
-                          .clamp(1.0, 1.3)),
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                     ),
                     child: Text(
                       action.title,

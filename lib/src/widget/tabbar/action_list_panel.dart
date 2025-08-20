@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 
 class ActionListPanel extends StatelessWidget {
   ActionListPanel({required this.selectedIndex});
@@ -91,7 +93,13 @@ class ActionListPanel extends StatelessWidget {
 
   Widget buildItem(BuildContext context, int index, String name, String icon) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
+        bool hasExerciseData = false;
+        if (index == 3) {
+          hasExerciseData = await HomeClient().fetchHomes().then((data) {
+            return data.exercise?.isDataNotEmpty ?? false;
+          });
+        }
         Navigator.pop(context);
         if (selectedIndex == index) {
           return;
@@ -103,12 +111,16 @@ class ActionListPanel extends StatelessWidget {
         } else if (index == 2) {
           Navigator.pushReplacementNamed(context, NavigatorName.detail_blood_pressure);
         } else if (index == 3) {
-          Navigator.pushReplacementNamed(context, NavigatorName.detail_exercrises);
+          if (hasExerciseData) {
+            showActivityInputMethodSelection(hasExerciseData: hasExerciseData);
+          } else {
+            Navigator.pushReplacementNamed(context, NavigatorName.exercrise_onboarding);
+          }
         } else if (index == 4) {
           Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
         } else if (index == 5) {
           Navigator.pushReplacementNamed(context, NavigatorName.detail_bmi);
-        } 
+        }
         // else if (index == 6) {
         //   Navigator.pushReplacementNamed(context, NavigatorName.detail_emotion);
         // }

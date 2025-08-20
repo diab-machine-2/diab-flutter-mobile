@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'blocs/newsDetail_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:flutter/material.dart';
@@ -336,7 +337,7 @@ class _NewsDetailViewState extends State<NewsDetailView> {
   }
 
   Future<void> _onShareNews(LearningPostModel newsDetail) async {
-    String? shareLink = await DynamicLinkConfig.createShareNewsLink(newsDetail);
+    String? shareLink = await BranchioLinkConfig.createShareNewsLink(newsDetail);
     if (shareLink != null) {
       AppShare.instance.shareNews(context, shareLink);
     }

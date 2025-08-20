@@ -7,13 +7,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/video_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
@@ -29,10 +33,13 @@ import 'widgets/youtube_video_widget.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final Function(String, int) onComplete;
-  const LessonDetailPage(
-      {required this.lessonType,
-      required this.lessonId,
-      required this.onComplete});
+  final SmartGoalList? smartGoal;
+  const LessonDetailPage({
+    required this.lessonType,
+    required this.lessonId,
+    required this.onComplete,
+    this.smartGoal,
+  });
   final int? lessonType;
   final String lessonId;
 
@@ -61,9 +68,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       objectId: _cubit.lessonDetail!.id!,
       objectTitle: _cubit.lessonDetail!.name!,
     );
-    super.dispose();
     _cubit.videoManager?.disposeAllVideo();
     _cubit.audioManager?.disposeAllAudio();
+    super.dispose();
   }
 
   @override
@@ -101,7 +108,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 context,
                 onShare: () =>
                     _onShareLesson(context, _cubit.currentSectionDetail!),
-                onCancel: () {
+                onCancel: () async {
+                  if (widget.smartGoal?.id != null) {
+                    await HomeClient().completeSmartGoal(DateTime.now(),
+                        widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
+                  }
                   NavigationUtil.pop(context, result: 0);
                   BotToast.closeAllLoading();
                 },
@@ -128,7 +139,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                     widget.onComplete(
                         _cubit.lessonDetail!.id!, _cubit.percentComplete);
                   },
-                  lessonDetail: _cubit.lessonDetail!)
+                  lessonDetail: _cubit.lessonDetail!,
+                  smartGoal: widget.smartGoal,
+                )
               : Scaffold(
                   body: Stack(
                     children: [
@@ -313,6 +326,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 _cubit.setVideoManager(
                                                     videoManager);
                                               },
+                                              videoTitle: _cubit
+                                                  .currentSectionDetail?.name,
+                                              videoThumbnail: _cubit
+                                                  .lessonDetail?.image?.url,
                                             ),
                                             title: _cubit.currentSectionDetail
                                                 ?.videoDescription,
@@ -340,11 +357,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               _cubit.complete();
                                               _onTrackingVideoComplete();
                                             },
+                                            videoTitle: _cubit
+                                                .currentSectionDetail?.name,
+                                            videoThumbnail:
+                                                _cubit.lessonDetail?.image?.url,
                                           ),
                                         SizedBox(height: 8),
                                         Padding(
                                           padding:
-                                              const EdgeInsets.only(bottom: 24),
+                                              const EdgeInsets.only(bottom: 12),
                                           child: WidgetHtmlText(_cubit
                                                   .currentSectionDetail
                                                   ?.firstContent ??
@@ -359,7 +380,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 bottom: 24),
                                             child: _buildTitleWidget(
                                               child: CachedNetworkImage(
-                                                  height: 90,
+                                                  // height: 90,
                                                   imageUrl: _cubit
                                                       .currentSectionDetail!
                                                       .image!
@@ -442,7 +463,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   },
                                 );
                                 _cubit.onChangeSection(
-                                    context, _cubit.currentSection + 1);
+                                    context, _cubit.currentSection + 1,
+                                    smartGoal: widget.smartGoal);
                               },
                               currentPositionTitle: _cubit.sectionPosition,
                               onTapCenter: () {
@@ -521,7 +543,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
-    String shareLink = await DynamicLinkConfig.instance.createShareLessonLink(
+    String shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
         lesson: lesson,
         featureImage: _cubit.featureImage,
         lessonDescription: _cubit.lessonDescription);

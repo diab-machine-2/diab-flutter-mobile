@@ -236,7 +236,8 @@ class _SubscriptionOptionsBottomSheetState
 
         // Attempt to purchase the package
         final purchased =
-            await RevenueCatService.purchasePackageWithiOSHandling(packageToPurchase);
+            await RevenueCatService.purchasePackageWithiOSHandling(
+                packageToPurchase);
 
         setState(() {
           _isLoading = false;
@@ -724,13 +725,21 @@ class _SubscriptionOptionsBottomSheetState
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Flexible(
-                child: Text(
-                  R.string.basic_program.tr().toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.color0xff111515,
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                  ),
+                  child: Text(
+                    // R.string.basic_program.tr().toUpperCase(),
+                    "${R.string.program.tr().toUpperCase()} ${widget.package.title.toUpperCase()}",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff111515,
+                    ),
                   ),
                 ),
               ),
@@ -824,7 +833,7 @@ class _SubscriptionOptionsBottomSheetState
     // Get price text
     String price = Utils.formatMoney(package?.storeProduct.price,
             currency: package?.storeProduct.currencyCode) ??
-        (index == 0 ? '150.000đ' : '200.000đ');
+        (index == 0 ? '149.000đ' : '199.000đ');
 
     // Calculate monthly price for 12-month option
     String monthlyPrice = '';
@@ -935,12 +944,20 @@ class _SubscriptionOptionsBottomSheetState
                       ),
                       Column(
                         children: [
-                          Text(
-                            price,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: R.color.color0xff111515,
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                              textScaler: MediaQuery.of(context)
+                                  .textScaler
+                                  .clamp(
+                                      minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                            ),
+                            child: Text(
+                              price,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                color: R.color.color0xff111515,
+                              ),
                             ),
                           ),
                           if (index == 1 && monthlyPrice.isNotEmpty) GapH(4),

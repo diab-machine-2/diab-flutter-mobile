@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -43,10 +43,7 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
         'cta_button_name': R.string.back_home_page.tr(),
       },
     );
-    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-      NavigatorName.tabbar,
-      (route) => false, // This removes all routes from stack
-    );
+    Observable.instance.notifyObservers([], notifyName: 'subscription_back_to_home');
   }
 
   void _learnMoreAboutProgram() async {
@@ -199,9 +196,8 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
                         GapW(4),
                         MediaQuery(
                           data: MediaQuery.of(context).copyWith(
-                            textScaler: TextScaler.linear(MediaQuery.of(context)
-                                .textScaleFactor
-                                .clamp(1.0, 1.3)),
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
                           ),
                           child: Text(
                             R.string.contact.tr(),
@@ -263,8 +259,9 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
           children: [
             MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.linear(
-                    MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
               ),
               child: Text(
                 R.string.welcome_program.tr(),
@@ -279,8 +276,9 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
             GapH(12),
             MediaQuery(
               data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.linear(
-                    MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
               ),
               child: Text(
                 widget.program.title.toUpperCase(),

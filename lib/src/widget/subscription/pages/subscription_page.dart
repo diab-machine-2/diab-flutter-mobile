@@ -13,7 +13,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
@@ -336,6 +335,19 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
       _cubit.checkSubscriptionStatus();
       refreshSubscriptionStatus();
     }
+
+    if (notifyName == 'auto_trigger_paywall') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+            builder: (context) => PaywallScreen(
+              autoTriggerBasicBottomSheet: true,
+            ),
+            fullscreenDialog: true,
+          ),
+        );
+      });
+    }
   }
 
   @override
@@ -430,9 +442,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                     // Title block
                     MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(MediaQuery.of(context)
-                            .textScaleFactor
-                            .clamp(1.0, 1.3)),
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                       ),
                       child: Text(
                         R.string.subscription_title_1.tr(),
@@ -446,9 +458,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                     ),
                     MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(MediaQuery.of(context)
-                            .textScaleFactor
-                            .clamp(1.0, 1.3)),
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                       ),
                       child: Text(
                         R.string.subscription_title_2.tr(),
@@ -465,14 +477,21 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                     // Subtitle
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        R.string.subscription_subtitle.tr(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          height: 1.5,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.color0xff111515,
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                        ),
+                        child: Text(
+                          R.string.subscription_subtitle.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            height: 1.5,
+                            fontWeight: FontWeight.w400,
+                            color: R.color.color0xff111515,
+                          ),
                         ),
                       ),
                     ),
@@ -637,9 +656,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                       child: Center(
                         child: MediaQuery(
                           data: MediaQuery.of(context).copyWith(
-                            textScaler: TextScaler.linear(MediaQuery.of(context)
-                                .textScaleFactor
-                                .clamp(1.0, 1.3)),
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
                           ),
                           child: Text(
                             R.string.tim_hieu_them.tr(),

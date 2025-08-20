@@ -62,12 +62,13 @@ class CalendarFilter {
   final DateTime fromDate;
   final DateTime toDate;
   final String courseId;
-  final int calendarType;
+  final int calendarType; // 30: screening interview, 31: evaluate interview
 
-  CalendarFilter(
-      {this.accountPatientId,
-      required this.fromDate,
-      required this.toDate,
-      required this.courseId,
-      required this.calendarType});
+  CalendarFilter({
+    this.accountPatientId,
+    required this.fromDate,
+    required this.toDate,
+    required this.courseId,
+    required this.calendarType,
+  });
 }

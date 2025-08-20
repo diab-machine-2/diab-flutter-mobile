@@ -2,7 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -70,7 +70,7 @@ class UtilitiesPage extends StatelessWidget {
                             switch (routeName) {
                               case "share":
                                 String? shareLink =
-                                    DynamicLinkConfig.instance.shareLink;
+                                    BranchioLinkConfig.instance.shareLink;
                                 if (shareLink != null) {
                                   AppShare.instance
                                       .userReferralCode(context, shareLink);

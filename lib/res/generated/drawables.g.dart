@@ -207,7 +207,7 @@ class Drawables {
   String get ic_laughing => "lib/res/drawables/ic_laughing.png";
   String get ic_learning => "lib/res/drawables/ic_learning.png";
   String get ic_lesson_can_not_learn =>
-      "lib/res/drawables/ic_lesson_can_not_learn.png";
+    "lib/res/drawables/ic_lesson_can_not_learn.png";
   String get ic_lesson_lock => "lib/res/drawables/ic_lesson_lock.png";
   String get ic_lesson_not_learn => "lib/res/drawables/ic_lesson_not_learn.png";
   String get ic_lesson_section_audio =>
@@ -234,7 +234,7 @@ class Drawables {
   String get ic_note_text => "lib/res/drawables/ic_note_text.png";
   String get ic_ok => "lib/res/drawables/ic_ok.png";
   String get ic_package_experience =>
-      "lib/res/drawables/ic_package_experience.png";
+    "lib/res/drawables/ic_package_experience.png";
   String get ic_package_premium => "lib/res/drawables/ic_package_premium.png";
   String get ic_package_pro => "lib/res/drawables/ic_package_pro.png";
   String get ic_package_roadmap => "lib/res/drawables/ic_package_roadmap.png";
@@ -780,12 +780,15 @@ class Drawables {
   String get co_ban_bg => "lib/res/drawables/co_ban_bg.png";
   String get co_ban_badge => "lib/res/drawables/co_ban_badge.png";
   String get ic_dialog_failed => "lib/res/drawables/ic_dialog_failed.png";
+  String get ic_infographic => "lib/res/drawables/ic_infographic.png";
   String get subscription_program_full_1 =>
       "lib/res/drawables/subscription/subscription_program_full_1.png";
   String get subscription_program_full_2 =>
       "lib/res/drawables/subscription/subscription_program_full_2.png";
   String get subscription_program_full_3 =>
       "lib/res/drawables/subscription/subscription_program_full_3.png";
+    String get img_upgrade_package_v2 => "lib/res/drawables/img_upgrade_package_v2.png";
+    String get ic_lesson_can_not_learn_v2 => "lib/res/drawables/ic_lesson_can_not_learn_v2.png";
   String get medicine_banner => "lib/res/drawables/medicine_banner.png";
   String get ic_mobile => "lib/res/drawables/ic_mobile.png";
   String get ic_medicine_calendar => "lib/res/drawables/ic_medicine_calendar.png";

@@ -424,6 +424,7 @@ abstract class AppApi {
     @Query("toDate") int? toDate,
     @Query("courseId") String? courseId,
     @Query("calendarType") int? calendarType,
+    @Query("type") int? type,
   });
 
   @POST("/App/Calendar/booking-success")
