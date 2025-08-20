@@ -73,6 +73,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     super.dispose();
   }
 
+  bool isYouTubeLink(String? videoAddressLink) {
+    if (videoAddressLink == null || videoAddressLink.isEmpty) {
+      return false;
+    }
+
+    final RegExp youtubeRegex = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/',
+      caseSensitive: false,
+    );
+
+    return youtubeRegex.hasMatch(videoAddressLink);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -282,9 +295,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         if (_cubit.currentSectionDetail
                                                     ?.videoAddressLink !=
                                                 null &&
-                                            _cubit.currentSectionDetail
-                                                    ?.linkType ==
-                                                0)
+                                            !isYouTubeLink(_cubit
+                                                .currentSectionDetail
+                                                ?.videoAddressLink))
                                           _buildTitleWidget(
                                             child:
                                                 //BetterPlayer(controller: _cubit.videoManager!.controller!),
@@ -337,9 +350,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         if (_cubit.currentSectionDetail
                                                     ?.videoAddressLink !=
                                                 null &&
-                                            _cubit.currentSectionDetail
-                                                    ?.linkType ==
-                                                1)
+                                            isYouTubeLink(_cubit
+                                                .currentSectionDetail
+                                                ?.videoAddressLink))
                                           YoutubeVideoWidget(
                                             videoUrl: _cubit
                                                 .currentSectionDetail!

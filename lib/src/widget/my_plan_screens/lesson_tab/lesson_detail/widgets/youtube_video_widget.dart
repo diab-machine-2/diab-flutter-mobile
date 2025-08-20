@@ -137,73 +137,82 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     _youtubeExplode = YoutubeExplode();
 
     try {
-      // Parallel fetching for speed
-      final futures = await Future.wait([
-        // Get stream manifest with very short timeout
-        _youtubeExplode!.videos.streamsClient.getManifest(
-          _videoId!,
-          ytClients: [
-            YoutubeApiClient.android
-          ], // Use only Android client for speed
-        ).timeout(const Duration(seconds: 3)),
-        // Get basic metadata
-        _youtubeExplode!.videos
-            .get(_videoId!)
-            .timeout(const Duration(seconds: 3)),
-      ]);
+      // Enhanced URL handling for different YouTube formats
+      final videoId = _extractVideoId(widget.videoUrl);
+      if (videoId == null) {
+        throw Exception(
+            'Could not extract video ID from URL: ${widget.videoUrl}');
+      }
 
-      final streamManifest = futures[0] as StreamManifest;
-      final videoMetadata = futures[1] as Video;
+      debugPrint('Extracted video ID: $videoId from URL: ${widget.videoUrl}');
+
+      // Get video metadata first
+      final videoMetadata = await _youtubeExplode!.videos
+          .get(videoId)
+          .timeout(const Duration(seconds: 5));
       final videoDuration = videoMetadata.duration?.inSeconds;
-
       debugPrint(
           'Video metadata duration: ${videoDuration ?? 'unknown'} seconds');
 
-      // Prioritize lower quality streams for faster loading
-      MuxedStreamInfo? streamInfo;
+      // Get stream manifest with multiple client attempts for better compatibility
+      StreamManifest? streamManifest;
+      Exception? lastError;
 
-      // Look for specific fast-loading qualities
-      final preferredQualities = [
-        VideoQuality.low240, // 240p - fastest
-        VideoQuality.medium360, // 360p - good balance
-        VideoQuality.low144, // 144p - fallback
-        VideoQuality.medium480, // 480p - acceptable
+      // Try different YouTube clients for better stream availability
+      final clientConfigs = [
+        [YoutubeApiClient.android],
+        [YoutubeApiClient.ios],
+        [YoutubeApiClient.android, YoutubeApiClient.ios],
       ];
 
-      // Try to find preferred quality
-      for (final quality in preferredQualities) {
-        streamInfo = streamManifest.muxed
-            .where((info) =>
-                info.container == StreamContainer.mp4 &&
-                info.videoQuality == quality)
-            .firstOrNull;
-        if (streamInfo != null) {
+      for (final clients in clientConfigs) {
+        try {
           debugPrint(
-              'Found preferred quality: ${streamInfo.videoQualityLabel}');
+              'Trying YouTube clients: ${clients.map((c) => c.toString()).join(', ')}');
+          streamManifest = await _youtubeExplode!.videos.streamsClient
+              .getManifest(
+                videoId,
+                ytClients: clients,
+              )
+              .timeout(const Duration(seconds: 5));
+          debugPrint(
+              'Successfully got stream manifest with ${clients.length} client(s)');
           break;
+        } catch (e) {
+          debugPrint('Failed with clients $clients: $e');
+          lastError = e is Exception ? e : Exception(e.toString());
+          continue;
         }
       }
 
-      // Fallback to any MP4 stream
-      streamInfo ??= streamManifest.muxed
-          .where((info) => info.container == StreamContainer.mp4)
-          .firstOrNull;
-
-      // Final fallback to any stream
-      streamInfo ??= streamManifest.muxed.firstOrNull;
-
-      if (streamInfo == null) {
-        throw Exception('No suitable stream found');
+      if (streamManifest == null) {
+        throw lastError ??
+            Exception(
+                'Failed to get stream manifest from all client configurations');
       }
 
+      // Enhanced stream selection with better error handling
+      MuxedStreamInfo? streamInfo = _selectBestStreamRobust(streamManifest);
+
+      if (streamInfo == null) {
+        // Try to get any video stream as a fallback
+        debugPrint(
+            'No muxed streams found, trying video-only + audio-only combination...');
+        throw Exception(
+            'No suitable video stream found. Available muxed: ${streamManifest.muxed.length}, video-only: ${streamManifest.videoOnly.length}');
+      }
+
+      final streamUrl = streamInfo.url.toString();
       debugPrint(
-          'Using stream: ${streamInfo.videoQualityLabel} (${streamInfo.container})');
+          'Selected stream URL: ${streamUrl.substring(0, 100)}...'); // Log first 100 chars
+      debugPrint(
+          'Stream details: ${streamInfo.videoQualityLabel} (${streamInfo.container}) - ${streamInfo.bitrate.bitsPerSecond} bps');
 
       if (!mounted) return;
 
-      _videoMetaData = {'videoId': _videoId, 'duration': videoDuration};
+      _videoMetaData = {'videoId': videoId, 'duration': videoDuration};
 
-      // Create controller with optimized settings for fast loading
+      // Create controller with more reliable configuration
       _controller = BetterPlayerController(
         BetterPlayerConfiguration(
           autoPlay: false,
@@ -245,38 +254,56 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         ),
         betterPlayerDataSource: BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
-          streamInfo.url.toString(),
+          streamUrl,
           videoFormat: BetterPlayerVideoFormat.other,
           notificationConfiguration: BetterPlayerNotificationConfiguration(
             showNotification: true,
             title: widget.videoTitle ?? 'DiaB Lesson',
             author: widget.videoArtist ?? 'DiaB',
             imageUrl: widget.videoThumbnail,
-            activityName: "MainActivity", // Important for Android
+            notificationChannelName: "DiaB Media Player",
+            activityName: "MainActivity",
           ),
           headers: {
-            'User-Agent': 'diaB Video Player',
-            'Accept': 'video/*',
+            'User-Agent':
+                'com.google.android.youtube/17.36.4 (Linux; U; Android 11) gzip',
+            'Accept': '*/*',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate',
+            'Origin': 'https://www.youtube.com',
+            'Referer': 'https://www.youtube.com/watch?v=$videoId',
           },
         ),
       );
 
-      // Add event listeners
+      // Enhanced event listeners for better media session control
       _controller!.addEventsListener((event) async {
         if (mounted) {
-          if (event.betterPlayerEventType == BetterPlayerEventType.play) {
-            widget.onPlay(meta: _videoMetaData);
-          }
-          if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
-            _controller!.exitFullScreen();
-            await Future.delayed(const Duration(seconds: 1));
-            widget.onEnded(meta: _videoMetaData);
+          switch (event.betterPlayerEventType) {
+            case BetterPlayerEventType.play:
+              debugPrint('Video playing - updating media session');
+              widget.onPlay(meta: _videoMetaData);
+              break;
+            case BetterPlayerEventType.pause:
+              debugPrint('Video paused - updating media session');
+              break;
+            case BetterPlayerEventType.finished:
+              debugPrint('Video finished');
+              _controller!.exitFullScreen();
+              await Future.delayed(const Duration(seconds: 1));
+              widget.onEnded(meta: _videoMetaData);
+              break;
+            case BetterPlayerEventType.initialized:
+              debugPrint('Player initialized - media session should be ready');
+              break;
+            default:
+              break;
           }
         }
       });
 
-      // Setup data source
-      await _controller!.setupDataSource(_controller!.betterPlayerDataSource!);
+      // Reliable initialization process
+      await _reliableInitialization();
 
       debugPrint(
           'YouTube BetterPlayer initialized successfully with notification support');
@@ -289,6 +316,180 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     } catch (e) {
       debugPrint('Fast BetterPlayer initialization failed: $e');
       rethrow;
+    }
+  }
+
+  // Enhanced video ID extraction for different YouTube URL formats
+  String? _extractVideoId(String url) {
+    // Handle multiple YouTube URL formats
+    final patterns = [
+      RegExp(
+          r'(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})'),
+      RegExp(r'youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})'),
+      RegExp(r'youtu\.be\/([a-zA-Z0-9_-]{11})'),
+    ];
+
+    for (final pattern in patterns) {
+      final match = pattern.firstMatch(url);
+      if (match != null && match.groupCount >= 1) {
+        final videoId = match.group(1);
+        debugPrint(
+            'Extracted video ID: $videoId using pattern: ${pattern.pattern}');
+        return videoId;
+      }
+    }
+
+    // Fallback to YouTube Player's method
+    final fallbackId = YoutubePlayer.convertUrlToId(url);
+    debugPrint('Fallback extraction result: $fallbackId');
+    return fallbackId;
+  }
+
+  // More robust stream selection with detailed logging
+  MuxedStreamInfo? _selectBestStreamRobust(StreamManifest manifest) {
+    debugPrint('=== Stream Selection Debug ===');
+    debugPrint('Total muxed streams available: ${manifest.muxed.length}');
+    debugPrint('Total video-only streams: ${manifest.videoOnly.length}');
+    debugPrint('Total audio-only streams: ${manifest.audioOnly.length}');
+
+    if (manifest.muxed.isEmpty) {
+      debugPrint('❌ No muxed streams available!');
+      return null;
+    }
+
+    // Log all available muxed streams
+    for (int i = 0; i < manifest.muxed.length; i++) {
+      final stream = manifest.muxed[i];
+      debugPrint(
+          'Stream $i: ${stream.videoQualityLabel} (${stream.container}) - ${stream.bitrate.bitsPerSecond} bps - ${stream.size.totalMegaBytes.toStringAsFixed(1)}MB');
+    }
+
+    // Prioritize stable formats over quality
+    final preferredContainers = [
+      StreamContainer.mp4, // Most compatible
+      StreamContainer.webM, // Fallback
+    ];
+
+    final preferredQualities = [
+      VideoQuality.medium360, // Good balance
+      VideoQuality.low240, // Lower quality but more stable
+      VideoQuality.medium480, // Acceptable
+      VideoQuality.low144, // Last resort
+    ];
+
+    // First pass: Try to find MP4 with preferred quality
+    for (final quality in preferredQualities) {
+      for (final container in preferredContainers) {
+        final stream = manifest.muxed
+            .where((info) =>
+                info.container == container && info.videoQuality == quality)
+            .firstOrNull;
+        if (stream != null) {
+          debugPrint(
+              '✅ Selected: ${stream.videoQualityLabel} (${stream.container}) - PREFERRED');
+          return stream;
+        }
+      }
+    }
+
+    // Second pass: Any MP4 stream
+    final mp4Stream = manifest.muxed
+        .where((info) => info.container == StreamContainer.mp4)
+        .firstOrNull;
+    if (mp4Stream != null) {
+      debugPrint('✅ Selected MP4 fallback: ${mp4Stream.videoQualityLabel}');
+      return mp4Stream;
+    }
+
+    // Third pass: Lowest bitrate stream (most likely to work)
+    final sortedStreams = List<MuxedStreamInfo>.from(manifest.muxed)
+      ..sort(
+          (a, b) => a.bitrate.bitsPerSecond.compareTo(b.bitrate.bitsPerSecond));
+
+    if (sortedStreams.isNotEmpty) {
+      final stream = sortedStreams.first;
+      debugPrint(
+          '✅ Selected lowest bitrate: ${stream.videoQualityLabel} (${stream.container}) - ${stream.bitrate.bitsPerSecond} bps');
+      return stream;
+    }
+
+    debugPrint('❌ No suitable stream found');
+    return null;
+  }
+
+  // More reliable initialization with better error handling
+  Future<void> _reliableInitialization() async {
+    try {
+      debugPrint('Starting reliable initialization...');
+
+      // Setup data source with timeout
+      await _controller!
+          .setupDataSource(_controller!.betterPlayerDataSource!)
+          .timeout(
+        Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception('Setup data source timed out after 10 seconds');
+        },
+      );
+
+      debugPrint('Data source setup completed');
+
+      // Wait for controller to be ready
+      int attempts = 0;
+      bool isReady = false;
+
+      while (attempts < 60 && !isReady) {
+        // 60 attempts = 12 seconds
+        await Future.delayed(Duration(milliseconds: 200));
+
+        final controller = _controller?.videoPlayerController;
+        if (controller != null) {
+          final value = controller.value;
+
+          if (attempts % 10 == 0) {
+            // Log every 2 seconds
+            debugPrint('Initialization attempt ${attempts + 1}/60:');
+            debugPrint('  - Initialized: ${value.initialized}');
+            debugPrint('  - Has error: ${value.hasError}');
+            debugPrint('  - Error: ${value.errorDescription ?? 'none'}');
+            debugPrint(
+                '  - Duration: ${value.duration?.inSeconds ?? 'unknown'}s');
+          }
+
+          if (value.hasError) {
+            throw Exception('Video player error: ${value.errorDescription}');
+          }
+
+          if (value.initialized &&
+              value.duration != null &&
+              value.duration!.inMilliseconds > 0) {
+            debugPrint('✅ Player successfully initialized');
+            debugPrint('  - Duration: ${value.duration!.inSeconds}s');
+            debugPrint(
+                '  - Video size: ${value.size?.width}x${value.size?.height}');
+            isReady = true;
+            break;
+          }
+        }
+
+        attempts++;
+        if (!mounted) return;
+      }
+
+      if (!isReady) {
+        final controller = _controller?.videoPlayerController;
+        if (controller?.value.hasError == true) {
+          throw Exception(
+              'Player initialization failed with error: ${controller!.value.errorDescription}');
+        } else {
+          debugPrint(
+              '⚠️ Player initialization incomplete but no errors detected');
+          // Continue anyway - sometimes works despite incomplete initialization
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error in reliable initialization: $e');
+      rethrow; // Let the caller handle the error
     }
   }
 
@@ -338,6 +539,11 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularProgressIndicator(color: Colors.white),
+              SizedBox(height: 16),
+              Text(
+                'Loading video...',
+                style: TextStyle(color: Colors.white),
+              ),
             ],
           ),
         ),
