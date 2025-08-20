@@ -1,6 +1,3 @@
-
-import 'package:medical/src/widget/medicine/medicine_add_model.dart';
-
 class MedicineScheduleItem {
   // T2, T3, T4...
   String dayInWeek;

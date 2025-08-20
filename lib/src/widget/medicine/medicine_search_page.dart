@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
-import '../../modal/medicine/medicine_item_model.dart';
+import '../../modal/medicine/medicine_tablet_model.dart';
 import '../../model/response/filter_data_response.dart';
 import '../../utils/navigator_name.dart';
 import '../helper/tracking_manager.dart';
@@ -150,7 +150,7 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
     );
   }
 
-  Widget _buildSearchResult(List<MedicineItemModel> data) {
+  Widget _buildSearchResult(List<MedicineTabletModel> data) {
     return Expanded(
       child: ListView.separated(
         physics: NeverScrollableScrollPhysics(),
@@ -168,7 +168,7 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
     );
   }
 
-  Widget _buildItem(BuildContext context, MedicineItemModel item) {
+  Widget _buildItem(BuildContext context, MedicineTabletModel item) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(

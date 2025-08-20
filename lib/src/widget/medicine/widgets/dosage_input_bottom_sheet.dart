@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../../res/R.dart';
-import 'medicine_add_model.dart';
+import '../../../../res/R.dart';
+import '../../../modal/medicine/dose_model.dart';
+import '../../../modal/medicine/medicine_add_model.dart';
 
 class DosageInputBottomSheet extends StatefulWidget {
   const DosageInputBottomSheet({Key? key}) : super(key: key);
@@ -681,9 +680,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       child: GestureDetector(
         onTap: () {
           print("Bottom sheet - morning controller ${_quantityInMorning.text} - parse: ${double.tryParse(_quantityInMorning.text)}");
-          Dosage dosage;
+          DosageModel dosage;
           if (R.string.everyday.tr() == _selectedFrequency) {
-            dosage = Dosage(
+            dosage = DosageModel(
               timeOfUse: _selectedTimeOfUse,
               frequency: _selectedFrequency,
               quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
@@ -692,14 +691,14 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
               quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
             );
           } else if (R.string.ngay_trong_tuan.tr() == _selectedFrequency) {
-            dosage = Dosage(
+            dosage = DosageModel(
               timeOfUse: _selectedTimeOfUse,
               frequency: _selectedFrequency,
               selectedDaysInWeek: _selectedDayIndexes,
               quantityForDaysInWeek: _quantityOnDayInWeek,
             );
           } else {
-            dosage = Dosage(
+            dosage = DosageModel(
               timeOfUse: _selectedTimeOfUse,
               frequency: _selectedFrequency,
               everyOtherDayNumber: _everyOtherDayNumber,

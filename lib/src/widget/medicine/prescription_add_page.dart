@@ -1,10 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
 import '../../../res/R.dart';
-import '../../modal/medicine/medicine_prescription_model.dart';
+import '../../modal/medicine/medicine_item_model.dart';
 import '../../utils/navigator_name.dart';
 import '../BloodSugar/widget/section_add_note.dart';
 
@@ -16,33 +14,36 @@ class PrescriptionAddPage extends StatefulWidget {
 }
 
 class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
-  final List<Medicine> medicines = [
-    Medicine(
+  final List<MedicineItemModel> medicines = [
+    MedicineItemModel(
+      id: '1',
       name: 'Gliclazid (Glycinorm-80)',
-      dosage: '80mg',
+      // dosage: '80mg',
       quantity: 36,
-      mealTime: 'Trước ăn',
-      frequency: 'Mỗi ngày',
-      time: 'Sáng',
-      dose: 1,
+      // mealTime: 'Trước ăn',
+      // frequency: 'Mỗi ngày',
+      // times: ['Sáng'],
+      // dose: 1,
     ),
-    Medicine(
+    MedicineItemModel(
+      id: '2',
       name: 'Metformin (Metformin Stella 1000mg)',
-      dosage: '1000 mg',
+      // dosage: '1000 mg',
       quantity: 36,
-      mealTime: 'Sau ăn',
-      frequency: 'Mỗi ngày',
-      time: 'Tối',
-      dose: 1,
+      // mealTime: 'Sau ăn',
+      // frequency: 'Mỗi ngày',
+      // times: ['Tối'],
+      // dose: 1,
     ),
-    Medicine(
+    MedicineItemModel(
+      id: '3',
       name: 'Fluvastatin (Autifan 40)',
-      dosage: '40mg',
+      // dosage: '40mg',
       quantity: 30,
-      mealTime: 'Sau ăn',
-      frequency: 'Mỗi ngày',
-      time: 'Tối',
-      dose: 1,
+      // mealTime: 'Sau ăn',
+      // frequency: 'Mỗi ngày',
+      // times: ['Tối'],
+      // dose: 1,
       note: 'uống lúc 20h',
     ),
   ];
@@ -301,7 +302,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
 }
 
 class MedicineCard extends StatelessWidget {
-  final Medicine medicine;
+  final MedicineItemModel medicine;
 
   const MedicineCard({required this.medicine});
 
@@ -333,14 +334,14 @@ class MedicineCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${medicine.name} ${medicine.dosage}",
+                    "${medicine.name} ",//${medicine.dosage}",
                     style: TextStyle(
                       fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff111515
                     ),
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "${medicine.quantity} Viên  •  ${medicine.mealTime}  •  ${medicine.frequency}",
+                    "${medicine.quantity} Viên  •  ",//${medicine.mealTime}  •  ${medicine.frequency}",
                     style: TextStyle(
                         fontSize: 15, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566
                     ),
@@ -358,14 +359,14 @@ class MedicineCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          medicine.time,
+                          '',//medicine.times[0],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 13, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566
                           ),
                         ),
                         Text(
-                          medicine.dose.toString(),
+                          '',//medicine.dose.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff5E6566

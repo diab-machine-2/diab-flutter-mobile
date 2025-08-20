@@ -2,28 +2,30 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../res/R.dart';
+import '../../modal/medicine/dose_model.dart';
 import '../../modal/medicine/medicine_item_model.dart';
+import '../../modal/medicine/medicine_tablet_model.dart';
+import '../../modal/medicine/prescription_model.dart';
 import '../../utils/navigator_name.dart';
-import 'dosage_input_bottom_sheet.dart';
-import 'medicine_add_model.dart';
+import 'widgets/dosage_input_bottom_sheet.dart';
+import '../../modal/medicine/medicine_add_model.dart';
 
 class MedicineAddPage extends StatefulWidget {
   const MedicineAddPage({super.key, this.medicineItem});
-  final MedicineItemModel? medicineItem;
+  final MedicineTabletModel? medicineItem;
 
   @override
   State<MedicineAddPage> createState() => _MedicineAddPageState();
 }
 
 class _MedicineAddPageState extends State<MedicineAddPage> {
-  late DraftPrescription _draftPrescription;
+  late PrescriptionModel _prescription;
+  MedicineItemModel _selectedMedication = MedicineItemModel(quantity: 10);
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -50,19 +52,18 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
 
   void _checkSubmitBtnEnabled() {
     setState(() {
-      _submitBtnEnabled = _draftPrescription.name.isNotEmpty &&
-          _draftPrescription.quantity > 0 &&
-          _draftPrescription.dosages.isNotEmpty;
+      _submitBtnEnabled = _prescription.isValid;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _draftPrescription = DraftPrescription();
-
-    _quantityController.text = _draftPrescription.quantity.toStringAsFixed(0);
-    _descriptionController.text = _draftPrescription.description;
+    _prescription = PrescriptionModel(
+      medications: [_selectedMedication],
+    );
+    _quantityController.text = _selectedMedication.quantity.toStringAsFixed(0);
+    _descriptionController.text = _prescription.description ?? '';
   }
 
   @override
@@ -70,28 +71,28 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null && args.containsKey('medicineItem')) {
-      final medicineItem = args['medicineItem'] as MedicineItemModel?;
+      final medicineItem = args['medicineItem'] as MedicineTabletModel?;
       if (medicineItem != null) {
         _nameController.text = medicineItem.name;
-        _draftPrescription.name = medicineItem.name;
+        // _prescription.name = medicineItem.name;
       }
     }
   }
 
   void _incrementQuantity() {
     setState(() {
-      _draftPrescription.quantity++;
-      _quantityController.text = _draftPrescription.quantity.toStringAsFixed(0);
+      _selectedMedication.quantity++;
+      _quantityController.text = _selectedMedication.quantity.toStringAsFixed(0);
     });
     _checkSubmitBtnEnabled();
   }
 
   void _decrementQuantity() {
-    if (_draftPrescription.quantity > 0) {
+    if (_selectedMedication.quantity > 0) {
       setState(() {
-        _draftPrescription.quantity--;
+        _selectedMedication.quantity--;
         _quantityController.text =
-            _draftPrescription.quantity.toStringAsFixed(0);
+            _selectedMedication.quantity.toStringAsFixed(0);
       });
       _checkSubmitBtnEnabled();
     }
@@ -104,11 +105,11 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       backgroundColor: Colors.transparent,
       builder: (context) => const DosageInputBottomSheet(),
     ).then((newDosage) {
-      if (newDosage != null && newDosage is Dosage) {
+      if (newDosage != null && newDosage is DosageModel) {
         setState(() {
-          final List<Dosage> newList = List.from(_draftPrescription.dosages);
+          final List<DosageModel> newList = List.from(_selectedMedication.dosages ?? []);
           newList.add(newDosage);
-          _draftPrescription.dosages = newList;
+          _selectedMedication.dosages = newList;
         });
         _checkSubmitBtnEnabled();
       }
@@ -133,10 +134,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        final List<String> newPhotos = List.from(_draftPrescription.photos);
+        final List<String> newPhotos = List.from(_prescription.photos ?? []);
         newPhotos.add(image.path);
         setState(() {
-          _draftPrescription.photos = newPhotos;
+          _prescription.photos = newPhotos;
         });
       }
     } catch (e) {
@@ -147,7 +148,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   /// Removes an image from the list at a given index.
   void _removeImage(int index) {
     setState(() {
-      _draftPrescription.photos.removeAt(index);
+      if (_prescription.photos != null && (_prescription.photos ?? []).length > index)
+      _prescription.photos?.removeAt(index);
     });
   }
 
@@ -339,7 +341,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
           ),
         ),
         onChanged: (value) {
-          _draftPrescription.name = value;
+          _prescription.name = value;
         },
       ),
     );
@@ -354,7 +356,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         itemCount: _medicineUnits.length,
         itemBuilder: (context, index) {
           final unit = _medicineUnits[index];
-          final isSelected = _draftPrescription.medicineUnit == unit;
+          final isSelected = _selectedMedication.medicineUnit == unit;
 
           return Padding(
             padding: (index == 0)
@@ -365,7 +367,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  _draftPrescription.medicineUnit = unit;
+                  _selectedMedication.medicineUnit = unit;
                 });
               },
               child: SizedBox(
@@ -441,7 +443,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
               ),
               onChanged: (value) {
                 setState(() {
-                  _draftPrescription.quantity = double.tryParse(value) ?? 0.0;
+                  _selectedMedication.quantity = double.tryParse(value) ?? 0.0;
                 });
                 _checkSubmitBtnEnabled();
               },
@@ -522,8 +524,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             SizedBox(width: 12),
           ],
         ),
-        if (_draftPrescription.dosages.isNotEmpty)
-          ..._buildDosageContentItems(_draftPrescription.dosages, _draftPrescription.medicineUnit)
+        if (_selectedMedication.dosages != null && _selectedMedication.dosages?.isNotEmpty == true)
+          ..._buildDosageContentItems(_selectedMedication.dosages ?? [], _selectedMedication.medicineUnit ?? MedicineUnit.pill)
         else
           Padding(
             padding: EdgeInsets.fromLTRB(12, 4, 12, 0),
@@ -554,7 +556,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     );
   }
 
-  List<Widget> _buildDosageContentItems(List<Dosage> dosages, MedicineUnit medicineUnit) {
+  List<Widget> _buildDosageContentItems(List<DosageModel> dosages, MedicineUnit medicineUnit) {
     List<Widget> widgets = [];
 
     for (final dosage in dosages) {
@@ -864,7 +866,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                     ),
                     onChanged: (value) {
                       setState(() {
-                        _draftPrescription.description = value;
+                        _prescription.description = value;
                       });
                     },
                   ),
@@ -872,7 +874,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                 // Select Image Image Button
                 GestureDetector(
                   onTap: () {
-                    if (_draftPrescription.photos.isEmpty) {
+                    if (_prescription.photos?.isEmpty == true) {
                       _checkPermissionAndPickImage();
                     }
                   },
@@ -880,7 +882,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                     R.icons.ic_camera,
                     height: 24,
                     width: 24,
-                    color: _draftPrescription.photos.isEmpty ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                    color: _prescription.photos?.isEmpty == true ? Color(0xFF008479) : Color(0xFFBFC6C6),
                     semanticsLabel: 'Take Photo',
                   ),
                 ),
@@ -898,7 +900,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                '${_draftPrescription.description.length}/50',
+                '${(_prescription.description ?? '').length}/50',
                 style: const TextStyle(
                   fontSize: 12,
                   height: 1.5,
@@ -919,9 +921,11 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
-              itemCount: _draftPrescription.photos.length,
+              itemCount: (_prescription.photos ?? []).length,
               itemBuilder: (context, index) {
-                final imagePath = _draftPrescription.photos[index];
+                final imagePath = _prescription.photos?[index];
+                if ((imagePath ?? '').isEmpty) return SizedBox();
+
                 return SizedBox(
                   width: 60,
                   height: 60,
@@ -933,7 +937,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(0, 4, 4, 0),
                           child: Image.file(
-                            File(imagePath),
+                            File(imagePath!),
                             fit: BoxFit.cover,
                             width: 56,
                             height: 56,

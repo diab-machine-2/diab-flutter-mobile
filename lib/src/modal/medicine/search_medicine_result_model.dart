@@ -1,8 +1,8 @@
-import 'medicine_item_model.dart';
+import 'medicine_tablet_model.dart';
 
 class SearchMedicineResultModel {
   final int total;
-  final List<MedicineItemModel> data;
+  final List<MedicineTabletModel> data;
 
   SearchMedicineResultModel({
     required this.total,
@@ -13,7 +13,7 @@ class SearchMedicineResultModel {
     return SearchMedicineResultModel(
       total: json['total'] ?? 0,
       data: (json['data'] as List)
-          .map((item) => MedicineItemModel.fromJson(item))
+          .map((item) => MedicineTabletModel.fromJson(item))
           .toList(),
     );
   }

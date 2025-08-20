@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../res/R.dart';
 import '../../utils/navigator_name.dart';
-import 'medicine_add_model.dart';
+import '../../modal/medicine/medicine_add_model.dart';
 
 class PrescriptionRemindPage extends StatefulWidget {
   const PrescriptionRemindPage({super.key});

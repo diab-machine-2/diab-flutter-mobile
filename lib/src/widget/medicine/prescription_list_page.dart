@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../res/R.dart';
 import '../../utils/navigator_name.dart';
+import 'widgets/stop_prescription_dialog.dart';
 
 class PrescriptionListPage extends StatefulWidget {
   const PrescriptionListPage({super.key});
@@ -165,18 +166,18 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     return TabBarView(
       controller: _tabController,
       children: [
-        _buildMedicineList(),
-        const Center(child: Text("Thuốc đã hết")),
+        _buildUsingMedicine(),
+        _buildStopMedicine(),
       ],
     );
   }
 
-  Widget _buildMedicineList() {
+  Widget _buildUsingMedicine() {
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
             color: const Color(0xFFFFF4E5),
             borderRadius: BorderRadius.only(
@@ -237,6 +238,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                   name: "Fluvastatin (Autifan 40) 4...",
                   quantity: "30 viên",
                 ),
+                const SizedBox(height: 4),
+                Divider(color: Color(0xFFDADEDF)),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -276,11 +279,24 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
-                        onPressed: () {},
-                        child: const Text("Ngừng thuốc"),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => StopPrescriptionDialog(
+                              onConfirm: () {
+                                Navigator.pop(context);
+                                // Thực hiện logic ngưng thuốc
+                              },
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Ngừng thuốc",
+                          style: TextStyle(color: Color(0xFF830000), fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 11),
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
@@ -291,8 +307,167 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
-                        onPressed: () {},
-                        child: const Text("Chỉnh sửa"),
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            NavigatorName.prescription_add,
+                            arguments: {
+                              'mode': 1,
+                              // 'prescription':
+                            }
+                          );
+                        },
+                        child: const Text(
+                          "Chỉnh sửa",
+                          style: TextStyle(color: Color(0xFF008479), fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        // Container(
+        //   padding: const EdgeInsets.all(8),
+        //   decoration: BoxDecoration(
+        //     color: const Color(0xFFDFFFE2),
+        //     borderRadius: BorderRadius.circular(8),
+        //   ),
+        //   child: Row(
+        //     children: const [
+        //       Icon(Icons.check_circle, color: Colors.green),
+        //       SizedBox(width: 8),
+        //       Expanded(child: Text("Tạo đơn thuốc thành công")),
+        //     ],
+        //   ),
+        // ),
+      ],
+    );
+  }
+
+  Widget _buildStopMedicine() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF4E5),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Expanded(
+                child: Text(
+                  "Bệnh đái tháo đường không...",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF95682E),
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                "21/02/2025",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF95682E),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _medicineItem(
+                  icon: Icons.medication,
+                  name: "Gliclazid (Glycinorm-80)...",
+                  quantity: "36 viên",
+                ),
+                _medicineItem(
+                  icon: Icons.medication,
+                  name: "Metformin (Metformin Ste...",
+                  quantity: "36 viên",
+                ),
+                _medicineItem(
+                  icon: Icons.medication,
+                  name: "Fluvastatin (Autifan 40) 4...",
+                  quantity: "30 viên",
+                ),
+                const SizedBox(height: 4),
+                Divider(color: Color(0xFFDADEDF)),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF4F7F7),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Ghi chú: Tái khám sau 1 tháng sử dụng thuốc tại bệnh viện BBB",
+                      ),
+                      const SizedBox(height: 8),
+                      // ClipRRect(
+                      //   borderRadius: BorderRadius.circular(8),
+                      //   child: Image.network(
+                      //     "https://via.placeholder.com/150",
+                      //     height: 80,
+                      //     fit: BoxFit.cover,
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.teal,
+                          side: const BorderSide(color: Colors.teal),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30), // bo tròn nhiều
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context,
+                              NavigatorName.prescription_add,
+                              arguments: {
+                                'mode': 2,
+                                // 'prescription':
+                              }
+                          );
+                        },
+                        child: const Text(
+                          "Dùng lại đơn thuốc",
+                          style: TextStyle(color: Color(0xFF008479), fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                       ),
                     ),
                   ],
