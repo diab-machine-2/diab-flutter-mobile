@@ -293,11 +293,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         if (_cubit.currentSectionDetail
-                                                    ?.videoAddressLink !=
-                                                null &&
-                                            !isYouTubeLink(_cubit
-                                                .currentSectionDetail
-                                                ?.videoAddressLink))
+                                                ?.videoAddressLink !=
+                                            null)
                                           _buildTitleWidget(
                                             child:
                                                 //BetterPlayer(controller: _cubit.videoManager!.controller!),
@@ -347,34 +344,34 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             title: _cubit.currentSectionDetail
                                                 ?.videoDescription,
                                           ),
-                                        if (_cubit.currentSectionDetail
-                                                    ?.videoAddressLink !=
-                                                null &&
-                                            isYouTubeLink(_cubit
-                                                .currentSectionDetail
-                                                ?.videoAddressLink))
-                                          YoutubeVideoWidget(
-                                            videoUrl: _cubit
-                                                .currentSectionDetail!
-                                                .videoAddressLink!,
-                                            onPlay: ({meta}) =>
-                                                _onTrackingVideoPlay(),
-                                            onEnded: ({meta}) {
-                                              LessonDetailTracking
-                                                  .completed50PercentVideo(
-                                                objectId:
-                                                    _cubit.lessonDetail?.id,
-                                                objectTitle:
-                                                    _cubit.lessonDetail?.name,
-                                              );
-                                              _cubit.complete();
-                                              _onTrackingVideoComplete();
-                                            },
-                                            videoTitle: _cubit
-                                                .currentSectionDetail?.name,
-                                            videoThumbnail:
-                                                _cubit.lessonDetail?.image?.url,
-                                          ),
+                                        // if (_cubit.currentSectionDetail
+                                        //             ?.videoAddressLink !=
+                                        //         null &&
+                                        //     isYouTubeLink(_cubit
+                                        //         .currentSectionDetail
+                                        //         ?.videoAddressLink))
+                                        //   YoutubeVideoWidget(
+                                        //     videoUrl: _cubit
+                                        //         .currentSectionDetail!
+                                        //         .videoAddressLink!,
+                                        //     onPlay: ({meta}) =>
+                                        //         _onTrackingVideoPlay(),
+                                        //     onEnded: ({meta}) {
+                                        //       LessonDetailTracking
+                                        //           .completed50PercentVideo(
+                                        //         objectId:
+                                        //             _cubit.lessonDetail?.id,
+                                        //         objectTitle:
+                                        //             _cubit.lessonDetail?.name,
+                                        //       );
+                                        //       _cubit.complete();
+                                        //       _onTrackingVideoComplete();
+                                        //     },
+                                        //     videoTitle: _cubit
+                                        //         .currentSectionDetail?.name,
+                                        //     videoThumbnail:
+                                        //         _cubit.lessonDetail?.image?.url,
+                                        //   ),
                                         SizedBox(height: 8),
                                         Padding(
                                           padding:

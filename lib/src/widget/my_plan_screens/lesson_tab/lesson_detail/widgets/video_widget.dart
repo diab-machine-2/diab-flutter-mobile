@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class VideoWidget extends StatefulWidget {
   VideoWidget({
@@ -39,12 +40,14 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   bool isInitializing = true;
   BetterPlayerController? playerController;
   bool hasError = false;
+  YoutubeExplode? _youtubeExplode;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     url = widget.url;
+    _youtubeExplode = YoutubeExplode();
     initializeVideo();
   }
 
@@ -61,6 +64,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     videoManager?.disposeAllVideo();
+    _youtubeExplode?.close();
+    _youtubeExplode = null;
     super.dispose();
   }
 
@@ -68,21 +73,15 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    // Don't auto-pause when app goes to background or device is locked
-    // This allows audio to continue playing in background
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
-        // App is paused or device locked - keep audio playing
         debugPrint('App paused/inactive - keeping video audio playing');
-        // Don't pause the video here to allow background audio playback
         break;
       case AppLifecycleState.resumed:
-        // App resumed
         debugPrint('App resumed');
         break;
       case AppLifecycleState.detached:
-        // App is about to be terminated - pause the video
         playerController?.pause();
         break;
       default:
@@ -132,6 +131,20 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
     try {
       debugPrint('Initializing video with URL: $url');
+      String? streamUrl = url;
+
+      // Check if the URL is a YouTube URL
+      final videoId = _extractYouTubeId(url!);
+      if (videoId != null) {
+        debugPrint('Detected YouTube URL, fetching stream manifest');
+        final streamManifest = await _fetchStreamManifestWithRetry(videoId);
+        final streamInfo = _selectBestStream(streamManifest);
+        if (streamInfo == null) {
+          throw Exception('No suitable muxed stream found for YouTube video');
+        }
+        streamUrl = streamInfo.url.toString();
+        debugPrint('Selected YouTube stream: ${streamInfo.videoQualityLabel}');
+      }
 
       videoManager = VideoManager(
         callbackEventListener: (eventType, videoLength) {
@@ -139,7 +152,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
             widget.callbackEventListener!(eventType, videoLength);
           }
         },
-        url: url,
+        url: streamUrl,
         placeHolder: Container(
           color: Colors.black,
           child: Center(
@@ -172,13 +185,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
       widget.setVideoManager(videoManager!);
 
-      // Get the controller reference with timeout
       await Future.any([
-        Future.delayed(Duration(seconds: 10)), // 10 second timeout
+        Future.delayed(Duration(seconds: 10)),
         _getControllerWithRetry(),
       ]);
 
-      // Ensure video is properly initialized
       await ensureVideoInitialized();
     } catch (e) {
       debugPrint('Error initializing video: $e');
@@ -194,6 +205,80 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         });
       }
     }
+  }
+
+  String? _extractYouTubeId(String url) {
+    // Simple regex to extract YouTube video ID from various URL formats
+    final RegExp regex = RegExp(
+      r'^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+      caseSensitive: false,
+    );
+    final match = regex.firstMatch(url);
+    if (match != null && match.groupCount >= 2) {
+      final videoId = match.group(2);
+      if (videoId != null && videoId.length == 11) {
+        return videoId;
+      }
+    }
+    return null;
+  }
+
+  Future<StreamManifest> _fetchStreamManifestWithRetry(String videoId) async {
+    int attempts = 0;
+    while (attempts < 3) {
+      try {
+        return await _youtubeExplode!.videos.streamsClient.getManifest(
+          videoId,
+          ytClients: [
+            YoutubeApiClient.ios,
+            YoutubeApiClient.android,
+          ],
+        ).timeout(const Duration(seconds: 15));
+      } catch (e) {
+        attempts++;
+        debugPrint('Stream manifest fetch attempt $attempts failed: $e');
+        if (attempts >= 3) rethrow;
+        await Future.delayed(Duration(milliseconds: 1000 * attempts));
+      }
+    }
+    throw Exception('Failed to fetch stream manifest after 3 attempts');
+  }
+
+  MuxedStreamInfo? _selectBestStream(StreamManifest streamManifest) {
+    final mp4Streams = streamManifest.muxed
+        .where((info) => info.container == StreamContainer.mp4)
+        .toList();
+
+    if (mp4Streams.isNotEmpty) {
+      mp4Streams.sort((a, b) {
+        final preferredOrder = [
+          'medium360',
+          'medium480',
+          'large720',
+          'hd1080',
+        ];
+        final aQuality = a.videoQuality.name;
+        final bQuality = b.videoQuality.name;
+        final aIndex = preferredOrder.indexOf(aQuality);
+        final bIndex = preferredOrder.indexOf(bQuality);
+
+        if (aIndex != -1 && bIndex != -1) {
+          return aIndex.compareTo(bIndex);
+        } else if (aIndex != -1) {
+          return -1;
+        } else if (bIndex != -1) {
+          return 1;
+        }
+        return 0;
+      });
+
+      debugPrint('Selected MP4 stream: ${mp4Streams.first.videoQualityLabel}');
+      return mp4Streams.first;
+    }
+
+    final fallback = streamManifest.muxed.firstOrNull;
+    debugPrint('No MP4 streams found, using fallback: ${fallback?.videoQualityLabel}');
+    return fallback;
   }
 
   Future<void> _getControllerWithRetry() async {
@@ -224,18 +309,14 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     }
 
     try {
-      // Wait for up to 5 seconds for the video to initialize properly
       int attempts = 0;
       bool isInitialized = false;
 
       while (attempts < 50 && !isInitialized) {
-        if (playerController!.videoPlayerController?.value.initialized ==
-            true) {
-          final duration =
-              playerController!.videoPlayerController!.value.duration;
+        if (playerController!.videoPlayerController?.value.initialized == true) {
+          final duration = playerController!.videoPlayerController!.value.duration;
           if (duration != null && duration.inMilliseconds > 0) {
-            debugPrint(
-                'Video successfully initialized with duration: ${duration.inSeconds}s');
+            debugPrint('Video successfully initialized with duration: ${duration.inSeconds}s');
             isInitialized = true;
             break;
           }
@@ -244,12 +325,10 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         attempts++;
       }
 
-      // If still not initialized properly, attempt to reload
       if (!isInitialized) {
         debugPrint('Video not properly initialized, attempting reload');
         try {
           await playerController!.retryDataSource();
-          // Wait a bit more after retry
           await Future.delayed(Duration(milliseconds: 1000));
         } catch (e) {
           debugPrint('Error during retry: $e');
