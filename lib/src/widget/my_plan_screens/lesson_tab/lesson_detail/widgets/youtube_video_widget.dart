@@ -35,6 +35,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   dynamic _videoMetaData;
   YoutubeExplode? _youtubeExplode;
   bool _isInitialized = false;
+  bool _isControllerReady = false;
 
   @override
   void initState() {
@@ -47,7 +48,6 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   @override
   void didUpdateWidget(YoutubeVideoWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If URL changes, refresh like video widget does
     if (oldWidget.videoUrl != widget.videoUrl) {
       _refreshVideo();
     }
@@ -66,12 +66,10 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    // Follow the same pattern as video widget
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
         debugPrint('YouTube: App paused/inactive - keeping audio playing');
-        // Don't pause to allow background audio playback
         break;
       case AppLifecycleState.resumed:
         debugPrint('YouTube: App resumed');
@@ -90,6 +88,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         _isInitializing = true;
         _hasError = false;
         _isInitialized = false;
+        _isControllerReady = false;
       });
     }
 
@@ -116,6 +115,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     try {
       _controller?.dispose(forceDispose: true);
       _controller = null;
+      _isControllerReady = false;
     } catch (e) {
       debugPrint('Error disposing controller: $e');
     }
@@ -144,9 +144,9 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         throw Exception('Invalid YouTube URL: ${widget.videoUrl}');
       }
 
-      // Fetch stream manifest with timeout like video widget
+      // Fetch stream manifest with timeout
       final streamManifest = await Future.any([
-        Future.delayed(Duration(seconds: 15)), // 15 second timeout
+        Future.delayed(Duration(seconds: 15)),
         _fetchStreamManifestWithRetry(videoId),
       ]);
 
@@ -160,49 +160,8 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       debugPrint(
           'Video metadata duration: ${videoDuration ?? 'unknown'} seconds');
 
-      // Select best available stream with better logic
-      MuxedStreamInfo? streamInfo;
-
-      // Try to find MP4 streams first, prioritizing lower quality for better compatibility
-      final mp4Streams = streamManifest.muxed
-          .where((info) => info.container == StreamContainer.mp4)
-          .toList();
-
-      if (mp4Streams.isNotEmpty) {
-        // Sort by quality, prefer 360p or 480p for better compatibility
-        mp4Streams.sort((a, b) {
-          final aQuality = a.videoQuality.name;
-          final bQuality = b.videoQuality.name;
-
-          // Prefer medium quality streams for stability
-          final preferredOrder = [
-            'medium360',
-            'medium480',
-            'small240',
-            'large720',
-            'hd1080'
-          ];
-          final aIndex = preferredOrder.indexOf(aQuality);
-          final bIndex = preferredOrder.indexOf(bQuality);
-
-          if (aIndex != -1 && bIndex != -1) {
-            return aIndex.compareTo(bIndex);
-          } else if (aIndex != -1) {
-            return -1;
-          } else if (bIndex != -1) {
-            return 1;
-          }
-          return 0;
-        });
-
-        streamInfo = mp4Streams.first;
-        debugPrint('Selected MP4 stream: ${streamInfo.videoQualityLabel}');
-      } else {
-        // Fallback to any muxed stream
-        streamInfo = streamManifest.muxed.firstOrNull;
-        debugPrint(
-            'No MP4 streams found, using fallback: ${streamInfo?.videoQualityLabel}');
-      }
+      // Select best available stream
+      MuxedStreamInfo? streamInfo = _selectBestStream(streamManifest);
 
       if (streamInfo == null) {
         throw Exception('No suitable muxed stream found');
@@ -210,13 +169,13 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
 
       final streamUrl = streamInfo.url.toString();
       debugPrint(
-          'Using muxed stream: $streamUrl (quality: ${streamInfo.videoQualityLabel}, container: ${streamInfo.container})');
+          'Using muxed stream: $streamUrl (quality: ${streamInfo.videoQualityLabel})');
 
       if (!mounted) return;
 
       _videoMetaData = {'videoId': videoId, 'duration': videoDuration};
 
-      // Create controller with same configuration pattern as VideoManager
+      // Create controller
       _controller = BetterPlayerController(
         BetterPlayerConfiguration(
           placeholder: Container(
@@ -261,12 +220,12 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         ),
       );
 
-      // Add event listener first (like VideoManager)
+      // Add event listener
       _controller!.addEventsListener((event) async {
         await _handlePlayerEvent(event);
       });
 
-      // Setup data source with enhanced configuration
+      // Setup data source
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         streamUrl,
@@ -280,11 +239,11 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         headers: {
           'User-Agent': 'diaB Video Player',
           'Accept': 'video/mp4',
-          'Range': 'bytes=0-', // Help with streaming
+          'Range': 'bytes=0-',
         },
         bufferingConfiguration: BetterPlayerBufferingConfiguration(
-          minBufferMs: 2000, // Reduced for faster start
-          maxBufferMs: 10000, // Reduced to prevent over-buffering
+          minBufferMs: 2000,
+          maxBufferMs: 10000,
           bufferForPlaybackMs: 1000,
           bufferForPlaybackAfterRebufferMs: 2000,
         ),
@@ -292,22 +251,22 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
 
       await _controller!.setupDataSource(betterPlayerDataSource);
 
-      // Wait a moment for data source to settle
+      // Wait for data source to settle
       await Future.delayed(Duration(milliseconds: 300));
 
-      // Add video player listener (like VideoManager)
+      // Add video player listener
       _controller!.videoPlayerController?.addListener(() async {
         await _handleVideoPlayerEvents();
       });
 
-      // Get the controller reference with timeout (like video widget)
+      // Get controller with timeout - similar to video widget
       await Future.any([
-        Future.delayed(Duration(seconds: 10)), // 10 second timeout
+        Future.delayed(Duration(seconds: 10)),
         _getControllerWithRetry(),
       ]);
 
-      // Ensure video is properly initialized
-      await ensureVideoInitialized();
+      // Ensure video is properly initialized - following video widget pattern
+      await _ensureVideoInitialized();
 
       debugPrint('YouTube video controller initialized successfully');
     } catch (e) {
@@ -324,6 +283,49 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         });
       }
     }
+  }
+
+  MuxedStreamInfo? _selectBestStream(StreamManifest streamManifest) {
+    // Try to find MP4 streams first
+    final mp4Streams = streamManifest.muxed
+        .where((info) => info.container == StreamContainer.mp4)
+        .toList();
+
+    if (mp4Streams.isNotEmpty) {
+      // Sort by quality, prefer medium quality for stability
+      mp4Streams.sort((a, b) {
+        final aQuality = a.videoQuality.name;
+        final bQuality = b.videoQuality.name;
+
+        final preferredOrder = [
+          'medium360',
+          'medium480',
+          'small240',
+          'large720',
+          'hd1080'
+        ];
+        final aIndex = preferredOrder.indexOf(aQuality);
+        final bIndex = preferredOrder.indexOf(bQuality);
+
+        if (aIndex != -1 && bIndex != -1) {
+          return aIndex.compareTo(bIndex);
+        } else if (aIndex != -1) {
+          return -1;
+        } else if (bIndex != -1) {
+          return 1;
+        }
+        return 0;
+      });
+
+      debugPrint('Selected MP4 stream: ${mp4Streams.first.videoQualityLabel}');
+      return mp4Streams.first;
+    }
+
+    // Fallback to any muxed stream
+    final fallback = streamManifest.muxed.firstOrNull;
+    debugPrint(
+        'No MP4 streams found, using fallback: ${fallback?.videoQualityLabel}');
+    return fallback;
   }
 
   Future<StreamManifest> _fetchStreamManifestWithRetry(String videoId) async {
@@ -347,12 +349,14 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     throw Exception('Failed to fetch stream manifest after 3 attempts');
   }
 
+  // Follow the same pattern as video widget
   Future<void> _getControllerWithRetry() async {
     int attempts = 0;
-    while (attempts < 30 && _controller?.videoPlayerController == null) {
+    while (attempts < 30 && !_isControllerReady) {
       try {
         if (_controller?.videoPlayerController != null) {
           debugPrint('Controller obtained successfully');
+          _isControllerReady = true;
           break;
         }
       } catch (e) {
@@ -362,19 +366,20 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       attempts++;
     }
 
-    if (_controller?.videoPlayerController == null) {
+    if (!_isControllerReady) {
       throw Exception('Failed to get video controller after 30 attempts');
     }
   }
 
-  Future<void> ensureVideoInitialized() async {
+  // Follow the exact same pattern as video widget
+  Future<void> _ensureVideoInitialized() async {
     if (_controller == null) {
       debugPrint('No player controller available');
       return;
     }
 
     try {
-      // Enhanced initialization check with metadata validation
+      // Wait for up to 5 seconds for the video to initialize properly - same as video widget
       int attempts = 0;
       bool isInitialized = false;
       final expectedDuration = _videoMetaData['duration'] as int?;
@@ -382,7 +387,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       debugPrint(
           'Ensuring video initialization. Expected duration: ${expectedDuration ?? 'unknown'} seconds');
 
-      while (attempts < 100 && !isInitialized) {
+      while (attempts < 50 && !isInitialized) {
         if (_controller!.videoPlayerController?.value.initialized == true) {
           final duration = _controller!.videoPlayerController!.value.duration;
 
@@ -390,22 +395,18 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
             debugPrint(
                 'Player duration: ${duration.inSeconds}s, Expected: ${expectedDuration ?? 'unknown'}s');
 
-            // Validate duration against metadata
+            // Validate duration against metadata if available
             if (expectedDuration != null) {
               final durationDiff =
                   (duration.inSeconds - expectedDuration).abs();
-              final maxAllowedDiff =
-                  (expectedDuration * 0.1).ceil(); // 10% tolerance
 
-              // If duration is way off and we haven't tried much, retry
-              if (durationDiff > maxAllowedDiff &&
-                  durationDiff > 2 &&
-                  attempts < 30) {
+              // If duration is significantly off, retry (but limit retries)
+              if (durationDiff > 5 && attempts < 20) {
                 debugPrint(
-                    'Duration mismatch detected: ${duration.inSeconds}s vs ${expectedDuration}s (diff: ${durationDiff}s), retrying...');
+                    'Duration mismatch: ${duration.inSeconds}s vs ${expectedDuration}s, retrying...');
                 try {
                   await _controller!.retryDataSource();
-                  await Future.delayed(Duration(milliseconds: 1500));
+                  await Future.delayed(Duration(milliseconds: 1000));
                 } catch (e) {
                   debugPrint('Retry failed: $e');
                 }
@@ -429,29 +430,29 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         attempts++;
       }
 
-      // If still not initialized properly, attempt one final reload
+      // If still not initialized properly, attempt to reload - same as video widget
       if (!isInitialized) {
-        debugPrint(
-            'Video not properly initialized after ${attempts} attempts, attempting final reload');
+        debugPrint('Video not properly initialized, attempting reload');
         try {
           await _controller!.retryDataSource();
-          await Future.delayed(Duration(milliseconds: 2000));
+          // Wait a bit more after retry - same as video widget
+          await Future.delayed(Duration(milliseconds: 1000));
 
-          // Check final result
+          // Final check
           final finalDuration =
               _controller!.videoPlayerController?.value.duration;
           debugPrint(
               'Final check - Duration: ${finalDuration?.inSeconds ?? 'unknown'}s');
 
           if (finalDuration != null && finalDuration.inMilliseconds > 0) {
-            debugPrint('Video initialized after final retry');
+            debugPrint('Video initialized after reload');
           } else {
             debugPrint(
-                'Final retry still shows invalid duration, but continuing');
+                'Final reload still shows invalid duration, but continuing');
           }
         } catch (e) {
-          debugPrint('Error during final retry: $e');
-          // Don't throw here, let it continue with whatever state we have
+          debugPrint('Error during reload: $e');
+          // Don't throw here - continue with whatever state we have
         }
       }
     } catch (e) {
@@ -491,7 +492,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         if (duration != null &&
             position != null &&
             duration.inMilliseconds > 0) {
-          // Check for completion (like VideoManager)
+          // Check for completion
           if (duration == position) {
             try {
               _controller!.exitFullScreen();
@@ -532,13 +533,14 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
             ),
             SizedBox(height: 8),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   _hasError = false;
                   _isInitializing = true;
                   _isInitialized = false;
+                  _isControllerReady = false;
                 });
-                _initializePlayer();
+                await _initializePlayer();
               },
               child: Text('Retry'),
             ),
@@ -554,7 +556,9 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
       return _buildErrorWidget();
     }
 
-    if (_isInitializing || _controller == null) {
+    // Only show the player when both initializing is done AND controller is ready
+    // This prevents the player from showing before duration is properly loaded
+    if (_isInitializing || _controller == null || !_isControllerReady) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
