@@ -34,11 +34,12 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   bool _hasError = false;
   dynamic _videoMetaData;
   YoutubeExplode? _youtubeExplode;
-  String? _videoId;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    _youtubeExplode = YoutubeExplode();
     WidgetsBinding.instance.addObserver(this);
     _initializePlayer();
   }
@@ -46,6 +47,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
   @override
   void didUpdateWidget(YoutubeVideoWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // If URL changes, refresh like video widget does
     if (oldWidget.videoUrl != widget.videoUrl) {
       _refreshVideo();
     }
@@ -56,16 +58,20 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     WidgetsBinding.instance.removeObserver(this);
     _disposeController();
     _youtubeExplode?.close();
+    _youtubeExplode = null;
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
+
+    // Follow the same pattern as video widget
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
         debugPrint('YouTube: App paused/inactive - keeping audio playing');
+        // Don't pause to allow background audio playback
         break;
       case AppLifecycleState.resumed:
         debugPrint('YouTube: App resumed');
@@ -78,6 +84,34 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     }
   }
 
+  Future<void> _refreshVideo() async {
+    if (mounted) {
+      setState(() {
+        _isInitializing = true;
+        _hasError = false;
+        _isInitialized = false;
+      });
+    }
+
+    try {
+      _disposeController();
+      await _initializePlayer();
+    } catch (e) {
+      debugPrint('Error refreshing YouTube video: $e');
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+        });
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _isInitializing = false;
+      });
+    }
+  }
+
   void _disposeController() {
     try {
       _controller?.dispose(forceDispose: true);
@@ -87,148 +121,119 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     }
   }
 
-  Future<void> _refreshVideo() async {
-    if (mounted) {
-      setState(() {
-        _isInitializing = true;
-        _hasError = false;
-      });
-    }
-
-    _disposeController();
-    await _initializePlayer();
-
-    if (mounted) {
-      setState(() {
-        _isInitializing = false;
-      });
-    }
-  }
-
   Future<void> _initializePlayer() async {
-    if (!mounted) return;
+    if (_isInitialized || !mounted) return;
+    _isInitialized = true;
 
     try {
       if (widget.videoUrl.isEmpty) {
-        throw Exception('No YouTube video URL provided');
-      }
-
-      _videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
-      if (_videoId == null) {
-        throw Exception('Invalid YouTube URL: ${widget.videoUrl}');
+        debugPrint('No YouTube video URL provided');
+        if (mounted) {
+          setState(() {
+            _isInitializing = false;
+            _hasError = true;
+          });
+        }
+        return;
       }
 
       debugPrint('Initializing YouTube video with URL: ${widget.videoUrl}');
 
-      // Use aggressive caching and reduced quality for faster loading
-      await _initializeFastBetterPlayer();
-    } catch (e) {
-      debugPrint('Error initializing YouTube video: $e');
-      if (mounted) {
-        setState(() {
-          _hasError = true;
-          _isInitializing = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _initializeFastBetterPlayer() async {
-    _youtubeExplode = YoutubeExplode();
-
-    try {
-      // Enhanced URL handling for different YouTube formats
-      final videoId = _extractVideoId(widget.videoUrl);
+      final videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
       if (videoId == null) {
-        throw Exception(
-            'Could not extract video ID from URL: ${widget.videoUrl}');
+        throw Exception('Invalid YouTube URL: ${widget.videoUrl}');
       }
 
-      debugPrint('Extracted video ID: $videoId from URL: ${widget.videoUrl}');
+      // Fetch stream manifest with timeout like video widget
+      final streamManifest = await Future.any([
+        Future.delayed(Duration(seconds: 15)), // 15 second timeout
+        _fetchStreamManifestWithRetry(videoId),
+      ]);
 
-      // Get video metadata first
-      final videoMetadata = await _youtubeExplode!.videos
-          .get(videoId)
-          .timeout(const Duration(seconds: 5));
+      if (streamManifest is! StreamManifest) {
+        throw Exception('Timeout fetching stream manifest');
+      }
+
+      // Fetch video metadata for duration
+      final videoMetadata = await _youtubeExplode!.videos.get(videoId);
       final videoDuration = videoMetadata.duration?.inSeconds;
       debugPrint(
           'Video metadata duration: ${videoDuration ?? 'unknown'} seconds');
 
-      // Get stream manifest with multiple client attempts for better compatibility
-      StreamManifest? streamManifest;
-      Exception? lastError;
+      // Select best available stream with better logic
+      MuxedStreamInfo? streamInfo;
 
-      // Try different YouTube clients for better stream availability
-      final clientConfigs = [
-        [YoutubeApiClient.android],
-        [YoutubeApiClient.ios],
-        [YoutubeApiClient.android, YoutubeApiClient.ios],
-      ];
+      // Try to find MP4 streams first, prioritizing lower quality for better compatibility
+      final mp4Streams = streamManifest.muxed
+          .where((info) => info.container == StreamContainer.mp4)
+          .toList();
 
-      for (final clients in clientConfigs) {
-        try {
-          debugPrint(
-              'Trying YouTube clients: ${clients.map((c) => c.toString()).join(', ')}');
-          streamManifest = await _youtubeExplode!.videos.streamsClient
-              .getManifest(
-                videoId,
-                ytClients: clients,
-              )
-              .timeout(const Duration(seconds: 5));
-          debugPrint(
-              'Successfully got stream manifest with ${clients.length} client(s)');
-          break;
-        } catch (e) {
-          debugPrint('Failed with clients $clients: $e');
-          lastError = e is Exception ? e : Exception(e.toString());
-          continue;
-        }
+      if (mp4Streams.isNotEmpty) {
+        // Sort by quality, prefer 360p or 480p for better compatibility
+        mp4Streams.sort((a, b) {
+          final aQuality = a.videoQuality.name;
+          final bQuality = b.videoQuality.name;
+
+          // Prefer medium quality streams for stability
+          final preferredOrder = [
+            'medium360',
+            'medium480',
+            'small240',
+            'large720',
+            'hd1080'
+          ];
+          final aIndex = preferredOrder.indexOf(aQuality);
+          final bIndex = preferredOrder.indexOf(bQuality);
+
+          if (aIndex != -1 && bIndex != -1) {
+            return aIndex.compareTo(bIndex);
+          } else if (aIndex != -1) {
+            return -1;
+          } else if (bIndex != -1) {
+            return 1;
+          }
+          return 0;
+        });
+
+        streamInfo = mp4Streams.first;
+        debugPrint('Selected MP4 stream: ${streamInfo.videoQualityLabel}');
+      } else {
+        // Fallback to any muxed stream
+        streamInfo = streamManifest.muxed.firstOrNull;
+        debugPrint(
+            'No MP4 streams found, using fallback: ${streamInfo?.videoQualityLabel}');
       }
-
-      if (streamManifest == null) {
-        throw lastError ??
-            Exception(
-                'Failed to get stream manifest from all client configurations');
-      }
-
-      // Enhanced stream selection with better error handling
-      MuxedStreamInfo? streamInfo = _selectBestStreamRobust(streamManifest);
 
       if (streamInfo == null) {
-        // Try to get any video stream as a fallback
-        debugPrint(
-            'No muxed streams found, trying video-only + audio-only combination...');
-        throw Exception(
-            'No suitable video stream found. Available muxed: ${streamManifest.muxed.length}, video-only: ${streamManifest.videoOnly.length}');
+        throw Exception('No suitable muxed stream found');
       }
 
       final streamUrl = streamInfo.url.toString();
       debugPrint(
-          'Selected stream URL: ${streamUrl.substring(0, 100)}...'); // Log first 100 chars
-      debugPrint(
-          'Stream details: ${streamInfo.videoQualityLabel} (${streamInfo.container}) - ${streamInfo.bitrate.bitsPerSecond} bps');
+          'Using muxed stream: $streamUrl (quality: ${streamInfo.videoQualityLabel}, container: ${streamInfo.container})');
 
       if (!mounted) return;
 
       _videoMetaData = {'videoId': videoId, 'duration': videoDuration};
 
-      // Create controller with more reliable configuration
+      // Create controller with same configuration pattern as VideoManager
       _controller = BetterPlayerController(
         BetterPlayerConfiguration(
-          autoPlay: false,
-          handleLifecycle: false,
-          allowedScreenSleep: false,
-          fit: BoxFit.contain,
-          aspectRatio: 16 / 9,
-          autoDispose: false,
-          expandToFill: false,
           placeholder: Container(
             color: Colors.black,
             child: Center(
-              child: Image.asset(R.drawable.ic_thumbnail1, fit: BoxFit.cover),
+              child: Image.asset(
+                R.drawable.ic_thumbnail1,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           showPlaceholderUntilPlay: true,
+          aspectRatio: 16 / 9,
+          autoDispose: false,
+          expandToFill: false,
+          allowedScreenSleep: false,
+          fit: BoxFit.contain,
           deviceOrientationsAfterFullScreen: [
             DeviceOrientation.portraitUp,
             DeviceOrientation.portraitDown,
@@ -237,6 +242,8 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
             SystemUiOverlay.top,
             SystemUiOverlay.bottom,
           ],
+          handleLifecycle: false,
+          autoPlay: false,
           startAt: Duration.zero,
           controlsConfiguration: BetterPlayerControlsConfiguration(
             enableProgressText: true,
@@ -252,244 +259,253 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
             progressBarHandleColor: R.color.greenGradientBottom,
           ),
         ),
-        betterPlayerDataSource: BetterPlayerDataSource(
-          BetterPlayerDataSourceType.network,
-          streamUrl,
-          videoFormat: BetterPlayerVideoFormat.other,
-          notificationConfiguration: BetterPlayerNotificationConfiguration(
-            showNotification: true,
-            title: widget.videoTitle ?? 'DiaB Lesson',
-            author: widget.videoArtist ?? 'DiaB',
-            imageUrl: widget.videoThumbnail,
-            notificationChannelName: "DiaB Media Player",
-            activityName: "MainActivity",
-          ),
-          headers: {
-            'User-Agent':
-                'com.google.android.youtube/17.36.4 (Linux; U; Android 11) gzip',
-            'Accept': '*/*',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate',
-            'Origin': 'https://www.youtube.com',
-            'Referer': 'https://www.youtube.com/watch?v=$videoId',
-          },
+      );
+
+      // Add event listener first (like VideoManager)
+      _controller!.addEventsListener((event) async {
+        await _handlePlayerEvent(event);
+      });
+
+      // Setup data source with enhanced configuration
+      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        streamUrl,
+        videoFormat: BetterPlayerVideoFormat.other,
+        notificationConfiguration: BetterPlayerNotificationConfiguration(
+          showNotification: true,
+          title: widget.videoTitle ?? 'DiaB Lesson',
+          author: widget.videoArtist ?? 'DiaB',
+          imageUrl: widget.videoThumbnail,
+        ),
+        headers: {
+          'User-Agent': 'diaB Video Player',
+          'Accept': 'video/mp4',
+          'Range': 'bytes=0-', // Help with streaming
+        },
+        bufferingConfiguration: BetterPlayerBufferingConfiguration(
+          minBufferMs: 2000, // Reduced for faster start
+          maxBufferMs: 10000, // Reduced to prevent over-buffering
+          bufferForPlaybackMs: 1000,
+          bufferForPlaybackAfterRebufferMs: 2000,
         ),
       );
 
-      // Enhanced event listeners for better media session control
-      _controller!.addEventsListener((event) async {
-        if (mounted) {
-          switch (event.betterPlayerEventType) {
-            case BetterPlayerEventType.play:
-              debugPrint('Video playing - updating media session');
-              widget.onPlay(meta: _videoMetaData);
-              break;
-            case BetterPlayerEventType.pause:
-              debugPrint('Video paused - updating media session');
-              break;
-            case BetterPlayerEventType.finished:
-              debugPrint('Video finished');
-              _controller!.exitFullScreen();
-              await Future.delayed(const Duration(seconds: 1));
-              widget.onEnded(meta: _videoMetaData);
-              break;
-            case BetterPlayerEventType.initialized:
-              debugPrint('Player initialized - media session should be ready');
-              break;
-            default:
-              break;
-          }
-        }
+      await _controller!.setupDataSource(betterPlayerDataSource);
+
+      // Wait a moment for data source to settle
+      await Future.delayed(Duration(milliseconds: 300));
+
+      // Add video player listener (like VideoManager)
+      _controller!.videoPlayerController?.addListener(() async {
+        await _handleVideoPlayerEvents();
       });
 
-      // Reliable initialization process
-      await _reliableInitialization();
+      // Get the controller reference with timeout (like video widget)
+      await Future.any([
+        Future.delayed(Duration(seconds: 10)), // 10 second timeout
+        _getControllerWithRetry(),
+      ]);
 
-      debugPrint(
-          'YouTube BetterPlayer initialized successfully with notification support');
+      // Ensure video is properly initialized
+      await ensureVideoInitialized();
 
+      debugPrint('YouTube video controller initialized successfully');
+    } catch (e) {
+      debugPrint('Error initializing YouTube video: $e');
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+        });
+      }
+    } finally {
       if (mounted) {
         setState(() {
           _isInitializing = false;
         });
       }
-    } catch (e) {
-      debugPrint('Fast BetterPlayer initialization failed: $e');
-      rethrow;
     }
   }
 
-  // Enhanced video ID extraction for different YouTube URL formats
-  String? _extractVideoId(String url) {
-    // Handle multiple YouTube URL formats
-    final patterns = [
-      RegExp(
-          r'(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})'),
-      RegExp(r'youtube\.com\/watch\?.*v=([a-zA-Z0-9_-]{11})'),
-      RegExp(r'youtu\.be\/([a-zA-Z0-9_-]{11})'),
-    ];
-
-    for (final pattern in patterns) {
-      final match = pattern.firstMatch(url);
-      if (match != null && match.groupCount >= 1) {
-        final videoId = match.group(1);
-        debugPrint(
-            'Extracted video ID: $videoId using pattern: ${pattern.pattern}');
-        return videoId;
-      }
-    }
-
-    // Fallback to YouTube Player's method
-    final fallbackId = YoutubePlayer.convertUrlToId(url);
-    debugPrint('Fallback extraction result: $fallbackId');
-    return fallbackId;
-  }
-
-  // More robust stream selection with detailed logging
-  MuxedStreamInfo? _selectBestStreamRobust(StreamManifest manifest) {
-    debugPrint('=== Stream Selection Debug ===');
-    debugPrint('Total muxed streams available: ${manifest.muxed.length}');
-    debugPrint('Total video-only streams: ${manifest.videoOnly.length}');
-    debugPrint('Total audio-only streams: ${manifest.audioOnly.length}');
-
-    if (manifest.muxed.isEmpty) {
-      debugPrint('❌ No muxed streams available!');
-      return null;
-    }
-
-    // Log all available muxed streams
-    for (int i = 0; i < manifest.muxed.length; i++) {
-      final stream = manifest.muxed[i];
-      debugPrint(
-          'Stream $i: ${stream.videoQualityLabel} (${stream.container}) - ${stream.bitrate.bitsPerSecond} bps - ${stream.size.totalMegaBytes.toStringAsFixed(1)}MB');
-    }
-
-    // Prioritize stable formats over quality
-    final preferredContainers = [
-      StreamContainer.mp4, // Most compatible
-      StreamContainer.webM, // Fallback
-    ];
-
-    final preferredQualities = [
-      VideoQuality.medium360, // Good balance
-      VideoQuality.low240, // Lower quality but more stable
-      VideoQuality.medium480, // Acceptable
-      VideoQuality.low144, // Last resort
-    ];
-
-    // First pass: Try to find MP4 with preferred quality
-    for (final quality in preferredQualities) {
-      for (final container in preferredContainers) {
-        final stream = manifest.muxed
-            .where((info) =>
-                info.container == container && info.videoQuality == quality)
-            .firstOrNull;
-        if (stream != null) {
-          debugPrint(
-              '✅ Selected: ${stream.videoQualityLabel} (${stream.container}) - PREFERRED');
-          return stream;
-        }
-      }
-    }
-
-    // Second pass: Any MP4 stream
-    final mp4Stream = manifest.muxed
-        .where((info) => info.container == StreamContainer.mp4)
-        .firstOrNull;
-    if (mp4Stream != null) {
-      debugPrint('✅ Selected MP4 fallback: ${mp4Stream.videoQualityLabel}');
-      return mp4Stream;
-    }
-
-    // Third pass: Lowest bitrate stream (most likely to work)
-    final sortedStreams = List<MuxedStreamInfo>.from(manifest.muxed)
-      ..sort(
-          (a, b) => a.bitrate.bitsPerSecond.compareTo(b.bitrate.bitsPerSecond));
-
-    if (sortedStreams.isNotEmpty) {
-      final stream = sortedStreams.first;
-      debugPrint(
-          '✅ Selected lowest bitrate: ${stream.videoQualityLabel} (${stream.container}) - ${stream.bitrate.bitsPerSecond} bps');
-      return stream;
-    }
-
-    debugPrint('❌ No suitable stream found');
-    return null;
-  }
-
-  // More reliable initialization with better error handling
-  Future<void> _reliableInitialization() async {
-    try {
-      debugPrint('Starting reliable initialization...');
-
-      // Setup data source with timeout
-      await _controller!
-          .setupDataSource(_controller!.betterPlayerDataSource!)
-          .timeout(
-        Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception('Setup data source timed out after 10 seconds');
-        },
-      );
-
-      debugPrint('Data source setup completed');
-
-      // Wait for controller to be ready
-      int attempts = 0;
-      bool isReady = false;
-
-      while (attempts < 60 && !isReady) {
-        // 60 attempts = 12 seconds
-        await Future.delayed(Duration(milliseconds: 200));
-
-        final controller = _controller?.videoPlayerController;
-        if (controller != null) {
-          final value = controller.value;
-
-          if (attempts % 10 == 0) {
-            // Log every 2 seconds
-            debugPrint('Initialization attempt ${attempts + 1}/60:');
-            debugPrint('  - Initialized: ${value.initialized}');
-            debugPrint('  - Has error: ${value.hasError}');
-            debugPrint('  - Error: ${value.errorDescription ?? 'none'}');
-            debugPrint(
-                '  - Duration: ${value.duration?.inSeconds ?? 'unknown'}s');
-          }
-
-          if (value.hasError) {
-            throw Exception('Video player error: ${value.errorDescription}');
-          }
-
-          if (value.initialized &&
-              value.duration != null &&
-              value.duration!.inMilliseconds > 0) {
-            debugPrint('✅ Player successfully initialized');
-            debugPrint('  - Duration: ${value.duration!.inSeconds}s');
-            debugPrint(
-                '  - Video size: ${value.size?.width}x${value.size?.height}');
-            isReady = true;
-            break;
-          }
-        }
-
+  Future<StreamManifest> _fetchStreamManifestWithRetry(String videoId) async {
+    int attempts = 0;
+    while (attempts < 3) {
+      try {
+        return await _youtubeExplode!.videos.streamsClient.getManifest(
+          videoId,
+          ytClients: [
+            YoutubeApiClient.ios,
+            YoutubeApiClient.android,
+          ],
+        ).timeout(const Duration(seconds: 15));
+      } catch (e) {
         attempts++;
-        if (!mounted) return;
+        debugPrint('Stream manifest fetch attempt $attempts failed: $e');
+        if (attempts >= 3) rethrow;
+        await Future.delayed(Duration(milliseconds: 1000 * attempts));
+      }
+    }
+    throw Exception('Failed to fetch stream manifest after 3 attempts');
+  }
+
+  Future<void> _getControllerWithRetry() async {
+    int attempts = 0;
+    while (attempts < 30 && _controller?.videoPlayerController == null) {
+      try {
+        if (_controller?.videoPlayerController != null) {
+          debugPrint('Controller obtained successfully');
+          break;
+        }
+      } catch (e) {
+        debugPrint('Error getting controller (attempt ${attempts + 1}): $e');
+      }
+      await Future.delayed(Duration(milliseconds: 500));
+      attempts++;
+    }
+
+    if (_controller?.videoPlayerController == null) {
+      throw Exception('Failed to get video controller after 30 attempts');
+    }
+  }
+
+  Future<void> ensureVideoInitialized() async {
+    if (_controller == null) {
+      debugPrint('No player controller available');
+      return;
+    }
+
+    try {
+      // Enhanced initialization check with metadata validation
+      int attempts = 0;
+      bool isInitialized = false;
+      final expectedDuration = _videoMetaData['duration'] as int?;
+
+      debugPrint(
+          'Ensuring video initialization. Expected duration: ${expectedDuration ?? 'unknown'} seconds');
+
+      while (attempts < 100 && !isInitialized) {
+        if (_controller!.videoPlayerController?.value.initialized == true) {
+          final duration = _controller!.videoPlayerController!.value.duration;
+
+          if (duration != null && duration.inMilliseconds > 0) {
+            debugPrint(
+                'Player duration: ${duration.inSeconds}s, Expected: ${expectedDuration ?? 'unknown'}s');
+
+            // Validate duration against metadata
+            if (expectedDuration != null) {
+              final durationDiff =
+                  (duration.inSeconds - expectedDuration).abs();
+              final maxAllowedDiff =
+                  (expectedDuration * 0.1).ceil(); // 10% tolerance
+
+              // If duration is way off and we haven't tried much, retry
+              if (durationDiff > maxAllowedDiff &&
+                  durationDiff > 2 &&
+                  attempts < 30) {
+                debugPrint(
+                    'Duration mismatch detected: ${duration.inSeconds}s vs ${expectedDuration}s (diff: ${durationDiff}s), retrying...');
+                try {
+                  await _controller!.retryDataSource();
+                  await Future.delayed(Duration(milliseconds: 1500));
+                } catch (e) {
+                  debugPrint('Retry failed: $e');
+                }
+                attempts += 5; // Skip ahead after retry
+                continue;
+              }
+            }
+
+            debugPrint(
+                'Video successfully initialized with duration: ${duration.inSeconds}s');
+            isInitialized = true;
+            break;
+          } else {
+            debugPrint('Duration is null or zero, attempt $attempts');
+          }
+        } else {
+          debugPrint('Video not initialized yet, attempt $attempts');
+        }
+
+        await Future.delayed(Duration(milliseconds: 100));
+        attempts++;
       }
 
-      if (!isReady) {
-        final controller = _controller?.videoPlayerController;
-        if (controller?.value.hasError == true) {
-          throw Exception(
-              'Player initialization failed with error: ${controller!.value.errorDescription}');
-        } else {
+      // If still not initialized properly, attempt one final reload
+      if (!isInitialized) {
+        debugPrint(
+            'Video not properly initialized after ${attempts} attempts, attempting final reload');
+        try {
+          await _controller!.retryDataSource();
+          await Future.delayed(Duration(milliseconds: 2000));
+
+          // Check final result
+          final finalDuration =
+              _controller!.videoPlayerController?.value.duration;
           debugPrint(
-              '⚠️ Player initialization incomplete but no errors detected');
-          // Continue anyway - sometimes works despite incomplete initialization
+              'Final check - Duration: ${finalDuration?.inSeconds ?? 'unknown'}s');
+
+          if (finalDuration != null && finalDuration.inMilliseconds > 0) {
+            debugPrint('Video initialized after final retry');
+          } else {
+            debugPrint(
+                'Final retry still shows invalid duration, but continuing');
+          }
+        } catch (e) {
+          debugPrint('Error during final retry: $e');
+          // Don't throw here, let it continue with whatever state we have
         }
       }
     } catch (e) {
-      debugPrint('❌ Error in reliable initialization: $e');
-      rethrow; // Let the caller handle the error
+      debugPrint('Error ensuring video initialization: $e');
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+        });
+      }
+    }
+  }
+
+  Future<void> _handlePlayerEvent(BetterPlayerEvent event) async {
+    try {
+      if (event.betterPlayerEventType == BetterPlayerEventType.play) {
+        widget.onPlay(meta: _videoMetaData);
+      }
+
+      if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
+        _controller!.exitFullScreen();
+        await Future.delayed(const Duration(seconds: 1));
+        widget.onEnded(meta: _videoMetaData);
+      }
+    } catch (e) {
+      debugPrint('Error handling player event: $e');
+    }
+  }
+
+  Future<void> _handleVideoPlayerEvents() async {
+    try {
+      if (_controller?.videoPlayerController?.value != null &&
+          !_controller!.videoPlayerController!.value.isPlaying &&
+          _controller!.videoPlayerController!.value.initialized) {
+        Duration? duration = _controller!.videoPlayerController!.value.duration;
+        Duration? position = _controller!.videoPlayerController!.value.position;
+
+        if (duration != null &&
+            position != null &&
+            duration.inMilliseconds > 0) {
+          // Check for completion (like VideoManager)
+          if (duration == position) {
+            try {
+              _controller!.exitFullScreen();
+              await Future.delayed(const Duration(seconds: 1));
+            } catch (e) {
+              debugPrint(
+                  "Error exiting fullscreen on completion: ${e.toString()}");
+            }
+            widget.onEnded(meta: _videoMetaData);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error handling video player events: $e');
     }
   }
 
@@ -501,11 +517,18 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, color: Colors.white, size: 48),
+            Icon(
+              Icons.error_outline,
+              color: Colors.white,
+              size: 48,
+            ),
             SizedBox(height: 16),
             Text(
               'Failed to load YouTube video',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
             ),
             SizedBox(height: 8),
             ElevatedButton(
@@ -513,6 +536,7 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
                 setState(() {
                   _hasError = false;
                   _isInitializing = true;
+                  _isInitialized = false;
                 });
                 _initializePlayer();
               },
@@ -531,20 +555,11 @@ class _YoutubeVideoWidgetState extends State<YoutubeVideoWidget>
     }
 
     if (_isInitializing || _controller == null) {
-      return Container(
-        height: 200,
-        color: Colors.black,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: Colors.white),
-              SizedBox(height: 16),
-              Text(
-                'Loading video...',
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: CircularProgressIndicator(
+            color: R.color.black,
           ),
         ),
       );
