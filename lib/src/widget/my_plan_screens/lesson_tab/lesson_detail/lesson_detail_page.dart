@@ -86,45 +86,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     return youtubeRegex.hasMatch(videoAddressLink);
   }
 
-  Future<String?> getMp4UrlFromYouTube(String youtubeUrl) async {
-    // Initialize YouTube Explode
-    var yt = YoutubeExplode();
-    try {
-      // Extract video ID from URL
-      var videoId = VideoId.parseVideoId(youtubeUrl);
-      if (videoId == null) {
-        print('Invalid YouTube URL: $youtubeUrl');
-        return null;
-      }
-
-      // Get video stream manifest
-      var streamManifest = await yt.videos.streamsClient.getManifest(videoId);
-
-      // Get muxed streams (contain both video and audio, suitable for VideoWidget)
-      var muxedStreams = streamManifest.muxed;
-
-      // Prioritize the lowest quality MP4 stream for speed
-      var streamInfo = muxedStreams
-          .where((stream) => stream.container == StreamContainer.mp4)
-          .toList()
-          .lastOrNull; // Get the lowest quality stream (last in sorted list)
-
-      if (streamInfo == null) {
-        print('No MP4 stream found for video: $youtubeUrl');
-        return null;
-      }
-
-      // Return the stream URL
-      return streamInfo.url.toString();
-    } catch (e) {
-      print('Error extracting MP4 URL: $e');
-      return null;
-    } finally {
-      // Clean up
-      yt.close();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -231,6 +192,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                       _cubit.lessonDetail?.name,
                                                 },
                                               );
+                                              _cubit.videoManager
+                                                  ?.disposeAllVideo();
                                               NavigationUtil.pop(context);
                                             },
                                             child: Icon(
@@ -332,145 +295,65 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         if (_cubit.currentSectionDetail
-                                                    ?.videoAddressLink !=
-                                                null &&
-                                            !isYouTubeLink(_cubit
-                                                .currentSectionDetail
-                                                ?.videoAddressLink))
-                                          // In lesson_detail_page.dart, within the SingleChildScrollView
-                                          if (_cubit.currentSectionDetail
-                                                  ?.videoAddressLink !=
-                                              null)
-                                            FutureBuilder<String?>(
-                                              future: isYouTubeLink(_cubit
-                                                      .currentSectionDetail
-                                                      ?.videoAddressLink)
-                                                  ? getMp4UrlFromYouTube(_cubit
-                                                      .currentSectionDetail!
-                                                      .videoAddressLink!)
-                                                  : Future.value(_cubit
-                                                      .currentSectionDetail
+                                                ?.videoAddressLink !=
+                                            null)
+                                          _buildTitleWidget(
+                                            child: VideoWidget(
+                                              isYouTubeLink: isYouTubeLink(
+                                                  _cubit.currentSectionDetail
                                                       ?.videoAddressLink),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.waiting) {
-                                                  return Center(
-                                                      child:
-                                                          CircularProgressIndicator());
-                                                }
-                                                if (snapshot.hasError ||
-                                                    !snapshot.hasData ||
-                                                    snapshot.data == null) {
-                                                  return _buildTitleWidget(
-                                                    child: Container(
-                                                      height: 200,
-                                                      color: Colors.black,
-                                                      child: Center(
-                                                        child: Text(
-                                                          'Failed to load video',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    title: _cubit
-                                                        .currentSectionDetail
-                                                        ?.videoDescription,
-                                                  );
-                                                }
-                                                return _buildTitleWidget(
-                                                  child: VideoWidget(
-                                                    url: snapshot.data!,
-                                                    callbackEventListener:
-                                                        (event, videoDuration) {
-                                                      LessonDetailTracking
-                                                          .videoPlayerLesson(
-                                                        videoDuration:
-                                                            videoDuration,
-                                                        objectTitle: _cubit
-                                                            .lessonDetail!
-                                                            .name!,
-                                                        objectId: _cubit
-                                                            .lessonDetail!.id!,
-                                                        eventType: event,
-                                                      );
-                                                    },
-                                                    onPlay: () async =>
-                                                        _onTrackingVideoPlay(),
-                                                    onComplete: () {
-                                                      LessonDetailTracking
-                                                          .completed50PercentVideo(
-                                                        objectId: _cubit
-                                                            .lessonDetail?.id,
-                                                        objectTitle: _cubit
-                                                            .lessonDetail?.name,
-                                                      );
-                                                      _cubit.complete();
-                                                      _onTrackingVideoComplete();
-                                                    },
-                                                    callbackByPercentVideo: () {
-                                                      LessonDetailTracking
-                                                          .completed50PercentVideo(
-                                                        objectId: _cubit
-                                                            .lessonDetail?.id,
-                                                        objectTitle: _cubit
-                                                            .lessonDetail?.name,
-                                                      );
-                                                      widget.onComplete(
-                                                          _cubit.lessonDetail!
-                                                              .id!,
-                                                          _cubit
-                                                              .percentComplete);
-                                                      _cubit.complete();
-                                                    },
-                                                    percentCallbackDefault: 0.5,
-                                                    setVideoManager:
-                                                        (videoManager) {
-                                                      _cubit.setVideoManager(
-                                                          videoManager);
-                                                    },
-                                                    videoTitle: _cubit
-                                                        .currentSectionDetail
-                                                        ?.name,
-                                                    videoThumbnail: _cubit
-                                                        .lessonDetail
-                                                        ?.image
-                                                        ?.url,
-                                                  ),
-                                                  title: _cubit
-                                                      .currentSectionDetail
-                                                      ?.videoDescription,
+                                              url: _cubit.currentSectionDetail!
+                                                  .videoAddressLink!,
+                                              callbackEventListener:
+                                                  (event, videoDuration) {
+                                                LessonDetailTracking
+                                                    .videoPlayerLesson(
+                                                  videoDuration: videoDuration,
+                                                  objectTitle: _cubit
+                                                      .lessonDetail!.name!,
+                                                  objectId:
+                                                      _cubit.lessonDetail!.id!,
+                                                  eventType: event,
                                                 );
                                               },
+                                              onPlay: () async =>
+                                                  _onTrackingVideoPlay(),
+                                              onComplete: () {
+                                                LessonDetailTracking
+                                                    .completed50PercentVideo(
+                                                  objectId:
+                                                      _cubit.lessonDetail?.id,
+                                                  objectTitle:
+                                                      _cubit.lessonDetail?.name,
+                                                );
+                                                _cubit.complete();
+                                                _onTrackingVideoComplete();
+                                              },
+                                              callbackByPercentVideo: () {
+                                                LessonDetailTracking
+                                                    .completed50PercentVideo(
+                                                  objectId:
+                                                      _cubit.lessonDetail?.id,
+                                                  objectTitle:
+                                                      _cubit.lessonDetail?.name,
+                                                );
+                                                widget.onComplete(
+                                                    _cubit.lessonDetail!.id!,
+                                                    _cubit.percentComplete);
+                                                _cubit.complete();
+                                              },
+                                              percentCallbackDefault: 0.5,
+                                              setVideoManager: (videoManager) {
+                                                _cubit.setVideoManager(
+                                                    videoManager);
+                                              },
+                                              videoTitle: _cubit
+                                                  .currentSectionDetail?.name,
+                                              videoThumbnail: _cubit
+                                                  .lessonDetail?.image?.url,
                                             ),
-                                        if (_cubit.currentSectionDetail
-                                                    ?.videoAddressLink !=
-                                                null &&
-                                            isYouTubeLink(_cubit
-                                                .currentSectionDetail
-                                                ?.videoAddressLink))
-                                          YoutubeVideoWidget(
-                                            videoUrl: _cubit
-                                                .currentSectionDetail!
-                                                .videoAddressLink!,
-                                            onPlay: ({meta}) =>
-                                                _onTrackingVideoPlay(),
-                                            onEnded: ({meta}) {
-                                              LessonDetailTracking
-                                                  .completed50PercentVideo(
-                                                objectId:
-                                                    _cubit.lessonDetail?.id,
-                                                objectTitle:
-                                                    _cubit.lessonDetail?.name,
-                                              );
-                                              _cubit.complete();
-                                              _onTrackingVideoComplete();
-                                            },
-                                            videoTitle: _cubit
-                                                .currentSectionDetail?.name,
-                                            videoThumbnail:
-                                                _cubit.lessonDetail?.image?.url,
+                                            title: _cubit.currentSectionDetail
+                                                ?.videoDescription,
                                           ),
                                         SizedBox(height: 8),
                                         Padding(

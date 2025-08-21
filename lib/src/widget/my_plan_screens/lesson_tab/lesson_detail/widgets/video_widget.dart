@@ -1,8 +1,10 @@
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class VideoWidget extends StatefulWidget {
   VideoWidget({
@@ -16,6 +18,7 @@ class VideoWidget extends StatefulWidget {
     this.videoTitle,
     this.videoArtist,
     this.videoThumbnail,
+    this.isYouTubeLink = false,
   });
 
   final String url;
@@ -28,6 +31,7 @@ class VideoWidget extends StatefulWidget {
   final String? videoTitle;
   final String? videoArtist;
   final String? videoThumbnail;
+  final bool isYouTubeLink;
 
   @override
   _VideoWidgetState createState() => _VideoWidgetState();
@@ -39,6 +43,9 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   bool isInitializing = true;
   BetterPlayerController? playerController;
   bool hasError = false;
+  String? errorMessage;
+  int retryCount = 0;
+  static const int maxRetries = 2; // Reduced from 3 to 2
 
   @override
   void initState() {
@@ -53,217 +60,408 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.url != widget.url) {
       url = widget.url;
-      _refreshVideo();
+      retryCount = 0;
+      _cleanupAndRefresh();
     }
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    videoManager?.disposeAllVideo();
+    _cleanup();
     super.dispose();
+  }
+
+  void _cleanup() {
+    videoManager?.removeEventListeners();
+    if (playerController?.videoPlayerController?.value.initialized == true) {
+      playerController?.pause();
+    }
+    playerController?.dispose();
+    videoManager?.disposeAllVideo();
+  }
+
+  void _cleanupAndRefresh() {
+    _cleanup();
+    playerController = null;
+    videoManager = null;
+    _refreshVideo();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-
-    // Don't auto-pause when app goes to background or device is locked
-    // This allows audio to continue playing in background
     switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
-        // App is paused or device locked - keep audio playing
         debugPrint('App paused/inactive - keeping video audio playing');
-        // Don't pause the video here to allow background audio playback
         break;
       case AppLifecycleState.resumed:
-        // App resumed
         debugPrint('App resumed');
+        if (playerController != null &&
+            playerController!.videoPlayerController?.value.hasError == true) {
+          _refreshVideo();
+        }
         break;
       case AppLifecycleState.detached:
-        // App is about to be terminated - pause the video
-        playerController?.pause();
+        if (playerController?.videoPlayerController?.value.initialized ==
+            true) {
+          playerController?.pause();
+        }
         break;
       default:
         break;
     }
   }
 
-  Future<void> _refreshVideo() async {
-    if (mounted) {
-      setState(() {
-        isInitializing = true;
-        hasError = false;
-      });
-    }
+  bool isYouTubeLink(String? url) {
+    if (url == null || url.isEmpty) return false;
+    final RegExp youtubeRegex = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/',
+      caseSensitive: false,
+    );
+    return youtubeRegex.hasMatch(url);
+  }
 
+  Future<String?> getMp4UrlFromYouTube(String youtubeUrl) async {
+    var yt = YoutubeExplode();
     try {
-      await videoManager?.refreshUrl(url: url);
-      playerController = await videoManager?.controller;
-      await ensureVideoInitialized();
-    } catch (e) {
-      debugPrint('Error refreshing video: $e');
-      if (mounted) {
-        setState(() {
-          hasError = true;
-        });
-      }
-    }
+      debugPrint('[VIDEO] Processing YouTube URL: $youtubeUrl');
 
-    if (mounted) {
-      setState(() {
-        isInitializing = false;
-      });
+      var videoId = VideoId.parseVideoId(youtubeUrl);
+      if (videoId == null) {
+        debugPrint('[VIDEO] Invalid YouTube URL: $youtubeUrl');
+        return null;
+      }
+
+      var streamManifest = await yt.videos.streamsClient.getManifest(videoId);
+
+      // First priority: Try muxed streams (contain both video and audio)
+      var muxedStreams = streamManifest.muxed;
+      if (muxedStreams.isNotEmpty) {
+        // Get the lowest quality muxed stream for faster loading
+        var bestMuxedStream = muxedStreams
+            .where((stream) => stream.container == StreamContainer.mp4)
+            .toList();
+
+        if (bestMuxedStream.isNotEmpty) {
+          // Sort by quality and get the lowest quality for faster loading
+          bestMuxedStream
+              .sort((a, b) => a.size.totalBytes.compareTo(b.size.totalBytes));
+          var selectedStream = bestMuxedStream.first;
+          debugPrint(
+              '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
+          return selectedStream.url.toString();
+        }
+      }
+
+      debugPrint(
+          '[VIDEO] No muxed MP4 streams found, trying video-only streams');
+
+      // Second priority: Try video-only streams (no audio)
+      var videoOnlyStreams = streamManifest.videoOnly;
+      if (videoOnlyStreams.isNotEmpty) {
+        var mp4VideoStreams = videoOnlyStreams
+            .where((stream) => stream.container == StreamContainer.mp4)
+            .toList();
+
+        if (mp4VideoStreams.isNotEmpty) {
+          // Sort by quality and get the lowest quality for faster loading
+          mp4VideoStreams
+              .sort((a, b) => a.size.totalBytes.compareTo(b.size.totalBytes));
+          var selectedStream = mp4VideoStreams.first;
+          debugPrint(
+              '[VIDEO] Selected video-only MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
+          return selectedStream.url.toString();
+        }
+      }
+
+      debugPrint('[VIDEO] No suitable video streams found');
+      return null;
+    } catch (e) {
+      debugPrint('[VIDEO] Error extracting MP4 URL: $e');
+      return null;
+    } finally {
+      yt.close();
     }
   }
 
+  Future<bool> _validateVideoUrl(String url) async {
+    try {
+      debugPrint('[VIDEO] Validating URL: $url');
+      final response =
+          await http.head(Uri.parse(url)).timeout(Duration(seconds: 8));
+
+      debugPrint('[VIDEO] Response status: ${response.statusCode}');
+      debugPrint('[VIDEO] Content-Type: ${response.headers['content-type']}');
+
+      if (response.statusCode == 200) {
+        final contentType = response.headers['content-type']?.toLowerCase();
+
+        // Accept video content types, audio/mp4 (for some YouTube streams), and octet-stream
+        if (contentType?.contains('video') == true ||
+            contentType?.contains('audio/mp4') ==
+                true || // Accept audio/mp4 for YouTube
+            contentType?.contains('application/octet-stream') == true ||
+            url.toLowerCase().contains('.mp4') ||
+            url.toLowerCase().contains('.m3u8') ||
+            url.contains('googlevideo.com')) {
+          // Accept YouTube video URLs
+          return true;
+        }
+      }
+
+      debugPrint('[VIDEO] Invalid video URL or content type');
+      return false;
+    } catch (e) {
+      debugPrint('[VIDEO] Error validating video URL: $e');
+      return true; // Assume valid if validation fails
+    }
+  }
+
+  Future<void> _refreshVideo() async {
+    if (!mounted) return;
+
+    setState(() {
+      isInitializing = true;
+      hasError = false;
+      errorMessage = null;
+    });
+
+    await _initializeVideoWithRetry();
+  }
+
   Future<void> initializeVideo() async {
-    if (url == null || url!.isEmpty) {
-      debugPrint('No video URL provided');
+    await _initializeVideoWithRetry();
+  }
+
+  Future<void> _initializeVideoWithRetry() async {
+    if (!mounted) return;
+
+    String? finalUrl = url;
+
+    // Handle YouTube URLs - ALWAYS process them first
+    if (widget.isYouTubeLink || isYouTubeLink(widget.url)) {
+      try {
+        debugPrint('[VIDEO] Detected YouTube URL, converting...');
+        final mp4YoutubeUrl = await getMp4UrlFromYouTube(widget.url);
+        if (mp4YoutubeUrl != null) {
+          finalUrl = mp4YoutubeUrl;
+          debugPrint('[VIDEO] YouTube URL converted successfully');
+        } else {
+          throw Exception('Failed to extract playable URL from YouTube');
+        }
+      } catch (e) {
+        debugPrint('[VIDEO] YouTube processing failed: $e');
+        if (mounted) {
+          setState(() {
+            isInitializing = false;
+            hasError = true;
+            errorMessage = 'Failed to process YouTube link: $e';
+          });
+        }
+        return;
+      }
+    }
+
+    if (finalUrl == null || finalUrl.isEmpty) {
+      debugPrint('[VIDEO] No video URL provided');
       if (mounted) {
         setState(() {
           isInitializing = false;
           hasError = true;
+          errorMessage = 'No video URL provided';
         });
       }
       return;
     }
 
-    try {
-      debugPrint('Initializing video with URL: $url');
+    // Update the working URL
+    url = finalUrl;
 
-      videoManager = VideoManager(
-        callbackEventListener: (eventType, videoLength) {
-          if (widget.callbackEventListener != null) {
-            widget.callbackEventListener!(eventType, videoLength);
-          }
-        },
-        url: url,
-        placeHolder: Container(
-          color: Colors.black,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  R.drawable.ic_thumbnail1,
-                  fit: BoxFit.cover,
-                ),
-              ],
-            ),
-          ),
-        ),
-        onExitFullScreen: () {},
-        onPlay: () {
-          debugPrint('Video started playing');
-          widget.onPlay?.call();
-        },
-        callbackByPercentVideo: widget.callbackByPercentVideo,
-        percentCallbackDefault: widget.percentCallbackDefault,
-        onCompleted: () {
-          debugPrint('Video completed');
-          widget.onComplete();
-        },
-        videoTitle: widget.videoTitle,
-        videoArtist: widget.videoArtist,
-        videoThumbnail: widget.videoThumbnail,
-      );
-
-      widget.setVideoManager(videoManager!);
-
-      // Get the controller reference with timeout
-      await Future.any([
-        Future.delayed(Duration(seconds: 10)), // 10 second timeout
-        _getControllerWithRetry(),
-      ]);
-
-      // Ensure video is properly initialized
-      await ensureVideoInitialized();
-    } catch (e) {
-      debugPrint('Error initializing video: $e');
-      if (mounted) {
-        setState(() {
-          hasError = true;
-        });
-      }
-    } finally {
+    // Validate URL
+    final isValidUrl = await _validateVideoUrl(finalUrl);
+    if (!isValidUrl) {
       if (mounted) {
         setState(() {
           isInitializing = false;
+          hasError = true;
+          errorMessage = 'Invalid video URL or unsupported format';
         });
+      }
+      return;
+    }
+
+    // Attempt initialization with retry logic
+    for (int attempt = 0; attempt <= maxRetries; attempt++) {
+      if (!mounted) return;
+
+      try {
+        debugPrint(
+            '[VIDEO] Initialization attempt ${attempt + 1}/${maxRetries + 1} for URL: $finalUrl');
+
+        await _createVideoManager();
+
+        // Wait for controller with shorter timeout
+        playerController = await _getControllerWithTimeout(timeoutSeconds: 10);
+
+        if (playerController == null) {
+          throw Exception('Failed to get video controller');
+        }
+
+        // Check video readiness with shorter timeout
+        final isReady =
+            await _waitForVideoReady(maxAttempts: 30); // Reduced from 60 to 30
+
+        if (isReady) {
+          debugPrint(
+              '[VIDEO] Video successfully initialized on attempt ${attempt + 1}');
+          if (mounted) {
+            setState(() {
+              isInitializing = false;
+              hasError = false;
+            });
+          }
+          return;
+        } else {
+          throw Exception('Video metadata failed to load (duration = 0)');
+        }
+      } catch (e) {
+        debugPrint('[VIDEO] Attempt ${attempt + 1} failed: $e');
+
+        if (attempt < maxRetries) {
+          // Clean up failed attempt
+          _cleanup();
+          playerController = null;
+          videoManager = null;
+
+          // Shorter wait before retry
+          await Future.delayed(Duration(seconds: 1));
+          debugPrint('[VIDEO] Retrying in 1 second...');
+        } else {
+          // Final attempt failed
+          if (mounted) {
+            setState(() {
+              isInitializing = false;
+              hasError = true;
+              errorMessage =
+                  'Video failed to load after ${maxRetries + 1} attempts. This may be due to network issues or incompatible video format.';
+            });
+          }
+        }
       }
     }
   }
 
-  Future<void> _getControllerWithRetry() async {
+  Future<void> _createVideoManager() async {
+    videoManager = VideoManager(
+      url: url,
+      callbackEventListener: widget.callbackEventListener,
+      onPlay: widget.onPlay,
+      callbackByPercentVideo: widget.callbackByPercentVideo,
+      percentCallbackDefault: widget.percentCallbackDefault,
+      onCompleted: widget.onComplete,
+      placeHolder: Container(
+        color: Colors.black,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                R.drawable.ic_thumbnail1,
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
+        ),
+      ),
+      onExitFullScreen: () {},
+      videoTitle: widget.videoTitle,
+      videoArtist: widget.videoArtist,
+      videoThumbnail: widget.videoThumbnail,
+    );
+
+    widget.setVideoManager(videoManager!);
+  }
+
+  Future<BetterPlayerController?> _getControllerWithTimeout(
+      {int timeoutSeconds = 10}) async {
+    try {
+      return await Future.any([
+        Future.delayed(Duration(seconds: timeoutSeconds)).then((_) => null),
+        _getControllerWithRetry(),
+      ]);
+    } catch (e) {
+      debugPrint('[VIDEO] Error getting controller: $e');
+      return null;
+    }
+  }
+
+  Future<BetterPlayerController?> _getControllerWithRetry() async {
     int attempts = 0;
-    while (attempts < 30 && playerController == null) {
+    while (attempts < 20 && mounted) {
+      // Reduced from 30 to 20
       try {
-        playerController = await videoManager?.controller;
-        if (playerController != null) {
-          debugPrint('Controller obtained successfully');
-          break;
+        final controller = await videoManager?.controller;
+        if (controller != null) {
+          debugPrint('[VIDEO] Controller obtained successfully');
+          return controller;
         }
       } catch (e) {
-        debugPrint('Error getting controller (attempt ${attempts + 1}): $e');
+        debugPrint(
+            '[VIDEO] Error getting controller (attempt ${attempts + 1}): $e');
       }
       await Future.delayed(Duration(milliseconds: 500));
       attempts++;
     }
-
-    if (playerController == null) {
-      throw Exception('Failed to get video controller after 30 attempts');
-    }
+    return null;
   }
 
-  Future<void> ensureVideoInitialized() async {
-    if (playerController == null) {
-      debugPrint('No player controller available');
-      return;
-    }
+  Future<bool> _waitForVideoReady({int maxAttempts = 30}) async {
+    if (playerController == null) return false;
 
-    try {
-      // Wait for up to 5 seconds for the video to initialize properly
-      int attempts = 0;
-      bool isInitialized = false;
+    int attempts = 0;
 
-      while (attempts < 50 && !isInitialized) {
-        if (playerController!.videoPlayerController?.value.initialized ==
-            true) {
-          final duration =
-              playerController!.videoPlayerController!.value.duration;
-          if (duration != null && duration.inMilliseconds > 0) {
+    while (attempts < maxAttempts && mounted) {
+      try {
+        final videoPlayerController = playerController!.videoPlayerController;
+
+        if (videoPlayerController?.value.hasError == true) {
+          debugPrint(
+              '[VIDEO] Video player has error: ${videoPlayerController?.value.errorDescription}');
+          throw Exception(
+              'Video player error: ${videoPlayerController?.value.errorDescription}');
+        }
+
+        if (videoPlayerController?.value.initialized == true) {
+          final duration = videoPlayerController!.value.duration;
+          final size = videoPlayerController!.value.size;
+
+          // Check if we have valid duration and size
+          if (duration != null &&
+              duration.inMilliseconds > 0 &&
+              size != null &&
+              size.width > 0 &&
+              size.height > 0) {
             debugPrint(
-                'Video successfully initialized with duration: ${duration.inSeconds}s');
-            isInitialized = true;
-            break;
+                '[VIDEO] Video ready - Duration: ${duration.inSeconds}s, Size: ${size.width}x${size.height}');
+            return true;
           }
+
+          debugPrint(
+              '[VIDEO] Video initialized but not ready - Duration: ${duration?.inMilliseconds}ms, Size: ${size?.width}x${size?.height}');
         }
-        await Future.delayed(Duration(milliseconds: 100));
-        attempts++;
+      } catch (e) {
+        debugPrint('[VIDEO] Error checking video readiness: $e');
+        throw e;
       }
 
-      // If still not initialized properly, attempt to reload
-      if (!isInitialized) {
-        debugPrint('Video not properly initialized, attempting reload');
-        try {
-          await playerController!.retryDataSource();
-          // Wait a bit more after retry
-          await Future.delayed(Duration(milliseconds: 1000));
-        } catch (e) {
-          debugPrint('Error during retry: $e');
-          throw e;
-        }
-      }
-    } catch (e) {
-      debugPrint('Error ensuring video initialization: $e');
-      if (mounted) {
-        setState(() {
-          hasError = true;
-        });
-      }
+      await Future.delayed(Duration(milliseconds: 200)); // Increased interval
+      attempts++;
     }
+
+    debugPrint('[VIDEO] Video not ready after ${maxAttempts} attempts');
+    return false;
   }
 
   Widget _buildErrorWidget() {
@@ -280,23 +478,35 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
               size: 48,
             ),
             SizedBox(height: 16),
-            Text(
-              'Failed to load video',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                errorMessage ?? 'Failed to load video',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  hasError = false;
-                  isInitializing = true;
-                });
-                initializeVideo();
-              },
-              child: Text('Retry'),
+              onPressed: retryCount < maxRetries
+                  ? () {
+                      if (mounted) {
+                        retryCount++;
+                        setState(() {
+                          hasError = false;
+                          isInitializing = true;
+                          errorMessage = null;
+                        });
+                        initializeVideo();
+                      }
+                    }
+                  : null,
+              child: Text(retryCount < maxRetries
+                  ? 'Retry (${retryCount}/${maxRetries})'
+                  : 'Max retries reached'),
             ),
           ],
         ),
@@ -311,11 +521,32 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     }
 
     if (isInitializing || playerController == null) {
-      return Center(
-          child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: CircularProgressIndicator(),
-      ));
+      return Container(
+        height: 200,
+        color: Colors.black,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                color: widget.isYouTubeLink
+                    ? R.color.red
+                    : R.color.greenGradientBottom,
+              ),
+              SizedBox(height: 16),
+              Text(
+                widget.isYouTubeLink || isYouTubeLink(widget.url)
+                    ? 'Processing YouTube video...'
+                    : 'Loading video...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     return AspectRatio(
