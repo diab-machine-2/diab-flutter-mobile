@@ -1,9 +1,11 @@
 import 'package:better_player_plus/better_player_plus.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/models/video_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class VideoWidget extends StatefulWidget {
@@ -45,7 +47,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   bool hasError = false;
   String? errorMessage;
   int retryCount = 0;
-  static const int maxRetries = 2; // Reduced from 3 to 2
+  static const int maxRetries = 1;
 
   @override
   void initState() {
@@ -204,7 +206,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
                 true || // Accept audio/mp4 for YouTube
             contentType?.contains('application/octet-stream') == true ||
             url.toLowerCase().contains('.mp4') ||
-            url.toLowerCase().contains('.m3u8') ||
             url.contains('googlevideo.com')) {
           // Accept YouTube video URLs
           return true;
@@ -240,7 +241,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
     String? finalUrl = url;
 
-    // Handle YouTube URLs - ALWAYS process them first
+    // Handle YouTube URLs
     if (widget.isYouTubeLink || isYouTubeLink(widget.url)) {
       try {
         debugPrint('[VIDEO] Detected YouTube URL, converting...');
@@ -400,7 +401,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   Future<BetterPlayerController?> _getControllerWithRetry() async {
     int attempts = 0;
     while (attempts < 20 && mounted) {
-      // Reduced from 30 to 20
       try {
         final controller = await videoManager?.controller;
         if (controller != null) {
@@ -435,32 +435,27 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
         if (videoPlayerController?.value.initialized == true) {
           final duration = videoPlayerController!.value.duration;
-          final size = videoPlayerController!.value.size;
 
           // Check if we have valid duration and size
-          if (duration != null &&
-              duration.inMilliseconds > 0 &&
-              size != null &&
-              size.width > 0 &&
-              size.height > 0) {
+          if (duration != null && duration.inMilliseconds > 0) {
             debugPrint(
-                '[VIDEO] Video ready - Duration: ${duration.inSeconds}s, Size: ${size.width}x${size.height}');
+                '[VIDEO] Video ready - Duration: ${duration.inSeconds}s');
             return true;
           }
 
           debugPrint(
-              '[VIDEO] Video initialized but not ready - Duration: ${duration?.inMilliseconds}ms, Size: ${size?.width}x${size?.height}');
+              '[VIDEO] Video initialized but not ready - Duration: ${duration?.inMilliseconds}ms');
         }
       } catch (e) {
         debugPrint('[VIDEO] Error checking video readiness: $e');
         throw e;
       }
 
-      await Future.delayed(Duration(milliseconds: 200)); // Increased interval
+      await Future.delayed(Duration(milliseconds: 200));
       attempts++;
     }
 
-    debugPrint('[VIDEO] Video not ready after ${maxAttempts} attempts');
+    debugPrint('[VIDEO] Video not ready after $maxAttempts attempts');
     return false;
   }
 
@@ -489,25 +484,24 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: retryCount < maxRetries
-                  ? () {
-                      if (mounted) {
-                        retryCount++;
-                        setState(() {
-                          hasError = false;
-                          isInitializing = true;
-                          errorMessage = null;
-                        });
-                        initializeVideo();
+            if (retryCount >= maxRetries) GapH(16),
+            if (retryCount >= maxRetries)
+              ElevatedButton(
+                onPressed: retryCount < maxRetries
+                    ? () {
+                        if (mounted) {
+                          retryCount++;
+                          setState(() {
+                            hasError = false;
+                            isInitializing = true;
+                            errorMessage = null;
+                          });
+                          initializeVideo();
+                        }
                       }
-                    }
-                  : null,
-              child: Text(retryCount < maxRetries
-                  ? 'Retry (${retryCount}/${maxRetries})'
-                  : 'Max retries reached'),
-            ),
+                    : null,
+                child: Text(R.string.retry.tr()),
+              ),
           ],
         ),
       ),
@@ -523,7 +517,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     if (isInitializing || playerController == null) {
       return Container(
         height: 200,
-        color: Colors.black,
+        color: R.color.backgroundColorNew,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -532,16 +526,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
                 color: widget.isYouTubeLink
                     ? R.color.red
                     : R.color.greenGradientBottom,
-              ),
-              SizedBox(height: 16),
-              Text(
-                widget.isYouTubeLink || isYouTubeLink(widget.url)
-                    ? 'Processing YouTube video...'
-                    : 'Loading video...',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                ),
               ),
             ],
           ),

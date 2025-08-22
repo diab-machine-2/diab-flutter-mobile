@@ -1380,4 +1380,5 @@ class Strings {
   String get healthy_lifestyle_roadmap => 'healthy_lifestyle_roadmap';
   String get use_all_advanced_features => 'use_all_advanced_features';
   String get advanced_features => 'advanced_features';
+  String get retry => 'retry';
 }

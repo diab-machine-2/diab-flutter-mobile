@@ -198,18 +198,11 @@ class VideoManager {
         'Accept-Encoding': 'identity;q=1, *;q=0',
         'Accept-Language': 'en-US,en;q=0.9',
         'Connection': 'keep-alive',
+        'Range': 'bytes=0-',
       };
 
-      // Add range header only for non-HLS content
-      if (url != null && !url.contains('.m3u8')) {
-        headers['Range'] = 'bytes=0-';
-      }
-
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
-        // Use HLS for .m3u8 URLs, otherwise use network
-        url?.contains('.m3u8') == true
-            ? BetterPlayerDataSourceType.network
-            : BetterPlayerDataSourceType.network,
+        BetterPlayerDataSourceType.network,
         url!,
         notificationConfiguration: BetterPlayerNotificationConfiguration(
           showNotification: true,
@@ -218,16 +211,13 @@ class VideoManager {
           imageUrl: videoThumbnail,
         ),
         headers: headers,
-        // Configure caching differently for different content types
-        cacheConfiguration: url.contains('.m3u8')
-            ? null // Don't cache HLS streams
-            : BetterPlayerCacheConfiguration(
-                useCache: true,
-                preCacheSize: 5 * 1024 * 1024, // Reduced to 5MB for iOS
-                maxCacheSize: 50 * 1024 * 1024, // Reduced to 50MB for iOS
-                maxCacheFileSize:
-                    25 * 1024 * 1024, // Reduced to 25MB per file for iOS
-              ),
+        cacheConfiguration: BetterPlayerCacheConfiguration(
+          useCache: true,
+          preCacheSize: 5 * 1024 * 1024, // Reduced to 5MB for iOS
+          maxCacheSize: 50 * 1024 * 1024, // Reduced to 50MB for iOS
+          maxCacheFileSize:
+              25 * 1024 * 1024, // Reduced to 25MB per file for iOS
+        ),
       );
 
       if (_isDisposed) return;
