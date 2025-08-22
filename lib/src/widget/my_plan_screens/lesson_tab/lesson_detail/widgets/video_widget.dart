@@ -136,52 +136,63 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         return null;
       }
 
-      var streamManifest = await yt.videos.streamsClient.getManifest(videoId);
+      var streamManifest =
+          await yt.videos.streamsClient.getManifest(videoId, ytClients: [
+        YoutubeApiClient.android,
+        YoutubeApiClient.ios,
+      ]);
 
-      // First priority: Try muxed streams (contain both video and audio)
-      var muxedStreams = streamManifest.muxed;
+      // Priority 1: Muxed MP4 streams (contain both video and audio)
+      var muxedStreams = streamManifest.streams
+          .whereType<MuxedStreamInfo>()
+          .where((stream) =>
+              stream.container == StreamContainer.mp4 &&
+              stream.videoQuality != VideoQuality.low144 &&
+              stream.videoQuality != VideoQuality.low240)
+          .toList();
+
       if (muxedStreams.isNotEmpty) {
-        // Get the lowest quality muxed stream for faster loading
-        var bestMuxedStream = muxedStreams
-            .where((stream) => stream.container == StreamContainer.mp4)
-            .toList();
-
-        if (bestMuxedStream.isNotEmpty) {
-          // Sort by quality and get the lowest quality for faster loading
-          bestMuxedStream
-              .sort((a, b) => a.size.totalBytes.compareTo(b.size.totalBytes));
-          var selectedStream = bestMuxedStream.first;
-          debugPrint(
-              '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
-          return selectedStream.url.toString();
-        }
+        // Sort by quality (lowest acceptable quality first for faster loading)
+        muxedStreams.sort(
+            (a, b) => a.videoQuality.index.compareTo(b.videoQuality.index));
+        var selectedStream = muxedStreams.first;
+        debugPrint(
+            '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
+        return selectedStream.url.toString();
       }
 
+      // // Priority 2: HLS streams (contain both video and audio, well supported by BetterPlayer)
+      // var hlsStreams = streamManifest.streams
+      //     .whereType<HlsVideoStreamInfo>()
+      //     .where((stream) =>
+      //         stream.videoQuality != VideoQuality.low144 &&
+      //         stream.videoQuality != VideoQuality.low240)
+      //     .toList();
+
+      // if (hlsStreams.isNotEmpty) {
+      //   // Sort by quality (lowest acceptable quality first for faster loading)
+      //   hlsStreams.sort(
+      //       (a, b) => a.videoQuality.index.compareTo(b.videoQuality.index));
+      //   var selectedStream = hlsStreams.first;
+      //   debugPrint(
+      //       '[VIDEO] Selected HLS stream: ${selectedStream.qualityLabel}');
+      //   return selectedStream.url.toString();
+      // }
+
+      debugPrint('[VIDEO] No suitable streams found with video and audio');
+      debugPrint('[VIDEO] Available stream types:');
       debugPrint(
-          '[VIDEO] No muxed MP4 streams found, trying video-only streams');
+          '[VIDEO] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
+      debugPrint(
+          '[VIDEO] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
+      debugPrint(
+          '[VIDEO] - Video-only streams: ${streamManifest.videoOnly.length}');
+      debugPrint(
+          '[VIDEO] - Audio-only streams: ${streamManifest.audioOnly.length}');
 
-      // Second priority: Try video-only streams (no audio)
-      var videoOnlyStreams = streamManifest.videoOnly;
-      if (videoOnlyStreams.isNotEmpty) {
-        var mp4VideoStreams = videoOnlyStreams
-            .where((stream) => stream.container == StreamContainer.mp4)
-            .toList();
-
-        if (mp4VideoStreams.isNotEmpty) {
-          // Sort by quality and get the lowest quality for faster loading
-          mp4VideoStreams
-              .sort((a, b) => a.size.totalBytes.compareTo(b.size.totalBytes));
-          var selectedStream = mp4VideoStreams.first;
-          debugPrint(
-              '[VIDEO] Selected video-only MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
-          return selectedStream.url.toString();
-        }
-      }
-
-      debugPrint('[VIDEO] No suitable video streams found');
       return null;
     } catch (e) {
-      debugPrint('[VIDEO] Error extracting MP4 URL: $e');
+      debugPrint('[VIDEO] Error extracting stream URL: $e');
       return null;
     } finally {
       yt.close();
@@ -479,7 +490,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
                 errorMessage ?? 'Failed to load video',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -523,9 +534,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularProgressIndicator(
-                color: widget.isYouTubeLink
-                    ? R.color.red
-                    : R.color.greenGradientBottom,
+                color: R.color.greenGradientBottom,
               ),
             ],
           ),
