@@ -142,7 +142,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         YoutubeApiClient.ios,
       ]);
 
-      // Priority 1: Muxed MP4 streams (contain both video and audio)
       var muxedStreams = streamManifest.streams
           .whereType<MuxedStreamInfo>()
           .where((stream) =>
@@ -152,14 +151,30 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
           .toList();
 
       if (muxedStreams.isNotEmpty) {
-        // Sort by quality (lowest acceptable quality first for faster loading)
-        muxedStreams.sort(
-            (a, b) => a.videoQuality.index.compareTo(b.videoQuality.index));
         var selectedStream = muxedStreams.first;
         debugPrint(
             '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
         return selectedStream.url.toString();
       }
+
+      // // Priority 1: Muxed MP4 streams (contain both video and audio)
+      // var muxedStreams = streamManifest.streams
+      //     .whereType<MuxedStreamInfo>()
+      //     .where((stream) =>
+      //         stream.container == StreamContainer.mp4 &&
+      //         stream.videoQuality != VideoQuality.low144 &&
+      //         stream.videoQuality != VideoQuality.low240)
+      //     .toList();
+
+      // if (muxedStreams.isNotEmpty) {
+      //   // Sort by quality (lowest acceptable quality first for faster loading)
+      //   muxedStreams.sort(
+      //       (a, b) => a.videoQuality.index.compareTo(b.videoQuality.index));
+      //   var selectedStream = muxedStreams.first;
+      //   debugPrint(
+      //       '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
+      //   return selectedStream.url.toString();
+      // }
 
       // // Priority 2: HLS streams (contain both video and audio, well supported by BetterPlayer)
       // var hlsStreams = streamManifest.streams
@@ -291,18 +306,18 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     // Update the working URL
     url = finalUrl;
 
-    // Validate URL
-    final isValidUrl = await _validateVideoUrl(finalUrl);
-    if (!isValidUrl) {
-      if (mounted) {
-        setState(() {
-          isInitializing = false;
-          hasError = true;
-          errorMessage = 'Invalid video URL or unsupported format';
-        });
-      }
-      return;
-    }
+    // // Validate URL
+    // final isValidUrl = await _validateVideoUrl(finalUrl);
+    // if (!isValidUrl) {
+    //   if (mounted) {
+    //     setState(() {
+    //       isInitializing = false;
+    //       hasError = true;
+    //       errorMessage = 'Invalid video URL or unsupported format';
+    //     });
+    //   }
+    //   return;
+    // }
 
     // Attempt initialization with retry logic
     for (int attempt = 0; attempt <= maxRetries; attempt++) {
