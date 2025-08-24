@@ -14,7 +14,7 @@ class DosageInputBottomSheet extends StatefulWidget {
 }
 
 class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
-  DraftPrescription _draftPrescription = DraftPrescription();
+  Medication _draftPrescription = Medication();
   String _selectedTimeOfUse = R.string.truoc_an.tr();
   String _selectedFrequency = R.string.everyday.tr();
 

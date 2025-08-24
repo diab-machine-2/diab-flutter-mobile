@@ -35,7 +35,7 @@ enum DayTime {
   night,
 }
 
-class DraftPrescription {
+class Medication {
   String? id;
   String name;
   MedicineUnit medicineUnit;
@@ -44,7 +44,7 @@ class DraftPrescription {
   String description;
   List<String> photos; // Stores file paths or URLs
 
-  DraftPrescription({
+  Medication({
     this.name = "",
     this.id,
     this.medicineUnit = MedicineUnit.pill,

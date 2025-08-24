@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:medical/src/modal/medicine/medicine_schedule_model.dart';
+import 'package:medical/src/modal/medicine/prescription_model.dart';
 
 import '../../../res/R.dart';
 import '../../utils/navigator_name.dart';
@@ -15,6 +17,48 @@ class PrescriptionListPage extends StatefulWidget {
 }
 
 class _PrescriptionListPageState extends State<PrescriptionListPage> with SingleTickerProviderStateMixin {
+  // Fake data
+  List<PrescriptionBySessionModel> sessionList = [
+    PrescriptionBySessionModel(
+      id: "T0001",
+      name: "Bệnh đái tháo đường không phụ thuộc insuline",
+      session: MedicineSession.MORNING,
+      time: DateTime(2025, 08, 21, 7, 30),
+      medications: [
+        MedicationInSession(
+          medicineName: "Metformin (Metformin Stella 1000mg) 1000 mg",
+          dosage: "1 viên - Sau ăn",
+          isTaken: true,
+        ),
+        MedicationInSession(
+          medicineName: "Fluvastatin (Autifan 40) 40mg",
+          dosage: "1 viên - Sau ăn",
+          isTaken: false,
+        ),
+      ],
+      note: "Uống lúc 20h",
+    ),
+    PrescriptionBySessionModel(
+      id: "T0001",
+      name: "Bệnh đái tháo đường không phụ thuộc insuline",
+      session: MedicineSession.EVENING,
+      time: DateTime(2025, 08, 21, 19, 30),
+      medications: [
+        MedicationInSession(
+          medicineName: "Metformin (Metformin Stella 1000mg) 1000 mg",
+          dosage: "1 viên - Sau ăn",
+          isTaken: true,
+        ),
+        MedicationInSession(
+          medicineName: "Fluvastatin (Autifan 40) 40mg",
+          dosage: "1 viên - Sau ăn",
+          isTaken: false,
+        ),
+      ],
+      note: "Uống lúc 20h",
+    )
+  ];
+  List<bool> _sessionExpandedList = [];
   late TabController _tabController;
   int bottomIndex = 1;
 
@@ -22,6 +66,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _sessionExpandedList = sessionList.map((e) => false).toList();
   }
 
   @override
@@ -45,15 +90,29 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           child: Align(
             alignment: Alignment.topLeft,
             child: Text(
-              R.string.prescription.tr(),
-              style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
+              bottomIndex == 0
+                  ? R.string.schedule_use_medicine.tr()
+                  : R.string.prescription.tr(),
+              key: ValueKey(bottomIndex), // important for AnimatedSwitcher
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ),
         actions: [
           Center(
             child: InkWell(
-              onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
+              borderRadius: BorderRadius.circular(16),
+              // Ripple Color
+              splashColor: Colors.white.withOpacity(0.3),
+              onTap: () async {
+                // Time to show ripple
+                await Future.delayed(const Duration(milliseconds: 250));
+                Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial);
+              },
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Text(
@@ -64,7 +123,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
             ),
           ),
         ],
-        bottom: PreferredSize(
+        bottom: bottomIndex == 1 ? PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
             color: Colors.white,
@@ -79,7 +138,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
               ],
             ),
           ),
-        ),
+        ) : null,
         backgroundColor: R.color.transparent,
         //No more green
         elevation: 0.0,
@@ -94,7 +153,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           ),
         ),
       ),
-      body: _buildBody(),
+      body: bottomIndex == 0 ? _buildBodyForScheduleTab() : _buildBodyForPrescriptionTab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.transparent,
@@ -113,48 +172,62 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  SvgPicture.asset(
-                    width: 24,
-                    height: 24,
-                    R.icons.ic_schedule_use_medicine,
-                    color: bottomIndex == 0 ? Color(0xFF008479) : Color(0xFFBFC6C6),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    R.string.schedule_use_medicine.tr(),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    bottomIndex = 0;
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    SvgPicture.asset(
+                      width: 24,
+                      height: 24,
+                      R.icons.ic_schedule_use_medicine,
                       color: bottomIndex == 0 ? Color(0xFF008479) : Color(0xFFBFC6C6),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      R.string.schedule_use_medicine.tr(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: bottomIndex == 0 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  SvgPicture.asset(
-                    width: 24,
-                    height: 24,
-                    R.icons.ic_prescription,
-                    color: bottomIndex == 1 ? Color(0xFF008479) : Color(0xFFBFC6C6),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    R.string.prescription.tr(),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    bottomIndex = 1;
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    SvgPicture.asset(
+                      width: 24,
+                      height: 24,
+                      R.icons.ic_prescription,
                       color: bottomIndex == 1 ? Color(0xFF008479) : Color(0xFFBFC6C6),
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(height: 4),
+                    Text(
+                      R.string.prescription.tr(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: bottomIndex == 1 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
@@ -162,7 +235,286 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     );
   }
 
-  Widget _buildBody() {
+  /*----------------------------LỊCH UỐNG THUỐC PAGE----------------------------*/
+  Widget _buildBodyForScheduleTab() {
+    return ListView.builder(
+      padding: EdgeInsets.all(16),
+      itemCount: sessionList.length,
+      itemBuilder: (context, sessionIndex) {
+        final session = sessionList[sessionIndex];
+        return _buildScheduleCard(
+          session,
+          EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          sessionIndex,
+          // (medicationIndex, isTaken) {
+          //
+          //   final medication = sessionList[sessionIndex].medications[medicationIndex];
+          //
+          //   // 2. Create a new, updated medication object
+          //   final updatedMedication = MedicationInSession(
+          //     medicineName: medication.medicineName,
+          //     dosage: medication.dosage,
+          //     isTaken: !medication.isTaken, // Toggle the value
+          //   );
+          //
+          //   // 3. Create a new list of medications for the session
+          //   final updatedMedicationsList =
+          //   List<MedicationInSession>.from(sessionList[sessionIndex].medications);
+          //   updatedMedicationsList[medicationIndex] = updatedMedication;
+          //
+          //   // 4. Create a new updated session object
+          //   final updatedSession = PrescriptionBySessionModel(
+          //     id: sessionList[sessionIndex].id,
+          //     name: sessionList[sessionIndex].name,
+          //     session: sessionList[sessionIndex].session,
+          //     time: sessionList[sessionIndex].time,
+          //     medications: updatedMedicationsList,
+          //     note: sessionList[sessionIndex].note,
+          //   );
+          //
+          //   // 5. Create a new list of sessions by replacing the updated session
+          //   final newSessionList = List<PrescriptionBySessionModel>.from(sessionList);
+          //   newSessionList[sessionIndex] = updatedSession;
+          //
+          //   setState(() {
+          //     sessionList = newSessionList;
+          //   });
+          // }
+        );
+      }
+    );
+  }
+
+  Widget _buildScheduleCard(
+      PrescriptionBySessionModel prescription,
+      EdgeInsetsGeometry margin,
+      int index,
+      // Function(int, bool) onTap,
+  ) {
+    return Card(
+      margin: margin,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 0,
+      child: ExpansionTile(
+        initiallyExpanded: _sessionExpandedList[index],
+        onExpansionChanged: (bool expanded) {
+          setState(() {
+            _sessionExpandedList[index] = expanded;
+          });
+        },
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          prescription.session.toString(),
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            height: 1.32,
+            letterSpacing: 0.2,
+            color: Colors.white,
+          ),
+        ),
+        trailing: AnimatedRotation(
+          turns: _sessionExpandedList[index] ? 0.5 : 0.0, // 0.5 turn = 180°
+          duration: const Duration(milliseconds: 200),
+          child: SvgPicture.asset(
+            R.icons.ic_chevron_up,
+            width: 12,
+            height: 6,
+          ),
+        ),
+        backgroundColor: const Color(0xFF0FB4A5),
+        collapsedBackgroundColor: const Color(0xFF0FB4A5),
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: Column(
+              children: [
+                // Disease Name
+                SizedBox(
+                  width: double.infinity,
+                  height: 38,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 253/375,
+                        height: 22,
+                        child: Text(
+                          prescription.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            height: 1.46,
+                            color: Color(0xFF95682E),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        "${prescription.time.hour}:${prescription.time.minute}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          height: 1.46,
+                          color: Color(0xFF95682E),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                ..._buildListOfMedicine(prescription.medications, /*onTap*/),
+                // Note
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF4F7F7),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Ghi chú: ",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            height: 1.5,
+                            color: Color(0xFF5E6566),
+                          ),
+                        ),
+                        TextSpan(
+                          text: "Uống lúc 20h",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 13,
+                            height: 1.5,
+                            letterSpacing: 0.4,
+                            color: Color(0xFF5E6566),
+                          ),
+                        ),
+                      ]
+                    )
+                  )
+                ),
+              ],
+            ),
+          )
+        ]
+      ),
+    );
+  }
+
+  List<Widget> _buildListOfMedicine(
+    List<MedicationInSession> medicationList,
+    // Function(int, bool) onTap,
+  ) {
+    List<Widget> widgets = [];
+    for (var i = 0; i < medicationList.length; i++) {
+      final medication = medicationList[i];
+      widgets.add(
+        Padding(
+          padding: i == 0 ? EdgeInsets.fromLTRB(0, 12, 0, 16) : EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+          child: _buildMedicineItem(
+            medication.medicineName,
+            medication.dosage,
+            medication.isTaken
+            // onTap(i, !medication.isTaken)
+          ),
+        )
+      );
+      if (i != medicationList.length - 1) {
+        widgets.add(Divider(color: Color(0xFFDADEDF)));
+      }
+    }
+    return widgets;
+  }
+
+  Widget _buildMedicineItem(
+      String title,
+      String subtitle,
+      bool isTaken,
+      // VoidCallback onTap,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width - 168,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  height: 1.46,
+                  color: Color(0xFF111515),
+                )
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 13,
+                  height: 1.5,
+                  letterSpacing: 0.4,
+                  color: Color(0xFF5E6566),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(width: 8),
+        SizedBox(
+          width: 80,
+          child: GestureDetector(
+            // onTap: onTap,
+            onTap: () {},
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: Icon(
+                    isTaken ? Icons.check_circle_outline : Icons.radio_button_unchecked,
+                    color: isTaken ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                  ),
+                ),
+                Text(
+                  "Chưa dùng",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 13,
+                    height: 1.5,
+                    letterSpacing: 0.4,
+                    color: isTaken ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                  ),
+                )
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  /*----------------------------ĐƠN THUỐC PAGE----------------------------*/
+  Widget _buildBodyForPrescriptionTab() {
     return TabBarView(
       controller: _tabController,
       children: [
