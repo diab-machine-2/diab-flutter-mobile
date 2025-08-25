@@ -860,7 +860,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                             child: Text(
                               R.string.tim_hieu_them.tr(),
                               style: TextStyle(
-                                color: R.color.white,
+                                color: R.color.white, 
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
                               ),
