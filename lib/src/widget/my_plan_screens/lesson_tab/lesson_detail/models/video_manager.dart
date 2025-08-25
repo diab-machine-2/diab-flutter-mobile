@@ -189,18 +189,6 @@ class VideoManager {
       BetterPlayerController newController =
           BetterPlayerController(configuration);
 
-      // // Create data source with iOS-optimized headers
-      // Map<String, String> headers = {
-      //   'User-Agent':
-      //       'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-      //   'Accept':
-      //       'video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5',
-      //   'Accept-Encoding': 'identity;q=1, *;q=0',
-      //   'Accept-Language': 'en-US,en;q=0.9',
-      //   'Connection': 'keep-alive',
-      //   'Range': 'bytes=0-',
-      // };
-
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         url!,
@@ -210,7 +198,6 @@ class VideoManager {
           author: videoArtist ?? 'DiaB',
           imageUrl: videoThumbnail,
         ),
-        // headers: headers,
         bufferingConfiguration: const BetterPlayerBufferingConfiguration(
           minBufferMs: 2000,
           maxBufferMs: 10000,
@@ -218,7 +205,8 @@ class VideoManager {
           bufferForPlaybackAfterRebufferMs: 2000,
         ),
         videoFormat: BetterPlayerVideoFormat.other,
-        // CacheConfiguration make ios have exception Cannot Play
+
+        //// CacheConfiguration make ios have exception Cannot Play
         // cacheConfiguration: BetterPlayerCacheConfiguration(
         //   useCache: true,
         //   preCacheSize: 5 * 1024 * 1024, // Reduced to 5MB for iOS
@@ -244,21 +232,6 @@ class VideoManager {
       if (videoPlayerController != null) {
         videoPlayerController
             .addListener(() => _handleVideoPlayerEvents(newController));
-      }
-
-      // Wait longer for metadata to load, especially for larger files
-      await Future.delayed(Duration(milliseconds: 2000));
-
-      // Force a small seek to trigger metadata loading
-      try {
-        if (!_isDisposed &&
-            newController.videoPlayerController?.value.initialized == true) {
-          await newController.seekTo(Duration(milliseconds: 1));
-          await Future.delayed(Duration(milliseconds: 500));
-          await newController.seekTo(Duration.zero);
-        }
-      } catch (e) {
-        print('[VIDEO] Error during seek workaround: $e');
       }
 
       if (!_isDisposed) {
@@ -371,8 +344,8 @@ class VideoManager {
       final value = videoPlayerController!.value;
 
       // Handle iOS-specific completion logic
-      if (Platform.isIOS && value.position != null && value.duration != null) {
-        final position = value.position!.inMilliseconds;
+      if (Platform.isIOS && value.duration != null) {
+        final position = value.position.inMilliseconds;
         final duration = value.duration!.inMilliseconds;
 
         if (position >= duration && value.isPlaying) {
@@ -388,10 +361,9 @@ class VideoManager {
 
       // Check if video is properly initialized
       if (value.initialized &&
-          value.duration != null &&
-          value.position != null) {
+          value.duration != null) {
         final duration = value.duration!;
-        final position = value.position!;
+        final position = value.position;
 
         // Store video duration if not already set
         if (videoDuration == null && duration.inMilliseconds > 0) {
@@ -485,7 +457,7 @@ class VideoManager {
   }
 
   void disposeAllVideo() {
-    if (_isDisposed) return;
+    // if (_isDisposed) return;
     _isDisposed = true;
     try {
       _placeholderStreamController.close();

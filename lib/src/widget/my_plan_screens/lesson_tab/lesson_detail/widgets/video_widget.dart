@@ -143,13 +143,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       ]);
 
       // Priority 1: Muxed MP4 streams (contain both video and audio)
-      var muxedStreams = streamManifest.muxed
-          // .whereType<MuxedStreamInfo>()
-          // .where((stream) =>
-          //     stream.container == StreamContainer.mp4 &&
-          //     stream.videoQuality != VideoQuality.low144 &&
-          //     stream.videoQuality != VideoQuality.low240)
-          .toList();
+      var muxedStreams = streamManifest.muxed.toList();
 
       if (muxedStreams.isNotEmpty) {
         var selectedStream = muxedStreams.first;
@@ -173,6 +167,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         return videoStream.url.toString();
       }
 
+      // HLS stream handling is error-prone on iOS, so disabled for now
       // // Priority 2: HLS streams (contain both video and audio, well supported by BetterPlayer)
       // var hlsStreams = streamManifest.streams
       //     .whereType<HlsVideoStreamInfo>()
@@ -195,38 +190,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       return null;
     } finally {
       yt.close();
-    }
-  }
-
-  Future<bool> _validateVideoUrl(String url) async {
-    try {
-      debugPrint('[VIDEO] Validating URL: $url');
-      final response =
-          await http.head(Uri.parse(url)).timeout(Duration(seconds: 8));
-
-      debugPrint('[VIDEO] Response status: ${response.statusCode}');
-      debugPrint('[VIDEO] Content-Type: ${response.headers['content-type']}');
-
-      if (response.statusCode == 200) {
-        final contentType = response.headers['content-type']?.toLowerCase();
-
-        // Accept video content types, audio/mp4 (for some YouTube streams), and octet-stream
-        if (contentType?.contains('video') == true ||
-            contentType?.contains('audio/mp4') ==
-                true || // Accept audio/mp4 for YouTube
-            contentType?.contains('application/octet-stream') == true ||
-            url.toLowerCase().contains('.mp4') ||
-            url.contains('googlevideo.com')) {
-          // Accept YouTube video URLs
-          return true;
-        }
-      }
-
-      debugPrint('[VIDEO] Invalid video URL or content type');
-      return false;
-    } catch (e) {
-      debugPrint('[VIDEO] Error validating video URL: $e');
-      return true; // Assume valid if validation fails
     }
   }
 
@@ -314,7 +277,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         await _createVideoManager();
 
         // Wait for controller with shorter timeout
-        playerController = await _getControllerWithTimeout(timeoutSeconds: 10);
+        playerController = await _getControllerWithRetry();
 
         if (playerController == null) {
           throw Exception('Failed to get video controller');
@@ -392,19 +355,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     );
 
     widget.setVideoManager(videoManager!);
-  }
-
-  Future<BetterPlayerController?> _getControllerWithTimeout(
-      {int timeoutSeconds = 10}) async {
-    try {
-      return await Future.any([
-        Future.delayed(Duration(seconds: timeoutSeconds)).then((_) => null),
-        _getControllerWithRetry(),
-      ]);
-    } catch (e) {
-      debugPrint('[VIDEO] Error getting controller: $e');
-      return null;
-    }
   }
 
   Future<BetterPlayerController?> _getControllerWithRetry() async {
