@@ -321,8 +321,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         }
 
         // Check video readiness with shorter timeout
-        final isReady =
-            await _waitForVideoReady(maxAttempts: 30); // Reduced from 60 to 30
+        final isReady = await _waitForVideoReady(maxAttempts: 30);
 
         if (isReady) {
           debugPrint(
@@ -435,7 +434,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     while (attempts < maxAttempts && mounted) {
       try {
         final videoPlayerController = playerController!.videoPlayerController;
-
+        debugPrint(
+            '[VIDEO] Video player controller: ${videoPlayerController?.value}');
         if (videoPlayerController?.value.hasError == true) {
           debugPrint(
               '[VIDEO] Video player has error: ${videoPlayerController?.value.errorDescription}');
@@ -455,6 +455,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
           debugPrint(
               '[VIDEO] Video initialized but not ready - Duration: ${duration?.inMilliseconds}ms');
+
+          await playerController?.retryDataSource();
         }
       } catch (e) {
         debugPrint('[VIDEO] Error checking video readiness: $e');

@@ -189,17 +189,17 @@ class VideoManager {
       BetterPlayerController newController =
           BetterPlayerController(configuration);
 
-      // Create data source with iOS-optimized headers
-      Map<String, String> headers = {
-        'User-Agent':
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
-        'Accept':
-            'video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5',
-        'Accept-Encoding': 'identity;q=1, *;q=0',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Connection': 'keep-alive',
-        'Range': 'bytes=0-',
-      };
+      // // Create data source with iOS-optimized headers
+      // Map<String, String> headers = {
+      //   'User-Agent':
+      //       'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+      //   'Accept':
+      //       'video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5',
+      //   'Accept-Encoding': 'identity;q=1, *;q=0',
+      //   'Accept-Language': 'en-US,en;q=0.9',
+      //   'Connection': 'keep-alive',
+      //   'Range': 'bytes=0-',
+      // };
 
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
@@ -210,14 +210,22 @@ class VideoManager {
           author: videoArtist ?? 'DiaB',
           imageUrl: videoThumbnail,
         ),
-        headers: headers,
-        cacheConfiguration: BetterPlayerCacheConfiguration(
-          useCache: true,
-          preCacheSize: 5 * 1024 * 1024, // Reduced to 5MB for iOS
-          maxCacheSize: 50 * 1024 * 1024, // Reduced to 50MB for iOS
-          maxCacheFileSize:
-              25 * 1024 * 1024, // Reduced to 25MB per file for iOS
+        // headers: headers,
+        bufferingConfiguration: const BetterPlayerBufferingConfiguration(
+          minBufferMs: 2000,
+          maxBufferMs: 10000,
+          bufferForPlaybackMs: 1000,
+          bufferForPlaybackAfterRebufferMs: 2000,
         ),
+        videoFormat: BetterPlayerVideoFormat.other,
+        // CacheConfiguration make ios have exception Cannot Play
+        // cacheConfiguration: BetterPlayerCacheConfiguration(
+        //   useCache: true,
+        //   preCacheSize: 5 * 1024 * 1024, // Reduced to 5MB for iOS
+        //   maxCacheSize: 50 * 1024 * 1024, // Reduced to 50MB for iOS
+        //   maxCacheFileSize:
+        //       25 * 1024 * 1024, // Reduced to 25MB per file for iOS
+        // ),
       );
 
       if (_isDisposed) return;
