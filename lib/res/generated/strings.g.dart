@@ -1448,4 +1448,6 @@ class Strings {
   String get chip_saturday => 'chip_saturday';
   String get chip_sunday => 'chip_sunday';
   String get please_input_dosage => 'please_input_dosage';
+  String get not_used => 'not_used';
+  String get used => 'used';
 }

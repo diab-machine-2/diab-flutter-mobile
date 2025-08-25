@@ -246,40 +246,40 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           session,
           EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           sessionIndex,
-          // (medicationIndex, isTaken) {
-          //
-          //   final medication = sessionList[sessionIndex].medications[medicationIndex];
-          //
-          //   // 2. Create a new, updated medication object
-          //   final updatedMedication = MedicationInSession(
-          //     medicineName: medication.medicineName,
-          //     dosage: medication.dosage,
-          //     isTaken: !medication.isTaken, // Toggle the value
-          //   );
-          //
-          //   // 3. Create a new list of medications for the session
-          //   final updatedMedicationsList =
-          //   List<MedicationInSession>.from(sessionList[sessionIndex].medications);
-          //   updatedMedicationsList[medicationIndex] = updatedMedication;
-          //
-          //   // 4. Create a new updated session object
-          //   final updatedSession = PrescriptionBySessionModel(
-          //     id: sessionList[sessionIndex].id,
-          //     name: sessionList[sessionIndex].name,
-          //     session: sessionList[sessionIndex].session,
-          //     time: sessionList[sessionIndex].time,
-          //     medications: updatedMedicationsList,
-          //     note: sessionList[sessionIndex].note,
-          //   );
-          //
-          //   // 5. Create a new list of sessions by replacing the updated session
-          //   final newSessionList = List<PrescriptionBySessionModel>.from(sessionList);
-          //   newSessionList[sessionIndex] = updatedSession;
-          //
-          //   setState(() {
-          //     sessionList = newSessionList;
-          //   });
-          // }
+          (medicationIndex, isTaken) {
+            final medication = sessionList[sessionIndex].medications[medicationIndex];
+
+            // 2. Create a new, updated medication object
+            final updatedMedication = MedicationInSession(
+              medicineName: medication.medicineName,
+              dosage: medication.dosage,
+              isTaken: !medication.isTaken, // Toggle the value
+            );
+
+            // 3. Create a new list of medications for the session
+            final updatedMedicationsList =
+            List<MedicationInSession>.from(sessionList[sessionIndex].medications);
+            updatedMedicationsList[medicationIndex] = updatedMedication;
+
+            // 4. Create a new updated session object
+            final updatedSession = PrescriptionBySessionModel(
+              id: sessionList[sessionIndex].id,
+              name: sessionList[sessionIndex].name,
+              session: sessionList[sessionIndex].session,
+              time: sessionList[sessionIndex].time,
+              medications: updatedMedicationsList,
+              note: sessionList[sessionIndex].note,
+            );
+
+            // 5. Create a new list of sessions by replacing the updated session
+            final newSessionList = List<PrescriptionBySessionModel>.from(sessionList);
+            newSessionList[sessionIndex] = updatedSession;
+            print("TestAlan - ${newSessionList[sessionIndex].medications[0]}");
+
+            setState(() {
+              sessionList = newSessionList;
+            });
+          }
         );
       }
     );
@@ -288,8 +288,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
   Widget _buildScheduleCard(
       PrescriptionBySessionModel prescription,
       EdgeInsetsGeometry margin,
-      int index,
-      // Function(int, bool) onTap,
+      int sessionIndex,
+      Function(int, bool) onTap,
   ) {
     return Card(
       margin: margin,
@@ -298,10 +298,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
       ),
       elevation: 0,
       child: ExpansionTile(
-        initiallyExpanded: _sessionExpandedList[index],
+        initiallyExpanded: _sessionExpandedList[sessionIndex],
         onExpansionChanged: (bool expanded) {
           setState(() {
-            _sessionExpandedList[index] = expanded;
+            _sessionExpandedList[sessionIndex] = expanded;
           });
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -317,7 +317,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           ),
         ),
         trailing: AnimatedRotation(
-          turns: _sessionExpandedList[index] ? 0.5 : 0.0, // 0.5 turn = 180°
+          turns: _sessionExpandedList[sessionIndex] ? 0.5 : 0.0, // 0.5 turn = 180°
           duration: const Duration(milliseconds: 200),
           child: SvgPicture.asset(
             R.icons.ic_chevron_up,
@@ -372,7 +372,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     ],
                   ),
                 ),
-                ..._buildListOfMedicine(prescription.medications, /*onTap*/),
+                ..._buildListOfMedicine(prescription.medications, onTap),
                 // Note
                 Container(
                   width: double.infinity,
@@ -395,7 +395,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                           ),
                         ),
                         TextSpan(
-                          text: "Uống lúc 20h",
+                          text: prescription.note,
                           style: const TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 13,
@@ -418,7 +418,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
 
   List<Widget> _buildListOfMedicine(
     List<MedicationInSession> medicationList,
-    // Function(int, bool) onTap,
+    Function(int, bool) onTap,
   ) {
     List<Widget> widgets = [];
     for (var i = 0; i < medicationList.length; i++) {
@@ -429,8 +429,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           child: _buildMedicineItem(
             medication.medicineName,
             medication.dosage,
-            medication.isTaken
-            // onTap(i, !medication.isTaken)
+            medication.isTaken,
+            () {
+              onTap(i, !medication.isTaken);
+            }
           ),
         )
       );
@@ -445,7 +447,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
       String title,
       String subtitle,
       bool isTaken,
-      // VoidCallback onTap,
+      VoidCallback onTap,
   ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,8 +484,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
         SizedBox(
           width: 80,
           child: GestureDetector(
-            // onTap: onTap,
-            onTap: () {},
+            onTap: onTap,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -496,7 +497,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                   ),
                 ),
                 Text(
-                  "Chưa dùng",
+                  isTaken ? R.string.used.tr() : R.string.not_used.tr(),
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 13,
