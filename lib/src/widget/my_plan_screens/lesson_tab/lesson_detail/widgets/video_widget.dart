@@ -142,12 +142,13 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         YoutubeApiClient.ios,
       ]);
 
-      var muxedStreams = streamManifest.streams
-          .whereType<MuxedStreamInfo>()
-          .where((stream) =>
-              stream.container == StreamContainer.mp4 &&
-              stream.videoQuality != VideoQuality.low144 &&
-              stream.videoQuality != VideoQuality.low240)
+      // Priority 1: Muxed MP4 streams (contain both video and audio)
+      var muxedStreams = streamManifest.muxed
+          // .whereType<MuxedStreamInfo>()
+          // .where((stream) =>
+          //     stream.container == StreamContainer.mp4 &&
+          //     stream.videoQuality != VideoQuality.low144 &&
+          //     stream.videoQuality != VideoQuality.low240)
           .toList();
 
       if (muxedStreams.isNotEmpty) {
@@ -155,26 +156,22 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         debugPrint(
             '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
         return selectedStream.url.toString();
+      } else {
+        debugPrint('[VIDEO] No suitable streams found with video and audio');
+        debugPrint('[VIDEO] Available stream types:');
+        debugPrint(
+            '[VIDEO] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
+        debugPrint(
+            '[VIDEO] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
+        debugPrint(
+            '[VIDEO] - Video-only streams: ${streamManifest.videoOnly.length}');
+        debugPrint(
+            '[VIDEO] - Audio-only streams: ${streamManifest.audioOnly.length}');
+        var videoStream = streamManifest.video.withHighestBitrate();
+        debugPrint(
+            '[VIDEO] Selected video stream: ${videoStream.qualityLabel}, Size: ${videoStream.size}');
+        return videoStream.url.toString();
       }
-
-      // // Priority 1: Muxed MP4 streams (contain both video and audio)
-      // var muxedStreams = streamManifest.streams
-      //     .whereType<MuxedStreamInfo>()
-      //     .where((stream) =>
-      //         stream.container == StreamContainer.mp4 &&
-      //         stream.videoQuality != VideoQuality.low144 &&
-      //         stream.videoQuality != VideoQuality.low240)
-      //     .toList();
-
-      // if (muxedStreams.isNotEmpty) {
-      //   // Sort by quality (lowest acceptable quality first for faster loading)
-      //   muxedStreams.sort(
-      //       (a, b) => a.videoQuality.index.compareTo(b.videoQuality.index));
-      //   var selectedStream = muxedStreams.first;
-      //   debugPrint(
-      //       '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
-      //   return selectedStream.url.toString();
-      // }
 
       // // Priority 2: HLS streams (contain both video and audio, well supported by BetterPlayer)
       // var hlsStreams = streamManifest.streams
@@ -193,19 +190,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       //       '[VIDEO] Selected HLS stream: ${selectedStream.qualityLabel}');
       //   return selectedStream.url.toString();
       // }
-
-      debugPrint('[VIDEO] No suitable streams found with video and audio');
-      debugPrint('[VIDEO] Available stream types:');
-      debugPrint(
-          '[VIDEO] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
-      debugPrint(
-          '[VIDEO] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
-      debugPrint(
-          '[VIDEO] - Video-only streams: ${streamManifest.videoOnly.length}');
-      debugPrint(
-          '[VIDEO] - Audio-only streams: ${streamManifest.audioOnly.length}');
-
-      return null;
     } catch (e) {
       debugPrint('[VIDEO] Error extracting stream URL: $e');
       return null;
