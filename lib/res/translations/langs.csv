@@ -1325,4 +1325,11 @@ activate_program_failed,"Kích hoạt chương trình thất bại. Vui lòng th
 unlock_advanced_lessons,"Mở khóa bài nâng cao","Unlock Advanced Lessons",
 membership_benefits,"Quyền lợi tham gia","Membership Benefits",
 program,"Chương trình","Program",
-premium_lesson,"Bài nâng cao","Premium lesson"
+premium_lesson,"Bài nâng cao","Premium lesson",
+pathology_nutrition_exercise_psychology_knowledge_diverse,"Kho tàng kiến thức bệnh lý, dinh dưỡng, vận động, tâm lý đa dạng","Diverse knowledge of pathology, nutrition, exercise, psychology",
+pathology_nutrition_knowledge,Kho tàng kiến thức,Knowledge repository,
+personalized_healthy_lifestyle_roadmap,Lộ trình sống khỏe cá nhân hóa,Personalized healthy lifestyle roadmap,
+healthy_lifestyle_roadmap,Lộ trình sống khỏe,Healthy lifestyle roadmap,
+use_all_advanced_features,Sử dụng toàn bộ tính năng cao cấp,Use all advanced features,
+advanced_features,tính năng cao cấp,advanced features,
+retry,Thử lại,Retry

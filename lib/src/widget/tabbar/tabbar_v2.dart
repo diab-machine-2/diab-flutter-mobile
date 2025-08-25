@@ -316,12 +316,10 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       });
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
-      NavigationUtil.popToFirst(context);
-
-      _jumpTo(TabBarType.program.index);
-      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
-
-      final user = await UserClient().fetchUser().then((value) {
+      BotToast.showLoading();
+      final user =
+          await UserClient().fetchUser().then((value) {
+        BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
           tabs = [
@@ -332,9 +330,12 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
             _buildStoreTab(),
           ];
         });
-
-        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
       });
+
+      NavigationUtil.popToFirst(context);
+
+      _jumpTo(TabBarType.program.index);
+      _bottomTabbarKey.currentState?.setPage(TabBarType.program.index);
 
       // _jumpTo(TabBarType.home.index);
       // _bottomTabbarKey.currentState?.setPage(TabBarType.home.index);
@@ -354,9 +355,30 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
             _buildStoreTab(),
           ];
         });
-
-        Observable.instance.notifyObservers([], notifyName: 'refresh_home');
       });
+    }
+
+    if (notifyName == 'subscription_back_to_home') {
+      BotToast.showLoading();
+      final user =
+          await UserClient().fetchUser().then((value) {
+        BotToast.closeAllLoading();
+        // Rebuild tabs with updated user info
+        setState(() {
+          tabs = [
+            HomeController(sharedCode: widget.sharedCode),
+            _buildProgramTab(),
+            MyPlanPage(index: 0),
+            Conversations(),
+            _buildStoreTab(),
+          ];
+        });
+      });
+
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+        NavigatorName.tabbar,
+        (route) => false, // This removes all routes from stack
+      );
     }
 
     if (notifyName == Const.LANGUAGE_CHANGED) {
@@ -431,9 +453,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   }
 
   Widget _buildProgramTab() {
-    log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
-    print(
-        '[SUBSCRIPTION] userPackageType: ${AppSettings.userInfo?.packageType}');
+    // log('[ACTIVE] userPackageType: ${jsonEncode(AppSettings.userInfo)}');
+    print('[ACTIVE] userPackageType: ${AppSettings.userInfo?.packageType}');
     print('[ACTIVE] ownPackage: ${AppSettings.userInfo?.ownPackage}');
     print('[ACTIVE] isOwnPackage: ${AppSettings.isOwnPackage}');
     if (AppSettings.userInfo?.packageType == PackageType.free) {

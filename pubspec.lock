@@ -2587,10 +2587,10 @@ packages:
     dependency: "direct main"
     description:
       name: youtube_player_flutter
-      sha256: "30f84e2f7063c56e536f507e37c1e803546842707cf58e5b5a71253b9ff9b455"
+      sha256: b670314008a9abd051f01f82df754d76fd1366340f03f4f8ff86fc3d6b03080c
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.4"
+    version: "9.0.3"
   zalo_flutter:
     dependency: "direct main"
     description:

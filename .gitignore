@@ -44,3 +44,4 @@ analysis_options.yaml
 
 .fvm/
 packages/zoom_video_sdk/ios/MobileRTC*
+ios/lib/
