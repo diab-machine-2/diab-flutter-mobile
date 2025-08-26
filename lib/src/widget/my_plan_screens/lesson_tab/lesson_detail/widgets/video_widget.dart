@@ -144,9 +144,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         return null;
       }
 
-      var ytClients = Platform.isAndroid
-          ? [YoutubeApiClient.android]
-          : [YoutubeApiClient.ios];
+      // YoutubeApiClient.ios is getting m3u8 streams -> cannot open with current player
+      var ytClients = [YoutubeApiClient.android];
 
       var streamManifest = await yt.videos.streamsClient
           .getManifest(videoId, ytClients: ytClients);

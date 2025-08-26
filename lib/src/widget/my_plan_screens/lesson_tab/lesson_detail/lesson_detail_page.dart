@@ -589,8 +589,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         return BottomSheetWidget(
           sectionList: _cubit.sectionList,
           currentSection: _cubit.currentSection,
-          onChangeSection: (int newSectionIndex) {
+          onChangeSection: (int newSectionIndex) async {
             _cubit.videoManager?.disposeAllVideo();
+            await Future.delayed(const Duration(milliseconds: 200));
             _cubit.onChangeSection(context, newSectionIndex, isFromList: true);
           },
           lessonDetail: _cubit.lessonDetail!,
