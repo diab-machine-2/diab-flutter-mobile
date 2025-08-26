@@ -590,6 +590,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           sectionList: _cubit.sectionList,
           currentSection: _cubit.currentSection,
           onChangeSection: (int newSectionIndex) {
+            _cubit.videoManager?.disposeAllVideo();
             _cubit.onChangeSection(context, newSectionIndex, isFromList: true);
           },
           lessonDetail: _cubit.lessonDetail!,

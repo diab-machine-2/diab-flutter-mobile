@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +50,10 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   String? errorMessage;
   int retryCount = 0;
   static const int maxRetries = 1;
+
+  String _getTimestamp() {
+    return DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
+  }
 
   @override
   void initState() {
@@ -128,19 +134,22 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   Future<String?> getMp4UrlFromYouTube(String youtubeUrl) async {
     var yt = YoutubeExplode();
     try {
-      debugPrint('[VIDEO] Processing YouTube URL: $youtubeUrl');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] Processing YouTube URL: $youtubeUrl');
 
       var videoId = VideoId.parseVideoId(youtubeUrl);
       if (videoId == null) {
-        debugPrint('[VIDEO] Invalid YouTube URL: $youtubeUrl');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Invalid YouTube URL: $youtubeUrl');
         return null;
       }
 
-      var streamManifest =
-          await yt.videos.streamsClient.getManifest(videoId, ytClients: [
-        YoutubeApiClient.android,
-        YoutubeApiClient.ios,
-      ]);
+      var ytClients = Platform.isAndroid
+          ? [YoutubeApiClient.android]
+          : [YoutubeApiClient.ios];
+
+      var streamManifest = await yt.videos.streamsClient
+          .getManifest(videoId, ytClients: ytClients);
 
       // Priority 1: Muxed MP4 streams (contain both video and audio)
       var muxedStreams = streamManifest.muxed.toList();
@@ -148,22 +157,23 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       if (muxedStreams.isNotEmpty) {
         var selectedStream = muxedStreams.first;
         debugPrint(
-            '[VIDEO] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
+            '[VIDEO][${_getTimestamp()}] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
         return selectedStream.url.toString();
       } else {
-        debugPrint('[VIDEO] No suitable streams found with video and audio');
-        debugPrint('[VIDEO] Available stream types:');
         debugPrint(
-            '[VIDEO] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
+            '[VIDEO][${_getTimestamp()}] No suitable streams found with video and audio');
+        debugPrint('[VIDEO][${_getTimestamp()}] Available stream types:');
         debugPrint(
-            '[VIDEO] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
+            '[VIDEO][${_getTimestamp()}] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
         debugPrint(
-            '[VIDEO] - Video-only streams: ${streamManifest.videoOnly.length}');
+            '[VIDEO][${_getTimestamp()}] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
         debugPrint(
-            '[VIDEO] - Audio-only streams: ${streamManifest.audioOnly.length}');
+            '[VIDEO][${_getTimestamp()}] - Video-only streams: ${streamManifest.videoOnly.length}');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] - Audio-only streams: ${streamManifest.audioOnly.length}');
         var videoStream = streamManifest.video.withHighestBitrate();
         debugPrint(
-            '[VIDEO] Selected video stream: ${videoStream.qualityLabel}, Size: ${videoStream.size}');
+            '[VIDEO][${_getTimestamp()}] Selected video stream: ${videoStream.qualityLabel}, Size: ${videoStream.size}');
         return videoStream.url.toString();
       }
 
@@ -186,7 +196,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       //   return selectedStream.url.toString();
       // }
     } catch (e) {
-      debugPrint('[VIDEO] Error extracting stream URL: $e');
+      debugPrint('[VIDEO][${_getTimestamp()}] Error extracting stream URL: $e');
       return null;
     } finally {
       yt.close();
@@ -217,16 +227,18 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     // Handle YouTube URLs
     if (widget.isYouTubeLink || isYouTubeLink(widget.url)) {
       try {
-        debugPrint('[VIDEO] Detected YouTube URL, converting...');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Detected YouTube URL, converting...');
         final mp4YoutubeUrl = await getMp4UrlFromYouTube(widget.url);
         if (mp4YoutubeUrl != null) {
           finalUrl = mp4YoutubeUrl;
-          debugPrint('[VIDEO] YouTube URL converted successfully');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] YouTube URL converted successfully');
         } else {
           throw Exception('Failed to extract playable URL from YouTube');
         }
       } catch (e) {
-        debugPrint('[VIDEO] YouTube processing failed: $e');
+        debugPrint('[VIDEO][${_getTimestamp()}] YouTube processing failed: $e');
         if (mounted) {
           setState(() {
             isInitializing = false;
@@ -239,7 +251,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     }
 
     if (finalUrl == null || finalUrl.isEmpty) {
-      debugPrint('[VIDEO] No video URL provided');
+      debugPrint('[VIDEO][${_getTimestamp()}] No video URL provided');
       if (mounted) {
         setState(() {
           isInitializing = false;
@@ -272,7 +284,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
       try {
         debugPrint(
-            '[VIDEO] Initialization attempt ${attempt + 1}/${maxRetries + 1} for URL: $finalUrl');
+            '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1}/${maxRetries + 1} for URL: $finalUrl');
 
         await _createVideoManager();
 
@@ -288,7 +300,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
         if (isReady) {
           debugPrint(
-              '[VIDEO] Video successfully initialized on attempt ${attempt + 1}');
+              '[VIDEO][${_getTimestamp()}] Video successfully initialized on attempt ${attempt + 1}');
           if (mounted) {
             setState(() {
               isInitializing = false;
@@ -300,7 +312,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
           throw Exception('Video metadata failed to load (duration = 0)');
         }
       } catch (e) {
-        debugPrint('[VIDEO] Attempt ${attempt + 1} failed: $e');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Attempt ${attempt + 1} failed: $e');
 
         if (attempt < maxRetries) {
           // Clean up failed attempt
@@ -310,7 +323,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
           // Shorter wait before retry
           await Future.delayed(Duration(seconds: 1));
-          debugPrint('[VIDEO] Retrying in 1 second...');
+          debugPrint('[VIDEO][${_getTimestamp()}] Retrying in 1 second...');
         } else {
           // Final attempt failed
           if (mounted) {
@@ -363,12 +376,13 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       try {
         final controller = await videoManager?.controller;
         if (controller != null) {
-          debugPrint('[VIDEO] Controller obtained successfully');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Controller obtained successfully');
           return controller;
         }
       } catch (e) {
         debugPrint(
-            '[VIDEO] Error getting controller (attempt ${attempts + 1}): $e');
+            '[VIDEO][${_getTimestamp()}] Error getting controller (attempt ${attempts + 1}): $e');
       }
       await Future.delayed(Duration(milliseconds: 500));
       attempts++;
@@ -385,10 +399,10 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       try {
         final videoPlayerController = playerController!.videoPlayerController;
         debugPrint(
-            '[VIDEO] Video player controller: ${videoPlayerController?.value}');
+            '[VIDEO][${_getTimestamp()}] Video player controller: ${videoPlayerController?.value}');
         if (videoPlayerController?.value.hasError == true) {
           debugPrint(
-              '[VIDEO] Video player has error: ${videoPlayerController?.value.errorDescription}');
+              '[VIDEO][${_getTimestamp()}] Video player has error: ${videoPlayerController?.value.errorDescription}');
           throw Exception(
               'Video player error: ${videoPlayerController?.value.errorDescription}');
         }
@@ -399,17 +413,18 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
           // Check if we have valid duration and size
           if (duration != null && duration.inMilliseconds > 0) {
             debugPrint(
-                '[VIDEO] Video ready - Duration: ${duration.inSeconds}s');
+                '[VIDEO][${_getTimestamp()}] Video ready - Duration: ${duration.inSeconds}s');
             return true;
           }
 
           debugPrint(
-              '[VIDEO] Video initialized but not ready - Duration: ${duration?.inMilliseconds}ms');
+              '[VIDEO][${_getTimestamp()}] Video initialized but not ready - Duration: ${duration?.inMilliseconds}ms');
 
           await playerController?.retryDataSource();
         }
       } catch (e) {
-        debugPrint('[VIDEO] Error checking video readiness: $e');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Error checking video readiness: $e');
         throw e;
       }
 
@@ -417,7 +432,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       attempts++;
     }
 
-    debugPrint('[VIDEO] Video not ready after $maxAttempts attempts');
+    debugPrint(
+        '[VIDEO][${_getTimestamp()}] Video not ready after $maxAttempts attempts');
     return false;
   }
 
