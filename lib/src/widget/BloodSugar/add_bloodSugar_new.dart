@@ -347,7 +347,8 @@ class _AddBloodSugarControllerNewState
                       ),
                     ),
                     _selectImageSection(),
-                    if (AppSettings.isRegionAllowInputDevice) _connectMachine(context),
+                    if (AppSettings.isRegionAllowInputDevice)
+                      _connectMachine(context),
                     const SizedBox(height: 16),
                   ]),
                 ),
@@ -712,67 +713,51 @@ class _AddBloodSugarControllerNewState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
+                        padding: const EdgeInsets.only(top: 32.0),
+                        child: Text(
+                          R.string.ban_muon_xoa_du_lieu.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: R.color.color0xff111515,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.confirm_to_remove_data.tr(),
-                            textAlign: TextAlign.center,
-                            style: R.style.normalTextStyle),
+                        child: Text(
+                          R.string.confirm_to_remove_data.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: R.color.greenGradientTop02,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500),
+                        ),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),
                         child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Container(
-                                      height: 43,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(200),
-                                          color: R.color.grayBorder),
-                                      child: Center(
-                                        child: Text(R.string.back.tr(),
-                                            style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      )),
-                                ),
-                              ),
-                              SizedBox(width: 14),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    deleteData();
-                                  },
-                                  child: Container(
-                                    height: 43,
-                                    decoration: BoxDecoration(
-                                      color: R.color.red,
-                                      borderRadius: BorderRadius.circular(200),
-                                    ),
-                                    child: Center(
-                                      child: Text(R.string.delete.tr(),
-                                          style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
-                                    ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  deleteData();
+                                },
+                                child: Container(
+                                  height: 43,
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: R.color.red,
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
+                                  child: Center(
+                                    child: Text(R.string.confirm.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600)),
                                   ),
                                 ),
                               ),
