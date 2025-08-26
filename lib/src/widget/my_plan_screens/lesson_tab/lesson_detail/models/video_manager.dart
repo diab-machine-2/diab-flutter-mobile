@@ -49,6 +49,10 @@ class VideoManager {
   StreamController<bool> _placeholderStreamController =
       StreamController.broadcast();
 
+  String _getTimestamp() {
+    return DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
+  }
+
   Future<BetterPlayerController?> get controller async {
     // Wait for initialization to complete
     int initWaitAttempts = 0;
@@ -70,6 +74,7 @@ class VideoManager {
   }
 
   Future<void> refreshUrl({required String? url}) async {
+    print('[VIDEO] ${_getTimestamp()} - refreshUrl started');
     if (_isDisposed) return;
 
     finishedVideo = false;
@@ -81,7 +86,8 @@ class VideoManager {
         await _controller?.seekTo(Duration.zero);
         await _controller?.pause();
       } catch (e) {
-        print('[VIDEO] Error seeking/pausing during refresh: $e');
+        print(
+            '[VIDEO] ${_getTimestamp()} - Error seeking/pausing during refresh: $e');
       }
       hasVideo = false;
       return;
@@ -90,9 +96,13 @@ class VideoManager {
     }
 
     if (_controller == null) {
+      print(
+          '[VIDEO] ${_getTimestamp()} - Controller is null, initializing new controller');
       await initController(url: url);
     } else {
       try {
+        print(
+            '[VIDEO] ${_getTimestamp()} - Setting up data source for existing controller');
         final dataSource = BetterPlayerDataSource(
           BetterPlayerDataSourceType.network,
           url,
@@ -109,33 +119,40 @@ class VideoManager {
         );
 
         await _controller!.setupDataSource(dataSource);
+        print(
+            '[VIDEO] ${_getTimestamp()} - Data source setup completed, waiting 1 second');
         await Future.delayed(Duration(milliseconds: 1000)); // Increased delay
 
         if (!_isDisposed) {
           await _controller?.seekTo(Duration.zero);
           await _controller?.pause();
+          print(
+              '[VIDEO] ${_getTimestamp()} - Seek to zero and pause completed');
         }
       } catch (e) {
-        print("[VIDEO] Error refreshing URL: $e");
+        print("[VIDEO] ${_getTimestamp()} - Error refreshing URL: $e");
         // Reinitialize if refresh fails
         if (!_isDisposed) {
           await initController(url: url);
         }
       }
     }
+    print('[VIDEO] ${_getTimestamp()} - refreshUrl completed');
   }
 
   Future<void> _initializeController({String? url}) async {
     if (_isInitializing || _isDisposed) return;
 
+    print('[VIDEO] ${_getTimestamp()} - _initializeController started');
     _isInitializing = true;
     try {
       await initController(url: url);
     } catch (e) {
-      print('[VIDEO] Error in _initializeController: $e');
+      print('[VIDEO] ${_getTimestamp()} - Error in _initializeController: $e');
       hasVideo = false;
     } finally {
       _isInitializing = false;
+      print('[VIDEO] ${_getTimestamp()} - _initializeController completed');
     }
   }
 
@@ -147,9 +164,11 @@ class VideoManager {
       return;
     }
 
-    print('[VIDEO] Initializing video controller for URL: $url');
+    print(
+        '[VIDEO] ${_getTimestamp()} - Initializing video controller for URL: $url');
 
     try {
+      print('[VIDEO] ${_getTimestamp()} - Creating BetterPlayer configuration');
       // Create configuration with better error handling
       final configuration = BetterPlayerConfiguration(
         placeholder: placeHolder ?? _buildDefaultPlaceholder(),
@@ -186,9 +205,11 @@ class VideoManager {
         ),
       );
 
+      print('[VIDEO] ${_getTimestamp()} - Creating BetterPlayerController');
       BetterPlayerController newController =
           BetterPlayerController(configuration);
 
+      print('[VIDEO] ${_getTimestamp()} - Creating BetterPlayerDataSource');
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         url!,
@@ -218,6 +239,8 @@ class VideoManager {
 
       if (_isDisposed) return;
 
+      print(
+          '[VIDEO] ${_getTimestamp()} - Setting up data source on controller');
       await newController.setupDataSource(betterPlayerDataSource);
 
       if (_isDisposed) {
@@ -225,6 +248,7 @@ class VideoManager {
         return;
       }
 
+      print('[VIDEO] ${_getTimestamp()} - Adding event listeners');
       // Add event listeners with null checks
       newController.addEventsListener(_handlePlayerEvent);
 
@@ -237,12 +261,14 @@ class VideoManager {
       if (!_isDisposed) {
         hasVideo = true;
         _controller = newController;
-        print('[VIDEO] Video controller initialized successfully');
+        print(
+            '[VIDEO] ${_getTimestamp()} - Video controller initialized successfully');
       } else {
         newController.dispose();
       }
     } catch (e) {
-      print('[VIDEO] Error initializing video controller: $e');
+      print(
+          '[VIDEO] ${_getTimestamp()} - Error initializing video controller: $e');
       hasVideo = false;
       _controller = null;
       rethrow;
@@ -272,7 +298,7 @@ class VideoManager {
         }
       }
     } catch (e) {
-      print('[VIDEO] Error removing event listeners: $e');
+      print('[VIDEO] ${_getTimestamp()} - Error removing event listeners: $e');
     }
   }
 
@@ -329,7 +355,7 @@ class VideoManager {
           break;
       }
     } catch (e) {
-      print('[VIDEO] Error handling player event: $e');
+      print('[VIDEO] ${_getTimestamp()} - Error handling player event: $e');
     }
   }
 
@@ -360,8 +386,7 @@ class VideoManager {
       }
 
       // Check if video is properly initialized
-      if (value.initialized &&
-          value.duration != null) {
+      if (value.initialized && value.duration != null) {
         final duration = value.duration!;
         final position = value.position;
 
@@ -404,7 +429,8 @@ class VideoManager {
         }
       }
     } catch (e) {
-      print('[VIDEO] Error handling video player events: $e');
+      print(
+          '[VIDEO] ${_getTimestamp()} - Error handling video player events: $e');
     }
   }
 
@@ -418,21 +444,9 @@ class VideoManager {
         callbackEventListener!(type, videoDuration ?? Duration.zero);
       }
     } catch (e) {
-      print('[VIDEO] Error in callback event listener: $e');
+      print(
+          '[VIDEO] ${_getTimestamp()} - Error in callback event listener: $e');
     }
-  }
-
-  Widget _buildVideoPlaceholder() {
-    return StreamBuilder<bool>(
-      stream: _placeholderStreamController.stream,
-      builder: (context, snapshot) {
-        if (snapshot.data == true) {
-          return Container(color: R.color.black);
-        }
-
-        return placeHolder ?? _buildDefaultPlaceholder();
-      },
-    );
   }
 
   void stopCache() {
@@ -452,12 +466,13 @@ class VideoManager {
         _controller?.stopPreCache(dataSource);
       }
     } catch (e) {
-      print('[VIDEO] Error stopping cache: $e');
+      print('[VIDEO] ${_getTimestamp()} - Error stopping cache: $e');
     }
   }
 
   void disposeAllVideo() {
     // if (_isDisposed) return;
+    print('[VIDEO] ${_getTimestamp()} - disposeAllVideo started');
     _isDisposed = true;
     try {
       _placeholderStreamController.close();
@@ -469,8 +484,9 @@ class VideoManager {
       _controller = null;
       hasVideo = false;
       _isInitializing = false;
+      print('[VIDEO] ${_getTimestamp()} - disposeAllVideo completed');
     } catch (e) {
-      print('[VIDEO] Error disposing video: $e');
+      print('[VIDEO] ${_getTimestamp()} - Error disposing video: $e');
     }
   }
 }
