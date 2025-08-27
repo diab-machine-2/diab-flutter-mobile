@@ -120,72 +120,73 @@ class VideoManager {
   }
 
   void _initializeController(ExerciseMovementResponseData? exerciseData) {
-    final BetterPlayerController newController = BetterPlayerController(
-      BetterPlayerConfiguration(
-        placeholder: _buildVideoPlaceholder(),
-        showPlaceholderUntilPlay: true,
-        aspectRatio: 16 / 9,
-        autoDispose: false,
-        expandToFill: false,
-        allowedScreenSleep: false,
-        fit: BoxFit.contain,
-        deviceOrientationsAfterFullScreen: [
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ],
-        systemOverlaysAfterFullScreen: [
-          SystemUiOverlay.top,
-          SystemUiOverlay.bottom,
-        ],
-        handleLifecycle: false, // Align with lesson module
-        autoPlay: false,
-        startAt: Duration.zero,
-        controlsConfiguration: BetterPlayerControlsConfiguration(
-          enableProgressText: true,
-          enableProgressBar: true,
-          enablePlayPause: true,
-          enableMute: true,
-          enableFullscreen: true,
-          enableSubtitles: false,
-          enableAudioTracks: false,
-          enableOverflowMenu: true,
-          enablePlaybackSpeed: true,
-          progressBarPlayedColor: R.color.greenGradientBottom,
-          progressBarHandleColor: R.color.greenGradientBottom,
-        ),
+    final BetterPlayerController newController =
+        BetterPlayerController(BetterPlayerConfiguration(
+      placeholder: _buildVideoPlaceholder(),
+      showPlaceholderUntilPlay: true,
+      aspectRatio: 16 / 9,
+      autoDetectFullscreenAspectRatio: true,
+      autoDispose: false,
+      expandToFill: false,
+      allowedScreenSleep: false,
+      fit: BoxFit.contain,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: [
+        SystemUiOverlay.top,
+        SystemUiOverlay.bottom,
+      ],
+      handleLifecycle: false,
+      autoPlay: false,
+      startAt: Duration.zero,
+      controlsConfiguration: BetterPlayerControlsConfiguration(
+        enableProgressText: true,
+        enableProgressBar: true,
+        enablePlayPause: true,
+        enableMute: true,
+        enableFullscreen: true,
+        enableSubtitles: false,
+        enableAudioTracks: false,
+        enableOverflowMenu: true,
+        enablePlaybackSpeed: true,
+        progressBarPlayedColor: R.color.greenGradientBottom,
+        progressBarHandleColor: R.color.greenGradientBottom,
       ),
-    )..addEventsListener((event) async {
-        if (event.betterPlayerEventType == BetterPlayerEventType.play) {
-          _placeholderStreamController.add(true);
-        }
-        if (currentEventState == null &&
-            event.betterPlayerEventType == BetterPlayerEventType.play &&
-            !isCompleted) {
-          checkCallbackEventListener(CustomPlayerEventType.videoPlay);
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.play &&
-            isCompleted) {
-          checkCallbackEventListener(CustomPlayerEventType.videoReplay);
-          isCompleted = false;
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
-          checkCallbackEventListener(CustomPlayerEventType.videoPause);
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.progress &&
-            controller != null) {
-          currentMillisecond =
-              controller!.videoPlayerController!.value.position.inMilliseconds;
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
-          if (currentMillisecond >
-              controller!
-                  .videoPlayerController!.value.position.inMilliseconds) {
-            checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
-          } else {
-            checkCallbackEventListener(CustomPlayerEventType.videoFoward);
-          }
-        }
-      });
+    ))
+          ..addEventsListener((event) async {
+            if (event.betterPlayerEventType == BetterPlayerEventType.play) {
+              _placeholderStreamController.add(true);
+            }
+            if (currentEventState == null &&
+                event.betterPlayerEventType == BetterPlayerEventType.play &&
+                !isCompleted) {
+              checkCallbackEventListener(CustomPlayerEventType.videoPlay);
+            }
+            if (event.betterPlayerEventType == BetterPlayerEventType.play &&
+                isCompleted) {
+              checkCallbackEventListener(CustomPlayerEventType.videoReplay);
+              isCompleted = false;
+            }
+            if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
+              checkCallbackEventListener(CustomPlayerEventType.videoPause);
+            }
+            if (event.betterPlayerEventType == BetterPlayerEventType.progress &&
+                controller != null) {
+              currentMillisecond = controller!
+                  .videoPlayerController!.value.position.inMilliseconds;
+            }
+            if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
+              if (currentMillisecond >
+                  controller!
+                      .videoPlayerController!.value.position.inMilliseconds) {
+                checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
+              } else {
+                checkCallbackEventListener(CustomPlayerEventType.videoFoward);
+              }
+            }
+          });
 
     print(
         '[EXERCISE] video manager init from exercise data url: ${sourceList[currentSourceIndex].url}');
