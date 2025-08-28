@@ -219,12 +219,6 @@ class VideoManager {
           author: videoArtist ?? 'DiaB',
           imageUrl: videoThumbnail,
         ),
-        bufferingConfiguration: const BetterPlayerBufferingConfiguration(
-          minBufferMs: 2000,
-          maxBufferMs: 10000,
-          bufferForPlaybackMs: 1000,
-          bufferForPlaybackAfterRebufferMs: 2000,
-        ),
         videoFormat: BetterPlayerVideoFormat.other,
 
         //// CacheConfiguration make ios have exception Cannot Play

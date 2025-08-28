@@ -70,7 +70,7 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
     // Ensure the video is properly initialized
     if (videoManager.controller != null) {
-      await videoManager.ensureVideoInitialized();
+      await videoManager.waitForVideoReady();
     }
   }
 
