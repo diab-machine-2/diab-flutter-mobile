@@ -21,7 +21,6 @@ import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widg
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 import '../course_quiz/course_quiz.dart';
 import 'lesson_detail.dart';
@@ -29,7 +28,6 @@ import 'models/audio_data.dart';
 import 'widgets/bottom_sheet_share_lesson.dart';
 import 'widgets/bottom_sheet_widget.dart';
 import 'widgets/share_lesson_button.dart';
-import 'widgets/youtube_video_widget.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final Function(String, int) onComplete;

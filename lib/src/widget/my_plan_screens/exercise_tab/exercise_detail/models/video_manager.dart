@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart'; // Add this import
 
 class VideoManager {
   BetterPlayerController? controller;
@@ -44,32 +45,117 @@ class VideoManager {
     }
   }
 
-  Future<void> ensureVideoInitialized() async {
-    // Add a safety check to ensure video is properly initialized
-    if (controller != null) {
-      // Wait for up to 3 seconds for the video to initialize properly
-      int attempts = 0;
-      while (attempts < 30) {
-        if (controller!.videoPlayerController?.value.duration != null &&
-            controller!.videoPlayerController!.value.duration!.inMilliseconds >
-                0) {
-          debugPrint(
-              '[EXERCISE] Video successfully initialized with duration: ${controller!.videoPlayerController!.value.duration!.inSeconds}s');
-          break;
-        }
-        await Future.delayed(Duration(milliseconds: 100));
-        attempts++;
+  String _getTimestamp() {
+    return DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
+  }
+
+  bool isYouTubeLink(String? url) {
+    if (url == null || url.isEmpty) return false;
+    final RegExp youtubeRegex = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/',
+      caseSensitive: false,
+    );
+    return youtubeRegex.hasMatch(url);
+  }
+
+  Future<String?> getMp4UrlFromYouTube(String youtubeUrl) async {
+    var yt = YoutubeExplode();
+    try {
+      debugPrint(
+          '[EXERCISE][${_getTimestamp()}] Processing YouTube URL: $youtubeUrl');
+
+      var videoId = VideoId.parseVideoId(youtubeUrl);
+      if (videoId == null) {
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] Invalid YouTube URL: $youtubeUrl');
+        return null;
       }
 
-      // If still not initialized properly, attempt to reload
-      if (controller!.videoPlayerController?.value.duration == null ||
-          controller!.videoPlayerController!.value.duration!.inMilliseconds <=
-              0) {
+      // YoutubeApiClient.ios is getting m3u8 streams -> cannot open with current player
+      var ytClients = [YoutubeApiClient.android];
+
+      var streamManifest = await yt.videos.streamsClient
+          .getManifest(videoId, ytClients: ytClients);
+
+      // Priority 1: Muxed MP4 streams (contain both video and audio)
+      var muxedStreams = streamManifest.muxed.toList();
+
+      if (muxedStreams.isNotEmpty) {
+        var selectedStream = muxedStreams.first;
         debugPrint(
-            '[EXERCISE] Video not properly initialized, attempting reload');
-        await controller!.retryDataSource();
+            '[EXERCISE][${_getTimestamp()}] Selected muxed MP4 stream: ${selectedStream.qualityLabel}, Size: ${selectedStream.size}');
+        return selectedStream.url.toString();
+      } else {
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] No suitable streams found with video and audio');
+        debugPrint('[EXERCISE][${_getTimestamp()}] Available stream types:');
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] - HLS streams: ${streamManifest.streams.whereType<HlsVideoStreamInfo>().length}');
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] - Muxed streams: ${streamManifest.streams.whereType<MuxedStreamInfo>().length}');
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] - Video-only streams: ${streamManifest.videoOnly.length}');
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] - Audio-only streams: ${streamManifest.audioOnly.length}');
+        var videoStream = streamManifest.video.withHighestBitrate();
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] Selected video stream: ${videoStream.qualityLabel}, Size: ${videoStream.size}');
+        return videoStream.url.toString();
       }
+    } catch (e) {
+      debugPrint(
+          '[EXERCISE][${_getTimestamp()}] Error extracting stream URL: $e');
+      return null;
+    } finally {
+      yt.close();
     }
+  }
+
+  Future<bool> waitForVideoReady({int maxAttempts = 30}) async {
+    if (controller == null) return false;
+
+    int attempts = 0;
+
+    while (attempts < maxAttempts) {
+      try {
+        final videoPlayerController = controller!.videoPlayerController;
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] Video player controller: ${videoPlayerController?.value}');
+        if (videoPlayerController?.value.hasError == true) {
+          debugPrint(
+              '[EXERCISE][${_getTimestamp()}] Video player has error: ${videoPlayerController?.value.errorDescription}');
+          throw Exception(
+              'Video player error: ${videoPlayerController?.value.errorDescription}');
+        }
+
+        if (videoPlayerController?.value.initialized == true) {
+          final duration = videoPlayerController!.value.duration;
+
+          // Check if we have valid duration and size
+          if (duration != null && duration.inMilliseconds > 0) {
+            debugPrint(
+                '[EXERCISE][${_getTimestamp()}] Video ready - Duration: ${duration.inSeconds}s');
+            return true;
+          }
+
+          debugPrint(
+              '[EXERCISE][${_getTimestamp()}] Video initialized but not ready - Duration: ${duration?.inMilliseconds}ms');
+
+          await controller?.retryDataSource();
+        }
+      } catch (e) {
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] Error checking video readiness: $e');
+        throw e;
+      }
+
+      await Future.delayed(Duration(milliseconds: 200));
+      attempts++;
+    }
+
+    debugPrint(
+        '[EXERCISE][${_getTimestamp()}] Video not ready after $maxAttempts attempts');
+    return false;
   }
 
   bool isYoutubeUrl() {
@@ -79,13 +165,7 @@ class VideoManager {
     }
 
     final url = sourceList[currentSourceIndex].url;
-    debugPrint('[EXERCISE] Checking URL type: $url');
-
-    RegExp youtubeRegExp = RegExp(
-      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$',
-      caseSensitive: false,
-    );
-    return youtubeRegExp.hasMatch(url);
+    return isYouTubeLink(url);
   }
 
   VideoManager.fromExerciseData(
@@ -102,6 +182,7 @@ class VideoManager {
         in exerciseData?.sections ?? []) {
       sourceList.add(VideoSourceData(
           url: data?.videoUrl ?? '',
+          originalUrl: data?.videoUrl ?? '', // Store original URL
           loopTimes: data?.replayTime ?? 1,
           exerciseCategoryId: data?.exerciseCategoryId ?? ''));
     }
@@ -109,6 +190,7 @@ class VideoManager {
     if (sourceList.isEmpty) {
       sourceList.add(VideoSourceData(
           url: exerciseData?.videoUrl ?? '',
+          originalUrl: exerciseData?.videoUrl ?? '', // Store original URL
           loopTimes: 1,
           exerciseCategoryId: ''));
     }
@@ -119,151 +201,107 @@ class VideoManager {
     }
   }
 
-  void _initializeController(ExerciseMovementResponseData? exerciseData) {
-    final BetterPlayerController newController = BetterPlayerController(
-      BetterPlayerConfiguration(
-        placeholder: _buildVideoPlaceholder(),
-        showPlaceholderUntilPlay: true,
-        aspectRatio: 16 / 9,
-        autoDispose: false,
-        expandToFill: false,
-        allowedScreenSleep: false,
-        fit: BoxFit.contain,
-        deviceOrientationsAfterFullScreen: [
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ],
-        systemOverlaysAfterFullScreen: [
-          SystemUiOverlay.top,
-          SystemUiOverlay.bottom,
-        ],
-        handleLifecycle: false, // Align with lesson module
-        autoPlay: false,
-        startAt: Duration.zero,
-        controlsConfiguration: BetterPlayerControlsConfiguration(
-          enableProgressText: true,
-          enableProgressBar: true,
-          enablePlayPause: true,
-          enableMute: true,
-          enableFullscreen: true,
-          enableSubtitles: false,
-          enableAudioTracks: false,
-          enableOverflowMenu: true,
-          enablePlaybackSpeed: true,
-          progressBarPlayedColor: R.color.greenGradientBottom,
-          progressBarHandleColor: R.color.greenGradientBottom,
-        ),
-      ),
-    )..addEventsListener((event) async {
-        if (event.betterPlayerEventType == BetterPlayerEventType.play) {
-          _placeholderStreamController.add(true);
-        }
-        if (currentEventState == null &&
-            event.betterPlayerEventType == BetterPlayerEventType.play &&
-            !isCompleted) {
-          checkCallbackEventListener(CustomPlayerEventType.videoPlay);
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.play &&
-            isCompleted) {
-          checkCallbackEventListener(CustomPlayerEventType.videoReplay);
-          isCompleted = false;
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
-          checkCallbackEventListener(CustomPlayerEventType.videoPause);
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.progress &&
-            controller != null) {
-          currentMillisecond =
-              controller!.videoPlayerController!.value.position.inMilliseconds;
-        }
-        if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
-          if (currentMillisecond >
-              controller!
-                  .videoPlayerController!.value.position.inMilliseconds) {
-            checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
+  Future<void> _processYouTubeUrls() async {
+    debugPrint(
+        '[EXERCISE][${_getTimestamp()}] Processing YouTube URLs in sourceList');
+
+    for (int i = 0; i < sourceList.length; i++) {
+      final videoData = sourceList[i];
+
+      if (isYouTubeLink(videoData.originalUrl)) {
+        debugPrint(
+            '[EXERCISE][${_getTimestamp()}] Converting YouTube URL at index $i: ${videoData.originalUrl}');
+
+        try {
+          final mp4Url = await getMp4UrlFromYouTube(videoData.originalUrl);
+          if (mp4Url != null) {
+            sourceList[i].url = mp4Url; // Update with converted URL
+            debugPrint(
+                '[EXERCISE][${_getTimestamp()}] Successfully converted YouTube URL at index $i');
           } else {
-            checkCallbackEventListener(CustomPlayerEventType.videoFoward);
+            debugPrint(
+                '[EXERCISE][${_getTimestamp()}] Failed to convert YouTube URL at index $i');
+            // Keep original URL as fallback
           }
+        } catch (e) {
+          debugPrint(
+              '[EXERCISE][${_getTimestamp()}] Error converting YouTube URL at index $i: $e');
+          // Keep original URL as fallback
         }
-      });
+      }
+    }
+  }
+
+  Future<void> _initializeController(
+      ExerciseMovementResponseData? exerciseData) async {
+    // TODO: Process YouTube URLs first 
+    // Currently processYoutubeUrls make controller init after the UI build
+    // Cause media player controller null -> not showing on exercise detail page (line 115)
+    // await _processYouTubeUrls();
+
+    final BetterPlayerController newController =
+        BetterPlayerController(BetterPlayerConfiguration(
+      placeholder: _buildVideoPlaceholder(),
+      showPlaceholderUntilPlay: true,
+      aspectRatio: 16 / 9,
+      autoDetectFullscreenAspectRatio: true,
+      autoDispose: false,
+      expandToFill: false,
+      allowedScreenSleep: false,
+      fit: BoxFit.contain,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ],
+      systemOverlaysAfterFullScreen: [
+        SystemUiOverlay.top,
+        SystemUiOverlay.bottom,
+      ],
+      handleLifecycle: false,
+      autoPlay: false,
+      startAt: Duration.zero,
+      controlsConfiguration: BetterPlayerControlsConfiguration(
+        enableProgressText: true,
+        enableProgressBar: true,
+        enablePlayPause: true,
+        enableMute: true,
+        enableFullscreen: true,
+        enableSubtitles: false,
+        enableAudioTracks: false,
+        enableOverflowMenu: true,
+        enablePlaybackSpeed: true,
+        enableRetry: true, // Add retry capability
+        progressBarPlayedColor: R.color.greenGradientBottom,
+        progressBarHandleColor: R.color.greenGradientBottom,
+      ),
+    ))
+          ..addEventsListener((event) async {
+            await _handlePlayerEvent(event);
+          });
 
     print(
         '[EXERCISE] video manager init from exercise data url: ${sourceList[currentSourceIndex].url}');
 
     BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      sourceList[currentSourceIndex].url,
+      sourceList[currentSourceIndex].url, // This will now be the processed URL
       notificationConfiguration: BetterPlayerNotificationConfiguration(
         showNotification: true,
         title: exerciseData?.name ?? 'DiaB Exercise',
         author: 'DiaB',
         imageUrl: exerciseData?.image?.url ?? R.drawable.ic_app,
       ),
+      videoFormat: BetterPlayerVideoFormat.other,
       headers: {
         'User-Agent': 'diaB Exercise Player',
+        'Accept': '*/*',
       },
     );
 
     newController.setupDataSource(betterPlayerDataSource);
 
     newController.videoPlayerController?.addListener(() async {
-      // Wait until the video is properly initialized with a valid duration
-      if (newController.videoPlayerController?.value.duration != null &&
-          newController.videoPlayerController!.value.duration!.inMilliseconds >
-              0) {
-        // Update videoDuration only if it's not set or if the current value is invalid
-        if (videoDuration == null || videoDuration!.inMilliseconds <= 0) {
-          videoDuration = newController.videoPlayerController!.value.duration;
-          debugPrint(
-              '[EXERCISE] Video duration set: ${videoDuration?.inSeconds} seconds');
-        }
-
-        // Get current values
-        Duration? duration =
-            newController.videoPlayerController!.value.duration;
-        Duration? position =
-            newController.videoPlayerController!.value.position;
-
-        // Only process completion logic if we have valid duration and position
-        if (!isLocked &&
-            duration != null &&
-            position != null &&
-            duration.inMilliseconds > 0 &&
-            !newController.videoPlayerController!.value.isPlaying &&
-            newController.videoPlayerController!.value.initialized) {
-          // Add fullscreen check
-          // Check if video is within 1000ms of completion or past completion
-          bool isAtEnd =
-              duration.inMilliseconds - position.inMilliseconds <= 1000;
-          bool isExactEnd = duration == position;
-
-          if (isAtEnd || isExactEnd) {
-            debugPrint(
-                '[EXERCISE] Video reached end: position=${position.inSeconds}s, duration=${duration.inSeconds}s');
-            try {
-              if (newController.isFullScreen) {
-                newController.exitFullScreen();
-                if (onExitFullScreen != null) {
-                  await Future.delayed(const Duration(seconds: 1));
-                  onExitFullScreen!.call();
-                }
-              }
-            } catch (e) {
-              debugPrint(
-                  "Error exiting fullscreen on completion: ${e.toString()}");
-            }
-            checkCallbackEventListener(CustomPlayerEventType.videoCompleted);
-            isCompleted = true;
-            _startTimer();
-            if (onCompleteVideo != null &&
-                sourceList[currentSourceIndex].exerciseCategoryId.isNotEmpty) {
-              onCompleteVideo!(
-                  sourceList[currentSourceIndex].exerciseCategoryId,
-                  videoDuration?.inSeconds ?? 0);
-            }
-          }
-        }
-      }
+      await _handleVideoPlayerEvents(newController);
     });
 
     this.controller = newController;
@@ -271,55 +309,126 @@ class VideoManager {
 
   Future<void> _handlePlayerEvent(BetterPlayerEvent event) async {
     try {
-      if (currentEventState == null &&
-          event.betterPlayerEventType == BetterPlayerEventType.play &&
-          !isCompleted) {
-        checkCallbackEventListener(CustomPlayerEventType.videoPlay);
-        hasPlayed = true;
-      }
+      switch (event.betterPlayerEventType) {
+        case BetterPlayerEventType.play:
+          if (finishedVideo) {
+            checkCallbackEventListener(CustomPlayerEventType.videoReplay);
+            finishedVideo = false;
+          }
+          if (!hasPlayed) {
+            hasPlayed = true;
+          }
+          _placeholderStreamController.add(true);
+          break;
 
-      if (event.betterPlayerEventType == BetterPlayerEventType.play &&
-          isCompleted) {
-        checkCallbackEventListener(CustomPlayerEventType.videoReplay);
-        isCompleted = false;
-        finishedVideo = false;
-      }
+        case BetterPlayerEventType.pause:
+          checkCallbackEventListener(CustomPlayerEventType.videoPause);
+          break;
 
-      if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
-        checkCallbackEventListener(CustomPlayerEventType.videoPause);
-      }
+        case BetterPlayerEventType.progress:
+          if (controller?.videoPlayerController?.value != null) {
+            final position = controller!.videoPlayerController!.value.position;
+            currentMillisecond = position.inMilliseconds;
+          }
+          break;
 
-      if (event.betterPlayerEventType == BetterPlayerEventType.progress &&
-          controller != null) {
-        currentMillisecond =
-            controller!.videoPlayerController!.value.position.inMilliseconds;
-      }
+        case BetterPlayerEventType.seekTo:
+          if (controller?.videoPlayerController?.value != null) {
+            final currentPosition = controller!
+                .videoPlayerController!.value.position.inMilliseconds;
+            if (currentMillisecond > currentPosition) {
+              checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
+            } else {
+              checkCallbackEventListener(CustomPlayerEventType.videoFoward);
+            }
+          }
+          break;
 
-      if (event.betterPlayerEventType == BetterPlayerEventType.seekTo) {
-        if (currentMillisecond >
-            controller!.videoPlayerController!.value.position.inMilliseconds) {
-          checkCallbackEventListener(CustomPlayerEventType.videoPrevious);
-        } else {
-          checkCallbackEventListener(CustomPlayerEventType.videoFoward);
-        }
-      }
+        case BetterPlayerEventType.hideFullscreen:
+          if (onExitFullScreen != null) {
+            await Future.delayed(const Duration(seconds: 1));
+            onExitFullScreen!.call();
+          }
+          break;
 
-      if (event.betterPlayerEventType == BetterPlayerEventType.play) {
-        _placeholderStreamController.add(true);
+        // Add error handling for network issues
+        case BetterPlayerEventType.exception:
+          debugPrint(
+              '[EXERCISE][${_getTimestamp()}] Player exception occurred');
+          await _handleNetworkError();
+          break;
+
+        default:
+          break;
       }
     } catch (e) {
-      debugPrint('[EXERCISE] Error handling player event: $e');
+      debugPrint(
+          '[EXERCISE][${_getTimestamp()}] Error handling player event: $e');
+    }
+  }
+
+  // Add network error handling
+  Future<void> _handleNetworkError() async {
+    try {
+      debugPrint(
+          '[EXERCISE][${_getTimestamp()}] Attempting to recover from network error');
+
+      await Future.delayed(Duration(seconds: 2));
+
+      if (controller?.betterPlayerDataSource?.url != null) {
+        final currentPosition =
+            controller?.videoPlayerController?.value.position ?? Duration.zero;
+
+        // If it's a YouTube video, try to re-extract the URL
+        if (isYouTubeLink(sourceList[currentSourceIndex].originalUrl)) {
+          debugPrint(
+              '[EXERCISE][${_getTimestamp()}] Re-extracting YouTube URL due to error');
+          final newUrl = await getMp4UrlFromYouTube(
+              sourceList[currentSourceIndex].originalUrl);
+          if (newUrl != null && newUrl != sourceList[currentSourceIndex].url) {
+            sourceList[currentSourceIndex].url = newUrl;
+
+            // Create new data source with updated URL
+            final dataSource = BetterPlayerDataSource(
+              BetterPlayerDataSourceType.network,
+              newUrl,
+              notificationConfiguration: BetterPlayerNotificationConfiguration(
+                showNotification: true,
+                title: 'DiaB Exercise',
+                author: 'DiaB',
+                imageUrl: R.drawable.ic_app,
+              ),
+            );
+
+            await controller?.setupDataSource(dataSource);
+
+            if (currentPosition.inSeconds > 0) {
+              await controller?.seekTo(currentPosition);
+            }
+            return;
+          }
+        }
+
+        // For regular videos or if YouTube re-extraction failed, try retry
+        await controller?.retryDataSource();
+
+        if (currentPosition.inSeconds > 0) {
+          await controller?.seekTo(currentPosition);
+        }
+      }
+    } catch (e) {
+      debugPrint(
+          '[EXERCISE][${_getTimestamp()}] Failed to recover from network error: $e');
     }
   }
 
   Future<void> _handleVideoPlayerEvents(
       BetterPlayerController newController) async {
     try {
-      if (Platform.isIOS) {
-        if ((newController
-                .videoPlayerController!.value.position.inMilliseconds) ==
-            newController
-                .videoPlayerController!.value.duration?.inMilliseconds) {
+      if (Platform.isIOS &&
+          newController.videoPlayerController?.value != null) {
+        final value = newController.videoPlayerController!.value;
+        if (value.position.inMilliseconds == value.duration?.inMilliseconds) {
           try {
             await newController.pause();
             newController.exitFullScreen();
@@ -359,14 +468,16 @@ class VideoManager {
           bool isExactEnd = duration == position;
 
           if ((isAtEnd || isExactEnd)) {
-            // Add fullscreen check
             debugPrint(
                 '[EXERCISE] Video reached end: position=${position.inSeconds}s, duration=${duration.inSeconds}s');
 
-            // Only exit fullscreen if already in fullscreen and video is completed
             try {
               if (newController.isFullScreen) {
                 newController.exitFullScreen();
+                if (onExitFullScreen != null) {
+                  await Future.delayed(const Duration(seconds: 1));
+                  onExitFullScreen!.call();
+                }
               }
             } catch (e) {
               debugPrint(
@@ -377,6 +488,13 @@ class VideoManager {
             isCompleted = true;
             finishedVideo = true;
             _startTimer();
+
+            if (onCompleteVideo != null &&
+                sourceList[currentSourceIndex].exerciseCategoryId.isNotEmpty) {
+              onCompleteVideo!(
+                  sourceList[currentSourceIndex].exerciseCategoryId,
+                  videoDuration?.inSeconds ?? 0);
+            }
           }
         }
       }
@@ -409,9 +527,28 @@ class VideoManager {
     await this.controller?.seekTo(Duration.zero);
     currentSourceIndex += 1;
 
+    // Process YouTube URL if needed for next video
+    final nextVideoData = sourceList[currentSourceIndex];
+    String videoUrl = nextVideoData.url;
+
+    if (isYouTubeLink(nextVideoData.originalUrl) &&
+        nextVideoData.url == nextVideoData.originalUrl) {
+      // URL hasn't been processed yet
+      try {
+        final mp4Url = await getMp4UrlFromYouTube(nextVideoData.originalUrl);
+        if (mp4Url != null) {
+          sourceList[currentSourceIndex].url = mp4Url;
+          videoUrl = mp4Url;
+        }
+      } catch (e) {
+        debugPrint(
+            '[EXERCISE] Error processing YouTube URL for next video: $e');
+      }
+    }
+
     var dataSource = BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
-      sourceList[currentSourceIndex].url,
+      videoUrl,
       notificationConfiguration: BetterPlayerNotificationConfiguration(
         showNotification: true,
         title: 'DiaB Exercise',
@@ -439,12 +576,16 @@ class VideoManager {
   }
 
   void checkCallbackEventListener(CustomPlayerEventType type) {
-    if ((callbackEventListener != null &&
-            currentEventState != type &&
-            isCompleted == false) ||
-        type == CustomPlayerEventType.videoReplay) {
-      currentEventState = type;
-      callbackEventListener!(type, videoDuration ?? Duration.zero);
+    try {
+      if ((callbackEventListener != null &&
+              currentEventState != type &&
+              isCompleted == false) ||
+          type == CustomPlayerEventType.videoReplay) {
+        currentEventState = type;
+        callbackEventListener!(type, videoDuration ?? Duration.zero);
+      }
+    } catch (e) {
+      debugPrint('[EXERCISE] Error in callback event listener: $e');
     }
   }
 
@@ -470,6 +611,9 @@ class VideoManager {
   void dispose() {
     try {
       _placeholderStreamController.close();
+      if (controller?.videoPlayerController?.value.initialized == true) {
+        controller?.pause();
+      }
       this.controller?.dispose(forceDispose: true);
       debugPrint('[EXERCISE] video manager controller disposed');
     } catch (e) {
@@ -479,11 +623,15 @@ class VideoManager {
 }
 
 class VideoSourceData {
-  VideoSourceData(
-      {required this.url,
-      required this.loopTimes,
-      required this.exerciseCategoryId});
-  final String url;
+  VideoSourceData({
+    required this.url,
+    required this.originalUrl, // Add originalUrl field
+    required this.loopTimes,
+    required this.exerciseCategoryId,
+  });
+
+  String url; // This will be the processed/converted URL
+  final String originalUrl; // This stores the original URL (YouTube or regular)
   int loopTimes;
   String exerciseCategoryId;
 }
