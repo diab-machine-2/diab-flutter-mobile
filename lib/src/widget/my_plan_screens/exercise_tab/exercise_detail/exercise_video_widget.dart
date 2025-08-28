@@ -82,11 +82,24 @@ class _ExerciseVideoWidgetState extends State<ExerciseVideoWidget>
         break;
       case AppLifecycleState.detached:
         // App is about to be terminated - pause the video
-        videoManager?.controller?.pause();
+        if (videoManager
+                ?.controller?.videoPlayerController?.value.initialized ==
+            true) {
+          videoManager?.controller?.pause();
+        }
         break;
       default:
         break;
     }
+  }
+
+  bool isYouTubeLink(String? url) {
+    if (url == null || url.isEmpty) return false;
+    final RegExp youtubeRegex = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/',
+      caseSensitive: false,
+    );
+    return youtubeRegex.hasMatch(url);
   }
 
   Future<void> initializeVideo() async {
@@ -106,7 +119,7 @@ class _ExerciseVideoWidgetState extends State<ExerciseVideoWidget>
       playerController = widget.videoManager.controller;
 
       // Ensure video is properly initialized
-      await widget.videoManager.ensureVideoInitialized();
+      await widget.videoManager.waitForVideoReady();
 
       debugPrint('[EXERCISE] Video manager initialized successfully');
     } catch (e) {
@@ -135,7 +148,7 @@ class _ExerciseVideoWidgetState extends State<ExerciseVideoWidget>
 
     try {
       // Reinitialize video using the provided videoManager
-      await widget.videoManager.ensureVideoInitialized();
+      await widget.videoManager.waitForVideoReady();
     } catch (e) {
       debugPrint('[EXERCISE] Error refreshing video: $e');
       if (mounted) {
@@ -150,22 +163,6 @@ class _ExerciseVideoWidgetState extends State<ExerciseVideoWidget>
         isInitializing = false;
       });
     }
-  }
-
-  Future<void> _waitForController() async {
-    int attempts = 0;
-    while (attempts < 50 && videoManager?.controller == null) {
-      await Future.delayed(Duration(milliseconds: 100));
-      attempts++;
-    }
-
-    if (videoManager?.controller == null) {
-      throw Exception(
-          '[EXERCISE] Failed to get video controller after waiting');
-    }
-
-    playerController = videoManager!.controller;
-    debugPrint('[EXERCISE] Controller obtained successfully');
   }
 
   Widget _buildErrorWidget() {

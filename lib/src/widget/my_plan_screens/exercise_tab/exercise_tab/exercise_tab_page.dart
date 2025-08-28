@@ -424,21 +424,6 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                               //   _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
                             },
                           ),
-                          // _buildCustomIconButton(
-                          //   title: R.string.show_instruction.tr(),
-                          //   icon: R.drawable.ic_play,
-                          //   borderColor: R.color.greenGradientBottom,
-                          //   backgroundColor: R.color.white,
-                          //   textColor: R.color.greenGradientBottom,
-                          //   onTap: () {
-                          //     NavigationUtil.navigatePage(
-                          //       context,
-                          //       VideoPlayerWidget(
-                          //         videoUrl: exerciseItem.videoUrl ?? '',
-                          //       ),
-                          //     );
-                          //   },
-                          // ),
                         ],
                       ),
                     ),
