@@ -1450,4 +1450,6 @@ class Strings {
   String get please_input_dosage => 'please_input_dosage';
   String get not_used => 'not_used';
   String get used => 'used';
+  String get today_you_have_no_schedule_today => 'today_you_have_no_schedule_today';
+  String get add_medicine_so_diab_remind_you_on_time => 'add_medicine_so_diab_remind_you_on_time';
 }

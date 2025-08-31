@@ -1,9 +1,11 @@
+import 'dart:math';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/src/modal/medicine/medicine_schedule_model.dart';
-import 'package:medical/src/modal/medicine/prescription_model.dart';
+import 'package:medical/src/widget/medicine/widgets/calendar_slider.dart';
+import 'package:medical/src/widget/medicine/widgets/empty_medicine_schedule.dart';
 
 import '../../../res/R.dart';
 import '../../utils/navigator_name.dart';
@@ -18,55 +20,70 @@ class PrescriptionListPage extends StatefulWidget {
 
 class _PrescriptionListPageState extends State<PrescriptionListPage> with SingleTickerProviderStateMixin {
   // Fake data
-  List<PrescriptionBySessionModel> sessionList = [
-    PrescriptionBySessionModel(
-      id: "T0001",
-      name: "Bệnh đái tháo đường không phụ thuộc insuline",
-      session: MedicineSession.MORNING,
-      time: DateTime(2025, 08, 21, 7, 30),
-      medications: [
-        MedicationInSession(
-          medicineName: "Metformin (Metformin Stella 1000mg) 1000 mg",
-          dosage: "1 viên - Sau ăn",
-          isTaken: true,
-        ),
-        MedicationInSession(
-          medicineName: "Fluvastatin (Autifan 40) 40mg",
-          dosage: "1 viên - Sau ăn",
-          isTaken: false,
-        ),
-      ],
-      note: "Uống lúc 20h",
-    ),
-    PrescriptionBySessionModel(
-      id: "T0001",
-      name: "Bệnh đái tháo đường không phụ thuộc insuline",
-      session: MedicineSession.EVENING,
-      time: DateTime(2025, 08, 21, 19, 30),
-      medications: [
-        MedicationInSession(
-          medicineName: "Metformin (Metformin Stella 1000mg) 1000 mg",
-          dosage: "1 viên - Sau ăn",
-          isTaken: true,
-        ),
-        MedicationInSession(
-          medicineName: "Fluvastatin (Autifan 40) 40mg",
-          dosage: "1 viên - Sau ăn",
-          isTaken: false,
-        ),
-      ],
-      note: "Uống lúc 20h",
-    )
-  ];
+  Map<DateTime, List<PrescriptionBySessionModel>> _medicineScheduleMap = {};
+
+  // List<PrescriptionBySessionModel> sessionList = [];
   List<bool> _sessionExpandedList = [];
   late TabController _tabController;
   int bottomIndex = 1;
 
+  /*------CALENDAR SLIDER------*/
+  // Store the currently selected date.
+  late DateTime _selectedDate;
+
   @override
   void initState() {
     super.initState();
+
+    // Initialize with today's date.
+    final currentDateTime = DateTime.now();
+    _selectedDate = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day);
+
+    // TODO: fake data
+    _medicineScheduleMap = {
+      _selectedDate : [
+        PrescriptionBySessionModel(
+          id: "T0001",
+          name: "Bệnh đái tháo đường không phụ thuộc insuline",
+          session: MedicineSession.MORNING,
+          time: DateTime(2025, 08, 21, 7, 30),
+          medications: [
+            MedicationInSession(
+              medicineName: "Metformin (Metformin Stella 1000mg) 1000 mg",
+              dosage: "1 viên - Sau ăn",
+              isTaken: true,
+            ),
+            MedicationInSession(
+              medicineName: "Fluvastatin (Autifan 40) 40mg",
+              dosage: "1 viên - Sau ăn",
+              isTaken: false,
+            ),
+          ],
+          note: "Uống lúc 20h",
+        ),
+        PrescriptionBySessionModel(
+          id: "T0001",
+          name: "Bệnh đái tháo đường không phụ thuộc insuline",
+          session: MedicineSession.EVENING,
+          time: DateTime(2025, 08, 21, 19, 30),
+          medications: [
+            MedicationInSession(
+              medicineName: "Metformin (Metformin Stella 1000mg) 1000 mg",
+              dosage: "1 viên - Sau ăn",
+              isTaken: true,
+            ),
+            MedicationInSession(
+              medicineName: "Fluvastatin (Autifan 40) 40mg",
+              dosage: "1 viên - Sau ăn",
+              isTaken: false,
+            ),
+          ],
+          note: "Uống lúc 20h",
+        )
+      ]
+    };
     _tabController = TabController(length: 2, vsync: this);
-    _sessionExpandedList = sessionList.map((e) => false).toList();
+    _sessionExpandedList = _medicineScheduleMap[_selectedDate]?.map((e) => false).toList() ?? [];
   }
 
   @override
@@ -237,16 +254,35 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
 
   /*----------------------------LỊCH UỐNG THUỐC PAGE----------------------------*/
   Widget _buildBodyForScheduleTab() {
+    final sessionList = _medicineScheduleMap[_selectedDate] ?? [];
+
     return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: sessionList.length,
-      itemBuilder: (context, sessionIndex) {
+      itemCount: max(sessionList.length + 1, 2),
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return CalendarSlider(
+            initialDate: _selectedDate,
+            onDateSelected: (newSelectedDate) {
+              setState(() {
+                _selectedDate = newSelectedDate;
+              });
+            }
+          );
+        }
+
+        if (sessionList.isEmpty) {
+          return EmptyMedicineSchedule();
+        }
+
+        final sessionIndex = index - 1;
         final session = sessionList[sessionIndex];
+
         return _buildScheduleCard(
           session,
           EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           sessionIndex,
           (medicationIndex, isTaken) {
+            // toggle between "Chưa dùng" and "Đã dùng"
             final medication = sessionList[sessionIndex].medications[medicationIndex];
 
             // 2. Create a new, updated medication object
@@ -274,10 +310,9 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
             // 5. Create a new list of sessions by replacing the updated session
             final newSessionList = List<PrescriptionBySessionModel>.from(sessionList);
             newSessionList[sessionIndex] = updatedSession;
-            print("TestAlan - ${newSessionList[sessionIndex].medications[0]}");
 
             setState(() {
-              sessionList = newSessionList;
+              _medicineScheduleMap[_selectedDate] = newSessionList;
             });
           }
         );

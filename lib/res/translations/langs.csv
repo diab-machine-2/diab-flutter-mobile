@@ -1400,3 +1400,5 @@ chip_sunday,"CN", "Su",
 please_input_dosage,"Vui lòng nhập Liều dùng thuốc", "Please input the Dosage"
 not_used,"Chưa dùng","Not use"
 used,"Đã dùng","Used"
+today_you_have_no_schedule_today,"Hôm nay bạn không có thuốc cần dùng","You have no medicine today"
+add_medicine_so_diab_remind_you_on_time,"Hãy thêm thuốc để DiaB nhắc bạn uống thuốc đúng giờ nhé!","Add medicine so DiaB can remind you to take your medicine on time."

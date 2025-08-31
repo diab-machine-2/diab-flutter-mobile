@@ -39,4 +39,5 @@ class Icons {
   String get ic_schedule_use_medicine => "lib/res/icons/ic_schedule_use_medicine.svg";
   String get ic_add_prescription => "lib/res/icons/ic_add_prescription.svg";
   String get ic_chevron_up => "lib/res/icons/ic_chevron_up.svg";
+  String get ic_empty_medicine_schedule => "lib/res/icons/ic_empty_medicine_schedule.svg";
 }
