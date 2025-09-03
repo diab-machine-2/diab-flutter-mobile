@@ -66,11 +66,11 @@ class _AddBloodSugarControllerNewState
   List<int> _rangeValue = [0, 60, 70, 95, 180];
   List<String> _rangeLabel = ['Rất thấp', "Thấp", 'Tốt', 'Cao', "Rất cao"];
   List<Color> _colorList = [
-    Color(0xFFF48222),
-    Color(0xFFF9B816),
-    Color(0xFF02635A),
-    Color(0xFFFE0201),
-    Color(0xFFB3020C),
+    Color(0xFFFF9841),
+    Color(0xFFFFCD57),
+    Color(0xFF23C559),
+    Color(0xFFF86F6F),
+    Color(0xFFD02424),
   ];
   double? number = 0;
   InputGlucoseModel? model;
@@ -1027,19 +1027,18 @@ class _AddBloodSugarControllerNewState
 
   Widget _appBarSection() {
     return CustomAppBar(
-      backgroundColor: R.color.transparent,
+      backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
       title: Text(
           widget.type == 'update'
               ? R.string.update_blood_sugar.tr()
               : R.string.enter_blood_sugar.tr(),
           style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: R.color.textDark)),
+              fontSize: 18, fontWeight: FontWeight.w700, color: R.color.white)),
       leadingIcon: IconButton(
           splashColor: R.color.transparent,
           highlightColor: R.color.transparent,
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
           onPressed: () {
             _showDialogSave();
           }),
@@ -1059,10 +1058,18 @@ class _AddBloodSugarControllerNewState
           child: Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: isClicked
-                ? Image.asset(R.drawable.ic_help_circle_active,
-                    width: 24, height: 24)
-                : Image.asset(R.drawable.ic_help_outlined,
-                    width: 24, height: 24),
+                ? Image.asset(
+                    R.drawable.ic_help_circle_active,
+                    width: 24,
+                    height: 24,
+                    color: R.color.white,
+                  )
+                : Image.asset(
+                    R.drawable.ic_help_outlined,
+                    width: 24,
+                    height: 24,
+                    color: R.color.white,
+                  ),
           ),
         ),
       ],

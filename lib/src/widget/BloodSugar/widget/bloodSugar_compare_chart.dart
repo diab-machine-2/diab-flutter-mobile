@@ -116,6 +116,7 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                         child: Icon(
                           Icons.arrow_forward_ios_rounded,
                           color: R.color.mainColor,
+                          size: 20,
                         ),
                       ),
                     ),

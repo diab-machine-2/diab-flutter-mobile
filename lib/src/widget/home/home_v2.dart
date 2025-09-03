@@ -510,12 +510,7 @@ class _HomeControllerState extends State<HomeController>
                 _showWelcomeDialog(model?.packageAccount, zaloGroup);
               });
             }
-            //
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
-                    true &&
-                state.model.measurements?.first.value1?.isNotEmpty == true &&
-                state.model.measurements?.first.value1 != "--";
-            //
+
             if (state.model.measurements?.isNotEmpty == true) {
               List<HomeMeasurementData> huyetAps = state.model.measurements!
                   .where((e) => e.title.toLowerCase() == "huyết áp")
@@ -524,7 +519,7 @@ class _HomeControllerState extends State<HomeController>
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
             }
-            //
+            
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
                     true &&
                 state.model.measurements?.first.value1?.isNotEmpty == true &&

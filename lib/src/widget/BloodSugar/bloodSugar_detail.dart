@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
@@ -9,6 +10,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -119,17 +121,19 @@ class BloodSugarDetailControllerState
     return Scaffold(
       backgroundColor: R.color.glucose_bg_color,
       appBar: AppBar(
-        backgroundColor: R.color.glucose_bg_color,
+        backgroundColor: R.color.greenGradientBottom,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
         ),
+        leadingWidth: 30,
+        centerTitle: false,
         title: Text(
           R.string.detail.tr(),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: R.color.textDark,
+            color: R.color.white,
           ),
         ),
       ),
@@ -187,7 +191,7 @@ class BloodSugarDetailControllerState
                       }
                     });
                   }
-                  
+
                   return RefreshIndicator(
                     onRefresh: _refresh,
                     child: model == null
@@ -279,75 +283,79 @@ class BloodSugarDetailControllerState
                                 children: [
                                   Text(roundNumber(element.glucose ?? 0),
                                       style: TextStyle(
-                                          fontFamily: 'Viga',
-                                          color:
-                                              toColor(element.backgroundColor),
+                                          color: R.color.color0xff111515,
                                           fontSize: 20,
-                                          fontWeight: FontWeight.w400)),
-                                  SizedBox(width: 8),
+                                          fontWeight: FontWeight.w700)),
+                                  GapW(4),
                                   Text(element.unit,
                                       style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
+                                          color: R.color.color0xff5E6566,
+                                          fontSize: 15,
                                           fontWeight: FontWeight.w400)),
                                 ],
                               ),
-                              Container(
-                                  height: 32,
-                                  padding: EdgeInsets.only(
-                                      left: 18, right: 18, top: 8, bottom: 8),
-                                  decoration: BoxDecoration(
+                              Text(element.type!,
+                                  style: TextStyle(
                                       color: element.backgroundColor == 'None'
-                                          ? R.color.white
+                                          ? R.color.color0xff111515
                                           : toColor(element.backgroundColor),
-                                      border: Border.all(
-                                          color: element.borderColor == 'None'
-                                              ? R.color.transparent
-                                              : toColor(element.borderColor),
-                                          width: element.borderColor == 'None'
-                                              ? 0
-                                              : 1),
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(13),
-                                          topRight: Radius.circular(13),
-                                          bottomLeft: Radius.circular(13))),
-                                  child: Center(
-                                    child: Text(element.type!,
-                                        style: TextStyle(
-                                            color: element.fontColor == 'None'
-                                                ? R.color.white
-                                                : toColor(element.fontColor),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600)),
-                                  ))
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700)),
                             ],
                           ),
-                          SizedBox(height: 8),
+                          GapH(8),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Text('${element.timeFrame}',
+                                  style: TextStyle(
+                                      color: R.color.color0xff5E6566,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400)),
                               Text(
                                 convertToUTC(element.createDate!, 'HH:mm'),
                                 style: TextStyle(
-                                    color: R.color.black,
+                                    color: R.color.color0xff5E6566,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400),
                               ),
-                              Text(', ${element.timeFrame}',
-                                  style: TextStyle(
-                                      color: R.color.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400)),
                             ],
                           ),
+                          element.byDevice == true
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    GapH(8),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                              R.string.connect_from_device.tr(
+                                                  args: ['Accu Chek Instant']),
+                                              style: TextStyle(
+                                                  color:
+                                                      R.color.color0xffBFC6C6,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : SizedBox(),
                           element.reason != null
                               ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SizedBox(height: 16),
+                                    GapH(16),
                                     Container(
                                         height: 1,
                                         color: R.color.color0xffEEEFF3),
-                                    SizedBox(height: 16),
+                                    GapH(16),
                                     Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,

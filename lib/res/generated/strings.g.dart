@@ -1381,4 +1381,6 @@ class Strings {
   String get use_all_advanced_features => 'use_all_advanced_features';
   String get advanced_features => 'advanced_features';
   String get retry => 'retry';
+  String get no_data_blood_sugar_trend_chart => 'no_data_blood_sugar_trend_chart';
+  String get connect_from_device => 'connect_from_device';
 }

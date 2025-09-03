@@ -427,8 +427,8 @@ class GlucoseClient extends FetchClient {
   Future<TrendDataModel> fetchGlucoseTrend(String? timeFrameId,
       String? currentDateTime, String? periodFilterType, String? page) async {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String?> requestData = {
         'page': page,

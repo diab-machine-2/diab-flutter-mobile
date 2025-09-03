@@ -9,18 +9,24 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
+import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 import 'ai_loading_text_widget.dart';
 import 'aihelp_butotn.dart';
+
+typedef BloodSugarChartCallback = void Function(
+    BloodSugarRangeType? rangeType, String? aiSuggestion);
 
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({
@@ -29,12 +35,14 @@ class BloodSugarChart extends StatefulWidget {
     required this.onFilterChanged,
     required this.onViewListing,
     required this.filterName,
+    this.bloodSugarChartCallback,
   }) : super(key: key);
 
   final int periodFilterType;
-  final Function() onFilterChanged;
+  final Function(int selectedIndex) onFilterChanged;
   final Function() onViewListing;
   final String filterName;
+  final BloodSugarChartCallback? bloodSugarChartCallback;
 
   @override
   BloodSugarChartState createState() => BloodSugarChartState();
@@ -65,12 +73,16 @@ class BloodSugarChartState extends State<BloodSugarChart>
   // less than [_breakingTypeNumber] focus
   int _focusIndex = -1;
 
+  final double _glucoseThresholdMgDl = 180;
+  final double _glucoseThresholdMmol = 10;
+
   @override
   void initState() {
     super.initState();
     periodFilterType =
         BloodSugarDetailTabbarController.of(context)?.periodFilterType ??
             widget.periodFilterType;
+    _subscription?.cancel();
     _subscription = _bloc.stream.listen((state) async {
       if (state is GlucoseTrendLoaded) {
         _subscription?.cancel();
@@ -128,6 +140,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
             mostAppearType = state.mostAppearType;
             mostAppearTypeColor = state.mostAppearTypeColor;
             rangeType = state.rangeType;
+
+            // Call the callback to pass data back to parent
+            if (widget.bloodSugarChartCallback != null) {
+              Future.delayed(Duration(milliseconds: 100), () {
+                widget.bloodSugarChartCallback!(rangeType, aiSuggestion);
+              });
+            }
           }
 
           if (model == null)
@@ -143,16 +162,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
               }
             },
             child: DecoratedBox(
-              decoration: BoxDecoration(color: Colors.white),
+              decoration: BoxDecoration(color: R.color.backgroundColorNew),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 17),
-                  _sectionFilter(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   _sectionTrending(model, mostAppearType, mostAppearTypeColor),
                   const SizedBox(height: 16),
-                  _sectionAIHelp(aiSuggestion, rangeType),
                 ],
               ),
             ),
@@ -162,78 +178,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionFilter() {
-    return Container(
-      height: 36,
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(width: 42),
-          SizedBox(
-            width: 165,
-            child: InkWell(
-              onTap: widget.onFilterChanged,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: R.color.color0xffE5E5E5),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.filterName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.textDark,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        color: R.color.textDark,
-                        size: 16,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
-          InkWell(
-            onTap: widget.onViewListing,
-            child: SizedBox(
-              width: 36,
-              height: 36,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: R.color.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: R.color.color0xffE5E5E5),
-                ),
-                child: Center(
-                    child:
-                        Icon(Icons.history, color: R.color.textDark, size: 20)),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _sectionTrending(TrendDataModel model, String? mostAppearType,
       String? mostAppearTypeColor) {
     if (model.trendItems.items.isEmpty) {
-      return Container(height: 100);
+      return _buildEmptyState();
     }
     List<TrendModel> trends = [];
     model.trendItems.items.forEach((element) {
@@ -249,11 +197,81 @@ class BloodSugarChartState extends State<BloodSugarChart>
     }
   }
 
+  Widget _buildEmptyState() {
+    // Define threshold based on unit
+    double thresholdValue = AppSettings.userInfo!.glucoseUnit == 1 ? 180 : 10;
+    String thresholdLabel =
+        AppSettings.userInfo!.glucoseUnit == 1 ? '180' : '10';
+    String selectedUnit =
+        AppSettings.userInfo!.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
+
+    return Container(
+      height: 150,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            R.string.no_data_blood_sugar_trend_chart.tr(args: [getLabel()]),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: R.color.textDark,
+            ),
+          ),
+          GapH(36),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Text(
+                  '$thresholdLabel\n$selectedUnit',
+                  style: TextStyle(
+                    color: R.color.color0xffBFC6C6,
+                    fontSize: 12,
+                  ),
+                ),
+                GapW(8),
+                Expanded(
+                  child: CustomPaint(
+                    size: Size(double.infinity, 1),
+                    painter: DashLinePainter(
+                      color: R.color.color0xffBFC6C6,
+                      strokeWidth: 1,
+                      dashWidth: 8,
+                      dashSpace: 4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String getLabel() {
+    final labels = [
+      R.string.filter_day.tr(args: ['7']),
+      R.string.filter_day.tr(args: ['14']),
+      R.string.filter_day.tr(args: ['30']),
+      R.string.filter_day.tr(args: ['90']),
+    ];
+
+    int index = periodFilterType - 1;
+    if (index >= 0 && index < labels.length) {
+      return labels[index];
+    }
+    return labels[0]; // Default to first label if index is out of bounds
+  }
+
   Widget _sectionTrendingLess(List<TrendModel> trends) {
     if (_focusIndex == -1) {
       _focusIndex = (trends.length - 1) ~/ 2;
     }
     String selectedDate = '';
+    String selectedDateTime = '';
     String selectedType = '';
     String selectedTimeFrame = '';
     String selectedGlucose = '';
@@ -262,7 +280,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
     if (_focusIndex != -1 && _focusIndex < trends.length) {
       final selectedTrend = trends[_focusIndex];
-      selectedDate = DateFormat('HH:mm - dd/MM/yyyy').format(
+      selectedDate = DateFormat('dd-MM').format(
+          DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000,
+              isUtc: true));
+      selectedDateTime = DateFormat('HH:mm').format(
           DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000,
               isUtc: true));
       selectedType = selectedTrend.type!;
@@ -280,14 +301,61 @@ class BloodSugarChartState extends State<BloodSugarChart>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              '$selectedDate\n($selectedTimeFrame)',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.textDark,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: R.color.white,
+                    borderRadius: BorderRadius.circular(19),
+                    border:
+                        Border.all(color: R.color.color0xffE5E5E5, width: 1),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$selectedDateTime',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.textDark,
+                        ),
+                      ),
+                      _dotWidget(),
+                      Text(
+                        '$selectedDate',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.textDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GapW(8),
+                InkWell(
+                  onTap: widget.onViewListing,
+                  child: SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: R.color.color0xffE5E5E5),
+                      ),
+                      child: Center(
+                          child: Icon(Icons.history,
+                              color: R.color.textDark, size: 20)),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 2),
             Row(
@@ -328,7 +396,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                       selectedType,
                       style: TextStyle(
                         fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         color: selectedColor.isNotEmpty
                             ? Color(int.parse(
                                 '0xff${selectedColor.split('#').join()}'))
@@ -370,14 +438,29 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 const SizedBox(width: 16),
               ],
             ),
-            Text(
-              '$selectedGlucose $selectedUnit',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.textDark,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$selectedTimeFrame',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff5E6566,
+                  ),
+                ),
+                _dotWidget(),
+                Text(
+                  '$selectedGlucose $selectedUnit',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.textDark,
+                  ),
+                ),
+                _dotWidget(),
+              ],
             ),
           ],
         ),
@@ -390,6 +473,18 @@ class BloodSugarChartState extends State<BloodSugarChart>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _dotWidget() {
+    return Container(
+      width: 4,
+      height: 4,
+      margin: EdgeInsets.only(left: 4, right: 4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFFBFC6C6),
+      ),
     );
   }
 
@@ -439,7 +534,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              // '01/01/2024 - 31/01/2024',
               '$fromDate - $toDate',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -553,7 +647,14 @@ class BloodSugarChartState extends State<BloodSugarChart>
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = trends.map<double>((e) => e.glucose ?? 0).reduce(max);
     maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
+
+    // Define threshold based on unit
     double scaleYMaxLine = AppSettings.userInfo!.glucoseUnit == 1 ? 180 : 10;
+    String thresholdLabel =
+        AppSettings.userInfo!.glucoseUnit == 1 ? '180' : '10';
+    String selectedUnit =
+        AppSettings.userInfo!.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
+
     // find min and max index
     minXIndex = -1;
     maxXIndex = -1;
@@ -576,7 +677,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     return SingleChildScrollView(
       reverse: trends.length > 1,
       scrollDirection: Axis.horizontal,
-      child: Stack(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             // width: ((length < 5 ? 5 : length) * (width + 20)).toDouble(),
@@ -657,9 +759,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                                 event is! FlPanEndEvent) {
                               final value = lineTouch?.lineBarSpots?[0].x;
                               if (value != null) {
-                                //    setState(() {
                                 touchIndex = value.toInt();
-                                //    });
                                 setState(() {
                                   _focusIndex = touchIndex;
                                 });
@@ -673,7 +773,23 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         rightTitles: SideTitles(showTitles: false),
                         topTitles: SideTitles(showTitles: false),
                         bottomTitles: SideTitles(showTitles: false),
-                        leftTitles: SideTitles(showTitles: false),
+                        leftTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 60,
+                          interval: (maxY - minY) / 10,
+                          textAlign: TextAlign.left,
+                          getTitles: (double value) {
+                            if ((value - scaleYMaxLine).abs() <=
+                                (maxY - minY) * 0.05) {
+                              return '${thresholdLabel}\n${selectedUnit}';
+                            }
+                            return '';
+                          },
+                          getTextStyles: (context, value) => TextStyle(
+                            color: R.color.color0xff111515,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                       borderData: FlBorderData(show: false),
                       minX: 0,
@@ -681,17 +797,16 @@ class BloodSugarChartState extends State<BloodSugarChart>
                       maxY: maxY,
                       minY: minY,
                       lineBarsData: _linesBarData(trends),
-                      extraLinesData: trends.length < _breakingTypeNumber
-                          ? null
-                          : ExtraLinesData(
-                              horizontalLines: [
-                                HorizontalLine(
-                                  y: scaleYMaxLine,
-                                  color: Color(0xFFC52F2F),
-                                  dashArray: [4, 4],
-                                ),
-                              ],
-                            ),
+                      extraLinesData: ExtraLinesData(
+                        horizontalLines: [
+                          HorizontalLine(
+                            y: scaleYMaxLine,
+                            color: R.color.color0xff636A6B,
+                            dashArray: [8, 4],
+                            strokeWidth: 1,
+                          ),
+                        ],
+                      ),
                     ),
                     swapAnimationDuration: Duration(milliseconds: 250),
                   ),
@@ -701,6 +816,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
+// Update the _linesBarData method to handle the baseline properly
   List<LineChartBarData> _linesBarData(List<TrendModel> trends) {
     if (trends.length == 0) return [];
     if (trends.length < _breakingTypeNumber) {
@@ -728,15 +844,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               );
             },
           ),
-          belowBarData: BarAreaData(
-            show: true,
-            colors: [
-              Color(0xFFE7FDFB),
-              Color(0xFFFFFFFF),
-            ],
-            gradientFrom: Offset(0.5, 0),
-            gradientTo: Offset(0.5, 1.2),
-          ),
+          belowBarData: BarAreaData(show: false),
         ),
       ];
     }

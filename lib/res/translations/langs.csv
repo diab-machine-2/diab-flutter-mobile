@@ -1332,4 +1332,6 @@ personalized_healthy_lifestyle_roadmap,Lộ trình sống khỏe cá nhân hóa,
 healthy_lifestyle_roadmap,Lộ trình sống khỏe,Healthy lifestyle roadmap,
 use_all_advanced_features,Sử dụng toàn bộ tính năng cao cấp,Use all advanced features,
 advanced_features,tính năng cao cấp,advanced features,
-retry,Thử lại,Retry
+retry,Thử lại,Retry,
+no_data_blood_sugar_trend_chart,"Không có dữ liệu \ntrong {} gần nhất","No data available \nin the past {}",
+connect_from_device,"*Kết nối máy đo {}","*Connect from {} device"

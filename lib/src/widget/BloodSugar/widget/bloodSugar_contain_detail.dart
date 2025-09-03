@@ -119,6 +119,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                             child: Icon(
                               Icons.arrow_forward_ios_rounded,
                               color: R.color.mainColor,
+                              size: 20,
                             ),
                           ),
                         ),
