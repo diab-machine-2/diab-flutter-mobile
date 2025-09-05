@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
@@ -13,6 +14,8 @@ import 'package:medical/src/widget/glucose_intro/widgets/glucose_lesson_section.
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart'; // Add this import
+import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
 import 'constant/bloodSugar_rangetype.dart';
@@ -53,10 +56,12 @@ class _BloodSugarDetailTabbarControllerState
   BloodSugarRangeType? _rangeType;
 
   bool _haveGlucoseScheduler = false;
+  bool _hasVisitedDetailListing = false;
 
   @override
   void initState() {
     _checkGlucoseScheduler();
+    _checkDetailListingVisitStatus();
     super.initState();
     // _initPeriodFilterType();
     Observable.instance.addObserver(this);
@@ -98,6 +103,7 @@ class _BloodSugarDetailTabbarControllerState
   }
 
   void _viewListing() {
+    _markDetailListingAsVisited();
     Navigator.pushNamed(context, NavigatorName.detail_blood_sugar_listing,
         arguments: {
           'glucoseID': glucoseID,
@@ -166,6 +172,64 @@ class _BloodSugarDetailTabbarControllerState
   void _doInputGlucose() async {
     Navigator.of(context).pushNamed(NavigatorName.add_blood_sugar_new,
         arguments: {'type': 'input'});
+  }
+
+  void _checkDetailListingVisitStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    _hasVisitedDetailListing =
+        prefs.getBool('has_visited_blood_sugar_detail_listing') ?? false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _markDetailListingAsVisited() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_visited_blood_sugar_detail_listing', true);
+    _hasVisitedDetailListing = true;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Widget _buildViewDetailButton() {
+    return InkWell(
+      onTap: _viewListing,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 60,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Color(0xffDCFFFC),
+              borderRadius: BorderRadius.circular(32),
+            ),
+            child: Center(
+              child: Image.asset(
+                R.drawable.ic_view_detail,
+                width: 20,
+                height: 20,
+              ),
+            ),
+          ),
+          // Red dot notification
+          if (!_hasVisitedDetailListing)
+            Positioned(
+              top: -2,
+              right: -2,
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -253,29 +317,33 @@ class _BloodSugarDetailTabbarControllerState
               top: 8,
             ),
             color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: InkWell(
-                onTap: _doInputGlucose,
-                child: Container(
-                  height: 48,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: R.color.accentColor,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Center(
-                    child: Text(
-                      R.string.blood_sugar_input.tr(),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+            child: Row(
+              children: [
+                _buildViewDetailButton(),
+                GapW(12),
+                Expanded(
+                  child: InkWell(
+                    onTap: _doInputGlucose,
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: R.color.accentColor,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Center(
+                        child: Text(
+                          R.string.blood_sugar_input.tr(),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ],

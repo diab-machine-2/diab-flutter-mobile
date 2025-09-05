@@ -50,11 +50,14 @@ class Indicator extends StatelessWidget {
                   children: [
                     Container(
                         decoration: BoxDecoration(
-                            shape: isSquare! ? BoxShape.rectangle : BoxShape.circle,
+                            shape: isSquare!
+                                ? BoxShape.rectangle
+                                : BoxShape.circle,
                             color: color,
                             borderRadius: BorderRadius.circular(8)),
                         child: Padding(
-                          padding: EdgeInsets.only(top: 2, bottom: 2, left: 8, right: 8),
+                          padding: EdgeInsets.only(
+                              top: 2, bottom: 2, left: 8, right: 8),
                           child: Center(
                             child: Text(number!,
                                 style: TextStyle(
@@ -115,7 +118,8 @@ class CircleIndicator extends StatelessWidget {
             ),
             SizedBox(width: 4),
             Text(
-              text + (number.isNotEmpty ? ' ($number%)' : ''),
+              // text + (number.isNotEmpty ? ' ($number%)' : ''),
+              text,
               style: TextStyle(
                 fontSize: fontsize,
                 height: 18 / fontsize,

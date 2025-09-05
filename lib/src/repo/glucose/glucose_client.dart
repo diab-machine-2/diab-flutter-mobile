@@ -153,8 +153,8 @@ class GlucoseClient extends FetchClient {
     //   params['periodFilterType'] = '$periodFilterType';
     // }
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       final Response response =
           await super.fetchData(url: '/App/Glucose/Distribution', params: {
@@ -183,8 +183,8 @@ class GlucoseClient extends FetchClient {
       String? glucoseDistributionType,
       {String size = '20'}) async {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
         'size': size,
@@ -457,8 +457,8 @@ class GlucoseClient extends FetchClient {
   Future<List<ComparerModel>> fetchFlucoseComparer(String? currentDateTime,
       String? periodFilterType, int? page, String? comparerType) async {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       final Response response =
           await super.fetchData(url: '/App/Glucose/Comparer', params: {
         'currentDateTime': currentDateTime,

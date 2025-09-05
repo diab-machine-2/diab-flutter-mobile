@@ -1352,6 +1352,7 @@ class _AddBloodSugarControllerNewState
         maxMedia: 5,
         key: _sectionAddNoteKey,
         initialFiles: files,
+        noteTitle: R.string.ghi_chu.tr(),
       ),
     );
   }

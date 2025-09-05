@@ -192,4 +192,5 @@ class Colors {
   Color get infographic_color => Color(0xff23C559);
   Color get color0xffB4802D => Color(0xffB4802D);
   Color get color0xff5E6566 => Color(0xff5E6566);
+  Color get color0xffDCFFFC => Color(0xffDCFFFC);
 }

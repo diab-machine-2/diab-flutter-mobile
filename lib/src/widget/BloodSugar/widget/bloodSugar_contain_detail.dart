@@ -193,11 +193,12 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                   style: TextStyle(
                                     fontSize: 20,
                                     height: 24 / 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: model.highest == 0
-                                        ? R.color.textDark
-                                        : Color(int.parse(
-                                            '0xff${model.highestColor!.split('#').join()}')),
+                                    fontWeight: FontWeight.w700,
+                                    color: R.color.color0xff111515,
+                                    // model.highest == 0
+                                    //     ? R.color.color0xff111515
+                                    //     : Color(int.parse(
+                                    //         '0xff${model.highestColor!.split('#').join()}')),
                                   ),
                                 ),
                               ],
@@ -235,10 +236,11 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                     fontSize: 20,
                                     height: 24 / 20,
                                     fontWeight: FontWeight.bold,
-                                    color: model.average == 0
-                                        ? R.color.textDark
-                                        : Color(int.parse(
-                                            '0xff${model.averageColor!.split('#').join()}')),
+                                    color: R.color.color0xff111515,
+                                    // model.average == 0
+                                    //     ? R.color.textDark
+                                    //     : Color(int.parse(
+                                    //         '0xff${model.averageColor!.split('#').join()}')),
                                   ),
                                 ),
                               ],
@@ -276,10 +278,11 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                     fontSize: 20,
                                     height: 24 / 20,
                                     fontWeight: FontWeight.bold,
-                                    color: model.lowest == 0
-                                        ? R.color.textDark
-                                        : Color(int.parse(
-                                            '0xff${model.lowestColor!.split('#').join()}')),
+                                    color: R.color.color0xff111515,
+                                    // model.lowest == 0
+                                    //     ? R.color.textDark
+                                    //     : Color(int.parse(
+                                    //         '0xff${model.lowestColor!.split('#').join()}')),
                                   ),
                                 ),
                               ],
@@ -306,7 +309,50 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
         model.lowCount! +
         model.veryLowCount!;
 
-    const double radius = 80;
+    const double radius = 60;
+
+    List<MapEntry<BloodSugarRangeType, Map<String, dynamic>>> chartSections =
+        [];
+
+    if (model.veryHighCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.very_high, {
+        'color': toColor(model.veryHighColor),
+        'value': model.veryHighCount! / total * 100,
+        'percentage': '${(model.veryHighCount! / total * 100).round()}%',
+      }));
+    }
+
+    if (model.highCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.high, {
+        'color': toColor(model.highColor),
+        'value': model.highCount! / total * 100,
+        'percentage': '${(model.highCount! / total * 100).round()}%',
+      }));
+    }
+
+    if (model.goodCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.normal, {
+        'color': toColor(model.goodColor),
+        'value': model.goodCount! / total * 100,
+        'percentage': '${(model.goodCount! / total * 100).round()}%',
+      }));
+    }
+
+    if (model.lowCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.low, {
+        'color': toColor(model.lowColor),
+        'value': model.lowCount! / total * 100,
+        'percentage': '${(model.lowCount! / total * 100).round()}%',
+      }));
+    }
+
+    if (model.veryLowCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.very_low, {
+        'color': toColor(model.veryLowColor),
+        'value': model.veryLowCount! / total * 100,
+        'percentage': '${(model.veryLowCount! / total * 100).round()}%',
+      }));
+    }
 
     return Container(
       padding: EdgeInsets.only(left: 8, right: 8),
@@ -326,43 +372,41 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     startDegreeOffset: 270,
                     borderData: FlBorderData(show: false),
                     sectionsSpace: 2,
-                    centerSpaceRadius: double.infinity,
-                    centerSpaceColor: Colors.transparent,
+                    centerSpaceRadius: 30,
+                    centerSpaceColor: Colors.white,
                     pieTouchData: PieTouchData(
                       touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                        print(pieTouchResponse);
-                      },
-                    ),
-                    sections: List.generate(
-                      5,
-                      (i) {
-                        const bool showTitle = false;
-                        late final double value;
-                        late final Color color;
-                        if (i == 0) {
-                          color = toColor(model.veryHighColor);
-                          value = model.veryHighCount! / total * 100;
-                        } else if (i == 1) {
-                          color = toColor(model.highColor);
-                          value = model.highCount! / total * 100;
-                        } else if (i == 2) {
-                          color = toColor(model.goodColor);
-                          value = model.goodCount! / total * 100;
-                        } else if (i == 3) {
-                          color = toColor(model.lowColor);
-                          value = model.lowCount! / total * 100;
-                        } else {
-                          color = toColor(model.lowestColor);
-                          value = model.veryLowCount! / total * 100;
+                        if (pieTouchResponse != null &&
+                            pieTouchResponse.touchedSection != null) {
+                          final sectionIndex = pieTouchResponse
+                              .touchedSection!.touchedSectionIndex;
+
+                          // Use the chartSections list to get the correct range type
+                          if (sectionIndex >= 0 &&
+                              sectionIndex < chartSections.length) {
+                            final rangeType = chartSections[sectionIndex].key;
+                            print('Touched section: $rangeType');
+
+                            // TODO: Call the onViewDetail callback with the selected range type
+                            // widget.onViewDetail(rangeType);
+                          }
                         }
-                        return PieChartSectionData(
-                          color: color,
-                          value: value,
-                          showTitle: showTitle,
-                          radius: radius,
-                        );
                       },
                     ),
+                    sections: chartSections.map((entry) {
+                      final data = entry.value;
+                      return PieChartSectionData(
+                        color: data['color'],
+                        value: data['value'],
+                        title: data['value'] > 5 ? data['percentage'] : '',
+                        titleStyle: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                        radius: radius,
+                      );
+                    }).toList(),
                   ),
                 ),
               ),

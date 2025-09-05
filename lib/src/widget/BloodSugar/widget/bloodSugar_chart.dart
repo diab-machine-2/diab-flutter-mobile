@@ -9,7 +9,6 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/glucose/glucose_bloc.dart';
 import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.dart';
@@ -21,6 +20,7 @@ import 'package:medical/src/modal/glucose/glucose_trend.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:medical/src/utils/debouncer.dart';
 
 import 'ai_loading_text_widget.dart';
 import 'aihelp_butotn.dart';
@@ -73,8 +73,117 @@ class BloodSugarChartState extends State<BloodSugarChart>
   // less than [_breakingTypeNumber] focus
   int _focusIndex = -1;
 
-  final double _glucoseThresholdMgDl = 180;
-  final double _glucoseThresholdMmol = 10;
+  DateTime? _lastTapTime;
+
+  List<TrendModel> trends = [];
+  List<TrendModel> _previousTrends = [];
+
+  int? _selectedDateTimestamp; // lưu timestamp của dot được chọn
+
+  bool _isChartReady = false;
+
+  bool _shouldAutoScroll = true; // Mặc định scroll 1 lần khi có data mới
+
+  final Debouncer _toastDebouncer = Debouncer(milliseconds: 1000);
+
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollToSelected({bool animated = true, int retry = 0}) {
+    if (!_shouldAutoScroll || !mounted) return;
+
+    // Chỉ thử lại tối đa 20 lần
+    if (retry > 20) {
+      _shouldAutoScroll = false;
+      return;
+    }
+
+    final bool shouldScroll = trends.length >= _breakingTypeNumber;
+    const double maxSpacing = 60.0;
+    const double minSpacing = 25.0;
+    final screenWidth = MediaQuery.of(context).size.width - 32; // padding 16*2
+    double pointSpacing = shouldScroll
+        ? max(minSpacing,
+            maxSpacing - (trends.length - _breakingTypeNumber) * 2.5)
+        : screenWidth / max(1, (trends.length - 1));
+
+    if (_scrollController.hasClients &&
+        _scrollController.position.hasContentDimensions &&
+        _focusIndex >= 0 &&
+        _focusIndex < trends.length) {
+      _shouldAutoScroll = false; // Chỉ tắt khi scroll thành công
+      final double scrollPosition = (_focusIndex * pointSpacing) - 100;
+
+      if (animated) {
+        _scrollController.animateTo(
+          scrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        _scrollController.jumpTo(
+          scrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent),
+        );
+      }
+    } else {
+      // Nếu chưa sẵn sàng, thử lại sau 50ms
+      Future.delayed(const Duration(milliseconds: 50), () {
+        _scrollToSelected(animated: animated, retry: retry + 1);
+      });
+    }
+  }
+
+  void _updateFocusIndexWithFallback(List<TrendModel> newTrends) {
+    // Store old timestamps for comparison
+    final oldTimestamps = _previousTrends.map((e) => e.date).toSet();
+    trends = newTrends;
+
+    if (trends.isEmpty) {
+      _focusIndex = -1;
+      _selectedDateTimestamp = null;
+      _previousTrends = [];
+      _toastDebouncer.run(() {
+        if (mounted) {
+          Message.showToastMessage(context, R.string.no_data.tr());
+        }
+      });
+      return;
+    }
+
+    int? matchedIndex;
+    // Check for new data by comparing timestamps
+    final newData =
+        trends.where((item) => !oldTimestamps.contains(item.date)).toList();
+
+    if (newData.isNotEmpty) {
+      // If new data exists, select the most recent new data point based on timestamp
+      final latestNewData = newData.reduce((a, b) => a.date! > b.date! ? a : b);
+      matchedIndex =
+          trends.indexWhere((item) => item.date == latestNewData.date);
+      _selectedDateTimestamp = latestNewData.date;
+    } else if (_selectedDateTimestamp != null) {
+      // If no new data but a previous selection exists, try to maintain it
+      matchedIndex =
+          trends.indexWhere((item) => item.date == _selectedDateTimestamp);
+      if (matchedIndex == -1) {
+        // If previous selection is not found, select the latest data point
+        matchedIndex = trends.length - 1;
+        _selectedDateTimestamp = trends.last.date;
+      }
+    } else {
+      // No new data and no previous selection, default to the latest data point
+      matchedIndex = trends.length - 1;
+      _selectedDateTimestamp = trends.last.date;
+    }
+
+    _focusIndex = matchedIndex;
+    _previousTrends =
+        List.from(trends); // Update previous trends for next comparison
+    if (mounted) {
+      setState(() {
+        _shouldAutoScroll = true;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -89,16 +198,16 @@ class BloodSugarChartState extends State<BloodSugarChart>
         _subscription = null;
 
         // Navigate to input if no data
-        List<TrendModel> trends = [];
+        // List<TrendModel> trends = [];
         state.trend.trendItems.items.forEach((item) {
           trends.addAll(item.subTrends);
         });
-        if (trends.isEmpty) {
-          await Future.delayed(Duration(milliseconds: 500));
-          Navigator.pushReplacementNamed(
-              context, NavigatorName.add_blood_sugar_new,
-              arguments: {'type': 'input'});
-        }
+        // if (trends.isEmpty) {
+        //   await Future.delayed(Duration(milliseconds: 500));
+        //   Navigator.pushReplacementNamed(
+        //       context, NavigatorName.add_blood_sugar_new,
+        //       arguments: {'type': 'input'});
+        // }
       }
     });
   }
@@ -106,6 +215,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   @override
   void dispose() {
     _subscription?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -147,6 +257,17 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 widget.bloodSugarChartCallback!(rangeType, aiSuggestion);
               });
             }
+
+            final newTrends = <TrendModel>[];
+            state.trend.trendItems.items.forEach((item) {
+              newTrends.addAll(item.subTrends);
+            });
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                _updateFocusIndexWithFallback(newTrends);
+              }
+            });
           }
 
           if (model == null)
@@ -159,6 +280,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
               var visiblePercentage = visibilityInfo.visibleFraction * 100;
               if (visiblePercentage == 0) {
                 previousDate = 0;
+              } else if (visiblePercentage > 0 && mounted) {
+                // Khi tab quay lại, scroll tới dot đang chọn
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    _scrollToSelected();
+                  }
+                });
               }
             },
             child: DecoratedBox(
@@ -187,14 +315,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     model.trendItems.items.forEach((element) {
       trends.addAll(element.subTrends);
     });
-    int totalItems = trends.length;
 
-    if (totalItems < _breakingTypeNumber) {
-      return _sectionTrendingLess(trends);
-    } else {
-      return _sectionTrendingMany(trends, model.fromDate, model.toDate,
-          mostAppearType, mostAppearTypeColor);
-    }
+    return _sectionTrendingLess(trends);
   }
 
   Widget _buildEmptyState() {
@@ -268,8 +390,15 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
   Widget _sectionTrendingLess(List<TrendModel> trends) {
     if (_focusIndex == -1) {
-      _focusIndex = (trends.length - 1) ~/ 2;
+      // if no focus index
+      // set focus index to the middle of the list
+      if (trends.length > 1) {
+        _focusIndex = (trends.length - 1) ~/ 2;
+      } else {
+        _focusIndex = 0;
+      }
     }
+
     String selectedDate = '';
     String selectedDateTime = '';
     String selectedType = '';
@@ -337,24 +466,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
                     ],
                   ),
                 ),
-                GapW(8),
-                InkWell(
-                  onTap: widget.onViewListing,
-                  child: SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: R.color.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: R.color.color0xffE5E5E5),
-                      ),
-                      child: Center(
-                          child: Icon(Icons.history,
-                              color: R.color.textDark, size: 20)),
-                    ),
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 2),
@@ -363,13 +474,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
               children: [
                 const SizedBox(width: 16),
                 InkWell(
-                  onTap: _focusIndex > 0
-                      ? () {
-                          setState(() {
-                            _focusIndex = max(0, _focusIndex - 1);
-                          });
-                        }
-                      : null,
+                  onTap: () {
+                    _goPreviousNode();
+                  },
                   child: Container(
                     width: 32,
                     height: 32,
@@ -392,29 +499,37 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 ),
                 Expanded(
                   child: Center(
-                    child: Text(
-                      selectedType,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: selectedColor.isNotEmpty
-                            ? Color(int.parse(
-                                '0xff${selectedColor.split('#').join()}'))
-                            : null,
-                        height: 36 / 24,
+                    child: InkWell(
+                      onTap: () {
+                        final selectedTrend = trends[_focusIndex];
+                        print(
+                            'Blood sugar chart Tap on trends: ${selectedTrend.glucose}');
+                        // Navigator.pushNamed(
+                        //     context, NavigatorName.add_blood_sugar_new,
+                        //     arguments: {
+                        //       'type': 'update',
+                        //       'id': selectedTrend.id
+                        //     });
+                      },
+                      child: Text(
+                        selectedType,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: selectedColor.isNotEmpty
+                              ? Color(int.parse(
+                                  '0xff${selectedColor.split('#').join()}'))
+                              : null,
+                          height: 36 / 24,
+                        ),
                       ),
                     ),
                   ),
                 ),
                 InkWell(
-                  onTap: _focusIndex < trends.length - 1
-                      ? () {
-                          setState(() {
-                            _focusIndex =
-                                min(trends.length - 1, _focusIndex + 1);
-                          });
-                        }
-                      : null,
+                  onTap: () {
+                    _goNextNode(trends.length);
+                  },
                   child: Container(
                     width: 32,
                     height: 32,
@@ -438,29 +553,37 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 const SizedBox(width: 16),
               ],
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '$selectedTimeFrame',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.color0xff5E6566,
+            InkWell(
+              onTap: () {
+                final selectedTrend = trends[_focusIndex];
+                print(
+                    'Blood sugar chart Tap on trends: ${selectedTrend.glucose} ');
+                // Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+                //     arguments: {'type': 'update', 'id': selectedTrend.id});
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$selectedTimeFrame',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff5E6566,
+                    ),
                   ),
-                ),
-                _dotWidget(),
-                Text(
-                  '$selectedGlucose $selectedUnit',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: R.color.textDark,
+                  _dotWidget(),
+                  Text(
+                    '$selectedGlucose $selectedUnit',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
+                    ),
                   ),
-                ),
-                _dotWidget(),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -476,6 +599,32 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
+  void _goNextNode(int length) {
+    if (_focusIndex < length - 1) {
+      setState(() {
+        _focusIndex = min(length - 1, _focusIndex + 1);
+        _selectedDateTimestamp = trends[_focusIndex].date;
+        _shouldAutoScroll = true;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToSelected();
+      });
+    }
+  }
+
+  void _goPreviousNode() {
+    if (_focusIndex > 0) {
+      setState(() {
+        _focusIndex = max(0, _focusIndex - 1);
+        _selectedDateTimestamp = trends[_focusIndex].date;
+        _shouldAutoScroll = true;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToSelected();
+      });
+    }
+  }
+
   Widget _dotWidget() {
     return Container(
       width: 4,
@@ -485,93 +634,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
         shape: BoxShape.circle,
         color: Color(0xFFBFC6C6),
       ),
-    );
-  }
-
-  Widget _sectionTrendingMany(
-    List<TrendModel> trends,
-    int? fromDateInt,
-    int? toDateInt,
-    String? mostAppearType,
-    String? mostAppearTypeColor,
-  ) {
-    double highestGlucose = 0;
-    double lowestGlucose = -1;
-
-    String fromDate = '';
-    String toDate = '';
-    if (fromDateInt != null) {
-      fromDate = DateFormat('dd/MM/yyyy').format(
-        DateTime.fromMillisecondsSinceEpoch(fromDateInt * 1000, isUtc: true),
-      );
-    }
-    if (toDateInt != null) {
-      toDate = DateFormat('dd/MM/yyyy').format(
-        DateTime.fromMillisecondsSinceEpoch(toDateInt * 1000, isUtc: true),
-      );
-    } else {
-      toDate = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    }
-
-    for (int i = 0; i < trends.length; i++) {
-      if (trends[i].glucose != null && trends[i].glucose! > highestGlucose) {
-        highestGlucose = trends[i].glucose!;
-      }
-      if (lowestGlucose == -1 ||
-          (trends[i].glucose != null && trends[i].glucose! < lowestGlucose)) {
-        lowestGlucose = trends[i].glucose!;
-      }
-    }
-
-    final selectedUnit =
-        AppSettings.userInfo!.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              '$fromDate - $toDate',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.textDark,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              mostAppearType ?? '--',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: mostAppearTypeColor?.isNotEmpty == true
-                    ? Color(int.parse(
-                        '0xff${mostAppearTypeColor!.split('#').join()}'))
-                    : null,
-                height: 36 / 24,
-              ),
-            ),
-            Text(
-              '${roundNumber(lowestGlucose)} - ${roundNumber(highestGlucose)} $selectedUnit',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.textDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          height: 88,
-          child: _buildChart(trends),
-        ),
-      ],
     );
   }
 
@@ -617,7 +679,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
             )
           else if (aiSuggestion.isEmpty)
             Text(
-              'Có lỗi xảy ra',
+              'CÃ³ lá»—i xáº£y ra',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -643,6 +705,9 @@ class BloodSugarChartState extends State<BloodSugarChart>
   }
 
   Widget _buildChart(List<TrendModel> trends, {double padding = 0}) {
+    if (trends.isEmpty) {
+      return SizedBox.shrink();
+    }
     double minY = trends.map<double>((e) => e.glucose ?? 0).reduce(min);
     minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = trends.map<double>((e) => e.glucose ?? 0).reduce(max);
@@ -674,213 +739,268 @@ class BloodSugarChartState extends State<BloodSugarChart>
     minY = max(0, minY - 10);
     maxY = maxY + 10;
 
-    return SingleChildScrollView(
-      reverse: trends.length > 1,
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            // width: ((length < 5 ? 5 : length) * (width + 20)).toDouble(),
-            width: MediaQuery.of(context).size.width - padding,
-            height: 88,
-            padding: EdgeInsets.only(top: 8, bottom: 8),
-            alignment: Alignment.center,
-            child: trends.length == 1
-                ? Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: toColor(trends[0].color).withOpacity(0.3),
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: toColor(trends[0].color),
+    const double chartPaddingTop = 8.0;
+    const double chartPaddingBottom = 8.0;
+
+    final screenWidth = MediaQuery.of(context).size.width - padding;
+
+    final bool shouldScroll = trends.length >= _breakingTypeNumber;
+
+    const double maxSpacing = 60.0;
+    const double minSpacing = 25.0;
+
+    double pointSpacing = shouldScroll
+        ? max(minSpacing,
+            maxSpacing - (trends.length - _breakingTypeNumber) * 2.5)
+        : screenWidth / max(1, (trends.length - 1));
+
+    double chartWidth =
+        shouldScroll ? pointSpacing * (trends.length - 1) : screenWidth;
+
+    double minX = trends.length == 1 ? -1 : 0;
+    double maxX = trends.length == 1 ? 1 : trends.length.toDouble() - 1;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final chartHeight = constraints.maxHeight - chartPaddingTop;
+        final usableHeight = chartHeight - chartPaddingBottom;
+        final targetPixel = chartPaddingTop +
+            (maxY - scaleYMaxLine) / (maxY - minY) * usableHeight;
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!_isChartReady && mounted) {
+            setState(() {
+              _isChartReady = true;
+            });
+
+            // Nếu có focus index hợp lệ thì scroll luôn
+            if (_focusIndex >= 0 &&
+                _focusIndex < trends.length &&
+                _shouldAutoScroll) {
+              _scrollToSelected();
+            }
+          }
+        });
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 55,
+              height: constraints.maxHeight,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: targetPixel - 8,
+                    left: 0,
+                    right: 0,
+                    child: Text(
+                      '$thresholdLabel\n$selectedUnit',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff111515,
                       ),
+                      textAlign: TextAlign.left,
                     ),
-                  )
-                : LineChart(
-                    LineChartData(
-                      lineTouchData: LineTouchData(
-                          getTouchLineStart: (barData, index) =>
-                              -double.infinity,
-                          getTouchLineEnd: (barData, index) => double.infinity,
-                          getTouchedSpotIndicator: (LineChartBarData barData,
-                              List<int> spotIndexes) {
-                            return spotIndexes.map((index) {
-                              return TouchedSpotIndicatorData(
-                                FlLine(
-                                    color: toColor(trends[index].color),
-                                    strokeWidth: 0.5),
-                                FlDotData(
-                                  show: true,
-                                  getDotPainter:
-                                      (spot, percent, barData, index) =>
-                                          FlDotCirclePainter(
-                                    radius: 6.5,
-                                    color: toColor(trends[index].color),
-                                    strokeWidth: 18,
-                                    strokeColor: toColor(trends[index].color)
-                                        .withOpacity(0.3),
-                                  ),
-                                ),
-                              );
-                            }).toList();
-                          },
-                          touchTooltipData: LineTouchTooltipData(
-                            showOnTopOfTheChartBoxArea: true,
-                            fitInsideHorizontally: true,
-                            fitInsideVertically: true,
-                            tooltipBgColor: R.color.transparent,
-                            tooltipRoundedRadius: 8,
-                            getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                              return lineBarsSpot.map((lineBarSpot) {
-                                return LineTooltipItem(
-                                  roundNumber(lineBarSpot.y),
-                                  TextStyle(
-                                      color: toColor(
-                                          trends[lineBarSpot.spotIndex].color),
-                                      fontWeight: FontWeight.bold),
-                                );
-                              }).toList();
-                            },
-                            tooltipPadding: EdgeInsets.only(bottom: 50),
-                          ),
-                          touchCallback: (FlTouchEvent event,
-                              LineTouchResponse? lineTouch) {
-                            previousDate = 0;
-                            if (lineTouch?.lineBarSpots?.length == 1 &&
-                                event is! FlLongPressEnd &&
-                                event is! FlPanEndEvent) {
-                              final value = lineTouch?.lineBarSpots?[0].x;
-                              if (value != null) {
-                                touchIndex = value.toInt();
-                                setState(() {
-                                  _focusIndex = touchIndex;
-                                });
-                              }
-                            } else {
-                              touchIndex = -1;
-                            }
-                          }),
-                      gridData: FlGridData(show: false),
-                      titlesData: FlTitlesData(
-                        rightTitles: SideTitles(showTitles: false),
-                        topTitles: SideTitles(showTitles: false),
-                        bottomTitles: SideTitles(showTitles: false),
-                        leftTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 60,
-                          interval: (maxY - minY) / 10,
-                          textAlign: TextAlign.left,
-                          getTitles: (double value) {
-                            if ((value - scaleYMaxLine).abs() <=
-                                (maxY - minY) * 0.05) {
-                              return '${thresholdLabel}\n${selectedUnit}';
-                            }
-                            return '';
-                          },
-                          getTextStyles: (context, value) => TextStyle(
-                            color: R.color.color0xff111515,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      minX: 0,
-                      maxX: trends.length.toDouble() - 1,
-                      maxY: maxY,
-                      minY: minY,
-                      lineBarsData: _linesBarData(trends),
-                      extraLinesData: ExtraLinesData(
-                        horizontalLines: [
-                          HorizontalLine(
-                            y: scaleYMaxLine,
-                            color: R.color.color0xff636A6B,
-                            dashArray: [8, 4],
-                            strokeWidth: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                    swapAnimationDuration: Duration(milliseconds: 250),
                   ),
-          ),
-        ],
-      ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: shouldScroll
+                  ? SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      controller: _scrollController,
+                      child: Container(
+                        width: chartWidth,
+                        height: constraints.maxHeight,
+                        padding: const EdgeInsets.only(
+                          top: chartPaddingTop,
+                          left: 8,
+                          right: 8,
+                          bottom: chartPaddingBottom,
+                        ),
+                        alignment: Alignment.center,
+                        child: _buildLineChart(
+                            trends, minX, maxX, minY, maxY, scaleYMaxLine),
+                      ),
+                    )
+                  : Container(
+                      width: chartWidth,
+                      height: constraints.maxHeight,
+                      padding: const EdgeInsets.only(
+                        top: chartPaddingTop,
+                        left: 8,
+                        right: 8,
+                        bottom: chartPaddingBottom,
+                      ),
+                      alignment: Alignment.center,
+                      child: _buildLineChart(
+                          trends, minX, maxX, minY, maxY, scaleYMaxLine),
+                    ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-// Update the _linesBarData method to handle the baseline properly
-  List<LineChartBarData> _linesBarData(List<TrendModel> trends) {
-    if (trends.length == 0) return [];
-    if (trends.length < _breakingTypeNumber) {
-      // can change focus
-      return [
-        LineChartBarData(
-          spots: List.generate(trends.length, (index) {
-            return FlSpot((index).toDouble(), trends[index].glucose!);
-          }),
-          isCurved: false,
-          colors: [Color(0xFF008479)],
-          barWidth: 1.5,
-          isStrokeCapRound: false,
-          dotData: FlDotData(
-            show: true,
-            checkToShowDot: (spot, barData) => true,
-            getDotPainter: (spot, percent, barData, index) {
-              return FlDotCirclePainter(
-                radius: 3,
+  Widget _buildLineChart(List<TrendModel> trends, double minX, double maxX,
+      double minY, double maxY, double scaleYMaxLine) {
+    return LineChart(
+      LineChartData(
+        minX: minX,
+        maxX: maxX,
+        minY: minY,
+        maxY: maxY,
+        lineBarsData: _linesBarData(trends),
+        titlesData: FlTitlesData(show: false),
+        gridData: FlGridData(show: false),
+        borderData: FlBorderData(show: false),
+        extraLinesData: ExtraLinesData(
+          extraLinesOnTop: true,
+          horizontalLines: [
+            HorizontalLine(
+              y: scaleYMaxLine,
+              color: R.color.color0xff636A6B,
+              strokeWidth: 1,
+              dashArray: [8, 4],
+            ),
+          ],
+        ),
+        lineTouchData: LineTouchData(
+          getTouchLineStart: (barData, index) => -double.infinity,
+          getTouchLineEnd: (barData, index) => double.infinity,
+          getTouchedSpotIndicator: (barData, indexes) => indexes.map((index) {
+            return TouchedSpotIndicatorData(
+              FlLine(
                 color: toColor(trends[index].color),
-                strokeWidth: index == _focusIndex ? 6 : 0,
-                strokeColor: index == _focusIndex
-                    ? toColor(trends[index].color).withOpacity(0.3)
-                    : null,
-              );
+                strokeWidth: 0.5,
+              ),
+              FlDotData(
+                show: true,
+                getDotPainter: (spot, percent, barData, index) =>
+                    FlDotCirclePainter(
+                  radius: 6.5,
+                  color: toColor(trends[index].color),
+                  strokeWidth: 18,
+                  strokeColor: toColor(trends[index].color).withOpacity(0.3),
+                ),
+              ),
+            );
+          }).toList(),
+          touchTooltipData: LineTouchTooltipData(
+            showOnTopOfTheChartBoxArea: true,
+            fitInsideHorizontally: true,
+            fitInsideVertically: true,
+            tooltipBgColor: R.color.transparent,
+            tooltipRoundedRadius: 8,
+            tooltipPadding: const EdgeInsets.only(bottom: 50),
+            getTooltipItems: (lineBarsSpot) {
+              return lineBarsSpot.map((spot) {
+                return LineTooltipItem(
+                  roundNumber(spot.y),
+                  TextStyle(
+                    color: toColor(trends[spot.spotIndex].color),
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              }).toList();
             },
           ),
-          belowBarData: BarAreaData(show: false),
+          touchCallback: (event, response) {
+            if (event is FlTapUpEvent) {
+              _touchCallback(event, response, trends);
+            }
+          },
         ),
-      ];
+      ),
+      swapAnimationDuration: const Duration(milliseconds: 250),
+    );
+  }
+
+  void _touchCallback(
+    FlTapUpEvent event,
+    LineTouchResponse? lineTouch,
+    List<TrendModel> trends,
+  ) {
+    final now = DateTime.now();
+
+    // detect double press
+    if (_lastTapTime != null &&
+        now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
+      // Double press detected
+      if (lineTouch?.lineBarSpots != null &&
+          lineTouch!.lineBarSpots!.isNotEmpty) {
+        final touchedSpot = lineTouch.lineBarSpots!.first;
+        final selectedTrend = trends[touchedSpot.spotIndex];
+        final date = selectedTrend.date != null
+            ? DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000)
+            : DateTime.now();
+
+        // Thực hiện hành động khi double press
+        if (touchedSpot.spotIndex == _focusIndex) {
+          print(
+              'Blood sugar chart Double tap on index: ${touchedSpot.spotIndex}');
+          //TODO: BE return id for trend api
+          // Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+          //     arguments: {'type': 'update', 'id': selectedTrend.id});
+        }
+      }
+    } else {
+      // Single press detected
+      previousDate = 0;
+      if (lineTouch?.lineBarSpots?.length == 1) {
+        final value = lineTouch?.lineBarSpots?[0].x;
+        if (value != null) {
+          touchIndex = value.toInt();
+          if (touchIndex != _focusIndex) {
+            if (!mounted) return;
+            setState(() {
+              _focusIndex = touchIndex;
+              _selectedDateTimestamp = trends[_focusIndex].date;
+              _shouldAutoScroll = true; // Cho phép scroll đúng dot sau khi tap
+            });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToSelected();
+            });
+          }
+        }
+      } else {
+        touchIndex = -1;
+      }
     }
+    _lastTapTime = now;
+  }
+
+  // Update the _linesBarData method to handle the baseline properly
+  List<LineChartBarData> _linesBarData(List<TrendModel> trends) {
+    if (trends.length == 0) return [];
     return [
       LineChartBarData(
         spots: List.generate(trends.length, (index) {
           return FlSpot((index).toDouble(), trends[index].glucose!);
         }),
-        isCurved: true,
+        isCurved: false,
         colors: [Color(0xFF008479)],
         barWidth: 1.5,
-        isStrokeCapRound: true,
+        isStrokeCapRound: false,
         dotData: FlDotData(
           show: true,
-          checkToShowDot: (spot, barData) =>
-              spot.x == minXIndex || spot.x == maxXIndex,
+          checkToShowDot: (spot, barData) => true,
           getDotPainter: (spot, percent, barData, index) {
             return FlDotCirclePainter(
               radius: 3,
-              color: index == maxXIndex ? Color(0xFFC82221) : Color(0xFFF9C239),
-              strokeWidth: 6,
-              strokeColor: index == maxXIndex
-                  ? Color(0xFFC82221).withOpacity(0.3)
-                  : Color(0xFFF9C239).withOpacity(0.3),
+              color: toColor(trends[index].color),
+              strokeWidth: index == _focusIndex ? 6 : 0,
+              strokeColor: index == _focusIndex
+                  ? toColor(trends[index].color).withOpacity(0.3)
+                  : null,
             );
           },
         ),
-        belowBarData: BarAreaData(
-          show: true,
-          colors: [
-            Color(0xFFE7FDFB),
-            Color(0xFFFFFFFF),
-          ],
-          gradientFrom: Offset(0.5, 0),
-          gradientTo: Offset(0.5, 1.2),
-        ),
+        belowBarData: BarAreaData(show: false),
       ),
     ];
   }
