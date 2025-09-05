@@ -84,8 +84,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
   bool _shouldAutoScroll = true; // Mặc định scroll 1 lần khi có data mới
 
-  final Debouncer _toastDebouncer = Debouncer(milliseconds: 1000);
-
   final ScrollController _scrollController = ScrollController();
 
   void _scrollToSelected({bool animated = true, int retry = 0}) {
@@ -141,11 +139,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
       _focusIndex = -1;
       _selectedDateTimestamp = null;
       _previousTrends = [];
-      _toastDebouncer.run(() {
-        if (mounted) {
-          Message.showToastMessage(context, R.string.no_data.tr());
-        }
-      });
       return;
     }
 
@@ -720,6 +713,10 @@ class BloodSugarChartState extends State<BloodSugarChart>
     String selectedUnit =
         AppSettings.userInfo!.glucoseUnit == 1 ? 'mg/dL' : 'mmol/L';
 
+    // Adjust minY and maxY to ensure scaleYMaxLine is within the chart
+    minY = max(0, min(minY, scaleYMaxLine - 10));
+    maxY = max(maxY, scaleYMaxLine + 10);
+
     // find min and max index
     minXIndex = -1;
     maxXIndex = -1;
@@ -735,9 +732,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
         }
       }
     }
-
-    minY = max(0, minY - 10);
-    maxY = maxY + 10;
 
     const double chartPaddingTop = 8.0;
     const double chartPaddingBottom = 8.0;
