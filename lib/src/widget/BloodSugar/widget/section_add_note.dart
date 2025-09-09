@@ -262,7 +262,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
   void _openCamera(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 512,
           maxHeight: 512,
           source: ImageSource.camera,
@@ -281,7 +281,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
     try {
       final picker = ImagePicker();
       final pickedFile =
-          await picker.getImage(maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
+          await picker.pickImage(maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
         _files.add(pickedFile);
         setState(() {});
