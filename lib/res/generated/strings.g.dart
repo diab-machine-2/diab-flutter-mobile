@@ -1383,4 +1383,10 @@ class Strings {
   String get retry => 'retry';
   String get no_data_blood_sugar_trend_chart => 'no_data_blood_sugar_trend_chart';
   String get connect_from_device => 'connect_from_device';
+  String get glucose_connect_device_title => 'glucose_connect_device_title';
+  String get glucose_connect_device_subtitle => 'glucose_connect_device_subtitle';
+  String get glucose_photo_title => 'glucose_photo_title';
+  String get glucose_photo_subtitle => 'glucose_photo_subtitle';
+  String get glucose_manual_title => 'glucose_manual_title';
+  String get glucose_manual_subtitle => 'glucose_manual_subtitle';
 }

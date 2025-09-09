@@ -1334,4 +1334,10 @@ use_all_advanced_features,Sử dụng toàn bộ tính năng cao cấp,Use all a
 advanced_features,tính năng cao cấp,advanced features,
 retry,Thử lại,Retry,
 no_data_blood_sugar_trend_chart,"Không có dữ liệu \ntrong {} gần nhất","No data available \nin the past {}",
-connect_from_device,"*Kết nối máy đo {}","*Connect from {} device"
+connect_from_device,"*Kết nối máy đo {}","*Connect from {} device",
+glucose_connect_device_title,Kết nối máy đo,Connect device,
+glucose_connect_device_subtitle,Tự động nhập chỉ số một cách nhanh chóng,Automatically enter readings quickly,
+glucose_photo_title,Chụp ảnh kết quả từ máy đo,Take photo of device results,
+glucose_photo_subtitle,Tự động đọc và nhập chỉ số,Automatically read and enter readings,
+glucose_manual_title,Nhập thủ công,Manual input,
+glucose_manual_subtitle,Nhập thủ công chỉ số đã đo,Manually enter measured readings

@@ -350,6 +350,8 @@ class _AddBloodSugarControllerNewState
                     if (AppSettings.isRegionAllowInputDevice)
                       _connectMachine(context),
                     const SizedBox(height: 16),
+                    _takePhoto(context),
+                    const SizedBox(height: 16),
                   ]),
                 ),
               ),
@@ -1276,6 +1278,9 @@ class _AddBloodSugarControllerNewState
         decoration: BoxDecoration(
           color: R.color.white,
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            Utils.getBoxShadowDropCard(),
+          ],
         ),
         height: 64,
         child: Row(
@@ -1286,10 +1291,10 @@ class _AddBloodSugarControllerNewState
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Kết nối máy đo đường huyết',
+                R.string.glucose_connect_device_title.tr(),
                 style: TextStyle(
                   fontSize: 15,
-                  color: R.color.dark,
+                  color: R.color.color0xff111515,
                 ),
               ),
             ),
@@ -1338,6 +1343,64 @@ class _AddBloodSugarControllerNewState
           ),
           const SizedBox(height: 12),
           connectMachineW,
+        ],
+      ),
+    );
+  }
+
+  Widget _takePhoto(BuildContext context) {
+    final action = () async {
+      // TODO: [PHOTO_GLUCOSE] Implement photo taking functionality
+      // Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (BuildContext context) => RocheConnectionView()));
+    };
+    final takePhotoW = InkWell(
+      onTap: action,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            Utils.getBoxShadowDropCard(),
+          ],
+        ),
+        height: 64,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(R.drawable.im_glucose_from_photo,
+                width: 40, height: 40),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                R.string.glucose_photo_title.tr(),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: R.color.color0xff111515,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Icon(
+              Icons.chevron_right,
+              color: R.color.primaryGreyColor,
+              size: 24,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          takePhotoW,
         ],
       ),
     );
