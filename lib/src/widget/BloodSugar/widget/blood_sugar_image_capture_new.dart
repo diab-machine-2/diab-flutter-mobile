@@ -38,6 +38,8 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
   // Animation properties
   bool _showFlashEffect = false;
   bool _requestingPermission = false;
+  bool _permissionDenied = false;
+  bool _permissionPermanentlyDenied = false;
 
   @override
   void initState() {
@@ -65,6 +67,23 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
       cameraController?.dispose();
       _controller = null;
     } else if (state == AppLifecycleState.resumed) {
+      // Check if permission was granted while in settings
+      _checkPermissionAndInitialize();
+    }
+  }
+
+  Future<void> _checkPermissionAndInitialize() async {
+    if (_permissionDenied || _permissionPermanentlyDenied) {
+      // Check if permission is now granted
+      final status = await Permission.camera.status;
+      if (status.isGranted) {
+        // Permission is now granted, reset states and initialize
+        _permissionDenied = false;
+        _permissionPermanentlyDenied = false;
+        _initializeCamera();
+      }
+    } else {
+      // No permission issues, initialize normally
       _initializeCamera();
     }
   }
@@ -88,35 +107,66 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
   }
 
   Future<void> _initializeCamera() async {
-    if (_requestingPermission) {
+    if (_requestingPermission || _permissionDenied || _permissionPermanentlyDenied) {
       return;
     }
+    
     try {
-      // request permission
-      if (!(await Permission.camera.isGranted)) {
+      // Check current permission status
+      final permissionStatus = await Permission.camera.status;
+      
+      // Request permission if not granted
+      if (!permissionStatus.isGranted) {
         _requestingPermission = true;
-        await Permission.camera.request();
-      }
-      final granted = await Permission.camera.isGranted;
-      _requestingPermission = false;
-      _cameras = !granted ? [] : await availableCameras();
-      if (_cameras.isEmpty) {
-        _showErrorDialog('Không tìm thấy camera nào');
-        return;
-      }
-
-      // Prefer back camera
-      _selectedCameraIndex = 0;
-      for (int i = 0; i < _cameras.length; i++) {
-        if (_cameras[i].lensDirection == CameraLensDirection.back) {
-          _selectedCameraIndex = i;
-          break;
+        final newStatus = await Permission.camera.request();
+        _requestingPermission = false;
+        
+        // If permission is permanently denied, show settings dialog
+        if (newStatus.isPermanentlyDenied) {
+          _permissionPermanentlyDenied = true;
+          _showPermissionDeniedDialog();
+          return;
+        }
+        
+        // If permission is denied, show permission dialog
+        if (!newStatus.isGranted) {
+          _permissionDenied = true;
+          _showPermissionDialog();
+          return;
         }
       }
+      
+      // Reset permission states if permission is granted
+      _permissionDenied = false;
+      _permissionPermanentlyDenied = false;
+      
+      // Get available cameras only if permission is granted
+      if (await Permission.camera.isGranted) {
+        _cameras = await availableCameras();
+        
+        if (_cameras.isEmpty) {
+          _showNoCameraDialog();
+          return;
+        }
 
-      await _setupCamera(_selectedCameraIndex);
+        // Prefer back camera
+        _selectedCameraIndex = 0;
+        for (int i = 0; i < _cameras.length; i++) {
+          if (_cameras[i].lensDirection == CameraLensDirection.back) {
+            _selectedCameraIndex = i;
+            break;
+          }
+        }
+
+        await _setupCamera(_selectedCameraIndex);
+      } else {
+        _permissionDenied = true;
+        _showPermissionDialog();
+      }
     } catch (e) {
-      _showErrorDialog('Không thể khởi tạo camera: $e');
+      if (mounted) {
+        _showErrorDialog('Không thể khởi tạo camera: $e');
+      }
     }
   }
 
@@ -217,6 +267,18 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
 
   Future<void> _selectFromGallery() async {
     try {
+      // Check storage permission for gallery access
+      if (Platform.isAndroid) {
+        final permission = await Permission.photos.status;
+        if (!permission.isGranted) {
+          final newPermission = await Permission.photos.request();
+          if (!newPermission.isGranted) {
+            _showGalleryPermissionDialog();
+            return;
+          }
+        }
+      }
+
       final XFile? pickedFile = await _picker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1024,
@@ -228,8 +290,37 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
         _analyzeImage(pickedFile.path);
       }
     } catch (e) {
-      _showPermissionDialog();
+      _showGalleryPermissionDialog();
     }
+  }
+
+  void _showGalleryPermissionDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Cần quyền truy cập thư viện'),
+          content: const Text(
+              'Ứng dụng cần quyền truy cập thư viện ảnh để chọn ảnh. Vui lòng cấp quyền để tiếp tục.'),
+          actions: [
+            TextButton(
+              child: const Text('Hủy'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Cấp quyền'),
+              onPressed: () {
+                Navigator.pop(context);
+                openAppSettings();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _manualInputSelect() {
@@ -261,29 +352,119 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
   void _showPermissionDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Thông báo'),
+          title: const Text('Cần quyền truy cập camera'),
           content: const Text(
-              'Ứng dụng cần quyền truy cập camera/thư viện để chọn ảnh'),
+              'Ứng dụng cần quyền truy cập camera để chụp ảnh đường huyết. Vui lòng cấp quyền để tiếp tục.'),
           actions: [
             TextButton(
               child: const Text('Hủy'),
               onPressed: () {
                 Navigator.pop(context);
+                Navigator.pop(context); // Go back to previous screen
               },
             ),
             TextButton(
-              child: const Text('Cho phép'),
+              child: const Text('Cấp quyền'),
               onPressed: () {
                 Navigator.pop(context);
-                openAppSettings();
+                _requestCameraPermission();
               },
             ),
           ],
         );
       },
     );
+  }
+
+  void _showPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Quyền truy cập bị từ chối'),
+          content: const Text(
+              'Quyền truy cập camera đã bị từ chối vĩnh viễn. Vui lòng vào Cài đặt để cấp quyền cho ứng dụng.'),
+          actions: [
+            TextButton(
+              child: const Text('Hủy'),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context); // Go back to previous screen
+              },
+            ),
+            TextButton(
+              child: const Text('Mở cài đặt'),
+              onPressed: () {
+                Navigator.pop(context);
+                openAppSettings().then((_) {
+                  // Reset permission states when user comes back from settings
+                  _permissionDenied = false;
+                  _permissionPermanentlyDenied = false;
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showNoCameraDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Không tìm thấy camera'),
+          content: const Text(
+              'Thiết bị không có camera hoặc camera không khả dụng. Vui lòng sử dụng chức năng chọn ảnh từ thư viện.'),
+          actions: [
+            TextButton(
+              child: const Text('Chọn ảnh'),
+              onPressed: () {
+                Navigator.pop(context);
+                _selectFromGallery();
+              },
+            ),
+            TextButton(
+              child: const Text('Hủy'),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context); // Go back to previous screen
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _requestCameraPermission() async {
+    try {
+      // Reset permission states before requesting
+      _permissionDenied = false;
+      _permissionPermanentlyDenied = false;
+      
+      final status = await Permission.camera.request();
+      if (status.isGranted) {
+        // Permission granted, reinitialize camera
+        _initializeCamera();
+      } else if (status.isPermanentlyDenied) {
+        _permissionPermanentlyDenied = true;
+        _showPermissionDeniedDialog();
+      } else {
+        _permissionDenied = true;
+        _showPermissionDialog();
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorDialog('Lỗi khi yêu cầu quyền camera: $e');
+      }
+    }
   }
 
   @override
@@ -391,6 +572,132 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
   }
 
   Widget _buildCameraPreview() {
+    // Show loading if requesting permission
+    if (_requestingPermission) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Đang yêu cầu quyền camera...',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Show permission denied state
+    if (_permissionDenied || _permissionPermanentlyDenied) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.camera_alt_outlined,
+              size: 64,
+              color: Colors.white.withOpacity(0.7),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Cần quyền truy cập camera',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Vui lòng cấp quyền camera để chụp ảnh hoặc sử dụng chức năng chọn ảnh từ thư viện',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _requestCameraPermission,
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Cấp quyền'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: R.color.greenGradientBottom,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton.icon(
+                  onPressed: _selectFromGallery,
+                  icon: const Icon(Icons.photo_library),
+                  label: const Text('Chọn ảnh'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Show error state if no cameras available
+    if (_cameras.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.camera_alt_outlined,
+              size: 64,
+              color: Colors.white.withOpacity(0.7),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Camera không khả dụng',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Vui lòng sử dụng chức năng chọn ảnh từ thư viện',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 14,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _selectFromGallery,
+              icon: const Icon(Icons.photo_library),
+              label: const Text('Chọn ảnh từ thư viện'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: R.color.greenGradientBottom,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Show loading if camera is not initialized
     if (!_isInitialized ||
         _controller == null ||
         !_controller!.value.isInitialized) {
@@ -454,32 +761,57 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
               ],
             ),
 
-            // Capture button
-            _buildCaptureButton(),
+            // Capture button - only show if camera is available and initialized
+            if (_cameras.isNotEmpty && _isInitialized)
+              _buildCaptureButton()
+            else
+              // Show disabled capture button when camera is not available
+              _buildDisabledCaptureButton(),
 
-            // Rotate button
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 13),
-                _buildControlButton(
-                  icon: Icons.rotate_right,
-                  onTap: _cameras.length > 1 && _isInitialized
-                      ? _switchCamera
-                      : null,
-                  size: 56,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Xoay',
-                  style: TextStyle(
-                    color: Color(0xFF636A6B),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
+            // Rotate button - only show if multiple cameras available
+            if (_cameras.length > 1)
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 13),
+                  _buildControlButton(
+                    icon: Icons.rotate_right,
+                    onTap: _isInitialized ? _switchCamera : null,
+                    size: 56,
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Xoay',
+                    style: TextStyle(
+                      color: Color(0xFF636A6B),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              )
+            else
+              // Show manual input button when no camera switching available
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 13),
+                  _buildControlButton(
+                    icon: Icons.edit,
+                    onTap: _manualInputSelect,
+                    size: 56,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Nhập',
+                    style: TextStyle(
+                      color: Color(0xFF636A6B),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
@@ -527,6 +859,35 @@ class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
           decoration: BoxDecoration(
             color: R.color.greenGradientBottom,
             shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDisabledCaptureButton() {
+    return GestureDetector(
+      onTap: null, // Disabled
+      child: Container(
+        width: 68,
+        height: 68,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.grey.shade400,
+            width: 4,
+          ),
+        ),
+        child: Container(
+          margin: EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.camera_alt,
+            color: Colors.grey.shade500,
+            size: 24,
           ),
         ),
       ),

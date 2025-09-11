@@ -319,6 +319,21 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
   void _openCamera(BuildContext context) async {
     try {
+      // Check camera permission first
+      final permissionStatus = await Permission.camera.status;
+      
+      if (!permissionStatus.isGranted) {
+        final newStatus = await Permission.camera.request();
+        if (!newStatus.isGranted) {
+          if (newStatus.isPermanentlyDenied) {
+            _showPermissionDeniedDialog(context);
+          } else {
+            _showAlertDialog(context);
+          }
+          return;
+        }
+      }
+
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
           maxWidth: 512,
@@ -327,16 +342,33 @@ class SectionAddNoteState extends State<SectionAddNote> {
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
         _files.add(ImageWithSource(pickedFile, true)); // Mark as from camera
-
         setState(() {});
       }
-    } catch (_) {
-      _showAlertDialog(context);
+    } catch (e) {
+      // Handle specific camera errors
+      if (e.toString().contains('camera') || e.toString().contains('permission')) {
+        _showAlertDialog(context);
+      } else {
+        // For other errors, show a generic error
+        _showGenericErrorDialog(context, 'Không thể mở camera. Vui lòng thử lại.');
+      }
     }
   }
 
   void _openGallery(BuildContext context) async {
     try {
+      // Check storage permission for gallery access on Android
+      if (Platform.isAndroid) {
+        final permission = await Permission.photos.status;
+        if (!permission.isGranted) {
+          final newPermission = await Permission.photos.request();
+          if (!newPermission.isGranted) {
+            _showGalleryPermissionDialog(context);
+            return;
+          }
+        }
+      }
+
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
@@ -344,9 +376,44 @@ class SectionAddNoteState extends State<SectionAddNote> {
         _files.add(ImageWithSource(pickedFile, false)); // Mark as from gallery
         setState(() {});
       }
-    } catch (_) {
-      _showAlertDialog(context);
+    } catch (e) {
+      if (e.toString().contains('permission') || e.toString().contains('storage')) {
+        _showGalleryPermissionDialog(context);
+      } else {
+        _showGenericErrorDialog(context, 'Không thể mở thư viện ảnh. Vui lòng thử lại.');
+      }
     }
+  }
+
+  void _showGalleryPermissionDialog(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: Text(R.string.cancel.tr()),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text('Mở cài đặt'),
+      onPressed: () {
+        Navigator.pop(context);
+        openAppSettings();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text('Cần quyền truy cập thư viện'),
+      content: Text('Ứng dụng cần quyền truy cập thư viện ảnh để chọn ảnh. Vui lòng cấp quyền để tiếp tục.'),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   void _showAlertDialog(BuildContext context) {
@@ -371,6 +438,58 @@ class SectionAddNoteState extends State<SectionAddNote> {
         cancelButton,
         continueButton,
       ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void _showPermissionDeniedDialog(BuildContext context) {
+    Widget cancelButton = TextButton(
+      child: Text(R.string.cancel.tr()),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text('Mở cài đặt'),
+      onPressed: () {
+        Navigator.pop(context);
+        openAppSettings();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text('Quyền truy cập bị từ chối'),
+      content: Text('Quyền truy cập camera đã bị từ chối vĩnh viễn. Vui lòng vào Cài đặt để cấp quyền cho ứng dụng.'),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void _showGenericErrorDialog(BuildContext context, String message) {
+    Widget okButton = TextButton(
+      child: Text('OK'),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text('Lỗi'),
+      content: Text(message),
+      actions: [okButton],
     );
     showDialog(
       context: context,
