@@ -388,7 +388,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                             print('Touched section: $rangeType');
 
                             // TODO: Call the onViewDetail callback with the selected range type
-                            // widget.onViewDetail(rangeType);
+                            widget.onViewDetail(rangeType);
                           }
                         }
                       },

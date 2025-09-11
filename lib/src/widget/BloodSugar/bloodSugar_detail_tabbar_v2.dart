@@ -117,6 +117,7 @@ class _BloodSugarDetailTabbarControllerState
           'glucoseID': glucoseID,
           'glucoseDistributionType': rangeType.value,
           'initPeriodFilterType': periodFilterType,
+          'GlucoseDistributionType': rangeType.value,
         });
   }
 

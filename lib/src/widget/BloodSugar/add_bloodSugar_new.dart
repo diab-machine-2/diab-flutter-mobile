@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:medical/src/widgets/toggle_buttons.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,8 +44,18 @@ class AddBloodSugarControllerNew extends StatefulWidget {
   final String? type;
   final String? id;
   final String? goalId;
+  final String? prefilledValue;
+  final String? prefilledUnit;
+  final List<String>? selectedImages;
 
-  AddBloodSugarControllerNew({this.type, this.id, this.goalId});
+  AddBloodSugarControllerNew({
+    this.type,
+    this.id,
+    this.goalId,
+    this.prefilledValue,
+    this.prefilledUnit,
+    this.selectedImages,
+  });
 
   @override
   _AddBloodSugarControllerNewState createState() =>
@@ -118,10 +130,45 @@ class _AddBloodSugarControllerNewState
     } else {
       await _loadConfig();
     }
-    isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
+
+    // Handle pre-filled data from image analysis
+    if (widget.prefilledValue != null && widget.prefilledValue!.isNotEmpty) {
+      _controller.text = widget.prefilledValue!;
+      number = double.tryParse(widget.prefilledValue!) ?? 0;
+    }
+
+    if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
+      // Set unit based on prefilled unit
+      isMgPerDl = widget.prefilledUnit!.toLowerCase().contains('mg') ||
+          widget.prefilledUnit!.toLowerCase().contains('mg/dl');
+
+      // Check if the AI analysis unit is different from current default
+      bool currentUnitIsMg = AppSettings.userInfo!.glucoseUnit == 1;
+      bool aiUnitIsMg = isMgPerDl;
+
+      if (currentUnitIsMg != aiUnitIsMg) {
+        // Update the user's default unit to match the AI analysis
+        _changeUnit(newUnit: widget.prefilledUnit!);
+      }
+    } else {
+      isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
+    }
+
     _lastUnitIndex = isMgPerDl ? 0 : 1;
+
+    // Handle selected images from camera/gallery
+    if (widget.selectedImages != null && widget.selectedImages!.isNotEmpty) {
+      files = widget.selectedImages!.map((path) => File(path)).toList();
+    }
+
     if (mounted) {
       setState(() {});
+
+      // Update SectionAddNote with the files after setState
+      if (_sectionAddNoteKey.currentState != null && files.isNotEmpty) {
+        _sectionAddNoteKey.currentState
+            ?.updateFilesAndNote(files, _controllerNote.text);
+      }
     }
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
@@ -350,8 +397,6 @@ class _AddBloodSugarControllerNewState
                     if (AppSettings.isRegionAllowInputDevice)
                       _connectMachine(context),
                     const SizedBox(height: 16),
-                    _takePhoto(context),
-                    const SizedBox(height: 16),
                   ]),
                 ),
               ),
@@ -360,8 +405,6 @@ class _AddBloodSugarControllerNewState
                       width: double.infinity,
                       padding: EdgeInsets.only(
                         top: 16,
-                        left: 16,
-                        right: 16,
                         bottom: MediaQuery.of(context).padding.bottom / 2,
                       ),
                       child: SpacingColumn(
@@ -398,56 +441,79 @@ class _AddBloodSugarControllerNewState
                                 ),
                               ),
                             ),
-                          GestureDetector(
-                            onTap: () async {
-                              int indexRange =
-                                  findIndexInRanges(number, _rangeValue);
-                              if (isChangeStatus) {
-                                LevelOffDiabetesRulePicker.showModal(context,
-                                    onSuccess: () {
-                                  if (indexRange == 4 || indexRange == 0) {
-                                    _showDialogWarning(
-                                        onConfirm: () => _submitData(),
-                                        range: indexRange);
-                                  } else {
-                                    _submitData();
-                                  }
-                                });
-                              } else {
-                                if (indexRange == 4 || indexRange == 0) {
-                                  _showDialogWarning(
-                                      onConfirm: () => _submitData(),
-                                      range: indexRange);
-                                } else {
-                                  _submitData();
-                                }
-                              }
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 195,
-                              decoration: BoxDecoration(
-                                color: R.color.mainColor,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    R.color.greenGradientTop,
-                                    R.color.greenGradientBottom
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  R.string.confirm.tr(),
-                                  style: TextStyle(
-                                    color: R.color.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
+                          Container(
+                            padding: EdgeInsets.only(
+                              bottom:
+                                  8 + MediaQuery.of(context).padding.bottom / 2,
+                              left: 12,
+                              right: 12,
+                              top: 8,
+                            ),
+                            color: Colors.white,
+                            child: Row(
+                              children: [
+                                if (_shouldShowTakePhotoButton()) ...[
+                                  _buildTakePhotoButton(),
+                                  GapW(16),
+                                ],
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      int indexRange = findIndexInRanges(
+                                          number, _rangeValue);
+                                      if (isChangeStatus) {
+                                        LevelOffDiabetesRulePicker.showModal(
+                                            context, onSuccess: () {
+                                          if (indexRange == 4 ||
+                                              indexRange == 0) {
+                                            _showDialogWarning(
+                                                onConfirm: () => _submitData(),
+                                                range: indexRange);
+                                          } else {
+                                            _submitData();
+                                          }
+                                        });
+                                      } else {
+                                        if (indexRange == 4 ||
+                                            indexRange == 0) {
+                                          _showDialogWarning(
+                                              onConfirm: () => _submitData(),
+                                              range: indexRange);
+                                        } else {
+                                          _submitData();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: 48,
+                                      width: 195,
+                                      decoration: BoxDecoration(
+                                        color: R.color.mainColor,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
+                                          ],
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          R.string.confirm.tr(),
+                                          style: TextStyle(
+                                            color: R.color.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ],
@@ -526,6 +592,27 @@ class _AddBloodSugarControllerNewState
     );
   }
 
+  Widget _buildTakePhotoButton() {
+    return InkWell(
+      onTap: () => _takePhoto(context),
+      child: Container(
+        width: 60,
+        height: 48,
+        decoration: BoxDecoration(
+          color: Color(0xffDCFFFC),
+          borderRadius: BorderRadius.circular(32),
+        ),
+        child: Center(
+          child: Image.asset(
+            R.drawable.ic_camera_green,
+            width: 20,
+            height: 20,
+          ),
+        ),
+      ),
+    );
+  }
+
   void deleteData() async {
     try {
       BotToast.showLoading();
@@ -553,7 +640,14 @@ class _AddBloodSugarControllerNewState
     final data = _sectionAddNoteKey.currentState?.getNote();
     if (data != null) {
       files.clear();
-      files.addAll(data.files);
+      // Convert all files to a consistent format
+      for (var file in data.files) {
+        if (file is XFile) {
+          files.add(File(file.path)); // Convert XFile to File
+        } else {
+          files.add(file); // Keep File as is
+        }
+      }
       removeIDs.clear();
       removeIDs.addAll(data.removeIDs);
     }
@@ -613,7 +707,14 @@ class _AddBloodSugarControllerNewState
     final data = _sectionAddNoteKey.currentState?.getNote();
     if (data != null) {
       files.clear();
-      files.addAll(data.files);
+      // Convert all files to a consistent format
+      for (var file in data.files) {
+        if (file is XFile) {
+          files.add(File(file.path)); // Convert XFile to File
+        } else {
+          files.add(file); // Keep File as is
+        }
+      }
       removeIDs.clear();
       removeIDs.addAll(data.removeIDs);
     }
@@ -677,16 +778,27 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  Future<void> _changeUnit() async {
+  Future<void> _changeUnit({String? newUnit}) async {
     try {
       BotToast.showLoading();
       ScheduleGlucoseTimeModel timeModel =
           await UserClient().fetchScheduleGlucoseSetting();
+
+      // Determine the new unit value
+      int newGlucoseUnit;
+      if (newUnit != null) {
+        // Use the provided unit from AI analysis
+        newGlucoseUnit = newUnit.toLowerCase().contains('mg') ? 1 : 2;
+      } else {
+        // Toggle between current units (manual change)
+        newGlucoseUnit = timeModel.glucoseUnit == 1 ? 2 : 1;
+      }
+
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
           beforeEat: timeModel.beforeEat,
           afterEat: timeModel.afterEat,
           beforeSleeping: timeModel.beforeSleeping,
-          glucoseUnit: timeModel.glucoseUnit == 1 ? 2 : 1));
+          glucoseUnit: newGlucoseUnit));
       await UserClient().fetchUser();
       Observable.instance
           .notifyObservers([], notifyName: "setup_schedule_change");
@@ -1318,7 +1430,7 @@ class _AddBloodSugarControllerNewState
         children: [
           // TODO: Enhance this
           // magic number follow sum on design or edit 1by1 :D
-          SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
+          SizedBox(height: max(height - 770 - (files.length > 0 ? 72 : 0), 8)),
           Container(
             width: 235,
             height: 20,
@@ -1348,62 +1460,21 @@ class _AddBloodSugarControllerNewState
     );
   }
 
-  Widget _takePhoto(BuildContext context) {
-    final action = () async {
-      // TODO: [PHOTO_GLUCOSE] Implement photo taking functionality
-      // Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (BuildContext context) => RocheConnectionView()));
-    };
-    final takePhotoW = InkWell(
-      onTap: action,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-        decoration: BoxDecoration(
-          color: R.color.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            Utils.getBoxShadowDropCard(),
-          ],
-        ),
-        height: 64,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(R.drawable.im_glucose_from_photo,
-                width: 40, height: 40),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                R.string.glucose_photo_title.tr(),
-                style: TextStyle(
-                  fontSize: 15,
-                  color: R.color.color0xff111515,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Icon(
-              Icons.chevron_right,
-              color: R.color.primaryGreyColor,
-              size: 24,
-            ),
-          ],
-        ),
-      ),
-    );
+  bool _shouldShowTakePhotoButton() {
+    // Don't show take photo button if data came from camera capture
+    return !_hasCameraCapturedData();
+  }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          takePhotoW,
-        ],
-      ),
-    );
+  bool _hasCameraCapturedData() {
+    // Check if data came from camera capture (has prefilled data from AI analysis)
+    return (widget.prefilledValue != null && widget.prefilledValue!.isNotEmpty) ||
+           (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) ||
+           (widget.selectedImages != null && widget.selectedImages!.isNotEmpty);
+  }
+
+  void _takePhoto(BuildContext context) {
+    // Navigate to blood glucose image capture
+    Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture);
   }
 
   Widget _selectImageSection() {
@@ -1416,9 +1487,23 @@ class _AddBloodSugarControllerNewState
         key: _sectionAddNoteKey,
         initialFiles: files,
         noteTitle: R.string.ghi_chu.tr(),
+        subText: _shouldShowSubText()
+            ? R.string.result_from_blood_glucose_device.tr()
+            : null,
+        showCameraIcons: widget.type != 'update', // Hide camera icons for update flow
       ),
     );
   }
+
+  bool _shouldShowSubText() {
+    // For update mode: show subText if byDevice is true and there are images
+    if (widget.type == 'update') {
+      return fromNipro && files.isNotEmpty;
+    }
+    // For new mode: show subText if there are camera-captured images
+    return files.any((file) => file is File);
+  }
+
 
   int findIndexInRanges(double? number, List<int> ranges) {
     if (number == null) return -1;

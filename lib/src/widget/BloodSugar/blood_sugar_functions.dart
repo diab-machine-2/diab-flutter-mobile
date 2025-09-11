@@ -180,10 +180,10 @@ class BloodSugarFunctions {
                       if (popPrevious) {
                         Navigator.pop(context);
                       }
-                      // TODO: [PHOTO_GLUCOSE] Implement photo glucose input
-                      // Navigator.pushNamed(
-                      //     context, NavigatorName.add_blood_sugar_new,
-                      //     arguments: {'type': 'input', 'goalId': goalId});
+                      // Navigate to new blood sugar image capture flow
+                      Navigator.pushNamed(
+                          context, NavigatorName.blood_sugar_image_capture,
+                          arguments: {'goalId': goalId});
                     },
                   ),
                   GapH(16),

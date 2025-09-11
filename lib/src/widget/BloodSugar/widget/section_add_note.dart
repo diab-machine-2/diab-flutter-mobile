@@ -9,6 +9,14 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+// Wrapper class to track image source
+class ImageWithSource {
+  final dynamic file;
+  final bool isFromCamera;
+
+  ImageWithSource(this.file, this.isFromCamera);
+}
+
 class SectionAddNote extends StatefulWidget {
   const SectionAddNote({
     super.key,
@@ -19,6 +27,8 @@ class SectionAddNote extends StatefulWidget {
     this.maxLength = 250,
     this.noteTitle,
     this.horizontalPadding = 16,
+    this.subText,
+    this.showCameraIcons = true, // Default to true for backward compatibility
   });
 
   final FocusNode? focusNode;
@@ -26,6 +36,8 @@ class SectionAddNote extends StatefulWidget {
   final int maxMedia;
   final int maxLength;
   final List<dynamic>? initialFiles;
+  final String? subText;
+  final bool showCameraIcons;
 
   // decorator
   final String? noteTitle;
@@ -36,7 +48,7 @@ class SectionAddNote extends StatefulWidget {
 }
 
 class SectionAddNoteState extends State<SectionAddNote> {
-  List<dynamic> _files = [];
+  List<ImageWithSource> _files = [];
   List<String?> _removeIDs = [];
 
   int _currentLength = 0;
@@ -44,7 +56,9 @@ class SectionAddNoteState extends State<SectionAddNote> {
   @override
   void initState() {
     super.initState();
-    _files.addAll(widget.initialFiles ?? []);
+    // Convert initial files to ImageWithSource, assume they are from camera
+    _files.addAll(
+        (widget.initialFiles ?? []).map((file) => ImageWithSource(file, true)));
     if (widget.controllerNote != null) {
       _currentLength = widget.controllerNote?.text.length ?? 0;
     }
@@ -52,7 +66,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
   void updateFilesAndNote(List<dynamic> files, String note) {
     _files.clear();
-    _files.addAll(files);
+    // Convert files to ImageWithSource, assume they are from camera
+    _files.addAll(files.map((file) => ImageWithSource(file, true)));
     widget.controllerNote?.text = note;
     _currentLength = note.length;
     setState(() {});
@@ -67,7 +82,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding, vertical: 16),
+      padding: EdgeInsets.symmetric(
+          horizontal: widget.horizontalPadding, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -87,7 +103,10 @@ class SectionAddNoteState extends State<SectionAddNote> {
           TextField(
             focusNode: widget.focusNode,
             controller: widget.controllerNote,
-            style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w400),
+            style: TextStyle(
+                color: R.color.black,
+                fontSize: 16,
+                fontWeight: FontWeight.w400),
             keyboardType: TextInputType.multiline,
             maxLength: widget.maxLength,
             maxLengthEnforcement: MaxLengthEnforcement.enforced,
@@ -111,9 +130,9 @@ class SectionAddNoteState extends State<SectionAddNote> {
                   R.drawable.ic_pick_photo,
                   width: 24,
                   height: 24,
-                  color: _isAddable 
-                          ? R.color.greenGradientBottom
-                          : R.color.color0xffBFC6C6,
+                  color: _isAddable
+                      ? R.color.greenGradientBottom
+                      : R.color.color0xffBFC6C6,
                 ),
               ),
               suffixIconConstraints: BoxConstraints(
@@ -148,58 +167,94 @@ class SectionAddNoteState extends State<SectionAddNote> {
             Wrap(
               spacing: 16,
               runSpacing: 16,
-              children: _files.map((e) {
-                final index = _files.indexOf(e);
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/photo_view',
-                        arguments: {'files': _files, 'index': index});
-                  },
-                  child: SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: Stack(
-                      alignment: AlignmentDirectional.topEnd,
-                      children: [
-                        Positioned.fill(
-                          top: 4,
-                          right: 4,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
+              children: _files.map((imageWithSource) {
+                final index = _files.indexOf(imageWithSource);
+                final file = imageWithSource.file;
+                final isFromCamera = imageWithSource.isFromCamera;
+
+                return Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        // Pass actual file objects to PhotoView
+                        List<dynamic> photoViewFiles =
+                            _files.map((img) => img.file).toList();
+                        Navigator.pushNamed(context, '/photo_view', arguments: {
+                          'files': photoViewFiles,
+                          'index': index
+                        });
+                      },
+                      child: SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Stack(
+                          alignment: AlignmentDirectional.topEnd,
+                          children: [
+                            Positioned.fill(
+                              top: 4,
+                              right: 4,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                width: 56,
+                                height: 56,
+                                clipBehavior: Clip.hardEdge,
+                                child: file is XFile
+                                    ? Image.file(
+                                        File(file.path),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : file is File
+                                        ? Image.file(
+                                            file,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : NetWorkImageWidget(
+                                            imageUrl: file.url,
+                                            fit: BoxFit.cover),
+                              ),
                             ),
-                            width: 56,
-                            height: 56,
-                            clipBehavior: Clip.hardEdge,
-                            child: _files[index] is PickedFile
-                                ? Image.file(
-                                    File(_files[index].path),
-                                    fit: BoxFit.cover,
-                                  )
-                                : NetWorkImageWidget(
-                                    imageUrl: _files[index].url, fit: BoxFit.cover),
-                          ),
+                            GestureDetector(
+                              onTap: () {
+                                if (isFromCamera) return;
+                                setState(() {
+                                  if (file is XFile || file is File) {
+                                    _files.removeAt(index);
+                                  } else {
+                                    _removeIDs.add(file.id);
+                                    _files.removeAt(index);
+                                  }
+                                });
+                              },
+                              child: (isFromCamera && widget.showCameraIcons)
+                                  ? Image.asset(R.drawable.ic_camera_white,
+                                      width: 24, height: 24)
+                                  : Image.asset(R.drawable.ic_close_circle_red,
+                                      width: 24, height: 24),
+                            ),
+                          ],
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (_files[index] is PickedFile) {
-                                _files.removeAt(index);
-                              } else {
-                                _removeIDs.add(_files[index].id);
-                                _files.removeAt(index);
-                              }
-                            });
-                          },
-                          child: Image.asset(R.drawable.ic_close_circle_red, width: 24, height: 24),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 );
               }).toList(),
             ),
           ],
+          // Show subText at section level when there is at least one camera image
+          if (widget.subText != null && _files.any((e) => e.isFromCamera))
+            Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text(
+                widget.subText!,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: R.color.color0xff666666,
+                ),
+                textAlign: TextAlign.start,
+              ),
+            ),
         ],
       ),
     );
@@ -218,7 +273,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
                   Image.asset(R.drawable.ic_photo, width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -232,10 +288,12 @@ class SectionAddNoteState extends State<SectionAddNote> {
               padding: EdgeInsets.only(left: 8, right: 8),
               child: Row(
                 children: [
-                  Image.asset(R.drawable.ic_camera_black, width: 24, height: 24),
+                  Image.asset(R.drawable.ic_camera_black,
+                      width: 24, height: 24),
                   SizedBox(width: 16),
                   Text(R.string.chup_anh.tr(),
-                      style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
+                      style: TextStyle(
+                          color: R.color.color0xff333333, fontSize: 14)),
                 ],
               ),
             ),
@@ -268,7 +326,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
           source: ImageSource.camera,
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
-        _files.add(pickedFile);
+        _files.add(ImageWithSource(pickedFile, true)); // Mark as from camera
 
         setState(() {});
       }
@@ -280,10 +338,10 @@ class SectionAddNoteState extends State<SectionAddNote> {
   void _openGallery(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile =
-          await picker.pickImage(maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
+      final pickedFile = await picker.pickImage(
+          maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
-        _files.add(pickedFile);
+        _files.add(ImageWithSource(pickedFile, false)); // Mark as from gallery
         setState(() {});
       }
     } catch (_) {
@@ -325,7 +383,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
   SectionAddNoteData getNote() {
     return SectionAddNoteData(
       note: widget.controllerNote?.text ?? '',
-      files: _files,
+      files: _files.map((imageWithSource) => imageWithSource.file).toList(),
       removeIDs: _removeIDs,
     );
   }
@@ -335,5 +393,6 @@ class SectionAddNoteData {
   final String note;
   final List<dynamic> files;
   final List<String?> removeIDs;
-  SectionAddNoteData({required this.note, required this.files, required this.removeIDs});
+  SectionAddNoteData(
+      {required this.note, required this.files, required this.removeIDs});
 }

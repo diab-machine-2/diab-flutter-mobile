@@ -57,7 +57,8 @@ class GlucoseClient extends FetchClient {
   }
 
   Future<bool> checkGlucoseSchedulerExisting() async {
-    final Response response = await super.fetchData(url: '/App/Patient/IsExistPatientGlucoseRemind', params: {});
+    final Response response = await super
+        .fetchData(url: '/App/Patient/IsExistPatientGlucoseRemind', params: {});
     if (response.statusCode == 200) {
       return response.data['data'] == true;
     }
@@ -65,7 +66,8 @@ class GlucoseClient extends FetchClient {
   }
 
   Future<List<GlucoseColorConfig>?> fetchColorConfig() async {
-    final Response response = await super.fetchData(url: '/App/Glucose/Config/Status', params: {});
+    final Response response =
+        await super.fetchData(url: '/App/Glucose/Config/Status', params: {});
 
     if (response.statusCode == 200) {
       final listResponse = ListResponse.fromJson(
@@ -78,7 +80,8 @@ class GlucoseClient extends FetchClient {
   }
 
   Future<GlucoseLesson?> fetchGlucoseUpcommingLesson() async {
-    final Response response = await super.fetchData(url: '/App/Glucose/Lesson/Normal');
+    final Response response =
+        await super.fetchData(url: '/App/Glucose/Lesson/Normal');
 
     if (response.statusCode == 200) {
       final singleResponse = SingleResponse.fromJson(
@@ -91,7 +94,8 @@ class GlucoseClient extends FetchClient {
   }
 
   Future<List<GlucoseLesson>?> fetchGlucoseLessons() async {
-    final Response response = await super.fetchData(url: '/App/Lesson/LessonSupport', params: {});
+    final Response response =
+        await super.fetchData(url: '/App/Lesson/LessonSupport', params: {});
 
     if (response.statusCode == 200) {
       final listResponse = ListResponse.fromJson(
@@ -130,7 +134,8 @@ class GlucoseClient extends FetchClient {
       url: '/App/Glucose/Analysis/HealthTrend',
       params: {
         'periodFilterType': periodFilterType.toString(),
-        'currentDateTime': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        'currentDateTime':
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       },
     );
 
@@ -254,25 +259,25 @@ class GlucoseClient extends FetchClient {
   Future<List<dynamic>> fetchGlucoseInputNotExist(
       List<GlucoseData> glucoses) async {
     try {
-    List<Map<String, dynamic>> params = [];
-    glucoses.forEach((element) {
-      params.add({
-        'glucose': element.glucose,
-        'createDate': element.date,
-        'unitType': 1
+      List<Map<String, dynamic>> params = [];
+      glucoses.forEach((element) {
+        params.add({
+          'glucose': element.glucose,
+          'createDate': element.date,
+          'unitType': 1
+        });
       });
-    });
-    final response = await super.postHttp2(
-        path: '/App/Glucose/GlucoseInputsNotExist',
-        params: jsonEncode({'glucoseInputs': params}));
+      final response = await super.postHttp2(
+          path: '/App/Glucose/GlucoseInputsNotExist',
+          params: jsonEncode({'glucoseInputs': params}));
 
-    if (response.statusCode == 200) {
-      final data = await response.stream.bytesToString();
+      if (response.statusCode == 200) {
+        final data = await response.stream.bytesToString();
 
-      return jsonDecode(data)['data'];
-    } else {
-      throw response.reasonPhrase!;
-    }
+        return jsonDecode(data)['data'];
+      } else {
+        throw response.reasonPhrase!;
+      }
     } catch (e) {
       print(e.toString());
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
@@ -312,8 +317,14 @@ class GlucoseClient extends FetchClient {
   }
   //============ nhập chỉ số Đường huyết =============/
 
-  Future<GlucoseInputResult?> postIndexGlucose(String? timeFrameId, int date, String glucoseInput,
-      String? reason, String note, bool byDevice, List<String> files) async {
+  Future<GlucoseInputResult?> postIndexGlucose(
+      String? timeFrameId,
+      int date,
+      String glucoseInput,
+      String? reason,
+      String note,
+      bool byDevice,
+      List<String> files) async {
     try {
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
@@ -328,8 +339,8 @@ class GlucoseClient extends FetchClient {
       if (reason != null) {
         params['reason'] = reason;
       }
-      final response =
-          await super.postHttp(path: '/App/Glucose/Input', params: params, files: files);
+      final response = await super
+          .postHttp(path: '/App/Glucose/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         final data = await response.stream.bytesToString();
@@ -529,6 +540,33 @@ class GlucoseClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  //============ Upload blood sugar images for AI analysis =============/
+  Future<BloodSugarAnalysisResult?> postBloodSugarImages(
+      List<String> imagePaths) async {
+    try {
+      final response = await super.postHttp(
+        path: '/App/Image/UploadAI/SugarMeterIndex',
+        params: <String, String>{},
+        files: imagePaths,
+      );
+
+      if (response.statusCode == 200) {
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+
+        if (jsonData['data'] != null) {
+          final bloodSugarData = jsonData['data'];
+          return BloodSugarAnalysisResult.fromJson(bloodSugarData);
+        }
+        return null;
+      } else {
+        throw response.reasonPhrase ?? 'Failed to analyze blood sugar images';
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
 }
 
 class GlucoseInputResult {
@@ -539,4 +577,30 @@ class GlucoseInputResult {
     required this.id,
     required this.images,
   });
+}
+
+class BloodSugarAnalysisResult {
+  final double value;
+  final String unit;
+  final double? confidence;
+
+  BloodSugarAnalysisResult({
+    required this.value,
+    required this.unit,
+    this.confidence,
+  });
+
+  factory BloodSugarAnalysisResult.fromJson(Map<String, dynamic> json) {
+    return BloodSugarAnalysisResult(
+      value: (json['value'] ?? json['glucose'] ?? 0.0).toDouble(),
+      unit: json['unit'] ?? json['glucoseUnit'] ?? 'mg/dL',
+      confidence: json['confidence']?.toDouble(),
+    );
+  }
+
+  static List<BloodSugarAnalysisResult> toList(List<dynamic> items) {
+    return items
+        .map((item) => BloodSugarAnalysisResult.fromJson(item))
+        .toList();
+  }
 }

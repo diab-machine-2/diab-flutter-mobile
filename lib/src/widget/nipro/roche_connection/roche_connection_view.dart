@@ -6,6 +6,7 @@ import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/glucose/glucose_faq.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'blocs/rocheConnection_cubit.dart';
@@ -30,8 +31,9 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
   }
 
   void _doManualInput() {
-    Navigator.of(context)
-        .pushReplacementNamed(NavigatorName.add_blood_sugar_new, arguments: {'type': 'input'});
+    Navigator.of(context).pushReplacementNamed(
+        NavigatorName.add_blood_sugar_new,
+        arguments: {'type': 'input'});
   }
 
   void _navigateFAQ(GlucoseFaq faq) async {
@@ -63,17 +65,18 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: examples
                           .map((deviceInfo) => Container(
-                            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: R.color.white,
-                            ),
-                            child: DeviceItemWidget(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: R.color.white,
+                                ),
+                                child: DeviceItemWidget(
                                   deviceInfo,
                                   bloc: _cubit,
                                   isNiproDevice: deviceInfo.tutorials.isEmpty,
                                 ),
-                          ))
+                              ))
                           .toList(),
                     ),
                     const SizedBox(height: 24),
@@ -81,6 +84,8 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: _buildConnectManually(),
                     ),
+                    const SizedBox(height: 16),
+                    _takePhoto(context),
                     const SizedBox(height: 24),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -110,7 +115,9 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
           alignment: Alignment.center,
           child: Row(
             children: [
-              Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+              Expanded(
+                  child:
+                      Container(height: 1, color: R.color.greenGradientBottom)),
               Text(
                 '   ${R.string.or.tr()}   ',
                 style: TextStyle(
@@ -118,7 +125,9 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
                   color: R.color.greenGradientBottom,
                 ),
               ),
-              Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+              Expanded(
+                  child:
+                      Container(height: 1, color: R.color.greenGradientBottom)),
             ],
           ),
         ),
@@ -136,7 +145,8 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(R.drawable.im_glucose_input_manual, width: 40, height: 40),
+                Image.asset(R.drawable.im_glucose_input_manual,
+                    width: 40, height: 40),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -158,6 +168,61 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _takePhoto(BuildContext context) {
+    final action = () async {
+      // Navigate to blood glucose image capture
+      Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture);
+    };
+    final takePhotoW = InkWell(
+      onTap: action,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            Utils.getBoxShadowDropCard(),
+          ],
+        ),
+        height: 64,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(R.drawable.im_glucose_from_photo,
+                width: 40, height: 40),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                R.string.glucose_photo_title.tr(),
+                style: TextStyle(
+                  fontSize: 15,
+                  color: R.color.color0xff111515,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Icon(
+              Icons.chevron_right,
+              color: R.color.primaryGreyColor,
+              size: 24,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          takePhotoW,
+        ],
+      ),
     );
   }
 

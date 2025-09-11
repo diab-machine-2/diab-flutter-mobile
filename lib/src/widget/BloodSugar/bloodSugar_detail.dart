@@ -321,7 +321,7 @@ class BloodSugarDetailControllerState
                               ),
                             ],
                           ),
-                          element.byDevice == true
+                          element.byDevice == true && element.modelName != null
                               ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -333,7 +333,7 @@ class BloodSugarDetailControllerState
                                         Flexible(
                                           child: Text(
                                               R.string.connect_from_device.tr(
-                                                  args: ['Accu Chek Instant']),
+                                                  args: [element.modelName!]),
                                               style: TextStyle(
                                                   color:
                                                       R.color.color0xffBFC6C6,

@@ -929,17 +929,14 @@ class BloodSugarChartState extends State<BloodSugarChart>
           lineTouch!.lineBarSpots!.isNotEmpty) {
         final touchedSpot = lineTouch.lineBarSpots!.first;
         final selectedTrend = trends[touchedSpot.spotIndex];
-        final date = selectedTrend.date != null
-            ? DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000)
-            : DateTime.now();
-
+        
         // Thực hiện hành động khi double press
         if (touchedSpot.spotIndex == _focusIndex) {
           print(
               'Blood sugar chart Double tap on index: ${touchedSpot.spotIndex}');
-          //TODO: BE return id for trend api
-          // Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-          //     arguments: {'type': 'update', 'id': selectedTrend.id});
+
+          Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+              arguments: {'type': 'update', 'id': selectedTrend.id});
         }
       }
     } else {

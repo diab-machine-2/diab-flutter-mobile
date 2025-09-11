@@ -791,4 +791,9 @@ class Drawables {
   String get ic_lesson_can_not_learn_v2 => "lib/res/drawables/ic_lesson_can_not_learn_v2.png";
   String get ic_view_detail => "lib/res/drawables/ic_view_detail.png";
   String get im_glucose_from_photo => "lib/res/drawables/glucose/im_glucose_from_photo.png";
+  String get im_food_capture => "lib/res/drawables/food/im_food_capture.png";
+  String get im_food_capture_rotate => "lib/res/drawables/food/im_food_capture_rotate.png";
+  String get ic_image_placeholder => "lib/res/drawables/food/ic_image_placeholder.png";
+  String get ic_camera_white => "lib/res/drawables/ic_camera_white.png";
+  String get ic_camera_green => "lib/res/drawables/ic_camera_green.png";
 }

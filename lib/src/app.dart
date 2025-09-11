@@ -311,6 +311,11 @@ class App extends StatelessWidget {
                           type: data?['type'],
                           id: data?['id'],
                           goalId: data?['goalId'],
+                          prefilledValue: data?['prefilledValue'],
+                          prefilledUnit: data?['prefilledUnit'],
+                          selectedImages: data?['selectedImages'] != null 
+                              ? List<String>.from(data!['selectedImages']) 
+                              : null,
                         ));
                   case NavigatorName.add_exercrises:
                     final data = settings.arguments as Map<String, dynamic>?;

@@ -1340,4 +1340,6 @@ glucose_connect_device_subtitle,Tự động nhập chỉ số một cách nhanh
 glucose_photo_title,Chụp ảnh kết quả từ máy đo,Take photo of device results,
 glucose_photo_subtitle,Tự động đọc và nhập chỉ số,Automatically read and enter readings,
 glucose_manual_title,Nhập thủ công,Manual input,
-glucose_manual_subtitle,Nhập thủ công chỉ số đã đo,Manually enter measured readings
+glucose_manual_subtitle,Nhập thủ công chỉ số đã đo,Manually enter measured readings,
+analyzing_blood_glucose,Đang phân tích chỉ số đường huyết,Analyzing your blood glucose index,
+result_from_blood_glucose_device,"*Kết quả chụp từ máy đo đường huyết","*Result from blood glucose device"
