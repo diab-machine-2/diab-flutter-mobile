@@ -236,7 +236,7 @@ class _BloodSugarDetailTabbarControllerState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: R.color.glucose_bg_color,
+      backgroundColor: R.color.backgroundColorNew,
       appBar: AppBar(
         backgroundColor: R.color.greenGradientBottom,
         leading: IconButton(
@@ -328,8 +328,16 @@ class _BloodSugarDetailTabbarControllerState
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
-                        color: R.color.accentColor,
-                        borderRadius: BorderRadius.circular(24),
+                        color: R.color.mainColor,
+                        borderRadius: BorderRadius.circular(200),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            R.color.greenGradientTop,
+                            R.color.greenGradientBottom
+                          ],
+                        ),
                       ),
                       child: Center(
                         child: Text(

@@ -51,8 +51,29 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
       create: (context) => _cubit,
       child: Scaffold(
         body: CommonPage(
-          title: 'Các loại máy hỗ trợ kết nối',
-          background: R.drawable.bg_glucose,
+          title: R.string.supported_devices.tr(),
+          backgroundColor: R.color.backgroundColorNew,
+          textColor: R.color.white,
+          appbarColor: R.color.greenGradientBottom,
+          appBarAction: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context)
+                      .pushNamed(NavigatorName.glucose_intro_2nd_page);
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Text(
+                    R.string.huong_dan.tr(),
+                    style: TextStyle(color: R.color.white, fontSize: 15),
+                  ),
+                ),
+              ),
+            ),
+          ),
           child: BlocConsumer<RocheConnectionCubit, RocheConnectionState>(
             listener: (context, state) async {},
             builder: (context, state) {

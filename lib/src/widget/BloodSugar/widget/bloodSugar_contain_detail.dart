@@ -127,7 +127,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 24),
 
                   model.totalCount == 0
                       ? EmptyDataBox(

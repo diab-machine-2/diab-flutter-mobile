@@ -29,6 +29,7 @@ class SectionAddNote extends StatefulWidget {
     this.horizontalPadding = 16,
     this.subText,
     this.showCameraIcons = true, // Default to true for backward compatibility
+    this.initialFilesFromCamera = false,
   });
 
   final FocusNode? focusNode;
@@ -38,6 +39,7 @@ class SectionAddNote extends StatefulWidget {
   final List<dynamic>? initialFiles;
   final String? subText;
   final bool showCameraIcons;
+  final bool initialFilesFromCamera;
 
   // decorator
   final String? noteTitle;
@@ -56,9 +58,10 @@ class SectionAddNoteState extends State<SectionAddNote> {
   @override
   void initState() {
     super.initState();
-    // Convert initial files to ImageWithSource, assume they are from camera
-    _files.addAll(
-        (widget.initialFiles ?? []).map((file) => ImageWithSource(file, true)));
+    // Convert initial files to ImageWithSource.
+    // Mark as from camera if caller indicates so, otherwise mark as not from camera.
+    _files.addAll((widget.initialFiles ?? [])
+        .map((file) => ImageWithSource(file, widget.initialFilesFromCamera)));
     if (widget.controllerNote != null) {
       _currentLength = widget.controllerNote?.text.length ?? 0;
     }
@@ -66,8 +69,9 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
   void updateFilesAndNote(List<dynamic> files, String note) {
     _files.clear();
-    // Convert files to ImageWithSource, assume they are from camera
-    _files.addAll(files.map((file) => ImageWithSource(file, true)));
+    // Convert files to ImageWithSource, keep the same initial source setting flag
+    _files.addAll(
+        files.map((file) => ImageWithSource(file, widget.initialFilesFromCamera)));
     widget.controllerNote?.text = note;
     _currentLength = note.length;
     setState(() {});
@@ -217,6 +221,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
                             ),
                             GestureDetector(
                               onTap: () {
+                                // Only allow removing if NOT from camera
                                 if (isFromCamera) return;
                                 setState(() {
                                   if (file is XFile || file is File) {
@@ -227,7 +232,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
                                   }
                                 });
                               },
-                              child: (isFromCamera && widget.showCameraIcons)
+                              child: isFromCamera
                                   ? Image.asset(R.drawable.ic_camera_white,
                                       width: 24, height: 24)
                                   : Image.asset(R.drawable.ic_close_circle_red,

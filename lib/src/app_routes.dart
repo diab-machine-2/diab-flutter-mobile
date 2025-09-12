@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture_new.dart';
+import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
@@ -143,7 +143,7 @@ class AppRoutes {
       // ~ END: Huyet Ap (mới) ~
       case NavigatorName.blood_sugar_image_capture:
         final data = settings.arguments as Map<String, dynamic>?;
-        page = BloodSugarImageCaptureNew();
+        page = BloodSugarImageCapture();
         break;
 
       default:

@@ -534,16 +534,18 @@ class _AddBloodSugarControllerNewState
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
+                                          color: R.color.color0xffFFE9E9,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           border: Border.all(
-                                              color: R.color.red, width: 2)),
+                                              color: R.color.attentionText,
+                                              width: 2)),
                                       child: Center(
                                         child: Text(R.string.xoa_du_lieu.tr(),
                                             style: TextStyle(
-                                                color: R.color.red,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
+                                                color: R.color.color0xff830000,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w700)),
                                       )),
                                 ),
                                 GestureDetector(
@@ -577,8 +579,8 @@ class _AddBloodSugarControllerNewState
                                       child: Text(R.string.save.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700)),
                                     ),
                                   ),
                                 ),
@@ -1157,33 +1159,21 @@ class _AddBloodSugarControllerNewState
             _showDialogSave();
           }),
       actions: [
-        GestureDetector(
-          onTap: () {
-            _doGuide();
-            // if (clickTime >= 2) {
-            //   await showGuide(context);
-            // } else {
-            //   setState(() {
-            //     isClicked = !isClicked;
-            //     clickTime = clickTime + 1;
-            //   });
-            // }
-          },
+        Center(
           child: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
-            child: isClicked
-                ? Image.asset(
-                    R.drawable.ic_help_circle_active,
-                    width: 24,
-                    height: 24,
-                    color: R.color.white,
-                  )
-                : Image.asset(
-                    R.drawable.ic_help_outlined,
-                    width: 24,
-                    height: 24,
-                    color: R.color.white,
-                  ),
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                _doGuide();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -1222,7 +1212,7 @@ class _AddBloodSugarControllerNewState
               focusNode: _focusNodeKPI,
               controller: _controller,
               maxLength: isMgPerDl ? 5 : 4,
-              autofocus: true,
+              autofocus: widget.type != 'update',
               textAlign: TextAlign.center,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               style: TextStyle(
@@ -1430,7 +1420,7 @@ class _AddBloodSugarControllerNewState
         children: [
           // TODO: Enhance this
           // magic number follow sum on design or edit 1by1 :D
-          SizedBox(height: max(height - 770 - (files.length > 0 ? 72 : 0), 8)),
+          SizedBox(height: max(height - 800 - (files.length > 0 ? 72 : 0), 8)),
           Container(
             width: 235,
             height: 20,
@@ -1467,9 +1457,10 @@ class _AddBloodSugarControllerNewState
 
   bool _hasCameraCapturedData() {
     // Check if data came from camera capture (has prefilled data from AI analysis)
-    return (widget.prefilledValue != null && widget.prefilledValue!.isNotEmpty) ||
-           (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) ||
-           (widget.selectedImages != null && widget.selectedImages!.isNotEmpty);
+    return (widget.prefilledValue != null &&
+            widget.prefilledValue!.isNotEmpty) ||
+        (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) ||
+        (widget.selectedImages != null && widget.selectedImages!.isNotEmpty);
   }
 
   void _takePhoto(BuildContext context) {
@@ -1486,11 +1477,14 @@ class _AddBloodSugarControllerNewState
         maxMedia: 5,
         key: _sectionAddNoteKey,
         initialFiles: files,
+        // If images come from camera capture flow, mark them as non-removable (camera icon)
+        initialFilesFromCamera: _hasCameraCapturedData(),
         noteTitle: R.string.ghi_chu.tr(),
         subText: _shouldShowSubText()
             ? R.string.result_from_blood_glucose_device.tr()
             : null,
-        showCameraIcons: widget.type != 'update', // Hide camera icons for update flow
+        showCameraIcons:
+            widget.type != 'update', // Hide camera icons for update flow
       ),
     );
   }
@@ -1503,7 +1497,6 @@ class _AddBloodSugarControllerNewState
     // For new mode: show subText if there are camera-captured images
     return files.any((file) => file is File);
   }
-
 
   int findIndexInRanges(double? number, List<int> ranges) {
     if (number == null) return -1;

@@ -11,13 +11,17 @@ class PageAddBloodSugarResultNote extends StatefulWidget {
   final List<dynamic>? files;
 
   @override
-  State<PageAddBloodSugarResultNote> createState() => _PageAddBloodSugarResultNoteState();
+  State<PageAddBloodSugarResultNote> createState() =>
+      _PageAddBloodSugarResultNoteState();
 }
 
-class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNote> {
+class _PageAddBloodSugarResultNoteState
+    extends State<PageAddBloodSugarResultNote> {
   final FocusNode _focusNode = FocusNode();
-  late TextEditingController _controllerNote = TextEditingController(text: widget.note);
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  late TextEditingController _controllerNote =
+      TextEditingController(text: widget.note);
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
 
   @override
   void dispose() {
@@ -50,6 +54,10 @@ class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNot
                   maxMedia: 5,
                   key: _sectionAddNoteKey,
                   initialFiles: widget.files,
+                  // Images opened from result page should be removable → red circle icon
+                  initialFilesFromCamera: false,
+                  // Allow deleting existing images in note edit screen
+                  showCameraIcons: false,
                 ),
               ),
             ],
@@ -61,15 +69,16 @@ class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNot
 
   Widget _appBarSection() {
     return CustomAppBar(
-      backgroundColor: R.color.transparent,
+      backgroundColor: R.color.greenGradientBottom,
       title: Text(
         R.string.them_ghi_chu.tr(),
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w700, color: R.color.white),
       ),
       leadingIcon: IconButton(
         splashColor: R.color.transparent,
         highlightColor: R.color.transparent,
-        icon: Icon(Icons.close, color: R.color.textDark),
+        icon: Icon(Icons.close, color: R.color.white),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
@@ -86,8 +95,8 @@ class _PageAddBloodSugarResultNoteState extends State<PageAddBloodSugarResultNot
             R.string.luu_ghi_chu.tr(),
             style: TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: R.color.mainColor,
+              fontWeight: FontWeight.w400,
+              color: R.color.white,
             ),
           ),
         ),

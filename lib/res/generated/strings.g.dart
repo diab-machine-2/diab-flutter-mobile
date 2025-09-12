@@ -1391,4 +1391,5 @@ class Strings {
   String get glucose_manual_subtitle => 'glucose_manual_subtitle';
   String get analyzing_blood_glucose => 'analyzing_blood_glucose';
   String get result_from_blood_glucose_device => 'result_from_blood_glucose_device';
+  String get supported_devices => 'supported_devices';
 }

@@ -519,7 +519,7 @@ class _HomeControllerState extends State<HomeController>
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
             }
-            
+
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
                     true &&
                 state.model.measurements?.first.value1?.isNotEmpty == true &&
@@ -1158,19 +1158,21 @@ class _HomeControllerState extends State<HomeController>
       if (!AppSettings.isRegionAllowInputDevice) {
         return true;
       }
-      // Logic navigate to glucose input page (saved before)
-      String? lastOpenedGlucoseInputType =
-          await AppSettings.getLastOpenedGlucoseInputType();
-      if (lastOpenedGlucoseInputType == null) {
-        BloodSugarFunctions.showModalAddData(context);
-      } else if (lastOpenedGlucoseInputType == 'device') {
-        BlocProvider.of<NiproBloc>(context).tryAutoConnect();
-      } else if (lastOpenedGlucoseInputType == 'manual') {
-        Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-            arguments: {'type': 'input', 'goalId': smartGoalId});
-        // or can return "true" to next page
-      }
-      return false;
+       // Logic navigate to glucose input page (saved before)
+       String? lastOpenedGlucoseInputType =
+           await AppSettings.getLastOpenedGlucoseInputType();
+       if (lastOpenedGlucoseInputType == null) {
+         BloodSugarFunctions.showModalAddData(context);
+       } else if (lastOpenedGlucoseInputType == 'device') {
+         BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+       } else if (lastOpenedGlucoseInputType == 'manual') {
+         Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+             arguments: {'type': 'input', 'goalId': smartGoalId});
+       } else if (lastOpenedGlucoseInputType == 'photo') {
+         Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture,
+             arguments: {'goalId': smartGoalId});
+       }
+       return false;
     }
     return true;
   }

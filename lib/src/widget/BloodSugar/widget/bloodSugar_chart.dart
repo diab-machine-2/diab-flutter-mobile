@@ -497,12 +497,12 @@ class BloodSugarChartState extends State<BloodSugarChart>
                         final selectedTrend = trends[_focusIndex];
                         print(
                             'Blood sugar chart Tap on trends: ${selectedTrend.glucose}');
-                        // Navigator.pushNamed(
-                        //     context, NavigatorName.add_blood_sugar_new,
-                        //     arguments: {
-                        //       'type': 'update',
-                        //       'id': selectedTrend.id
-                        //     });
+                        Navigator.pushNamed(
+                            context, NavigatorName.add_blood_sugar_new,
+                            arguments: {
+                              'type': 'update',
+                              'id': selectedTrend.id
+                            });
                       },
                       child: Text(
                         selectedType,
@@ -551,8 +551,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 final selectedTrend = trends[_focusIndex];
                 print(
                     'Blood sugar chart Tap on trends: ${selectedTrend.glucose} ');
-                // Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
-                //     arguments: {'type': 'update', 'id': selectedTrend.id});
+                Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+                    arguments: {'type': 'update', 'id': selectedTrend.id});
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -929,7 +929,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
           lineTouch!.lineBarSpots!.isNotEmpty) {
         final touchedSpot = lineTouch.lineBarSpots!.first;
         final selectedTrend = trends[touchedSpot.spotIndex];
-        
+
         // Thực hiện hành động khi double press
         if (touchedSpot.spotIndex == _focusIndex) {
           print(

@@ -12,15 +12,15 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class BloodSugarImageCaptureNew extends StatefulWidget {
-  const BloodSugarImageCaptureNew({Key? key}) : super(key: key);
+class BloodSugarImageCapture extends StatefulWidget {
+  const BloodSugarImageCapture({Key? key}) : super(key: key);
 
   @override
-  State<BloodSugarImageCaptureNew> createState() =>
-      _BloodSugarImageCaptureNewState();
+  State<BloodSugarImageCapture> createState() =>
+      _BloodSugarImageCaptureState();
 }
 
-class _BloodSugarImageCaptureNewState extends State<BloodSugarImageCaptureNew>
+class _BloodSugarImageCaptureState extends State<BloodSugarImageCapture>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? _controller;
   List<CameraDescription> _cameras = [];

@@ -141,10 +141,7 @@ class BloodSugarFunctions {
                     R.string.glucose_connect_device_subtitle.tr(),
                     R.drawable.im_glucose_input_device,
                     () async {
-                      if (await AppSettings.getLastOpenedGlucoseInputType() ==
-                          null) {
-                        AppSettings.setLastOpenedGlucoseInputType('device');
-                      }
+                      AppSettings.setLastOpenedGlucoseInputType('device');
                       TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',
@@ -165,10 +162,7 @@ class BloodSugarFunctions {
                     R.string.glucose_photo_subtitle.tr(),
                     R.drawable.im_glucose_from_photo,
                     () async {
-                      if (await AppSettings.getLastOpenedGlucoseInputType() ==
-                          null) {
-                        AppSettings.setLastOpenedGlucoseInputType('photo');
-                      }
+                     AppSettings.setLastOpenedGlucoseInputType('photo');
                       TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',
@@ -192,10 +186,7 @@ class BloodSugarFunctions {
                     R.string.glucose_manual_subtitle.tr(),
                     R.drawable.im_glucose_input_manual,
                     () async {
-                      if (await AppSettings.getLastOpenedGlucoseInputType() ==
-                          null) {
-                        AppSettings.setLastOpenedGlucoseInputType('manual');
-                      }
+                      AppSettings.setLastOpenedGlucoseInputType('manual');
                       TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',
@@ -212,6 +203,7 @@ class BloodSugarFunctions {
                           arguments: {'type': 'input', 'goalId': goalId});
                     },
                   ),
+                  GapH(16),
                 ],
               ),
             ),
