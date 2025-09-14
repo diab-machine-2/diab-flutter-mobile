@@ -5,9 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 
-String convertToUTC(int timeStamp, String fotmat) {
+String convertToUTC(int timeStamp, String format) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
-  String formattedDate = DateFormat(fotmat).format(date);
+  String formattedDate = DateFormat(format).format(date);
+  return formattedDate;
+}
+
+String convertDateTimeToUTC(DateTime date, String format) {
+  String formattedDate = DateFormat(format).format(date);
   return formattedDate;
 }
 

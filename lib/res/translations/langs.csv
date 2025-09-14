@@ -1397,8 +1397,11 @@ chip_thursday,"T5", "Th",
 chip_friday,"T6", "Fr",
 chip_saturday,"T7", "Sa",
 chip_sunday,"CN", "Su",
-please_input_dosage,"Vui lòng nhập Liều dùng thuốc", "Please input the Dosage"
-not_used,"Chưa dùng","Not use"
-used,"Đã dùng","Used"
-today_you_have_no_schedule_today,"Hôm nay bạn không có thuốc cần dùng","You have no medicine today"
-add_medicine_so_diab_remind_you_on_time,"Hãy thêm thuốc để DiaB nhắc bạn uống thuốc đúng giờ nhé!","Add medicine so DiaB can remind you to take your medicine on time."
+please_input_dosage,"Vui lòng nhập Liều dùng thuốc", "Please input the Dosage",
+not_used,"Chưa dùng","Not use",
+used,"Đã dùng","Used",
+today_you_have_no_schedule_today,"Hôm nay bạn không có thuốc cần dùng","You have no medicine today",
+add_medicine_so_diab_remind_you_on_time,"Hãy thêm thuốc để DiaB nhắc bạn uống thuốc đúng giờ nhé!","Add medicine so DiaB can remind you to take your medicine on time.",
+reuse_prescription,"Dùng lại đơn thuốc","Reuse prescription",
+input_medicine, "Nhập thuốc", "Input medicine",
+should_capture_advice,"Hãy chụp ở nơi có điều kiện ánh sáng tốt","Take photos in good lighting conditions.",

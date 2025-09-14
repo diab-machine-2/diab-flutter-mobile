@@ -6,6 +6,34 @@ import '../../../../res/R.dart';
 import '../../../modal/medicine/dose_model.dart';
 import '../../../modal/medicine/medicine_add_model.dart';
 
+enum FrequencyType { everyday, weekDays, everyOtherDay }
+extension FrequencyTypeExt on FrequencyType {
+  String get label {
+    switch (this) {
+      case FrequencyType.everyday:
+        return R.string.everyday.tr();
+      case FrequencyType.weekDays:
+        return R.string.ngay_trong_tuan.tr();
+      case FrequencyType.everyOtherDay:
+        return R.string.every_other_day.tr();
+    }
+  }
+}
+
+enum MomentType { before_meal, after_meal, during_meal }
+extension MomentTypeExt on MomentType {
+  String get label {
+    switch (this) {
+      case MomentType.before_meal:
+        return R.string.truoc_an.tr();
+      case MomentType.after_meal:
+        return R.string.sau_an.tr();
+      case MomentType.during_meal:
+        return R.string.during_meal.tr();
+    }
+  }
+}
+
 class DosageInputBottomSheet extends StatefulWidget {
   const DosageInputBottomSheet({Key? key}) : super(key: key);
 
@@ -14,9 +42,8 @@ class DosageInputBottomSheet extends StatefulWidget {
 }
 
 class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
-  Medication _draftPrescription = Medication();
-  String _selectedTimeOfUse = R.string.truoc_an.tr();
-  String _selectedFrequency = R.string.everyday.tr();
+  MomentType _selectedMoment = MomentType.before_meal;
+  FrequencyType _selectedFrequency = FrequencyType.everyday;
 
   // Mỗi ngày states
   TextEditingController _quantityInMorning = TextEditingController(text: "0.0");
@@ -56,14 +83,14 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
 
   void _checkEnableSubmitBtnState() {
     setState(() {
-      if (_selectedFrequency == R.string.everyday.tr()) {
+      if (_selectedFrequency == FrequencyType.everyday) {
         final morningQuantity = double.tryParse(_quantityInMorning.text) ?? 0.0;
         final noonQuantity = double.tryParse(_quantityInNoon.text) ?? 0.0;
         final afternoonQuantity = double.tryParse(_quantityInAfternoon.text) ?? 0.0;
         final eveningQuantity = double.tryParse(_quantityInEvening.text) ?? 0.0;
 
         _submitBtnEnabled = morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0;
-      } else if (_selectedFrequency == R.string.ngay_trong_tuan.tr()) {
+      } else if (_selectedFrequency == FrequencyType.weekDays) {
         _submitBtnEnabled = _selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0;
       } else {
         _submitBtnEnabled = _everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0;
@@ -141,14 +168,14 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                       children: [
                         const SizedBox(height: 16),
                         _buildSectionTitle(R.string.time_of_use.tr()),
-                        _buildTimingSelector(),
+                        _buildMomentSelector(),
                         const SizedBox(height: 16),
                         _buildSectionTitle(R.string.frequency_of_use.tr()),
                         _buildFrequencySelector(),
                         const SizedBox(height: 16),
-                        if (_selectedFrequency == R.string.everyday.tr())
+                        if (_selectedFrequency == FrequencyType.everyday)
                           ..._buildEveryDayController()
-                        else if (_selectedFrequency == R.string.ngay_trong_tuan.tr())
+                        else if (_selectedFrequency == FrequencyType.weekDays)
                           ..._buildDayInWeekController()
                         else
                           ..._buildEveryOtherDayController(),
@@ -204,19 +231,19 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     );
   }
 
-  Widget _buildTimingSelector() {
+  Widget _buildMomentSelector() {
     return Row(
       children: [
         const SizedBox(width: 8),
-        ...[R.string.truoc_an.tr(), R.string.sau_an.tr(), R.string.during_meal.tr()].map((timing) {
-          final isSelected = _selectedTimeOfUse == timing;
+        ...MomentType.values.map((moment) {
+          final isSelected = _selectedMoment == moment;
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: GestureDetector(
                 onTap: () {
                   setState(() {
-                    _selectedTimeOfUse = timing;
+                    _selectedMoment = moment;
                   });
                 },
                 child: AnimatedContainer(
@@ -228,7 +255,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    timing,
+                    moment.label,
                     style: TextStyle(
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
                       fontSize: 15,
@@ -251,7 +278,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     return Row(
       children: [
         const SizedBox(width: 8),
-        ...[R.string.everyday.tr(), R.string.ngay_trong_tuan.tr(), R.string.every_other_day.tr()].map((frequency) {
+        ...FrequencyType.values.map((frequency) {
           final isSelected = _selectedFrequency == frequency;
           return Expanded(
             child: Padding(
@@ -272,7 +299,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    frequency,
+                    frequency.label,
                     style: TextStyle(
                       color: isSelected ? Colors.white : Colors.black,
                     ),
@@ -519,6 +546,52 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
             _quantityOnDayInWeek = double.tryParse(value) ?? 0;
           }),
       ),
+
+      const SizedBox(height: 20),
+      _buildSectionTitle(R.string.dosage.tr()),
+      _buildDosageRow(R.string.the_morning.tr(), R.icons.ic_morning, _quantityInMorning, (value) => setState(() {
+        _quantityInMorning.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_noon.tr(), R.icons.ic_noon, _quantityInNoon, (value) => setState(() {
+        _quantityInNoon.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_afternoon.tr(), R.icons.ic_afternoon, _quantityInAfternoon, (value) => setState(() {
+        _quantityInAfternoon.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_evening.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
+        _quantityInEvening.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      if (getQuantity(_quantityInMorning) == 0.0 &&
+          getQuantity(_quantityInNoon) == 0.0 && getQuantity(_quantityInAfternoon) == 0.0 && getQuantity(_quantityInEvening) == 0.0)
+        Padding(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+          child: Row(
+              children: [
+                SvgPicture.asset(
+                  R.icons.ic_information,
+                  width: 14,
+                  height: 14,
+                  semanticsLabel: 'caution',
+                ),
+                SizedBox(width: 3),
+                Text(
+                  R.string.please_input_dosage.tr(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    height: 1.50,
+                    letterSpacing: 0.2,
+                    color: Color(0xFFAF0000),
+                  ),
+                ),
+              ]
+          ),
+        ),
+      const SizedBox(height: 20),
     ];
   }
 
@@ -557,6 +630,51 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         () => _updateCounter(() => _quantityOnEveryOtherDay--),
         (value) => _updateCounter(() => _quantityOnEveryOtherDay = double.tryParse(value) ?? 0.0),
       ),
+
+      const SizedBox(height: 20),
+      _buildSectionTitle(R.string.dosage.tr()),
+      _buildDosageRow(R.string.the_morning.tr(), R.icons.ic_morning, _quantityInMorning, (value) => setState(() {
+        _quantityInMorning.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_noon.tr(), R.icons.ic_noon, _quantityInNoon, (value) => setState(() {
+        _quantityInNoon.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_afternoon.tr(), R.icons.ic_afternoon, _quantityInAfternoon, (value) => setState(() {
+        _quantityInAfternoon.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      _buildDosageRow(R.string.the_evening.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
+        _quantityInEvening.text = value;
+        _checkEnableSubmitBtnState();
+      })),
+      if (getQuantity(_quantityInMorning) == 0.0 &&
+          getQuantity(_quantityInNoon) == 0.0 && getQuantity(_quantityInAfternoon) == 0.0 && getQuantity(_quantityInEvening) == 0.0)
+        Padding(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+          child: Row(
+              children: [
+                SvgPicture.asset(
+                  R.icons.ic_information,
+                  width: 14,
+                  height: 14,
+                  semanticsLabel: 'caution',
+                ),
+                SizedBox(width: 3),
+                Text(
+                  R.string.please_input_dosage.tr(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    height: 1.50,
+                    letterSpacing: 0.2,
+                    color: Color(0xFFAF0000),
+                  ),
+                ),
+              ]
+          ),
+        ),
       const SizedBox(height: 20),
     ];
   }
@@ -681,26 +799,32 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         onTap: () {
           print("Bottom sheet - morning controller ${_quantityInMorning.text} - parse: ${double.tryParse(_quantityInMorning.text)}");
           DosageModel dosage;
-          if (R.string.everyday.tr() == _selectedFrequency) {
+          if (FrequencyType.everyday == _selectedFrequency) {
             dosage = DosageModel(
-              timeOfUse: _selectedTimeOfUse,
-              frequency: _selectedFrequency,
+              momentName: _selectedMoment.label,
+              moment: _selectedMoment.index + 1,
+              frequencyName: _selectedFrequency.label,
+              frequency: _selectedFrequency.index + 1,
               quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
               quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
               quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
               quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
             );
-          } else if (R.string.ngay_trong_tuan.tr() == _selectedFrequency) {
+          } else if (FrequencyType.weekDays == _selectedFrequency) {
             dosage = DosageModel(
-              timeOfUse: _selectedTimeOfUse,
-              frequency: _selectedFrequency,
+              momentName: _selectedMoment.label,
+              moment: _selectedMoment.index + 1,
+              frequencyName: _selectedFrequency.label,
+              frequency: _selectedFrequency.index + 1,
               selectedDaysInWeek: _selectedDayIndexes,
               quantityForDaysInWeek: _quantityOnDayInWeek,
             );
           } else {
             dosage = DosageModel(
-              timeOfUse: _selectedTimeOfUse,
-              frequency: _selectedFrequency,
+              momentName: _selectedMoment.label,
+              moment: _selectedMoment.index + 1,
+              frequencyName: _selectedFrequency.label,
+              frequency: _selectedFrequency.index + 1,
               everyOtherDayNumber: _everyOtherDayNumber,
               quantityForEveryOtherDay: _quantityOnEveryOtherDay,
             );

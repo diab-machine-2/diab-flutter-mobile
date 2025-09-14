@@ -40,4 +40,6 @@ class Icons {
   String get ic_add_prescription => "lib/res/icons/ic_add_prescription.svg";
   String get ic_chevron_up => "lib/res/icons/ic_chevron_up.svg";
   String get ic_empty_medicine_schedule => "lib/res/icons/ic_empty_medicine_schedule.svg";
+  String get ic_medicine_unused => "lib/res/icons/ic_medicine_unused.svg";
+  String get ic_medicine_used => "lib/res/icons/ic_medicine_used.svg";
 }

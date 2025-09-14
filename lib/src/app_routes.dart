@@ -3,6 +3,8 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
+import 'package:medical/src/widget/medicine/medicine_check_page.dart';
+import 'package:medical/src/widget/medicine/photo_picker_page.dart';
 import 'package:medical/src/widget/medicine/prescription_add_page.dart';
 import 'package:medical/src/widget/medicine/tutorial_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
@@ -23,6 +25,7 @@ import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/glucose_intro/glucose_intro_1st_page.dart';
 import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
 import 'widget/home/schema/home_schema.dart';
+import 'widget/medicine/capture_prescription_page.dart';
 import 'widget/medicine/medicine_add_page.dart';
 import 'widget/medicine/medicine_search_page.dart';
 import 'widget/medicine/onboarding_page.dart';
@@ -148,29 +151,43 @@ class AppRoutes {
         break;
       // ~ END: Huyet Ap (mới) ~
       // Lịch dùng thuốc
+
+      case NavigatorName.medicine_check:
+        page = MedicineCheckPage();
+        break;
       case NavigatorName.medicine:
         page = OnboardingPage();
         break;
       case NavigatorName.medicine_tutorial:
         page = TutorialPage();
         break;
+      case NavigatorName.prescription_capture:
+        page = CapturePrescriptionPage();
+        break;
+      case NavigatorName.medicine_photo_picker:
+        page = PhotoPickerPage();
+        break;
       case NavigatorName.medicine_search:
         page = MedicineSearchPage();
         break;
       case NavigatorName.medicine_add:
         final data = settings.arguments as Map<String, dynamic>?;
+        final mode = data?['mode'] as MedicineMode?;
         final medicineItem = data?['medicineItem'];
-        page = MedicineAddPage(medicineItem: medicineItem);
+        final medicine = data?['medicine'];
+        page = MedicineAddPage(medicineMode: mode, medicineTablet: medicineItem, medicine: medicine);
         break;
       case NavigatorName.prescription_add:
-        // final data = settings.arguments as Map<String, dynamic>?;
-        // final medicineItem = data?['medicineItem'];
-        page = PrescriptionAddPage();
+        final data = settings.arguments as Map<String, dynamic>?;
+        final mode = data?['mode'] as PrescriptionMode?;
+        final medicineItem = data?['medicineItem'];
+        final prescription = data?['prescription'];
+        page = PrescriptionAddPage(prescriptionMode: mode, medicineItem: medicineItem, prescription: prescription,);
         break;
       case NavigatorName.prescription_remind:
-      // final data = settings.arguments as Map<String, dynamic>?;
-      // final medicineItem = data?['medicineItem'];
-        page = PrescriptionRemindPage();
+        final data = settings.arguments as Map<String, dynamic>?;
+        final prescription = data?['prescription'];
+        page = PrescriptionRemindPage(prescription: prescription);
         break;
       case NavigatorName.prescription:
         page = PrescriptionListPage();

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/modal/medicine/medicine_schedule_model.dart';
+import 'package:medical/src/modal/medicine/prescription_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -38,9 +41,14 @@ part 'medicine_bloc_state.dart';
 class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
   MedicineBloc() : super(MedicineInitial()) {
     on<SearchMedicineEvent>(_onSearchMedicine);
-    // on<ClearSearchEvent>((event, emit) {
-    //   emit(MedicineInitial());
-    // });
+    on<UploadPrescriptionPhotoEvent>(_onUploadPrescriptionPhoto);
+    on<CreateNewPrescriptionEvent>(_onCreateNewPrescription);
+    on<UpdatePrescriptionEvent>(_onUpdatePrescription);
+    on<StopPrescriptionEvent>(_onStopPrescription);
+    on<FetchPrescriptionsEvent>(_onFetchPrescriptions);
+    on<FetchPrescriptionEvent>(_onFetchPrescription);
+    on<FetchMedicineScheduleEvent>(_onFetchMedicineSchedule);
+    on<UseMedicineEvent>(_onUseMedicine);
   }
 
   Future<void> _onSearchMedicine(
@@ -50,6 +58,93 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
     try {
       final result = await client.searchMedicine(searchText: event.searchText);
       emit(MedicineSearchSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUploadPrescriptionPhoto(
+      UploadPrescriptionPhotoEvent event, Emitter<MedicineState> emit) async {
+    emit(MedicineLoading());
+    final client = MedicineClient();
+    try {
+      final result = await client.uploadPrescriptionPhoto(file: event.photo);
+      emit(UploadPrescriptionPhotoSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onCreateNewPrescription(
+      CreateNewPrescriptionEvent event, Emitter<MedicineState> emit) async {
+    emit(MedicineLoading());
+    final client = MedicineClient();
+    try {
+      final result = await client.createNewPrescription(prescription: event.prescription);
+      emit(CreatePrescriptionSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdatePrescription(
+      UpdatePrescriptionEvent event, Emitter<MedicineState> emit) async {
+    emit(MedicineLoading());
+    final client = MedicineClient();
+    try {
+      final result = await client.updatePrescription(prescription: event.prescription);
+      emit(CreatePrescriptionSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onFetchPrescriptions(FetchPrescriptionsEvent event, Emitter<MedicineState> emit) async {
+    emit(MedicineLoading());
+    final client = MedicineClient();
+    try {
+      final result = await client.fetchPrescriptions();
+      emit(FetchPrescriptionsSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onFetchPrescription(FetchPrescriptionEvent event, Emitter<MedicineState> emit) async {
+    final client = MedicineClient();
+    try {
+      final result = await client.fetchPrescription(id: event.id);
+      emit(FetchPrescriptionSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onStopPrescription(StopPrescriptionEvent event, Emitter<MedicineState> emit) async {
+    final client = MedicineClient();
+    try {
+      final result = await client.stopPrescription(id: event.id);
+      emit(StopPrescriptionSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onFetchMedicineSchedule(FetchMedicineScheduleEvent event, Emitter<MedicineState> emit) async {
+    final client = MedicineClient();
+    try {
+      final result = await client.fetchMedicineScheduleByDate(timestamp: event.timestamp);
+      emit(FetchMedicineScheduleSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUseMedicine(UseMedicineEvent event, Emitter<MedicineState> emit) async {
+    final client = MedicineClient();
+    try {
+      final result = await client.useMedicine(id: event.id);
+      emit(UseMedicineSuccess(result));
     } catch (e) {
       emit(MedicineError(message: e.toString()));
     }

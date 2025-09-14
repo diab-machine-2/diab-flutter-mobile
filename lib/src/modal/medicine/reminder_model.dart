@@ -1,18 +1,18 @@
 class ReminderModel {
-  final String label; // "Buổi sáng", "Buổi tối"
-  final String time; // "09:00", "20:30"
+  final String timeSchedule; // "09:00", "20:30"
+  final int type; // 1->4: sáng, trưa, chiều, tối
 
-  ReminderModel({required this.label, required this.time});
+  ReminderModel({required this.timeSchedule, required this.type});
 
   factory ReminderModel.fromJson(Map<String, dynamic> json) {
     return ReminderModel(
-      label: json['label'],
-      time: json['time'],
+      timeSchedule: json['timeSchedule'],
+      type: json['type'],
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'label': label,
-    'time': time,
+    'timeSchedule': timeSchedule,
+    'type': type,
   };
 }

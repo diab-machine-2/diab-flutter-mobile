@@ -1,8 +1,10 @@
 class DosageModel {
   // E.g. "Trước ăn", "Sau ăn", "Trong khi ăn"
-  final String timeOfUse;
+  final String momentName;
+  final int moment;
   // E.g. "Mỗi ngày", "Ngày trong tuần", "Cách ngày"
-  final String frequency;
+  final String frequencyName;
+  final int frequency;
 
   // Use for "Mỗi ngày"
   final double quantityInMorning;
@@ -19,8 +21,11 @@ class DosageModel {
   final double quantityForEveryOtherDay;
 
   DosageModel({
-    required this.timeOfUse,
-    required this.frequency,
+    required this.momentName,
+    required this.frequencyName,
+
+    this.moment = 1,
+    this.frequency = 1,
 
     this.quantityInMorning = 0.0,
     this.quantityInNoon = 0.0,
@@ -36,7 +41,9 @@ class DosageModel {
 
   factory DosageModel.fromJson(Map<String, dynamic> json) {
     return DosageModel(
-      timeOfUse: json['timeOfUse'] ?? '',
+      momentName: json['momentName'] ?? '',
+      frequencyName: json['frequencyName'] ?? '',
+      moment: json['moment'] ?? '',
       frequency: json['frequency'] ?? '',
       quantityInMorning: (json['quantityInMorning'] ?? 0).toDouble(),
       quantityInNoon: (json['quantityInNoon'] ?? 0).toDouble(),
@@ -50,7 +57,9 @@ class DosageModel {
   }
 
   Map<String, dynamic> toJson() => {
-    'timeOfUse': timeOfUse,
+    'momentName': momentName,
+    'frequencyName': frequencyName,
+    'moment': moment,
     'frequency': frequency,
     'quantityInMorning': quantityInMorning,
     'quantityInNoon': quantityInNoon,

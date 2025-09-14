@@ -10,6 +10,7 @@ import '../../utils/navigation_util.dart';
 import '../../utils/navigator_name.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'widgets/input_options_bottom_sheet.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -52,11 +53,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-          NavigatorName.tabbar,
-          (route) => false, // This removes all routes from stack
-        );
-        return false;
+        Navigator.of(context).pop();
+        return true;
       },
       child: GestureDetector(
         onTap: () {
@@ -71,10 +69,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 highlightColor: R.color.transparent,
                 icon: Icon(Icons.arrow_back, color: R.color.white),
                 onPressed: () {
-                  Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-                    NavigatorName.tabbar,
-                    (route) => false,
-                  );
+                  Navigator.of(context).pop();
                 }),
             title: Transform(
               transform: Matrix4.translationValues(-20, 0.0, 0.0),
@@ -177,7 +172,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
 
           GestureDetector(
-            onTap: () => _showPopupInputOptions(context),
+            onTap: () {
+              InputOptionsBottomSheet.show(
+                context,
+                onCameraTap: () {
+                  Navigator.of(context).pushNamed(NavigatorName.prescription_capture);
+                },
+                onHandTap: () {
+                  Navigator.of(context).pushNamed(NavigatorName.medicine_search);
+                },
+              );
+            },
             child: Container(
               margin: const EdgeInsets.only(top: 16),
               height: 48,

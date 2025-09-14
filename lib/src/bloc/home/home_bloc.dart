@@ -433,7 +433,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         icon: R.drawable.ic_home_medicine,
         title: R.string.schedule_medicine.tr(),
         slug: "lich-uong-thuoc",
-        navigatorName: NavigatorName.medicine,
+        navigatorName: NavigatorName.medicine_check,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_reminder,

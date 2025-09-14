@@ -1,56 +1,93 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:medical/src/modal/medicine/prescription_model.dart';
 import '../../../res/R.dart';
+import '../../bloc/medicine/medicine_bloc.dart';
 import '../../modal/medicine/medicine_item_model.dart';
 import '../../utils/navigator_name.dart';
+import '../../widgets/CalendarPicker/custom_date_picker2.dart';
 import '../BloodSugar/widget/section_add_note.dart';
+import '../helper/helper.dart';
+import 'medicine_add_page.dart';
+import 'widgets/medicine_card.dart';
+
+enum PrescriptionMode {
+  create,   // Tạo đơn thuốc
+  edit,     // chỉnh sửa đơn thuốc
+  reuse,    // sử dụng lại đơn thuốc
+}
 
 class PrescriptionAddPage extends StatefulWidget {
-  const PrescriptionAddPage({super.key});
+  PrescriptionAddPage({super.key, this.prescriptionMode, this.medicineItem, this.prescription});
+
+  final PrescriptionMode? prescriptionMode;
+  final MedicineItemModel? medicineItem;
+  final PrescriptionModel? prescription;
 
   @override
   State<PrescriptionAddPage> createState() => _PrescriptionAddPageState();
 }
 
 class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
-  final List<MedicineItemModel> medicines = [
-    MedicineItemModel(
-      id: '1',
-      name: 'Gliclazid (Glycinorm-80)',
-      // dosage: '80mg',
-      quantity: 36,
-      // mealTime: 'Trước ăn',
-      // frequency: 'Mỗi ngày',
-      // times: ['Sáng'],
-      // dose: 1,
-    ),
-    MedicineItemModel(
-      id: '2',
-      name: 'Metformin (Metformin Stella 1000mg)',
-      // dosage: '1000 mg',
-      quantity: 36,
-      // mealTime: 'Sau ăn',
-      // frequency: 'Mỗi ngày',
-      // times: ['Tối'],
-      // dose: 1,
-    ),
-    MedicineItemModel(
-      id: '3',
-      name: 'Fluvastatin (Autifan 40)',
-      // dosage: '40mg',
-      quantity: 30,
-      // mealTime: 'Sau ăn',
-      // frequency: 'Mỗi ngày',
-      // times: ['Tối'],
-      // dose: 1,
-      note: 'uống lúc 20h',
-    ),
-  ];
+  final List<MedicineItemModel> _medicines = [];
 
+  final TextEditingController _controllerPrescriptionName = TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
+
+  PrescriptionModel _prescription = PrescriptionModel();
+  late PrescriptionMode _prescriptionMode;
+  DateTime? selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.prescriptionMode == null) {
+      _prescriptionMode = PrescriptionMode.create;
+    } else {
+      _prescriptionMode = widget.prescriptionMode!;
+    }
+
+    if (widget.medicineItem != null) _medicines.add(widget.medicineItem!);
+    if (widget.prescription != null) initPrescription(widget.prescription!);
+  }
+
+  void initPrescription(PrescriptionModel prescription) {
+    _prescription = prescription;
+    _controllerPrescriptionName.text = prescription.prescriptionName ?? '';
+    _controllerNote.text = prescription.note ?? '';
+
+    if (prescription.patientMedications != null) {
+      _medicines.addAll(prescription.patientMedications!);
+    }
+  }
+
+  Future<void> _addMedicine() async {
+    final MedicineItemModel? result = await Navigator.pushNamed(context, NavigatorName.medicine_search, arguments: {
+      'mode': MedicineMode.addMore,
+    });
+    if (result != null) {
+      setState(() {
+        _medicines.add(result);
+      });
+    }
+  }
+
+  Future<void> _editMedicine(int index) async {
+    final MedicineItemModel? result = await Navigator.pushNamed(context, NavigatorName.medicine_add, arguments: {
+      'medicineItem': _medicines[index],
+      'mode': MedicineMode.edit,
+    });
+    if (result != null) {
+      setState(() {
+        _medicines[index] = result; // cập nhật thuốc đã sửa
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,45 +180,16 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 Expanded(
                   child: Text(
                     R.string.prescription_warning.tr(),
-                    style: TextStyle(
-                        color: R.color.color0xff111515, fontSize: 13, fontWeight: FontWeight.w400
-                    ),
+                    style: TextStyle(color: R.color.color0xff111515, fontSize: 13, fontWeight: FontWeight.w400),
                   ),
                 ),
               ],
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               R.string.prescription_name.tr(),
-              style: TextStyle(
-                  color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.w700
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            padding: const EdgeInsets.all(12),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Color(0xFFDADEDF)),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              'Bệnh đái tháo đường \nkhông phụ thuộc insuline',
-              style: TextStyle(color: R.color.color0xff111515, fontSize: 15, fontWeight: FontWeight.w400),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(
-              R.string.start_date.tr(),
               style: TextStyle(color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.w700),
             ),
           ),
@@ -195,17 +203,54 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
               border: Border.all(color: Color(0xFFDADEDF)),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '06/8/2025',
-                  style: TextStyle(
-                    color: R.color.color0xff111515, fontSize: 15, fontWeight: FontWeight.w400
+            child: TextField(
+              autofocus: true,
+              controller: _controllerPrescriptionName,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: R.string.prescription_name.tr(),
+                counterText: '',
+              ),
+              style: TextStyle(
+                color: R.color.grey_2,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+              onChanged: (text) {},
+            ),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              R.string.start_date.tr(),
+              style: TextStyle(color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.w700),
+            ),
+          ),
+          const SizedBox(height: 12),
+          InkWell(
+            onTap: () {
+              _showDatePicker(context);
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.all(12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Color(0xFFDADEDF)),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    convertDateTimeToUTC((selectedDate ?? DateTime.now()), 'dd/MM/yyyy'),
+                    style: TextStyle(color: R.color.color0xff111515, fontSize: 15, fontWeight: FontWeight.w400),
                   ),
-                ),
-                SvgPicture.asset(R.icons.ic_calendar, width: 20),
-              ],
+                  SvgPicture.asset(R.icons.ic_calendar, width: 20),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 20),
@@ -217,41 +262,64 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   Widget _buildMedicineList() {
     return Column(
       children: [
-        Container(
-          padding: EdgeInsets.all(11),
-          margin: EdgeInsets.only(top: 12, left: 12, right: 12),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              width: 1,
-              color: R.color.color0xff008479,
+        InkWell(
+          onTap: _addMedicine,
+          child: Container(
+            padding: EdgeInsets.all(11),
+            margin: EdgeInsets.only(top: 12, left: 12, right: 12),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                width: 1,
+                color: R.color.color0xff008479,
+              ),
             ),
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.add, size: 16, color: R.color.color0xff008479),
-                const SizedBox(width: 6),
-                Text(
-                  R.string.add_medicine.tr(),
-                  style: TextStyle(
-                      color: R.color.color0xff008479, fontSize: 15, fontWeight: FontWeight.bold
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.add, size: 16, color: R.color.color0xff008479),
+                  const SizedBox(width: 6),
+                  Text(
+                    R.string.add_medicine.tr(),
+                    style: TextStyle(color: R.color.color0xff008479, fontSize: 15, fontWeight: FontWeight.bold),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: medicines.length,
+          itemCount: _medicines.length,
           padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
           itemBuilder: (context, index) {
-            return MedicineCard(medicine: medicines[index]);
+            return MedicineCard(
+              medicine: _medicines[index],
+              onEdit: () async {
+                final result = await Navigator.pushNamed(
+                  context,
+                  NavigatorName.medicine_add,
+                  arguments: {
+                    'mode': MedicineMode.edit,
+                    'medicine': _medicines[index],
+                  },
+                );
+                if (result is MedicineItemModel) {
+                  setState(() {
+                    _medicines[index] = result; // update lại item đã sửa
+                  });
+                }
+              },
+              onDelete: () {
+                setState(() {
+                  _medicines.removeAt(index);
+                });
+              }
+            );
           },
         ),
       ],
@@ -277,7 +345,23 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
       color: Colors.white,
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, NavigatorName.prescription_remind),
+        onTap: () {
+          _prescription = _prescription.copyWith(
+            prescriptionName: _controllerPrescriptionName.text,
+            note: _controllerNote.text,
+            startDate: selectedDate,
+            patientMedications: _medicines,
+            status: 0,
+          );
+
+          if (_prescriptionMode == PrescriptionMode.reuse) {
+            Navigator.pop(context, true);
+            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(_prescription));
+          } else {
+            Navigator.pushNamed(context, NavigatorName.prescription_remind,
+                arguments: {'prescription': _prescription});
+          }
+        },
         child: Container(
           height: 48,
           decoration: BoxDecoration(
@@ -291,7 +375,9 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           ),
           child: Center(
             child: Text(
-              R.string.set_time.tr(),
+              _prescriptionMode == PrescriptionMode.reuse
+                ? R.string.reuse_prescription.tr()
+                : R.string.set_time.tr(),
               style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
             ),
           ),
@@ -299,120 +385,18 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
       ),
     );
   }
-}
 
-class MedicineCard extends StatelessWidget {
-  final MedicineItemModel medicine;
-
-  const MedicineCard({required this.medicine});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0x14016961),
-            offset: const Offset(1, 2),
-            blurRadius: 8,
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SvgPicture.asset(R.icons.ic_medicine, width: 38),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${medicine.name} ",//${medicine.dosage}",
-                    style: TextStyle(
-                      fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff111515
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    "${medicine.quantity} Viên  •  ",//${medicine.mealTime}  •  ${medicine.frequency}",
-                    style: TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Container(
-                    width: 48,
-                    height: 52,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: R.color.backgroundColorNew,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '',//medicine.times[0],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566
-                          ),
-                        ),
-                        Text(
-                          '',//medicine.dose.toString(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff5E6566
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (medicine.note != null) ...[
-                    SizedBox(height: 8),
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                              text: 'Ghi chú: ',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          TextSpan(text: medicine.note),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            Column(
-              children: [
-                IconButton(
-                  icon: SvgPicture.asset(R.icons.ic_delete, width: 20),
-                  onPressed: () {
-                    // TODO: Xoá thuốc
-                  },
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton(
-                    icon: SvgPicture.asset(R.icons.ic_edit, width: 20),
-                    onPressed: () {
-
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+  void _showDatePicker(BuildContext context) {
+    CustomCalendarDatePicker2.showDatePicker(context,
+        minTime: DateTime.now(),
+        maxTime: DateTime.parse('3000-01-01 00:00:00.000Z'),
+        showTitleActions: true,
+        onChanged: (date) {}, onConfirm: (date) async {
+      setState(() {
+        selectedDate = date;
+      });
+    },
+        currentTime: selectedDate == null ? DateTime.parse('1970-01-01 00:00:00.000Z') : selectedDate,
+        locale: LocaleType.vi);
   }
 }

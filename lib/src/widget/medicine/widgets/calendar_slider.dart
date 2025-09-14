@@ -50,7 +50,7 @@ class _CalendarSliderState extends State<CalendarSlider> {
 
   List<DateTime> _generateDates() {
     final currentDateTime = DateTime.now();
-    final now = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day);
+    final now = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
     final start = now.subtract(const Duration(days: 30));
     final end = now.add(const Duration(days: 30));
     final dates = <DateTime>[];

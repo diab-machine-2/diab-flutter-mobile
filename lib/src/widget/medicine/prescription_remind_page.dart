@@ -2,14 +2,19 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../res/R.dart';
+import '../../bloc/medicine/medicine_bloc.dart';
+import '../../modal/medicine/prescription_model.dart';
 import '../../utils/navigator_name.dart';
 import '../../modal/medicine/medicine_add_model.dart';
 
 class PrescriptionRemindPage extends StatefulWidget {
-  const PrescriptionRemindPage({super.key});
+  PrescriptionRemindPage({super.key, required this.prescription});
+
+  final PrescriptionModel prescription;
 
   @override
   State<PrescriptionRemindPage> createState() => _PrescriptionRemindPageState();
@@ -30,59 +35,59 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: R.color.backgroundColorNew,
-      appBar: AppBar(
-        leading: IconButton(
-            splashColor: R.color.transparent,
-            highlightColor: R.color.transparent,
-            icon: Icon(Icons.arrow_back, color: R.color.white),
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-                NavigatorName.tabbar,
-                (route) => false,
-              );
-            }),
-        title: Transform(
-          transform: Matrix4.translationValues(-20, 0.0, 0.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              R.string.set_time.tr(),
-              style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
-            ),
-          ),
-        ),
-        actions: [
-          Center(
-            child: InkWell(
-              onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  R.string.tutorial.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15, fontWeight: FontWeight.w400),
-                ),
+    return BlocProvider(
+      create: (context) => MedicineBloc(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: R.color.backgroundColorNew,
+        appBar: AppBar(
+          leading: IconButton(
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
+              icon: Icon(Icons.arrow_back, color: R.color.white),
+              onPressed: () {
+                Navigator.of(context).pop();
+              }),
+          title: Transform(
+            transform: Matrix4.translationValues(-20, 0.0, 0.0),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                R.string.set_time.tr(),
+                style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
               ),
             ),
           ),
-        ],
-        backgroundColor: R.color.transparent,
-        //No more green
-        elevation: 0.0,
-        //Shadow gone
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [R.color.greenGradientMid, R.color.greenGradientBottom],
+          actions: [
+            Center(
+              child: InkWell(
+                onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    R.string.tutorial.tr(),
+                    style: TextStyle(color: R.color.white, fontSize: 15, fontWeight: FontWeight.w400),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          backgroundColor: R.color.transparent,
+          //No more green
+          elevation: 0.0,
+          //Shadow gone
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [R.color.greenGradientMid, R.color.greenGradientBottom],
+              ),
             ),
           ),
         ),
+        body: _buildBody(),
       ),
-      body: _buildBody(),
     );
   }
 
@@ -242,31 +247,37 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
   }
 
   Widget _buildConfirmButton() {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, NavigatorName.prescription),
-        child: Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: R.color.mainColor,
-            borderRadius: BorderRadius.circular(200),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.centerRight,
-              colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+    return BlocBuilder<MedicineBloc, MedicineState>(
+        builder: (context, state) {
+      return Container(
+        color: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        child: GestureDetector(
+          onTap: () {
+            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(widget.prescription));
+            Navigator.pushNamed(context, NavigatorName.prescription);
+          },
+          child: Container(
+            height: 48,
+            decoration: BoxDecoration(
+              color: R.color.mainColor,
+              borderRadius: BorderRadius.circular(200),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.centerRight,
+                colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+              ),
             ),
-          ),
-          child: Center(
-            child: Text(
-              R.string.confirm.tr(),
-              style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
+            child: Center(
+              child: Text(
+                R.string.confirm.tr(),
+                style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Future<TimeOfDay?> showCustomTimePicker({required BuildContext context, required TimeOfDay initialTime}) {

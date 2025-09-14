@@ -10,25 +10,38 @@ import '../../../res/R.dart';
 import '../../modal/medicine/dose_model.dart';
 import '../../modal/medicine/medicine_item_model.dart';
 import '../../modal/medicine/medicine_tablet_model.dart';
-import '../../modal/medicine/prescription_model.dart';
 import '../../utils/navigator_name.dart';
+import '../BloodSugar/widget/section_add_note.dart';
 import 'widgets/dosage_input_bottom_sheet.dart';
 import '../../modal/medicine/medicine_add_model.dart';
 
+enum MedicineMode {
+  create,   // thêm mới lần đầu vào đơn thuốc
+  edit,     // chỉnh sửa thuốc có sẵn trong đơn thuốc
+  addMore,  // thêm thuốc vào đơn thuốc
+}
+
 class MedicineAddPage extends StatefulWidget {
-  const MedicineAddPage({super.key, this.medicineItem});
-  final MedicineTabletModel? medicineItem;
+  const MedicineAddPage({super.key, this.medicineMode, this.medicineTablet, this.medicine});
+  final MedicineMode? medicineMode;
+  final MedicineTabletModel? medicineTablet;
+  final MedicineItemModel? medicine;
 
   @override
   State<MedicineAddPage> createState() => _MedicineAddPageState();
 }
 
 class _MedicineAddPageState extends State<MedicineAddPage> {
-  late PrescriptionModel _prescription;
-  MedicineItemModel _selectedMedication = MedicineItemModel(quantity: 10);
+  late MedicineMode _medicineMode;
+  late MedicineItemModel _selectedMedication;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
+  MedicineUnit _unit = MedicineUnit.pill; // viên, gói, ống, ml, khác
+  double _amount = 5;
+  int _breakDay = 0;
+  DosageModel? _dosage;
+  List<File?> _files = [];
 
   final List<MedicineUnit> _medicineUnits = [
     MedicineUnit.pill,
@@ -50,20 +63,34 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
 
   bool _submitBtnEnabled = false;
 
-  void _checkSubmitBtnEnabled() {
-    setState(() {
-      _submitBtnEnabled = _prescription.isValid;
-    });
+  bool isValid() {
+    if ((_dosage?.quantityInMorning ?? 0) == 0 && (_dosage?.quantityInNoon ?? 0) == 0
+        && (_dosage?.quantityInAfternoon ?? 0) == 0 && (_dosage?.quantityInNight ?? 0) == 0) return false;
+    // if (_frequency == 2 && _customDay.isEmpty) return false;
+    // if (_frequency == 3 && _breakDay <= 0) return false;
+
+    return true;
   }
 
   @override
   void initState() {
     super.initState();
-    _prescription = PrescriptionModel(
-      medications: [_selectedMedication],
+
+    if (widget.medicineMode == null) {
+      _medicineMode = MedicineMode.create;
+    } else {
+      _medicineMode = widget.medicineMode!;
+    }
+
+    //Mode create
+    _selectedMedication = MedicineItemModel(
+      id: widget.medicineTablet?.id ?? widget.medicine?.id ?? '',
+      medicationName: widget.medicineTablet?.name ?? widget.medicine?.medicationName ?? '',
     );
-    _quantityController.text = _selectedMedication.quantity.toStringAsFixed(0);
-    _descriptionController.text = _prescription.description ?? '';
+    _quantityController.text = _amount.toStringAsFixed(0);
+
+    //Mode edit
+    //Not implement yet
   }
 
   @override
@@ -74,27 +101,30 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       final medicineItem = args['medicineItem'] as MedicineTabletModel?;
       if (medicineItem != null) {
         _nameController.text = medicineItem.name;
-        // _prescription.name = medicineItem.name;
       }
     }
   }
 
   void _incrementQuantity() {
     setState(() {
-      _selectedMedication.quantity++;
-      _quantityController.text = _selectedMedication.quantity.toStringAsFixed(0);
+      _amount++;
+      _quantityController.text = _amount.toStringAsFixed(0);
+
+      if (_submitBtnEnabled == false) {
+        _submitBtnEnabled = isValid();
+      }
     });
-    _checkSubmitBtnEnabled();
   }
 
   void _decrementQuantity() {
-    if (_selectedMedication.quantity > 0) {
+    if (_amount > 0) {
       setState(() {
-        _selectedMedication.quantity--;
-        _quantityController.text =
-            _selectedMedication.quantity.toStringAsFixed(0);
+        _amount--;
+        _quantityController.text = _amount.toStringAsFixed(0);
+        if (_amount == 0) {
+          _submitBtnEnabled = isValid();
+        }
       });
-      _checkSubmitBtnEnabled();
     }
   }
 
@@ -107,11 +137,9 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     ).then((newDosage) {
       if (newDosage != null && newDosage is DosageModel) {
         setState(() {
-          final List<DosageModel> newList = List.from(_selectedMedication.dosages ?? []);
-          newList.add(newDosage);
-          _selectedMedication.dosages = newList;
+          _dosage = newDosage;
+          _submitBtnEnabled = isValid();
         });
-        _checkSubmitBtnEnabled();
       }
     });
   }
@@ -134,11 +162,11 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        final List<String> newPhotos = List.from(_prescription.photos ?? []);
-        newPhotos.add(image.path);
-        setState(() {
-          _prescription.photos = newPhotos;
-        });
+        // final List<String> newPhotos = List.from(_prescription.photos ?? []);
+        // newPhotos.add(image.path);
+        // setState(() {
+        //   _prescription.photos = newPhotos;
+        // });
       }
     } catch (e) {
       _showErrorSnackBar('Failed to pick images: $e');
@@ -148,8 +176,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   /// Removes an image from the list at a given index.
   void _removeImage(int index) {
     setState(() {
-      if (_prescription.photos != null && (_prescription.photos ?? []).length > index)
-      _prescription.photos?.removeAt(index);
+      // if (_prescription.photos != null && (_prescription.photos ?? []).length > index)
+      // _prescription.photos?.removeAt(index);
     });
   }
 
@@ -236,7 +264,24 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         child: ElevatedButton(
           onPressed: () {
             if (_submitBtnEnabled) {
-              Navigator.pushNamed(context, NavigatorName.prescription_add);
+              _selectedMedication = _selectedMedication.copyWith(
+                amount: _amount,
+                note: _noteController.text,
+                moment: _dosage?.moment,
+                frequency: _dosage?.frequency,
+                morning: _dosage?.quantityInMorning,
+                midDay: _dosage?.quantityInNoon,
+                afternoon: _dosage?.quantityInAfternoon,
+                night: _dosage?.quantityInNight,
+                customDay: _dosage?.selectedDaysInWeek.join(','),
+                breakDay: _dosage?.everyOtherDayNumber,
+              );
+
+              Navigator.pushNamed(
+                context,
+                NavigatorName.prescription_add,
+                arguments: {'medicineItem': _selectedMedication},
+              );
             }
           },
           style: ElevatedButton.styleFrom(
@@ -341,7 +386,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
           ),
         ),
         onChanged: (value) {
-          _prescription.name = value;
+          // _prescription.prescriptionName = value;
         },
       ),
     );
@@ -356,7 +401,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         itemCount: _medicineUnits.length,
         itemBuilder: (context, index) {
           final unit = _medicineUnits[index];
-          final isSelected = _selectedMedication.medicineUnit == unit;
+          final isSelected = _unit == unit;
 
           return Padding(
             padding: (index == 0)
@@ -367,7 +412,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedMedication.medicineUnit = unit;
+                  _unit = unit;
                 });
               },
               child: SizedBox(
@@ -443,9 +488,13 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
               ),
               onChanged: (value) {
                 setState(() {
-                  _selectedMedication.quantity = double.tryParse(value) ?? 0.0;
+                  _amount = double.tryParse(value) ?? 0.0;
+                  if (_amount == 0 && _submitBtnEnabled == true) {
+                    _submitBtnEnabled = false;
+                  } else if (_amount > 0 && _submitBtnEnabled == false) {
+                    _submitBtnEnabled = true;
+                  }
                 });
-                _checkSubmitBtnEnabled();
               },
             )
           ),
@@ -524,8 +573,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             SizedBox(width: 12),
           ],
         ),
-        if (_selectedMedication.dosages != null && _selectedMedication.dosages?.isNotEmpty == true)
-          ..._buildDosageContentItems(_selectedMedication.dosages ?? [], _selectedMedication.medicineUnit ?? MedicineUnit.pill)
+        if (_dosage != null)
+          ..._buildDosageContentItems([_dosage!], _unit ?? MedicineUnit.pill)
         else
           Padding(
             padding: EdgeInsets.fromLTRB(12, 4, 12, 0),
@@ -560,10 +609,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     List<Widget> widgets = [];
 
     for (final dosage in dosages) {
-      if (dosage.frequency == R.string.everyday.tr()) {
+      if (dosage.frequencyName == R.string.everyday.tr()) {
         widgets.addAll(
           _buildEveryDayDosage(
-            dosage.timeOfUse,
+            dosage.momentName,
             dosage.quantityInMorning,
             dosage.quantityInNoon,
             dosage.quantityInAfternoon,
@@ -571,10 +620,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             medicineUnit.getName(),
           )
         );
-      } else if (dosage.frequency == R.string.ngay_trong_tuan.tr()) {
+      } else if (dosage.frequencyName == R.string.ngay_trong_tuan.tr()) {
         widgets.addAll(
           _buildDayInWeekDosage(
-            dosage.timeOfUse,
+            dosage.momentName,
             dosage.selectedDaysInWeek,
             dosage.quantityForDaysInWeek,
             medicineUnit.getName(),
@@ -584,7 +633,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         // Cách ngày
         widgets.addAll(
           _buildEveryDayOtherDosage(
-            dosage.timeOfUse,
+            dosage.momentName,
             dosage.everyOtherDayNumber,
             dosage.quantityForEveryOtherDay,
             medicineUnit.getName(),
@@ -816,163 +865,177 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
 
   // Description Card - Ghi chú
   Widget _buildDescriptionCard() {
-    return Card(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      elevation: 4.0,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title "Ghi chú"
-            Text(
-              R.string.ghi_chu.tr(),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                height: 1.32,
-                letterSpacing: 0.2,
-                color: Color(0xFF111515),
-              ),
-            ),
-            const SizedBox(height: 12),
-            // Text input and Image icon
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(
-                      hintText: 'Nhập ghi chú',
-                      filled: false,
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
-                      isDense: true,
-                    ),
-                    maxLines: null,
-                    minLines: 1,
-                    maxLength: 50,
-                    buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      height: 1.46,
-                      letterSpacing: 0.4,
-                      color: Color(0xFF777E90),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _prescription.description = value;
-                      });
-                    },
-                  ),
-                ),
-                // Select Image Image Button
-                GestureDetector(
-                  onTap: () {
-                    if (_prescription.photos?.isEmpty == true) {
-                      _checkPermissionAndPickImage();
-                    }
-                  },
-                  child: SvgPicture.asset(
-                    R.icons.ic_camera,
-                    height: 24,
-                    width: 24,
-                    color: _prescription.photos?.isEmpty == true ? Color(0xFF008479) : Color(0xFFBFC6C6),
-                    semanticsLabel: 'Take Photo',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Horizontal line
-            const Divider(
-              color: Color(0xFFF4F5F6),
-              thickness: 1,
-              height: 1,
-            ),
-            const SizedBox(height: 8),
-            // current characters/max characters
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                '${(_prescription.description ?? '').length}/50',
-                style: const TextStyle(
-                  fontSize: 12,
-                  height: 1.5,
-                  letterSpacing: 0.2,
-                  color: Color(0xFFBFC6C6),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            // Attach images
-            GridView.builder(
-              padding: const EdgeInsets.all(0),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                // childAspectRatio: 1,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: (_prescription.photos ?? []).length,
-              itemBuilder: (context, index) {
-                final imagePath = _prescription.photos?[index];
-                if ((imagePath ?? '').isEmpty) return SizedBox();
-
-                return SizedBox(
-                  width: 60,
-                  height: 60,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(16.0),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 4, 4, 0),
-                          child: Image.file(
-                            File(imagePath!),
-                            fit: BoxFit.cover,
-                            width: 56,
-                            height: 56,
-                          )
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: () => _removeImage(index),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                              // border: Border.all(color: Colors.white, width: 1.5),
-                            ),
-                            padding: const EdgeInsets.all(7.29),
-                            child: const Icon(
-                              Icons.close,
-                              color: Colors.white,
-                              size: 9.41,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: SectionAddNote(
+        // focusNode: _focusNode,
+        controllerNote: _noteController,
+        maxMedia: 5,
+        // key: _sectionAddNoteKey,
+        initialFiles: _files,
+        noteTitle: R.string.ghi_chu.tr(),
+        horizontalPadding: 12,
       ),
     );
+
+
+    // return Card(
+    //   margin: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.circular(16.0),
+    //   ),
+    //   elevation: 4.0,
+    //   child: Padding(
+    //     padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         // Title "Ghi chú"
+    //         Text(
+    //           R.string.ghi_chu.tr(),
+    //           style: const TextStyle(
+    //             fontWeight: FontWeight.bold,
+    //             fontSize: 18,
+    //             height: 1.32,
+    //             letterSpacing: 0.2,
+    //             color: Color(0xFF111515),
+    //           ),
+    //         ),
+    //         const SizedBox(height: 12),
+    //         // Text input and Image icon
+    //         Row(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             Expanded(
+    //               child: TextField(
+    //                 controller: _noteController,
+    //                 decoration: InputDecoration(
+    //                   hintText: 'Nhập ghi chú',
+    //                   filled: false,
+    //                   border: InputBorder.none,
+    //                   contentPadding: EdgeInsets.zero,
+    //                   isDense: true,
+    //                 ),
+    //                 maxLines: null,
+    //                 minLines: 1,
+    //                 maxLength: 50,
+    //                 buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+    //                 style: const TextStyle(
+    //                   fontWeight: FontWeight.w400,
+    //                   fontSize: 16,
+    //                   height: 1.46,
+    //                   letterSpacing: 0.4,
+    //                   color: Color(0xFF777E90),
+    //                 ),
+    //                 onChanged: (value) {
+    //                   setState(() {
+    //                     // _prescription.description = value;
+    //                   });
+    //                 },
+    //               ),
+    //             ),
+    //             // Select Image Image Button
+    //             GestureDetector(
+    //               onTap: () {
+    //                 // if (_prescription.photos?.isEmpty == true) {
+    //                 //   _checkPermissionAndPickImage();
+    //                 // }
+    //               },
+    //               child: SvgPicture.asset(
+    //                 R.icons.ic_camera,
+    //                 height: 24,
+    //                 width: 24,
+    //                 color: Color(0xFF008479),// _prescription.photos?.isEmpty == true ? Color(0xFF008479) : Color(0xFFBFC6C6),
+    //                 semanticsLabel: 'Take Photo',
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //         const SizedBox(height: 8),
+    //         // Horizontal line
+    //         const Divider(
+    //           color: Color(0xFFF4F5F6),
+    //           thickness: 1,
+    //           height: 1,
+    //         ),
+    //         const SizedBox(height: 8),
+    //         // current characters/max characters
+    //         Align(
+    //           alignment: Alignment.centerRight,
+    //           child: Text(
+    //             '',//'''${(_prescription.description ?? '').length}/50',
+    //             style: const TextStyle(
+    //               fontSize: 12,
+    //               height: 1.5,
+    //               letterSpacing: 0.2,
+    //               color: Color(0xFFBFC6C6),
+    //             ),
+    //           ),
+    //         ),
+    //         const SizedBox(height: 8),
+    //         // Attach images
+    //         // GridView.builder(
+    //         //   padding: const EdgeInsets.all(0),
+    //         //   shrinkWrap: true,
+    //         //   physics: const NeverScrollableScrollPhysics(),
+    //         //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    //         //     crossAxisCount: 3,
+    //         //     // childAspectRatio: 1,
+    //         //     crossAxisSpacing: 8,
+    //         //     mainAxisSpacing: 8,
+    //         //   ),
+    //         //   itemCount: (_prescription.photos ?? []).length,
+    //         //   itemBuilder: (context, index) {
+    //         //     final imagePath = _prescription.photos?[index];
+    //         //     if ((imagePath ?? '').isEmpty) return SizedBox();
+    //         //
+    //         //     return SizedBox(
+    //         //       width: 60,
+    //         //       height: 60,
+    //         //       child: Stack(
+    //         //         fit: StackFit.expand,
+    //         //         children: [
+    //         //           ClipRRect(
+    //         //             borderRadius: BorderRadius.circular(16.0),
+    //         //             child: Padding(
+    //         //               padding: const EdgeInsets.fromLTRB(0, 4, 4, 0),
+    //         //               child: Image.file(
+    //         //                 File(imagePath!),
+    //         //                 fit: BoxFit.cover,
+    //         //                 width: 56,
+    //         //                 height: 56,
+    //         //               )
+    //         //             ),
+    //         //           ),
+    //         //           Positioned(
+    //         //             top: 0,
+    //         //             right: 0,
+    //         //             child: GestureDetector(
+    //         //               onTap: () => _removeImage(index),
+    //         //               child: Container(
+    //         //                 decoration: BoxDecoration(
+    //         //                   color: Colors.red,
+    //         //                   shape: BoxShape.circle,
+    //         //                   // border: Border.all(color: Colors.white, width: 1.5),
+    //         //                 ),
+    //         //                 padding: const EdgeInsets.all(7.29),
+    //         //                 child: const Icon(
+    //         //                   Icons.close,
+    //         //                   color: Colors.white,
+    //         //                   size: 9.41,
+    //         //                 ),
+    //         //               ),
+    //         //             ),
+    //         //           ),
+    //         //         ],
+    //         //       ),
+    //         //     );
+    //         //   },
+    //         // ),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 
 }

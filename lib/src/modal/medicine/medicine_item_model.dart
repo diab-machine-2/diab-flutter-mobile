@@ -3,69 +3,107 @@ import 'medicine_add_model.dart';
 
 class MedicineItemModel {
   final String? id;
-  final String? name;
-  // final String? dosage;
-  double quantity;
-  // final int dose;
-  List<DosageModel>? dosages;
-  MedicineUnit? medicineUnit;
-  // final String mealTime;
-  // final String frequency;
-  // final List<String> times;
+  final String? medicationName;
+
+  final int? moment; //1: Trước ăn, 2: Sau ăn, 3: Trong khi ăn
+  final int? frequency; //1: Mỗi ngày, 2: Ngày trong tuần, 3: Cách ngày
+
+  /// liều theo buổi
+  final double? morning;
+  final double? afternoon;
+  final double? midDay;
+  final double? night;
+
+  final String? unit; // viên, gói, ống, ml, khác
+  final double? amount;
+
+  final String? customDay;
+  final int? breakDay;
+
   final String? note;
 
   MedicineItemModel({
     this.id,
-    this.name,
-    // required this.dosage,
-    required this.quantity,
-    // required this.dose,
-    this.dosages,
-    this.medicineUnit,
-    // required this.mealTime,
-    // required this.frequency,
-    // required this.times,
+    this.medicationName,
+    this.moment,
+    this.frequency,
+    this.morning,
+    this.afternoon,
+    this.midDay,
+    this.night,
+    this.unit,
+    this.amount,
+    this.customDay,
+    this.breakDay,
     this.note,
   });
 
   factory MedicineItemModel.fromJson(Map<String, dynamic> json) {
     return MedicineItemModel(
       id: json['id'],
-      name: json['name'],
-      // dosage: json['dosage'],
-      quantity: json['quantity'],
-      // dose: json['usage'],
-      dosages: json['dosages'] != null
-          ? (json['dosages'] as List)
-          .map((e) => DosageModel.fromJson(e))
-          .toList()
-          : null,
-
-      // mealTime: json['mealTime'],
-      // frequency: json['frequency'],
-      // times: List<String>.from(json['times']),
+      medicationName: json['medicationName'],
+      moment: json['moment'],
+      frequency: json['frequency'],
+      morning: json['morning'],
+      afternoon: json['afternoon'],
+      midDay: json['midDay'],
+      night: json['night'],
+      unit: json['unit'],
+      amount: (json['amount'] as num?)?.toDouble(),
       note: json['note'],
     );
   }
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'name': name,
-    // 'dosage': dosage,
-    'quantity': quantity,
-    // 'usage': dose,
-    'dosages': dosages?.map((e) => e.toJson()).toList(),
-    // 'mealTime': mealTime,
-    // 'frequency': frequency,
-    // 'times': times,
+    'medicationName': medicationName,
+    'frequency': frequency,
+    'morning': morning,
+    'afternoon': afternoon,
+    'midDay': midDay,
+    'night': night,
+    'unit': unit,
+    'amount': amount,
     'note': note,
   };
+
+  MedicineItemModel copyWith({
+    String? id,
+    String? name,
+    int? moment,
+    int? frequency,
+    double? morning,
+    double? afternoon,
+    double? midDay,
+    double? night,
+    String? unit,
+    double? amount,
+    String? customDay,
+    int? breakDay,
+    String? note,
+  }) {
+    return MedicineItemModel(
+      id: id ?? this.id,
+      medicationName: name ?? this.medicationName,
+      moment: moment ?? this.moment,
+      frequency: frequency ?? this.frequency,
+      morning: morning ?? this.morning,
+      afternoon: afternoon ?? this.afternoon,
+      midDay: midDay ?? this.midDay,
+      night: night ?? this.night,
+      unit: unit ?? this.unit,
+      amount: amount ?? this.amount,
+      customDay: customDay ?? this.customDay,
+      breakDay: breakDay ?? this.breakDay,
+      note: note ?? this.note,
+    );
+  }
 }
 
 extension MedicineItemValidator on MedicineItemModel {
   bool get isValid {
-    if (quantity <= 0) return false;
-    if (dosages == null || dosages!.isEmpty) return false;
+    if ((amount ?? 0) <= 0) return false;
+    // if (dosages == null || dosages!.isEmpty) return false;
     return true;
   }
 }
