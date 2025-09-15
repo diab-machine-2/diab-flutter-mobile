@@ -61,13 +61,16 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   @override
   Future<void> dispose() async {
+    debugPrint('[VIDEO] LessonDetailPage.dispose start for lessonId=${_cubit.lessonDetail?.id} title=${_cubit.lessonDetail?.name}');
     await LessonDetailTracking.lessonDetailScrolling(
       percentComplete: percentComplete,
       objectId: _cubit.lessonDetail!.id!,
       objectTitle: _cubit.lessonDetail!.name!,
     );
+    debugPrint('[VIDEO] Disposing lesson media managers');
     _cubit.videoManager?.disposeAllVideo();
     _cubit.audioManager?.disposeAllAudio();
+    debugPrint('[VIDEO] LessonDetailPage.dispose done');
     super.dispose();
   }
 
@@ -155,6 +158,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 )
               : WillPopScope(
                   onWillPop: () async {
+                    debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - disposing video and audio');
                     // Immediately dispose video when system back button is pressed
                     _cubit.videoManager?.disposeAllVideo();
                     _cubit.audioManager?.disposeAllAudio();
@@ -183,6 +187,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         children: [
                                           GestureDetector(
                                             onTap: () async {
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - disposing video and audio');
                                               // Immediately dispose video to prevent background audio
                                               _cubit.videoManager?.disposeAllVideo();
                                               _cubit.audioManager?.disposeAllAudio();

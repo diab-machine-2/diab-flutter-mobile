@@ -286,6 +286,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                     .lessonsList![index]!.name,
                                               );
 
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Navigating to LessonDetailPage for id='+(_cubit.lessonsList![index]!.id ?? '')+' name='+(_cubit.lessonsList![index]!.name ?? ''));
                                               var result = await NavigationUtil
                                                   .navigatePage(
                                                 context,
@@ -306,6 +307,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                   },
                                                 ),
                                               );
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Returned from LessonDetailPage with result=' + (result?.toString() ?? 'null'));
                                               // if (result == 0) {
                                               // _controller.requestRefresh();
                                               // }

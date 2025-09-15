@@ -20,6 +20,7 @@ class VideoManager {
     this.videoArtist,
     this.videoThumbnail,
   }) {
+    print('[VIDEO] ${_getTimestamp()} - VideoManager constructor called with URL: $url');
     _initializeController(url: url);
   }
 
@@ -54,14 +55,19 @@ class VideoManager {
   }
 
   Future<BetterPlayerController?> get controller async {
+    print('[VIDEO] ${_getTimestamp()} - controller getter called - disposed: $_isDisposed, initializing: $_isInitializing');
+    
     // Wait for initialization to complete
     int initWaitAttempts = 0;
-    while (_isInitializing && initWaitAttempts < 100) {
+    while (_isInitializing && initWaitAttempts < 100 && !_isDisposed) {
       await Future.delayed(Duration(milliseconds: 100));
       initWaitAttempts++;
     }
 
-    if (_isDisposed) return null;
+    if (_isDisposed) {
+      print('[VIDEO] ${_getTimestamp()} - controller getter aborted - disposed');
+      return null;
+    }
 
     // Wait for controller to be available
     int attempts = 0;
@@ -70,6 +76,12 @@ class VideoManager {
       attempts++;
     }
 
+    if (_isDisposed) {
+      print('[VIDEO] ${_getTimestamp()} - controller getter aborted - disposed during wait');
+      return null;
+    }
+
+    print('[VIDEO] ${_getTimestamp()} - controller getter returning controller: ${_controller != null}');
     return (hasVideo && !_isDisposed) ? _controller : null;
   }
 
@@ -157,9 +169,14 @@ class VideoManager {
   }
 
   Future<void> initController({required String? url}) async {
-    if (_isDisposed) return;
+    print('[VIDEO] ${_getTimestamp()} - initController started - disposed: $_isDisposed, url: $url');
+    if (_isDisposed) {
+      print('[VIDEO] ${_getTimestamp()} - initController aborted - already disposed');
+      return;
+    }
 
     if (url?.isNotEmpty != true) {
+      print('[VIDEO] ${_getTimestamp()} - initController aborted - no URL provided');
       hasVideo = false;
       return;
     }
@@ -206,10 +223,20 @@ class VideoManager {
       );
 
       print('[VIDEO] ${_getTimestamp()} - Creating BetterPlayerController');
+      if (_isDisposed) {
+        print('[VIDEO] ${_getTimestamp()} - initController aborted - disposed during setup');
+        return;
+      }
+      
       BetterPlayerController newController =
           BetterPlayerController(configuration);
 
       print('[VIDEO] ${_getTimestamp()} - Creating BetterPlayerDataSource');
+      if (_isDisposed) {
+        print('[VIDEO] ${_getTimestamp()} - initController aborted - disposed during data source creation');
+        newController.dispose();
+        return;
+      }
       BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network,
         url!,
@@ -231,13 +258,18 @@ class VideoManager {
         // ),
       );
 
-      if (_isDisposed) return;
+      if (_isDisposed) {
+        print('[VIDEO] ${_getTimestamp()} - initController aborted - disposed before data source setup');
+        newController.dispose();
+        return;
+      }
 
       print(
           '[VIDEO] ${_getTimestamp()} - Setting up data source on controller');
       await newController.setupDataSource(betterPlayerDataSource);
 
       if (_isDisposed) {
+        print('[VIDEO] ${_getTimestamp()} - initController aborted - disposed after data source setup');
         newController.dispose();
         return;
       }
@@ -282,6 +314,7 @@ class VideoManager {
 
   void removeEventListeners() {
     try {
+      print('[VIDEO] ${_getTimestamp()} - removeEventListeners begin');
       if (_controller != null && !_isDisposed) {
         _controller!.removeEventsListener(_handlePlayerEvent);
 
@@ -291,6 +324,7 @@ class VideoManager {
               .removeListener(() => _handleVideoPlayerEvents(_controller!));
         }
       }
+      print('[VIDEO] ${_getTimestamp()} - removeEventListeners done');
     } catch (e) {
       print('[VIDEO] ${_getTimestamp()} - Error removing event listeners: $e');
     }
@@ -468,6 +502,7 @@ class VideoManager {
     print('[VIDEO] ${_getTimestamp()} - disposeAllVideo started');
     _isDisposed = true;
     try {
+      print('[VIDEO] ${_getTimestamp()} - disposeAllVideo closing placeholder stream');
       _placeholderStreamController.close();
       removeEventListeners();
       

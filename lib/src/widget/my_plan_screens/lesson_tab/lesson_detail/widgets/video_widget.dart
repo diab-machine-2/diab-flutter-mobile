@@ -51,6 +51,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   int retryCount = 0;
   static const int maxRetries = 1;
   bool _isDisposed = false;
+  bool _isInitializing = false;
 
   String _getTimestamp() {
     return DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
@@ -61,6 +62,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     url = widget.url;
+    debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.initState url=$url isYouTube=${widget.isYouTubeLink}');
     initializeVideo();
   }
 
@@ -70,6 +72,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     if (oldWidget.url != widget.url) {
       url = widget.url;
       retryCount = 0;
+      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.didUpdateWidget url changed to $url');
       _cleanupAndRefresh();
     }
   }
@@ -77,33 +80,51 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.dispose called, starting cleanup');
     _isDisposed = true;
     _cleanup();
     super.dispose();
   }
 
   void _cleanup() {
-    debugPrint('[VIDEO][${_getTimestamp()}] Starting cleanup...');
     try {
-      videoManager?.removeEventListeners();
+      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup begin - isInitializing: $_isInitializing');
+      _isDisposed = true;
+      _isInitializing = false;
+      
+      // Force dispose video manager first to stop any ongoing initialization
+      if (videoManager != null) {
+        debugPrint('[VIDEO][${_getTimestamp()}] Disposing video manager during cleanup');
+        videoManager?.disposeAllVideo();
+        videoManager = null;
+      }
+      
+      // Then dispose player controller
       if (playerController?.videoPlayerController?.value.initialized == true) {
         playerController?.pause();
       }
       // Force pause even if not initialized to prevent background audio
       playerController?.pause();
       playerController?.dispose();
-      videoManager?.disposeAllVideo();
-      debugPrint('[VIDEO][${_getTimestamp()}] Cleanup completed');
+      playerController = null;
+      
+      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup completed');
     } catch (e) {
       debugPrint('[VIDEO][${_getTimestamp()}] Error during cleanup: $e');
+      playerController?.dispose();
+      videoManager?.disposeAllVideo();
+      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup done');
     }
   }
 
   void _cleanupAndRefresh() {
+    debugPrint('[VIDEO][${_getTimestamp()}] _cleanupAndRefresh called');
     _cleanup();
     playerController = null;
     videoManager = null;
-    _refreshVideo();
+    if (!_isDisposed) {
+      _refreshVideo();
+    }
   }
 
   @override
@@ -213,7 +234,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _refreshVideo() async {
-    if (!mounted || _isDisposed) return;
+    debugPrint('[VIDEO][${_getTimestamp()}] _refreshVideo called - mounted: $mounted, disposed: $_isDisposed');
+    if (!mounted || _isDisposed) {
+      debugPrint('[VIDEO][${_getTimestamp()}] _refreshVideo aborted - not mounted or disposed');
+      return;
+    }
 
     setState(() {
       isInitializing = true;
@@ -225,11 +250,23 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> initializeVideo() async {
+    if (_isDisposed) {
+      debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo aborted - already disposed');
+      return;
+    }
+    _isInitializing = true;
+    debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo started');
     await _initializeVideoWithRetry();
+    _isInitializing = false;
+    debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo completed');
   }
 
   Future<void> _initializeVideoWithRetry() async {
-    if (!mounted || _isDisposed) return;
+    debugPrint('[VIDEO][${_getTimestamp()}] _initializeVideoWithRetry started - mounted: $mounted, disposed: $_isDisposed');
+    if (!mounted || _isDisposed) {
+      debugPrint('[VIDEO][${_getTimestamp()}] _initializeVideoWithRetry aborted - not mounted or disposed');
+      return;
+    }
 
     String? finalUrl = url;
 
@@ -289,19 +326,38 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
     // Attempt initialization with retry logic
     for (int attempt = 0; attempt <= maxRetries; attempt++) {
-      if (!mounted || _isDisposed) return;
+      debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1}/${maxRetries + 1} - mounted: $mounted, disposed: $_isDisposed');
+      if (!mounted || _isDisposed) {
+        debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - not mounted or disposed');
+        return;
+      }
 
       try {
         debugPrint(
             '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1}/${maxRetries + 1} for URL: $finalUrl');
 
+        if (_isDisposed) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed before video manager creation');
+          return;
+        }
+        
         await _createVideoManager();
+
+        if (_isDisposed) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after video manager creation');
+          return;
+        }
 
         // Wait for controller with shorter timeout
         playerController = await _getControllerWithRetry();
 
         if (playerController == null) {
           throw Exception('Failed to get video controller');
+        }
+
+        if (_isDisposed) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after controller creation');
+          return;
         }
 
         // Check video readiness with shorter timeout
@@ -349,7 +405,24 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _createVideoManager() async {
-    if (!mounted || _isDisposed) return;
+    debugPrint('[VIDEO][${_getTimestamp()}] _createVideoManager called - mounted: $mounted, disposed: $_isDisposed, isInitializing: $_isInitializing');
+    if (!mounted || _isDisposed) {
+      debugPrint('[VIDEO][${_getTimestamp()}] _createVideoManager aborted - not mounted or disposed');
+      return;
+    }
+    
+    // Prevent multiple video managers from being created
+    if (videoManager != null) {
+      debugPrint('[VIDEO][${_getTimestamp()}] Video manager already exists, disposing old one');
+      videoManager?.disposeAllVideo();
+      videoManager = null;
+    }
+    
+    // Double check disposal state before creating new manager
+    if (_isDisposed) {
+      debugPrint('[VIDEO][${_getTimestamp()}] _createVideoManager aborted - disposed during cleanup');
+      return;
+    }
     
     videoManager = VideoManager(
       url: url,
@@ -379,7 +452,10 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     );
 
     if (mounted && !_isDisposed) {
+      debugPrint('[VIDEO][${_getTimestamp()}] Setting video manager in parent');
       widget.setVideoManager(videoManager!);
+    } else {
+      debugPrint('[VIDEO][${_getTimestamp()}] Not setting video manager - not mounted or disposed');
     }
   }
 
@@ -502,10 +578,12 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (hasError) {
+      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.build -> error: $errorMessage');
       return _buildErrorWidget();
     }
 
     if (isInitializing || playerController == null) {
+      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.build -> loading... (playerController is ${playerController == null ? 'null' : 'not null'})');
       return Container(
         height: 200,
         color: R.color.backgroundColorNew,
