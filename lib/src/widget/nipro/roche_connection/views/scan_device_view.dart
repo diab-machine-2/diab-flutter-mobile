@@ -24,7 +24,6 @@ import '../data/models/glucose_config.dart';
 import '../data/models/glucose_functions.dart';
 import '../widgets/condition_widget.dart';
 import '../widgets/result_sync_data_new.dart';
-import '../utils/glucose_sync_cache.dart';
 
 enum AppStatus {
   isScanning,
@@ -64,11 +63,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   List<Map<String, String>> glucosedList = [];
   bool deviceFound = false;
   int previousDataCount = 0;
-  
-  // Cache variables for performance optimization
-  DateTime? lastSyncTime;
-  Map<String, dynamic>? lastSyncDevice;
-  bool shouldPerformFullSync = true;
   bool isConnectionInProgress = false; // Track if connection is in progress
   late GlucoseUnitsFlag glucoseUnits;
   String? modelName;
@@ -81,131 +75,25 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       duration: Duration(seconds: 3),
       vsync: this,
     )..repeat();
-    _initializeCache();
     _startScan();
     _checkAppStatus();
   }
-  
-  /// Initialize cache and check sync history
-  Future<void> _initializeCache() async {
-    try {
-      // Load cache info
-      lastSyncTime = await GlucoseSyncCache.getLastSyncTime();
-      lastSyncDevice = await GlucoseSyncCache.getLastSyncDevice();
-      
-      // Print cache info for debugging
-      await GlucoseSyncCache.printCacheInfo();
-      
-      print('🚀 Cache initialized successfully');
-    } catch (e) {
-      print('❌ Error initializing cache: $e');
-    }
-  }
-  
-  /// Determine sync strategy based on device and last sync info
-  Future<void> _determineSyncStrategy(BluetoothDevice currentDevice) async {
-    try {
-      final currentDeviceId = currentDevice.remoteId.str;
-      shouldPerformFullSync = await GlucoseSyncCache.shouldFullSync(currentDeviceId);
-      
-      if (shouldPerformFullSync) {
-        print('📋 FULL SYNC: Will request all data from device');
-      } else {
-        final incrementalStartTime = await GlucoseSyncCache.getIncrementalSyncStartTime();
-        print('⚡ INCREMENTAL SYNC: Will request data newer than ${incrementalStartTime?.toIso8601String()}');
-      }
-    } catch (e) {
-      print('❌ Error determining sync strategy: $e');
-      // Default to full sync on error
-      shouldPerformFullSync = true;
-    }
-  }
-  
-  /// Save sync success information to cache
-  Future<void> _saveSyncSuccessInfo() async {
-    try {
-      if (device != null) {
-        // Save current time as last sync time
-        final now = DateTime.now();
-        await GlucoseSyncCache.saveLastSyncTime(now);
-        
-        // Save device info
-        await GlucoseSyncCache.saveLastSyncDevice(
-          deviceId: device!.remoteId.str,
-          deviceName: device!.platformName,
-          modelName: modelName,
-          modelNumber: modelNumber,
-        );
-        
-        print('✅ Sync success info saved to cache');
-        print('📅 Sync time: ${now.toIso8601String()}');
-        print('📱 Device: ${device!.platformName} (${device!.remoteId.str})');
-      }
-    } catch (e) {
-      print('❌ Error saving sync success info: $e');
-    }
-  }
-  
-  /// Clear sync cache (for debugging or reset purposes)
-  Future<void> _clearSyncCache() async {
-    try {
-      await GlucoseSyncCache.clearCache();
-      // Reset local variables
-      lastSyncTime = null;
-      lastSyncDevice = null;
-      shouldPerformFullSync = true;
-      print('🗑️ Sync cache cleared successfully');
-    } catch (e) {
-      print('❌ Error clearing sync cache: $e');
-    }
-  }
-  
-  /// Debug method to test cache functionality
-  Future<void> _debugCacheInfo() async {
-    await GlucoseSyncCache.printCacheInfo();
-  }
 
   /// Build RACP (Record Access Control Point) request command
-  /// Returns time-filtered request if incremental sync, otherwise requests all records
-  Future<List<int>> _buildRACPRequest() async {
-    if (!shouldPerformFullSync && lastSyncTime != null) {
-      // Incremental sync: Request records newer than lastSyncTime
-      // Convert DateTime to seconds since epoch (UNIX timestamp)
-      final timeOffsetSeconds = lastSyncTime!.millisecondsSinceEpoch ~/ 1000;
-      
-      print('⚡ INCREMENTAL RACP REQUEST:');
-      print('   📅 Request data after: ${lastSyncTime!.toIso8601String()}');
-      print('   🕐 Time offset (seconds): $timeOffsetSeconds');
-      
-      // RACP Command Format for time-based filtering:
-      // [OpCode, Operator, FilterType, TimeFilter_Low, TimeFilter_High]
-      // 0x01 = Report stored records
-      // 0x06 = Greater than or equal to
-      // 0x01 = Time offset filter type
-      final List<int> racpCommand = [
-        0x01, // OpCode: Report stored records
-        0x06, // Operator: Greater than or equal to  
-        0x01, // Filter Type: Time offset
-        timeOffsetSeconds & 0xFF,        // Time filter low byte
-        (timeOffsetSeconds >> 8) & 0xFF, // Time filter high byte
-      ];
-      
-      return racpCommand;
-    } else {
-      // Full sync: Request all records
-      print('📋 FULL RACP REQUEST: Request all stored records');
-      return [0x01, 0x01]; // OpCode: Report all stored records
-    }
+  /// Always requests all records (original behavior)
+  List<int> _buildRACPRequest() {
+    print('📋 RACP REQUEST: Request all stored records');
+    return [0x01, 0x01]; // OpCode: Report all stored records
   }
 
   Timer? _statusTimer;
-  
+
   void _safeSetState(VoidCallback fn) {
     if (mounted) {
       setState(fn);
     }
   }
-  
+
   void _checkAppStatus() {
     _statusTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (!secondsStreamController.isClosed) {
@@ -256,13 +144,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                     return _scanDeviceWidget();
                   case AppStatus.isConnecting:
                     return _enterPinCode();
-                case AppStatus.isManualForget:
-                  return _manualForgetDeviceWidget(); // Case 2.1
-                case AppStatus.isDeviceUnpair:
-                  return _deviceUnpairWidget(); // Case 3.1
-                case AppStatus.isDeviceAlreadyPaired:
-                  return _deviceAlreadyPairedWidget(); // Device đã pair
-                case AppStatus.isSyncCompleted:
+                  case AppStatus.isManualForget:
+                    return _manualForgetDeviceWidget(); // Case 2.1
+                  case AppStatus.isDeviceUnpair:
+                    return _deviceUnpairWidget(); // Case 3.1
+                  case AppStatus.isDeviceAlreadyPaired:
+                    return _deviceAlreadyPairedWidget(); // Device đã pair
+                  case AppStatus.isSyncCompleted:
                     return _selectData(context);
                   default:
                     return Container();
@@ -323,11 +211,9 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     if (result) {
       Message.showToastMessage(
           context, "Đồng bộ chỉ số đường huyết thành công!");
-      
-      // Save successful sync info to cache ONLY after API success
-      print('✅ API postGlucoseInputs() successful - saving sync cache');
-      await _saveSyncSuccessInfo();
-      
+
+      // API postGlucoseInputs() successful
+
       Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
       await TrackingManager.trackEvent(
         'glucose_sync',
@@ -348,9 +234,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           .notifyObservers([],
               notifyName: "glucose_change_data", map: {'index': 1}));
     } else {
-      // API postGlucoseInputs() failed - do NOT save cache
-      print('❌ API postGlucoseInputs() failed - cache NOT saved');
-      
+      // API postGlucoseInputs() failed
+
       await TrackingManager.trackEvent(
         'glucose_sync',
         'kpi_glucose_sync',
@@ -651,7 +536,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     );
   }
 
-
   Widget _manualForgetDeviceWidget() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -707,8 +591,10 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                       ),
                       SizedBox(height: 15),
                       _buildStep('1', 'Vào Settings > Bluetooth trên iPhone'),
-                      _buildStep('2', 'Tìm thiết bị "${device?.platformName ?? "máy đo đường huyết"}" trong "MY DEVICES"'),
-                      _buildStep('3', 'Nhấn vào biểu tượng (i) bên cạnh tên thiết bị'),
+                      _buildStep('2',
+                          'Tìm thiết bị "${device?.platformName ?? "máy đo đường huyết"}" trong "MY DEVICES"'),
+                      _buildStep(
+                          '3', 'Nhấn vào biểu tượng (i) bên cạnh tên thiết bị'),
                       _buildStep('4', 'Chọn "Forget This Device" và xác nhận'),
                     ],
                   ),
@@ -724,7 +610,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: Color(0xFF856404), size: 20),
+                      Icon(Icons.info_outline,
+                          color: Color(0xFF856404), size: 20),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -781,7 +668,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   onPressed: () async {
                     if (device != null) {
                       try {
-                        print('=== CASE 2.1: USER PRESSED "THỬ LẠI KẾT NỐI" ===');
+                        print(
+                            '=== CASE 2.1: USER PRESSED "THỬ LẠI KẾT NỐI" ===');
                         print('Device: ${device!.platformName}');
                         print('Retrying connection after manual forget...');
                         _safeSetState(() {
@@ -859,7 +747,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                       ),
                       SizedBox(height: 15),
                       _buildStep('1', 'Mở máy đường huyết'),
-                      _buildStep('2', 'Chọn cài đặt và xóa pair với điện thoại đang kết nối'),
+                      _buildStep('2',
+                          'Chọn cài đặt và xóa pair với điện thoại đang kết nối'),
                     ],
                   ),
                 ),
@@ -874,7 +763,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, color: Color(0xFF856404), size: 20),
+                      Icon(Icons.info_outline,
+                          color: Color(0xFF856404), size: 20),
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -931,7 +821,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   onPressed: () async {
                     if (device != null) {
                       try {
-                        print('=== CASE 3.1: USER PRESSED "THỬ LẠI KẾT NỐI" ===');
+                        print(
+                            '=== CASE 3.1: USER PRESSED "THỬ LẠI KẾT NỐI" ===');
                         print('Device: ${device!.platformName}');
                         print('Retrying connection after device unpair...');
                         _safeSetState(() {
@@ -1001,7 +892,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         _btnClose(context),
         Column(
           children: [
-              
             Text(
               "Nhập mã PIN",
               style: TextStyle(
@@ -1069,7 +959,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   });
                 }
               } else if (isConnectionInProgress) {
-                print('⚠️ Connection already in progress, ignoring duplicate tap');
+                print(
+                    '⚠️ Connection already in progress, ignoring duplicate tap');
                 Message.showToastMessage(
                     context, 'Đang kết nối, vui lòng đợi...');
               }
@@ -1133,50 +1024,54 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           appStatus = AppStatus.isConnecting;
         });
         await FlutterBluePlus.stopScan();
-        
+
         // Skip auto-detection for Transfer Data flow - go directly to PIN UI
         // User wants the original flow without solution screen popup
-        print('🔄 Skipping auto-detection - proceeding with original Transfer Data flow');
+        print(
+            '🔄 Skipping auto-detection - proceeding with original Transfer Data flow');
         return;
       }
     }
   }
-  
+
   /// Check if device is already paired
   /// If paired, show solution screen instead of PIN UI
   /// Check if device is paired at iOS system level
   /// iOS doesn't have bondedDevices API, so we use connection behavior to detect pairing
-  Future<bool> _checkIfDeviceIsSystemPaired(BluetoothDevice targetDevice) async {
+  Future<bool> _checkIfDeviceIsSystemPaired(
+      BluetoothDevice targetDevice) async {
     try {
       print('🔍 iOS pairing detection: Testing connection behavior...');
-      print('📱 Device: ${targetDevice.platformName} (${targetDevice.remoteId})');
-      
+      print(
+          '📱 Device: ${targetDevice.platformName} (${targetDevice.remoteId})');
+
       // On iOS, if device is paired, connection will either:
       // 1. Connect immediately (already paired)
       // 2. Fail with specific pairing-related error
       await targetDevice.connect(timeout: Duration(seconds: 2));
-      
+
       // If we reach here, device connected = already paired
       print('✅ Device connected immediately - already paired!');
       await targetDevice.disconnect();
       return true;
-      
     } catch (e) {
       print('⚠️ Connection test failed: $e');
-      
+
       // Check for iOS pairing-related errors that indicate device is known but needs auth
       String errorStr = e.toString().toLowerCase();
-      bool isPairingError = errorStr.contains('pairing') || 
-                           errorStr.contains('authentication') ||
-                           errorStr.contains('bonding') ||
-                           errorStr.contains('fbp-code: 10') ||
-                           errorStr.contains('fbp-code: 1'); // iOS quick timeout when device is paired
-      
+      bool isPairingError = errorStr.contains('pairing') ||
+          errorStr.contains('authentication') ||
+          errorStr.contains('bonding') ||
+          errorStr.contains('fbp-code: 10') ||
+          errorStr.contains(
+              'fbp-code: 1'); // iOS quick timeout when device is paired
+
       if (isPairingError) {
-        print('✅ Pairing error detected - device is known to iOS but needs re-auth');
+        print(
+            '✅ Pairing error detected - device is known to iOS but needs re-auth');
         return true; // Device is known to system
       }
-      
+
       print('❌ Pure connection timeout - device not paired');
       return false;
     }
@@ -1187,67 +1082,71 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       print('⚠️ Connection already in progress, skipping pairing check');
       return;
     }
-    
+
     try {
-      print('🔍 Checking if device is already paired: ${targetDevice.platformName}');
+      print(
+          '🔍 Checking if device is already paired: ${targetDevice.platformName}');
       print('📱 Device ID: ${targetDevice.remoteId.str}');
-      
+
       isConnectionInProgress = true;
-      
+
       // Show loading state during auto-detection
       _safeSetState(() {
         isLoading = true;
       });
-      
+
       // First: Check if device is in iOS bonded devices list
       bool isSystemPaired = await _checkIfDeviceIsSystemPaired(targetDevice);
-      
+
       if (isSystemPaired) {
         print('✅ Device found in iOS bonded devices - already paired!');
         print('📱 System pairing detected → Show solution screen');
-        
+
         _safeSetState(() {
           deviceFound = true;
           device = targetDevice;
           appStatus = AppStatus.isDeviceAlreadyPaired; // Show solution screen
         });
-        
-        print('🎯 AUTO-DETECT SUCCESS: System pairing detected → Solution screen');
+
+        print(
+            '🎯 AUTO-DETECT SUCCESS: System pairing detected → Solution screen');
         return;
       }
-      
+
       // Fallback: Try quick connection with optimized timeout to detect pairing status
       await targetDevice.connect(timeout: Duration(seconds: 5)).timeout(
         Duration(seconds: 5),
         onTimeout: () {
-          print('⏰ Quick connection check timed out after 5s - device not paired');
+          print(
+              '⏰ Quick connection check timed out after 5s - device not paired');
           throw TimeoutException('Quick pairing check timed out');
         },
       );
-      
+
       print('✅ Device is already paired! Showing solution screen');
-      print('🎯 AUTO-DETECT SUCCESS: Device connected within 5s → Already paired');
-      
+      print(
+          '🎯 AUTO-DETECT SUCCESS: Device connected within 5s → Already paired');
+
       // Disconnect immediately since we only want to check pairing status
       try {
         await targetDevice.disconnect();
         print('📱 Disconnected after pairing check');
       } catch (_) {}
-      
+
       // Device is paired - show solution screen
       _safeSetState(() {
         appStatus = AppStatus.isDeviceAlreadyPaired;
       });
-      
     } catch (e) {
       print('⚠️ Device not paired yet, showing PIN UI: $e');
-      print('🎯 AUTO-DETECT FAILED: Device timeout within 5s → Need manual pairing');
-      
+      print(
+          '🎯 AUTO-DETECT FAILED: Device timeout within 5s → Need manual pairing');
+
       // Connection failed - device needs pairing, show PIN UI
       try {
         await targetDevice.disconnect();
       } catch (_) {}
-      
+
       // Show PIN code UI for user to complete pairing
       _safeSetState(() {
         appStatus = AppStatus.isConnecting;
@@ -1298,7 +1197,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   ),
                 ),
                 SizedBox(height: 24),
-                
+
                 // Title
                 Text(
                   'Thiết bị đã được ghép nối',
@@ -1309,7 +1208,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   ),
                 ),
                 SizedBox(height: 8),
-                
+
                 // Subtitle
                 Text(
                   'Thiết bị "${device?.platformName ?? "máy đo đường huyết"}" đã sẵn sàng chuyển dữ liệu',
@@ -1320,7 +1219,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   ),
                 ),
                 SizedBox(height: 40),
-                
+
                 // Instructions box
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 20),
@@ -1377,10 +1276,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             ),
           ),
         ),
-        
+
         // Buttons
         Container(
-          margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          margin:
+              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
           child: Column(
             children: [
               // Main button - Continue to data transfer
@@ -1406,7 +1306,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                 ),
               ),
               SizedBox(height: 10),
-              
+
               // Secondary button - Scan for other devices
               Container(
                 width: double.infinity,
@@ -1489,16 +1389,13 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               return;
             }
           });
-          
+
           // Store model info for caching
           this.modelName = modelName;
           this.modelNumber = modelNo;
-          
+
           await updateGlucoseUnit(glucoseUnits,
               modelNameParam: modelName, modelNoParam: modelNo);
-              
-          // Check if we need full sync or incremental sync
-          await _determineSyncStrategy(deviceFounded);
         }
       }
 
@@ -1532,28 +1429,29 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             GlucoseProfileConfiguration
                 .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
           await characteristic.setNotifyValue(true);
-          
+
           // Đợi một chút để đảm bảo notification đã được setup
           await Future.delayed(Duration(milliseconds: 500));
-          
+
           // Thử gửi lệnh request data với retry mechanism (Cải tiến cho case 1.1)
           bool dataRequestSuccess = false;
           int retryCount = 0;
           const maxRetries = 3;
-          
+
           while (!dataRequestSuccess && retryCount < maxRetries) {
             try {
-              // Build RACP request with time filter if incremental sync
-              List<int> requestData = await _buildRACPRequest();
+              // Build RACP request for all data
+              List<int> requestData = _buildRACPRequest();
               print('📡 RACP Request: $requestData');
               await characteristic.write(requestData);
-              
+
               // Đợi lâu hơn cho lần đầu tiên để device có thời gian xử lý
               int delaySeconds = retryCount == 0 ? 8 : 5;
               await Future.delayed(Duration(seconds: delaySeconds));
-              
+
               dataRequestSuccess = true;
-              print('Data request sent successfully on attempt ${retryCount + 1}');
+              print(
+                  'Data request sent successfully on attempt ${retryCount + 1}');
             } catch (e) {
               retryCount++;
               print('Data request failed on attempt $retryCount: $e');
@@ -1562,7 +1460,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               }
             }
           }
-          
+
           if (dataRequestSuccess) {
             await TrackingManager.trackEvent(
               'glucose_pair',
@@ -1573,7 +1471,16 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             );
             startCheckingData();
           } else {
-            throw Exception('Failed to send data request after $maxRetries attempts');
+            // Hết số lần retry: về màn hình lỗi
+            try {
+              await deviceFounded.disconnect();
+            } catch (_) {}
+            _safeSetState(() {
+              appStatus = AppStatus.isNoDeviceFound;
+            });
+            Message.showToastMessage(
+                context, 'Không thể lấy dữ liệu từ thiết bị, xin thử lại.');
+            return;
           }
         }
       }
@@ -1584,14 +1491,14 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       print('Error type: ${e.runtimeType}');
       print('Stack trace: $s');
       print('===============================');
-      
+
       // Phân biệt giữa Case 2.1 và Case 3.1
       bool isNonConnectionError = e.toString().contains('Service not found') ||
-                                 e.toString().contains('Characteristic not found') ||
-                                 e.toString().contains('Permission denied') ||
-                                 e.toString().contains('Invalid') ||
-                                 e.toString().contains('Parse error');
-      
+          e.toString().contains('Characteristic not found') ||
+          e.toString().contains('Permission denied') ||
+          e.toString().contains('Invalid') ||
+          e.toString().contains('Parse error');
+
       if (isNonConnectionError) {
         // Những lỗi technical không liên quan đến pairing
         print('Technical error (non-pairing): $e');
@@ -1603,76 +1510,99 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             context, 'Lỗi kỹ thuật, xin vui lòng thử lại.');
       } else {
         // Phân biệt Case 2.1 vs 3.1 dựa trên error patterns cụ thể
-        bool isCase21 = e.toString().contains('Peer removed pairing') || 
-                        e.toString().contains('pairing information') ||
-                        e.toString().contains('authentication failed') ||
-                        e.toString().contains('apple-code: 14'); // iOS specific pairing error
-        
+        bool isCase21 = e.toString().contains('Peer removed pairing') ||
+            e.toString().contains('pairing information') ||
+            e.toString().contains('authentication failed') ||
+            e
+                .toString()
+                .contains('apple-code: 14'); // iOS specific pairing error
+
         // Check for specific pairing-in-progress error (fbp-code: 10) or iOS paired device timeout (fbp-code: 1)
         bool isPairingInProgress = (e.toString().contains('fbp-code: 10') &&
-                                   e.toString().contains('connection canceled')) ||
-                                  (e.toString().contains('fbp-code: 1') &&
-                                   e.toString().contains('Timed out'));
-        
+                e.toString().contains('connection canceled')) ||
+            (e.toString().contains('fbp-code: 1') &&
+                e.toString().contains('Timed out'));
+
         // Alternative check: any connection canceled might indicate device is ready
-        bool isConnectionCanceled = e.toString().contains('connection canceled') ||
-                                   e.toString().contains('FlutterBluePlusException');
-        
+        bool isConnectionCanceled =
+            e.toString().contains('connection canceled') ||
+                e.toString().contains('FlutterBluePlusException');
+
         // Check if this is a paired device with connection issues
-        bool isPairedDeviceConnectionDrop = e.toString().contains('TimeoutException') &&
-                                           e.toString().contains('Connection timed out') &&
-                                           !e.toString().contains('Quick pairing check'); // Exclude auto-detection timeouts
-        
+        bool isPairedDeviceConnectionDrop =
+            e.toString().contains('TimeoutException') &&
+                e.toString().contains('Connection timed out') &&
+                !e.toString().contains(
+                    'Quick pairing check'); // Exclude auto-detection timeouts
+
         // Debug: Print detailed error analysis
         print('🔍 ERROR ANALYSIS:');
-        print('   - Contains fbp-code: 10: ${e.toString().contains('fbp-code: 10')}');
-        print('   - Contains fbp-code: 1: ${e.toString().contains('fbp-code: 1')}');
-        print('   - Contains fbp-code: 6: ${e.toString().contains('fbp-code: 6')}');
-        print('   - Contains connection canceled: ${e.toString().contains('connection canceled')}');
+        print(
+            '   - Contains fbp-code: 10: ${e.toString().contains('fbp-code: 10')}');
+        print(
+            '   - Contains fbp-code: 1: ${e.toString().contains('fbp-code: 1')}');
+        print(
+            '   - Contains fbp-code: 6: ${e.toString().contains('fbp-code: 6')}');
+        print(
+            '   - Contains connection canceled: ${e.toString().contains('connection canceled')}');
         print('   - Contains Timed out: ${e.toString().contains('Timed out')}');
-        print('   - Contains FlutterBluePlusException: ${e.toString().contains('FlutterBluePlusException')}');
-        print('   - Contains TimeoutException: ${e.toString().contains('TimeoutException')}');
-        print('   - Contains Connection timed out: ${e.toString().contains('Connection timed out')}');
-        print('   - Contains Device is disconnected: ${e.toString().contains('Device is disconnected')}');
-        print('   - Contains discoverServices: ${e.toString().contains('discoverServices')}');
+        print(
+            '   - Contains FlutterBluePlusException: ${e.toString().contains('FlutterBluePlusException')}');
+        print(
+            '   - Contains TimeoutException: ${e.toString().contains('TimeoutException')}');
+        print(
+            '   - Contains Connection timed out: ${e.toString().contains('Connection timed out')}');
+        print(
+            '   - Contains Device is disconnected: ${e.toString().contains('Device is disconnected')}');
+        print(
+            '   - Contains discoverServices: ${e.toString().contains('discoverServices')}');
         print('   - isPairingInProgress: $isPairingInProgress');
         print('   - isConnectionCanceled: $isConnectionCanceled');
-        print('   - isPairedDeviceConnectionDrop: $isPairedDeviceConnectionDrop');
-        
+        print(
+            '   - isPairedDeviceConnectionDrop: $isPairedDeviceConnectionDrop');
+
         // Calculate isCase31 before printing
         bool isCase31 = (e.toString().contains('Failed to connect') ||
-                        e.toString().contains('didFailToConnectPeripheral') ||
-                        e.toString().contains('fbp-code: 6') || // Device is disconnected  
-                        e.toString().contains('Device is disconnected') ||
-                        e.toString().contains('discoverServices') ||
-                        e.toString().contains('Connection timeout') ||
-                        e.toString().contains('TimeoutException')) &&
-                        !isPairingInProgress && // Exclude pairing-in-progress errors
-                        !isPairedDeviceConnectionDrop; // Exclude paired device connection drops
-        
+                e.toString().contains('didFailToConnectPeripheral') ||
+                e
+                    .toString()
+                    .contains('fbp-code: 6') || // Device is disconnected
+                e.toString().contains('Device is disconnected') ||
+                e.toString().contains('discoverServices') ||
+                e.toString().contains('Connection timeout') ||
+                e.toString().contains('TimeoutException')) &&
+            !isPairingInProgress && // Exclude pairing-in-progress errors
+            !isPairedDeviceConnectionDrop; // Exclude paired device connection drops
+
         print('   - isCase21: ${isCase21}');
         print('   - isCase31: $isCase31');
         print('   - Full error: $e');
-        
+
         if (isPairingInProgress) {
           // Connection canceled - device đã paired và ready for data transfer
-          print('✅ EXACT MATCH: Connection canceled (fbp-code: 10) - device already paired and ready for data transfer: $e');
-          print('📱 Phone has history + Device is connected → Show solution screen');
+          print(
+              '✅ EXACT MATCH: Connection canceled (fbp-code: 10) - device already paired and ready for data transfer: $e');
+          print(
+              '📱 Phone has history + Device is connected → Show solution screen');
           _safeSetState(() {
             deviceFound = true; // Giữ device info để có thể transfer
             appStatus = AppStatus.isDeviceAlreadyPaired; // Show solution screen
           });
         } else if (isPairedDeviceConnectionDrop) {
           // Paired device with connection drop - show solution screen
-          print('✅ PAIRED DEVICE CONNECTION DROP: Device is paired but connection dropped: $e');
-          print('📱 Device paired + Connection interrupted → Show solution screen for retry');
+          print(
+              '✅ PAIRED DEVICE CONNECTION DROP: Device is paired but connection dropped: $e');
+          print(
+              '📱 Device paired + Connection interrupted → Show solution screen for retry');
           _safeSetState(() {
             deviceFound = true; // Giữ device info để có thể transfer
             appStatus = AppStatus.isDeviceAlreadyPaired; // Show solution screen
           });
-        } else if (isConnectionCanceled && e.toString().contains('fbp-code: 10')) {
+        } else if (isConnectionCanceled &&
+            e.toString().contains('fbp-code: 10')) {
           // Fallback: Any connection canceled with fbp-code: 10
-          print('✅ FALLBACK MATCH: Connection canceled with fbp-code: 10 - device may be ready: $e');
+          print(
+              '✅ FALLBACK MATCH: Connection canceled with fbp-code: 10 - device may be ready: $e');
           print('📱 Trying alternative detection → Show solution screen');
           _safeSetState(() {
             deviceFound = true; // Giữ device info để có thể transfer
@@ -1705,8 +1635,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       }
     }
   }
-
-
 
   Future<void> updateGlucoseUnit(GlucoseUnitsFlag glucoseUnitsFlag,
       {String? modelNameParam, String? modelNoParam}) async {
@@ -1743,14 +1671,14 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   void startCheckingData() {
     int noDataCount = 0;
     const maxNoDataCount = 15; // Đợi tối đa 15 giây cho dữ liệu
-    
+
     Timer.periodic(Duration(seconds: 1), (timer) {
       if (glucoseMeasurementRecordList.length > previousDataCount) {
         previousDataCount = glucoseMeasurementRecordList.length;
         noDataCount = 0; // Reset counter khi có dữ liệu mới
       } else {
         noDataCount++;
-        
+
         // Nếu đã đợi đủ lâu mà không có dữ liệu mới, kết thúc
         if (noDataCount >= maxNoDataCount) {
           timer.cancel();
@@ -1767,26 +1695,12 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     Set<DateTime> uniqueValues = Set<DateTime>();
 
     if (glucoseMeasurementRecordList.isNotEmpty) {
-      // Filter records based on sync strategy
-      List<GlucoseMeasurementRecord> recordsToProcess = glucoseMeasurementRecordList;
-      
-      // ✅ NEW LOGIC: Device already filtered data based on RACP request
-      // No need for app-side filtering since device only returns requested data
-      if (!shouldPerformFullSync && lastSyncTime != null) {
-        print('⚡ INCREMENTAL SYNC: Device returned ${glucoseMeasurementRecordList.length} new records after ${lastSyncTime!.toIso8601String()}');
-      } else {
-        print('📋 FULL SYNC: Device returned all ${glucoseMeasurementRecordList.length} stored records');
-      }
-      
-      // Process all records returned by device (they're already filtered)
-      recordsToProcess = glucoseMeasurementRecordList;
-      
-      if (recordsToProcess.isEmpty) {
-        print('✅ No data returned from device - all records up to date');
-      } else {
-        print('📊 Processing ${recordsToProcess.length} records from device');
-      }
-      
+      // Process all records from device (original behavior)
+      List<GlucoseMeasurementRecord> recordsToProcess =
+          glucoseMeasurementRecordList;
+
+      print('📊 Processing ${recordsToProcess.length} records from device');
+
       recordsToProcess.forEach((element) {
         final glucose = roundAsFixed(roundDouble(element
             .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
