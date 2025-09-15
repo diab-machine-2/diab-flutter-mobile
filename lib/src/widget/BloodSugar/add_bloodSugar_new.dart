@@ -836,6 +836,8 @@ class _AddBloodSugarControllerNewState
       builder: (context) {
         return Container(
           child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16.0))),
               contentPadding: EdgeInsets.all(0),
               content: Stack(children: [
                 Container(

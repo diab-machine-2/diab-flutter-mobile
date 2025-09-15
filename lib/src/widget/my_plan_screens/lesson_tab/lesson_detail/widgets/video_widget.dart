@@ -257,6 +257,13 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     _isInitializing = true;
     debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo started');
     await _initializeVideoWithRetry();
+    
+    // Check disposal state before completing initialization
+    if (_isDisposed) {
+      debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo aborted - disposed during initialization');
+      return;
+    }
+    
     _isInitializing = false;
     debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo completed');
   }
@@ -362,6 +369,12 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
         // Check video readiness with shorter timeout
         final isReady = await _waitForVideoReady(maxAttempts: 30);
+        
+        // Check disposal state after waiting for video ready
+        if (_isDisposed) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after video ready check');
+          return;
+        }
 
         if (isReady) {
           debugPrint(
@@ -381,13 +394,32 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
             '[VIDEO][${_getTimestamp()}] Attempt ${attempt + 1} failed: $e');
 
         if (attempt < maxRetries) {
+          // Check disposal state before retry
+          if (_isDisposed) {
+            debugPrint('[VIDEO][${_getTimestamp()}] Retry aborted - disposed during cleanup');
+            return;
+          }
+          
           // Clean up failed attempt
           _cleanup();
           playerController = null;
           videoManager = null;
 
+          // Check disposal state before delay
+          if (_isDisposed) {
+            debugPrint('[VIDEO][${_getTimestamp()}] Retry aborted - disposed before delay');
+            return;
+          }
+
           // Shorter wait before retry
           await Future.delayed(Duration(seconds: 1));
+          
+          // Check disposal state after delay
+          if (_isDisposed) {
+            debugPrint('[VIDEO][${_getTimestamp()}] Retry aborted - disposed after delay');
+            return;
+          }
+          
           debugPrint('[VIDEO][${_getTimestamp()}] Retrying in 1 second...');
         } else {
           // Final attempt failed
@@ -462,6 +494,12 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   Future<BetterPlayerController?> _getControllerWithRetry() async {
     int attempts = 0;
     while (attempts < 20 && mounted && !_isDisposed) {
+      // Check disposal state before each attempt
+      if (_isDisposed) {
+        debugPrint('[VIDEO][${_getTimestamp()}] _getControllerWithRetry aborted - disposed during retry');
+        return null;
+      }
+      
       try {
         final controller = await videoManager?.controller;
         if (controller != null) {
@@ -473,6 +511,13 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         debugPrint(
             '[VIDEO][${_getTimestamp()}] Error getting controller (attempt ${attempts + 1}): $e');
       }
+      
+      // Check disposal state before delay
+      if (_isDisposed) {
+        debugPrint('[VIDEO][${_getTimestamp()}] _getControllerWithRetry aborted - disposed before delay');
+        return null;
+      }
+      
       await Future.delayed(Duration(milliseconds: 500));
       attempts++;
     }
@@ -485,6 +530,12 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     int attempts = 0;
 
     while (attempts < maxAttempts && mounted && !_isDisposed) {
+      // Check disposal state before each attempt
+      if (_isDisposed) {
+        debugPrint('[VIDEO][${_getTimestamp()}] _waitForVideoReady aborted - disposed during check');
+        return false;
+      }
+      
       try {
         final videoPlayerController = playerController!.videoPlayerController;
         debugPrint(
@@ -515,6 +566,12 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         debugPrint(
             '[VIDEO][${_getTimestamp()}] Error checking video readiness: $e');
         throw e;
+      }
+
+      // Check disposal state before delay
+      if (_isDisposed) {
+        debugPrint('[VIDEO][${_getTimestamp()}] _waitForVideoReady aborted - disposed before delay');
+        return false;
       }
 
       await Future.delayed(Duration(milliseconds: 200));

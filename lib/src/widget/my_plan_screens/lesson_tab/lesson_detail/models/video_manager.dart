@@ -230,6 +230,13 @@ class VideoManager {
       
       BetterPlayerController newController =
           BetterPlayerController(configuration);
+      
+      // Immediately check if disposed after controller creation
+      if (_isDisposed) {
+        print('[VIDEO] ${_getTimestamp()} - initController aborted - disposed after controller creation, disposing controller');
+        newController.dispose();
+        return;
+      }
 
       print('[VIDEO] ${_getTimestamp()} - Creating BetterPlayerDataSource');
       if (_isDisposed) {
@@ -274,6 +281,13 @@ class VideoManager {
         return;
       }
 
+      // Check disposal state before adding event listeners
+      if (_isDisposed) {
+        print('[VIDEO] ${_getTimestamp()} - initController aborted - disposed before adding event listeners');
+        newController.dispose();
+        return;
+      }
+      
       print('[VIDEO] ${_getTimestamp()} - Adding event listeners');
       // Add event listeners with null checks
       newController.addEventsListener(_handlePlayerEvent);
@@ -290,7 +304,9 @@ class VideoManager {
         print(
             '[VIDEO] ${_getTimestamp()} - Video controller initialized successfully');
       } else {
+        print('[VIDEO] ${_getTimestamp()} - initController aborted - disposed before final assignment');
         newController.dispose();
+        return;
       }
     } catch (e) {
       print(
@@ -501,6 +517,9 @@ class VideoManager {
   void disposeAllVideo() {
     print('[VIDEO] ${_getTimestamp()} - disposeAllVideo started');
     _isDisposed = true;
+    _isInitializing = false;
+    hasVideo = false;
+    
     try {
       print('[VIDEO] ${_getTimestamp()} - disposeAllVideo closing placeholder stream');
       _placeholderStreamController.close();
@@ -522,10 +541,14 @@ class VideoManager {
         }
       }
       
-      _controller?.dispose(forceDispose: true);
+      // Force dispose with aggressive cleanup
+      try {
+        _controller?.dispose(forceDispose: true);
+      } catch (e) {
+        print('[VIDEO] ${_getTimestamp()} - Error disposing controller: $e');
+      }
+      
       _controller = null;
-      hasVideo = false;
-      _isInitializing = false;
       print('[VIDEO] ${_getTimestamp()} - disposeAllVideo completed');
     } catch (e) {
       print('[VIDEO] ${_getTimestamp()} - Error disposing video: $e');
