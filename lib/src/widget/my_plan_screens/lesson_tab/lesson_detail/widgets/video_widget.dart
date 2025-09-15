@@ -50,6 +50,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   String? errorMessage;
   int retryCount = 0;
   static const int maxRetries = 1;
+  bool _isDisposed = false;
 
   String _getTimestamp() {
     return DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
@@ -76,17 +77,26 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _isDisposed = true;
     _cleanup();
     super.dispose();
   }
 
   void _cleanup() {
-    videoManager?.removeEventListeners();
-    if (playerController?.videoPlayerController?.value.initialized == true) {
+    debugPrint('[VIDEO][${_getTimestamp()}] Starting cleanup...');
+    try {
+      videoManager?.removeEventListeners();
+      if (playerController?.videoPlayerController?.value.initialized == true) {
+        playerController?.pause();
+      }
+      // Force pause even if not initialized to prevent background audio
       playerController?.pause();
+      playerController?.dispose();
+      videoManager?.disposeAllVideo();
+      debugPrint('[VIDEO][${_getTimestamp()}] Cleanup completed');
+    } catch (e) {
+      debugPrint('[VIDEO][${_getTimestamp()}] Error during cleanup: $e');
     }
-    playerController?.dispose();
-    videoManager?.disposeAllVideo();
   }
 
   void _cleanupAndRefresh() {
@@ -203,7 +213,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _refreshVideo() async {
-    if (!mounted) return;
+    if (!mounted || _isDisposed) return;
 
     setState(() {
       isInitializing = true;
@@ -219,7 +229,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _initializeVideoWithRetry() async {
-    if (!mounted) return;
+    if (!mounted || _isDisposed) return;
 
     String? finalUrl = url;
 
@@ -238,7 +248,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         }
       } catch (e) {
         debugPrint('[VIDEO][${_getTimestamp()}] YouTube processing failed: $e');
-        if (mounted) {
+        if (mounted && !_isDisposed) {
           setState(() {
             isInitializing = false;
             hasError = true;
@@ -251,7 +261,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
     if (finalUrl == null || finalUrl.isEmpty) {
       debugPrint('[VIDEO][${_getTimestamp()}] No video URL provided');
-      if (mounted) {
+      if (mounted && !_isDisposed) {
         setState(() {
           isInitializing = false;
           hasError = true;
@@ -279,7 +289,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
     // Attempt initialization with retry logic
     for (int attempt = 0; attempt <= maxRetries; attempt++) {
-      if (!mounted) return;
+      if (!mounted || _isDisposed) return;
 
       try {
         debugPrint(
@@ -300,7 +310,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         if (isReady) {
           debugPrint(
               '[VIDEO][${_getTimestamp()}] Video successfully initialized on attempt ${attempt + 1}');
-          if (mounted) {
+          if (mounted && !_isDisposed) {
             setState(() {
               isInitializing = false;
               hasError = false;
@@ -325,7 +335,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
           debugPrint('[VIDEO][${_getTimestamp()}] Retrying in 1 second...');
         } else {
           // Final attempt failed
-          if (mounted) {
+          if (mounted && !_isDisposed) {
             setState(() {
               isInitializing = false;
               hasError = true;
@@ -339,6 +349,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _createVideoManager() async {
+    if (!mounted || _isDisposed) return;
+    
     videoManager = VideoManager(
       url: url,
       callbackEventListener: widget.callbackEventListener,
@@ -366,12 +378,14 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       videoThumbnail: widget.videoThumbnail,
     );
 
-    widget.setVideoManager(videoManager!);
+    if (mounted && !_isDisposed) {
+      widget.setVideoManager(videoManager!);
+    }
   }
 
   Future<BetterPlayerController?> _getControllerWithRetry() async {
     int attempts = 0;
-    while (attempts < 20 && mounted) {
+    while (attempts < 20 && mounted && !_isDisposed) {
       try {
         final controller = await videoManager?.controller;
         if (controller != null) {
@@ -390,11 +404,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<bool> _waitForVideoReady({int maxAttempts = 30}) async {
-    if (playerController == null) return false;
+    if (playerController == null || _isDisposed) return false;
 
     int attempts = 0;
 
-    while (attempts < maxAttempts && mounted) {
+    while (attempts < maxAttempts && mounted && !_isDisposed) {
       try {
         final videoPlayerController = playerController!.videoPlayerController;
         debugPrint(
@@ -466,7 +480,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
               ElevatedButton(
                 onPressed: retryCount < maxRetries
                     ? () {
-                        if (mounted) {
+                        if (mounted && !_isDisposed) {
                           retryCount++;
                           setState(() {
                             hasError = false;

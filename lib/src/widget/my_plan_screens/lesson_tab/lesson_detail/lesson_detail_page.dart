@@ -153,7 +153,14 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                   lessonDetail: _cubit.lessonDetail!,
                   smartGoal: widget.smartGoal,
                 )
-              : Scaffold(
+              : WillPopScope(
+                  onWillPop: () async {
+                    // Immediately dispose video when system back button is pressed
+                    _cubit.videoManager?.disposeAllVideo();
+                    _cubit.audioManager?.disposeAllAudio();
+                    return true;
+                  },
+                  child: Scaffold(
                   body: Stack(
                     children: [
                       BackgroundPage(
@@ -176,6 +183,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         children: [
                                           GestureDetector(
                                             onTap: () async {
+                                              // Immediately dispose video to prevent background audio
+                                              _cubit.videoManager?.disposeAllVideo();
+                                              _cubit.audioManager?.disposeAllAudio();
+                                              
                                               await TrackingManager.analytics
                                                   .logEvent(
                                                 name: 'component_clicked',
@@ -190,8 +201,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                       _cubit.lessonDetail?.name,
                                                 },
                                               );
-                                              _cubit.videoManager
-                                                  ?.disposeAllVideo();
+                                              
                                               NavigationUtil.pop(context);
                                             },
                                             child: Icon(
@@ -483,6 +493,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           left: MediaQuery.of(context).size.width * 0.5 - 50,
                         ),
                     ],
+                  ),
                   ),
                 );
         },

@@ -465,15 +465,28 @@ class VideoManager {
   }
 
   void disposeAllVideo() {
-    // if (_isDisposed) return;
     print('[VIDEO] ${_getTimestamp()} - disposeAllVideo started');
     _isDisposed = true;
     try {
       _placeholderStreamController.close();
       removeEventListeners();
-      if (_controller?.videoPlayerController?.value.initialized == true) {
+      
+      // Force pause immediately to stop any background audio
+      try {
         _controller?.pause();
+      } catch (e) {
+        print('[VIDEO] ${_getTimestamp()} - Error pausing during dispose: $e');
       }
+      
+      // Additional pause check for video player controller
+      if (_controller?.videoPlayerController?.value.initialized == true) {
+        try {
+          _controller?.videoPlayerController?.pause();
+        } catch (e) {
+          print('[VIDEO] ${_getTimestamp()} - Error pausing video player controller: $e');
+        }
+      }
+      
       _controller?.dispose(forceDispose: true);
       _controller = null;
       hasVideo = false;

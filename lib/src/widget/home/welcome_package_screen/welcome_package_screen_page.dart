@@ -426,10 +426,17 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
   }
 
   Future<void> _openZaloGroup(String zaloGroup) async {
+    // Always mark welcome as displayed when user clicks join_zalo_group button
+    await _cubit.markDisplayedWelcome();
+    
     final url = Uri.tryParse(zaloGroup);
     if (url != null && await canLaunchUrl(url)) {
       await launchUrl(url);
+    } else {
+      // Handle case where URL cannot be launched
+      print('[ONBOARDING] Could not launch Zalo group URL: $zaloGroup');
     }
+    
     if (!isClickSkip) {
       isClickSkip = true;
       await _backPressed();
