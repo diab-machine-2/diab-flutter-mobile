@@ -62,14 +62,18 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   @override
   Future<void> dispose() async {
     debugPrint('[VIDEO] LessonDetailPage.dispose start for lessonId=${_cubit.lessonDetail?.id} title=${_cubit.lessonDetail?.name}');
+    
+    // Immediately dispose video and audio to prevent background audio
+    debugPrint('[VIDEO] Immediately disposing lesson media managers');
+    _cubit.videoManager?.disposeAllVideo();
+    _cubit.audioManager?.disposeAllAudio();
+    
     await LessonDetailTracking.lessonDetailScrolling(
       percentComplete: percentComplete,
       objectId: _cubit.lessonDetail!.id!,
       objectTitle: _cubit.lessonDetail!.name!,
     );
-    debugPrint('[VIDEO] Disposing lesson media managers');
-    _cubit.videoManager?.disposeAllVideo();
-    _cubit.audioManager?.disposeAllAudio();
+    
     debugPrint('[VIDEO] LessonDetailPage.dispose done');
     super.dispose();
   }
@@ -135,36 +139,36 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
-          return _cubit.showQuizLesson
-              ? CourseQuizPage(
-                  key: Key(_cubit.currentSectionDetail?.id ?? ''),
-                  currentPercent: (((_cubit.currentSection + 1) /
-                              _cubit.sectionList.length) *
-                          100)
-                      .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
-                  lessonId: _cubit.lessonId,
-                  lessonSectionItem: widget.lessonType != 3
-                      ? _cubit.currentSectionDetail
-                      : null,
-                  onDone: (isPassed) async {
-                    _cubit.onChangeSection(context, _cubit.currentSection + 1);
-                  },
-                  onComplete: () {
-                    widget.onComplete(
-                        _cubit.lessonDetail!.id!, _cubit.percentComplete);
-                  },
-                  lessonDetail: _cubit.lessonDetail!,
-                  smartGoal: widget.smartGoal,
-                )
-              : WillPopScope(
-                  onWillPop: () async {
-                    debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - disposing video and audio');
-                    // Immediately dispose video when system back button is pressed
-                    _cubit.videoManager?.disposeAllVideo();
-                    _cubit.audioManager?.disposeAllAudio();
-                    return true;
-                  },
-                  child: Scaffold(
+          return WillPopScope(
+            onWillPop: () async {
+              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - disposing video and audio');
+              // Immediately dispose video when system back button is pressed
+              _cubit.videoManager?.disposeAllVideo();
+              _cubit.audioManager?.disposeAllAudio();
+              return true;
+            },
+            child: _cubit.showQuizLesson
+                ? CourseQuizPage(
+                    key: Key(_cubit.currentSectionDetail?.id ?? ''),
+                    currentPercent: (((_cubit.currentSection + 1) /
+                                _cubit.sectionList.length) *
+                            100)
+                        .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
+                    lessonId: _cubit.lessonId,
+                    lessonSectionItem: widget.lessonType != 3
+                        ? _cubit.currentSectionDetail
+                        : null,
+                    onDone: (isPassed) async {
+                      _cubit.onChangeSection(context, _cubit.currentSection + 1);
+                    },
+                    onComplete: () {
+                      widget.onComplete(
+                          _cubit.lessonDetail!.id!, _cubit.percentComplete);
+                    },
+                    lessonDetail: _cubit.lessonDetail!,
+                    smartGoal: widget.smartGoal,
+                  )
+                : Scaffold(
                   body: Stack(
                     children: [
                       BackgroundPage(
@@ -499,8 +503,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         ),
                     ],
                   ),
-                  ),
-                );
+                ),
+          );
         },
       ),
     );

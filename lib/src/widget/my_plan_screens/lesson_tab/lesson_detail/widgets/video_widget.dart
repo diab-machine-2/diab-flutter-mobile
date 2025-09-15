@@ -82,6 +82,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.dispose called, starting cleanup');
     _isDisposed = true;
+    _isInitializing = false;
     _cleanup();
     super.dispose();
   }
@@ -111,8 +112,16 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup completed');
     } catch (e) {
       debugPrint('[VIDEO][${_getTimestamp()}] Error during cleanup: $e');
-      playerController?.dispose();
-      videoManager?.disposeAllVideo();
+      try {
+        playerController?.dispose();
+      } catch (e2) {
+        debugPrint('[VIDEO][${_getTimestamp()}] Error disposing player controller: $e2');
+      }
+      try {
+        videoManager?.disposeAllVideo();
+      } catch (e3) {
+        debugPrint('[VIDEO][${_getTimestamp()}] Error disposing video manager: $e3');
+      }
       debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup done');
     }
   }
