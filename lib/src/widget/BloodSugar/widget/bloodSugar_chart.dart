@@ -431,8 +431,6 @@ class BloodSugarChartState extends State<BloodSugarChart>
                   decoration: BoxDecoration(
                     color: R.color.white,
                     borderRadius: BorderRadius.circular(19),
-                    border:
-                        Border.all(color: R.color.color0xffE5E5E5, width: 1),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -991,7 +989,16 @@ class BloodSugarChartState extends State<BloodSugarChart>
             );
           },
         ),
-        belowBarData: BarAreaData(show: false),
+        belowBarData: BarAreaData(
+          show: true,
+          colors: [
+            R.color.greenGradientMid.withOpacity(0.2),
+            R.color.greenGradientMid.withOpacity(0.0),
+          ],
+          gradientColorStops: const [0.5, 1.0],
+          gradientFrom: const Offset(0.5, 0),
+          gradientTo: const Offset(0.5, 1),
+        ),
       ),
     ];
   }

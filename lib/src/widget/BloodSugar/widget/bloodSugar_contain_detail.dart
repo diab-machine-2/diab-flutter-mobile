@@ -149,7 +149,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         )
                       : _buildChart(model),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
                   Divider(
                     color: R.color.gray_btn,
                     thickness: 1,

@@ -131,16 +131,30 @@ class _AddBloodSugarControllerNewState
       await _loadConfig();
     }
 
+    // Handle pre-filled unit first to determine if it's mg/dL
+    bool isPrefilledMgDl = false;
+    if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
+      isPrefilledMgDl = widget.prefilledUnit!.toLowerCase().contains('mg') ||
+          widget.prefilledUnit!.toLowerCase().contains('mg/dl');
+    }
+
     // Handle pre-filled data from image analysis
     if (widget.prefilledValue != null && widget.prefilledValue!.isNotEmpty) {
-      _controller.text = widget.prefilledValue!;
-      number = double.tryParse(widget.prefilledValue!) ?? 0;
+      // Parse the pre-filled value
+      double parsedValue = double.tryParse(widget.prefilledValue!) ?? 0;
+      number = parsedValue;
+
+      // For mg/dL values, remove decimal part if it's a whole number
+      if (isPrefilledMgDl && parsedValue == parsedValue.roundToDouble()) {
+        _controller.text = parsedValue.round().toString();
+      } else {
+        _controller.text = widget.prefilledValue!;
+      }
     }
 
     if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
       // Set unit based on prefilled unit
-      isMgPerDl = widget.prefilledUnit!.toLowerCase().contains('mg') ||
-          widget.prefilledUnit!.toLowerCase().contains('mg/dl');
+      isMgPerDl = isPrefilledMgDl;
 
       // Check if the AI analysis unit is different from current default
       bool currentUnitIsMg = AppSettings.userInfo!.glucoseUnit == 1;
@@ -372,6 +386,7 @@ class _AddBloodSugarControllerNewState
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(children: [
+                    GapH(16),
                     _inforSection(context),
                     Container(
                       margin: const EdgeInsets.only(
@@ -505,8 +520,8 @@ class _AddBloodSugarControllerNewState
                                           R.string.confirm.tr(),
                                           style: TextStyle(
                                             color: R.color.white,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 15,
                                           ),
                                         ),
                                       ),
@@ -586,7 +601,6 @@ class _AddBloodSugarControllerNewState
                                 ),
                               ])),
                     ),
-              SizedBox(height: 8),
             ],
           ),
         ),
@@ -846,9 +860,9 @@ class _AddBloodSugarControllerNewState
                           R.string.confirm_to_remove_data.tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: R.color.greenGradientTop02,
+                              color: R.color.color0xff5E6566,
                               fontSize: 13,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w400),
                         ),
                       ),
                       Container(
@@ -865,15 +879,15 @@ class _AddBloodSugarControllerNewState
                                   height: 43,
                                   padding: EdgeInsets.symmetric(horizontal: 16),
                                   decoration: BoxDecoration(
-                                    color: R.color.red,
+                                    color: R.color.attentionText,
                                     borderRadius: BorderRadius.circular(200),
                                   ),
                                   child: Center(
                                     child: Text(R.string.confirm.tr(),
                                         style: TextStyle(
                                             color: R.color.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600)),
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700)),
                                   ),
                                 ),
                               ),
@@ -1367,7 +1381,7 @@ class _AddBloodSugarControllerNewState
 
   Widget _connectMachine(BuildContext context) {
     final action = () async {
-      Navigator.pushReplacement(
+      Navigator.push(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => RocheConnectionView()));

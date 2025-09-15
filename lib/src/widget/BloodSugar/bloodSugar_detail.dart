@@ -136,6 +136,27 @@ class BloodSugarDetailControllerState
             color: R.color.white,
           ),
         ),
+        actions: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context)
+                      .pushNamed(NavigatorName.glucose_intro_2nd_page);
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Text(
+                    R.string.huong_dan.tr(),
+                    style: TextStyle(color: R.color.white, fontSize: 15),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
