@@ -141,9 +141,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     });
   }
 
-    void _setInitialSelectedDate() {
+  void _setInitialSelectedDate() {
     if (_hasSetInitialSelectedDate) return;
-    
+
     // Get active dates (same logic as in _buildSectionCalendarBooking)
     List<DateTime> activeDates = _cubit.calendarCoachs
         .map((model) => DateTime.fromMillisecondsSinceEpoch(
@@ -166,7 +166,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             ))
         .toSet()
         .toList();
-    
+
     if (activeDates.isNotEmpty) {
       activeDates.sort((a, b) {
         int yearComparison = a.year.compareTo(b.year);
@@ -175,11 +175,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
         if (monthComparison != 0) return monthComparison;
         return a.day.compareTo(b.day);
       });
-      
+
       setState(() {
         seletedDate = activeDates.first;
         _hasSetInitialSelectedDate = true;
-        
+
         // Also update pickSlots for the selected date
         var targets = _cubit.calendarCoachs
             .where((model) => DateUtil.isSameDate(
@@ -192,7 +192,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             .toList();
         pickSlots = targets;
       });
-      
+
       print('[CALENDAR] Initial selectedDate set to: $seletedDate');
     } else {
       // If no active dates yet, schedule another check
@@ -478,7 +478,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
       await _welcomPackageCubit.markDisplayedWelcome();
 
-      Observable.instance.notifyObservers([], notifyName: 'refresh_home');
+      Observable.instance
+          .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
 
       if (widget.smartGoal?.id != null) {
         await HomeClient().completeSmartGoal(
@@ -899,7 +900,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
             ),
           ),
           CustomHorizontalDatePicker(
-            initialDate:  seletedDate,
+            initialDate: seletedDate,
             firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
             activeDates: activeDates,
             datesRange: Const.MAX_DAY_RANGE_PRIMARY_SCREENING,
