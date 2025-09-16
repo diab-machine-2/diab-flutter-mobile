@@ -102,7 +102,10 @@ class GlucoseClient extends FetchClient {
         response.data as Map<String, dynamic>,
         GlucoseLesson.fromJson,
       );
-      return listResponse.data;
+      final data = listResponse.data;
+      if (data == null) return null;
+      // Filter out inactive lessons (status == 2)
+      return data.where((e) => e.status != 2).toList();
     }
     return null;
   }
