@@ -162,12 +162,12 @@ class BloodSugarFunctions {
                     R.string.glucose_photo_subtitle.tr(),
                     R.drawable.im_glucose_from_photo,
                     () async {
-                     AppSettings.setLastOpenedGlucoseInputType('photo');
-                      TrackingManager.trackEvent(
+                      AppSettings.setLastOpenedGlucoseInputType('camera');
+                      await TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',
                         params: {
-                          'method': 'photo',
+                          'method': 'camera',
                         },
                       );
                       Navigator.pop(context);

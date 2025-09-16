@@ -773,7 +773,9 @@ class _AddBloodSugarControllerNewState
           'kpi_glucose_add',
           params: {
             'index_time': selectedTimeFrame?.name,
-            'method': fromNipro ? 'device' : 'manual',
+            'method': fromNipro
+                ? 'device'
+                : (_hasCameraCapturedData() ? 'camera' : 'manual'),
           },
         );
         if (widget.goalId != null && widget.goalId?.isNotEmpty == true) {
@@ -1479,7 +1481,14 @@ class _AddBloodSugarControllerNewState
         (widget.selectedImages != null && widget.selectedImages!.isNotEmpty);
   }
 
-  void _takePhoto(BuildContext context) {
+  void _takePhoto(BuildContext context) async {
+    await TrackingManager.trackEvent(
+      'glucose_select_method',
+      'kpi_glucose',
+      params: {
+        'method': 'camera',
+      },
+    );
     // Navigate to blood glucose image capture
     Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture);
   }
