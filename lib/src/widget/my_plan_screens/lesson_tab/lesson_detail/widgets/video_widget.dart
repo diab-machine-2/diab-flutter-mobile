@@ -373,6 +373,12 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
         if (_isDisposed) {
           debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after controller creation');
+          // Force pause the controller before returning to prevent audio
+          try {
+            playerController?.pause();
+          } catch (e) {
+            debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller after disposal: $e');
+          }
           return;
         }
 
@@ -382,6 +388,12 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         // Check disposal state after waiting for video ready
         if (_isDisposed) {
           debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after video ready check');
+          // Force pause the controller before returning to prevent audio
+          try {
+            playerController?.pause();
+          } catch (e) {
+            debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller after disposal: $e');
+          }
           return;
         }
 
@@ -396,11 +408,24 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
           }
           return;
         } else {
+          // Force pause before throwing exception to prevent audio
+          try {
+            playerController?.pause();
+          } catch (e) {
+            debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller before exception: $e');
+          }
           throw Exception('Video metadata failed to load (duration = 0)');
         }
       } catch (e) {
         debugPrint(
             '[VIDEO][${_getTimestamp()}] Attempt ${attempt + 1} failed: $e');
+
+        // Force pause controller before handling error to prevent audio
+        try {
+          playerController?.pause();
+        } catch (e2) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller in catch block: $e2');
+        }
 
         if (attempt < maxRetries) {
           // Check disposal state before retry

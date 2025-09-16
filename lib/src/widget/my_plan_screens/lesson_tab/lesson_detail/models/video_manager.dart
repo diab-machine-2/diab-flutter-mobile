@@ -283,12 +283,23 @@ class VideoManager {
       if (_isDisposed) {
         print(
             '[VIDEO] ${_getTimestamp()} - initController aborted - disposed after data source setup, disposing controller');
+        // Force pause immediately before disposing to prevent audio
+        try {
+          await newController.pause();
+        } catch (e) {
+          print('[VIDEO] ${_getTimestamp()} - Error pausing after setupDataSource: $e');
+        }
         newController.dispose();
         return;
       }
 
-      // Ensure video is paused immediately after setup
-      await newController.pause();
+      // Ensure video is paused immediately after setup to prevent auto-play
+      try {
+        await newController.pause();
+        print('[VIDEO] ${_getTimestamp()} - Video paused after setupDataSource');
+      } catch (e) {
+        print('[VIDEO] ${_getTimestamp()} - Error pausing after setupDataSource: $e');
+      }
 
       // Final disposal check before setting the controller
       if (_isDisposed) {
