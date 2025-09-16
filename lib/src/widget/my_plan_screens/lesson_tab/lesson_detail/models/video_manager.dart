@@ -279,32 +279,38 @@ class VideoManager {
           '[VIDEO] ${_getTimestamp()} - Setting up data source on controller');
       await newController.setupDataSource(betterPlayerDataSource);
 
+      // CRITICAL: Immediately pause after setupDataSource to prevent auto-play
+      try {
+        await newController.pause();
+        print('[VIDEO] ${_getTimestamp()} - Video paused immediately after setupDataSource');
+      } catch (e) {
+        print('[VIDEO] ${_getTimestamp()} - Error pausing after setupDataSource: $e');
+      }
+
       // Critical check: Verify disposal state after async operation
       if (_isDisposed) {
         print(
             '[VIDEO] ${_getTimestamp()} - initController aborted - disposed after data source setup, disposing controller');
-        // Force pause immediately before disposing to prevent audio
+        // Force pause again before disposing to prevent audio
         try {
           await newController.pause();
         } catch (e) {
-          print('[VIDEO] ${_getTimestamp()} - Error pausing after setupDataSource: $e');
+          print('[VIDEO] ${_getTimestamp()} - Error pausing before dispose: $e');
         }
         newController.dispose();
         return;
-      }
-
-      // Ensure video is paused immediately after setup to prevent auto-play
-      try {
-        await newController.pause();
-        print('[VIDEO] ${_getTimestamp()} - Video paused after setupDataSource');
-      } catch (e) {
-        print('[VIDEO] ${_getTimestamp()} - Error pausing after setupDataSource: $e');
       }
 
       // Final disposal check before setting the controller
       if (_isDisposed) {
         print(
             '[VIDEO] ${_getTimestamp()} - initController aborted - disposed before adding event listeners');
+        // Force pause before disposing to prevent audio
+        try {
+          await newController.pause();
+        } catch (e) {
+          print('[VIDEO] ${_getTimestamp()} - Error pausing before dispose: $e');
+        }
         newController.dispose();
         return;
       }
@@ -328,6 +334,12 @@ class VideoManager {
       } else {
         print(
             '[VIDEO] ${_getTimestamp()} - initController aborted - disposed before final assignment, disposing controller');
+        // Force pause before disposing to prevent audio
+        try {
+          await newController.pause();
+        } catch (e) {
+          print('[VIDEO] ${_getTimestamp()} - Error pausing before dispose: $e');
+        }
         newController.dispose();
         return;
       }
@@ -336,6 +348,12 @@ class VideoManager {
           '[VIDEO] ${_getTimestamp()} - Error initializing video controller: $e');
       // Dispose the controller if it was created but initialization failed
       if (newController != null) {
+        try {
+          // Force pause before disposing to prevent audio
+          await newController.pause();
+        } catch (e) {
+          print('[VIDEO] ${_getTimestamp()} - Error pausing before dispose: $e');
+        }
         try {
           newController.dispose();
         } catch (disposeError) {
@@ -561,6 +579,7 @@ class VideoManager {
       // Force pause immediately to stop any background audio
       try {
         _controller?.pause();
+        print('[VIDEO] ${_getTimestamp()} - Controller paused during disposal');
       } catch (e) {
         print('[VIDEO] ${_getTimestamp()} - Error pausing during dispose: $e');
       }
