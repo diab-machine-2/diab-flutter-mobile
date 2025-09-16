@@ -22,6 +22,7 @@ import '../blocs/rocheConnection_cubit.dart';
 import '../data/models/GlucoseMeasurementRecord.dart';
 import '../data/models/glucose_config.dart';
 import '../data/models/glucose_functions.dart';
+import '../utils/glucose_sync_cache.dart';
 import '../widgets/condition_widget.dart';
 import '../widgets/result_sync_data_new.dart';
 
@@ -80,10 +81,46 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   /// Build RACP (Record Access Control Point) request command
-  /// Always requests all records (original behavior)
-  List<int> _buildRACPRequest() {
-    print('📋 RACP REQUEST: Request all stored records');
-    return [0x01, 0x01]; // OpCode: Report all stored records
+  /// Uses cache time for incremental sync if available
+  Future<List<int>> _buildRACPRequest() async {
+    // Check if we should do incremental sync
+    final deviceId = device?.remoteId.str ?? '';
+    final shouldFullSync = await GlucoseSyncCache.shouldFullSync(deviceId);
+
+    if (shouldFullSync) {
+      print('📋 RACP REQUEST: Full sync - Request all stored records');
+      return [0x01, 0x01]; // OpCode: Report all stored records
+    } else {
+      // Incremental sync - get start time from cache
+      final startTime = await GlucoseSyncCache.getIncrementalSyncStartTime();
+      if (startTime != null) {
+        print(
+            '📋 RACP REQUEST: Incremental sync from ${startTime.toIso8601String()}');
+        // Build RACP request with time filter
+        return _buildRACPRequestWithTimeFilter(startTime);
+      } else {
+        print(
+            '📋 RACP REQUEST: No start time available, fallback to full sync');
+        return [0x01, 0x01]; // Fallback to full sync
+      }
+    }
+  }
+
+  /// Build RACP request with time filter for incremental sync
+  List<int> _buildRACPRequestWithTimeFilter(DateTime startTime) {
+    // Convert DateTime to Bluetooth time format (seconds since 2000-01-01)
+    final bluetoothEpoch = DateTime(2000, 1, 1);
+    final secondsSinceEpoch = startTime.difference(bluetoothEpoch).inSeconds;
+
+    // RACP request with time filter: OpCode(0x01) + Operator(0x03 = Greater than or equal) + FilterType(0x02 = User facing time) + Time(4 bytes)
+    final timeBytes = [
+      (secondsSinceEpoch >> 24) & 0xFF,
+      (secondsSinceEpoch >> 16) & 0xFF,
+      (secondsSinceEpoch >> 8) & 0xFF,
+      secondsSinceEpoch & 0xFF,
+    ];
+
+    return [0x01, 0x03, 0x02, ...timeBytes];
   }
 
   Timer? _statusTimer;
@@ -213,6 +250,20 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           context, "Đồng bộ chỉ số đường huyết thành công!");
 
       // API postGlucoseInputs() successful
+
+      // Save cache time and device info after successful sync
+      if (device != null) {
+        final syncTime = DateTime.now();
+        await GlucoseSyncCache.saveLastSyncTime(syncTime);
+        await GlucoseSyncCache.saveLastSyncDevice(
+          deviceId: device!.remoteId.str,
+          deviceName: device!.platformName,
+          modelName: modelName,
+          modelNumber: modelNumber,
+        );
+        print(
+            '💾 Cache updated: Sync time saved at ${syncTime.toIso8601String()}');
+      }
 
       Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
       await TrackingManager.trackEvent(
@@ -1017,20 +1068,18 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   void connectToAvailableDevice(List<ScanResult> scanResultList) async {
     for (var i = 0; i < scanResultList.length; i++) {
       final result = scanResultList[i];
-      if (result.device.platformName.contains('meter')) {
-        setState(() {
-          deviceFound = true;
-          device = result.device;
-          appStatus = AppStatus.isConnecting;
-        });
-        await FlutterBluePlus.stopScan();
+      // Since startScan is already filtered with required service UUIDs,
+      // any result here should be a valid glucose device. Do not rely on name.
+      setState(() {
+        deviceFound = true;
+        device = result.device;
+        appStatus = AppStatus.isConnecting;
+      });
+      await FlutterBluePlus.stopScan();
 
-        // Skip auto-detection for Transfer Data flow - go directly to PIN UI
-        // User wants the original flow without solution screen popup
-        print(
-            '🔄 Skipping auto-detection - proceeding with original Transfer Data flow');
-        return;
-      }
+      // Skip auto-detection for Transfer Data flow - go directly to PIN UI
+      print('🔄 Proceeding with Transfer Data flow (no name check)');
+      return;
     }
   }
 
@@ -1441,7 +1490,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           while (!dataRequestSuccess && retryCount < maxRetries) {
             try {
               // Build RACP request for all data
-              List<int> requestData = _buildRACPRequest();
+              List<int> requestData = await _buildRACPRequest();
               print('📡 RACP Request: $requestData');
               await characteristic.write(requestData);
 
