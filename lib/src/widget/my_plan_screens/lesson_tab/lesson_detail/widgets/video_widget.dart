@@ -93,26 +93,56 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       _isDisposed = true;
       _isInitializing = false;
       
-      // Force dispose video manager first to stop any ongoing initialization
+      // Force pause video manager first to prevent any audio
       if (videoManager != null) {
+        debugPrint('[VIDEO][${_getTimestamp()}] Pausing video manager before disposal');
+        try {
+          // Force pause immediately to prevent any audio
+          videoManager?.controller.then((controller) {
+            if (controller != null) {
+              controller.pause();
+              debugPrint('[VIDEO][${_getTimestamp()}] Video manager controller paused');
+            }
+          });
+        } catch (e) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Error pausing video manager: $e');
+        }
         debugPrint('[VIDEO][${_getTimestamp()}] Disposing video manager during cleanup');
         videoManager?.disposeAllVideo();
         videoManager = null;
       }
       
-      // Then dispose player controller
-      if (playerController?.videoPlayerController?.value.initialized == true) {
-        playerController?.pause();
+      // Force pause player controller with immediate pause
+      if (playerController != null) {
+        debugPrint('[VIDEO][${_getTimestamp()}] Pausing player controller before disposal');
+        try {
+          // Force pause immediately, even if not initialized
+          playerController!.pause();
+          debugPrint('[VIDEO][${_getTimestamp()}] Player controller paused');
+          
+          // Additional pause for video player controller if available
+          if (playerController!.videoPlayerController?.value.initialized == true) {
+            playerController!.videoPlayerController!.pause();
+            debugPrint('[VIDEO][${_getTimestamp()}] Video player controller paused');
+          }
+        } catch (e) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Error pausing player controller: $e');
+        }
+        
+        try {
+          playerController!.dispose();
+          debugPrint('[VIDEO][${_getTimestamp()}] Player controller disposed');
+        } catch (e) {
+          debugPrint('[VIDEO][${_getTimestamp()}] Error disposing player controller: $e');
+        }
+        playerController = null;
       }
-      // Force pause even if not initialized to prevent background audio
-      playerController?.pause();
-      playerController?.dispose();
-      playerController = null;
       
       debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup completed');
     } catch (e) {
       debugPrint('[VIDEO][${_getTimestamp()}] Error during cleanup: $e');
       try {
+        playerController?.pause();
         playerController?.dispose();
       } catch (e2) {
         debugPrint('[VIDEO][${_getTimestamp()}] Error disposing player controller: $e2');

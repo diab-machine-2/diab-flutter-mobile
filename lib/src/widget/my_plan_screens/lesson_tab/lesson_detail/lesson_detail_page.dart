@@ -141,10 +141,30 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         builder: (context, state) {
           return WillPopScope(
             onWillPop: () async {
-              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - disposing video and audio');
-              // Immediately dispose video when system back button is pressed
-              _cubit.videoManager?.disposeAllVideo();
-              _cubit.audioManager?.disposeAllAudio();
+              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - pausing and disposing video and audio');
+              // Immediately pause video and audio before disposal
+              if (_cubit.videoManager != null) {
+                try {
+                  _cubit.videoManager?.controller.then((controller) {
+                    if (controller != null) {
+                      controller.pause();
+                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on system back press');
+                    }
+                  });
+                } catch (e) {
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on system back press: $e');
+                }
+                _cubit.videoManager?.disposeAllVideo();
+              }
+              if (_cubit.audioManager != null) {
+                try {
+                  _cubit.audioManager?.controller?.pause();
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on system back press');
+                } catch (e) {
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on system back press: $e');
+                }
+                _cubit.audioManager?.disposeAllAudio();
+              }
               return true;
             },
             child: _cubit.showQuizLesson
@@ -211,6 +231,30 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                 },
                                               );
                                               
+                                              // Immediately pause video and audio before navigation
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - pausing and disposing video and audio');
+                                              if (_cubit.videoManager != null) {
+                                                try {
+                                                  _cubit.videoManager?.controller.then((controller) {
+                                                    if (controller != null) {
+                                                      controller.pause();
+                                                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on back press');
+                                                    }
+                                                  });
+                                                } catch (e) {
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on back press: $e');
+                                                }
+                                                _cubit.videoManager?.disposeAllVideo();
+                                              }
+                                              if (_cubit.audioManager != null) {
+                                                try {
+                                                  _cubit.audioManager?.controller?.pause();
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on back press');
+                                                } catch (e) {
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on back press: $e');
+                                                }
+                                                _cubit.audioManager?.disposeAllAudio();
+                                              }
                                               NavigationUtil.pop(context);
                                             },
                                             child: Icon(
