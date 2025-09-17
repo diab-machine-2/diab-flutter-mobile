@@ -445,7 +445,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                 Container(
                   width: double.infinity,
                   child: ButtonWidget(
-                    title: 'Clear Cache & Thử lại',
+                    title: 'Xóa Cache & Thử lại',
                     backgroundColor: Colors.grey,
                     onPressed: () async {
                       print('🔄 Manual cache clear requested from sync screen');

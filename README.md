@@ -58,3 +58,20 @@ flutter build apk --release
 4. After build completes, click on "locate" in the notification to find the APK
 
 adb shell setprop debug.firebase.analytics.app com.vbhc.diab
+
+
+Case 1.1
+ Cả máy đường huyết và máy điện thoại không có kết nối với nhau.
+ (Đã xóa pair)
+
+Case 2.1
+ Máy điện thoại xóa pair, máy đường huyết giữ thông tin pair
+
+Case 3.1
+ Máy điện thoại giữ thông tin pair, máy đường huyết xóa thông tin pair
+
+Case 4.1 
+Cả 2 đang pair với nhau và send data
+
+Với case 1.1 và 4.1 thì mong muốn send data thành công
+Case 2.1 và 3.1 thì show nội dung hướng dẫn cách xử lý
