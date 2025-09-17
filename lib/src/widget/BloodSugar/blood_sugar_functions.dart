@@ -11,6 +11,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 
 class BloodSugarFunctions {
   static void showModalAddData(BuildContext context,
@@ -42,8 +43,8 @@ class BloodSugarFunctions {
                       style: TextStyle(
                         fontSize: 15,
                         height: 24 / 15,
-                        color: R.color.textDark,
-                        fontWeight: FontWeight.w600,
+                        color: R.color.color0xff111515,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -85,7 +86,11 @@ class BloodSugarFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: 365 + MediaQuery.of(context).viewInsets.bottom / 2,
+        constraints: BoxConstraints(
+          maxHeight:
+              MediaQuery.of(context).size.height * 0.9, // Max 90% of screen
+          minHeight: 200, // Minimum height
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -132,14 +137,11 @@ class BloodSugarFunctions {
               child: Column(
                 children: [
                   buildContentItem(
-                    'Kết nối máy đo đường huyết',
-                    'Tự động nhập chỉ số một cách nhanh chóng và chính xác.',
+                    R.string.glucose_connect_device_title.tr(),
+                    R.string.glucose_connect_device_subtitle.tr(),
                     R.drawable.im_glucose_input_device,
                     () async {
-                      if (await AppSettings.getLastOpenedGlucoseInputType() ==
-                          null) {
-                        AppSettings.setLastOpenedGlucoseInputType('device');
-                      }
+                      AppSettings.setLastOpenedGlucoseInputType('device');
                       TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',
@@ -154,16 +156,37 @@ class BloodSugarFunctions {
                       BlocProvider.of<NiproBloc>(context).tryAutoConnect();
                     },
                   ),
-                  const SizedBox(height: 16),
+                  GapH(16),
                   buildContentItem(
-                    'Nhập thủ công',
-                    'Nhập chỉ số đường huyết của bạn bằng cách nhập thủ công từ kết quả đo đã có sẵn',
+                    R.string.glucose_photo_title.tr(),
+                    R.string.glucose_photo_subtitle.tr(),
+                    R.drawable.im_glucose_from_photo,
+                    () async {
+                      AppSettings.setLastOpenedGlucoseInputType('camera');
+                      await TrackingManager.trackEvent(
+                        'glucose_select_method',
+                        'kpi_glucose',
+                        params: {
+                          'method': 'camera',
+                        },
+                      );
+                      Navigator.pop(context);
+                      if (popPrevious) {
+                        Navigator.pop(context);
+                      }
+                      // Navigate to new blood sugar image capture flow
+                      Navigator.pushNamed(
+                          context, NavigatorName.blood_sugar_image_capture,
+                          arguments: {'goalId': goalId});
+                    },
+                  ),
+                  GapH(16),
+                  buildContentItem(
+                    R.string.glucose_manual_title.tr(),
+                    R.string.glucose_manual_subtitle.tr(),
                     R.drawable.im_glucose_input_manual,
                     () async {
-                      if (await AppSettings.getLastOpenedGlucoseInputType() ==
-                          null) {
-                        AppSettings.setLastOpenedGlucoseInputType('manual');
-                      }
+                      AppSettings.setLastOpenedGlucoseInputType('manual');
                       TrackingManager.trackEvent(
                         'glucose_select_method',
                         'kpi_glucose',
@@ -180,6 +203,7 @@ class BloodSugarFunctions {
                           arguments: {'type': 'input', 'goalId': goalId});
                     },
                   ),
+                  GapH(16),
                 ],
               ),
             ),

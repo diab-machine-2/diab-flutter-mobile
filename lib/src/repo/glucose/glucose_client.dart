@@ -22,7 +22,6 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
 
-import '../../widget/home/fliter_enum.dart';
 
 class GlucoseClient extends FetchClient {
   Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int? time}) async {
@@ -102,7 +101,10 @@ class GlucoseClient extends FetchClient {
         response.data as Map<String, dynamic>,
         GlucoseLesson.fromJson,
       );
-      return listResponse.data;
+      final data = listResponse.data;
+      if (data == null) return null;
+      // Filter out inactive lessons (status == 2)
+      return data.where((e) => e.status != 2).toList();
     }
     return null;
   }
@@ -158,8 +160,8 @@ class GlucoseClient extends FetchClient {
     //   params['periodFilterType'] = '$periodFilterType';
     // }
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       final Response response =
           await super.fetchData(url: '/App/Glucose/Distribution', params: {
@@ -188,8 +190,8 @@ class GlucoseClient extends FetchClient {
       String? glucoseDistributionType,
       {String size = '20'}) async {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String> params = {
         'size': size,
@@ -452,8 +454,8 @@ class GlucoseClient extends FetchClient {
   Future<TrendDataModel> fetchGlucoseTrend(String? timeFrameId,
       String? currentDateTime, String? periodFilterType, String? page) async {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String?> requestData = {
         'page': page,
@@ -482,8 +484,8 @@ class GlucoseClient extends FetchClient {
   Future<List<ComparerModel>> fetchFlucoseComparer(String? currentDateTime,
       String? periodFilterType, int? page, String? comparerType) async {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
+      // periodFilterType =
+      //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
       final Response response =
           await super.fetchData(url: '/App/Glucose/Comparer', params: {
         'currentDateTime': currentDateTime,
@@ -554,6 +556,33 @@ class GlucoseClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  //============ Upload blood sugar images for AI analysis =============/
+  Future<BloodSugarAnalysisResult?> postBloodSugarImages(
+      List<String> imagePaths) async {
+    try {
+      final response = await super.postHttp(
+        path: '/App/Image/UploadAI/SugarMeterIndex',
+        params: <String, String>{},
+        files: imagePaths,
+      );
+
+      if (response.statusCode == 200) {
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+
+        if (jsonData['data'] != null) {
+          final bloodSugarData = jsonData['data'];
+          return BloodSugarAnalysisResult.fromJson(bloodSugarData);
+        }
+        return null;
+      } else {
+        throw response.reasonPhrase ?? 'Failed to analyze blood sugar images';
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
 }
 
 class GlucoseInputResult {
@@ -564,4 +593,30 @@ class GlucoseInputResult {
     required this.id,
     required this.images,
   });
+}
+
+class BloodSugarAnalysisResult {
+  final double value;
+  final String unit;
+  final double? confidence;
+
+  BloodSugarAnalysisResult({
+    required this.value,
+    required this.unit,
+    this.confidence,
+  });
+
+  factory BloodSugarAnalysisResult.fromJson(Map<String, dynamic> json) {
+    return BloodSugarAnalysisResult(
+      value: (json['value'] ?? json['glucose'] ?? 0.0).toDouble(),
+      unit: json['unit'] ?? json['glucoseUnit'] ?? 'mg/dL',
+      confidence: json['confidence']?.toDouble(),
+    );
+  }
+
+  static List<BloodSugarAnalysisResult> toList(List<dynamic> items) {
+    return items
+        .map((item) => BloodSugarAnalysisResult.fromJson(item))
+        .toList();
+  }
 }

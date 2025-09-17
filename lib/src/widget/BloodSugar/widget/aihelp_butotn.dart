@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,7 +26,7 @@ class AIHelpButton extends StatelessWidget {
       }
     } else if (rangeType == BloodSugarRangeType.very_low) {
       // TODO: Replace to definition instead
-      Navigator.of(context).pushNamed('/dsmes_booking');
+      Navigator.of(context).pushNamed(NavigatorName.dsmes_booking);
     } else {
       // Random a lesson, then navigate to lesson detail
       final glucoseClient = GlucoseClient();

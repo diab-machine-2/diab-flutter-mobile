@@ -382,7 +382,7 @@ List<DeviceInfoModel> examples = [
 DeviceInfoModel guideReconnection = DeviceInfoModel(
   image: 'lib/res/drawables/accu-chek-guide.png',
   imagePin: '',
-  name: 'Accu Chek Guide',
+  name: 'Accu-Chek Guide',
   tutorials: [
     TutorialModel(
       index: 0,

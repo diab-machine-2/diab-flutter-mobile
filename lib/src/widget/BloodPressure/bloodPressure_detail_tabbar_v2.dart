@@ -25,18 +25,19 @@ class BloodPressureDetailTabbarController extends StatefulWidget {
       _BloodPressureDetailTabbarControllerState();
 
   static _BloodPressureDetailTabbarControllerState? of(BuildContext context) {
-    final _BloodPressureDetailTabbarControllerState? navigator =
-        context.findAncestorStateOfType<_BloodPressureDetailTabbarControllerState>();
+    final _BloodPressureDetailTabbarControllerState? navigator = context
+        .findAncestorStateOfType<_BloodPressureDetailTabbarControllerState>();
     return navigator;
   }
 }
 
-class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetailTabbarController>
+class _BloodPressureDetailTabbarControllerState
+    extends State<BloodPressureDetailTabbarController>
     with SingleTickerProviderStateMixin, Observer {
   // TabController? _tabController;
 
-  final GlobalKey<BloodPressureDistributionChartState> _bloodPressureDistributionChartKey =
-      GlobalKey();
+  final GlobalKey<BloodPressureDistributionChartState>
+      _bloodPressureDistributionChartKey = GlobalKey();
   final GlobalKey<BloodPressureChartState> _bloodPressureTrendKey = GlobalKey();
 
   int _periodFilterType = 3;
@@ -69,7 +70,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'BloodPressure_change_data') {
       bool isForce = map?['isNew'] == true;
       _reload(isForce);
@@ -99,17 +101,19 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
         arguments: {'initPeriodFilterType': _periodFilterType});
   }
 
-  void _viewFilteredListing(BloodPressureRangeType rangeType, String? bloodPressureID) {
-    Navigator.pushNamed(context, NavigatorName.detail_bloodpressure_listing, arguments: {
-      'initBloodPressureID': bloodPressureID,
-      'initBloodPressureRangeType': rangeType.value,
-      'initPeriodFilterType': _periodFilterType,
-    });
+  void _viewFilteredListing(
+      BloodPressureRangeType rangeType, String? bloodPressureID) {
+    Navigator.pushNamed(context, NavigatorName.detail_bloodpressure_listing,
+        arguments: {
+          'initBloodPressureID': bloodPressureID,
+          'initBloodPressureRangeType': rangeType.value,
+          'initPeriodFilterType': _periodFilterType,
+        });
   }
 
   Future<void> _loadAITrend() async {
-    final bloodPressureInputAIAnalysis =
-        await BloodPressureClient().fetchBloodPressureAlltimeAnalysis(_periodFilterType);
+    final bloodPressureInputAIAnalysis = await BloodPressureClient()
+        .fetchBloodPressureAlltimeAnalysis(_periodFilterType);
     if (bloodPressureInputAIAnalysis != null) {
       _aiSuggestion = bloodPressureInputAIAnalysis;
     }
@@ -117,7 +121,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
 
   void _reload([bool isNew = false]) async {
     _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType, isNew);
-    _bloodPressureDistributionChartKey.currentState?.reloadData(_periodFilterType);
+    _bloodPressureDistributionChartKey.currentState
+        ?.reloadData(_periodFilterType);
     await _loadAITrend();
     if (mounted) {
       setState(() {});
@@ -157,12 +162,13 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.arrow_back, color: R.color.white),
         ),
+        leadingWidth: 30,
         centerTitle: false,
         title: Text(
           R.string.huyet_ap.tr(),
           style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
             color: R.color.white,
           ),
         ),
@@ -171,7 +177,8 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+                Navigator.of(context)
+                    .pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
               },
               child: Text(
                 R.string.huong_dan.tr(),
@@ -213,7 +220,7 @@ class _BloodPressureDetailTabbarControllerState extends State<BloodPressureDetai
                 ),
               ),
             ),
-            
+
             // Sticky bottom button
             Container(
               padding: EdgeInsets.only(

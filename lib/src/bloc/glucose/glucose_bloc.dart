@@ -130,12 +130,12 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
             : (maxIndex == listNames.length - 1 || maxIndex == listNames.length - 2)
                 ? BloodSugarRangeType.very_low
                 : BloodSugarRangeType.normal;
-        yield GlucoseTrendLoaded(
-          trend: model,
-          mostAppearType: mostAppearType,
-          mostAppearTypeColor: mostAppearTypeColor,
-          rangeType: rangeType,
-        );
+        // yield GlucoseTrendLoaded(
+        //   trend: model,
+        //   mostAppearType: mostAppearType,
+        //   mostAppearTypeColor: mostAppearTypeColor,
+        //   rangeType: rangeType,
+        // );
         final glucoseInputAIAnalysis =
             await client.fetchGlucoseAlltimeAnalysis(int.parse(periodFilterType!));
         yield GlucoseTrendLoaded(
