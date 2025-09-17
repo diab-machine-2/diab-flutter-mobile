@@ -478,9 +478,6 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
       await _welcomPackageCubit.markDisplayedWelcome();
 
-      Observable.instance
-          .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
-
       if (widget.smartGoal?.id != null) {
         await HomeClient().completeSmartGoal(
             DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);
