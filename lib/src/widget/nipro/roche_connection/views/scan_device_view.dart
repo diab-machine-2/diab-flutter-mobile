@@ -76,8 +76,24 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       duration: Duration(seconds: 3),
       vsync: this,
     )..repeat();
+    _clearCacheIfNeeded(); // Clear cache khi app mới cài
     _startScan();
     _checkAppStatus();
+  }
+
+  /// Clear cache khi app mới cài để đảm bảo sync đầy đủ
+  Future<void> _clearCacheIfNeeded() async {
+    try {
+      // Kiểm tra xem có phải lần đầu mở app không
+      final isFirstLaunch = await GlucoseSyncCache.isFirstLaunch();
+      if (isFirstLaunch) {
+        print('🔄 First launch detected - clearing sync cache');
+        await GlucoseSyncCache.clearAllCache();
+        await GlucoseSyncCache.setFirstLaunchCompleted();
+      }
+    } catch (e) {
+      print('⚠️ Error clearing cache: $e');
+    }
   }
 
   /// Build RACP (Record Access Control Point) request command
@@ -85,14 +101,24 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   Future<List<int>> _buildRACPRequest() async {
     // Check if we should do incremental sync
     final deviceId = device?.remoteId.str ?? '';
-    final shouldFullSync = await GlucoseSyncCache.shouldFullSync(deviceId);
+    final userId = AppSettings.userInfo?.id ?? '';
+
+    if (deviceId.isEmpty || userId.isEmpty) {
+      print(
+          '📋 RACP REQUEST: Missing deviceId or userId, fallback to full sync');
+      return [0x01, 0x01]; // Fallback to full sync
+    }
+
+    final shouldFullSync =
+        await GlucoseSyncCache.shouldFullSync(deviceId, userId);
 
     if (shouldFullSync) {
       print('📋 RACP REQUEST: Full sync - Request all stored records');
       return [0x01, 0x01]; // OpCode: Report all stored records
     } else {
       // Incremental sync - get start time from cache
-      final startTime = await GlucoseSyncCache.getIncrementalSyncStartTime();
+      final startTime =
+          await GlucoseSyncCache.getIncrementalSyncStartTime(deviceId, userId);
       if (startTime != null) {
         print(
             '📋 RACP REQUEST: Incremental sync from ${startTime.toIso8601String()}');
@@ -254,15 +280,33 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       // Save cache time and device info after successful sync
       if (device != null) {
         final syncTime = DateTime.now();
+        final deviceId = device!.remoteId.str;
+        final userId = AppSettings.userInfo?.id ?? '';
+
+        // Lưu cache mới với deviceId + userId + lastSyncTime
+        if (deviceId.isNotEmpty && userId.isNotEmpty) {
+          await GlucoseSyncCache.saveSyncCache(
+            deviceId: deviceId,
+            userId: userId,
+            lastSyncTime: syncTime,
+            deviceName: device!.platformName,
+            modelName: modelName,
+            modelNumber: modelNumber,
+          );
+          print(
+              '💾 New cache saved: Device=$deviceId, User=$userId, Time=${syncTime.toIso8601String()}');
+        }
+
+        // Giữ lại cache cũ để backward compatibility
         await GlucoseSyncCache.saveLastSyncTime(syncTime);
         await GlucoseSyncCache.saveLastSyncDevice(
-          deviceId: device!.remoteId.str,
+          deviceId: deviceId,
           deviceName: device!.platformName,
           modelName: modelName,
           modelNumber: modelNumber,
         );
         print(
-            '💾 Cache updated: Sync time saved at ${syncTime.toIso8601String()}');
+            '💾 Legacy cache updated: Sync time saved at ${syncTime.toIso8601String()}');
       }
 
       Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
@@ -383,14 +427,43 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         ),
         Container(
           margin: EdgeInsets.only(top: 25),
-          width: double.infinity,
-          child: ButtonWidget(
-            title: 'Xác nhận & Xem dữ liệu',
-            onPressed: selectedGlucose.isEmpty
-                ? null
-                : () {
-                    submitSyncDataNew(selectedGlucose);
-                  },
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Xác nhận & Xem dữ liệu',
+                  onPressed: selectedGlucose.isEmpty
+                      ? null
+                      : () {
+                          submitSyncDataNew(selectedGlucose);
+                        },
+                ),
+              ),
+              if (glucosedList.isEmpty) ...[
+                SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  child: ButtonWidget(
+                    title: 'Clear Cache & Thử lại',
+                    backgroundColor: Colors.grey,
+                    onPressed: () async {
+                      print('🔄 Manual cache clear requested from sync screen');
+                      await GlucoseSyncCache.clearAllCache();
+                      await FlutterBluePlus.stopScan();
+                      setState(() {
+                        deviceFound = false;
+                        appStatus = AppStatus.isScanning;
+                        isConnectionInProgress = false;
+                      });
+                      _startScan();
+                      Message.showToastMessage(
+                          context, 'Đã xóa cache, kết nối lại...');
+                    },
+                  ),
+                ),
+              ],
+            ],
           ),
         )
       ],
@@ -569,18 +642,45 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         ),
         Container(
           margin: EdgeInsets.only(bottom: 20),
-          width: double.infinity,
-          child: ButtonWidget(
-            title: 'Kết nối lại',
-            onPressed: () async {
-              await FlutterBluePlus.stopScan();
-              setState(() {
-                deviceFound = false;
-                appStatus = AppStatus.isScanning;
-                isConnectionInProgress = false; // Reset connection flag
-              });
-              _startScan();
-            },
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Kết nối lại',
+                  onPressed: () async {
+                    await FlutterBluePlus.stopScan();
+                    setState(() {
+                      deviceFound = false;
+                      appStatus = AppStatus.isScanning;
+                      isConnectionInProgress = false; // Reset connection flag
+                    });
+                    _startScan();
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Clear Cache & Kết nối lại',
+                  backgroundColor: Colors.orange,
+                  onPressed: () async {
+                    print('🔄 Manual cache clear requested');
+                    await GlucoseSyncCache.clearAllCache();
+                    await FlutterBluePlus.stopScan();
+                    setState(() {
+                      deviceFound = false;
+                      appStatus = AppStatus.isScanning;
+                      isConnectionInProgress = false;
+                    });
+                    _startScan();
+                    Message.showToastMessage(
+                        context, 'Đã xóa cache, kết nối lại...');
+                  },
+                ),
+              ),
+            ],
           ),
         )
       ],
@@ -1066,8 +1166,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   void connectToAvailableDevice(List<ScanResult> scanResultList) async {
-    for (var i = 0; i < scanResultList.length; i++) {
-      final result = scanResultList[i];
+    if (scanResultList.isNotEmpty) {
+      final result = scanResultList.first;
       // Since startScan is already filtered with required service UUIDs,
       // any result here should be a valid glucose device. Do not rely on name.
       setState(() {
@@ -1079,7 +1179,6 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
       // Skip auto-detection for Transfer Data flow - go directly to PIN UI
       print('🔄 Proceeding with Transfer Data flow (no name check)');
-      return;
     }
   }
 
@@ -1463,12 +1562,26 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           characteristicListener =
               characteristic.lastValueStream.listen((data) async {
             if (data.isEmpty) {
+              print('🔍 DEBUG: Received empty data from device');
               return;
             }
+            print(
+                '🔍 DEBUG: Received data from device, length: ${data.length}');
+            print(
+                '🔍 DEBUG: Data bytes: ${data.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ')}');
+
             GlucoseMeasurementRecord glucoseMeasurementRecord =
                 GlucoseFunctions().readDataFrom2A18(data);
+
+            print(
+                '🔍 DEBUG: Parsed record - calendar: ${glucoseMeasurementRecord.calendar}, isBloodGlucose: ${glucoseMeasurementRecord.isBloodGlucose}');
+
             if (glucoseMeasurementRecord.isBloodGlucose) {
               glucoseMeasurementRecordList.add(glucoseMeasurementRecord);
+              print(
+                  '🔍 DEBUG: Added blood glucose record. Total records: ${glucoseMeasurementRecordList.length}');
+            } else {
+              print('🔍 DEBUG: Skipped non-blood glucose record');
             }
           });
         }
@@ -1501,6 +1614,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               dataRequestSuccess = true;
               print(
                   'Data request sent successfully on attempt ${retryCount + 1}');
+              print(
+                  '🔍 DEBUG: RACP request completed, dataRequestSuccess = true');
             } catch (e) {
               retryCount++;
               print('Data request failed on attempt $retryCount: $e');
@@ -1511,6 +1626,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           }
 
           if (dataRequestSuccess) {
+            print('🔍 DEBUG: Data request successful, starting data check');
             await TrackingManager.trackEvent(
               'glucose_pair',
               'kpi_glucose_device',
@@ -1518,7 +1634,9 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                 'status': 'success',
               },
             );
+            print('🔍 DEBUG: About to call startCheckingData()');
             startCheckingData();
+            print('🔍 DEBUG: startCheckingData() called');
           } else {
             // Hết số lần retry: về màn hình lỗi
             try {
@@ -1719,17 +1837,41 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   void startCheckingData() {
     int noDataCount = 0;
-    const maxNoDataCount = 15; // Đợi tối đa 15 giây cho dữ liệu
+    const maxNoDataCount = 5; // Giảm timeout xuống 5 giây
+    bool hasReceivedData = false; // Flag để track xem đã nhận được dữ liệu chưa
+
+    print(
+        '🔍 DEBUG: startCheckingData called, initial records: ${glucoseMeasurementRecordList.length}');
 
     Timer.periodic(Duration(seconds: 1), (timer) {
+      print(
+          '🔍 DEBUG: Checking data - current: ${glucoseMeasurementRecordList.length}, previous: $previousDataCount, noDataCount: $noDataCount, hasReceivedData: $hasReceivedData');
+
       if (glucoseMeasurementRecordList.length > previousDataCount) {
         previousDataCount = glucoseMeasurementRecordList.length;
         noDataCount = 0; // Reset counter khi có dữ liệu mới
+        hasReceivedData = true; // Đánh dấu đã nhận được dữ liệu
+        print('🔍 DEBUG: New data detected, reset counter');
+
+        // Nếu đã có dữ liệu, đợi thêm 2 giây để xem có dữ liệu mới không, rồi xử lý
+        if (glucoseMeasurementRecordList.length >= 1) {
+          print('🔍 DEBUG: Data available, will process after 2 seconds');
+        }
       } else {
         noDataCount++;
+        print('🔍 DEBUG: No new data, counter: $noDataCount/$maxNoDataCount');
 
-        // Nếu đã đợi đủ lâu mà không có dữ liệu mới, kết thúc
-        if (noDataCount >= maxNoDataCount) {
+        // Nếu đã có dữ liệu và đợi đủ lâu, xử lý ngay
+        if (hasReceivedData && noDataCount >= 2) {
+          print(
+              '🔍 DEBUG: Data available and waited enough, calling fetchGlucoseInputNotExist');
+          timer.cancel();
+          fetchGlucoseInputNotExist();
+        }
+        // Nếu chưa nhận được dữ liệu gì và timeout, cũng gọi fetchGlucoseInputNotExist
+        else if (!hasReceivedData && noDataCount >= maxNoDataCount) {
+          print(
+              '🔍 DEBUG: Timeout reached without receiving any data, calling fetchGlucoseInputNotExist');
           timer.cancel();
           fetchGlucoseInputNotExist();
         }
@@ -1743,6 +1885,10 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
     Set<DateTime> uniqueValues = Set<DateTime>();
 
+    print('🔍 DEBUG: fetchGlucoseInputNotExist called');
+    print(
+        '🔍 DEBUG: glucoseMeasurementRecordList.length = ${glucoseMeasurementRecordList.length}');
+
     if (glucoseMeasurementRecordList.isNotEmpty) {
       // Process all records from device (original behavior)
       List<GlucoseMeasurementRecord> recordsToProcess =
@@ -1751,35 +1897,85 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       print('📊 Processing ${recordsToProcess.length} records from device');
 
       recordsToProcess.forEach((element) {
-        final glucose = roundAsFixed(roundDouble(element
-            .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+        print(
+            '🔍 DEBUG: Processing record - calendar: ${element.calendar}, isBloodGlucose: ${element.isBloodGlucose}');
 
-        if (!uniqueValues.contains(element.calendar)) {
-          glucoseDataRequest.add(GlucoseData(
-            glucose: glucose.toString(),
-            date: DateUtil.getDayInMillis(element.calendar!).toString(),
-          ));
-          uniqueValues.add(element.calendar!);
+        if (element.calendar != null && element.isBloodGlucose) {
+          final glucose = roundAsFixed(roundDouble(element
+              .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+
+          print(
+              '🔍 DEBUG: Glucose value: $glucose, calendar: ${element.calendar}');
+
+          if (!uniqueValues.contains(element.calendar)) {
+            glucoseDataRequest.add(GlucoseData(
+              glucose: glucose.toString(),
+              date: DateUtil.getDayInMillis(element.calendar!).toString(),
+            ));
+            uniqueValues.add(element.calendar!);
+            print(
+                '🔍 DEBUG: Added to request - glucose: $glucose, date: ${DateUtil.getDayInMillis(element.calendar!)}');
+          } else {
+            print('🔍 DEBUG: Skipped duplicate calendar: ${element.calendar}');
+          }
+        } else {
+          print(
+              '🔍 DEBUG: Skipped record - calendar: ${element.calendar}, isBloodGlucose: ${element.isBloodGlucose}');
         }
       });
 
-      final result =
-          await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
+      print(
+          '🔍 DEBUG: glucoseDataRequest.length = ${glucoseDataRequest.length}');
 
-      result.forEach((element) {
-        glucoseDataList.add({
-          'glucose': element['glucose'].toString(),
-          'date': element['createDate'].toString()
+      if (glucoseDataRequest.isNotEmpty) {
+        print(
+            '🔍 DEBUG: Calling API with data: ${glucoseDataRequest.map((e) => 'glucose: ${e.glucose}, date: ${e.date}').toList()}');
+        final result =
+            await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
+
+        print('🔍 DEBUG: API result.length = ${result.length}');
+        print('🔍 DEBUG: API result content: $result');
+
+        // Nếu API trả về dữ liệu, sử dụng dữ liệu từ API
+        if (result.isNotEmpty) {
+          result.forEach((element) {
+            glucoseDataList.add({
+              'glucose': element['glucose'].toString(),
+              'date': element['createDate'].toString()
+            });
+            print(
+                '🔍 DEBUG: Added to display list from API - glucose: ${element['glucose']}, date: ${element['createDate']}');
+          });
+        } else {
+          // Nếu API trả về empty, sử dụng dữ liệu từ thiết bị trực tiếp
+          print('🔍 DEBUG: API returned empty, using device data directly');
+          glucoseDataRequest.forEach((element) {
+            glucoseDataList.add({
+              'glucose': element.glucose.toString(),
+              'date': element.date.toString()
+            });
+            print(
+                '🔍 DEBUG: Added to display list from device - glucose: ${element.glucose}, date: ${element.date}');
+          });
+        }
+
+        print(
+            '🔍 DEBUG: Final glucoseDataList.length = ${glucoseDataList.length}');
+
+        _safeSetState(() {
+          selectAllData = true;
+          glucosedList = glucoseDataList;
+          appStatus = AppStatus.isSyncCompleted;
+          selectedGlucose = [...glucoseDataList];
         });
-      });
-
-      _safeSetState(() {
-        selectAllData = true;
-        glucosedList = glucoseDataList;
-        appStatus = AppStatus.isSyncCompleted;
-        selectedGlucose = [...glucoseDataList];
-      });
+      } else {
+        print('🔍 DEBUG: No valid data to process, showing empty list');
+        _safeSetState(() {
+          appStatus = AppStatus.isSyncCompleted;
+        });
+      }
     } else {
+      print('🔍 DEBUG: No records from device, showing empty list');
       _safeSetState(() {
         appStatus = AppStatus.isSyncCompleted;
       });
