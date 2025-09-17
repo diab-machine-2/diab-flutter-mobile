@@ -22,7 +22,6 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
 
-import '../../widget/home/fliter_enum.dart';
 
 class GlucoseClient extends FetchClient {
   Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int? time}) async {
@@ -270,18 +269,32 @@ class GlucoseClient extends FetchClient {
           'unitType': 1
         });
       });
+
+      print('🔍 DEBUG: API Request - glucoseInputs: ${jsonEncode({
+            'glucoseInputs': params
+          })}');
+
       final response = await super.postHttp2(
           path: '/App/Glucose/GlucoseInputsNotExist',
           params: jsonEncode({'glucoseInputs': params}));
 
+      print('🔍 DEBUG: API Response - statusCode: ${response.statusCode}');
+
       if (response.statusCode == 200) {
         final data = await response.stream.bytesToString();
+        print('🔍 DEBUG: API Response data: $data');
 
-        return jsonDecode(data)['data'];
+        final result = jsonDecode(data)['data'];
+        print('🔍 DEBUG: API Response data field: $result');
+
+        return result;
       } else {
+        print(
+            '🔍 DEBUG: API Error - statusCode: ${response.statusCode}, reason: ${response.reasonPhrase}');
         throw response.reasonPhrase!;
       }
     } catch (e) {
+      print('🔍 DEBUG: API Exception: $e');
       print(e.toString());
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
