@@ -440,7 +440,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                         },
                 ),
               ),
-              if (glucosedList.isEmpty) ...[
+              if (glucosedList.isEmpty &&
+                  GlucoseSyncCache.isAccuChekDevice(modelNumber)) ...[
                 SizedBox(height: 10),
                 Container(
                   width: double.infinity,
@@ -659,27 +660,29 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                   },
                 ),
               ),
-              SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                child: ButtonWidget(
-                  title: 'Clear Cache & Kết nối lại',
-                  backgroundColor: Colors.orange,
-                  onPressed: () async {
-                    print('🔄 Manual cache clear requested');
-                    await GlucoseSyncCache.clearAllCache();
-                    await FlutterBluePlus.stopScan();
-                    setState(() {
-                      deviceFound = false;
-                      appStatus = AppStatus.isScanning;
-                      isConnectionInProgress = false;
-                    });
-                    _startScan();
-                    Message.showToastMessage(
-                        context, 'Đã xóa cache, kết nối lại...');
-                  },
+              if (GlucoseSyncCache.isAccuChekDevice(modelNumber)) ...[
+                SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  child: ButtonWidget(
+                    title: 'Xóa Cache & Kết nối lại',
+                    backgroundColor: Colors.orange,
+                    onPressed: () async {
+                      print('🔄 Manual cache clear requested');
+                      await GlucoseSyncCache.clearAllCache();
+                      await FlutterBluePlus.stopScan();
+                      setState(() {
+                        deviceFound = false;
+                        appStatus = AppStatus.isScanning;
+                        isConnectionInProgress = false;
+                      });
+                      _startScan();
+                      Message.showToastMessage(
+                          context, 'Đã xóa cache, kết nối lại...');
+                    },
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         )

@@ -184,6 +184,36 @@ class GlucoseSyncCache {
     print('💾 Marked first launch as completed');
   }
 
+  /// Kiểm tra xem thiết bị có phải là Accu-Chek không
+  static bool isAccuChekDevice(String? modelNumber) {
+    if (modelNumber == null) return false;
+
+    // Danh sách model numbers của Accu-Chek devices
+    final accuChekModels = [
+      '483', '484', '497', '498', '499', '500', '502',
+      '685', // Accu Check Aviva Connect
+      '479', '501', '503', '765', // Accu Check Performa Connect
+      '912', '922', '923', '925', '926', '929', '930',
+      '932', // Accu Check Guide
+      '958', '959', '960', '961', '963', '964', '965', // Accu Check Instant
+      '897', '898', '901', '902', '903', '904', '905', // Accu Check Guide Me
+      '972', '973', '975', '976', '977', '978', '979',
+      '980', // Accu Check Instant2
+      '966', '967', '968', '969', '970', '971', // Accu Check Instant S
+    ];
+
+    return accuChekModels.contains(modelNumber);
+  }
+
+  /// Kiểm tra xem thiết bị có phải là Nipro không
+  static bool isNiproDevice(String? modelNumber) {
+    if (modelNumber == null) return false;
+
+    // Nếu không phải Accu-Chek thì có thể là Nipro hoặc thiết bị khác
+    // Có thể thêm logic cụ thể hơn để identify Nipro devices nếu cần
+    return !isAccuChekDevice(modelNumber);
+  }
+
   /// Debug: In ra tất cả thông tin cache
   static Future<void> printCacheInfo() async {
     print('=== GLUCOSE SYNC CACHE INFO ===');
