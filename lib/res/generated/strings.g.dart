@@ -1381,4 +1381,15 @@ class Strings {
   String get use_all_advanced_features => 'use_all_advanced_features';
   String get advanced_features => 'advanced_features';
   String get retry => 'retry';
+  String get no_data_blood_sugar_trend_chart => 'no_data_blood_sugar_trend_chart';
+  String get connect_from_device => 'connect_from_device';
+  String get glucose_connect_device_title => 'glucose_connect_device_title';
+  String get glucose_connect_device_subtitle => 'glucose_connect_device_subtitle';
+  String get glucose_photo_title => 'glucose_photo_title';
+  String get glucose_photo_subtitle => 'glucose_photo_subtitle';
+  String get glucose_manual_title => 'glucose_manual_title';
+  String get glucose_manual_subtitle => 'glucose_manual_subtitle';
+  String get analyzing_blood_glucose => 'analyzing_blood_glucose';
+  String get result_from_blood_glucose_device => 'result_from_blood_glucose_device';
+  String get supported_devices => 'supported_devices';
 }

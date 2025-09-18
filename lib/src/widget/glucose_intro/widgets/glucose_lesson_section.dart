@@ -50,8 +50,8 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _bloc,
-      child:
-          BlocBuilder<GlucoseIntroLessonBloc, GlucoseIntroLessonState>(builder: (context, state) {
+      child: BlocBuilder<GlucoseIntroLessonBloc, GlucoseIntroLessonState>(
+          builder: (context, state) {
         if (state is GlucoseIntroLessonLoaded) {
           final lessons = state.lessons;
           return Container(
@@ -67,7 +67,7 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    R.string.glucose_intro_help_title.tr(),
+                    R.string.knowledge_from_diab_experts.tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -84,7 +84,8 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                     padding: const EdgeInsets.only(left: 12),
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      return SizedBox(child: _buildLessonItem(lessons[index]), height: 318);
+                      return SizedBox(
+                          child: _buildLessonItem(lessons[index]), height: 318);
                     },
                     separatorBuilder: (context, index) {
                       return const SizedBox(width: 12);
@@ -106,8 +107,11 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                             height: 8,
                             margin: const EdgeInsets.symmetric(horizontal: 3),
                             decoration: BoxDecoration(
-                              color: _currentIndex == i ? R.color.mainColor : Colors.grey,
-                              borderRadius: BorderRadius.all(Radius.circular(4)),
+                              color: _currentIndex == i
+                                  ? R.color.mainColor
+                                  : Colors.grey,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(4)),
                             ),
                           ),
                       ],
@@ -218,11 +222,13 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(R.drawable.ic_lesson_share, width: 20.0, height: 20.0),
+                        Image.asset(R.drawable.ic_lesson_share,
+                            width: 20.0, height: 20.0),
                         const SizedBox(width: 8.0),
                         Text(
                           R.string.share.tr(),
-                          style: TextStyle(color: R.color.textDark, fontSize: 15.0),
+                          style: TextStyle(
+                              color: R.color.textDark, fontSize: 15.0),
                         ),
                       ],
                     ),

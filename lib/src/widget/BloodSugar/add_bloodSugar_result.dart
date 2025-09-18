@@ -27,7 +27,8 @@ class PageAddBloodSugarResult extends StatefulWidget {
   final BloodSugarResultDto data;
 
   @override
-  State<PageAddBloodSugarResult> createState() => _PageAddBloodSugarResultState();
+  State<PageAddBloodSugarResult> createState() =>
+      _PageAddBloodSugarResultState();
 }
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
@@ -76,6 +77,10 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
         for (var file in _files) {
           if (file is PickedFile) {
             paths.add(file.path);
+          } else if (file is XFile) {
+            paths.add(file.path);
+          } else if (file is File) {
+            paths.add(file.path);
           }
         }
         final result = await GlucoseClient().putIndexGlucose(
@@ -91,11 +96,13 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             paths);
         if (result != null) {
           BotToast.closeAllLoading();
-          Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+          Observable.instance
+              .notifyObservers([], notifyName: "glucose_change_data");
           return;
         }
       }
-      Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
+      Observable.instance
+          .notifyObservers([], notifyName: "glucose_change_data");
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     } finally {
@@ -180,26 +187,38 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _appBarSection() {
-    String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
+    String formattedDateTime =
+        DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
-      backgroundColor: R.color.transparent,
-      centerTitle: true,
+      backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
       title: Text(
         formattedDateTime,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w700, color: R.color.white),
       ),
       leadingIcon: IconButton(
         splashColor: R.color.transparent,
         highlightColor: R.color.transparent,
-        icon: Icon(Icons.arrow_back, color: R.color.textDark),
+        icon: Icon(Icons.arrow_back, color: R.color.white),
         onPressed: _doBack,
       ),
       actions: [
-        GestureDetector(
-          onTap: _doGuide,
+        Center(
           child: Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Image.asset(R.drawable.ic_help_outlined, width: 24, height: 24),
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                _doGuide();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -307,15 +326,19 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
               children: [
                 Text(
                   R.string.ghi_chu.tr(),
-                  style:
-                      TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: R.color.textDark),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: R.color.textDark),
                 ),
                 Spacer(),
                 GestureDetector(
                   onTap: _doEditNote,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
-                    child: Image.asset(R.drawable.ic_pencil_create, width: 20, height: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6.0, vertical: 2.0),
+                    child: Image.asset(R.drawable.ic_pencil_create,
+                        width: 20, height: 20),
                   ),
                 ),
               ],
@@ -358,7 +381,20 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
                                 File(_files[index].path),
                                 fit: BoxFit.cover,
                               )
-                            : NetWorkImageWidget(imageUrl: _files[index].url, fit: BoxFit.cover),
+                            : _files[index] is XFile
+                                ? Image.file(
+                                    File((_files[index] as XFile).path),
+                                    fit: BoxFit.cover,
+                                  )
+                                : _files[index] is File
+                                    ? Image.file(
+                                        (_files[index] as File),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : NetWorkImageWidget(
+                                        imageUrl: _files[index].url,
+                                        fit: BoxFit.cover,
+                                      ),
                       ),
                     ),
                   );
@@ -375,7 +411,8 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       child: Center(
         child: Text(
           R.string.them_ghi_chu.tr(),
-          style: TextStyle(color: R.color.dark, fontSize: 13, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: R.color.dark, fontSize: 13, fontWeight: FontWeight.bold),
         ),
       ),
       style: ElevatedButton.styleFrom(
@@ -390,13 +427,29 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _bottomSection() {
-    return ElevatedButton(
-      onPressed: _doComplete,
-      child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: R.color.mainColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+    return Container(
+      decoration: BoxDecoration(
+        color: R.color.mainColor,
+        borderRadius: BorderRadius.circular(200),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.centerRight,
+          colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+        ),
+      ),
+      child: ElevatedButton(
+        onPressed: _doComplete,
+        child: Text(R.string.completed.tr(),
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(200),
+          ),
         ),
       ),
     );

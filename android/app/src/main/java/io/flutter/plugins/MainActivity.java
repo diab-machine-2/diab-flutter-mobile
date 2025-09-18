@@ -116,6 +116,21 @@ public class MainActivity extends FlutterFragmentActivity {
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
         context = this;
+
+        // Register EventChannel for iBle SDK streaming events
+        new EventChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "eventChannelStreamiBle")
+                .setStreamHandler(new EventChannel.StreamHandler() {
+                    @Override
+                    public void onListen(Object arguments, EventChannel.EventSink eventSink) {
+                        events = eventSink;
+                    }
+
+                    @Override
+                    public void onCancel(Object arguments) {
+                        events = null;
+                    }
+                });
+
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "iBleSdk")
                 .setMethodCallHandler(
                         (call, result) -> {
@@ -402,6 +417,10 @@ public class MainActivity extends FlutterFragmentActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (events == null) {
+                    Log.e(TAG, "EventChannel sink is null. No active listeners for event: " + event);
+                    return;
+                }
                 Map<String, Object> map = new HashMap();
                 map.put("event", event);
                 map.put("data", data );
