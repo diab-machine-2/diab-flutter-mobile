@@ -61,13 +61,20 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   @override
   Future<void> dispose() async {
+    debugPrint('[VIDEO] LessonDetailPage.dispose start for lessonId=${_cubit.lessonDetail?.id} title=${_cubit.lessonDetail?.name}');
+    
+    // Immediately dispose video and audio to prevent background audio
+    debugPrint('[VIDEO] Immediately disposing lesson media managers');
+    _cubit.videoManager?.disposeAllVideo();
+    _cubit.audioManager?.disposeAllAudio();
+    
     await LessonDetailTracking.lessonDetailScrolling(
       percentComplete: percentComplete,
       objectId: _cubit.lessonDetail!.id!,
       objectTitle: _cubit.lessonDetail!.name!,
     );
-    _cubit.videoManager?.disposeAllVideo();
-    _cubit.audioManager?.disposeAllAudio();
+    
+    debugPrint('[VIDEO] LessonDetailPage.dispose done');
     super.dispose();
   }
 
@@ -132,28 +139,56 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
-          return _cubit.showQuizLesson
-              ? CourseQuizPage(
-                  key: Key(_cubit.currentSectionDetail?.id ?? ''),
-                  currentPercent: (((_cubit.currentSection + 1) /
-                              _cubit.sectionList.length) *
-                          100)
-                      .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
-                  lessonId: _cubit.lessonId,
-                  lessonSectionItem: widget.lessonType != 3
-                      ? _cubit.currentSectionDetail
-                      : null,
-                  onDone: (isPassed) async {
-                    _cubit.onChangeSection(context, _cubit.currentSection + 1);
-                  },
-                  onComplete: () {
-                    widget.onComplete(
-                        _cubit.lessonDetail!.id!, _cubit.percentComplete);
-                  },
-                  lessonDetail: _cubit.lessonDetail!,
-                  smartGoal: widget.smartGoal,
-                )
-              : Scaffold(
+          return WillPopScope(
+            onWillPop: () async {
+              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - pausing and disposing video and audio');
+              // Immediately pause video and audio before disposal
+              if (_cubit.videoManager != null) {
+                try {
+                  _cubit.videoManager?.controller.then((controller) {
+                    if (controller != null) {
+                      controller.pause();
+                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on system back press');
+                    }
+                  });
+                } catch (e) {
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on system back press: $e');
+                }
+                _cubit.videoManager?.disposeAllVideo();
+              }
+              if (_cubit.audioManager != null) {
+                try {
+                  _cubit.audioManager?.controller?.pause();
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on system back press');
+                } catch (e) {
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on system back press: $e');
+                }
+                _cubit.audioManager?.disposeAllAudio();
+              }
+              return true;
+            },
+            child: _cubit.showQuizLesson
+                ? CourseQuizPage(
+                    key: Key(_cubit.currentSectionDetail?.id ?? ''),
+                    currentPercent: (((_cubit.currentSection + 1) /
+                                _cubit.sectionList.length) *
+                            100)
+                        .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
+                    lessonId: _cubit.lessonId,
+                    lessonSectionItem: widget.lessonType != 3
+                        ? _cubit.currentSectionDetail
+                        : null,
+                    onDone: (isPassed) async {
+                      _cubit.onChangeSection(context, _cubit.currentSection + 1);
+                    },
+                    onComplete: () {
+                      widget.onComplete(
+                          _cubit.lessonDetail!.id!, _cubit.percentComplete);
+                    },
+                    lessonDetail: _cubit.lessonDetail!,
+                    smartGoal: widget.smartGoal,
+                  )
+                : Scaffold(
                   body: Stack(
                     children: [
                       BackgroundPage(
@@ -176,6 +211,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         children: [
                                           GestureDetector(
                                             onTap: () async {
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - disposing video and audio');
+                                              // Immediately dispose video to prevent background audio
+                                              _cubit.videoManager?.disposeAllVideo();
+                                              _cubit.audioManager?.disposeAllAudio();
+                                              
                                               await TrackingManager.analytics
                                                   .logEvent(
                                                 name: 'component_clicked',
@@ -190,8 +230,31 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                       _cubit.lessonDetail?.name,
                                                 },
                                               );
-                                              _cubit.videoManager
-                                                  ?.disposeAllVideo();
+                                              
+                                              // Immediately pause video and audio before navigation
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - pausing and disposing video and audio');
+                                              if (_cubit.videoManager != null) {
+                                                try {
+                                                  _cubit.videoManager?.controller.then((controller) {
+                                                    if (controller != null) {
+                                                      controller.pause();
+                                                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on back press');
+                                                    }
+                                                  });
+                                                } catch (e) {
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on back press: $e');
+                                                }
+                                                _cubit.videoManager?.disposeAllVideo();
+                                              }
+                                              if (_cubit.audioManager != null) {
+                                                try {
+                                                  _cubit.audioManager?.controller?.pause();
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on back press');
+                                                } catch (e) {
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on back press: $e');
+                                                }
+                                                _cubit.audioManager?.disposeAllAudio();
+                                              }
                                               NavigationUtil.pop(context);
                                             },
                                             child: Icon(
@@ -484,7 +547,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         ),
                     ],
                   ),
-                );
+                ),
+          );
         },
       ),
     );

@@ -36,13 +36,29 @@ class _PhotoViewState extends State<PhotoView> {
                 controller: controller,
                 itemCount: widget.files.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return widget.files[index] is PickedFile
-                      ? Image.file(
-                          File(widget.files[index].path),
-                          fit: BoxFit.fitWidth,
-                        )
-                      : NetWorkImageWidget(imageUrl: widget.files[index].url,
-                          fit: BoxFit.fitWidth);
+                  final file = widget.files[index];
+                  if (file is XFile) {
+                    return Image.file(
+                      File(file.path),
+                      fit: BoxFit.fitWidth,
+                    );
+                  } else if (file is File) {
+                    return Image.file(
+                      file,
+                      fit: BoxFit.fitWidth,
+                    );
+                  } else if (file is PickedFile) {
+                    return Image.file(
+                      File(file.path),
+                      fit: BoxFit.fitWidth,
+                    );
+                  } else {
+                    // Network image
+                    return NetWorkImageWidget(
+                      imageUrl: file.url,
+                      fit: BoxFit.fitWidth,
+                    );
+                  }
                 }),
           ),
           SafeArea(

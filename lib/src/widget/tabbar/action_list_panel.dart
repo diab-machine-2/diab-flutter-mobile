@@ -95,11 +95,18 @@ class ActionListPanel extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         bool hasExerciseData = false;
-        if (index == 3) {
+        bool hasGlucoseData = false;
+
+        if (index == 1) {
+          hasGlucoseData = await HomeClient().fetchHomes().then((data) {
+            return data.glucoseIndex.index != null && data.glucoseIndex.index! > 0;
+          });
+        } else if (index == 3) {
           hasExerciseData = await HomeClient().fetchHomes().then((data) {
             return data.exercise?.isDataNotEmpty ?? false;
           });
         }
+
         Navigator.pop(context);
         if (selectedIndex == index) {
           return;
@@ -107,14 +114,22 @@ class ActionListPanel extends StatelessWidget {
         if (index == 0) {
           Navigator.pushReplacementNamed(context, NavigatorName.detail_hba1c);
         } else if (index == 1) {
-          Navigator.pushReplacementNamed(context, NavigatorName.detail_blood_sugar);
+          if (hasGlucoseData) {
+            Navigator.pushReplacementNamed(
+                context, NavigatorName.detail_blood_sugar);
+          } else {
+            Navigator.pushReplacementNamed(
+                context, NavigatorName.glucose_intro_1st_page);
+          }
         } else if (index == 2) {
-          Navigator.pushReplacementNamed(context, NavigatorName.detail_blood_pressure);
+          Navigator.pushReplacementNamed(
+              context, NavigatorName.detail_blood_pressure);
         } else if (index == 3) {
           if (hasExerciseData) {
             showActivityInputMethodSelection(hasExerciseData: hasExerciseData);
           } else {
-            Navigator.pushReplacementNamed(context, NavigatorName.exercrise_onboarding);
+            Navigator.pushReplacementNamed(
+                context, NavigatorName.exercrise_onboarding);
           }
         } else if (index == 4) {
           Navigator.pushReplacementNamed(context, NavigatorName.detail_food);

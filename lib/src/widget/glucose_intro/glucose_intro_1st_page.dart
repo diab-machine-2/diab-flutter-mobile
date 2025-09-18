@@ -80,8 +80,28 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CommonPage(
-        background: R.drawable.bg_glucose,
+        appbarColor: R.color.greenGradientBottom,
+        textColor: Colors.white,
+        backgroundColor: R.color.backgroundColorNew,
         title: R.string.duong_huyet.tr(),
+        appBarAction: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context)
+                    .pushNamed(NavigatorName.glucose_intro_2nd_page);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
+              ),
+            ),
+          ),
+        ),
         child: _composeLayout(),
       ),
     );
@@ -142,21 +162,37 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _navigateToInputSelection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: R.color.mainColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: R.color.mainColor,
+                    borderRadius: BorderRadius.circular(200),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        R.color.greenGradientTop,
+                        R.color.greenGradientBottom
+                      ],
                     ),
-                    minimumSize: Size.fromHeight(40),
                   ),
-                  child: Text(
-                    R.string.blood_sugar_input.tr(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                  child: ElevatedButton(
+                    onPressed: _navigateToInputSelection,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(200),
+                      ),
+                      minimumSize: Size.fromHeight(40),
+                    ),
+                    child: Text(
+                      R.string.blood_sugar_input.tr(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),

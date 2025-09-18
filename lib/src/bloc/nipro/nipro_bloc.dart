@@ -225,8 +225,10 @@ class NiproBloc extends Bloc<NiproEvent, NiproState> {
   }
 
   Future<bool> submitData(List<GlucoseData> input) {
-    return GlucoseClient()
-        .postGlucoseInputs(input.map((e) => e.toJson()).toList());
+    return GlucoseClient().postGlucoseInputs(
+        input.map((e) => e.toJson()).toList(),
+        modelName: 'Nipro Premier α',
+        modelNumber: '1');
   }
 
   void showListData(BuildContext context, List<GlucoseData> glucoseData) async {
