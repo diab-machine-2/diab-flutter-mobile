@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
@@ -15,7 +16,8 @@ class AIHelpButton extends StatelessWidget {
 
   final BloodSugarRangeType? rangeType;
 
-  void _actionByRangeType(BloodSugarRangeType rangeType, BuildContext context) async {
+  void _actionByRangeType(
+      BloodSugarRangeType rangeType, BuildContext context) async {
     if (rangeType == BloodSugarRangeType.very_high) {
       const url = Const.ZALO_OA_TECHNICAL_SUPPORT_LINK;
       final uri = Uri.parse(url);
@@ -35,12 +37,12 @@ class AIHelpButton extends StatelessWidget {
         final lesson = await glucoseClient.fetchGlucoseUpcommingLesson();
         if (lesson != null) {
           await NavigationUtil.navigatePage(
-            context,
-            LessonDetailPage(
-              lessonType: lesson.type,
-              lessonId: lesson.id,
-              onComplete: (_, __) {},
-            ));
+              context,
+              LessonDetailPage(
+                lessonType: lesson.type,
+                lessonId: lesson.id,
+                onComplete: (_, __) {},
+              ));
           // _cubit.refreshData(isRefresh: true);
           Observable.instance
               .notifyObservers([], notifyName: "refresh_lesson_tab");
@@ -58,14 +60,17 @@ class AIHelpButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (rangeType != null)
       return ElevatedButton(
-        onPressed: () => _actionByRangeType(rangeType!, context),
+        // onPressed: () => _actionByRangeType(rangeType!, context),
+        onPressed: () => Observable.instance
+            .notifyObservers([], notifyName: Const.NAVIGATE_TO_CHAT_TAB),
         child: Center(
           child: Text(
-            rangeType == BloodSugarRangeType.very_high
-                ? 'Chuyên gia hỗ trợ'
-                : rangeType == BloodSugarRangeType.very_low
-                    ? 'Tư vấn chuyên gia'
-                    : 'Bí quyết ổn định đường huyết',
+            // rangeType == BloodSugarRangeType.very_high
+            //     ? 'Chuyên gia hỗ trợ'
+            //     : rangeType == BloodSugarRangeType.very_low
+            //         ? 'Tư vấn chuyên gia'
+            //         : 'Bí quyết ổn định đường huyết',
+            R.string.chat_with_AI.tr(),
             style: TextStyle(
               color: R.color.mainColor,
               fontSize: 13,

@@ -281,7 +281,7 @@ class _BloodSugarDetailTabbarControllerState
               child: Column(
                 children: [
                   _buildTrendingChart(),
-                  const SizedBox(height: 12),
+                  // const SizedBox(height: 12),
                   _sectionAIHelp(_aiSuggestion),
                   const SizedBox(height: 14),
                   Padding(
