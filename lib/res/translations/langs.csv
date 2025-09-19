@@ -1343,4 +1343,10 @@ glucose_manual_title,Nhập thủ công,Manual input,
 glucose_manual_subtitle,Nhập thủ công chỉ số đã đo,Manually enter measured readings,
 analyzing_blood_glucose,Đang phân tích chỉ số đường huyết,Analyzing your blood glucose index,
 result_from_blood_glucose_device,"*Kết quả chụp từ máy đo đường huyết","*Result from blood glucose device",
-supported_devices,"Loại máy hỗ trợ kết nối","Supported devices"
+supported_devices,"Loại máy hỗ trợ kết nối","Supported devices",
+cap_nhat_so_dien_thoai,Cập nhật số điện thoại,Update phone number,
+giup_bao_ve_tai_khoan,"Giúp bảo vệ tài khoản, giữ an toàn và đồng bộ dữ liệu trên mọi thiết bị","Helps protect your account, keep it safe, and synchronize data across all devices",
+cap_nhat_ngay,Cập nhật ngay,Update now,
+lan_sau,Lần sau,Next time,
+nhap_4_so_trong_tin_nhan,Nhập 4 số trong tin nhắn văn bản đã gửi đến,Enter 4 digits from the text message sent to,
+ban_muon_dong_bo_so_dien_thoai,Bạn muốn đồng bộ số điện thoại với tài khoản hiện tại?,You want to sync phone number with current account?

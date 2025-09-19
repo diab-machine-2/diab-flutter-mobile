@@ -11,7 +11,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
@@ -28,6 +27,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -37,6 +37,7 @@ import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -169,6 +170,7 @@ class _HomeControllerState extends State<HomeController>
         _showDialogSuccess();
         AppSettings.isSyncSuccess = false;
       }
+      _checkPhoneNumberValidation();
     });
 
     if (lessonId == null && meetingId == null && activityId == null) {
@@ -443,6 +445,9 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance.notifyObservers([],
         notifyName: Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM);
 
+    // Check phone number validation after pull to refresh
+    await _checkPhoneNumberValidation();
+
     return true;
   }
 
@@ -474,6 +479,19 @@ class _HomeControllerState extends State<HomeController>
     try {
       user = await UserClient().fetchUser();
       AppSettings.isReloadCurrentUserInfo = true;
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  Future<void> _checkPhoneNumberValidation() async {
+    try {
+      final phoneValidationResult =
+          await PhoneValidationHelper.isValidUserPhoneNumber();
+      if (!phoneValidationResult) {
+        // Show phone update bottom sheet
+        PhoneUpdateBottomSheet.show(context);
+      }
     } catch (e, s) {
       TrackingManager.recordError(e, s);
     }
