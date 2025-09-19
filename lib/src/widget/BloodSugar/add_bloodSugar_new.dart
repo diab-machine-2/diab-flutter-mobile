@@ -474,6 +474,13 @@ class _AddBloodSugarControllerNewState
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () async {
+                                      if (number != null && number == 0) {
+                                        Message.showToastMessage(
+                                            context,
+                                            R.string.mes_blood_sugar_empty
+                                                .tr());
+                                        return;
+                                      }
                                       int indexRange = findIndexInRanges(
                                           number, _rangeValue);
                                       if (isChangeStatus) {
@@ -565,6 +572,12 @@ class _AddBloodSugarControllerNewState
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    // Prevent editing blood glucose index to 0 when type is 'update'
+                                    if (number != null && number == 0) {
+                                      Message.showToastMessage(context,
+                                          R.string.mes_blood_sugar_empty.tr());
+                                      return;
+                                    }
                                     int indexRange =
                                         findIndexInRanges(number, _rangeValue);
                                     if (indexRange == 4 || indexRange == 0) {
