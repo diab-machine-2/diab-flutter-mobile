@@ -13,9 +13,9 @@ class PhoneValidationHelper {
     if (phoneNumber.startsWith('+84')) {
       phoneNumber = '0${phoneNumber.substring(3)}';
     }
-    if (phoneNumber.startsWith('0000')) {
-      return false;
-    }
+    // if (phoneNumber.startsWith('0000')) {
+    //   return false;
+    // }
     const String pattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
     final RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(phoneNumber) &&

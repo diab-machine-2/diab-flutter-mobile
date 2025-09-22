@@ -7,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -382,6 +383,7 @@ class _ConfirmPhoneNumberVerifyOTPPageState
 
   void _showSyncAccountDialog() {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -479,19 +481,13 @@ class _ConfirmPhoneNumberVerifyOTPPageState
 
   Future<void> _syncAccount() async {
     try {
-      BotToast.showLoading();
+     Navigator.pushNamed(context, NavigatorName.sync_screen);
 
-      //TODO: Call sync account API
-      // await LoginClient().syncAccount(widget.phone);
-      await Future.delayed(Duration(seconds: 2));
+      // // Notify back to home
+      // Observable.instance
+      //     .notifyObservers([], notifyName: "subscription_back_to_home");
 
-      BotToast.closeAllLoading();
-
-      // Notify back to home
-      Observable.instance
-          .notifyObservers([], notifyName: "subscription_back_to_home");
-
-      Navigator.popUntil(context, (route) => route.isFirst);
+      // Navigator.popUntil(context, (route) => route.isFirst);
     } catch (e) {
       BotToast.closeAllLoading();
       Message.showToastMessage(context, e.toString());
