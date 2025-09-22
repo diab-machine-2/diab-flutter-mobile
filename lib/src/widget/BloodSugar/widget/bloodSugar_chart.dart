@@ -443,7 +443,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
     if (_focusIndex != -1 && _focusIndex < trends.length) {
       final selectedTrend = trends[_focusIndex];
-      selectedDate = DateFormat('dd-MM').format(
+      selectedDate = DateFormat('dd/MM').format(
           DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000,
               isUtc: true));
       selectedDateTime = DateFormat('HH:mm').format(

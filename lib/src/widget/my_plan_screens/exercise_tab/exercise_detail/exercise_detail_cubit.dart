@@ -19,6 +19,7 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
   late final ExerciseMovementResponseData exerciseData;
   late final VideoManager videoManager;
+  late final String resolvedVideoUrl;
 
   bool exerciseCompleted = false;
 
@@ -27,6 +28,15 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
     if (exerciseData == null) return;
     this.exerciseData = exerciseData;
     debugPrint('[EXERCISE] Exercise data initialized: ${exerciseData.name}');
+
+    // Resolve playable video URL: prefer main, else first section, else empty
+    final String mainUrl = exerciseData.videoUrl ?? '';
+    final String sectionUrl = (exerciseData.sections?.isNotEmpty ?? false)
+        ? (exerciseData.sections!.first?.videoUrl ?? '')
+        : '';
+    resolvedVideoUrl = mainUrl.isNotEmpty
+        ? mainUrl
+        : (sectionUrl.isNotEmpty ? sectionUrl : '');
 
     // Initialize videoManager
     videoManager = VideoManager.fromExerciseData(
@@ -69,7 +79,7 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
     );
 
     // Ensure the video is properly initialized
-    if (videoManager.controller != null) {
+    if (resolvedVideoUrl.isNotEmpty && videoManager.controller != null) {
       await videoManager.waitForVideoReady();
     }
   }
@@ -94,7 +104,7 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
     emit(const ExerciseDetailLoading());
     final CompleteExerciseRequest request = CompleteExerciseRequest(
       exerciseMovementId: exerciseMovementId,
-      roadmapid: exerciseData?.agendaId,
+      roadmapid: exerciseData.agendaId,
     );
     final ApiResult<CommonResponse> apiResult =
         await repository.completeExercise(request);
