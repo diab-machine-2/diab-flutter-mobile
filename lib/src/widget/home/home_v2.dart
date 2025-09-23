@@ -1168,7 +1168,7 @@ class _HomeControllerState extends State<HomeController>
       } else if (lastOpenedGlucoseInputType == 'manual') {
         Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
             arguments: {'type': 'input', 'goalId': smartGoalId});
-      } else if (lastOpenedGlucoseInputType == 'photo') {
+      } else if (lastOpenedGlucoseInputType == 'camera') {
         Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture,
             arguments: {'goalId': smartGoalId});
       }

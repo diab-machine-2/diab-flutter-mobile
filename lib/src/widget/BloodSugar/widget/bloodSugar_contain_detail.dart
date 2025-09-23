@@ -318,7 +318,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
       chartSections.add(MapEntry(BloodSugarRangeType.very_high, {
         'color': toColor(model.veryHighColor),
         'value': model.veryHighCount! / total * 100,
-        'percentage': '${(model.veryHighCount! / total * 100).round()}%',
+        'count': model.veryHighCount!,
       }));
     }
 
@@ -326,7 +326,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
       chartSections.add(MapEntry(BloodSugarRangeType.high, {
         'color': toColor(model.highColor),
         'value': model.highCount! / total * 100,
-        'percentage': '${(model.highCount! / total * 100).round()}%',
+        'count': model.highCount!,
       }));
     }
 
@@ -334,7 +334,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
       chartSections.add(MapEntry(BloodSugarRangeType.normal, {
         'color': toColor(model.goodColor),
         'value': model.goodCount! / total * 100,
-        'percentage': '${(model.goodCount! / total * 100).round()}%',
+        'count': model.goodCount!,
       }));
     }
 
@@ -342,7 +342,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
       chartSections.add(MapEntry(BloodSugarRangeType.low, {
         'color': toColor(model.lowColor),
         'value': model.lowCount! / total * 100,
-        'percentage': '${(model.lowCount! / total * 100).round()}%',
+        'count': model.lowCount!,
       }));
     }
 
@@ -350,8 +350,23 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
       chartSections.add(MapEntry(BloodSugarRangeType.very_low, {
         'color': toColor(model.veryLowColor),
         'value': model.veryLowCount! / total * 100,
-        'percentage': '${(model.veryLowCount! / total * 100).round()}%',
+        'count': model.veryLowCount!,
       }));
+    }
+
+    // Calculate rounded percentages, with the last section getting the remainder
+    int sumOfRounded = 0;
+    for (int i = 0; i < chartSections.length; i++) {
+      if (i == chartSections.length - 1) {
+        // Last section gets the remainder to ensure total = 100%
+        int remainingPercentage = 100 - sumOfRounded;
+        chartSections[i].value['percentage'] = '$remainingPercentage%';
+      } else {
+        int roundedPercentage =
+            (chartSections[i].value['value'] as double).round();
+        chartSections[i].value['percentage'] = '$roundedPercentage%';
+        sumOfRounded += roundedPercentage;
+      }
     }
 
     return Container(

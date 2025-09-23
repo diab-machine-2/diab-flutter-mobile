@@ -7,6 +7,7 @@ import 'package:medical/src/modal/glucose/glucose_faq.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'blocs/rocheConnection_cubit.dart';
@@ -194,6 +195,13 @@ class _RocheConnectionViewState extends State<RocheConnectionView> {
 
   Widget _takePhoto(BuildContext context) {
     final action = () async {
+      await TrackingManager.trackEvent(
+        'glucose_select_method',
+        'kpi_glucose',
+        params: {
+          'method': 'camera',
+        },
+      );
       // Navigate to blood glucose image capture
       Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture);
     };

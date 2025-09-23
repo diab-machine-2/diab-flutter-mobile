@@ -8,12 +8,12 @@ class GlucoseProfileConfiguration {
   static List<String> accuCheckInstant2 = ['972','973','975','976','977','978','979','980'];
   static List<String> accuCheckInstantS = ['966','967','968','969','970','971'];
   static const Map<String,List<String>> rocheModels = {
-    'Accu Check Aviva Connect' : ['483','484','497','498','499','500','502','685'],
-    'Accu Check Performa Connect' : ['479','501','503','765'],
-    'Accu Check Guide' : ['912','922','923','925','926','929','930','932'],
-    'Accu Check Instant' : ['958','959','960','961','963','964','965','972','973','975','976','977','978','979','980'],
-    'Accu Check Guide Me' : ['897','898','901','902','903','904','905'],
-    'Accu Check Instant S' : ['966','967','968','969','970','971'],
+    'Accu-Chek Aviva Connect' : ['483','484','497','498','499','500','502','685'],
+    'Accu-Chek Performa Connect' : ['479','501','503','765'],
+    'Accu-Chek Guide' : ['912','922','923','925','926','929','930','932'],
+    'Accu-Chek Instant' : ['958','959','960','961','963','964','965','972','973','975','976','977','978','979','980'],
+    'Accu-Chek Guide Me' : ['897','898','901','902','903','904','905'],
+    'Accu-Chek Instant S' : ['966','967','968','969','970','971'],
   };
   static List<String> mgPerDLModels = [
     '483',

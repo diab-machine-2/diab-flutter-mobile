@@ -150,7 +150,7 @@ class _AddBloodSugarControllerNewState
       } else {
         _controller.text = widget.prefilledValue!;
       }
-    }
+  }
 
     if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
       // Set unit based on prefilled unit
@@ -162,7 +162,11 @@ class _AddBloodSugarControllerNewState
 
       if (currentUnitIsMg != aiUnitIsMg) {
         // Update the user's default unit to match the AI analysis
-        _changeUnit(newUnit: widget.prefilledUnit!);
+        await _changeUnit(newUnit: widget.prefilledUnit!);
+        // Refresh glucose range after unit change
+        if (selectedTimeFrame != null) {
+          await _getGlucoseRange(selectedTimeFrame!);
+        }
       }
     } else {
       isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
@@ -474,6 +478,13 @@ class _AddBloodSugarControllerNewState
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () async {
+                                      if (number != null && number == 0) {
+                                        Message.showToastMessage(
+                                            context,
+                                            R.string.mes_blood_sugar_empty
+                                                .tr());
+                                        return;
+                                      }
                                       int indexRange = findIndexInRanges(
                                           number, _rangeValue);
                                       if (isChangeStatus) {
@@ -565,6 +576,12 @@ class _AddBloodSugarControllerNewState
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    // Prevent editing blood glucose index to 0 when type is 'update'
+                                    if (number != null && number == 0) {
+                                      Message.showToastMessage(context,
+                                          R.string.mes_blood_sugar_empty.tr());
+                                      return;
+                                    }
                                     int indexRange =
                                         findIndexInRanges(number, _rangeValue);
                                     if (indexRange == 4 || indexRange == 0) {
@@ -773,7 +790,9 @@ class _AddBloodSugarControllerNewState
           'kpi_glucose_add',
           params: {
             'index_time': selectedTimeFrame?.name,
-            'method': fromNipro ? 'device' : 'manual',
+            'method': fromNipro
+                ? 'device'
+                : (_hasCameraCapturedData() ? 'camera' : 'manual'),
           },
         );
         if (widget.goalId != null && widget.goalId?.isNotEmpty == true) {
@@ -1287,6 +1306,11 @@ class _AddBloodSugarControllerNewState
                   _lastUnitIndex = index;
                   _changedUnit = true;
                   await _changeUnit();
+                  
+                  // Refresh glucose range after unit change
+                  if (selectedTimeFrame != null) {
+                    await _getGlucoseRange(selectedTimeFrame!);
+                  }
 
                   final glucose = roundAsFixed(
                       AppSettings.userInfo!.glucoseUnit == 1
@@ -1479,7 +1503,14 @@ class _AddBloodSugarControllerNewState
         (widget.selectedImages != null && widget.selectedImages!.isNotEmpty);
   }
 
-  void _takePhoto(BuildContext context) {
+  void _takePhoto(BuildContext context) async {
+    await TrackingManager.trackEvent(
+      'glucose_select_method',
+      'kpi_glucose',
+      params: {
+        'method': 'camera',
+      },
+    );
     // Navigate to blood glucose image capture
     Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture);
   }
