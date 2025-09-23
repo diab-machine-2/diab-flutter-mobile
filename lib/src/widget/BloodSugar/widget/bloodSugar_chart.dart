@@ -139,43 +139,21 @@ class BloodSugarChartState extends State<BloodSugarChart>
     if (trends.isEmpty) {
       _focusIndex = -1;
       _selectedDateTimestamp = null;
+      _selectedId = null;
       _previousTrends = [];
       return;
     }
 
-    int? matchedIndex;
-    // Check for new data by comparing timestamps
-    final newData =
-        trends.where((item) => !oldTimestamps.contains(item.date)).toList();
+    int? matchedIndex = -1;
 
-    if (newData.isNotEmpty) {
-      // If new data exists, select the most recent new data point based on timestamp
-      final latestNewData = newData.reduce((a, b) => a.date! > b.date! ? a : b);
-      matchedIndex =
-          trends.indexWhere((item) => item.date == latestNewData.date);
-      _selectedDateTimestamp = latestNewData.date;
-      _selectedId = trends[matchedIndex].id;
-    } else if (_selectedId != null) {
-      // First priority: keep exact same id if possible
+    // 1) Prefer keeping the exact same id if it still exists in new data
+    if (_selectedId != null) {
       matchedIndex = trends.indexWhere((item) => item.id == _selectedId);
-      if (matchedIndex == -1 && _selectedDateTimestamp != null) {
-        // Fall back to timestamp but try to pick the closest index to previous focus
-        final duplicateIndexes = <int>[];
-        for (int i = 0; i < trends.length; i++) {
-          if (trends[i].date == _selectedDateTimestamp) duplicateIndexes.add(i);
-        }
-        if (duplicateIndexes.isNotEmpty) {
-          matchedIndex = duplicateIndexes.reduce((a, b) =>
-              (a - _focusIndex).abs() <= (b - _focusIndex).abs() ? a : b);
-        }
-      }
-      if (matchedIndex == -1) {
-        // As a last resort, select latest
-        matchedIndex = trends.length - 1;
-      }
-    } else if (_selectedDateTimestamp != null) {
-      // If no new data but a previous selection exists, try to maintain it
-      // If there are duplicates with same timestamp, prefer the index closest to previous focus
+    }
+
+    // 2) If id not found, try to keep the same timestamp (choose closest to previous focus if duplicates)
+    if ((matchedIndex == null || matchedIndex == -1) &&
+        _selectedDateTimestamp != null) {
       final duplicateIndexes = <int>[];
       for (int i = 0; i < trends.length; i++) {
         if (trends[i].date == _selectedDateTimestamp) duplicateIndexes.add(i);
@@ -183,21 +161,20 @@ class BloodSugarChartState extends State<BloodSugarChart>
       if (duplicateIndexes.isNotEmpty) {
         matchedIndex = duplicateIndexes.reduce((a, b) =>
             (a - _focusIndex).abs() <= (b - _focusIndex).abs() ? a : b);
-      } else {
-        // If previous selection is not found, select the latest data point
-        matchedIndex = trends.length - 1;
-        _selectedDateTimestamp = trends.last.date;
       }
-    } else {
-      // No new data and no previous selection, default to the latest data point
+    }
+
+    // 3) If no previous selection could be preserved, prefer the latest data point
+    if (matchedIndex == null || matchedIndex == -1) {
       matchedIndex = trends.length - 1;
-      _selectedDateTimestamp = trends.last.date;
     }
 
     _focusIndex = matchedIndex;
+    _selectedDateTimestamp = trends[_focusIndex].date;
     _selectedId = trends[_focusIndex].id;
-    _previousTrends =
-        List.from(trends); // Update previous trends for next comparison
+
+    // Update previous trends for next comparison
+    _previousTrends = List.from(trends);
     if (mounted) {
       setState(() {
         _shouldAutoScroll = true;
