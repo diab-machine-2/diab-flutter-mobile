@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/add_bmi_cubit.dart';
+import 'package:medical/src/widget/bmi/views/add_bmi_view_old/add_bmi_cubit.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'custom_height_picker.dart';
 import 'custome_weight_picker.dart';

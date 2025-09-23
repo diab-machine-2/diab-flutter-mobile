@@ -33,7 +33,7 @@ class NavigatorName {
   static const String detail_blood_pressure = '/detail_blood_pressure';
   static const String detail_bmi = '/detail_bmi';
   static const String bmi = '/bmi';
-  static const String add_bmi = '/add_bmi';
+  
   static const String add_emo = '/add_emo';
   static const String add_symbo = '/add_symbo';
   static const String add_work = '/add_work';
@@ -133,4 +133,9 @@ class NavigatorName {
   static const String blood_pressure_intro_2nd_page = '/blood_pressure_intro_2nd_page';
   static const String add_bloodpressure_result = '/add_bloodpressure_result';
   static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
+
+  // Bmi
+  static const String add_bmi = '/add_bmi';
+  static const String bmiInputPage = '/add_bmi/bmi_input';
+  static const String bmiOverviewPage = '/add_bmi/bmi_input/bmi_overview';
 }

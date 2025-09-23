@@ -6,7 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
+import 'package:medical/src/widget/bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/Food/widget/intensity_food.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';

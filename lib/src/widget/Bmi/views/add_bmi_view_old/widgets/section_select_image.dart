@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/add_bmi_mixin.dart';
+import 'package:medical/src/widget/bmi/views/add_bmi_view_old/widgets/add_bmi_mixin.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';

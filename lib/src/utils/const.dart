@@ -2,11 +2,13 @@ class Const {
   static const String ENVIRONMENT_DEFAULT = "product"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
+  // static const String IS_DOMAIN = "is.debug.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
   static const String IS_DOMAIN_DEV = "is.dev.diab.vn";
 
   // static const String DOMAIN = "api.preprod.diab.com.vn";
   static const String DOMAIN = "api.diab.com.vn";
+  // static const String DOMAIN = "api.debug.diab.vn";
   static const String DOMAIN_STAGING = "api.staging.diab.com.vn";
   static const String DOMAIN_DEV = "api.dev.diab.vn";
 
@@ -252,4 +254,11 @@ class Const {
   static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
   static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
+
+  static const bmiThreshold = [
+    18.5,
+    23,
+    25,
+    30
+  ];
 }

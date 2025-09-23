@@ -8,6 +8,7 @@ import 'package:medical/src/model/request/make_comment_request.dart';
 import 'package:medical/src/model/request/make_question_request.dart';
 import 'package:medical/src/model/request/mark_completed_target_request.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
+import 'package:medical/src/model/request/submit_weight_record_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
@@ -514,4 +515,11 @@ abstract class AppApi {
     @Query("accountId") required String accountId,
     @Query("packageId") required String packageId,
   });
+
+  // region BMI
+
+  @POST("/App/Weight/Input")
+  Future<CommonResponse> submitWeightRecord(
+    @Body() SubmitWeightRecordRequest request,
+  );
 }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
@@ -23,11 +24,18 @@ class PrimaryRoundedButton extends StatelessWidget {
         alignment: Alignment.center,
         height: height,
         decoration: BoxDecoration(
-          color: R.color.mainColor,
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF0DAB9C),
+              R.color.mainColor,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter
+          ),
           borderRadius: borderRadius,
         ),
         child: Text(
-          title,
+          title.tr(),
           style: R.style.primaryButtonText,
         ),
       ),

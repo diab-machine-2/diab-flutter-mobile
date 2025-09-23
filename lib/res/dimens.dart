@@ -8,4 +8,8 @@ class AppDimens {
   static const double big_large_text_size = 20;
 
   static const double default_button_height = 48;
+
+  static const double smallRadius = 8.0;
+  static const double mediumRadius = 16.0;
+  static const double largeRadius = 24.0;
 }

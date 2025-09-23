@@ -10,7 +10,7 @@ import 'package:medical/src/model/response/config/bmi_color_config.dart';
 import 'package:medical/src/utils/api_methods.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/Bmi/models/weight_ranger_model.dart';
+import 'package:medical/src/widget/bmi/models/weight_ranger_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';

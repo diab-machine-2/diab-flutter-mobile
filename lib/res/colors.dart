@@ -151,4 +151,18 @@ class AppColors {
   static const color0xffFFE5E5 = Color(0xffFFE5E5);
   static const infographic_color = Color(0xff23C559);
   static const color0xffB4802D = Color(0xffB4802D);
+
+  static const cardShadowColor = Color(0x14042B28);
+
+  // static const neutral2 = Color(0xFF5E6566);
+  static const neutral3 = Color(0xFF5E6566);
+  static const neutral4 = Color(0xFFBFC6C6);
+  static const neutral5 = Color(0xFFDADEDF);
+
+  // Bmi status color
+  static const bmiNormalColor = Color(0xFF23C559);
+  static const bmiUnderThresholdColor = Color(0xFFFFCD57);
+  static const bmiOverThreshold1Color = Color(0xFFF86F6F);
+  static const bmiOverThreshold2Color = Color(0xFFD02424);
+  static const bmiOverThreshold3Color = Color(0xFFAF0000);
 }

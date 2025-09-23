@@ -18,8 +18,8 @@ import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar_v2.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_table_distribution.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table_compare.dart';
-import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/add_bmi_view.dart';
+import 'package:medical/src/widget/bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/Emotion/widget/add_emo.dart';
 import 'package:medical/src/widget/Emotion/widget/add_insight.dart';
@@ -44,6 +44,7 @@ import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/widget/bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
 import 'package:medical/src/widget/calendar/interview_success.dart';
@@ -403,12 +404,15 @@ class App extends StatelessWidget {
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
                         settings,
-                        AddBmiView(
-                          // AddBmiController(
-                          type: data?['type'],
-                          id: data?['id'],
-                          goalId: data?['goalId'],
-                          isCurrentBmi: data?['isCurrentBmi'],
+                        BlocProvider(
+                          create: (_) => BmiBloc(),
+                          child: BmiOnBoardingPage(
+                            // AddBmiController(
+                            type: data?['type'],
+                            id: data?['id'],
+                            goalId: data?['goalId'],
+                            isCurrentBmi: data?['isCurrentBmi'],
+                          ),
                         ));
                   case NavigatorName.add_emo:
                     final data = settings.arguments as Map<String, dynamic>?;

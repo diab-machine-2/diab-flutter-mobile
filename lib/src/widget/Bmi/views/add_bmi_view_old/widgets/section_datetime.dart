@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/add_bmi_cubit.dart';
-import 'package:medical/src/widget/Bmi/widget/add_bmi.dart';
+import 'package:medical/src/widget/bmi/views/add_bmi_view_old/add_bmi_cubit.dart';
+import 'package:medical/src/widget/bmi/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 
 class SectionDateTime extends StatelessWidget {

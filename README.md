@@ -19,6 +19,10 @@ samples, guidance on mobile development, and a full API reference.
 
 To build an APK file for the development environment that can be shared with clients, follow these steps:
 
+## Build runner
+
+flutter pub run build_runner build --delete-conflicting-outputs
+
 ### Using Command Line
 
 1. Navigate to the project root directory:

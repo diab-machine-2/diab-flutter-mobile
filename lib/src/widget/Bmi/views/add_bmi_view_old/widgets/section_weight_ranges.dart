@@ -2,9 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/app_media_query.dart';
-import 'package:medical/src/widget/Bmi/models/weight_ranger_model.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/add_bmi_cubit.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/add_bmi_mixin.dart';
+import 'package:medical/src/widget/bmi/models/weight_ranger_model.dart';
+import 'package:medical/src/widget/bmi/views/add_bmi_view_old/add_bmi_cubit.dart';
+import 'package:medical/src/widget/bmi/views/add_bmi_view_old/widgets/add_bmi_mixin.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 
 class SectionWeightRanges extends StatelessWidget with AddBmiMixin {
