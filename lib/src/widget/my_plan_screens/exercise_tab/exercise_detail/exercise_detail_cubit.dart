@@ -29,14 +29,11 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
     this.exerciseData = exerciseData;
     debugPrint('[EXERCISE] Exercise data initialized: ${exerciseData.name}');
 
-    // Resolve playable video URL: prefer main, else first section, else empty
-    final String mainUrl = exerciseData.videoUrl ?? '';
+    // Resolve playable video URL: only from first section, else empty
     final String sectionUrl = (exerciseData.sections?.isNotEmpty ?? false)
         ? (exerciseData.sections!.first?.videoUrl ?? '')
         : '';
-    resolvedVideoUrl = mainUrl.isNotEmpty
-        ? mainUrl
-        : (sectionUrl.isNotEmpty ? sectionUrl : '');
+    resolvedVideoUrl = sectionUrl;
 
     // Initialize videoManager
     videoManager = VideoManager.fromExerciseData(
