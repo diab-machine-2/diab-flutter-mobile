@@ -12,6 +12,13 @@ import 'package:medical/src/model/request/submit_weight_record_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
+import 'package:medical/src/model/response/base/response.dart';
+import 'package:medical/src/model/response/bmi_get_weight_detail_response.dart';
+import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
+import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
+import 'package:medical/src/model/response/bmi_statistical_response.dart';
+import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
+import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
@@ -489,7 +496,8 @@ abstract class AppApi {
       @Body() UpdateExerciseRequest request, @Path("id") String id);
 
   @GET("App/Exercise/Intensity")
-  Future<ExerciseIntensityResponse> getExerciseIntensities({@Query("shortname") int shortname = 1});
+  Future<ExerciseIntensityResponse> getExerciseIntensities(
+      {@Query("shortname") int shortname = 1});
   @GET("App/Exercise/Category")
   Future<ExerciseCategoryResponse> getExerciseCategories();
 
@@ -509,17 +517,93 @@ abstract class AppApi {
     @Query('CurrentDateTime') String currentDateTime,
     @Query('PeriodFilterType') int periodFilterType,
   );
-  
+
   @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
   Future<CommonResponse> subscriptionActivePackage({
     @Query("accountId") required String accountId,
     @Query("packageId") required String packageId,
   });
 
-  // region BMI
+  // region weight
+
+  @GET("/App/Weight/Analysis/Index")
+  Future<SingleResponse<String>> analyzeWeightIndex(
+    @Query("id") String id,
+  );
+
+  @GET("/App/Weight/Analysis/Trend")
+  Future<SingleResponse<String>> analyzeWeightTrend({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+  });
+
+  //
 
   @POST("/App/Weight/Input")
   Future<CommonResponse> submitWeightRecord(
     @Body() SubmitWeightRecordRequest request,
   );
+
+  //
+
+  @GET("/App/Weight/Input")
+  Future<BmiGetWeightListResponse> getWeightIndexList({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+  });
+
+  @GET("/App/Weight/Input/{id}")
+  Future<SingleResponse<BmiGetWeightDetailResponse>> getWeightDetail(
+    @Path("id") String id,
+  );
+
+  //
+
+  //
+
+  @GET("/App/Weight/Lessons")
+  Future<ListResponse<BmiGetWeightLessonsResponse>> getWeightLessons();
+
+  @GET("/App/Weight/Statistic/Bmi")
+  Future<SingleResponse<BmiStatisticalResponse>> getBmiStatisticalData({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+    @Query('reverseItems') bool? reverseItems,
+    @Query('thresholdType') int? thresholdType,
+    @Query('patientId') String? patientId,
+    @Query('takeAll') bool? takeAll,
+  });
+
+  @GET("/App/Weight/Statistic/Waist")
+  Future<SingleResponse<BmiWaistStatisticalResponse>> getWaistStatisticalData({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+    @Query('reverseItems') bool? reverseItems,
+    @Query('thresholdType') int? thresholdType,
+    @Query('patientId') String? patientId,
+    @Query('takeAll') bool? takeAll,
+  });
+
+  @GET("/App/Weight/Statistic/Weight")
+  Future<SingleResponse<BmiWeightStatisticalResponse>>
+      getWeightStatisticalData({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+    @Query('reverseItems') bool? reverseItems,
+    @Query('thresholdType') int? thresholdType,
+    @Query('patientId') String? patientId,
+    @Query('takeAll') bool? takeAll,
+  });
+
+  // end region weight
 }

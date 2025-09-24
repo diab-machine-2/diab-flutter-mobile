@@ -1,0 +1,90 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'bmi_weight_statistical_response.g.dart';
+
+@JsonSerializable()
+class BmiWeightStatisticalResponse {
+    @JsonKey(name: "safeWeightFrom")
+    final int? safeWeightFrom;
+    @JsonKey(name: "safeWeightTo")
+    final int? safeWeightTo;
+    @JsonKey(name: "weightSafes")
+    final List<WeightSafe>? weightSafes;
+    @JsonKey(name: "current")
+    final int? current;
+    @JsonKey(name: "lowest")
+    final int? lowest;
+    @JsonKey(name: "highest")
+    final int? highest;
+    @JsonKey(name: "goal")
+    final int? goal;
+    @JsonKey(name: "message")
+    final String? message;
+    @JsonKey(name: "iconUrl")
+    final String? iconUrl;
+    @JsonKey(name: "trendItems")
+    final List<TrendItem>? trendItems;
+
+    BmiWeightStatisticalResponse({
+        this.safeWeightFrom,
+        this.safeWeightTo,
+        this.weightSafes,
+        this.current,
+        this.lowest,
+        this.highest,
+        this.goal,
+        this.message,
+        this.iconUrl,
+        this.trendItems,
+    });
+
+    factory BmiWeightStatisticalResponse.fromJson(Map<String, dynamic> json) => _$BmiWeightStatisticalResponseFromJson(json);
+
+    Map<String, dynamic> toJson() => _$BmiWeightStatisticalResponseToJson(this);
+}
+
+@JsonSerializable()
+class TrendItem {
+    @JsonKey(name: "date")
+    final int? date;
+    @JsonKey(name: "value")
+    final int? value;
+    @JsonKey(name: "colorCode")
+    final String? colorCode;
+
+    TrendItem({
+        this.date,
+        this.value,
+        this.colorCode,
+    });
+
+    factory TrendItem.fromJson(Map<String, dynamic> json) => _$TrendItemFromJson(json);
+
+    Map<String, dynamic> toJson() => _$TrendItemToJson(this);
+}
+
+@JsonSerializable()
+class WeightSafe {
+    @JsonKey(name: "safeWeightFrom")
+    final int? safeWeightFrom;
+    @JsonKey(name: "safeWeightTo")
+    final int? safeWeightTo;
+    @JsonKey(name: "safeDateFrom")
+    final int? safeDateFrom;
+    @JsonKey(name: "week")
+    final int? week;
+    @JsonKey(name: "length")
+    final int? length;
+
+    WeightSafe({
+        this.safeWeightFrom,
+        this.safeWeightTo,
+        this.safeDateFrom,
+        this.week,
+        this.length,
+    });
+
+    factory WeightSafe.fromJson(Map<String, dynamic> json) => _$WeightSafeFromJson(json);
+
+    Map<String, dynamic> toJson() => _$WeightSafeToJson(this);
+}
