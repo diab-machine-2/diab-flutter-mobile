@@ -493,6 +493,11 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                             data.addAll(
                                 state.categorySearch!.exerciseCategories);
                           }
+                          if (state.categorySearch?.exerciseCategoryCommons !=
+                              null) {
+                            data.addAll(
+                                state.categorySearch!.exerciseCategoryCommons);
+                          }
                         } else {
                           if (state.category?.exerciseCategoryRegularlies !=
                               null) {
@@ -501,6 +506,9 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                           }
                           if (state.category?.exerciseCategories != null) {
                             data.addAll(state.category!.exerciseCategories);
+                          }
+                          if (state.category?.exerciseCategoryCommons != null) {
+                            data.addAll(state.category!.exerciseCategoryCommons);
                           }
                         }
 
