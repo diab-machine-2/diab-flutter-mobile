@@ -97,7 +97,7 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_pinedLessons.isNotEmpty) ...[
+      if (_pinedLessons.isNotEmpty) ...[
           Row(
             children: [
               Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
