@@ -150,7 +150,7 @@ class _AddBloodSugarControllerNewState
       } else {
         _controller.text = widget.prefilledValue!;
       }
-    }
+  }
 
     if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
       // Set unit based on prefilled unit
@@ -162,7 +162,11 @@ class _AddBloodSugarControllerNewState
 
       if (currentUnitIsMg != aiUnitIsMg) {
         // Update the user's default unit to match the AI analysis
-        _changeUnit(newUnit: widget.prefilledUnit!);
+        await _changeUnit(newUnit: widget.prefilledUnit!);
+        // Refresh glucose range after unit change
+        if (selectedTimeFrame != null) {
+          await _getGlucoseRange(selectedTimeFrame!);
+        }
       }
     } else {
       isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
@@ -1302,6 +1306,11 @@ class _AddBloodSugarControllerNewState
                   _lastUnitIndex = index;
                   _changedUnit = true;
                   await _changeUnit();
+                  
+                  // Refresh glucose range after unit change
+                  if (selectedTimeFrame != null) {
+                    await _getGlucoseRange(selectedTimeFrame!);
+                  }
 
                   final glucose = roundAsFixed(
                       AppSettings.userInfo!.glucoseUnit == 1
