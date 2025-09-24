@@ -1,3 +1,4 @@
+import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/widget/bmi/models/weight_instruction_model.dart';
 
@@ -18,7 +19,6 @@ class BmiDataChangedState extends BmiState {
   const BmiDataChangedState(this.event, [this.data]);
 }
 
-
 class BmiGetWeightStatisticalState extends BmiState {
   const BmiGetWeightStatisticalState();
 }
@@ -29,4 +29,10 @@ class BmiGetBmiStatisticalState extends BmiState {
 
 class BmiGetWaistStatisticalState extends BmiState {
   const BmiGetWaistStatisticalState();
+}
+
+class BmiGetWeightIndexListState extends BmiState {
+  const BmiGetWeightIndexListState(this.data);
+
+  final Resource<BmiGetWeightListResponse> data;
 }
