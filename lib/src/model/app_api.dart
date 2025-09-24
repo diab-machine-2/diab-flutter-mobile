@@ -13,6 +13,8 @@ import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
 import 'package:medical/src/model/response/base/response.dart';
+import 'package:medical/src/model/response/bmi_get_analyze_weight_index_response.dart';
+import 'package:medical/src/model/response/bmi_get_analyze_weight_trend_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_detail_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
@@ -527,12 +529,12 @@ abstract class AppApi {
   // region weight
 
   @GET("/App/Weight/Analysis/Index")
-  Future<SingleResponse<String>> analyzeWeightIndex(
+  Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(
     @Query("id") String id,
   );
 
   @GET("/App/Weight/Analysis/Trend")
-  Future<SingleResponse<String>> analyzeWeightTrend({
+  Future<BmiGetAnalyzeWeightTrendResponse> analyzeWeightTrend({
     @Query('currentDateTime') required int currentTime,
     @Query('periodFilterType') required int periodFilterType,
     @Query('page') int? page,
@@ -557,7 +559,7 @@ abstract class AppApi {
   });
 
   @GET("/App/Weight/Input/{id}")
-  Future<SingleResponse<BmiGetWeightDetailResponse>> getWeightDetail(
+  Future<BmiGetWeightDetailResponse> getWeightDetail(
     @Path("id") String id,
   );
 
@@ -566,10 +568,10 @@ abstract class AppApi {
   //
 
   @GET("/App/Weight/Lessons")
-  Future<ListResponse<BmiGetWeightLessonsResponse>> getWeightLessons();
+  Future<BmiGetWeightLessonsResponse> getWeightLessons();
 
   @GET("/App/Weight/Statistic/Bmi")
-  Future<SingleResponse<BmiStatisticalResponse>> getBmiStatisticalData({
+  Future<BmiStatisticalResponse> getBmiStatisticalData({
     @Query('currentDateTime') required int currentTime,
     @Query('periodFilterType') required int periodFilterType,
     @Query('page') int? page,
@@ -581,7 +583,7 @@ abstract class AppApi {
   });
 
   @GET("/App/Weight/Statistic/Waist")
-  Future<SingleResponse<BmiWaistStatisticalResponse>> getWaistStatisticalData({
+  Future<BmiWaistStatisticalResponse> getWaistStatisticalData({
     @Query('currentDateTime') required int currentTime,
     @Query('periodFilterType') required int periodFilterType,
     @Query('page') int? page,
@@ -593,7 +595,7 @@ abstract class AppApi {
   });
 
   @GET("/App/Weight/Statistic/Weight")
-  Future<SingleResponse<BmiWeightStatisticalResponse>>
+  Future<BmiWeightStatisticalResponse>
       getWeightStatisticalData({
     @Query('currentDateTime') required int currentTime,
     @Query('periodFilterType') required int periodFilterType,

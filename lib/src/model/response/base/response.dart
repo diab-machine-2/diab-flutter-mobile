@@ -1,3 +1,7 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'response.g.dart';
+
 class ListResponse<T> {
   final List<T> data;
   final Meta? meta;
@@ -35,13 +39,35 @@ class SingleResponse<T> {
   }
 }
 
-class Meta {
-  final bool success;
-  Meta({required this.success});
+// class Meta {
+//   final bool success;
+//   Meta({required this.success});
 
-  factory Meta.fromJson(Map<String, dynamic> json) {
-    return Meta(
-      success: json['success'],
-    );
-  }
+//   factory Meta.fromJson(Map<String, dynamic> json) {
+//     return Meta(
+//       success: json['success'],
+//     );
+//   }
+// }
+
+
+@JsonSerializable()
+class Meta {
+    @JsonKey(name: "success")
+    final bool? success;
+
+    Meta({
+        this.success,
+    });
+
+    Meta copyWith({
+        bool? success,
+    }) => 
+        Meta(
+            success: success ?? this.success,
+        );
+
+    factory Meta.fromJson(Map<String, dynamic> json) => _$MetaFromJson(json);
+
+    Map<String, dynamic> toJson() => _$MetaToJson(this);
 }

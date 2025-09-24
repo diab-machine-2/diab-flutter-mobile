@@ -17,10 +17,6 @@ class BmiGetWeightLessonsEvent extends BmiEvent {
   const BmiGetWeightLessonsEvent();
 }
 
-class BmiGetWeightListEvent extends BmiEvent {
-  const BmiGetWeightListEvent();
-}
-
 // statistical
 
 class BmiGetWeightStatisticalEvent extends BmiEvent {
@@ -35,4 +31,17 @@ class BmiGetWaistStatisticalEvent extends BmiEvent {
   const BmiGetWaistStatisticalEvent();
 }
 
-// 
+// weight index
+
+class BmiGetWeightRecordsEvent extends BmiEvent {
+  const BmiGetWeightRecordsEvent();
+}
+// others
+
+class BmiGetAIAnalysicEvent extends BmiEvent {
+  const BmiGetAIAnalysicEvent();
+}
+
+class BmiGetAIIndexAnalysicEvent extends BmiEvent {
+  const BmiGetAIIndexAnalysicEvent();
+}

@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
+import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -405,7 +406,7 @@ class App extends StatelessWidget {
                     return _buildRoute(
                         settings,
                         BlocProvider(
-                          create: (_) => BmiBloc(),
+                          create: (_) => BmiBloc(WeightRepository.instance),
                           child: BmiOnBoardingPage(
                             // AddBmiController(
                             type: data?['type'],

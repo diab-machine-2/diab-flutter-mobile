@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
+import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 
 class BmiOnBoardingPostCard extends StatelessWidget {
   const BmiOnBoardingPostCard({
     super.key,
     this.margin,
+    required this.lesson,
   });
 
   final EdgeInsetsGeometry? margin;
+  final BmiWeightLesson lesson;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +33,15 @@ class BmiOnBoardingPostCard extends StatelessWidget {
                   topLeft: Radius.circular(AppDimens.mediumRadius),
                   topRight: Radius.circular(AppDimens.mediumRadius)),
               child: CachedNetworkImage(
-                imageUrl:
-                    "https://images.squarespace-cdn.com/content/v1/607f89e638219e13eee71b1e/1684821560422-SD5V37BAG28BURTLIXUQ/michael-sum-LEpfefQf4rU-unsplash.jpg",
+                imageUrl: lesson.image?.url ?? "",
+                errorWidget: (context, url, error) => Container(
+                  color: AppColors.neutral5,
+                  child: Icon(
+                    Icons.image_not_supported_rounded,
+                    size: 56,
+                    color: AppColors.neutral3,
+                  ),
+                ),
                 fit: BoxFit.cover,
                 width: double.maxFinite,
               ),
@@ -42,14 +52,19 @@ class BmiOnBoardingPostCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text("uuiuiuiouiopa sss sss"),
+            child: Text(
+              lesson.description ?? "--",
+              style: R.style.normalTextStyle,
+            ),
           ),
           const SizedBox(
             height: 8.0,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: const _Category(),
+            child: _Category(
+              category: lesson.code ?? "--",
+            ),
           ),
           const SizedBox(
             height: 8.0,
@@ -99,7 +114,10 @@ class _ShareButton extends StatelessWidget {
 class _Category extends StatelessWidget {
   const _Category({
     super.key,
+    required this.category,
   });
+
+  final String category;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +134,7 @@ class _Category extends StatelessWidget {
         const SizedBox(width: 6.0),
         Expanded(
           child: Text(
-            "category",
+            category,
             style: R.style.smallTextStyle.copyWith(color: AppColors.neutral3),
           ),
         ),

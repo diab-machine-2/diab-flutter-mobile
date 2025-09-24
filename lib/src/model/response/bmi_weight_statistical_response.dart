@@ -1,9 +1,28 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:medical/src/model/response/base/response.dart';
 
 part 'bmi_weight_statistical_response.g.dart';
 
+
 @JsonSerializable()
 class BmiWeightStatisticalResponse {
+    @JsonKey(name: "meta")
+    final Meta? meta;
+    @JsonKey(name: "data")
+    final BmiWeightStatistical? data;
+
+    BmiWeightStatisticalResponse({
+        this.meta,
+        this.data,
+    });
+
+    factory BmiWeightStatisticalResponse.fromJson(Map<String, dynamic> json) => _$BmiWeightStatisticalResponseFromJson(json);
+
+    Map<String, dynamic> toJson() => _$BmiWeightStatisticalResponseToJson(this);
+}
+
+@JsonSerializable()
+class BmiWeightStatistical {
     @JsonKey(name: "safeWeightFrom")
     final int? safeWeightFrom;
     @JsonKey(name: "safeWeightTo")
@@ -25,7 +44,7 @@ class BmiWeightStatisticalResponse {
     @JsonKey(name: "trendItems")
     final List<TrendItem>? trendItems;
 
-    BmiWeightStatisticalResponse({
+    BmiWeightStatistical({
         this.safeWeightFrom,
         this.safeWeightTo,
         this.weightSafes,
@@ -38,9 +57,9 @@ class BmiWeightStatisticalResponse {
         this.trendItems,
     });
 
-    factory BmiWeightStatisticalResponse.fromJson(Map<String, dynamic> json) => _$BmiWeightStatisticalResponseFromJson(json);
+    factory BmiWeightStatistical.fromJson(Map<String, dynamic> json) => _$BmiWeightStatisticalFromJson(json);
 
-    Map<String, dynamic> toJson() => _$BmiWeightStatisticalResponseToJson(this);
+    Map<String, dynamic> toJson() => _$BmiWeightStatisticalToJson(this);
 }
 
 @JsonSerializable()

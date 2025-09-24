@@ -1,4 +1,8 @@
+import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
+import 'package:medical/src/model/response/bmi_statistical_response.dart';
+import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
+import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/widget/bmi/models/weight_instruction_model.dart';
 
@@ -19,20 +23,50 @@ class BmiDataChangedState extends BmiState {
   const BmiDataChangedState(this.event, [this.data]);
 }
 
+// statistical
+
 class BmiGetWeightStatisticalState extends BmiState {
-  const BmiGetWeightStatisticalState();
+  const BmiGetWeightStatisticalState(this.data);
+
+  final Resource<BmiWeightStatistical> data;
 }
 
 class BmiGetBmiStatisticalState extends BmiState {
-  const BmiGetBmiStatisticalState();
+  const BmiGetBmiStatisticalState(this.data);
+
+  final Resource<BmiStatistical> data;
 }
 
 class BmiGetWaistStatisticalState extends BmiState {
-  const BmiGetWaistStatisticalState();
+  const BmiGetWaistStatisticalState(this.data);
+
+  final Resource<BmiWaistStatistical> data;
 }
+
+// weight index
 
 class BmiGetWeightIndexListState extends BmiState {
   const BmiGetWeightIndexListState(this.data);
 
   final Resource<BmiGetWeightListResponse> data;
+}
+
+// others data
+
+class BmiGetWeightLessonsState extends BmiState {
+  const BmiGetWeightLessonsState(this.data);
+
+  final Resource<List<BmiWeightLesson>> data;
+}
+
+class BmiGetAIAnalysicState extends BmiState {
+  const BmiGetAIAnalysicState(this.data);
+
+  final Resource<String> data;
+}
+
+class BmiGetAIIndexAnalysicState extends BmiState {
+  const BmiGetAIIndexAnalysicState(this.data);
+
+  final Resource<String> data;
 }

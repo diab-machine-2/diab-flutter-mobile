@@ -1,12 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/scheduler/ticker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
 import 'package:medical/res/generated/dimens.g.dart';
+import 'package:medical/src/widget/bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/bmi/enum.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
+import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_statistical_chart.dart';
 import 'package:medical/src/widgets/button/secondary_rounded_button.dart';
 
 class BmiOnBoardingChartSession extends StatefulWidget {
@@ -19,8 +24,7 @@ class BmiOnBoardingChartSession extends StatefulWidget {
       _BmiOnBoardingChartSessionState();
 }
 
-class _BmiOnBoardingChartSessionState
-    extends State<BmiOnBoardingChartSession> {
+class _BmiOnBoardingChartSessionState extends State<BmiOnBoardingChartSession> {
   final _gradientBg = LinearGradient(
     colors: [
       R.color.backgroundColorNew,
@@ -29,6 +33,13 @@ class _BmiOnBoardingChartSessionState
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
+  late BmiBloc _bmiBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bmiBloc = context.read();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +53,41 @@ class _BmiOnBoardingChartSessionState
           const SizedBox(
             height: 24,
           ),
-          const BmiDateFilterBar(),
+          BmiDateFilterBar(
+            onChanged: _onPeriodChanged,
+          ),
           const SizedBox(
             height: 12,
           ),
           _DateTimeLabel(),
+          BmiStatisticalChart(),
+          _AIAnalysic(),
           const SizedBox(
-            height: 100,
+            height: 12,
           ),
-          Column(
+        ],
+      ),
+    );
+  }
+
+  void _onPeriodChanged(BmiDateFilterType filterType) {
+    _bmiBloc.changePeriodTime(filterType, isStatisticalView: true);
+  }
+}
+
+class _AIAnalysic extends StatelessWidget {
+  const _AIAnalysic({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    BmiBloc _bmiBloc = context.read();
+
+    return BlocBuilder<BmiBloc, BmiState>(
+        buildWhen: (previous, current) => current is BmiGetAIAnalysicState,
+        builder: (context, state) {
+          return Column(
             children: [
               Row(
                 children: [
@@ -58,7 +95,9 @@ class _BmiOnBoardingChartSessionState
                     R.string.ai_suggestion_glucose.tr(),
                     style: R.style.semiBoldXLargeStyle,
                   ),
-                  const SizedBox(width: 8,),
+                  const SizedBox(
+                    width: 8,
+                  ),
                   Icon(Icons.info_outline_rounded)
                 ],
               ),
@@ -66,7 +105,7 @@ class _BmiOnBoardingChartSessionState
                 height: 12,
               ),
               Text(
-                "Bạn đang thừa cân nhẹ. Nên đặt mục tiêu giảm về 55–60kg để cải thiện sức khỏe. Ăn uống lành mạnh, tập thể dục đều và giảm cân từ từ sẽ giúp duy trì hiệu quả bền vững.",
+                _bmiBloc.aiAnalysicTrend,
                 style: R.style.normalTextStyle,
               ),
               const SizedBox(
@@ -77,13 +116,8 @@ class _BmiOnBoardingChartSessionState
                 onPressed: () {},
               ),
             ],
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }
 

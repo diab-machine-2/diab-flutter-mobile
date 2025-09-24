@@ -14,5 +14,14 @@ extension BmiDateFilterTypeExt on BmiDateFilterType {
     BmiDateFilterType.threeMonths: 90,
   };
 
+  static const _mapRequestValue = {
+    BmiDateFilterType.aWeek: 1,
+    BmiDateFilterType.twoWeeks: 2,
+    BmiDateFilterType.aMonth: 3,
+    BmiDateFilterType.threeMonths: 4,
+  };
+
   int get days => _mapDate[this]!;
+
+  int get requestValue => _mapRequestValue[this]!;
 }

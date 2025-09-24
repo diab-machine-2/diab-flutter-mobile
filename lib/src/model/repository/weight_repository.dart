@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/submit_weight_record_request.dart';
 import 'package:medical/src/model/response/base/response.dart';
+import 'package:medical/src/model/response/bmi_get_analyze_weight_index_response.dart';
+import 'package:medical/src/model/response/bmi_get_analyze_weight_trend_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_detail_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
@@ -22,9 +24,9 @@ class WeightRepository {
 
   Future<ApiResult<String>> analyzeWeightIndex(String id) async {
     try {
-      final SingleResponse<String> response =
+      final BmiGetAnalyzeWeightIndexResponse response =
           await appClient.analyzeWeightIndex(id);
-      return ApiResult.success(data: response.data);
+      return ApiResult.success(data: response.data ?? "");
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -37,14 +39,14 @@ class WeightRepository {
     int? size,
   }) async {
     try {
-      final SingleResponse<String> response =
+      final BmiGetAnalyzeWeightTrendResponse response =
           await appClient.analyzeWeightTrend(
         currentTime: currentTime,
         periodFilterType: periodFilterType,
         page: page,
         size: size,
       );
-      return ApiResult.success(data: response.data);
+      return ApiResult.success(data: response.data ?? "");
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -84,26 +86,26 @@ class WeightRepository {
   Future<ApiResult<BmiGetWeightDetailResponse>> getWeightDetail(
       String id) async {
     try {
-      final SingleResponse<BmiGetWeightDetailResponse> response =
+      final BmiGetWeightDetailResponse response =
           await appClient.getWeightDetail(id);
-      return ApiResult.success(data: response.data);
+      return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<List<BmiGetWeightLessonsResponse>>>
+  Future<ApiResult<List<BmiWeightLesson>>>
       getWeightLessons() async {
     try {
-      final ListResponse<BmiGetWeightLessonsResponse> response =
+      final BmiGetWeightLessonsResponse response =
           await appClient.getWeightLessons();
-      return ApiResult.success(data: response.data);
+      return ApiResult.success(data: response.data ?? []);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<BmiStatisticalResponse>> getBmiStatisticalData({
+  Future<ApiResult<BmiStatistical>> getBmiStatisticalData({
     required int currentTime,
     required int periodFilterType,
     int page = 1,
@@ -114,7 +116,7 @@ class WeightRepository {
     bool? takeAll,
   }) async {
     try {
-      final SingleResponse<BmiStatisticalResponse> response =
+      final BmiStatisticalResponse response =
           await appClient.getBmiStatisticalData(
         currentTime: currentTime,
         periodFilterType: periodFilterType,
@@ -125,13 +127,13 @@ class WeightRepository {
         patientId: patientId,
         takeAll: takeAll,
       );
-      return ApiResult.success(data: response.data);
+      return ApiResult.success(data: response.data!);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<BmiWaistStatisticalResponse>> getWaistStatisticalData({
+  Future<ApiResult<BmiWaistStatistical>> getWaistStatisticalData({
     required int currentTime,
     required int periodFilterType,
     int page = 1,
@@ -142,7 +144,7 @@ class WeightRepository {
     bool? takeAll,
   }) async {
     try {
-      final SingleResponse<BmiWaistStatisticalResponse> response =
+      final BmiWaistStatisticalResponse response =
           await appClient.getWaistStatisticalData(
         currentTime: currentTime,
         periodFilterType: periodFilterType,
@@ -153,13 +155,13 @@ class WeightRepository {
         patientId: patientId,
         takeAll: takeAll,
       );
-      return ApiResult.success(data: response.data);
+      return ApiResult.success(data: response.data!);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<BmiWeightStatisticalResponse>> getWeightStatisticalData({
+  Future<ApiResult<BmiWeightStatistical>> getWeightStatisticalData({
     required int currentTime,
     required int periodFilterType,
     int page = 1,
@@ -170,7 +172,7 @@ class WeightRepository {
     bool? takeAll,
   }) async {
     try {
-      final SingleResponse<BmiWeightStatisticalResponse> response =
+      final BmiWeightStatisticalResponse response =
           await appClient.getWeightStatisticalData(
         currentTime: currentTime,
         periodFilterType: periodFilterType,
@@ -181,7 +183,7 @@ class WeightRepository {
         patientId: patientId,
         takeAll: takeAll,
       );
-      return ApiResult.success(data: response.data);
+      return ApiResult.success(data: response.data!);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

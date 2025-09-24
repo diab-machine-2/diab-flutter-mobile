@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
+import 'package:medical/src/widget/bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_post_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -23,61 +26,75 @@ class _BmiPostSessionState extends State<BmiPostSession> {
   static const _dotSize = 8.0;
   static const _sessionHeight = 360.0;
 
+  late BmiBloc _bmiBloc;
+  
+  @override
+  void initState() {
+    super.initState();
+    _bmiBloc = context.read();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: R.decorationStyle.mediumRadiusCardStyles,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      width: double.maxFinite,
-      height: _sessionHeight,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Text(
-              R.string.glucose_intro_help_title.tr(),
-              style: R.style.alertTitle,
-            ),
+    return BlocBuilder<BmiBloc, BmiState>(
+      buildWhen: (_, state) => state is BmiGetWeightLessonsState,
+      builder: (context, state) {
+        return Container(
+          decoration: R.decorationStyle.mediumRadiusCardStyles,
+          margin: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          width: double.maxFinite,
+          height: _sessionHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Text(
+                  R.string.glucose_intro_help_title.tr(),
+                  style: R.style.alertTitle,
+                ),
+              ),
+              const SizedBox(height: 12,),
+              Expanded(
+                child: PageView.builder(
+                  itemBuilder: (context, index) {
+                    EdgeInsetsGeometry? margin;
+                    if (index == 0) {
+                      margin = EdgeInsets.only(left: 6);
+                    } else if (index == 4) {
+                      margin = EdgeInsets.only(right: 6);
+                    }
+                    return BmiOnBoardingPostCard(
+                      margin: margin,
+                      lesson: _bmiBloc.lessons[index],
+                    );
+                  },
+                  itemCount: _bmiBloc.lessons.length,
+                  // pageSnapping: false,
+                  controller: _pageController,
+                  padEnds: false,
+                ),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Center(
+                child: SmoothPageIndicator(
+                  controller: _pageController,
+                  count: _bmiBloc.lessons.length,
+                  effect: WormEffect(
+                      dotHeight: _dotSize,
+                      dotWidth: _dotSize,
+                      activeDotColor: R.color.mainColor,
+                      dotColor: AppColors.neutral5),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12,),
-          Expanded(
-            child: PageView.builder(
-              itemBuilder: (context, index) {
-                EdgeInsetsGeometry? margin;
-                if (index == 0) {
-                  margin = EdgeInsets.only(left: 6);
-                } else if (index == 4) {
-                  margin = EdgeInsets.only(right: 6);
-                }
-                return BmiOnBoardingPostCard(
-                  margin: margin,
-                );
-              },
-              itemCount: 5,
-              // pageSnapping: false,
-              controller: _pageController,
-              padEnds: false,
-            ),
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          Center(
-            child: SmoothPageIndicator(
-              controller: _pageController,
-              count: 5,
-              effect: WormEffect(
-                  dotHeight: _dotSize,
-                  dotWidth: _dotSize,
-                  activeDotColor: R.color.mainColor,
-                  dotColor: AppColors.neutral5),
-            ),
-          ),
-        ],
-      ),
+        );
+      }
     );
   }
 }

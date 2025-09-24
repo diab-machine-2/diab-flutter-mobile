@@ -1,10 +1,38 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
 
+import 'package:medical/src/model/response/base/response.dart';
+
 part 'bmi_get_weight_detail_response.g.dart';
 
 @JsonSerializable()
 class BmiGetWeightDetailResponse {
+    @JsonKey(name: "meta")
+    final Meta? meta;
+    @JsonKey(name: "data")
+    final BmiGetWeightDetail? data;
+
+    BmiGetWeightDetailResponse({
+        this.meta,
+        this.data,
+    });
+
+    BmiGetWeightDetailResponse copyWith({
+        Meta? meta,
+        BmiGetWeightDetail? data,
+    }) => 
+        BmiGetWeightDetailResponse(
+            meta: meta ?? this.meta,
+            data: data ?? this.data,
+        );
+
+    factory BmiGetWeightDetailResponse.fromJson(Map<String, dynamic> json) => _$BmiGetWeightDetailResponseFromJson(json);
+
+    Map<String, dynamic> toJson() => _$BmiGetWeightDetailResponseToJson(this);
+}
+
+@JsonSerializable()
+class BmiGetWeightDetail {
     @JsonKey(name: "id")
     final String? id;
     @JsonKey(name: "images")
@@ -42,7 +70,7 @@ class BmiGetWeightDetailResponse {
     @JsonKey(name: "isPregnancy")
     final bool? isPregnancy;
 
-    BmiGetWeightDetailResponse({
+    BmiGetWeightDetail({
         this.id,
         this.images,
         this.date,
@@ -63,9 +91,50 @@ class BmiGetWeightDetailResponse {
         this.isPregnancy,
     });
 
-    factory BmiGetWeightDetailResponse.fromJson(Map<String, dynamic> json) => _$BmiGetWeightDetailResponseFromJson(json);
+    BmiGetWeightDetail copyWith({
+        String? id,
+        List<Image>? images,
+        int? date,
+        int? weight,
+        int? waist,
+        int? height,
+        int? bmi,
+        String? note,
+        String? timeFrameId,
+        String? timeFrameText,
+        String? bmiId,
+        String? bmiText,
+        String? waistId,
+        String? bmiColorCode,
+        String? bmiBackgroundColorCode,
+        String? bmiTextColorCode,
+        String? waistColorCode,
+        bool? isPregnancy,
+    }) => 
+        BmiGetWeightDetail(
+            id: id ?? this.id,
+            images: images ?? this.images,
+            date: date ?? this.date,
+            weight: weight ?? this.weight,
+            waist: waist ?? this.waist,
+            height: height ?? this.height,
+            bmi: bmi ?? this.bmi,
+            note: note ?? this.note,
+            timeFrameId: timeFrameId ?? this.timeFrameId,
+            timeFrameText: timeFrameText ?? this.timeFrameText,
+            bmiId: bmiId ?? this.bmiId,
+            bmiText: bmiText ?? this.bmiText,
+            waistId: waistId ?? this.waistId,
+            bmiColorCode: bmiColorCode ?? this.bmiColorCode,
+            bmiBackgroundColorCode: bmiBackgroundColorCode ?? this.bmiBackgroundColorCode,
+            bmiTextColorCode: bmiTextColorCode ?? this.bmiTextColorCode,
+            waistColorCode: waistColorCode ?? this.waistColorCode,
+            isPregnancy: isPregnancy ?? this.isPregnancy,
+        );
 
-    Map<String, dynamic> toJson() => _$BmiGetWeightDetailResponseToJson(this);
+    factory BmiGetWeightDetail.fromJson(Map<String, dynamic> json) => _$BmiGetWeightDetailFromJson(json);
+
+    Map<String, dynamic> toJson() => _$BmiGetWeightDetailToJson(this);
 }
 
 @JsonSerializable()
@@ -79,6 +148,15 @@ class Image {
         this.id,
         this.url,
     });
+
+    Image copyWith({
+        String? id,
+        String? url,
+    }) => 
+        Image(
+            id: id ?? this.id,
+            url: url ?? this.url,
+        );
 
     factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
 

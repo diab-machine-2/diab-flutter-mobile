@@ -1,10 +1,29 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
 
+import 'package:medical/src/model/response/base/response.dart';
+
 part 'bmi_get_weight_lessons_response.g.dart';
 
 @JsonSerializable()
 class BmiGetWeightLessonsResponse {
+    @JsonKey(name: "meta")
+    final Meta? meta;
+    @JsonKey(name: "data")
+    final List<BmiWeightLesson>? data;
+
+    BmiGetWeightLessonsResponse({
+        this.meta,
+        this.data,
+    });
+
+    factory BmiGetWeightLessonsResponse.fromJson(Map<String, dynamic> json) => _$BmiGetWeightLessonsResponseFromJson(json);
+
+    Map<String, dynamic> toJson() => _$BmiGetWeightLessonsResponseToJson(this);
+}
+
+@JsonSerializable()
+class BmiWeightLesson {
     @JsonKey(name: "id")
     final String? id;
     @JsonKey(name: "code")
@@ -66,9 +85,9 @@ class BmiGetWeightLessonsResponse {
     @JsonKey(name: "lessonTags")
     final List<LessonLevelElement>? lessonTags;
     @JsonKey(name: "image")
-    final Image? image;
+    final BmiLessonImage? image;
     @JsonKey(name: "imageVendor")
-    final Image? imageVendor;
+    final BmiLessonImage? imageVendor;
     @JsonKey(name: "numberOfQuiz")
     final int? numberOfQuiz;
     @JsonKey(name: "percentComplete")
@@ -76,7 +95,7 @@ class BmiGetWeightLessonsResponse {
     @JsonKey(name: "linkShare")
     final String? linkShare;
 
-    BmiGetWeightLessonsResponse({
+    BmiWeightLesson({
         this.id,
         this.code,
         this.name,
@@ -114,26 +133,26 @@ class BmiGetWeightLessonsResponse {
         this.linkShare,
     });
 
-    factory BmiGetWeightLessonsResponse.fromJson(Map<String, dynamic> json) => _$BmiGetWeightLessonsResponseFromJson(json);
+    factory BmiWeightLesson.fromJson(Map<String, dynamic> json) => _$BmiWeightLessonFromJson(json);
 
-    Map<String, dynamic> toJson() => _$BmiGetWeightLessonsResponseToJson(this);
+    Map<String, dynamic> toJson() => _$BmiWeightLessonToJson(this);
 }
 
 @JsonSerializable()
-class Image {
+class BmiLessonImage {
     @JsonKey(name: "id")
     final String? id;
     @JsonKey(name: "url")
     final String? url;
 
-    Image({
+    BmiLessonImage({
         this.id,
         this.url,
     });
 
-    factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
+    factory BmiLessonImage.fromJson(Map<String, dynamic> json) => _$BmiLessonImageFromJson(json);
 
-    Map<String, dynamic> toJson() => _$ImageToJson(this);
+    Map<String, dynamic> toJson() => _$BmiLessonImageToJson(this);
 }
 
 @JsonSerializable()
@@ -155,7 +174,7 @@ class PurpleLesson {
     @JsonKey(name: "updaterCode")
     final String? updaterCode;
     @JsonKey(name: "updaterImage")
-    final Image? updaterImage;
+    final BmiLessonImage? updaterImage;
 
     PurpleLesson({
         this.id,
@@ -315,7 +334,7 @@ class LessonSection {
     @JsonKey(name: "lessonSectionTypes")
     final List<LessonLevelElement>? lessonSectionTypes;
     @JsonKey(name: "image")
-    final Image? image;
+    final BmiLessonImage? image;
 
     LessonSection({
         this.id,

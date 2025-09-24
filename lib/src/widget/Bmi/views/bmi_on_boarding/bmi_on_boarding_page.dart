@@ -9,6 +9,7 @@ import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
 import 'package:medical/src/widget/bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/bmi/views/add_bmi_view_old/widgets/add_bmi_mixin.dart';
+import 'package:medical/src/widget/bmi/views/bmi_input_type_bottom_sheet.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_instruction_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_app_bar.dart';
 import 'package:medical/src/widget/bmi/views/add_bmi_view_old/widgets/section_input_note.dart';
@@ -137,7 +138,7 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (true) ...[
+            if (!_bmiBloc.hasStatisticalData) ...[
               const SizedBox(height: 24),
               const BmiOnBoardingIntroducingSession(),
               const SizedBox(height: 12),
@@ -183,7 +184,9 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
             Expanded(
               child: PrimaryRoundedButton(
                 title: "sss",
-                onPressed: () {},
+                onPressed: () {
+                  BmiInputTypeBottomSheet.show(context);
+                },
               ),
             ),
           ],
@@ -300,10 +303,16 @@ class _StatisticalDataViewButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BmiBloc _bmiBloc = context.read();
+
     return InkWell(
       onTap: () {
+        _bmiBloc.fetchHistoricalWeight();
+
         Navigator.push(context,
-            MaterialPageRoute(builder: (_) => BmiStatisticalDataPage()));
+            MaterialPageRoute(builder: (_) => BlocProvider.value(
+              value: _bmiBloc,
+              child: BmiStatisticalDataPage())));
       },
       child: Stack(
         alignment: Alignment.topRight,

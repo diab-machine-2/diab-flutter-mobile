@@ -1,9 +1,27 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:medical/src/model/response/base/response.dart';
 
 part 'bmi_statistical_response.g.dart';
 
 @JsonSerializable()
 class BmiStatisticalResponse {
+    @JsonKey(name: "meta")
+    final Meta? meta;
+    @JsonKey(name: "data")
+    final BmiStatistical? data;
+
+    BmiStatisticalResponse({
+        this.meta,
+        this.data,
+    });
+
+    factory BmiStatisticalResponse.fromJson(Map<String, dynamic> json) => _$BmiStatisticalResponseFromJson(json);
+
+    Map<String, dynamic> toJson() => _$BmiStatisticalResponseToJson(this);
+}
+
+@JsonSerializable()
+class BmiStatistical {
     @JsonKey(name: "value")
     final int? value;
     @JsonKey(name: "weight")
@@ -15,7 +33,7 @@ class BmiStatisticalResponse {
     @JsonKey(name: "legends")
     final List<End>? legends;
 
-    BmiStatisticalResponse({
+    BmiStatistical({
         this.value,
         this.weight,
         this.height,
@@ -23,9 +41,9 @@ class BmiStatisticalResponse {
         this.legends,
     });
 
-    factory BmiStatisticalResponse.fromJson(Map<String, dynamic> json) => _$BmiStatisticalResponseFromJson(json);
+    factory BmiStatistical.fromJson(Map<String, dynamic> json) => _$BmiStatisticalFromJson(json);
 
-    Map<String, dynamic> toJson() => _$BmiStatisticalResponseToJson(this);
+    Map<String, dynamic> toJson() => _$BmiStatisticalToJson(this);
 }
 
 @JsonSerializable()

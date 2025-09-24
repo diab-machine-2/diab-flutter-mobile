@@ -2244,6 +2244,63 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'id': id};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiGetAnalyzeWeightIndexResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Analysis/Index',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiGetAnalyzeWeightIndexResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BmiGetAnalyzeWeightTrendResponse> analyzeWeightTrend({
+    required currentTime,
+    required periodFilterType,
+    page,
+    size,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'currentDateTime': currentTime,
+      r'periodFilterType': periodFilterType,
+      r'page': page,
+      r'size': size,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiGetAnalyzeWeightTrendResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Analysis/Trend',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiGetAnalyzeWeightTrendResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CommonResponse> submitWeightRecord(request) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -2264,6 +2321,212 @@ class _AppApi implements AppApi {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BmiGetWeightListResponse> getWeightIndexList({
+    required currentTime,
+    required periodFilterType,
+    page,
+    size,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'currentDateTime': currentTime,
+      r'periodFilterType': periodFilterType,
+      r'page': page,
+      r'size': size,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiGetWeightListResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Input',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiGetWeightListResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BmiGetWeightDetailResponse> getWeightDetail(id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiGetWeightDetailResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Input/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiGetWeightDetailResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BmiGetWeightLessonsResponse> getWeightLessons() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiGetWeightLessonsResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Lessons',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiGetWeightLessonsResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BmiStatisticalResponse> getBmiStatisticalData({
+    required currentTime,
+    required periodFilterType,
+    page,
+    size,
+    reverseItems,
+    thresholdType,
+    patientId,
+    takeAll,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'currentDateTime': currentTime,
+      r'periodFilterType': periodFilterType,
+      r'page': page,
+      r'size': size,
+      r'reverseItems': reverseItems,
+      r'thresholdType': thresholdType,
+      r'patientId': patientId,
+      r'takeAll': takeAll,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiStatisticalResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Statistic/Bmi',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiStatisticalResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BmiWaistStatisticalResponse> getWaistStatisticalData({
+    required currentTime,
+    required periodFilterType,
+    page,
+    size,
+    reverseItems,
+    thresholdType,
+    patientId,
+    takeAll,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'currentDateTime': currentTime,
+      r'periodFilterType': periodFilterType,
+      r'page': page,
+      r'size': size,
+      r'reverseItems': reverseItems,
+      r'thresholdType': thresholdType,
+      r'patientId': patientId,
+      r'takeAll': takeAll,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiWaistStatisticalResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Statistic/Waist',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiWaistStatisticalResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<BmiWeightStatisticalResponse> getWeightStatisticalData({
+    required currentTime,
+    required periodFilterType,
+    page,
+    size,
+    reverseItems,
+    thresholdType,
+    patientId,
+    takeAll,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'currentDateTime': currentTime,
+      r'periodFilterType': periodFilterType,
+      r'page': page,
+      r'size': size,
+      r'reverseItems': reverseItems,
+      r'thresholdType': thresholdType,
+      r'patientId': patientId,
+      r'takeAll': takeAll,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiWeightStatisticalResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Statistic/Weight',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiWeightStatisticalResponse.fromJson(_result.data!);
     return value;
   }
 

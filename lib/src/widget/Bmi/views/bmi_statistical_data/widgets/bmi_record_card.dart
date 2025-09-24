@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
+import 'package:medical/res/text_styles_extension.dart';
+import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 
 class BmiRecordCard extends StatelessWidget {
   const BmiRecordCard({
     super.key,
+    required this.data,
   });
+
+  final BmiGetWeightRecord data;
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +28,15 @@ class BmiRecordCard extends StatelessWidget {
               Row(
                 children: [
                   Text.rich(
-                    TextSpan(text: "70 ", style: R.style.alertTitle, children: [
-                      TextSpan(
-                        text: "kg",
-                        style: R.style.normalTextStyle,
-                      )
-                    ]),
+                    TextSpan(
+                        text: "${data.weight} ",
+                        style: R.style.boldXXLargeStyle,
+                        children: [
+                          TextSpan(
+                            text: "kg",
+                            style: R.style.largeTextStyle.neutral3,
+                          )
+                        ]),
                   ),
                   const SizedBox(
                     width: 12,
@@ -43,13 +51,13 @@ class BmiRecordCard extends StatelessWidget {
                     width: 12,
                   ),
                   Text(
-                    "7:30",
-                    style: R.style.normalTextStyle,
+                    "${data.date}",
+                    style: R.style.largeTextStyle.neutral3,
                   )
                 ],
               ),
               Text(
-                "Thua can",
+                data.bmiText ?? "--",
                 style: R.style.alertTitle,
               )
             ],
@@ -63,23 +71,23 @@ class BmiRecordCard extends StatelessWidget {
               Text.rich(
                 TextSpan(
                   text: "BMI ",
-                  style: R.style.normalTextStyle,
+                  style: R.style.largeTextStyle.neutral3,
                   children: [
                     TextSpan(
-                      text: "25.0",
-                      style: R.style.normalTextStyle,
+                      text: "${data.bmi} cm",
+                      style: R.style.boldLargeStyle,
                     )
                   ],
                 ),
               ),
               Text.rich(
                 TextSpan(
-                  text: "BMI ",
-                  style: R.style.normalTextStyle,
+                  text: "Vong eo ",
+                  style: R.style.largeTextStyle.neutral3,
                   children: [
                     TextSpan(
-                      text: "25.0",
-                      style: R.style.normalTextStyle,
+                      text: "${data.waist} cm",
+                      style: R.style.boldLargeStyle,
                     )
                   ],
                 ),
