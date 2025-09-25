@@ -1,53 +1,27 @@
-import 'package:bot_toast/bot_toast.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/repo/weight/weight_client.dart';
-import 'package:medical/src/widget/BloodSugar/widget/action_list_trend.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/bmi/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/bmi/views/add_bmi_view_old/widgets/add_bmi_mixin.dart';
+import 'package:medical/src/widget/bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/bmi/views/bmi_input_type_bottom_sheet.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_instruction_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_app_bar.dart';
-import 'package:medical/src/widget/bmi/views/add_bmi_view_old/widgets/section_input_note.dart';
-import 'package:medical/src/widget/bmi/views/add_bmi_view_old/widgets/section_select_image.dart';
-import 'package:medical/src/widget/base/cubit_base_state.dart';
-import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_introducing_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_chart_session.dart';
+import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_introducing_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_onboarding_avarage_bmi_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_onboarding_current_height_widget.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_onboarding_current_weight_widget.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_post_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widgets/button/primary_rounded_button.dart';
-import 'package:medical/src/widgets/spacing_row.dart';
-import 'package:easy_localization/easy_localization.dart';
-import '../add_bmi_view_old/add_bmi_cubit.dart';
-import '../add_bmi_view_old/widgets/section_app_bar.dart';
-import '../add_bmi_view_old/widgets/section_datetime.dart';
-import '../add_bmi_view_old/widgets/section_footer.dart';
-import '../add_bmi_view_old/widgets/section_input_kpi.dart';
-import '../add_bmi_view_old/widgets/section_weight_ranges.dart';
-
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
-import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
-import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
-import 'package:medical/src/utils/app_storages.dart';
-import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 // import 'widgets/bloodpresure_lesson_section.dart';
@@ -79,22 +53,22 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
     _bmiBloc = context.read<BmiBloc>();
     _bmiBloc.init();
     super.initState();
-    _loadLessons();
+    // _loadLessons();
   }
 
-  void _loadLessons() async {
-    try {
-      _pinedLessons.clear();
-      final lessons = await BloodPressureClient().fetchBloodPressureLessons();
-      if (lessons != null) {
-        setState(() {
-          _pinedLessons.addAll(lessons);
-        });
-      }
-    } catch (e, s) {
-      TrackingManager.recordError(e, s);
-    }
-  }
+  // void _loadLessons() async {
+  //   try {
+  //     _pinedLessons.clear();
+  //     final lessons = await BloodPressureClient().fetchBloodPressureLessons();
+  //     if (lessons != null) {
+  //       setState(() {
+  //         _pinedLessons.addAll(lessons);
+  //       });
+  //     }
+  //   } catch (e, s) {
+  //     TrackingManager.recordError(e, s);
+  //   }
+  // }
 
   void _navigateToInputSelection() async {
     // bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
@@ -183,15 +157,31 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
             ),
             Expanded(
               child: PrimaryRoundedButton(
-                title: "sss",
+                title: R.string.enter_weight.tr(),
                 onPressed: () {
-                  BmiInputTypeBottomSheet.show(context);
+                  BmiInputTypeBottomSheet.show(
+                    context,
+                    onSelected: _onSelectMethodInput,
+                  );
                 },
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _onSelectMethodInput() {
+    BmiHeightInputDialog.show(
+      context,
+      onConfirmed: (height) {
+        Navigator.pushNamed(
+          context,
+          NavigatorName.bmiInputPage,
+          arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
+        );
+      },
     );
   }
 
@@ -309,10 +299,11 @@ class _StatisticalDataViewButton extends StatelessWidget {
       onTap: () {
         _bmiBloc.fetchHistoricalWeight();
 
-        Navigator.push(context,
-            MaterialPageRoute(builder: (_) => BlocProvider.value(
-              value: _bmiBloc,
-              child: BmiStatisticalDataPage())));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                    value: _bmiBloc, child: BmiStatisticalDataPage())));
       },
       child: Stack(
         alignment: Alignment.topRight,

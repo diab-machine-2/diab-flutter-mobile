@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
@@ -18,7 +19,7 @@ class BmiOnboardingCurrentWeightWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "hkhjjk",
+            R.string.muc_tieu_can_nang.tr(),
             style: R.style.largeTextStyle,
           ),
           const SizedBox(

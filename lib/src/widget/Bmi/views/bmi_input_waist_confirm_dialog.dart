@@ -1,15 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
-import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/bmi/views/add_bmi/add_bmi_page.dart';
-import 'package:medical/src/widget/bmi/views/bmi_overview.dart/bmi_overview_page.dart';
-import 'package:medical/src/widget/bmi/widget/bmi_height_picker.dart';
+import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/widgets/button/outlined_rounded_button.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
-import 'package:medical/src/widgets/button/secondary_rounded_button.dart';
 
 class BmiInputWaistConfirmDialog {
   static Future show(BuildContext context, {void Function()? onConfirmed}) {
@@ -57,20 +53,21 @@ class _BmiInputWaistConfirmDialogView extends StatelessWidget {
               Icon(
                 Icons.info_rounded,
                 size: 64,
+                color: AppColors.neutral5,
               ),
               const SizedBox(
                 height: 24,
               ),
               Text(
-                "iopppp",
+                R.string.notInputWaistWarning.tr(),
                 style: R.style.alertTitle,
               ),
               const SizedBox(
                 height: 12,
               ),
               Text(
-                "iopppp",
-                style: R.style.normalTextStyle,
+                R.string.notInputWaistWarningDes.tr(),
+                style: R.style.normalTextStyle.neutral4,
               ),
               const SizedBox(
                 height: 24,
@@ -90,7 +87,7 @@ class _BmiInputWaistConfirmDialogView extends StatelessWidget {
                   ),
                   Expanded(
                     child: PrimaryRoundedButton(
-                      title: "uiouoa",
+                      title: R.string.inputRightNow.tr(),
                       onPressed: () {
                         Navigator.pop(context);
                         onConfirmed?.call();

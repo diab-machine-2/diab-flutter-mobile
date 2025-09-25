@@ -29,7 +29,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "ioiopaf",
+                  R.string.averageBmi.tr(),
                   style: R.style.alertTitle,
                 ),
                 const SizedBox(

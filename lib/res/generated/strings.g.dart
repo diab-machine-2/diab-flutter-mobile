@@ -1381,4 +1381,15 @@ class Strings {
   String get use_all_advanced_features => 'use_all_advanced_features';
   String get advanced_features => 'advanced_features';
   String get retry => 'retry';
+  String get day => 'day';
+  String get bmiInRangeQuestion => 'bmi_in_range_question';
+  String get inputHeightWarning => 'input_height_warning';
+  String get connectToHealthConnect => 'connect_to_health_connect';
+  String get inputWeight => 'input_weight';
+  String get notInputWaistWarning => 'not_input_waist_warning';
+  String get notInputWaistWarningDes => 'not_input_waist_warning_des';
+  String get inputRightNow => 'input_right_now';
+  String get averageBmi => 'average_bmi';
+  String get chieuCao => 'chieu_cao';
+
 }

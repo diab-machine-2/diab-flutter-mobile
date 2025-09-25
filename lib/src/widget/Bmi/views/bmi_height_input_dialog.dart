@@ -61,7 +61,7 @@ class _BmiHeightInputDialogViewState extends State<_BmiHeightInputDialogView> {
                 height: 12,
               ),
               Text(
-                "iopppp",
+                R.string.inputHeightWarning.tr(),
                 style: R.style.normalTextStyle,
               ),
               SizedBox(

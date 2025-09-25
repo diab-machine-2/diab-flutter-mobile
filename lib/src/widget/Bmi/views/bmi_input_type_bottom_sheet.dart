@@ -5,21 +5,28 @@ import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/app_media_query.dart';
-import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/bmi/views/add_bmi/add_bmi_page.dart';
-import 'package:medical/src/widget/bmi/views/bmi_height_input_dialog.dart';
 
 class BmiInputTypeBottomSheet {
-  static Future show(BuildContext context) {
+  static Future show(
+    BuildContext context, {
+    Function()? onSelected,
+  }) {
     return showModalBottomSheet(
         context: context,
-        builder: (context) => const _BmiInputTypeBottomSheetView(),
+        builder: (context) => _BmiInputTypeBottomSheetView(
+              onMethodSelected: onSelected,
+            ),
         backgroundColor: Colors.transparent);
   }
 }
 
 class _BmiInputTypeBottomSheetView extends StatelessWidget {
-  const _BmiInputTypeBottomSheetView({super.key});
+  const _BmiInputTypeBottomSheetView({
+    super.key,
+    this.onMethodSelected,
+  });
+
+  final Function()? onMethodSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +68,7 @@ class _BmiInputTypeBottomSheetView extends StatelessWidget {
           ),
           _BmiInputOptionItem(
             name: R.string.connect_from_Health_Connect.tr(),
-            description: "jkjasdklj ajkal skjkd askjk sskksjs smsms sk",
+            description: R.string.enter_healt_connect_details.tr(),
             image: R.drawable.logo_healthConnect,
           ),
           const SizedBox(
@@ -72,16 +79,18 @@ class _BmiInputTypeBottomSheetView extends StatelessWidget {
             description: "jkjasdklj ajkal skjkd askjk sskksjs smsms sk",
             image: R.drawable.im_glucose_input_manual,
             onTap: () {
-              BmiHeightInputDialog.show(
-                context,
-                onConfirmed: (height) {
-                  Navigator.pushNamed(
-                    context,
-                    NavigatorName.bmiInputPage,
-                    arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
-                  );
-                },
-              );
+              Navigator.pop(context);
+              onMethodSelected?.call();
+              // BmiHeightInputDialog.show(
+              //   context,
+              //   onConfirmed: (height) {
+              //     Navigator.pushNamed(
+              //       context,
+              //       NavigatorName.bmiInputPage,
+              //       arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
+              //     );
+              //   },
+              // );
               // .then((value) => Navigator.pop(context));
             },
           ),

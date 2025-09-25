@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
@@ -82,7 +83,7 @@ class BmiRecordCard extends StatelessWidget {
               ),
               Text.rich(
                 TextSpan(
-                  text: "Vong eo ",
+                  text: "${R.string.waist.tr()} ",
                   style: R.style.largeTextStyle.neutral3,
                   children: [
                     TextSpan(
