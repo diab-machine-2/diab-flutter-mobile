@@ -75,9 +75,7 @@ class FirebaseRemoteSetting {
           jsonEncode(_glucoseFaqs.map((faq) => faq.toJson()).toList()),
       "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ??
           "cao-huyet-ap,tieu-duong,suy-than-man,suc-khoe-tim-mach,benh-khac",
-      "VNPAY_INTEGRATED_INFO":
-          '{"vnp_TmnCode":"FVV111XA","vnp_HashSecret":"68KYR85BQOR10B3W58WTBQ8BZ1FAL4EB","vnp_Url":"https://sandbox.vnpayment.vn/paymentv2/vpcpay.html","vnp_Api":"https://sandbox.vnpayment.vn/merchant_webapi/api/transaction","vnp_ReturnUrl":"https://demo.ladipage.diab.vn/success"}',
-      // "VNPAY_INTEGRATED_INFO": localSetting["VNPAY_INTEGRATED_INFO"] ?? '',
+      "VNPAY_INTEGRATED_INFO": localSetting["VNPAY_INTEGRATED_INFO"] ?? '',
       "SUBSCRIPTION_PACKAGE_INFO": localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? ''
     });
     // Config timeout for remoteConfig
@@ -122,9 +120,7 @@ class FirebaseRemoteSetting {
               .toList();
     }
     _specialtyOrder = remoteConfig.getString('SPECIALTIES_ORDER');
-    _vnpayIntegratedInfo =
-        '{"vnp_TmnCode":"FVV111XA","vnp_HashSecret":"68KYR85BQOR10B3W58WTBQ8BZ1FAL4EB","vnp_Url":"https://sandbox.vnpayment.vn/paymentv2/vpcpay.html","vnp_Api":"https://sandbox.vnpayment.vn/merchant_webapi/api/transaction","vnp_ReturnUrl":"https://demo.ladipage.diab.vn/success"}';
-    // _vnpayIntegratedInfo = remoteConfig.getString('VNPAY_INTEGRATED_INFO');
+    _vnpayIntegratedInfo = remoteConfig.getString('VNPAY_INTEGRATED_INFO');
     _subscriptionPackageInfo = remoteConfig.getString('SUBSCRIPTION_PACKAGE_INFO');
   }
 }

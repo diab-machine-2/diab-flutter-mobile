@@ -391,7 +391,7 @@ class _BookingCLinicSelectServicePageState
                   ))
           .toList();
       _cubit.updateCreateDsmesBookingRequestServiceList(
-        paymentType: 'local_banking',
+        // paymentType: 'local_banking',
         selectedServices: serviceItems,
       );
 
