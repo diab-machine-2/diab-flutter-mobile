@@ -79,6 +79,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
   List<TrendModel> _previousTrends = [];
 
   int? _selectedDateTimestamp; // lưu timestamp của dot được chọn
+  String? _selectedId; // id của dot được chọn để phân biệt khi trùng timestamp
 
   bool _isChartReady = false;
 
@@ -138,39 +139,42 @@ class BloodSugarChartState extends State<BloodSugarChart>
     if (trends.isEmpty) {
       _focusIndex = -1;
       _selectedDateTimestamp = null;
+      _selectedId = null;
       _previousTrends = [];
       return;
     }
 
-    int? matchedIndex;
-    // Check for new data by comparing timestamps
-    final newData =
-        trends.where((item) => !oldTimestamps.contains(item.date)).toList();
+    int? matchedIndex = -1;
 
-    if (newData.isNotEmpty) {
-      // If new data exists, select the most recent new data point based on timestamp
-      final latestNewData = newData.reduce((a, b) => a.date! > b.date! ? a : b);
-      matchedIndex =
-          trends.indexWhere((item) => item.date == latestNewData.date);
-      _selectedDateTimestamp = latestNewData.date;
-    } else if (_selectedDateTimestamp != null) {
-      // If no new data but a previous selection exists, try to maintain it
-      matchedIndex =
-          trends.indexWhere((item) => item.date == _selectedDateTimestamp);
-      if (matchedIndex == -1) {
-        // If previous selection is not found, select the latest data point
-        matchedIndex = trends.length - 1;
-        _selectedDateTimestamp = trends.last.date;
+    // 1) Prefer keeping the exact same id if it still exists in new data
+    if (_selectedId != null) {
+      matchedIndex = trends.indexWhere((item) => item.id == _selectedId);
+    }
+
+    // 2) If id not found, try to keep the same timestamp (choose closest to previous focus if duplicates)
+    if ((matchedIndex == null || matchedIndex == -1) &&
+        _selectedDateTimestamp != null) {
+      final duplicateIndexes = <int>[];
+      for (int i = 0; i < trends.length; i++) {
+        if (trends[i].date == _selectedDateTimestamp) duplicateIndexes.add(i);
       }
-    } else {
-      // No new data and no previous selection, default to the latest data point
+      if (duplicateIndexes.isNotEmpty) {
+        matchedIndex = duplicateIndexes.reduce((a, b) =>
+            (a - _focusIndex).abs() <= (b - _focusIndex).abs() ? a : b);
+      }
+    }
+
+    // 3) If no previous selection could be preserved, prefer the latest data point
+    if (matchedIndex == null || matchedIndex == -1) {
       matchedIndex = trends.length - 1;
-      _selectedDateTimestamp = trends.last.date;
     }
 
     _focusIndex = matchedIndex;
-    _previousTrends =
-        List.from(trends); // Update previous trends for next comparison
+    _selectedDateTimestamp = trends[_focusIndex].date;
+    _selectedId = trends[_focusIndex].id;
+
+    // Update previous trends for next comparison
+    _previousTrends = List.from(trends);
     if (mounted) {
       setState(() {
         _shouldAutoScroll = true;
@@ -283,7 +287,21 @@ class BloodSugarChartState extends State<BloodSugarChart>
               }
             },
             child: DecoratedBox(
-              decoration: BoxDecoration(color: R.color.backgroundColorNew),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    R.color.white,
+                    R.color.white.withAlpha(0),
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  stops: const [0.6, 1.0],
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -402,7 +420,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
     if (_focusIndex != -1 && _focusIndex < trends.length) {
       final selectedTrend = trends[_focusIndex];
-      selectedDate = DateFormat('dd-MM').format(
+      selectedDate = DateFormat('dd/MM').format(
           DateTime.fromMillisecondsSinceEpoch(selectedTrend.date! * 1000,
               isUtc: true));
       selectedDateTime = DateFormat('HH:mm').format(
@@ -595,6 +613,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
       setState(() {
         _focusIndex = min(length - 1, _focusIndex + 1);
         _selectedDateTimestamp = trends[_focusIndex].date;
+        _selectedId = trends[_focusIndex].id;
         _shouldAutoScroll = true;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -608,6 +627,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
       setState(() {
         _focusIndex = max(0, _focusIndex - 1);
         _selectedDateTimestamp = trends[_focusIndex].date;
+        _selectedId = trends[_focusIndex].id;
         _shouldAutoScroll = true;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -949,6 +969,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
             setState(() {
               _focusIndex = touchIndex;
               _selectedDateTimestamp = trends[_focusIndex].date;
+              _selectedId = trends[_focusIndex].id;
               _shouldAutoScroll = true; // Cho phép scroll đúng dot sau khi tap
             });
             WidgetsBinding.instance.addPostFrameCallback((_) {
