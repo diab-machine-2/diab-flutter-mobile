@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/base/text_field_custom.dart';
 
 class PhoneValidationHelper {
   static const String phonePattern = r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
@@ -30,7 +32,8 @@ class PhoneValidationHelper {
         phoneNumber.isEmpty ||
         !phoneNumber.startsWith('+84') ||
         !isValidPhoneNumber(phoneNumber)) {
-      phoneNumber = await PhoneValidationHelper.showDialogUpdatePhone(context);
+      phoneNumber =
+          await PhoneValidationHelper.showBottomSheetUpdatePhone(context);
     }
 
     return phoneNumber;
@@ -40,7 +43,7 @@ class PhoneValidationHelper {
     var phoneNumber = AppSettings.userInfo?.phoneNumber;
 
     // Check if phone number is empty or invalid
-    if (phoneNumber  == null ||
+    if (phoneNumber == null ||
         phoneNumber.isEmpty ||
         !phoneNumber.startsWith('+84') ||
         !isValidPhoneNumber(phoneNumber)) {
@@ -186,6 +189,128 @@ class PhoneValidationHelper {
           ],
         ),
       ),
+    );
+
+    return result ?? '';
+  }
+
+  // New bottom sheet UI for updating phone number
+  static Future<String> showBottomSheetUpdatePhone(BuildContext context) async {
+    String phone = '';
+
+    String? result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(builder: (ctx, setState) {
+          final String input = phone.trim();
+          final bool hasText = input.isNotEmpty;
+          final bool isDigits = RegExp(r'^\d{1,}$').hasMatch(input);
+          final bool isValid =
+              hasText && isDigits && (input.length == 9 || input.length == 10);
+
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              top: 12,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      R.string.update_phone_number.tr(),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w700),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.of(ctx).pop(''),
+                      child: Icon(Icons.close, color: R.color.color0xff5E6566),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      R.drawable.ic_phone_illustration,
+                      width: 120,
+                      height: 120,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                TextFieldCustom(
+                  title: R.string.so_dien_thoai.tr(),
+                  placeholder: R.string.nhap_so_dien_thoai.tr(),
+                  autoFocus: true,
+                  maxLength: 10,
+                  onChanged: (value) {
+                    // Only digits allowed in this flow
+                    phone = value;
+                    setState(() {});
+                  },
+                ),
+                const SizedBox(height: 60),
+                GestureDetector(
+                  onTap: isValid
+                      ? () {
+                          final String current = phone.trim();
+                          if (current.isEmpty) {
+                            Message.showToastMessage(context,
+                                R.string.ban_chua_nhap_so_dien_thoai.tr());
+                            return;
+                          }
+                          // Format to international +84
+                          final formatted = Utils.formatPhoneNumber(current);
+                          Navigator.of(ctx).pop(formatted);
+                        }
+                      : null,
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(200),
+                      gradient: isValid
+                          ? LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                R.color.greenGradientTop,
+                                R.color.greenGradientBottom,
+                              ],
+                            )
+                          : null,
+                      color: isValid ? null : const Color(0xFFEAEDEE),
+                    ),
+                    child: Center(
+                      child: Text(
+                        R.string.confirm.tr(),
+                        style: TextStyle(
+                          color:
+                              isValid ? R.color.white : R.color.color0xff777E90,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          );
+        });
+      },
     );
 
     return result ?? '';

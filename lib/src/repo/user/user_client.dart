@@ -209,7 +209,7 @@ class UserClient extends FetchClient {
       DateTime diabetesDate =
           DateTime.fromMillisecondsSinceEpoch(user.diabetes!.date! * 1000);
 
-      TrackingManager.setUserId(user.id!);
+      TrackingManager.setUserId(user.accountId!);
       TrackingManager.setUserProperty(name: 'gender', value: user.gender ?? '');
       TrackingManager.setUserProperty(
           name: 'referral_name',
