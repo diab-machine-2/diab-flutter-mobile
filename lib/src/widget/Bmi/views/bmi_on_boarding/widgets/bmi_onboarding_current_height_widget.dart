@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 
 class BmiOnboardingCurrentHeightWidget extends StatelessWidget {
   const BmiOnboardingCurrentHeightWidget({
@@ -30,10 +32,11 @@ class BmiOnboardingCurrentHeightWidget extends StatelessWidget {
             children: [
               Text("00",
                   style: R.style.largeTextStyle.copyWith(
-                    color: R.color.mainColor,
-                    fontWeight: FontWeight.w700
-                  )),
-              Icon(Icons.edit_square)
+                      color: R.color.mainColor, fontWeight: FontWeight.w700)),
+              Icon(
+                Icons.edit_rounded,
+                color: AppColors.neutral4,
+              )
             ],
           ),
         ],

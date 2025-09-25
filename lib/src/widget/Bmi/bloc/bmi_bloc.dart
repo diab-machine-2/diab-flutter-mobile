@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:medical/res/colors.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
@@ -10,6 +13,7 @@ import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/service/resource.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/bmi/enum.dart';
@@ -66,6 +70,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   String get aiAnalysicTrend => _aiAnalysicTrend;
   String get aiAnalysicIndex => _aiAnalysicIndex;
 
+  double get weightGoal => AppSettings.weightGoal;
+
   // set periodType(BmiDateFilterType type) {
   //   if (type == _periodType) return;
   //   _periodType = type;
@@ -75,6 +81,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
       _weightStatistical != null ||
       _bmiStatistical != null ||
       _bmiWaistStatistical != null;
+
+  
 
   void _onGetInstruction(
     BmiInstructionFetchingEvent event,

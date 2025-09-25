@@ -132,7 +132,7 @@ class _ConnectToHealthConnectButton extends StatelessWidget {
     return Container(
       decoration: R.decorationStyle.mediumRadiusCardStyles,
       padding: const EdgeInsets.symmetric(
-        vertical: 12,
+        vertical: 8,
         horizontal: 12,
       ),
       child: Row(
@@ -144,7 +144,11 @@ class _ConnectToHealthConnectButton extends StatelessWidget {
           const SizedBox(
             width: 12,
           ),
-          Expanded(child: Text("ket noi vs health connect")),
+          Expanded(
+              child: Text(
+            R.string.connectToHealthConnect.tr(),
+            style: R.style.largeTextStyle,
+          )),
           Icon(
             Icons.arrow_forward_ios_rounded,
             color: AppColors.neutral4,

@@ -16,7 +16,8 @@ class BmiInputTypeBottomSheet {
         builder: (context) => _BmiInputTypeBottomSheetView(
               onMethodSelected: onSelected,
             ),
-        backgroundColor: Colors.transparent);
+        backgroundColor: Colors.transparent,
+        useRootNavigator: true);
   }
 }
 
@@ -81,17 +82,6 @@ class _BmiInputTypeBottomSheetView extends StatelessWidget {
             onTap: () {
               Navigator.pop(context);
               onMethodSelected?.call();
-              // BmiHeightInputDialog.show(
-              //   context,
-              //   onConfirmed: (height) {
-              //     Navigator.pushNamed(
-              //       context,
-              //       NavigatorName.bmiInputPage,
-              //       arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
-              //     );
-              //   },
-              // );
-              // .then((value) => Navigator.pop(context));
             },
           ),
         ],

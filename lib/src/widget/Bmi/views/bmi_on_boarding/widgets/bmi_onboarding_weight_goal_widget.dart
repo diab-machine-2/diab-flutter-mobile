@@ -1,14 +1,19 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
+import 'package:medical/src/widget/bmi/bloc/bmi_bloc.dart';
 
-class BmiOnboardingCurrentWeightWidget extends StatelessWidget {
-  const BmiOnboardingCurrentWeightWidget({
+class BmiOnboardingWeightGoalWidget extends StatelessWidget {
+  const BmiOnboardingWeightGoalWidget({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    BmiBloc _bmiBloc = context.read();
+
     return Container(
       decoration: R.decorationStyle.mediumRadiusCardStyles,
       padding: const EdgeInsets.symmetric(
@@ -28,12 +33,13 @@ class BmiOnboardingCurrentWeightWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("hkhjjk",
+              Text("${_bmiBloc.weightGoal} kg",
                   style: R.style.largeTextStyle.copyWith(
-                    color: R.color.mainColor,
-                    fontWeight: FontWeight.w700
-                  )),
-              Icon(Icons.edit_square)
+                      color: R.color.mainColor, fontWeight: FontWeight.w700)),
+              Icon(
+                Icons.edit_rounded,
+                color: AppColors.neutral4,
+              )
             ],
           ),
         ],

@@ -254,7 +254,7 @@ class Const {
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
   static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
 
-  static const bmiThreshold = [
+  static const bmiThreshold = <double>[
     18.5,
     23,
     25,

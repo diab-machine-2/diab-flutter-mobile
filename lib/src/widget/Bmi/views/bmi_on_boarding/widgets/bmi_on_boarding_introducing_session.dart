@@ -7,6 +7,8 @@ import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
+import 'package:medical/src/widget/bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/bmi/views/bmi_input_type_bottom_sheet.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
@@ -84,6 +86,22 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
   void _onInputBmiTapped(BuildContext context) async {
     // bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
 
-    BmiInputTypeBottomSheet.show(context);
+    BmiInputTypeBottomSheet.show(
+      context,
+      onSelected: () => _onSelectMethodInput(context),
+    );
+  }
+
+  void _onSelectMethodInput(BuildContext context) {
+    BmiHeightInputDialog.show(
+      context,
+      onConfirmed: (height) {
+        Navigator.pushNamed(
+          context,
+          NavigatorName.bmiInputPage,
+          arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
+        );
+      },
+    );
   }
 }

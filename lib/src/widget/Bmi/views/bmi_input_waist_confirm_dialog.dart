@@ -67,7 +67,8 @@ class _BmiInputWaistConfirmDialogView extends StatelessWidget {
               ),
               Text(
                 R.string.notInputWaistWarningDes.tr(),
-                style: R.style.normalTextStyle.neutral4,
+                style: R.style.normalTextStyle.neutral3,
+                textAlign: TextAlign.center,
               ),
               const SizedBox(
                 height: 24,
@@ -79,6 +80,7 @@ class _BmiInputWaistConfirmDialogView extends StatelessWidget {
                       title: R.string.skip.tr(),
                       onPressed: () {
                         Navigator.pop(context);
+                        onConfirmed?.call();
                       },
                     ),
                   ),
@@ -90,7 +92,6 @@ class _BmiInputWaistConfirmDialogView extends StatelessWidget {
                       title: R.string.inputRightNow.tr(),
                       onPressed: () {
                         Navigator.pop(context);
-                        onConfirmed?.call();
                       },
                     ),
                   ),

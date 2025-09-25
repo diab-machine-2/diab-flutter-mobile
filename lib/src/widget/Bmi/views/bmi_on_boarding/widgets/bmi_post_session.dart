@@ -54,7 +54,7 @@ class _BmiPostSessionState extends State<BmiPostSession> {
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Text(
                     R.string.glucose_intro_help_title.tr(),
-                    style: R.style.alertTitle,
+                    style: R.style.boldXLargeStyle,
                   ),
                 ),
                 const SizedBox(

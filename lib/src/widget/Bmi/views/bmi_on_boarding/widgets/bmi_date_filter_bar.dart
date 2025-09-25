@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
@@ -19,10 +20,10 @@ class _BmiDateFilterBarState extends State<BmiDateFilterBar>
   final List<Widget> _tabs = BmiDateFilterType.values
       .map((e) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text(
-              "${e.days} ${R.string.day}",
-              style: R.style.normalTextStyle,
-            ),
+            child: Text("${e.days} ${R.string.day.tr()}",
+                style: TextStyle(
+                  fontSize: 14,
+                )),
           ))
       .toList();
 
@@ -51,10 +52,7 @@ class _BmiDateFilterBarState extends State<BmiDateFilterBar>
           color: R.color.mainColor,
         ),
         tabs: _tabs,
-        labelStyle: R.style.largeTextStyle.copyWith(
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
+        labelStyle: R.style.boldLargeStyle.copyWith(color: Colors.white),
         unselectedLabelStyle:
             R.style.largeTextStyle.copyWith(color: AppColors.neutral3),
         onTap: (value) =>

@@ -8,6 +8,7 @@ import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/bmi/views/bmi_input_type_bottom_sheet.dart';
@@ -17,7 +18,7 @@ import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boar
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_introducing_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_onboarding_avarage_bmi_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_onboarding_current_height_widget.dart';
-import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_onboarding_current_weight_widget.dart';
+import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_onboarding_weight_goal_widget.dart';
 import 'package:medical/src/widget/bmi/views/bmi_on_boarding/widgets/bmi_post_session.dart';
 import 'package:medical/src/widget/bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -105,84 +106,53 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.glucose_bg_color,
-      resizeToAvoidBottomInset: true,
-      appBar: const BmiOnBoardingAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            if (!_bmiBloc.hasStatisticalData) ...[
-              const SizedBox(height: 24),
-              const BmiOnBoardingIntroducingSession(),
-              const SizedBox(height: 12),
-              const BmiInstructionSession(),
-              const SizedBox(height: 12),
-            ] else ...[
-              const BmiOnBoardingChartSession(),
-              const SizedBox(height: 12),
-              const BmiOnboardingAvarageBmiSession(),
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  children: [
-                    const Expanded(child: BmiOnboardingCurrentHeightWidget()),
-                    const SizedBox(
-                      width: 12,
+    return BlocBuilder<BmiBloc, BmiState>(
+        buildWhen: (_, state) => state is BmiGetWaistStatisticalState,
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: R.color.glucose_bg_color,
+            resizeToAvoidBottomInset: true,
+            appBar: const BmiOnBoardingAppBar(),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (!_bmiBloc.hasStatisticalData) ...[
+                    const SizedBox(height: 24),
+                    const BmiOnBoardingIntroducingSession(),
+                    const SizedBox(height: 12),
+                    const BmiInstructionSession(),
+                    const SizedBox(height: 12),
+                  ] else ...[
+                    const BmiOnBoardingChartSession(),
+                    const SizedBox(height: 12),
+                    const BmiOnboardingAvarageBmiSession(),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                              child: BmiOnboardingCurrentHeightWidget()),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          const Expanded(
+                              child: BmiOnboardingWeightGoalWidget()),
+                        ],
+                      ),
                     ),
-                    const Expanded(child: BmiOnboardingCurrentWeightWidget()),
+                    const SizedBox(height: 12),
                   ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-            // _buildPinnedLessonsSection()
-            const BmiPostSession(),
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 16,
-        ),
-        color: Colors.white,
-        child: Row(
-          children: [
-            _StatisticalDataViewButton(),
-            const SizedBox(
-              width: 12,
-            ),
-            Expanded(
-              child: PrimaryRoundedButton(
-                title: R.string.enter_weight.tr(),
-                onPressed: () {
-                  BmiInputTypeBottomSheet.show(
-                    context,
-                    onSelected: _onSelectMethodInput,
-                  );
-                },
+                  // _buildPinnedLessonsSection()
+                  const BmiPostSession(),
+                  const SizedBox(height: 24),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _onSelectMethodInput() {
-    BmiHeightInputDialog.show(
-      context,
-      onConfirmed: (height) {
-        Navigator.pushNamed(
-          context,
-          NavigatorName.bmiInputPage,
-          arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
-        );
-      },
-    );
+            bottomNavigationBar:
+                _bmiBloc.hasStatisticalData ? const _BottomBar() : null,
+          );
+        });
   }
 
   Widget _buildPinnedLessonsSection() {
@@ -282,6 +252,55 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 16,
+      ),
+      color: Colors.white,
+      child: Row(
+        children: [
+          _StatisticalDataViewButton(),
+          const SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: PrimaryRoundedButton(
+              title: R.string.enter_weight.tr(),
+              onPressed: () {
+                BmiInputTypeBottomSheet.show(
+                  context,
+                  onSelected: () => _onSelectMethodInput(context),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onSelectMethodInput(BuildContext context) {
+    BmiHeightInputDialog.show(
+      context,
+      onConfirmed: (height) {
+        Navigator.pushNamed(
+          context,
+          NavigatorName.bmiInputPage,
+          arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
+        );
+      },
     );
   }
 }
