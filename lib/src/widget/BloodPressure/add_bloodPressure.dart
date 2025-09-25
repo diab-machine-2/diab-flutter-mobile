@@ -1831,7 +1831,7 @@ class _AddBloodPressureControllerState
   _openCamera(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 512,
           maxHeight: 512,
           source: ImageSource.camera,
@@ -1849,7 +1849,7 @@ class _AddBloodPressureControllerState
   _openGallery(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
         files.add(pickedFile);

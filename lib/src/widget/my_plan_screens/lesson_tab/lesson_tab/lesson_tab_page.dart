@@ -286,6 +286,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                     .lessonsList![index]!.name,
                                               );
 
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Navigating to LessonDetailPage for id='+(_cubit.lessonsList![index]!.id ?? '')+' name='+(_cubit.lessonsList![index]!.name ?? ''));
                                               var result = await NavigationUtil
                                                   .navigatePage(
                                                 context,
@@ -306,6 +307,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                   },
                                                 ),
                                               );
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Returned from LessonDetailPage with result=' + (result?.toString() ?? 'null'));
                                               // if (result == 0) {
                                               // _controller.requestRefresh();
                                               // }
@@ -818,12 +820,12 @@ class _LessonTabPageState extends State<LessonTabPage>
                     ),
                     GapH(12),
                     _benefitRow(
-                        'Kho tàng kiến thức bệnh lý, dinh dưỡng, vận động, tâm lý đa dạng',
-                        'Kho tàng kiến thức'),
-                    _benefitRow('Lộ trình sống khỏe cận nhân hóa',
-                        'Lộ trình sống khỏe'),
-                    _benefitRow('Sử dụng toàn bộ tính năng cao cấp',
-                        'tính năng cao cấp'),
+                      R.string.pathology_nutrition_exercise_psychology_knowledge_diverse.tr(),
+                      R.string.pathology_nutrition_knowledge.tr()),
+                    _benefitRow(R.string.personalized_healthy_lifestyle_roadmap.tr(),
+                      R.string.healthy_lifestyle_roadmap.tr()),
+                    _benefitRow(R.string.use_all_advanced_features.tr(),
+                      R.string.advanced_features.tr()),
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
@@ -860,7 +862,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                             child: Text(
                               R.string.tim_hieu_them.tr(),
                               style: TextStyle(
-                                color: R.color.white,
+                                color: R.color.white, 
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
                               ),

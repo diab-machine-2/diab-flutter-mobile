@@ -1,10 +1,12 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,7 +16,8 @@ class AIHelpButton extends StatelessWidget {
 
   final BloodSugarRangeType? rangeType;
 
-  void _actionByRangeType(BloodSugarRangeType rangeType, BuildContext context) async {
+  void _actionByRangeType(
+      BloodSugarRangeType rangeType, BuildContext context) async {
     if (rangeType == BloodSugarRangeType.very_high) {
       const url = Const.ZALO_OA_TECHNICAL_SUPPORT_LINK;
       final uri = Uri.parse(url);
@@ -25,7 +28,7 @@ class AIHelpButton extends StatelessWidget {
       }
     } else if (rangeType == BloodSugarRangeType.very_low) {
       // TODO: Replace to definition instead
-      Navigator.of(context).pushNamed('/dsmes_booking');
+      Navigator.of(context).pushNamed(NavigatorName.dsmes_booking);
     } else {
       // Random a lesson, then navigate to lesson detail
       final glucoseClient = GlucoseClient();
@@ -34,12 +37,12 @@ class AIHelpButton extends StatelessWidget {
         final lesson = await glucoseClient.fetchGlucoseUpcommingLesson();
         if (lesson != null) {
           await NavigationUtil.navigatePage(
-            context,
-            LessonDetailPage(
-              lessonType: lesson.type,
-              lessonId: lesson.id,
-              onComplete: (_, __) {},
-            ));
+              context,
+              LessonDetailPage(
+                lessonType: lesson.type,
+                lessonId: lesson.id,
+                onComplete: (_, __) {},
+              ));
           // _cubit.refreshData(isRefresh: true);
           Observable.instance
               .notifyObservers([], notifyName: "refresh_lesson_tab");
@@ -57,14 +60,17 @@ class AIHelpButton extends StatelessWidget {
   Widget build(BuildContext context) {
     if (rangeType != null)
       return ElevatedButton(
-        onPressed: () => _actionByRangeType(rangeType!, context),
+        // onPressed: () => _actionByRangeType(rangeType!, context),
+        onPressed: () => Observable.instance
+            .notifyObservers([], notifyName: Const.NAVIGATE_TO_CHAT_TAB),
         child: Center(
           child: Text(
-            rangeType == BloodSugarRangeType.very_high
-                ? 'Chuyên gia hỗ trợ'
-                : rangeType == BloodSugarRangeType.very_low
-                    ? 'Tư vấn chuyên gia'
-                    : 'Bí quyết ổn định đường huyết',
+            // rangeType == BloodSugarRangeType.very_high
+            //     ? 'Chuyên gia hỗ trợ'
+            //     : rangeType == BloodSugarRangeType.very_low
+            //         ? 'Tư vấn chuyên gia'
+            //         : 'Bí quyết ổn định đường huyết',
+            R.string.chat_with_AI.tr(),
             style: TextStyle(
               color: R.color.mainColor,
               fontSize: 13,

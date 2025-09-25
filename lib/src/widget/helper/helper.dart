@@ -26,15 +26,14 @@ String convertToTicketDate(int timeStamp, String format) {
 String convertToSectionTicketDate(int timeStamp, String format) {
   final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
   // String languageCode = Localizations.localeOf(context).languageCode;
-  String formattedDate =
-      DateFormat('dd/MM/yyyy $format', 'vi_VN').format(date);
+  String formattedDate = DateFormat('dd/MM/yyyy $format', 'vi_VN').format(date);
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final yesterday = today.subtract(Duration(days: 1));
   final aDate = DateTime(date.year, date.month, date.day);
   if (aDate == today) {
     return 'Hôm nay';
-  }  else if (aDate == yesterday) {
+  } else if (aDate == yesterday) {
     return 'Hôm qua';
   } else {
     return formattedDate;
@@ -66,7 +65,7 @@ String convertCustomDate(int timeStamp) {
   if (date.year == now.year && date.month == now.month && date.day == now.day) {
     return R.string.today.tr();
   } else {
-    return '${date.day} tháng ${date.month} năm ${date.year}';
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 }
 

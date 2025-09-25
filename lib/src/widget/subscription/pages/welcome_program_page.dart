@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -43,10 +43,7 @@ class _WelcomeProgramPageState extends State<WelcomeProgramPage> {
         'cta_button_name': R.string.back_home_page.tr(),
       },
     );
-    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-      NavigatorName.tabbar,
-      (route) => false, // This removes all routes from stack
-    );
+    Observable.instance.notifyObservers([], notifyName: 'subscription_back_to_home');
   }
 
   void _learnMoreAboutProgram() async {

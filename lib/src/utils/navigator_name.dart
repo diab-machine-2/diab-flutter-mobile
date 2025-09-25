@@ -133,4 +133,7 @@ class NavigatorName {
   static const String blood_pressure_intro_2nd_page = '/blood_pressure_intro_2nd_page';
   static const String add_bloodpressure_result = '/add_bloodpressure_result';
   static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
+  // New Blood Sugar
+  static const String confirm_blood_sugar = '/confirm_blood_sugar';
+  static const String blood_sugar_image_capture = '/blood_sugar_image_capture';
 }

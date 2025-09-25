@@ -378,7 +378,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     children: [
                       Expanded(
                         child: Text(
-                          exerciseItem!.name ?? '',
+                          exerciseItem?.name ?? '',
                           style: TextStyle(
                             color: R.color.textDark,
                             fontSize: 16,
@@ -388,7 +388,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '${exerciseItem.practiceTime ?? ''} ${R.string.minute.tr()}',
+                        '${exerciseItem?.practiceTime ?? ''} ${R.string.minute.tr()}',
                         style: TextStyle(
                             color: R.color.grey_2,
                             fontSize: 12,
@@ -398,10 +398,10 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   ),
                   const SizedBox(height: 8),
                   Visibility(
-                    visible: exerciseItem.exerciseMovementStates !=
-                            Const.LESSON_LOCKED &&
-                        exerciseItem.exerciseMovementStates !=
-                            Const.LESSON_CAN_NOT_LEARN,
+                    visible: (exerciseItem?.exerciseMovementStates !=
+                            Const.LESSON_LOCKED) &&
+                        (exerciseItem?.exerciseMovementStates !=
+                            Const.LESSON_CAN_NOT_LEARN),
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
                       child: Row(
@@ -424,27 +424,12 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                               //   _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
                             },
                           ),
-                          // _buildCustomIconButton(
-                          //   title: R.string.show_instruction.tr(),
-                          //   icon: R.drawable.ic_play,
-                          //   borderColor: R.color.greenGradientBottom,
-                          //   backgroundColor: R.color.white,
-                          //   textColor: R.color.greenGradientBottom,
-                          //   onTap: () {
-                          //     NavigationUtil.navigatePage(
-                          //       context,
-                          //       VideoPlayerWidget(
-                          //         videoUrl: exerciseItem.videoUrl ?? '',
-                          //       ),
-                          //     );
-                          //   },
-                          // ),
                         ],
                       ),
                     ),
                   ),
                   LessonStatusWidget(
-                    learningStatus: exerciseItem.exerciseMovementStates,
+                    learningStatus: exerciseItem?.exerciseMovementStates,
                   ),
                 ],
               ),
