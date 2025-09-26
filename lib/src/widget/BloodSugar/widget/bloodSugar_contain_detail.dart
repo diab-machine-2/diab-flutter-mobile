@@ -42,14 +42,16 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
   @override
   void initState() {
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ??
+            widget.periodFilterType;
     super.initState();
   }
 
   void reloadData(int periodFilter) async {
     periodFilterType = periodFilter;
     BlocProvider.of<GlucoseBloc>(currentContext).add(FetchGlucoseDistribution(
-        currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        currentDateTime:
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         periodFilterType: periodFilterType.toString(),
         page: periodFilterType.toString()));
   }
@@ -70,7 +72,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
 
           if (state is GlucoseInitial) {
             BlocProvider.of<GlucoseBloc>(context).add(FetchGlucoseDistribution(
-                currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+                currentDateTime:
+                    (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
                 periodFilterType: periodFilterType.toString(),
                 page: '1'));
           }
@@ -113,17 +116,10 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                           onTap: _doViewMore,
                           child: Padding(
                             padding: const EdgeInsets.only(top: 3.0),
-                            child: SizedBox(
-                              width: 80,
-                              height: 28,
-                              child: Text(
-                                R.string.show_more.tr(),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: R.color.mainColor,
-                                ),
-                              ),
+                            child: Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: R.color.mainColor,
+                              size: 20,
                             ),
                           ),
                         ),
@@ -131,7 +127,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 24),
 
                   model.totalCount == 0
                       ? EmptyDataBox(
@@ -142,8 +138,9 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                             //   "screen_name": 'kpi_glycemic',
                             //   'cta_button_name': 'cta_add_glycemic_0',
                             // });
-                            if (AppSettings.isUS) {
-                              Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+                            if (!AppSettings.isRegionAllowInputDevice) {
+                              Navigator.pushNamed(
+                                  context, NavigatorName.add_blood_sugar_new,
                                   arguments: {'type': 'input'});
                             } else {
                               BloodSugarFunctions.showModalAddData(context);
@@ -152,7 +149,7 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                         )
                       : _buildChart(model),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
                   Divider(
                     color: R.color.gray_btn,
                     thickness: 1,
@@ -190,15 +187,18 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
-                                  model.highest == 0 ? '--' : roundNumber(model.highest!),
+                                  model.highest == 0
+                                      ? '--'
+                                      : roundNumber(model.highest!),
                                   style: TextStyle(
                                     fontSize: 20,
                                     height: 24 / 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: model.highest == 0
-                                        ? R.color.textDark
-                                        : Color(int.parse(
-                                            '0xff${model.highestColor!.split('#').join()}')),
+                                    fontWeight: FontWeight.w700,
+                                    color: R.color.color0xff111515,
+                                    // model.highest == 0
+                                    //     ? R.color.color0xff111515
+                                    //     : Color(int.parse(
+                                    //         '0xff${model.highestColor!.split('#').join()}')),
                                   ),
                                 ),
                               ],
@@ -229,15 +229,18 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
-                                  model.average == 0 ? '--' : roundNumber(model.average!),
+                                  model.average == 0
+                                      ? '--'
+                                      : roundNumber(model.average!),
                                   style: TextStyle(
                                     fontSize: 20,
                                     height: 24 / 20,
                                     fontWeight: FontWeight.bold,
-                                    color: model.average == 0
-                                        ? R.color.textDark
-                                        : Color(int.parse(
-                                            '0xff${model.averageColor!.split('#').join()}')),
+                                    color: R.color.color0xff111515,
+                                    // model.average == 0
+                                    //     ? R.color.textDark
+                                    //     : Color(int.parse(
+                                    //         '0xff${model.averageColor!.split('#').join()}')),
                                   ),
                                 ),
                               ],
@@ -268,15 +271,18 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
-                                  model.lowest == 0 ? '--' : roundNumber(model.lowest!),
+                                  model.lowest == 0
+                                      ? '--'
+                                      : roundNumber(model.lowest!),
                                   style: TextStyle(
                                     fontSize: 20,
                                     height: 24 / 20,
                                     fontWeight: FontWeight.bold,
-                                    color: model.lowest == 0
-                                        ? R.color.textDark
-                                        : Color(int.parse(
-                                            '0xff${model.lowestColor!.split('#').join()}')),
+                                    color: R.color.color0xff111515,
+                                    // model.lowest == 0
+                                    //     ? R.color.textDark
+                                    //     : Color(int.parse(
+                                    //         '0xff${model.lowestColor!.split('#').join()}')),
                                   ),
                                 ),
                               ],
@@ -303,7 +309,65 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
         model.lowCount! +
         model.veryLowCount!;
 
-    const double radius = 80;
+    const double radius = 60;
+
+    List<MapEntry<BloodSugarRangeType, Map<String, dynamic>>> chartSections =
+        [];
+
+    if (model.veryHighCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.very_high, {
+        'color': toColor(model.veryHighColor),
+        'value': model.veryHighCount! / total * 100,
+        'count': model.veryHighCount!,
+      }));
+    }
+
+    if (model.highCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.high, {
+        'color': toColor(model.highColor),
+        'value': model.highCount! / total * 100,
+        'count': model.highCount!,
+      }));
+    }
+
+    if (model.goodCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.normal, {
+        'color': toColor(model.goodColor),
+        'value': model.goodCount! / total * 100,
+        'count': model.goodCount!,
+      }));
+    }
+
+    if (model.lowCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.low, {
+        'color': toColor(model.lowColor),
+        'value': model.lowCount! / total * 100,
+        'count': model.lowCount!,
+      }));
+    }
+
+    if (model.veryLowCount! > 0) {
+      chartSections.add(MapEntry(BloodSugarRangeType.very_low, {
+        'color': toColor(model.veryLowColor),
+        'value': model.veryLowCount! / total * 100,
+        'count': model.veryLowCount!,
+      }));
+    }
+
+    // Calculate rounded percentages, with the last section getting the remainder
+    int sumOfRounded = 0;
+    for (int i = 0; i < chartSections.length; i++) {
+      if (i == chartSections.length - 1) {
+        // Last section gets the remainder to ensure total = 100%
+        int remainingPercentage = 100 - sumOfRounded;
+        chartSections[i].value['percentage'] = '$remainingPercentage%';
+      } else {
+        int roundedPercentage =
+            (chartSections[i].value['value'] as double).round();
+        chartSections[i].value['percentage'] = '$roundedPercentage%';
+        sumOfRounded += roundedPercentage;
+      }
+    }
 
     return Container(
       padding: EdgeInsets.only(left: 8, right: 8),
@@ -323,43 +387,41 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                     startDegreeOffset: 270,
                     borderData: FlBorderData(show: false),
                     sectionsSpace: 2,
-                    centerSpaceRadius: double.infinity,
-                    centerSpaceColor: Colors.transparent,
+                    centerSpaceRadius: 30,
+                    centerSpaceColor: Colors.white,
                     pieTouchData: PieTouchData(
                       touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                        print(pieTouchResponse);
-                      },
-                    ),
-                    sections: List.generate(
-                      5,
-                      (i) {
-                        const bool showTitle = false;
-                        late final double value;
-                        late final Color color;
-                        if (i == 0) {
-                          color = toColor(model.veryHighColor);
-                          value = model.veryHighCount! / total * 100;
-                        } else if (i == 1) {
-                          color = toColor(model.highColor);
-                          value = model.highCount! / total * 100;
-                        } else if (i == 2) {
-                          color = toColor(model.goodColor);
-                          value = model.goodCount! / total * 100;
-                        } else if (i == 3) {
-                          color = toColor(model.lowColor);
-                          value = model.lowCount! / total * 100;
-                        } else {
-                          color = toColor(model.lowestColor);
-                          value = model.veryLowCount! / total * 100;
+                        if (pieTouchResponse != null &&
+                            pieTouchResponse.touchedSection != null) {
+                          final sectionIndex = pieTouchResponse
+                              .touchedSection!.touchedSectionIndex;
+
+                          // Use the chartSections list to get the correct range type
+                          if (sectionIndex >= 0 &&
+                              sectionIndex < chartSections.length) {
+                            final rangeType = chartSections[sectionIndex].key;
+                            print('Touched section: $rangeType');
+
+                            // TODO: Call the onViewDetail callback with the selected range type
+                            widget.onViewDetail(rangeType);
+                          }
                         }
-                        return PieChartSectionData(
-                          color: color,
-                          value: value,
-                          showTitle: showTitle,
-                          radius: radius,
-                        );
                       },
                     ),
+                    sections: chartSections.map((entry) {
+                      final data = entry.value;
+                      return PieChartSectionData(
+                        color: data['color'],
+                        value: data['value'],
+                        title: data['value'] > 5 ? data['percentage'] : '',
+                        titleStyle: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                        radius: radius,
+                      );
+                    }).toList(),
                   ),
                 ),
               ),
@@ -378,7 +440,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: CircleIndicator(
                     color: toColor(model.veryHighColor),
-                    number: (model.veryHighCount! / total * 100).round().toString(),
+                    number:
+                        (model.veryHighCount! / total * 100).round().toString(),
                     text: R.string.very_high.tr(),
                   ),
                 ),
@@ -426,7 +489,8 @@ class BloodSugarDetailState extends State<BloodSugarDetail>
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: CircleIndicator(
                     color: toColor(model.veryLowColor),
-                    number: (model.veryLowCount! / total * 100).round().toString(),
+                    number:
+                        (model.veryLowCount! / total * 100).round().toString(),
                     text: R.string.very_low.tr(),
                   ),
                 ),

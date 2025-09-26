@@ -179,7 +179,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _fetchActivities() async* {
     // load today target
     final repository = AppRepository();
-    final currentDay = DateUtil.getCurrentDayInMillis();
+    final dateTime0 = DateTime.utc(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0);
+    final currentDay = DateUtil.getDayInMillis(dateTime0);
     final apiResult =
         await repository.getListSmartGoal(day: currentDay, week: _currentWeek);
     HomeLoaded currentState = state as HomeLoaded;
@@ -348,7 +350,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     yield currentState.copyWith(lessons: lessonsResponse);
   }
 
-
   Future<void> shareLesson(String lessonId, BuildContext context) async {
     try {
       BotToast.showLoading();
@@ -497,8 +498,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeMeasurementIndex(
         title: R.string.van_dong.tr(),
         icon: R.drawable.ic_home_measurement_exercise,
-        navigatorName: NavigatorName.add_exercrises,
-        args: {'type': 'input'},
+        navigatorName: NavigatorName.exercrise_onboarding,
+        // args: {'type': 'input'},
       ),
       HomeMeasurementIndex(
         title: R.string.dinh_duong.tr(),
@@ -661,8 +662,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2Color: null,
       unit: model?.exercise?.unit ?? "kcal",
       navigatorName: haveExercise
-          ? NavigatorName.detail_exercrises
-          : NavigatorName.add_exercrises,
+          ? NavigatorName.exercrise_dashboard
+          : NavigatorName.exercrise_onboarding,
       args: haveExercise ? null : {'type': 'input'},
     );
 

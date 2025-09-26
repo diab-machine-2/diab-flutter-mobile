@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:medical/src/widgets/toggle_buttons.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,8 +44,18 @@ class AddBloodSugarControllerNew extends StatefulWidget {
   final String? type;
   final String? id;
   final String? goalId;
+  final String? prefilledValue;
+  final String? prefilledUnit;
+  final List<String>? selectedImages;
 
-  AddBloodSugarControllerNew({this.type, this.id, this.goalId});
+  AddBloodSugarControllerNew({
+    this.type,
+    this.id,
+    this.goalId,
+    this.prefilledValue,
+    this.prefilledUnit,
+    this.selectedImages,
+  });
 
   @override
   _AddBloodSugarControllerNewState createState() =>
@@ -66,11 +78,11 @@ class _AddBloodSugarControllerNewState
   List<int> _rangeValue = [0, 60, 70, 95, 180];
   List<String> _rangeLabel = ['Rất thấp', "Thấp", 'Tốt', 'Cao', "Rất cao"];
   List<Color> _colorList = [
-    Color(0xFFF48222),
-    Color(0xFFF9B816),
-    Color(0xFF02635A),
-    Color(0xFFFE0201),
-    Color(0xFFB3020C),
+    Color(0xFFFF9841),
+    Color(0xFFFFCD57),
+    Color(0xFF23C559),
+    Color(0xFFF86F6F),
+    Color(0xFFD02424),
   ];
   double? number = 0;
   InputGlucoseModel? model;
@@ -118,10 +130,63 @@ class _AddBloodSugarControllerNewState
     } else {
       await _loadConfig();
     }
-    isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
+
+    // Handle pre-filled unit first to determine if it's mg/dL
+    bool isPrefilledMgDl = false;
+    if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
+      isPrefilledMgDl = widget.prefilledUnit!.toLowerCase().contains('mg') ||
+          widget.prefilledUnit!.toLowerCase().contains('mg/dl');
+    }
+
+    // Handle pre-filled data from image analysis
+    if (widget.prefilledValue != null && widget.prefilledValue!.isNotEmpty) {
+      // Parse the pre-filled value
+      double parsedValue = double.tryParse(widget.prefilledValue!) ?? 0;
+      number = parsedValue;
+
+      // For mg/dL values, remove decimal part if it's a whole number
+      if (isPrefilledMgDl && parsedValue == parsedValue.roundToDouble()) {
+        _controller.text = parsedValue.round().toString();
+      } else {
+        _controller.text = widget.prefilledValue!;
+      }
+  }
+
+    if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
+      // Set unit based on prefilled unit
+      isMgPerDl = isPrefilledMgDl;
+
+      // Check if the AI analysis unit is different from current default
+      bool currentUnitIsMg = AppSettings.userInfo!.glucoseUnit == 1;
+      bool aiUnitIsMg = isMgPerDl;
+
+      if (currentUnitIsMg != aiUnitIsMg) {
+        // Update the user's default unit to match the AI analysis
+        await _changeUnit(newUnit: widget.prefilledUnit!);
+        // Refresh glucose range after unit change
+        if (selectedTimeFrame != null) {
+          await _getGlucoseRange(selectedTimeFrame!);
+        }
+      }
+    } else {
+      isMgPerDl = AppSettings.userInfo!.glucoseUnit == 1;
+    }
+
     _lastUnitIndex = isMgPerDl ? 0 : 1;
+
+    // Handle selected images from camera/gallery
+    if (widget.selectedImages != null && widget.selectedImages!.isNotEmpty) {
+      files = widget.selectedImages!.map((path) => File(path)).toList();
+    }
+
     if (mounted) {
       setState(() {});
+
+      // Update SectionAddNote with the files after setState
+      if (_sectionAddNoteKey.currentState != null && files.isNotEmpty) {
+        _sectionAddNoteKey.currentState
+            ?.updateFilesAndNote(files, _controllerNote.text);
+      }
     }
     List<int> valueOfClickTime = await AppSettings.getValueOfClickShortGuide();
     clickTime = valueOfClickTime[ScreenList.BLOOD_SUGAR.index];
@@ -325,6 +390,7 @@ class _AddBloodSugarControllerNewState
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(children: [
+                    GapH(16),
                     _inforSection(context),
                     Container(
                       margin: const EdgeInsets.only(
@@ -347,7 +413,8 @@ class _AddBloodSugarControllerNewState
                       ),
                     ),
                     _selectImageSection(),
-                    if (!AppSettings.isUS) _connectMachine(context),
+                    if (AppSettings.isRegionAllowInputDevice)
+                      _connectMachine(context),
                     const SizedBox(height: 16),
                   ]),
                 ),
@@ -357,8 +424,6 @@ class _AddBloodSugarControllerNewState
                       width: double.infinity,
                       padding: EdgeInsets.only(
                         top: 16,
-                        left: 16,
-                        right: 16,
                         bottom: MediaQuery.of(context).padding.bottom / 2,
                       ),
                       child: SpacingColumn(
@@ -395,56 +460,86 @@ class _AddBloodSugarControllerNewState
                                 ),
                               ),
                             ),
-                          GestureDetector(
-                            onTap: () async {
-                              int indexRange =
-                                  findIndexInRanges(number, _rangeValue);
-                              if (isChangeStatus) {
-                                LevelOffDiabetesRulePicker.showModal(context,
-                                    onSuccess: () {
-                                  if (indexRange == 4 || indexRange == 0) {
-                                    _showDialogWarning(
-                                        onConfirm: () => _submitData(),
-                                        range: indexRange);
-                                  } else {
-                                    _submitData();
-                                  }
-                                });
-                              } else {
-                                if (indexRange == 4 || indexRange == 0) {
-                                  _showDialogWarning(
-                                      onConfirm: () => _submitData(),
-                                      range: indexRange);
-                                } else {
-                                  _submitData();
-                                }
-                              }
-                            },
-                            child: Container(
-                              height: 48,
-                              width: 195,
-                              decoration: BoxDecoration(
-                                color: R.color.mainColor,
-                                borderRadius: BorderRadius.circular(200),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    R.color.greenGradientTop,
-                                    R.color.greenGradientBottom
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  R.string.confirm.tr(),
-                                  style: TextStyle(
-                                    color: R.color.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
+                          Container(
+                            padding: EdgeInsets.only(
+                              bottom:
+                                  8 + MediaQuery.of(context).padding.bottom / 2,
+                              left: 12,
+                              right: 12,
+                              top: 8,
+                            ),
+                            color: Colors.white,
+                            child: Row(
+                              children: [
+                                if (_shouldShowTakePhotoButton()) ...[
+                                  _buildTakePhotoButton(),
+                                  GapW(16),
+                                ],
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      if (number != null && number == 0) {
+                                        Message.showToastMessage(
+                                            context,
+                                            R.string.mes_blood_sugar_empty
+                                                .tr());
+                                        return;
+                                      }
+                                      int indexRange = findIndexInRanges(
+                                          number, _rangeValue);
+                                      if (isChangeStatus) {
+                                        LevelOffDiabetesRulePicker.showModal(
+                                            context, onSuccess: () {
+                                          if (indexRange == 4 ||
+                                              indexRange == 0) {
+                                            _showDialogWarning(
+                                                onConfirm: () => _submitData(),
+                                                range: indexRange);
+                                          } else {
+                                            _submitData();
+                                          }
+                                        });
+                                      } else {
+                                        if (indexRange == 4 ||
+                                            indexRange == 0) {
+                                          _showDialogWarning(
+                                              onConfirm: () => _submitData(),
+                                              range: indexRange);
+                                        } else {
+                                          _submitData();
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      height: 48,
+                                      width: 195,
+                                      decoration: BoxDecoration(
+                                        color: R.color.mainColor,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
+                                          ],
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          R.string.confirm.tr(),
+                                          style: TextStyle(
+                                            color: R.color.white,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ],
@@ -465,20 +560,28 @@ class _AddBloodSugarControllerNewState
                                       height: 48,
                                       width: 164,
                                       decoration: BoxDecoration(
+                                          color: R.color.color0xffFFE9E9,
                                           borderRadius:
                                               BorderRadius.circular(200),
                                           border: Border.all(
-                                              color: R.color.red, width: 2)),
+                                              color: R.color.attentionText,
+                                              width: 2)),
                                       child: Center(
                                         child: Text(R.string.xoa_du_lieu.tr(),
                                             style: TextStyle(
-                                                color: R.color.red,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
+                                                color: R.color.color0xff830000,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w700)),
                                       )),
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    // Prevent editing blood glucose index to 0 when type is 'update'
+                                    if (number != null && number == 0) {
+                                      Message.showToastMessage(context,
+                                          R.string.mes_blood_sugar_empty.tr());
+                                      return;
+                                    }
                                     int indexRange =
                                         findIndexInRanges(number, _rangeValue);
                                     if (indexRange == 4 || indexRange == 0) {
@@ -508,15 +611,35 @@ class _AddBloodSugarControllerNewState
                                       child: Text(R.string.save.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700)),
                                     ),
                                   ),
                                 ),
                               ])),
                     ),
-              SizedBox(height: 8),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTakePhotoButton() {
+    return InkWell(
+      onTap: () => _takePhoto(context),
+      child: Container(
+        width: 60,
+        height: 48,
+        decoration: BoxDecoration(
+          color: Color(0xffDCFFFC),
+          borderRadius: BorderRadius.circular(32),
+        ),
+        child: Center(
+          child: Image.asset(
+            R.drawable.ic_camera_green,
+            width: 20,
+            height: 20,
           ),
         ),
       ),
@@ -550,7 +673,14 @@ class _AddBloodSugarControllerNewState
     final data = _sectionAddNoteKey.currentState?.getNote();
     if (data != null) {
       files.clear();
-      files.addAll(data.files);
+      // Convert all files to a consistent format
+      for (var file in data.files) {
+        if (file is XFile) {
+          files.add(File(file.path)); // Convert XFile to File
+        } else {
+          files.add(file); // Keep File as is
+        }
+      }
       removeIDs.clear();
       removeIDs.addAll(data.removeIDs);
     }
@@ -610,7 +740,14 @@ class _AddBloodSugarControllerNewState
     final data = _sectionAddNoteKey.currentState?.getNote();
     if (data != null) {
       files.clear();
-      files.addAll(data.files);
+      // Convert all files to a consistent format
+      for (var file in data.files) {
+        if (file is XFile) {
+          files.add(File(file.path)); // Convert XFile to File
+        } else {
+          files.add(file); // Keep File as is
+        }
+      }
       removeIDs.clear();
       removeIDs.addAll(data.removeIDs);
     }
@@ -653,11 +790,15 @@ class _AddBloodSugarControllerNewState
           'kpi_glucose_add',
           params: {
             'index_time': selectedTimeFrame?.name,
-            'method': fromNipro ? 'device' : 'manual',
+            'method': fromNipro
+                ? 'device'
+                : (_hasCameraCapturedData() ? 'camera' : 'manual'),
           },
         );
-        await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
-            1, ScheduleType.blood_sugar.typeIndex);
+        if (widget.goalId != null && widget.goalId?.isNotEmpty == true) {
+          await HomeClient().completeSmartGoal(selectedDate,
+              widget.goalId ?? '', 1, ScheduleType.blood_sugar.typeIndex);
+        }
         _navigateAfterSuccess(result!.id, result.images);
       }
 
@@ -672,16 +813,27 @@ class _AddBloodSugarControllerNewState
     }
   }
 
-  Future<void> _changeUnit() async {
+  Future<void> _changeUnit({String? newUnit}) async {
     try {
       BotToast.showLoading();
       ScheduleGlucoseTimeModel timeModel =
           await UserClient().fetchScheduleGlucoseSetting();
+
+      // Determine the new unit value
+      int newGlucoseUnit;
+      if (newUnit != null) {
+        // Use the provided unit from AI analysis
+        newGlucoseUnit = newUnit.toLowerCase().contains('mg') ? 1 : 2;
+      } else {
+        // Toggle between current units (manual change)
+        newGlucoseUnit = timeModel.glucoseUnit == 1 ? 2 : 1;
+      }
+
       await UserClient().updateScheduleGlucoseSetting(ScheduleGlucoseTimeModel(
           beforeEat: timeModel.beforeEat,
           afterEat: timeModel.afterEat,
           beforeSleeping: timeModel.beforeSleeping,
-          glucoseUnit: timeModel.glucoseUnit == 1 ? 2 : 1));
+          glucoseUnit: newGlucoseUnit));
       await UserClient().fetchUser();
       Observable.instance
           .notifyObservers([], notifyName: "setup_schedule_change");
@@ -703,6 +855,8 @@ class _AddBloodSugarControllerNewState
       builder: (context) {
         return Container(
           child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16.0))),
               contentPadding: EdgeInsets.all(0),
               content: Stack(children: [
                 Container(
@@ -710,67 +864,51 @@ class _AddBloodSugarControllerNewState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
+                        padding: const EdgeInsets.only(top: 32.0),
+                        child: Text(
+                          R.string.ban_muon_xoa_du_lieu.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: R.color.color0xff111515,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(R.string.confirm_to_remove_data.tr(),
-                            textAlign: TextAlign.center,
-                            style: R.style.normalTextStyle),
+                        child: Text(
+                          R.string.confirm_to_remove_data.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: R.color.color0xff5E6566,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400),
+                        ),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),
                         child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Container(
-                                      height: 43,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(200),
-                                          color: R.color.grayBorder),
-                                      child: Center(
-                                        child: Text(R.string.back.tr(),
-                                            style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      )),
-                                ),
-                              ),
-                              SizedBox(width: 14),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    deleteData();
-                                  },
-                                  child: Container(
-                                    height: 43,
-                                    decoration: BoxDecoration(
-                                      color: R.color.red,
-                                      borderRadius: BorderRadius.circular(200),
-                                    ),
-                                    child: Center(
-                                      child: Text(R.string.delete.tr(),
-                                          style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
-                                    ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  deleteData();
+                                },
+                                child: Container(
+                                  height: 43,
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: R.color.attentionText,
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
+                                  child: Center(
+                                    child: Text(R.string.confirm.tr(),
+                                        style: TextStyle(
+                                            color: R.color.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700)),
                                   ),
                                 ),
                               ),
@@ -1040,42 +1178,37 @@ class _AddBloodSugarControllerNewState
 
   Widget _appBarSection() {
     return CustomAppBar(
-      backgroundColor: R.color.transparent,
+      backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
       title: Text(
           widget.type == 'update'
               ? R.string.update_blood_sugar.tr()
               : R.string.enter_blood_sugar.tr(),
           style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: R.color.textDark)),
+              fontSize: 18, fontWeight: FontWeight.w700, color: R.color.white)),
       leadingIcon: IconButton(
           splashColor: R.color.transparent,
           highlightColor: R.color.transparent,
-          icon: Icon(Icons.arrow_back, color: R.color.textDark),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
           onPressed: () {
             _showDialogSave();
           }),
       actions: [
-        GestureDetector(
-          onTap: () {
-            _doGuide();
-            // if (clickTime >= 2) {
-            //   await showGuide(context);
-            // } else {
-            //   setState(() {
-            //     isClicked = !isClicked;
-            //     clickTime = clickTime + 1;
-            //   });
-            // }
-          },
+        Center(
           child: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
-            child: isClicked
-                ? Image.asset(R.drawable.ic_help_circle_active,
-                    width: 24, height: 24)
-                : Image.asset(R.drawable.ic_help_outlined,
-                    width: 24, height: 24),
+            padding: const EdgeInsets.only(right: 8.0),
+            child: InkWell(
+              onTap: () {
+                _doGuide();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(color: R.color.white, fontSize: 15),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -1114,7 +1247,7 @@ class _AddBloodSugarControllerNewState
               focusNode: _focusNodeKPI,
               controller: _controller,
               maxLength: isMgPerDl ? 5 : 4,
-              autofocus: true,
+              autofocus: widget.type != 'update',
               textAlign: TextAlign.center,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               style: TextStyle(
@@ -1173,6 +1306,11 @@ class _AddBloodSugarControllerNewState
                   _lastUnitIndex = index;
                   _changedUnit = true;
                   await _changeUnit();
+                  
+                  // Refresh glucose range after unit change
+                  if (selectedTimeFrame != null) {
+                    await _getGlucoseRange(selectedTimeFrame!);
+                  }
 
                   final glucose = roundAsFixed(
                       AppSettings.userInfo!.glucoseUnit == 1
@@ -1269,7 +1407,7 @@ class _AddBloodSugarControllerNewState
 
   Widget _connectMachine(BuildContext context) {
     final action = () async {
-      Navigator.pushReplacement(
+      Navigator.push(
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => RocheConnectionView()));
@@ -1282,6 +1420,9 @@ class _AddBloodSugarControllerNewState
         decoration: BoxDecoration(
           color: R.color.white,
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            Utils.getBoxShadowDropCard(),
+          ],
         ),
         height: 64,
         child: Row(
@@ -1292,10 +1433,10 @@ class _AddBloodSugarControllerNewState
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Kết nối máy đo đường huyết',
+                R.string.glucose_connect_device_title.tr(),
                 style: TextStyle(
                   fontSize: 15,
-                  color: R.color.dark,
+                  color: R.color.color0xff111515,
                 ),
               ),
             ),
@@ -1319,7 +1460,7 @@ class _AddBloodSugarControllerNewState
         children: [
           // TODO: Enhance this
           // magic number follow sum on design or edit 1by1 :D
-          SizedBox(height: max(height - 750 - (files.length > 0 ? 76 : 0), 12)),
+          SizedBox(height: max(height - 800 - (files.length > 0 ? 72 : 0), 8)),
           Container(
             width: 235,
             height: 20,
@@ -1349,6 +1490,31 @@ class _AddBloodSugarControllerNewState
     );
   }
 
+  bool _shouldShowTakePhotoButton() {
+    // Don't show take photo button if data came from camera capture
+    return !_hasCameraCapturedData();
+  }
+
+  bool _hasCameraCapturedData() {
+    // Check if data came from camera capture (has prefilled data from AI analysis)
+    return (widget.prefilledValue != null &&
+            widget.prefilledValue!.isNotEmpty) ||
+        (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) ||
+        (widget.selectedImages != null && widget.selectedImages!.isNotEmpty);
+  }
+
+  void _takePhoto(BuildContext context) async {
+    await TrackingManager.trackEvent(
+      'glucose_select_method',
+      'kpi_glucose',
+      params: {
+        'method': 'camera',
+      },
+    );
+    // Navigate to blood glucose image capture
+    Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture);
+  }
+
   Widget _selectImageSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1358,8 +1524,25 @@ class _AddBloodSugarControllerNewState
         maxMedia: 5,
         key: _sectionAddNoteKey,
         initialFiles: files,
+        // If images come from camera capture flow, mark them as non-removable (camera icon)
+        initialFilesFromCamera: _hasCameraCapturedData(),
+        noteTitle: R.string.ghi_chu.tr(),
+        subText: _shouldShowSubText()
+            ? R.string.result_from_blood_glucose_device.tr()
+            : null,
+        showCameraIcons:
+            widget.type != 'update', // Hide camera icons for update flow
       ),
     );
+  }
+
+  bool _shouldShowSubText() {
+    // For update mode: show subText if byDevice is true and there are images
+    if (widget.type == 'update') {
+      return fromNipro && files.isNotEmpty;
+    }
+    // For new mode: show subText if there are camera-captured images
+    return files.any((file) => file is File);
   }
 
   int findIndexInRanges(double? number, List<int> ranges) {

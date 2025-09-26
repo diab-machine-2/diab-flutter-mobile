@@ -122,13 +122,13 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to scan QR codes</string>
+	<string>Vui lòng cho phép DiaB truy cập camera của bạn</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>We will sync your data with the Apple Health app to give you better insights</string>
+	<string>Chúng tôi sẽ đồng bộ hóa dữ liệu của bạn với ứng dụng Apple Health để cung cấp cho bạn những thông tin chi tiết tốt hơn</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>We will sync your data with the Apple Health app to give you better insights</string>
+	<string>Chúng tôi sẽ đồng bộ hóa dữ liệu của bạn với ứng dụng Apple Health để cung cấp cho bạn những thông tin chi tiết tốt hơn</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app requires the access to Microphone to record your voice memo.</string>
+	<string>Vui lòng cho phép DiaB truy cập microphone của bạn.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

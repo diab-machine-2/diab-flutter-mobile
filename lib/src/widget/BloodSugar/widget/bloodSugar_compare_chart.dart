@@ -37,7 +37,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   @override
   void initState() {
     periodFilterType =
-        BloodSugarDetailTabbarController.of(context)?.periodFilterType ?? widget.periodFilterType;
+        BloodSugarDetailTabbarController.of(context)?.periodFilterType ??
+            widget.periodFilterType;
     super.initState();
   }
 
@@ -64,7 +65,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
 
         if (state is GlucoseInitial) {
           BlocProvider.of<GlucoseBloc>(context).add(FetchComparerGlucose(
-              currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+              currentDateTime:
+                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType: periodFilterType.toString(),
               page: 1,
               comparerType: comparerType.toString()));
@@ -111,13 +113,10 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                       onTap: () => _doViewDetail(model!),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          R.string.show_more.tr(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: R.color.mainColor,
-                          ),
+                        child: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: R.color.mainColor,
+                          size: 20,
                         ),
                       ),
                     ),
@@ -136,16 +135,20 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
     final width = (MediaQuery.of(context).size.width - 200) / 5;
 
     double minY = model
-        .map<double>((e) => (e.postGlucose! < e.preGlucose! ? e.postGlucose! : e.preGlucose!))
+        .map<double>((e) =>
+            (e.postGlucose! < e.preGlucose! ? e.postGlucose! : e.preGlucose!))
         .reduce(min);
     minY = (minY * (model.length == 1 ? 0.5 : 0.8)).roundToDouble();
     double maxY = model
-        .map<double>((e) => (e.postGlucose! > e.preGlucose! ? e.postGlucose! : e.preGlucose!))
+        .map<double>((e) =>
+            (e.postGlucose! > e.preGlucose! ? e.postGlucose! : e.preGlucose!))
         .reduce(max);
     maxY = (maxY * (model.length == 1 ? 1.5 : 1.2)).roundToDouble();
     final jumpValue = (maxY - minY) / 4;
     List<int> number =
-        List.generate(5, (index) => (jumpValue * index + minY).round()).reversed.toList();
+        List.generate(5, (index) => (jumpValue * index + minY).round())
+            .reversed
+            .toList();
 
     final double titleAlign = 20;
     final double titleMargin = 8;
@@ -165,7 +168,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(number.length, (index) {
-                      return Text(number[index].toString(), style: R.style.normalTextStyle);
+                      return Text(number[index].toString(),
+                          style: R.style.normalTextStyle);
                     })),
               ),
               Expanded(
@@ -176,24 +180,30 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                     children: [
                       Container(
                           height: 300,
-                          padding: EdgeInsets.only(bottom: titleAlign + titleMargin),
+                          padding:
+                              EdgeInsets.only(bottom: titleAlign + titleMargin),
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: List.generate(
                                   number.length,
                                   (index) => Padding(
-                                        padding: EdgeInsets.only(left: 8, top: 8, bottom: 8),
+                                        padding: EdgeInsets.only(
+                                            left: 8, top: 8, bottom: 8),
                                         child: Container(
                                           height: 1,
-                                          width:
-                                              ((model.length < 5 ? 5 : model.length) * (width + 20))
-                                                      .toDouble() -
-                                                  36,
+                                          width: ((model.length < 5
+                                                          ? 5
+                                                          : model.length) *
+                                                      (width + 20))
+                                                  .toDouble() -
+                                              36,
                                           color: R.color.grayComponentBorder,
                                         ),
                                       )))),
                       Container(
-                        width: ((model.length < 5 ? 5 : model.length) * (width + 20)).toDouble(),
+                        width: ((model.length < 5 ? 5 : model.length) *
+                                (width + 20))
+                            .toDouble(),
                         height: 300,
                         padding: EdgeInsets.only(top: 8, bottom: 8),
                         child: BarChart(
@@ -205,8 +215,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
                                 tooltipBgColor: R.color.yellow,
-                                tooltipPadding:
-                                    const EdgeInsets.only(left: 12, right: 12, top: 4, bottom: 0),
+                                tooltipPadding: const EdgeInsets.only(
+                                    left: 12, right: 12, top: 4, bottom: 0),
                                 tooltipMargin: 22,
                                 fitInsideVertically: true,
                                 fitInsideHorizontally: true,
@@ -219,14 +229,21 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                   return BarTooltipItem(
                                     group.barRods.first.y.round().toString() +
                                         '/' +
-                                        group.barRods.last.y.round().toString() +
-                                        (group.barRods.first.y <= group.barRods.last.y
+                                        group.barRods.last.y
+                                            .round()
+                                            .toString() +
+                                        (group.barRods.first.y <=
+                                                group.barRods.last.y
                                             ? '\n ↑' +
-                                                ((group.barRods.last.y - group.barRods.first.y)
+                                                ((group.barRods.last.y -
+                                                            group.barRods.first
+                                                                .y)
                                                         .round())
                                                     .toString()
                                             : '\n ↓' +
-                                                ((group.barRods.first.y - group.barRods.last.y)
+                                                ((group.barRods.first.y -
+                                                            group
+                                                                .barRods.last.y)
                                                         .round())
                                                     .toString()),
                                     TextStyle(
@@ -250,13 +267,14 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                 reservedSize: titleAlign,
                                 margin: titleMargin,
                                 getTitles: (double value) {
-                                  return convertToUTC(model[value.toInt()].date!, 'dd/MM');
+                                  return convertToUTC(
+                                      model[value.toInt()].date!, 'dd/MM');
                                 },
                               ),
                               leftTitles: SideTitles(
                                   showTitles: false,
-                                  getTextStyles: (context, value) =>
-                                      TextStyle(color: R.color.black, fontSize: 14)),
+                                  getTextStyles: (context, value) => TextStyle(
+                                      color: R.color.black, fontSize: 14)),
                             ),
                             gridData: FlGridData(show: false),
                             borderData: FlBorderData(show: false),
@@ -288,7 +306,9 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                   ),
                 ),
                 SizedBox(width: 8),
-                Text(comparerType == 1 ? R.string.truoc_an.tr() : R.string.truoc_tap_luyen.tr())
+                Text(comparerType == 1
+                    ? R.string.truoc_an.tr()
+                    : R.string.truoc_tap_luyen.tr())
               ]),
               Row(children: [
                 Container(
@@ -300,7 +320,9 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                   ),
                 ),
                 SizedBox(width: 8),
-                Text(comparerType == 1 ? R.string.sau_an.tr() : R.string.sau_tap_luyen.tr())
+                Text(comparerType == 1
+                    ? R.string.sau_an.tr()
+                    : R.string.sau_tap_luyen.tr())
               ])
             ],
           ),
@@ -324,7 +346,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
     );
   }
 
-  BarChartGroupData buildBarChartGroupData(List<ComparerModel> model, int index) {
+  BarChartGroupData buildBarChartGroupData(
+      List<ComparerModel> model, int index) {
     return BarChartGroupData(
       x: index,
       //showingTooltipIndicators: index == model.hbA1Cs.length - 1 ? [0] : [],
@@ -355,7 +378,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   void showDialog(BuildContext context) {
     //Navigator.pushNamed(context, NavigatorName.hba1c_tabble);
     Navigator.of(context).push(PageRouteBuilder(
-        opaque: false, pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
+        opaque: false,
+        pageBuilder: (BuildContext context, _, __) => HbA1CTable()));
   }
 
   // void showActionCompareFilter(BuildContext context) {
@@ -382,7 +406,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
   void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
     BlocProvider.of<GlucoseBloc>(currentContext).add(FetchComparerGlucose(
-        currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        currentDateTime:
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         periodFilterType: periodFilterType.toString(),
         page: 1,
         comparerType: comparerType.toString()));

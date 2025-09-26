@@ -26,6 +26,8 @@ import '../modal/user/secure.dart';
 class AppSettings {
   static UserModel? userInfo;
   static bool isGetUser = false;
+  static double targetDuration = 0.0;
+  static double targetBurnedCalorie = 0.0;
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
@@ -55,6 +57,9 @@ class AppSettings {
   static void setCountryCode(String code) {
     _countryCode = code;
   }
+
+  static bool get isRegionAllowInputDevice =>
+      Const.REGION_ALLOW_CONNECT_DEVICE.contains(countryCode);
 
   static bool _splashScreenInitDone = false;
   static bool get splashScreenInitDone => _splashScreenInitDone;
@@ -417,6 +422,21 @@ class AppSettings {
     appPreference.removeData("lastOpenedGlucoseInputType");
   }
 
+  // Store exercise input method
+  static Future<String?> getLastOpenedExerciseInputType() async {
+    String? lastOpenedExerciseInputType =
+        appPreference.getData("lastOpenedExerciseInputType");
+    return lastOpenedExerciseInputType;
+  }
+
+  static void setLastOpenedExerciseInputType(String inputType) {
+    appPreference.setData("lastOpenedExerciseInputType", inputType);
+  }
+
+  static void clearLastOpenedExerciseInputType() {
+    appPreference.removeData("lastOpenedExerciseInputType");
+  }
+
   static Future<void> saveZaloGroup(String? zaloGroup) async {
     if (zaloGroup != null && zaloGroup.isNotEmpty) {
       print('[ONBOARDING] saveZaloGroup: $zaloGroup');
@@ -474,6 +494,7 @@ class AppSettings {
       }
       userInfo = null;
       await FetchClient().checkNetwork();
+      await RevenueCatService.logout();
       await LoginClient().logout();
       await deleteHomeData();
       await clearToken();
@@ -493,7 +514,6 @@ class AppSettings {
       final facebookLogin = FacebookLogin();
       facebookLogin.logOut();
       await clearZaloGroup();
-      await RevenueCatService.logout();
       return true;
     } catch (_) {
       return false;

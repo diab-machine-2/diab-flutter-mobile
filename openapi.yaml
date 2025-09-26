@@ -1,0 +1,468 @@
+openapi: 3.0.0
+info:
+  title: Exercrises API
+  description: API để quản lý dữ liệu vận động.
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+    description: Server chính
+paths:
+  /App/Exercise/Index:
+    post:
+      summary: Submit exercise data
+      description: API để gửi dữ liệu vận động của người dùng.
+      tags:
+        - Exercise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: integer
+                  format: int64
+                  description: Ngày được chọn (timestamp tính bằng giây).
+                  example: 1697040000
+                intensity:
+                  type: string
+                  description: Mức độ vận động.
+                  enum: [low, medium, high]
+                  example: medium
+                note:
+                  type: string
+                  description: Ghi chú từ người dùng.
+                  example: "Chạy bộ buổi sáng"
+                categories:
+                  type: array
+                  description: Danh sách các ID danh mục vận động được chọn.
+                  items:
+                    type: string
+                    description: ID của danh mục.
+                    example: "category1"
+                files:
+                  type: array
+                  description: Danh sách file media đính kèm.
+                  items:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                        description: Tên file.
+                        example: "image1.jpg"
+                      fileUrl:
+                        type: string
+                        description: URL của file.
+                        example: "https://example.com/image1.jpg"
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Trạng thái thành công.
+                    example: true
+        '400':
+          description: Lỗi yêu cầu không hợp lệ
+        '500':
+          description: Lỗi máy chủ
+  /App/Exercise/Categories:
+    get:
+      summary: Fetch exercise categories
+      description: API để lấy danh sách các danh mục vận động.
+      tags:
+        - Exercise
+      parameters:
+        - name: page
+          in: query
+          description: Số trang để phân trang dữ liệu.
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: search
+          in: query
+          description: Từ khóa tìm kiếm danh mục.
+          required: false
+          schema:
+            type: string
+            example: "running"
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Trạng thái thành công.
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      exerciseCategories:
+                        type: array
+                        description: Danh sách các danh mục vận động.
+                        items:
+                          type: object
+                          properties:
+                            categoryId:
+                              type: string
+                              description: ID của danh mục.
+                              example: "category1"
+                            category:
+                              type: string
+                              description: Tên danh mục.
+                              example: "Chạy bộ"
+                            cover:
+                              type: object
+                              properties:
+                                url:
+                                  type: string
+                                  description: URL ảnh bìa.
+                                  example: "https://example.com/images/running.jpg"
+                      exerciseCategoryRegularlies:
+                        type: array
+                        description: Danh sách các danh mục vận động thường xuyên.
+                        items:
+                          type: object
+                          properties:
+                            categoryId:
+                              type: string
+                              description: ID của danh mục.
+                              example: "category3"
+                            category:
+                              type: string
+                              description: Tên danh mục.
+                              example: "Yoga"
+                            cover:
+                              type: object
+                              properties:
+                                url:
+                                  type: string
+                                  description: URL ảnh bìa.
+                                  example: "https://example.com/images/yoga.jpg"
+                      exerciseCategoryCommons:
+                        type: array
+                        description: Danh sách các danh mục vận động phổ biến.
+                        items:
+                          type: object
+                          properties:
+                            categoryId:
+                              type: string
+                              description: ID của danh mục.
+                              example: "category4"
+                            category:
+                              type: string
+                              description: Tên danh mục.
+                              example: "Bơi lội"
+                            cover:
+                              type: object
+                              properties:
+                                url:
+                                  type: string
+                                  description: URL ảnh bìa.
+                                  example: "https://example.com/images/swimming.jpg"
+        '400':
+          description: Lỗi yêu cầu không hợp lệ
+        '500':
+          description: Lỗi máy chủ
+  /App/Exercise/Results:
+    get:
+      summary: Fetch exercise results
+      description: API để lấy dữ liệu tổng hợp về kết quả vận động của người dùng.
+      tags:
+        - Exercise
+      parameters:
+        - name: date
+          in: query
+          description: Ngày cần lấy kết quả vận động (timestamp tính bằng giây).
+          required: false
+          schema:
+            type: integer
+            format: int64
+            example: 1697040000
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Trạng thái thành công.
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      summary:
+                        type: object
+                        description: Thông tin tổng hợp về kết quả vận động.
+                        properties:
+                          totalMinutes:
+                            type: integer
+                            description: Tổng số phút vận động mục tiêu.
+                            example: 45
+                          completedMinutes:
+                            type: integer
+                            description: Số phút vận động đã hoàn thành.
+                            example: 15
+                          totalCalories:
+                            type: integer
+                            description: Tổng lượng calo mục tiêu.
+                            example: 800
+                          burnedCalories:
+                            type: integer
+                            description: Lượng calo đã tiêu thụ.
+                            example: 100
+                      activities:
+                        type: array
+                        description: Danh sách các hoạt động đã thực hiện.
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: ID của hoạt động.
+                              example: "activity1"
+                            name:
+                              type: string
+                              description: Tên hoạt động.
+                              example: "Đi bộ"
+                            time:
+                              type: string
+                              description: Thời gian thực hiện hoạt động.
+                              example: "08:00"
+                            duration:
+                              type: integer
+                              description: Thời lượng hoạt động (phút).
+                              example: 15
+                            calories:
+                              type: integer
+                              description: Lượng calo tiêu thụ trong hoạt động.
+                              example: 100
+                            imageUrl:
+                              type: string
+                              description: URL ảnh minh họa cho hoạt động.
+                              example: "https://example.com/images/walking.jpg"
+                      suggestion:
+                        type: object
+                        description: Gợi ý từ hệ thống dựa trên kết quả vận động.
+                        properties:
+                          message:
+                            type: string
+                            description: Thông điệp gợi ý.
+                            example: "Thật tuyệt vời, bạn đã hoàn thành mục tiêu vận động của ngày hôm nay!"
+                          rangeType:
+                            type: string
+                            description: Loại phạm vi gợi ý.
+                            example: "very_high"
+        '400':
+          description: Lỗi yêu cầu không hợp lệ
+        '500':
+          description: Lỗi máy chủ
+  /App/Exercise/Analysis/HealthTrend:
+    get:
+      summary: Fetch exercise health trend analysis
+      description: API để lấy gợi ý từ AI dựa trên dữ liệu vận động của người dùng.
+      tags:
+        - Exercise
+      parameters:
+        - name: periodFilterType
+          in: query
+          description: Loại chu kỳ lọc dữ liệu vận động (ngày, tuần, tháng).
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: currentDateTime
+          in: query
+          description: Thời gian hiện tại (timestamp tính bằng giây).
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1697040000
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Trạng thái thành công.
+                    example: true
+                  data:
+                    type: string
+                    description: Gợi ý từ AI dựa trên dữ liệu vận động.
+                    example: "Bạn đã hoàn thành 70% mục tiêu vận động tuần này. Hãy cố gắng thêm 10 phút đi bộ mỗi ngày để đạt mục tiêu!"
+        '400':
+          description: Lỗi yêu cầu không hợp lệ
+        '500':
+          description: Lỗi máy chủ
+  /App/Exercise/Update:
+    put:
+      summary: Update exercise data
+      description: API để chỉnh sửa thông tin vận động của người dùng.
+      tags:
+        - Exercise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exerciseId:
+                  type: string
+                  description: ID của vận động cần chỉnh sửa.
+                  example: "exercise123"
+                date:
+                  type: integer
+                  format: int64
+                  description: Ngày vận động (timestamp tính bằng giây).
+                  example: 1697040000
+                duration:
+                  type: integer
+                  description: Thời gian vận động (phút).
+                  example: 30
+                intensity:
+                  type: string
+                  description: Cường độ vận động.
+                  enum: [low, medium, high]
+                  example: "medium"
+                categories:
+                  type: array
+                  description: Danh sách ID danh mục vận động.
+                  items:
+                    type: string
+                    example: "category1"
+                note:
+                  type: string
+                  description: Ghi chú.
+                  example: "Chạy bộ buổi sáng"
+                files:
+                  type: array
+                  description: Danh sách file media đính kèm.
+                  items:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                        description: Tên file.
+                        example: "image1.jpg"
+                      fileUrl:
+                        type: string
+                        description: URL file.
+                        example: "https://example.com/image1.jpg"
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Trạng thái thành công.
+                    example: true
+                  message:
+                    type: string
+                    description: Thông báo thành công.
+                    example: "Exercise updated successfully."
+        '400':
+          description: Lỗi yêu cầu không hợp lệ
+        '500':
+          description: Lỗi máy chủ
+  /App/Lesson/ExerciseLesson:
+    post:
+      summary: Fetch exercise lessons
+      description: API để lấy danh sách các bài học liên quan đến vận động.
+      tags:
+        - Exercise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: integer
+                  description: Loại bài học (1: bắt buộc, 2: tùy chọn, 3: quiz cấp độ).
+                  example: 1
+                week:
+                  type: integer
+                  description: Tuần học (0: tuần hiện tại).
+                  example: 0
+                page:
+                  type: integer
+                  description: Số trang.
+                  example: 1
+                size:
+                  type: integer
+                  description: Số lượng bài học trên mỗi trang.
+                  example: 10
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Trạng thái thành công.
+                    example: true
+                  data:
+                    type: array
+                    description: Danh sách các bài học.
+                    items:
+                      type: object
+                      properties:
+                        lessonId:
+                          type: string
+                          description: ID của bài học.
+                          example: "lesson1"
+                        title:
+                          type: string
+                          description: Tiêu đề bài học.
+                          example: "Lợi ích của việc đi bộ"
+                        description:
+                          type: string
+                          description: Mô tả bài học.
+                          example: "Đi bộ giúp cải thiện sức khỏe tim mạch và giảm căng thẳng."
+                        type:
+                          type: integer
+                          description: Loại bài học.
+                          example: 1
+                        week:
+                          type: integer
+                          description: Tuần học.
+                          example: 0
+                        isCompleted:
+                          type: boolean
+                          description: Trạng thái hoàn thành bài học.
+                          example: false
+                        imageUrl:
+                          type: string
+                          description: URL hình ảnh minh họa bài học.
+                          example: "https://example.com/images/walking.jpg"
+        '400':
+          description: Lỗi yêu cầu không hợp lệ
+        '500':
+          description: Lỗi máy chủ

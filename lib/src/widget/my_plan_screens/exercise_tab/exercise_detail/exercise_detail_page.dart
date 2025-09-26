@@ -1,4 +1,3 @@
-import 'package:better_player_plus/better_player_plus.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,7 @@ import 'package:medical/src/model/response/exercise_movement_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/youtube_video_widget.dart';
+import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_video_widget.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -53,7 +52,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
     if (_cubit.videoManager.controller != null) {
       try {
         // Make sure the player is properly initialized
-        await _cubit.videoManager.ensureVideoInitialized();
+        await _cubit.videoManager.waitForVideoReady();
 
         // If there's still an issue, you can force a reload
         if (_cubit.videoManager.videoDuration == null ||
@@ -109,48 +108,59 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   children: [
                     SizedBox(height: 120),
                     Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-                      child: _cubit.videoManager.isYoutubeUrl() == false
-                          ? _cubit.videoManager.controller != null
-                              ? BetterPlayer(
-                                  controller: _cubit.videoManager.controller!,
-                                  // Add key to force rebuild when needed
-                                  key: ValueKey(
-                                      'better_player_${DateTime.now().millisecondsSinceEpoch}'),
-                                )
-                              : const SizedBox.shrink()
-                          : YoutubeVideoWidget(
-                              videoUrl: _cubit.exerciseData.videoUrl ?? '',
-                              onPlay: ({meta}) {
-                                debugPrint(
-                                    '[EXERCISE] onPlay youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
-                                ExcerciseDetailTracking.playVideo(
-                                  eventType: CustomPlayerEventType.videoPlay,
-                                  videoDuration:
-                                      meta?.duration ?? Duration(seconds: 0),
-                                  objectId: _cubit.exerciseData.id,
-                                  objectTitle: _cubit.exerciseData.name,
-                                );
-                              },
-                              onEnded: ({meta}) async {
-                                debugPrint(
-                                    '[EXERCISE] onEnded youtube video: $meta - ${_cubit.exerciseData.id} - ${_cubit.exerciseData.name}');
-                                ExcerciseDetailTracking.playVideo(
-                                  eventType:
-                                      CustomPlayerEventType.videoCompleted,
-                                  videoDuration:
-                                      meta?.duration ?? Duration(seconds: 0),
-                                  objectId: _cubit.exerciseData.id,
-                                  objectTitle: _cubit.exerciseData.name,
-                                );
-                                await _cubit.completeExercise(
-                                    _cubit.exerciseData.id ?? '');
-                              },
-                            ),
-                    ),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        child: _cubit.videoManager.controller != null &&
+                                _cubit.resolvedVideoUrl.isNotEmpty
+                            ? ExerciseVideoWidget(
+                                callbackEventListener: (event, videoDuration) {
+                                  ExcerciseDetailTracking.playVideo(
+                                    eventType: event,
+                                    videoDuration: videoDuration,
+                                    objectId: widget.exerciseData?.id,
+                                    objectTitle: widget.exerciseData?.name,
+                                  );
+
+                                  if (!_cubit.exerciseCompleted &&
+                                      widget.exerciseData?.completionStatus !=
+                                          CompletionStatus.completed &&
+                                      event ==
+                                          CustomPlayerEventType
+                                              .videoCompleted &&
+                                      videoDuration.inMilliseconds > 0) {
+                                    debugPrint(
+                                        '[EXERCISE] Marking exercise as completed through event listener');
+                                    _cubit.exerciseCompleted = true;
+                                    _cubit.completeExercise(
+                                        widget.exerciseData?.id ?? '');
+                                  }
+                                },
+                                url: _cubit.resolvedVideoUrl,
+                                onPlay: () {
+                                  debugPrint(
+                                      '[EXERCISE] Video started playing');
+                                },
+                                onComplete: () {
+                                  debugPrint('[EXERCISE] Video completed');
+                                  if (!_cubit.exerciseCompleted &&
+                                      widget.exerciseData?.completionStatus !=
+                                          CompletionStatus.completed) {
+                                    debugPrint(
+                                        '[EXERCISE] Marking exercise as completed through onComplete');
+                                    _cubit.exerciseCompleted = true;
+                                    _cubit.completeExercise(
+                                        widget.exerciseData?.id ?? '');
+                                  }
+                                },
+                                percentCallbackDefault: 1.0,
+                                videoTitle: widget.exerciseData?.name ?? '',
+                                videoThumbnail: widget.exerciseData?.image?.url,
+                                exerciseData: widget.exerciseData,
+                                videoManager: _cubit.videoManager,
+                              )
+                            : const SizedBox.shrink()),
                     SizedBox(height: 2),
                     Expanded(
                       child: Padding(
@@ -295,7 +305,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
   Future<void> _showDonePopup(BuildContext context) async {
     Observable.instance.notifyObservers([], notifyName: "goal_calo_changed");
 
-    await showDialog(
+    final result = await showDialog<bool>(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => Scaffold(
@@ -354,7 +364,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                         'object_title': '${widget.exerciseData?.name}',
                       },
                     );
-                    NavigationUtil.pop(context);
+                    Navigator.of(context).pop(true);
                   },
                 ),
               )
@@ -363,6 +373,9 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
         ),
       ),
     );
-    NavigationUtil.pop(context);
+
+    if (result == true) {
+      NavigationUtil.pop(context);
+    }
   }
 }

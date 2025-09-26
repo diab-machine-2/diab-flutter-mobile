@@ -109,6 +109,15 @@ class NavigatorName {
   // New Glucose
   static const String glucose_intro_1st_page = '/glucose-intro-1st-page';
   static const String glucose_intro_2nd_page = '/glucose-intro-2nd-page';
+
+  // Exercrise Step Onboarding
+  static const String exercrise_onboarding = '/exercrise_onboarding';
+  static const String exercrise_dashboard = '/exercrise_dashboard';
+  static const String exercrise_step_detail_v2 = '/exercrise_step_detail_v2';
+  static const String exercrise_add_v2 = '/exercrise_add_v2';
+  static const String exercrise_select_category = '/exercrise_select_category';
+  static const String exercrise_result = '/exercrise_result';
+  static const String exercrise_guide = '/exercrise_guide';
   // BOOKING CLINIC
   static const String booking_clinic = '/booking_clinic';
   static const String other_diseases = '/other_diseases';
@@ -120,9 +129,13 @@ class NavigatorName {
   static const String paywall_screen = '/paywall_screen';
   static const String package_program_list = '/package_program_list';
   static const String package_program_detail = '/package_program_detail';
+  static const String welcome_program = '/welcome_program';
   // New Blood Pressure
   static const String blood_pressure_intro_1st_page = '/blood_pressure_intro_1st_page';
   static const String blood_pressure_intro_2nd_page = '/blood_pressure_intro_2nd_page';
   static const String add_bloodpressure_result = '/add_bloodpressure_result';
   static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
+  // New Blood Sugar
+  static const String confirm_blood_sugar = '/confirm_blood_sugar';
+  static const String blood_sugar_image_capture = '/blood_sugar_image_capture';
 }

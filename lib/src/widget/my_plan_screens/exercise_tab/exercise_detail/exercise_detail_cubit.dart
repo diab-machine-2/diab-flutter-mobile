@@ -19,6 +19,7 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
 
   late final ExerciseMovementResponseData exerciseData;
   late final VideoManager videoManager;
+  late final String resolvedVideoUrl;
 
   bool exerciseCompleted = false;
 
@@ -26,12 +27,18 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
       ExerciseMovementResponseData? exerciseData, BuildContext context) async {
     if (exerciseData == null) return;
     this.exerciseData = exerciseData;
+    debugPrint('[EXERCISE] Exercise data initialized: ${exerciseData.name}');
+
+    // Resolve playable video URL: only from first section, else empty
+    final String sectionUrl = (exerciseData.sections?.isNotEmpty ?? false)
+        ? (exerciseData.sections!.first?.videoUrl ?? '')
+        : '';
+    resolvedVideoUrl = sectionUrl;
+
+    // Initialize videoManager
     videoManager = VideoManager.fromExerciseData(
       context,
       exerciseData,
-      onCompleteVideo: (exerciseCategoryId, duration) async {
-        await completeVideo(exerciseCategoryId, duration);
-      },
       callbackEventListener: (eventType, duration) {
         ExcerciseDetailTracking.playVideo(
           eventType: eventType,
@@ -40,12 +47,9 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
           objectTitle: exerciseData.name,
         );
 
-        // Only mark exercise as completed when it's actually completed
-        // and only if it hasn't been marked completed before
         if (!exerciseCompleted &&
             exerciseData.completionStatus != CompletionStatus.completed &&
             eventType == CustomPlayerEventType.videoCompleted &&
-            // Additional check to ensure we have a valid duration
             duration.inMilliseconds > 0) {
           debugPrint(
               '[EXERCISE] Marking exercise as completed through event listener');
@@ -61,11 +65,19 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
           completeExercise(exerciseData.id ?? '');
         }
       },
+      onCompleteVideo: (exerciseCategoryId, duration) async {
+        debugPrint(
+            '[EXERCISE] Video completed: $exerciseCategoryId, duration: ${duration}s');
+        await completeVideo(exerciseCategoryId, duration);
+      },
+      onExitFullScreen: () {
+        debugPrint('[EXERCISE] Fullscreen exited via callback');
+      },
     );
 
     // Ensure the video is properly initialized
-    if (videoManager.controller != null) {
-      await videoManager.ensureVideoInitialized();
+    if (resolvedVideoUrl.isNotEmpty && videoManager.controller != null) {
+      await videoManager.waitForVideoReady();
     }
   }
 

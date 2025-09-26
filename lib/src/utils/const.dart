@@ -1,5 +1,5 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "dev"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT = "product"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -178,6 +178,11 @@ class Const {
   static const String NAVIGATE_TO_ACTIVITY_DETAIL =
       'Navigate_to_activity_detail';
   static const String LANGUAGE_CHANGED = 'language_changed';
+  static const String UPDATE_SUBSCRIPTION = 'Update_subscription';
+  static const String UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM =
+      'Update_subscription_without_navigate_program';
+  static const String NAVIGATE_TO_MY_PLAN_TAB_AUTO_TRIGGER_SUBSCRIPTION =
+      'Navigate_to_my_plan_tab_auto_trigger_subscription';
 
   static const List<int> hourList = [
     0,
@@ -234,7 +239,7 @@ class Const {
     CLINIC_TIMEFRAME_WEEKDAY,
     CLINIC_TIMEFRAME_AFTER_HOURS,
   ];
-  
+
   static const String BOOKING_TYPE_CENTER = 'center';
   static const String BOOKING_TYPE_CLINIC = 'clinic';
   static const String BOOKING_TYPE_DOCTOR = 'doctor';
@@ -246,4 +251,5 @@ class Const {
   static const TABLET_BREAKPOINT = 540;
   static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
+  static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
 }

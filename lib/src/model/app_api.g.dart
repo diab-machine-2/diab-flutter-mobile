@@ -555,7 +555,7 @@ class _AppApi implements AppApi {
     )
             .compose(
               _dio.options,
-              'App/Lesson/MyLessonsOptimizedAndCacheLessonPercent',
+              'App/Lesson/MyLessonsOptimizedRemoveWeek',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -1691,6 +1691,7 @@ class _AppApi implements AppApi {
     toDate,
     courseId,
     calendarType,
+    type,
   }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -1699,6 +1700,7 @@ class _AppApi implements AppApi {
       r'toDate': toDate,
       r'courseId': courseId,
       r'calendarType': calendarType,
+      r'type': type,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
@@ -1843,9 +1845,15 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CommonResponse> notifySubscription(request) async {
+  Future<CommonResponse> notifySubscription(
+    phoneNumberInput,
+    request,
+  ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'phoneNumberInput': phoneNumberInput
+    };
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
@@ -2005,6 +2013,233 @@ class _AppApi implements AppApi {
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = ConversationListResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CommonResponse> addExercise(request) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'App/Exercise/Input',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CommonResponse> updateExercise(
+    request,
+    id,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'App/Exercise/Input/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ExerciseIntensityResponse> getExerciseIntensities(
+      {shortname = 1}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'shortname': shortname};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ExerciseIntensityResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'App/Exercise/Intensity',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ExerciseIntensityResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ExerciseCategoryResponse> getExerciseCategories() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ExerciseCategoryResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'App/Exercise/Category',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ExerciseCategoryResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ExerciseAnalysisResponse> getExerciseAnalysis(exerciseId) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'id': exerciseId};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ExerciseAnalysisResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'App/Exercise/Analysis/Index',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ExerciseAnalysisResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ExerciseSummaryResponse> getExerciseSummary(currentDateTime) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'currentDateTime': currentDateTime
+    };
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ExerciseSummaryResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'App/Exercise/Summary',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ExerciseSummaryResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ExerciseLessonResponse> getSupportExercises() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ExerciseLessonResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Lesson/Support/Exercise',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ExerciseLessonResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<ExerciseHealthTrendResponse> getExerciseHealthTrend(
+    currentDateTime,
+    periodFilterType,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'CurrentDateTime': currentDateTime,
+      r'PeriodFilterType': periodFilterType,
+    };
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<ExerciseHealthTrendResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Exercise/Analysis/HealthTrend',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = ExerciseHealthTrendResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<CommonResponse> subscriptionActivePackage({
+    required accountId,
+    required packageId,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'accountId': accountId,
+      r'packageId': packageId,
+    };
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/PackageAccountTransaction/SubscriptionActivePackage',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CommonResponse.fromJson(_result.data!);
     return value;
   }
 

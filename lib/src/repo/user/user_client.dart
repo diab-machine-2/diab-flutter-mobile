@@ -106,14 +106,17 @@ class UserClient extends FetchClient {
               .millisecondsSinceEpoch ~/
           1000;
 
-      final Response response =
-          await super.fetchData(url: '/App/CalendarCoach/', params: {
-        "courseId": courseId,
-        "startTime": localTargetTime
-            .toString(), // only booking calendar after currentday + 24h
-        // "endTime": endTime,
+      final params = <String, String?>{
+        "startTime": localTargetTime.toString(),
         "accountId": AppSettings.userInfo?.accountId,
-      });
+      };
+
+      if (courseId.isNotEmpty) {
+        params["courseId"] = courseId;
+      }
+
+      final Response response =
+          await super.fetchData(url: '/App/CalendarCoach', params: params);
       if (response.statusCode == 200) {
         final data = response.data['data'];
         if (data == null) {
@@ -415,6 +418,7 @@ class UserClient extends FetchClient {
         'goalWeight': model.goalWeight
       });
       if (response.statusCode == 200) {
+        AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
         return true;
       } else {
         final error = Error.fromJson(response);
