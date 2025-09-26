@@ -187,10 +187,14 @@ class _DsmesConfirmCreateInformationState
                           GapH(12),
                           _buildConsultingInformation(),
                           if (widget.serviceType ==
-                              DsmesAppointmentMode.telemedicine.toString())
+                                  DsmesAppointmentMode.telemedicine
+                                      .toString() &&
+                              widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
                             GapH(12),
                           if (widget.serviceType ==
-                              DsmesAppointmentMode.telemedicine.toString())
+                                  DsmesAppointmentMode.telemedicine
+                                      .toString() &&
+                              widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
                             widget.bookingType == Const.BOOKING_TYPE_CENTER
                                 ? _buildSelectedServiceInformation()
                                 : _buildBookingClinicSelectedServicesInformation(),
@@ -665,7 +669,9 @@ class _DsmesConfirmCreateInformationState
                   Flexible(
                     flex: 3,
                     child: Text(
-                      R.string.center_name.tr(),
+                      widget.bookingType == Const.BOOKING_TYPE_DOCTOR
+                          ? R.string.doctor_name.tr()
+                          : R.string.center_name.tr(),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
@@ -676,7 +682,9 @@ class _DsmesConfirmCreateInformationState
                   Flexible(
                     flex: 7,
                     child: Text(
-                      _cubit.selectedClinic?.name ?? '',
+                      widget.bookingType == Const.BOOKING_TYPE_DOCTOR
+                          ? _cubit.selectedDoctor?.displayName ?? ''
+                          : _cubit.selectedClinic?.name ?? '',
                       maxLines: 2,
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,

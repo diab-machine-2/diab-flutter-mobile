@@ -1,14 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 
-class DsmesClinicModel {
+class BookingDoctorModel {
   final int id;
   final String name;
   final List<String> language;
   final String address;
   final String phone;
   final String introduction;
-  final List<SpecialtyDetail> specialty;
+  final List<DoctorSpecialtyDetail> specialty;
   final String avatar;
   final String lat;
   final String lng;
@@ -17,7 +18,7 @@ class DsmesClinicModel {
   final String status;
   final int serviceId;
   // final String insurance;
-  final String tagLine;
+  // final String tagLine;
   final Map<String, int> showGoodAt;
   final Map<String, List<GoodAt>> goodAt;
   final List<GoodAt> defaultGoodAt;
@@ -27,10 +28,18 @@ class DsmesClinicModel {
   final Map<String, Map<String, int>> schedule;
   final String aptInterval;
   final List<ExtraAvatar> extraAvatar;
-  final List<ServiceAvailable> svAvailable; // 'at_clinic', 'telemedicine', 'at_home'
+  final List<ServiceAvailable>
+      svAvailable; // 'at_clinic', 'telemedicine', 'at_home'
   final String profileType; // 'booking' or 'premium'
+  final String? graduateName;
+  final List<Education>? education;
+  final List<OwnerClinic>? ownerClinics;
+  final List<OwnerClinic>? ownerClinic;
+  final List<OwnerClinic>? staffClinic;
+  final String? displayName; // doctor name
+  final String? experience;
 
-  DsmesClinicModel({
+  BookingDoctorModel({
     required this.id,
     required this.name,
     required this.language,
@@ -46,7 +55,7 @@ class DsmesClinicModel {
     required this.status,
     required this.serviceId,
     // required this.insurance, // issue empty is String, but have data is List
-    required this.tagLine,
+    // required this.tagLine,
     required this.showGoodAt,
     required this.goodAt,
     required this.defaultGoodAt,
@@ -58,10 +67,17 @@ class DsmesClinicModel {
     required this.extraAvatar,
     required this.svAvailable,
     required this.profileType,
+    this.graduateName,
+    this.education,
+    this.ownerClinics,
+    this.ownerClinic,
+    this.staffClinic,
+    this.displayName,
+    this.experience,
   });
 
-  factory DsmesClinicModel.fromJson(Map<String, dynamic> json) {
-    return DsmesClinicModel(
+  factory BookingDoctorModel.fromJson(Map<String, dynamic> json) {
+    return BookingDoctorModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       language: List<String>.from(json['language'] ?? []),
@@ -69,7 +85,7 @@ class DsmesClinicModel {
       phone: json['phone'] ?? '',
       introduction: json['introduction'] ?? '',
       specialty: (json['specialty'] as List?)
-              ?.map((e) => SpecialtyDetail.fromJson(e))
+              ?.map((e) => DoctorSpecialtyDetail.fromJson(e))
               .toList() ??
           [],
       avatar: json['avatar'] ?? '',
@@ -80,7 +96,7 @@ class DsmesClinicModel {
       status: json['status'] ?? '',
       serviceId: json['service_id'] ?? 0,
       // insurance: json['insurance'] ?? '',
-      tagLine: json['tag_line'] ?? '',
+      // tagLine: json['tag_line'] ?? '',
       showGoodAt: Map<String, int>.from(json['show_good_at'] ?? {}),
       goodAt: (json['good_at'] as Map<String, dynamic>?)?.map(
             (key, value) => MapEntry(
@@ -95,7 +111,12 @@ class DsmesClinicModel {
           [],
       clinicId: json['clinic_id'] ?? 0,
       serviceType: json['service_type'] ?? [],
-      serviceList: ServiceList.fromJson(json['service_list'] ?? {}),
+      serviceList: json['service_list'] is List
+          ? (json['service_list'] as List).isNotEmpty
+              ? ServiceList.fromJson(json['service_list'][0])
+              : ServiceList.fromJson({})
+          : ServiceList.fromJson(json['service_list'] ?? {}),
+
       schedule: _parseSchedule(json['schedule'] ?? {}),
       aptInterval: json['apt_interval'] ?? '',
       extraAvatar: (json['extra_avatar'] as List?)
@@ -107,7 +128,38 @@ class DsmesClinicModel {
               .toList() ??
           [],
       profileType: json['profile_type'] ?? '',
+      graduateName: json['graduate_name'] ?? '',
+      education: (json['education'] as List?)
+              ?.map((e) => Education.fromJson(e))
+              .toList() ??
+          [],
+      ownerClinics: (json['owner_clinics'] as List?)
+              ?.map((e) => OwnerClinic.fromJson(e))
+              .toList() ??
+          [],
+      ownerClinic: (json['owner_clinic'] as List?)
+              ?.map((e) => OwnerClinic.fromJson(e))
+              .toList() ??
+          [],
+      staffClinic: (json['staff_clinic'] as List?)
+              ?.map((e) => OwnerClinic.fromJson(e))
+              .toList() ??
+          [],
+      displayName: json['display_name'] ?? '',
+      experience: json['experience'] ?? '',
     );
+  }
+
+  OwnerClinic? getFirstOwnerClinic() {
+    if (ownerClinic != null && ownerClinic!.isNotEmpty) {
+      return ownerClinic!.first;
+    }
+
+    if (staffClinic != null && staffClinic!.isNotEmpty) {
+      return staffClinic!.first;
+    }
+
+    return null;
   }
 
   static Map<String, Map<String, int>> _parseSchedule(
@@ -170,208 +222,72 @@ class DsmesClinicModel {
   }
 }
 
-class BookingSchedule {
-  final String startTime;
-  final String endTime;
-  final bool isAvailable;
-
-  BookingSchedule({
-    required this.startTime,
-    required this.endTime,
-    required this.isAvailable,
-  });
-}
-
-class SpecialtyDetail {
-  final int id;
-  final int clinicId;
-  final int specialtyId;
-  final String isPrimary;
-  final SpecialtyInfo info;
-
-  SpecialtyDetail({
-    required this.id,
-    required this.clinicId,
-    required this.specialtyId,
-    required this.isPrimary,
-    required this.info,
-  });
-
-  factory SpecialtyDetail.fromJson(Map<String, dynamic> json) {
-    return SpecialtyDetail(
-      id: json['id'] ?? 0,
-      clinicId: json['clinic_id'] ?? 0,
-      specialtyId: json['specialty_id'] ?? 0,
-      isPrimary: json['is_primary'] ?? '',
-      info: SpecialtyInfo.fromJson(json['info'] ?? {}),
-    );
-  }
-}
-
-class SpecialtyInfo {
+class Education {
   final String name;
-  final int id;
-  final String image;
-
-  SpecialtyInfo({
-    required this.name,
-    required this.id,
-    required this.image,
-  });
-
-  factory SpecialtyInfo.fromJson(Map<String, dynamic> json) {
-    return SpecialtyInfo(
-      name: json['name'] ?? '',
-      id: json['id'] ?? 0,
-      image: json['image'] ?? '',
-    );
-  }
-}
-
-class GoodAt {
-  final int id;
-  final String name;
-
-  GoodAt({
-    required this.id,
-    required this.name,
-  });
-
-  factory GoodAt.fromJson(Map<String, dynamic> json) {
-    return GoodAt(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-    );
-  }
-}
-
-class ServiceList {
-  final String name;
-  final int id;
-  final List<ServiceCategory> categories;
-
-  ServiceList({
-    required this.name,
-    required this.id,
-    required this.categories,
-  });
-
-  factory ServiceList.fromJson(Map<String, dynamic> json) {
-    return ServiceList(
-      name: json['name'] ?? '',
-      id: json['id'] ?? 0,
-      categories: (json['categories'] as List?)
-              ?.map((e) => ServiceCategory.fromJson(e))
-              .toList() ??
-          [],
-    );
-  }
-}
-
-class ServiceCategory {
-  final String name;
-  final int id;
-  final String type;
-  final List<ServiceData> data;
-  final String slug;
-
-  ServiceCategory({
-    required this.name,
-    required this.id,
-    required this.type,
-    required this.data,
-    required this.slug,
-  });
-
-  factory ServiceCategory.fromJson(Map<String, dynamic> json) {
-    return ServiceCategory(
-      name: json['name'] ?? '',
-      id: json['id'] ?? 0,
-      type: json['type'] ?? '',
-      data: (json['data'] as List?)
-              ?.map((e) => ServiceData.fromJson(e))
-              .toList() ??
-          [],
-      slug: json['slug'] ?? '',
-    );
-  }
-}
-
-class ServiceData {
-  final String name;
-  final int id;
-  final String priceType;
-  final int fromPrice;
-  final int toPrice;
-  final String unit;
-  final String currencyUnit;
-  final String description;
-  final int isPayment;
   final String value;
 
-  ServiceData({
+  Education({
     required this.name,
-    required this.id,
-    required this.priceType,
-    required this.fromPrice,
-    required this.toPrice,
-    required this.unit,
-    required this.currencyUnit,
-    required this.description,
-    required this.isPayment,
     required this.value,
   });
 
-  factory ServiceData.fromJson(Map<String, dynamic> json) {
-    return ServiceData(
+  factory Education.fromJson(Map<String, dynamic> json) {
+    return Education(
       name: json['name'] ?? '',
-      id: json['id'] ?? 0,
-      priceType: json['price_type'] ?? '',
-      fromPrice: json['from_price'] ?? 0,
-      toPrice: json['to_price'] ?? 0,
-      unit: json['unit'] ?? '',
-      currencyUnit: json['currency_unit'] ?? '',
-      description: json['description'] ?? '',
-      isPayment: int.tryParse(json['is_payable']?.toString() ?? '0') ?? 0,
       value: json['value'] ?? '',
     );
   }
 }
 
-// Add this class to handle extra avatar data
-class ExtraAvatar {
+class OwnerClinic {
   final int id;
-  final String path;
-  final String thumbPath;
+  final String name;
+  final String address;
 
-  ExtraAvatar({
+  OwnerClinic({
     required this.id,
-    required this.path,
-    required this.thumbPath,
+    required this.name,
+    required this.address,
   });
 
-  factory ExtraAvatar.fromJson(Map<String, dynamic> json) {
-    return ExtraAvatar(
-      id: json['id'] ?? 0,
-      path: json['path'] ?? '',
-      thumbPath: json['thumb_path'] ?? '',
+  factory OwnerClinic.fromJson(Map<String, dynamic> json) {
+    return OwnerClinic(
+      id: json['id'],
+      name: json['name'] ?? '',
+      address: json['address'] ?? '',
     );
   }
 }
 
-class ServiceAvailable {
-  final String key;
+class DoctorSpecialtyDetail {
   final String name;
+  final SpecialtyPivot pivot;
 
-  ServiceAvailable({
-    required this.key,
+  DoctorSpecialtyDetail({
     required this.name,
+    required this.pivot,
   });
 
-  factory ServiceAvailable.fromJson(Map<String, dynamic> json) {
-    return ServiceAvailable(
-      key: json['key'] ?? '',
+  factory DoctorSpecialtyDetail.fromJson(Map<String, dynamic> json) {
+    return DoctorSpecialtyDetail(
       name: json['name'] ?? '',
+      pivot: SpecialtyPivot.fromJson(json['pivot'] ?? {}),
     );
+  }
+}
+
+class SpecialtyPivot {
+  final int doctorId;
+  final int specialtyId;
+
+  SpecialtyPivot({
+    required this.doctorId,
+    required this.specialtyId,
+  });
+
+  factory SpecialtyPivot.fromJson(Map<String, dynamic> json) {
+    return SpecialtyPivot(
+        doctorId: json['doctor_id'] ?? 0,
+        specialtyId: json['specialty_id'] ?? 0);
   }
 }

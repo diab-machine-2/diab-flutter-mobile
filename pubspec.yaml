@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: 'none'
 
-version: 2.0.0+12
+version: 2.3.3+5
 
 environment:
   sdk: '>=2.18.0 <4.0.0'
@@ -133,7 +133,7 @@ dependencies:
   flutter_blue_plus: ^1.32.11
   # fwfh_text_style: ^2.22.8+3
   store_redirect: ^2.0.1
-  youtube_player_flutter: 9.0.4
+  youtube_player_flutter: 9.0.3
   # zoom video sdk
   # flutter_zoom_videosdk:
   #   path: packages/zoom_video_sdk

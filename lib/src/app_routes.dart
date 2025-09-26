@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
+import 'package:medical/src/widget/booking_doctor/booking_doctor_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
@@ -88,8 +89,14 @@ class AppRoutes {
           page = BookingClinicPage();
           break;
         }
+      case NavigatorName.booking_doctor:
+        {
+          page = BookingDoctorPage();
+          break;
+        }
       case NavigatorName.add_blood_sugar_result:
-        page = PageAddBloodSugarResult(data: settings.arguments as BloodSugarResultDto);
+        page = PageAddBloodSugarResult(
+            data: settings.arguments as BloodSugarResultDto);
         break;
       case NavigatorName.glucose_intro_1st_page:
         page = GlucoseIntro1stPage();
@@ -118,7 +125,8 @@ class AppRoutes {
         page = BloodPressureIntro2ndPage();
         break;
       case NavigatorName.add_bloodpressure_result:
-        page = PageAddBloodPressureResult(data: settings.arguments as BloodPressureResultDto);
+        page = PageAddBloodPressureResult(
+            data: settings.arguments as BloodPressureResultDto);
         break;
       case NavigatorName.detail_bloodpressure_listing:
         final data = settings.arguments as Map<String, dynamic>?;
@@ -132,6 +140,8 @@ class AppRoutes {
       default:
         break;
     }
-    return page != null ? MaterialPageRoute(settings: settings, builder: (_) => page!) : null;
+    return page != null
+        ? MaterialPageRoute(settings: settings, builder: (_) => page!)
+        : null;
   }
 }

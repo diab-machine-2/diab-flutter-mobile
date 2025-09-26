@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -10,28 +11,32 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/empty_clinic_provider_page.dart';
+import 'package:medical/src/widget/booking_doctor/widgets/rating_heart_widget.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class BookingClinicProvidersPage extends StatefulWidget {
+class BookingDoctorProvidersPage extends StatefulWidget {
   final int specialtyId;
+  final String? specialtyName;
   final String bookingType;
-  const BookingClinicProvidersPage({
+
+  const BookingDoctorProvidersPage({
     Key? key,
     required this.specialtyId,
-    this.bookingType = Const.BOOKING_TYPE_CLINIC,
+    this.specialtyName,
+    this.bookingType = Const.BOOKING_TYPE_DOCTOR,
   }) : super(key: key);
 
   @override
-  _BookingClinicProvidersPageState createState() =>
-      _BookingClinicProvidersPageState();
+  _BookingDoctorProvidersPageState createState() =>
+      _BookingDoctorProvidersPageState();
 }
 
-class _BookingClinicProvidersPageState
-    extends State<BookingClinicProvidersPage> {
+class _BookingDoctorProvidersPageState
+    extends State<BookingDoctorProvidersPage> {
   late DsmesAppointmentCubit _cubit;
   Map<String, bool> isProcessing = {
     'clinicDetail': false,
@@ -110,7 +115,7 @@ class _BookingClinicProvidersPageState
         specialtyId: widget.specialtyId.toString(),
         lat: lat,
         lng: lng,
-        kind: Const.BOOKING_TYPE_CLINIC,
+        kind: Const.BOOKING_TYPE_DOCTOR,
       );
 
       final request = _cubit.searchBookingClinicListRequest;
@@ -122,7 +127,10 @@ class _BookingClinicProvidersPageState
       }
 
       await _cubit.searchBookingClinicList(
-          request: request, isRefresh: true, showLoading: true);
+          request: request,
+          isRefresh: true,
+          showLoading: true,
+          bookingType: Const.BOOKING_TYPE_DOCTOR);
     } catch (e) {
       // Log error if needed
     } finally {
@@ -181,7 +189,7 @@ class _BookingClinicProvidersPageState
           child: CustomAppBar(
             backgroundColor: Colors.transparent,
             title: Text(
-              R.string.chon_noi_kham.tr(),
+              widget.specialtyName ?? R.string.chon_bac_si.tr(),
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -233,7 +241,8 @@ class _BookingClinicProvidersPageState
                             request: _cubit.searchBookingClinicListRequest!
                                 .copyWith(
                                     page: _cubit.clinicProviderCurrentPage + 1),
-                            showLoading: false);
+                            showLoading: false,
+                            bookingType: Const.BOOKING_TYPE_DOCTOR);
                         _refreshController.loadComplete();
                         setState(() {});
                       },
@@ -253,7 +262,7 @@ class _BookingClinicProvidersPageState
                                 itemBuilder: (context, index) {
                                   BookingClinicProvider data =
                                       _cubit.listBookingClinicProvider[index];
-                                  return _buildClinicItem(data);
+                                  return _buildDoctorItem(data);
                                 },
                               ),
                               GapH(16),
@@ -334,26 +343,66 @@ class _BookingClinicProvidersPageState
     );
   }
 
-  _handleViewClinicDetailInfo(BookingClinicProvider data) async {
-    final detailSuccess = await _cubit.getClinicDetail(id: data.id);
-    final rateSuccess = await _cubit.getClinicRate(id: data.id);
-    if (detailSuccess && rateSuccess) {
+  _handleViewDoctorDetailInfo(BookingClinicProvider data) async {
+    final detailSuccess = await _cubit.getDoctorDetail(id: data.id);
+
+    final rateSuccess = await _cubit.getDoctorRate(id: data.id);
+
+    final ownerClinic = _cubit.selectedDoctor?.getFirstOwnerClinic();
+
+    if (ownerClinic == null) {
+      return;
+    }
+
+    final detailClinicSuccess =
+        await _cubit.getClinicDetail(id: ownerClinic.id, isLoading: false);
+
+    if (detailSuccess && rateSuccess && detailClinicSuccess) {
       DsmesNavigationMixin.getNavigationKey()
           .currentState
-          ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
-        'clinicId': data.id,
-        'bookingType': Const.BOOKING_TYPE_CLINIC
+          ?.pushNamed(NavigatorName.doctor_detail, arguments: {
+        'clinicId': ownerClinic.id,
+        'doctorId': data.id,
+        'bookingType': Const.BOOKING_TYPE_DOCTOR
       });
     }
   }
 
-  _buildClinicItem(BookingClinicProvider data) {
+  ClinicService? _getLowestPriceService(
+      List<ClinicService>? services, BookingClinicProvider data) {
+    if (services == null || services.isEmpty) {
+      return null;
+    }
+
+    // Filter out services with null prices first
+    final servicesWithPrice = services
+        .where((service) => service.fromPrice != null && service.fromPrice != 0
+            // &&
+            // service.name.toLowerCase().contains(data.name
+            //     .toLowerCase()), // Wait BE support filter services belong to each doctor
+            )
+        .toList();
+
+    if (servicesWithPrice.isEmpty) {
+      // If no services have prices, return the first service or null
+      return services.first;
+    }
+
+    final result = servicesWithPrice.reduce(
+        (current, next) => current.fromPrice < next.fromPrice ? current : next);
+
+    return result;
+  }
+
+  _buildDoctorItem(BookingClinicProvider data) {
+    final consultService = _getLowestPriceService(data.service, data);
+
     return GestureDetector(
       onTap: () async {
         if (isProcessing['clinicDetail']!) return;
         isProcessing['clinicDetail'] = true;
         try {
-          _handleViewClinicDetailInfo(data);
+          _handleViewDoctorDetailInfo(data);
         } finally {
           isProcessing['clinicDetail'] = false;
         }
@@ -371,6 +420,7 @@ class _BookingClinicProvidersPageState
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                       width: 72,
@@ -380,71 +430,113 @@ class _BookingClinicProvidersPageState
                             "${Utils.getHostDocosanUrl()}${data.avatar}"),
                       )),
                   GapW(12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          data.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        data.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      GapH(10),
+                      Row(
+                        children: [
+                          RatingHeartWidget(
+                            rating: data.star ?? 5.0,
+                            heartSize: 16,
+                            spacing: 2,
+                            filledColor: R.color.color0xffB4802D,
+                            emptyColor: Color(0xFFE0E0E0),
                           ),
-                        ),
-                        GapH(10),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.asset(R.drawable.ic_map_marker,
-                                width: 14, height: 14),
-                            GapW(5),
-                            Flexible(
-                              child: Text(
-                                data.address ?? '',
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w400,
-                                  color: R.color.color0xff777E90,
-                                ),
-                              ),
+                          GapW(6),
+                          Text(
+                            '${(data.star ?? 5.0).toStringAsFixed(1)}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: R.color.color0xff5E6566,
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              GapH(16),
+              if (data.verify == 1) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.verified,
+                      size: 16,
+                      color: R.color.greenGradientTop02,
+                    ),
+                    GapW(4),
+                    Text(
+                      "Đã xác minh",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.greenGradientTop02,
+                      ),
+                    ),
+                  ],
+                ),
+                GapH(8),
+              ],
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.location_pin,
+                    size: 16,
+                    color: R.color.color0xff5E6566,
+                  ),
+                  GapW(5),
+                  Flexible(
+                    child: Text(
+                      data.clinicName ?? '',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff5E6566,
+                      ),
                     ),
                   ),
                 ],
               ),
-              GapH(12),
-              Container(
-                width: double.infinity,
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: data.specialty.take(3).map((e) {
-                    return Container(
-                        // height: 21,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: R.color.color0xffFAF0D2,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Text(
-                          e.name,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: R.color.color0xffA36E2A,
-                          ),
-                        ));
-                  }).toList(),
-                ),
+              GapH(8),
+              Row(
+                children: [
+                  Icon(
+                    Icons.medical_services,
+                    size: 16,
+                    color: R.color.color0xff5E6566,
+                  ),
+                  GapW(5),
+                  Flexible(
+                    child: Text(
+                      data.specialty.length <= 2
+                          ? data.specialty.map((e) => e.name).join(' | ')
+                          : '${data.specialty.take(2).map((e) => e.name).join(' | ')} | +${data.specialty.length - 2}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff5E6566,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               GapH(16),
               Row(
@@ -455,30 +547,22 @@ class _BookingClinicProvidersPageState
                       child: Row(
                         children: [
                           Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                if (isProcessing['viewInfo']!) return;
-                                isProcessing['viewInfo'] = true;
-                                try {
-                                  _handleViewClinicDetailInfo(data);
-                                } finally {
-                                  isProcessing['viewInfo'] = false;
-                                }
-                              },
-                              child: Container(
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: R.color.color0xffE7FDFB,
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
-                                child: Text(
-                                  R.string.view_information.tr(),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.greenGradientBottom,
-                                  ),
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: R.color.color0xffE7FDFB,
+                                borderRadius: BorderRadius.circular(200),
+                              ),
+                              child: Text(
+                                Utils.formatMoney(consultService == null
+                                        ? 0
+                                        : consultService.fromPrice) ??
+                                    '',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.greenGradientBottom,
                                 ),
                               ),
                             ),
@@ -500,25 +584,54 @@ class _BookingClinicProvidersPageState
                                 isProcessing['bookingClinic'] = true;
                                 try {
                                   final detailSuccess =
-                                      await _cubit.getClinicDetail(id: data.id);
+                                      await _cubit.getClinicDetail(
+                                          id: data.doctorClinicInfo!.id,
+                                          isLoading: false);
 
                                   if (!detailSuccess ||
                                       _cubit.selectedClinic == null) {
                                     return;
                                   }
 
+                                  final detailDoctorSuccess =
+                                      await _cubit.getDoctorDetail(id: data.id);
+
+                                  if (!detailDoctorSuccess ||
+                                      _cubit.selectedDoctor == null) {
+                                    return;
+                                  }
+
                                   _cubit.initCreateDsmesBookingRequest(
                                       locale: context.locale.languageCode);
+
+                                  _cubit.updateBookingDoctorInfoCreateRequest(
+                                      doctorId: _cubit.selectedDoctor!.id);
+
+                                  _cubit.updateCreateDsmesBookingRequestServiceList(
+                                      paymentType: 'local_banking',
+                                      // TODO: get first cheapest service of doctor
+                                      // payment type will update later
+                                      selectedServices: [
+                                        ServiceItem(
+                                          id: int.tryParse(
+                                                  consultService?.id ?? '') ??
+                                              0,
+                                          quantity: 1,
+                                        )
+                                      ]);
+
                                   await DsmesNavigationMixin.getNavigationKey()
                                       .currentState
                                       ?.pushNamed(
                                           NavigatorName
                                               .dsmes_booking_select_date,
                                           arguments: {
-                                        // 'serviceType': widget.serviceType,
+                                        'serviceType': DsmesAppointmentMode
+                                            .telemedicine
+                                            .toString(),
                                         'action': 'create',
                                         'bookingType':
-                                            Const.BOOKING_TYPE_CLINIC,
+                                            Const.BOOKING_TYPE_DOCTOR,
                                       });
                                 } finally {
                                   isProcessing['bookingClinic'] = false;
@@ -1107,7 +1220,9 @@ class _BookingClinicProvidersPageState
                   return;
                 }
                 await _cubit.searchBookingClinicList(
-                    request: request, isRefresh: true);
+                    request: request,
+                    isRefresh: true,
+                    bookingType: Const.BOOKING_TYPE_DOCTOR);
                 setState(() {});
                 Navigator.pop(context);
               },

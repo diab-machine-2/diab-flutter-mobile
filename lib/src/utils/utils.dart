@@ -636,6 +636,26 @@ class Utils {
     }
     return phoneNumber;
   }
+
+  static String getLanguageName(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.string.vietnamese.tr(),
+      'en': R.string.english.tr(),
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
+
+  static String getLanguageFlag(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.icons.ic_flag_vn,
+      'en': R.icons.ic_flag_en,
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
 }
 
 extension Precision on double {

@@ -1311,4 +1311,12 @@ class Strings {
   String get begin_program => 'begin_program';
   String get loading_subscription_packages => 'loading_subscription_packages';
   String get basic_program_confirm => 'basic_program_confirm';
+  String get chon_bac_si => 'chon_bac_si';
+  String get introduce => 'introduce';
+  String get doctor_good_at => 'doctor_good_at';
+  String get training => 'training';
+  String get language => 'language';
+  String get vietnamese => 'vietnamese';
+  String get english => 'english';
+  String get doctor_name => 'doctor_name';
 }

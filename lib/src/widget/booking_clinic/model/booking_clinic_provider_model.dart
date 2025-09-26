@@ -23,6 +23,10 @@ class BookingClinicProvider {
   final int? isSale;
   final double? lat;
   final double? lng;
+  // For kind "doctor" response
+  final String? clinicName;
+  final String? clinicAddress;
+  final DoctorClinicInfo? doctorClinicInfo;
 
   BookingClinicProvider({
     required this.id,
@@ -49,6 +53,9 @@ class BookingClinicProvider {
     this.isSale,
     this.lat,
     this.lng,
+    this.clinicName,
+    this.clinicAddress,
+    this.doctorClinicInfo,
   });
 
   factory BookingClinicProvider.fromJson(Map<String, dynamic> json) {
@@ -103,6 +110,11 @@ class BookingClinicProvider {
       lng: json['lng'] is String
           ? double.tryParse(json['lng']) ?? 0.0
           : (json['lng']?.toDouble() ?? 0.0),
+      clinicName: json['clinic_name'] ?? '',
+      clinicAddress: json['clinic_address'] ?? '',
+      doctorClinicInfo: json['clinic'] is Map
+          ? DoctorClinicInfo.fromJson(json['clinic'])
+          : null,
     );
   }
 
@@ -147,14 +159,14 @@ class Specialty {
 
 class ClinicService {
   final String name;
-  final String type;
+  final String? type;
   final String id;
   final int fromPrice;
   final String price;
 
   ClinicService({
     required this.name,
-    required this.type,
+    this.type,
     required this.id,
     required this.fromPrice,
     required this.price,
@@ -162,9 +174,9 @@ class ClinicService {
 
   factory ClinicService.fromJson(Map<String, dynamic> json) {
     return ClinicService(
-      name: json['name'],
-      type: json['type'],
-      id: json['id'],
+      name: json['name'] ?? json['vi'] ?? '',
+      type: json['type'] ?? '',
+      id: json['id'] is int ? json['id'].toString() : (json['id'] ?? ''),
       fromPrice: json['from_price'],
       price: json['price'],
     );
@@ -224,6 +236,26 @@ class DaySchedule {
       isWork: json['is_work'],
       openTime: json['open_time'],
       closeTime: json['close_time'],
+    );
+  }
+}
+
+class DoctorClinicInfo {
+  final int id;
+  final String? name;
+  final String? address;
+
+  DoctorClinicInfo({
+    required this.id,
+    this.name,
+    this.address,
+  });
+
+  factory DoctorClinicInfo.fromJson(Map<String, dynamic> json) {
+    return DoctorClinicInfo(
+      id: json['id'],
+      name: json['name'],
+      address: json['address'],
     );
   }
 }

@@ -458,6 +458,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         slug: "dat-lich-kham-benh",
         navigatorName: NavigatorName.booking_clinic,
       ),
+      HomeUtilityData(
+        icon: R.drawable.ic_booking_doctor,
+        title: "Khám từ xa",
+        slug: "kham-tu-xa",
+        navigatorName: NavigatorName.booking_doctor,
+      ),
     ];
 
     if (preOrder?.isNotEmpty == true) {

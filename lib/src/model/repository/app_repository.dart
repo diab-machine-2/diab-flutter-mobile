@@ -32,6 +32,7 @@ import 'package:medical/src/model/request/update_quiz_lesson_request.dart';
 import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/zoom_token_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
+import 'package:medical/src/model/response/booking_doctor_detail_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
@@ -1168,7 +1169,7 @@ class AppRepository {
     }
   }
 
-    Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyList(
+  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyList(
       {String? top}) async {
     try {
       final response = await docosanClient.getCLinicSpecialtyList(
@@ -1214,6 +1215,36 @@ class AppRepository {
       NotifySubscriptionRequest request) async {
     try {
       final response = await appClient.notifySubscription(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SearchListClinicResponse>> searchListBookingDoctor(
+      {required SearchBookingClinicListRequest request}) async {
+    try {
+      final response = await docosanClient.searchBookinDoctorList(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<BookingDoctorDetailResponse>> getDoctorDetail(
+      {required int id}) async {
+    try {
+      final response = await docosanClient.getDoctorDetail(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<DsmesClinicRatingResponse>> getDoctorRate(
+      {required int id}) async {
+    try {
+      final response = await docosanClient.getDoctorRate(id);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

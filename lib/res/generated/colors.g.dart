@@ -188,4 +188,6 @@ class Colors {
   Color get conversation_typing_broder => Color(0xffD4D4D8);
   Color get conversation_bubble_author_broder => Color(0xff8FEBE0);
   Color get conversation_bubble_bot_broder => Color(0xffDFE4E4);
+  Color get color0xffB4802D => Color(0xffB4802D);
+  Color get color0xff5E6566 => Color(0xff5E6566);
 }

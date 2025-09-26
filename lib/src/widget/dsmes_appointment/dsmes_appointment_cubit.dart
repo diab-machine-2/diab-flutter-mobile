@@ -13,6 +13,7 @@ import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/response/booking_doctor_detail_response.dart';
 import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
@@ -30,6 +31,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
+import 'package:medical/src/widget/booking_doctor/model/booking_doctor_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
@@ -47,6 +49,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
   DsmesClinicModel? selectedClinic;
   DsmesAppointment? currentDsmesAppointment;
+  BookingDoctorModel? selectedDoctor;
 
   CreateDsmesBookingRequest? createDsmesBookingRequest;
   SearchBookingClinicListRequest? searchBookingClinicListRequest;
@@ -365,7 +368,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   Future<List<BookingClinicProvider>> searchBookingClinicList(
       {required SearchBookingClinicListRequest request,
       bool isRefresh = false,
-      bool showLoading = true}) async {
+      bool showLoading = true,
+      String bookingType = Const.BOOKING_TYPE_CLINIC}) async {
     if (isRefresh) {
       listBookingClinicProvider.clear();
       clinicProviderCurrentPage = 1;
@@ -379,7 +383,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
         : InitialDsmesAppointmentState());
 
     ApiResult<SearchListClinicResponse> apiResult =
-        await appRepository.searchListBookingClinic(request: request);
+        bookingType == Const.BOOKING_TYPE_CLINIC
+            ? await appRepository.searchListBookingClinic(request: request)
+            : await appRepository.searchListBookingDoctor(request: request);
 
     apiResult.when(success: (SearchListClinicResponse response) {
       final totalPage = response.attr.totalPage ?? 0;
@@ -401,6 +407,35 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     });
 
     return listBookingClinicProvider;
+  }
+
+  Future<bool> getDoctorDetail({required int id, bool isLoading = true}) async {
+    if (isLoading) {
+      emit(DsmesAppointmentLoading());
+    }
+    ApiResult<BookingDoctorDetailResponse> apiResult =
+        await appRepository.getDoctorDetail(id: id);
+    return apiResult.when(success: (BookingDoctorDetailResponse response) {
+      setSelectedDoctor(response.data);
+      emit(DsmesAppointmentLoaded());
+      return true;
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      return false;
+    });
+  }
+
+  Future<bool> getDoctorRate({required int id}) async {
+    ApiResult<DsmesClinicRatingResponse> apiResult =
+        await appRepository.getDoctorRate(id: id);
+
+    return apiResult.when(success: (DsmesClinicRatingResponse response) {
+      listClinicReview = response.data.normalReview;
+      return true;
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+      return false;
+    });
   }
 
   _getFilteredData() {
@@ -575,6 +610,15 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     selectedClinic = clinic;
   }
 
+  setSelectedDoctor(BookingDoctorModel? doctor) {
+    selectedDoctor = doctor;
+  }
+
+  updateBookingDoctorInfoCreateRequest({required int doctorId}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+        doctorId: doctorId, bookingForClinic: 0);
+  }
+
   updateCreateDsmesBookingRequestTime(
       {required String startTime, required String endTime}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
@@ -640,13 +684,15 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       {required String specialtyId,
       int page = 1,
       String lat = '',
-      String lng = ''}) {
+      String lng = '',
+      String kind = 'clinic'}) {
     searchBookingClinicListRequest = SearchBookingClinicListRequest(
       page: page.toString(),
       urlKeywords: [],
       specialty: specialtyId,
       lat: lat,
       lng: lng,
+      kind: kind,
     );
   }
 

@@ -28,7 +28,7 @@ class SearchBookingClinicListRequest {
     this.parentTerm = '',
     this.lng = '',
     this.lat = '',
-    this.kind = 'clinic',
+    this.kind = '',
     this.timeframes = const [],
     this.clinicTypes = const [],
   });
