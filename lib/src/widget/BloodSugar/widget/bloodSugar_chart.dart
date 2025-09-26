@@ -133,7 +133,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
   void _updateFocusIndexWithFallback(List<TrendModel> newTrends) {
     // Store old timestamps for comparison
-    final oldTimestamps = _previousTrends.map((e) => e.date).toSet();
+    _previousTrends.map((e) => e.date).toSet();
     trends = newTrends;
 
     if (trends.isEmpty) {
@@ -146,9 +146,22 @@ class BloodSugarChartState extends State<BloodSugarChart>
 
     int? matchedIndex = -1;
 
+    // If previously focused item was the last one and a new tail item appears,
+    // auto-focus the new last item (the newly added data point)
+    final bool wasLastPreviously =
+        _previousTrends.isNotEmpty && _focusIndex == _previousTrends.length - 1;
+    final bool hasNewTail = _previousTrends.isNotEmpty && trends.isNotEmpty &&
+        (_previousTrends.last.id != trends.last.id ||
+            _previousTrends.last.date != trends.last.date);
+    if (wasLastPreviously && hasNewTail) {
+      matchedIndex = trends.length - 1;
+    }
+
     // 1) Prefer keeping the exact same id if it still exists in new data
-    if (_selectedId != null) {
-      matchedIndex = trends.indexWhere((item) => item.id == _selectedId);
+    if (matchedIndex == -1 || matchedIndex == null) {
+      if (_selectedId != null) {
+        matchedIndex = trends.indexWhere((item) => item.id == _selectedId);
+      }
     }
 
     // 2) If id not found, try to keep the same timestamp (choose closest to previous focus if duplicates)
