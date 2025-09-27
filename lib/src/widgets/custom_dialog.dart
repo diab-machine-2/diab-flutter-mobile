@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
+import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
 class CustomDialog {
   CustomDialog._();
@@ -165,6 +166,7 @@ class CustomDialog {
     BuildContext context, {
     String title = "Thành công",
     String message = "",
+    Function()? onPrimaryButtonTap,
   }) {
     showGeneralDialog(
       context: context,
@@ -194,7 +196,7 @@ class CustomDialog {
                     children: [
                       // Icon thành công
                       const Icon(
-                        Icons.check_circle_outline,
+                        Icons.check_circle_rounded,
                         color: Colors.green,
                         size: 48,
                       ),
@@ -223,17 +225,12 @@ class CustomDialog {
                       // Nút Đóng
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                        child: PrimaryRoundedButton(
+                          title: 'Đóng',
                           onPressed: () {
                             Navigator.of(context, rootNavigator: true).pop();
+                            onPrimaryButtonTap?.call();
                           },
-                          child: const Text('Đóng'),
                         ),
                       ),
                     ],

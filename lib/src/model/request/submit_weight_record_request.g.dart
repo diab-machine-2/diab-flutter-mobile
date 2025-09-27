@@ -11,10 +11,10 @@ SubmitWeightRecordRequest _$SubmitWeightRecordRequestFromJson(
     SubmitWeightRecordRequest(
       images:
           (json['images'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      date: (json['date'] as num?)?.toInt(),
-      weight: (json['weight'] as num?)?.toInt(),
-      waist: (json['waist'] as num?)?.toInt(),
-      height: (json['height'] as num?)?.toInt(),
+      date: (json['date'] as num).toInt(),
+      weight: (json['weight'] as num).toDouble(),
+      waist: (json['waist'] as num?)?.toDouble(),
+      height: (json['height'] as num).toInt(),
       note: json['note'] as String?,
       timeFrameValue: (json['timeFrameValue'] as num?)?.toInt(),
       timeFrameId: json['timeFrameId'] as String?,

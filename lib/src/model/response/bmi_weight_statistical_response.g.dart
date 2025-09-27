@@ -27,19 +27,20 @@ Map<String, dynamic> _$BmiWeightStatisticalResponseToJson(
 BmiWeightStatistical _$BmiWeightStatisticalFromJson(
         Map<String, dynamic> json) =>
     BmiWeightStatistical(
-      safeWeightFrom: (json['safeWeightFrom'] as num?)?.toInt(),
-      safeWeightTo: (json['safeWeightTo'] as num?)?.toInt(),
+      safeWeightFrom: (json['safeWeightFrom'] as num?)?.toDouble(),
+      safeWeightTo: (json['safeWeightTo'] as num?)?.toDouble(),
       weightSafes: (json['weightSafes'] as List<dynamic>?)
           ?.map((e) => WeightSafe.fromJson(e as Map<String, dynamic>))
           .toList(),
-      current: (json['current'] as num?)?.toInt(),
-      lowest: (json['lowest'] as num?)?.toInt(),
-      highest: (json['highest'] as num?)?.toInt(),
-      goal: (json['goal'] as num?)?.toInt(),
+      current: (json['current'] as num?)?.toDouble(),
+      lowest: (json['lowest'] as num?)?.toDouble(),
+      highest: (json['highest'] as num?)?.toDouble(),
+      goal: (json['goal'] as num?)?.toDouble(),
       message: json['message'] as String?,
       iconUrl: json['iconUrl'] as String?,
       trendItems: (json['trendItems'] as List<dynamic>?)
-          ?.map((e) => TrendItem.fromJson(e as Map<String, dynamic>))
+          ?.map(
+              (e) => WeightStatisticRecord.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -58,21 +59,25 @@ Map<String, dynamic> _$BmiWeightStatisticalToJson(
       'trendItems': instance.trendItems,
     };
 
-TrendItem _$TrendItemFromJson(Map<String, dynamic> json) => TrendItem(
+WeightStatisticRecord _$WeightStatisticRecordFromJson(
+        Map<String, dynamic> json) =>
+    WeightStatisticRecord(
       date: (json['date'] as num?)?.toInt(),
-      value: (json['value'] as num?)?.toInt(),
+      value: (json['value'] as num?)?.toDouble(),
       colorCode: json['colorCode'] as String?,
     );
 
-Map<String, dynamic> _$TrendItemToJson(TrendItem instance) => <String, dynamic>{
+Map<String, dynamic> _$WeightStatisticRecordToJson(
+        WeightStatisticRecord instance) =>
+    <String, dynamic>{
       'date': instance.date,
       'value': instance.value,
       'colorCode': instance.colorCode,
     };
 
 WeightSafe _$WeightSafeFromJson(Map<String, dynamic> json) => WeightSafe(
-      safeWeightFrom: (json['safeWeightFrom'] as num?)?.toInt(),
-      safeWeightTo: (json['safeWeightTo'] as num?)?.toInt(),
+      safeWeightFrom: (json['safeWeightFrom'] as num?)?.toDouble(),
+      safeWeightTo: (json['safeWeightTo'] as num?)?.toDouble(),
       safeDateFrom: (json['safeDateFrom'] as num?)?.toInt(),
       week: (json['week'] as num?)?.toInt(),
       length: (json['length'] as num?)?.toInt(),

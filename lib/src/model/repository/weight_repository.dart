@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -41,7 +42,7 @@ class WeightRepository {
     try {
       final BmiGetAnalyzeWeightTrendResponse response =
           await appClient.analyzeWeightTrend(
-        currentTime: currentTime,
+        currentTime: currentTime ~/ 1000,
         periodFilterType: periodFilterType,
         page: page,
         size: size,
@@ -55,8 +56,15 @@ class WeightRepository {
   Future<ApiResult<CommonResponse>> submitWeightRecord(
       SubmitWeightRecordRequest request) async {
     try {
-      final CommonResponse response =
-          await appClient.submitWeightRecord(request);
+      final CommonResponse response = await appClient.submitWeightRecord(
+        date: request.date ~/ 1000,
+        weight: request.weight,
+        height: request.height,
+        waist: request.waist,
+        note: request.note,
+        images:
+            request.images?.map((e) => MultipartFile.fromFileSync(e)).toList(),
+      );
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -72,7 +80,7 @@ class WeightRepository {
     try {
       final BmiGetWeightListResponse response =
           await appClient.getWeightIndexList(
-        currentTime: currentTime,
+        currentTime: currentTime ~/ 1000,
         periodFilterType: periodFilterType,
         page: page,
         size: size,
@@ -94,8 +102,7 @@ class WeightRepository {
     }
   }
 
-  Future<ApiResult<List<BmiWeightLesson>>>
-      getWeightLessons() async {
+  Future<ApiResult<List<BmiWeightLesson>>> getWeightLessons() async {
     try {
       final BmiGetWeightLessonsResponse response =
           await appClient.getWeightLessons();
@@ -118,7 +125,7 @@ class WeightRepository {
     try {
       final BmiStatisticalResponse response =
           await appClient.getBmiStatisticalData(
-        currentTime: currentTime,
+        currentTime: currentTime ~/ 1000,
         periodFilterType: periodFilterType,
         page: page,
         size: size,
@@ -146,7 +153,7 @@ class WeightRepository {
     try {
       final BmiWaistStatisticalResponse response =
           await appClient.getWaistStatisticalData(
-        currentTime: currentTime,
+        currentTime: currentTime ~/ 1000,
         periodFilterType: periodFilterType,
         page: page,
         size: size,
@@ -174,7 +181,7 @@ class WeightRepository {
     try {
       final BmiWeightStatisticalResponse response =
           await appClient.getWeightStatisticalData(
-        currentTime: currentTime,
+        currentTime: currentTime ~/ 1000,
         periodFilterType: periodFilterType,
         page: page,
         size: size,

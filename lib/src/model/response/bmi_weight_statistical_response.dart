@@ -24,25 +24,25 @@ class BmiWeightStatisticalResponse {
 @JsonSerializable()
 class BmiWeightStatistical {
     @JsonKey(name: "safeWeightFrom")
-    final int? safeWeightFrom;
+    final double? safeWeightFrom;
     @JsonKey(name: "safeWeightTo")
-    final int? safeWeightTo;
+    final double? safeWeightTo;
     @JsonKey(name: "weightSafes")
     final List<WeightSafe>? weightSafes;
     @JsonKey(name: "current")
-    final int? current;
+    final double? current;
     @JsonKey(name: "lowest")
-    final int? lowest;
+    final double? lowest;
     @JsonKey(name: "highest")
-    final int? highest;
+    final double? highest;
     @JsonKey(name: "goal")
-    final int? goal;
+    final double? goal;
     @JsonKey(name: "message")
     final String? message;
     @JsonKey(name: "iconUrl")
     final String? iconUrl;
     @JsonKey(name: "trendItems")
-    final List<TrendItem>? trendItems;
+    final List<WeightStatisticRecord>? trendItems;
 
     BmiWeightStatistical({
         this.safeWeightFrom,
@@ -63,31 +63,31 @@ class BmiWeightStatistical {
 }
 
 @JsonSerializable()
-class TrendItem {
+class WeightStatisticRecord {
     @JsonKey(name: "date")
     final int? date;
     @JsonKey(name: "value")
-    final int? value;
+    final double? value;
     @JsonKey(name: "colorCode")
     final String? colorCode;
 
-    TrendItem({
+    WeightStatisticRecord({
         this.date,
         this.value,
         this.colorCode,
     });
 
-    factory TrendItem.fromJson(Map<String, dynamic> json) => _$TrendItemFromJson(json);
+    factory WeightStatisticRecord.fromJson(Map<String, dynamic> json) => _$WeightStatisticRecordFromJson(json);
 
-    Map<String, dynamic> toJson() => _$TrendItemToJson(this);
+    Map<String, dynamic> toJson() => _$WeightStatisticRecordToJson(this);
 }
 
 @JsonSerializable()
 class WeightSafe {
     @JsonKey(name: "safeWeightFrom")
-    final int? safeWeightFrom;
+    final double? safeWeightFrom;
     @JsonKey(name: "safeWeightTo")
-    final int? safeWeightTo;
+    final double? safeWeightTo;
     @JsonKey(name: "safeDateFrom")
     final int? safeDateFrom;
     @JsonKey(name: "week")

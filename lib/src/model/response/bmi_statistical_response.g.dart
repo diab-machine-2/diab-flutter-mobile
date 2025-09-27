@@ -26,9 +26,9 @@ Map<String, dynamic> _$BmiStatisticalResponseToJson(
 
 BmiStatistical _$BmiStatisticalFromJson(Map<String, dynamic> json) =>
     BmiStatistical(
-      value: (json['value'] as num?)?.toInt(),
-      weight: (json['weight'] as num?)?.toInt(),
-      height: (json['height'] as num?)?.toInt(),
+      value: (json['value'] as num?)?.toDouble(),
+      weight: (json['weight'] as num?)?.toDouble(),
+      height: (json['height'] as num?)?.toDouble(),
       currentLedend: json['currentLedend'] == null
           ? null
           : End.fromJson(json['currentLedend'] as Map<String, dynamic>),

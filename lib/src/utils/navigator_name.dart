@@ -138,4 +138,5 @@ class NavigatorName {
   static const String add_bmi = '/add_bmi';
   static const String bmiInputPage = '/add_bmi/bmi_input';
   static const String bmiOverviewPage = '/add_bmi/bmi_input/bmi_overview';
+  static const String bmiHistoricalPage = 'add_bmi/bmi_historical';
 }

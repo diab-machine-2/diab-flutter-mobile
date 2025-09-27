@@ -1391,5 +1391,5 @@ class Strings {
   String get inputRightNow => 'input_right_now';
   String get averageBmi => 'average_bmi';
   String get chieuCao => 'chieu_cao';
-
+  String get input_manual_des => 'input_manual_des';
 }

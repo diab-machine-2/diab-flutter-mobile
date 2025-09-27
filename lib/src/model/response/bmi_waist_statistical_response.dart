@@ -36,7 +36,7 @@ class BmiWaistStatistical {
     @JsonKey(name: "iconUrl")
     final String? iconUrl;
     @JsonKey(name: "trendItems")
-    final List<TrendItem>? trendItems;
+    final List<WaistStatisticRecord>? trendItems;
 
     BmiWaistStatistical({
         this.current,
@@ -54,21 +54,21 @@ class BmiWaistStatistical {
 }
 
 @JsonSerializable()
-class TrendItem {
+class WaistStatisticRecord {
     @JsonKey(name: "date")
     final int? date;
     @JsonKey(name: "value")
-    final int? value;
+    final double? value;
     @JsonKey(name: "colorCode")
     final String? colorCode;
 
-    TrendItem({
+    WaistStatisticRecord({
         this.date,
         this.value,
         this.colorCode,
     });
 
-    factory TrendItem.fromJson(Map<String, dynamic> json) => _$TrendItemFromJson(json);
+    factory WaistStatisticRecord.fromJson(Map<String, dynamic> json) => _$WaistStatisticRecordFromJson(json);
 
-    Map<String, dynamic> toJson() => _$TrendItemToJson(this);
+    Map<String, dynamic> toJson() => _$WaistStatisticRecordToJson(this);
 }

@@ -543,10 +543,20 @@ abstract class AppApi {
 
   //
 
+  @MultiPart()
   @POST("/App/Weight/Input")
-  Future<CommonResponse> submitWeightRecord(
-    @Body() SubmitWeightRecordRequest request,
-  );
+  Future<CommonResponse> submitWeightRecord({
+    // @Body() SubmitWeightRecordRequest request,
+    @Part(name: "images") List<MultipartFile>? images,
+    @Part(name: "date") required int date,
+    @Part(name: "weight") required double weight,
+    @Part(name: "waist") double? waist,
+    @Part(name: "height") required int height,
+    @Part(name: "note") String? note,
+    @Part(name: "timeFrameValue") int? timeFrameValue,
+    @Part(name: "timeFrameId") String? timeFrameId,
+    @Part(name: "thresholdType") int? thresholdType,
+  });
 
   //
 
@@ -595,8 +605,7 @@ abstract class AppApi {
   });
 
   @GET("/App/Weight/Statistic/Weight")
-  Future<BmiWeightStatisticalResponse>
-      getWeightStatisticalData({
+  Future<BmiWeightStatisticalResponse> getWeightStatisticalData({
     @Query('currentDateTime') required int currentTime,
     @Query('periodFilterType') required int periodFilterType,
     @Query('page') int? page,

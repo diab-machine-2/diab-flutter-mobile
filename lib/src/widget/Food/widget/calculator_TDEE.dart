@@ -5,7 +5,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/widget/bmi/widget/add_bmi.dart';
+import 'package:medical/src/widget/Bmi_temp/widget/add_bmi.dart';
 import 'package:medical/src/widget/Food/widget/intensity_food.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';

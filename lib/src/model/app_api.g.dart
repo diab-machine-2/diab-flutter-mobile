@@ -2301,17 +2301,73 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CommonResponse> submitWeightRecord(request) async {
+  Future<CommonResponse> submitWeightRecord({
+    images,
+    required date,
+    required weight,
+    waist,
+    required height,
+    note,
+    timeFrameValue,
+    timeFrameId,
+    thresholdType,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(request.toJson());
+    final _data = FormData();
+    if (images != null) {
+      _data.files.addAll(images.map((i) => MapEntry('images', i)));
+    }
+    _data.fields.add(MapEntry(
+      'date',
+      date.toString(),
+    ));
+    _data.fields.add(MapEntry(
+      'weight',
+      weight.toString(),
+    ));
+    if (waist != null) {
+      _data.fields.add(MapEntry(
+        'waist',
+        waist.toString(),
+      ));
+    }
+    _data.fields.add(MapEntry(
+      'height',
+      height.toString(),
+    ));
+    if (note != null) {
+      _data.fields.add(MapEntry(
+        'note',
+        note,
+      ));
+    }
+    if (timeFrameValue != null) {
+      _data.fields.add(MapEntry(
+        'timeFrameValue',
+        timeFrameValue.toString(),
+      ));
+    }
+    if (timeFrameId != null) {
+      _data.fields.add(MapEntry(
+        'timeFrameId',
+        timeFrameId,
+      ));
+    }
+    if (thresholdType != null) {
+      _data.fields.add(MapEntry(
+        'thresholdType',
+        thresholdType.toString(),
+      ));
+    }
     final _result = await _dio
         .fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
+      contentType: 'multipart/form-data',
     )
             .compose(
               _dio.options,

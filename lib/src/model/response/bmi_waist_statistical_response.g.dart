@@ -33,7 +33,7 @@ BmiWaistStatistical _$BmiWaistStatisticalFromJson(Map<String, dynamic> json) =>
       message: json['message'] as String?,
       iconUrl: json['iconUrl'] as String?,
       trendItems: (json['trendItems'] as List<dynamic>?)
-          ?.map((e) => TrendItem.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => WaistStatisticRecord.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -49,13 +49,17 @@ Map<String, dynamic> _$BmiWaistStatisticalToJson(
       'trendItems': instance.trendItems,
     };
 
-TrendItem _$TrendItemFromJson(Map<String, dynamic> json) => TrendItem(
+WaistStatisticRecord _$WaistStatisticRecordFromJson(
+        Map<String, dynamic> json) =>
+    WaistStatisticRecord(
       date: (json['date'] as num?)?.toInt(),
-      value: (json['value'] as num?)?.toInt(),
+      value: (json['value'] as num?)?.toDouble(),
       colorCode: json['colorCode'] as String?,
     );
 
-Map<String, dynamic> _$TrendItemToJson(TrendItem instance) => <String, dynamic>{
+Map<String, dynamic> _$WaistStatisticRecordToJson(
+        WaistStatisticRecord instance) =>
+    <String, dynamic>{
       'date': instance.date,
       'value': instance.value,
       'colorCode': instance.colorCode,

@@ -6,7 +6,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/app_media_query.dart';
-import 'package:medical/src/widget/bmi/widget/add_bmi.dart';
+import 'package:medical/src/widget/Bmi_temp/widget/add_bmi.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
