@@ -6,10 +6,10 @@ import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/bmi_utils.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_on_boarding/widgets/bmi_threshold_bar_chart.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/bmi_utils.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_threshold_bar_chart.dart';
 
 class BmiOnboardingAvarageBmiSession extends StatelessWidget {
   const BmiOnboardingAvarageBmiSession({

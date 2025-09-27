@@ -6,7 +6,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
 
 class BmiOverviewAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BmiOverviewAppBar({

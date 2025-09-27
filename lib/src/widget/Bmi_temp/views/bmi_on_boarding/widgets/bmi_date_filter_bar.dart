@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/enum.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/enum.dart';
 
 class BmiDateFilterBar extends StatefulWidget {
   const BmiDateFilterBar({super.key, this.onChanged});

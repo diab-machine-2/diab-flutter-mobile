@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/dimens.dart';
-import 'package:medical/src/widget/Bmi_temp/widget/bmi_height_picker.dart';
+import 'package:medical/src/widget/Bmi/widget/bmi_height_picker.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
 class BmiHeightInputDialog {

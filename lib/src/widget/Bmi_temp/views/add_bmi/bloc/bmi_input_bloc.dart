@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/model/request/submit_weight_record_request.dart';
 import 'package:medical/src/service/resource.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_event.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_event.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_state.dart';
 import 'dart:math' as math;
 
 class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {

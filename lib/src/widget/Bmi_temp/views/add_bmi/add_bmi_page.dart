@@ -5,14 +5,14 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_state.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/widgets/add_bmi_app_bar.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/widgets/add_bmi_note_session.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/widgets/add_bmi_waist_circumference_input_session.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/widgets/add_bmi_weight_input_session.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_input_waist_confirm_dialog.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_overview.dart/bmi_overview_page.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_app_bar.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_note_session.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_waist_circumference_input_session.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_weight_input_session.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_input_waist_confirm_dialog.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
 class AddBmiPage extends StatefulWidget {

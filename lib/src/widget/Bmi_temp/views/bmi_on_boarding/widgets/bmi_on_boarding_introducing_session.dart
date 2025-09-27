@@ -7,9 +7,9 @@ import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/add_bmi_page.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_height_input_dialog.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_input_type_bottom_sheet.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_input_type_bottom_sheet.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/enum.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_statistical_data/widgets/bmi_record_card.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_statistical_data/widgets/bmi_statistical_data_app_bar.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/enum.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_record_card.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_statistical_data_app_bar.dart';
 
 class BmiStatisticalDataPage extends StatefulWidget {
   const BmiStatisticalDataPage({super.key});

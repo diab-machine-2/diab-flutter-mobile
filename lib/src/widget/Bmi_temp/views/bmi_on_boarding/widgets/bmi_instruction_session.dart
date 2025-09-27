@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/styles.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/models/weight_instruction_model.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/models/weight_instruction_model.dart';
 
 class BmiInstructionSession extends StatelessWidget {
   const BmiInstructionSession({

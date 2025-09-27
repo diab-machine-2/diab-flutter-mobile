@@ -6,9 +6,9 @@ import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_on_boarding/widgets/bmi_on_boarding_post_card.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_on_boarding_post_card.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 

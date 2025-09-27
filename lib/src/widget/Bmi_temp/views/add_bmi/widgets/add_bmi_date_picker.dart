@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_event.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_event.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_state.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi_view_old/widgets/custom_datetime_picker.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_event.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custom_datetime_picker.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 
 class AddBmiDatePicker extends StatefulWidget {

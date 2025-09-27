@@ -14,10 +14,10 @@ import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_event.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/enum.dart';
-import 'package:medical/src/widget/Bmi_temp/models/weight_instruction_model.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/enum.dart';
+import 'package:medical/src/widget/Bmi/models/weight_instruction_model.dart';
 
 class BmiBloc extends Bloc<BmiEvent, BmiState> {
   BmiBloc(WeightRepository repository)

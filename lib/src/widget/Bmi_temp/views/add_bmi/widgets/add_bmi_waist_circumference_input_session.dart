@@ -2,8 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/views/add_bmi/widgets/bmi_input_text_field.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_text_field.dart';
 
 class AddBmiWaistCircumferenceInputSession extends StatelessWidget {
   const AddBmiWaistCircumferenceInputSession({

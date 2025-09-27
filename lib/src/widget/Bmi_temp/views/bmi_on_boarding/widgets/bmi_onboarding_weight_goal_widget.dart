@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 
 class BmiOnboardingWeightGoalWidget extends StatelessWidget {
   const BmiOnboardingWeightGoalWidget({

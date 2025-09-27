@@ -6,11 +6,11 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
-import 'package:medical/src/widget/Bmi_temp/widget/bmi_ai_suggestion_session.dart';
+import 'package:medical/src/widget/Bmi/widget/bmi_ai_suggestion_session.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ai_suggestion.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/enum.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widgets/button/secondary_rounded_button.dart';
 
 class BmiAiWeightIndexAnalysis extends StatelessWidget {

@@ -20,7 +20,7 @@ import 'package:medical/src/repo/weight/weight_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/Bmi_temp/models/weight_ranger_model.dart';
+import 'package:medical/src/widget/Bmi/models/weight_ranger_model.dart';
 import 'package:medical/src/widget/base/cubit_base_state.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';

@@ -9,12 +9,12 @@ import 'package:medical/res/dimens.dart';
 import 'package:medical/res/generated/dimens.g.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi_temp/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi_temp/enum.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_on_boarding/widgets/bmi_ai_weight_index_analysis.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
-import 'package:medical/src/widget/Bmi_temp/views/bmi_on_boarding/widgets/bmi_statistical_chart.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/enum.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_ai_weight_index_analysis.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_statistical_chart.dart';
 import 'package:medical/src/widgets/button/secondary_rounded_button.dart';
 
 class BmiOnBoardingChartSession extends StatefulWidget {
