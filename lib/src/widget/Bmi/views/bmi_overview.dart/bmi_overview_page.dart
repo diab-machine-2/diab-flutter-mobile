@@ -2,20 +2,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/service/api_result.dart';
-import 'package:medical/src/service/resource.dart';
-import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/widgets/bmi_overview_ai_evaluation.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/widgets/bmi_overview_app_bar.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/widgets/bmi_overview_evaluated_chart_session.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/widgets/bmi_overview_note_session.dart';
 import 'package:medical/src/widgets/button/outlined_rounded_button.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
-import 'package:medical/src/widgets/button/secondary_rounded_button.dart';
-import 'package:medical/src/widgets/custom_dialog.dart';
 
 class BmiOverviewPage extends StatefulWidget {
   const BmiOverviewPage({super.key});
@@ -24,9 +19,17 @@ class BmiOverviewPage extends StatefulWidget {
   State<BmiOverviewPage> createState() => _BmiOverviewPageState();
 
   static const String bmiInputBlocKey = "bmi_input_bloc_key";
+  static const String bmiBlocKey = "bmi_bloc_key";
 }
 
 class _BmiOverviewPageState extends State<BmiOverviewPage> {
+  @override
+  void dispose() {
+    BmiInputBloc _bmiInputBloc = context.read();
+    _bmiInputBloc.clear();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<BmiInputBloc, BmiInputState>(
@@ -58,28 +61,28 @@ class _BmiOverviewPageState extends State<BmiOverviewPage> {
   }
 
   void _handleListener(BuildContext context, BmiInputState state) {
-    if (state is BmiInputSubmitedState) {
-      if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
-      } else if (state.result.isSuccess) {
-        CustomDialog.hideLoadingDialog(context);
-        CustomDialog.showSuccessDialog(
-          context,
-          onPrimaryButtonTap: () {
-            Navigator.popUntil(
-              context,
-              (route) => route.settings.name == NavigatorName.add_bmi,
-            );
-          },
-        );
-      } else {
-        CustomDialog.hideLoadingDialog(context);
-        CustomDialog.showErrorDialog(
-          context,
-          message: state.result.error.toString(),
-        );
-      }
-    }
+    // if (state is BmiInputSubmitedState) {
+    //   if (state.result.isLoading) {
+    //     CustomDialog.showLoadingDialog(context);
+    //   } else if (state.result.isSuccess) {
+    //     CustomDialog.hideLoadingDialog(context);
+    //     CustomDialog.showSuccessDialog(
+    //       context,
+    //       onPrimaryButtonTap: () {
+    //         Navigator.popUntil(
+    //           context,
+    //           (route) => route.settings.name == NavigatorName.add_bmi,
+    //         );
+    //       },
+    //     );
+    //   } else {
+    //     CustomDialog.hideLoadingDialog(context);
+    //     CustomDialog.showErrorDialog(
+    //       context,
+    //       message: state.result.error.toString(),
+    //     );
+    //   }
+    // }
   }
 }
 
@@ -90,7 +93,7 @@ class _BottomActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BmiInputBloc _bmiInputBloc = context.read();
+    // BmiInputBloc _bmiInputBloc = context.read();
 
     return SafeArea(
       child: Padding(
@@ -103,7 +106,9 @@ class _BottomActionButtons extends StatelessWidget {
             Expanded(
               child: OutlinedRoundedButton(
                 title: R.string.share.tr(),
-                onPressed: () {},
+                onPressed: () {
+                  AppShare.instance.userReferralCode(context, "");
+                },
               ),
             ),
             const SizedBox(
@@ -113,7 +118,11 @@ class _BottomActionButtons extends StatelessWidget {
               child: PrimaryRoundedButton(
                 title: R.string.completed.tr(),
                 onPressed: () {
-                  _bmiInputBloc.submitWeightRecord();
+                  // Navigator.popUntil(
+                  //   context,
+                  //   (route) => route.settings.name == NavigatorName.add_bmi,
+                  // );
+                  Navigator.pop(context);
                 },
               ),
             ),

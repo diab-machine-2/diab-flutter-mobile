@@ -4,9 +4,9 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/Bmi/bmi_utils.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class BmiGaugeChart extends StatelessWidget {
@@ -15,84 +15,88 @@ class BmiGaugeChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BmiInputBloc _bmiInputBloc = context.read();
-    Color thresholdColor =
-        BmiUtils.getAvgBmiThresholdColor(_bmiInputBloc.bmi);
+    // Color thresholdColor = BmiUtils.getAvgBmiThresholdColor(_bmiInputBloc.bmi);
+
     double minValue = Const.bmiThreshold.first - 2.5;
     double maxValue = Const.bmiThreshold.last + 2.5;
 
-    return BlocBuilder<BmiInputBloc, BmiInputState>(builder: (context, state) {
-      return Padding(
-        // width: 300,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: SfRadialGauge(
-          axes: <RadialAxis>[
-            RadialAxis(
-              minimum: minValue,
-              maximum: maxValue,
-              startAngle: 160,
-              endAngle: 20,
-              // showLabels: true,
-              showFirstLabel: false,
-              labelOffset: -20,
-              tickOffset: -50,
-              showTicks: true,
-              radiusFactor: 0.8,
-              canScaleToFit: true,
-              axisLineStyle: AxisLineStyle(
-                thickness: 0.3,
-                thicknessUnit: GaugeSizeUnit.factor,
-                color: AppColors.neutral5,
-                cornerStyle: CornerStyle.bothCurve,
-              ),
-              ranges: buildGaugeRangesWithHighlight(
-                thresholds: Const.bmiThreshold,
-                colors: [],
-                current: _bmiInputBloc.bmi,
-                highlightColor: thresholdColor,
-              ),
-              pointers: <GaugePointer>[
-                NeedlePointer(
-                  value: _bmiInputBloc.bmi, // BMI hiện tại
-                  needleColor: AppColors.neutral4,
-                  needleStartWidth: 1,
-                  needleEndWidth: 4,
-                  needleLength: 0.3,
-                  knobStyle: const KnobStyle(color: AppColors.neutral4),
-                  enableAnimation: true,
-                ),
-              ],
-              annotations: <GaugeAnnotation>[
-                GaugeAnnotation(
-                  angle: 90,
-                  positionFactor: 0.5,
-                  widget: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 8),
-                      Text(
-                        'Thừa cân',
-                        style: R.style.smallDisplayStyle
-                            .copyWith(color: thresholdColor),
-                      ),
-                      SizedBox(height: 8),
-                      Text.rich(TextSpan(
-                          text: "${_bmiInputBloc.weight} ",
-                          style: R.style.boldXLargeStyle,
-                          children: [
-                            TextSpan(
-                              text: "kg",
-                              style: R.style.normalTextStyle.neutral3,
-                            )
-                          ]))
-                    ],
+    return BlocBuilder<BmiInputBloc, BmiInputState>(
+        buildWhen: (previous, current) => current is BmiCalculatedState,
+        builder: (context, state) {
+          Color thresholdColor =
+              Utils.parseStringToColor(_bmiInputBloc.calculatedBmi?.colorCode);
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: SfRadialGauge(
+              axes: <RadialAxis>[
+                RadialAxis(
+                  minimum: minValue,
+                  maximum: maxValue,
+                  startAngle: 160,
+                  endAngle: 20,
+                  // showLabels: true,
+                  showFirstLabel: false,
+                  labelOffset: -20,
+                  tickOffset: -50,
+                  showTicks: true,
+                  radiusFactor: 0.8,
+                  canScaleToFit: true,
+                  axisLineStyle: AxisLineStyle(
+                    thickness: 0.3,
+                    thicknessUnit: GaugeSizeUnit.factor,
+                    color: AppColors.neutral5,
+                    cornerStyle: CornerStyle.bothCurve,
                   ),
+                  ranges: buildGaugeRangesWithHighlight(
+                    thresholds: Const.bmiThreshold,
+                    colors: [],
+                    current: _bmiInputBloc.bmi,
+                    highlightColor: thresholdColor,
+                  ),
+                  pointers: <GaugePointer>[
+                    NeedlePointer(
+                      value: _bmiInputBloc.bmi, // BMI hiện tại
+                      needleColor: AppColors.neutral4,
+                      needleStartWidth: 1,
+                      needleEndWidth: 4,
+                      needleLength: 0.3,
+                      knobStyle: const KnobStyle(color: AppColors.neutral4),
+                      enableAnimation: true,
+                    ),
+                  ],
+                  annotations: <GaugeAnnotation>[
+                    GaugeAnnotation(
+                      angle: 90,
+                      positionFactor: 0.5,
+                      widget: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(height: 8),
+                          Text(
+                            _bmiInputBloc.calculatedBmi?.note ?? "--",
+                            style: R.style.smallDisplayStyle
+                                .copyWith(color: thresholdColor),
+                          ),
+                          SizedBox(height: 8),
+                          Text.rich(TextSpan(
+                              text: "${_bmiInputBloc.weight} ",
+                              style: R.style.boldXLargeStyle,
+                              children: [
+                                TextSpan(
+                                  text: "kg",
+                                  style: R.style.normalTextStyle.neutral3,
+                                )
+                              ]))
+                        ],
+                      ),
+                    )
+                  ],
                 )
               ],
-            )
-          ],
-        ),
-      );
-    });
+            ),
+          );
+        });
   }
 
   List<GaugeRange> buildGaugeRangesWithHighlight({

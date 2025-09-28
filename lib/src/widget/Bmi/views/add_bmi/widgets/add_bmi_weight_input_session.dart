@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/colors.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_date_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_range_chart.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_text_field.dart';
@@ -55,15 +56,25 @@ class _WeightInputTextFieldState extends State<_WeightInputTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return BmiInputTextField(
-      hintText: "0.00",
-      suffixText: "kg",
-      controller: _controller,
-      onChanged: (value) {
-        if (value.trim().isNotEmpty) {
-          _bmiInputBloc.weight = double.tryParse(value) ?? 0;
+    return BlocListener<BmiInputBloc, BmiInputState>(
+      listenWhen: (previous, state) => state is BmiInputDataChangedState,
+      listener: (context, state) {
+        if (state is BmiInputDataChangedState) {
+          if (state.event == BmiInputDataChangeEvent.weightChanged) {
+            _controller.text = state.data.toString();
+          }
         }
       },
+      child: BmiInputTextField(
+        hintText: "0.00",
+        suffixText: "kg",
+        controller: _controller,
+        onChanged: (value) {
+          if (value.trim().isNotEmpty) {
+            _bmiInputBloc.weightWithoutEmit = double.tryParse(value) ?? 0;
+          }
+        },
+      ),
     );
   }
 }

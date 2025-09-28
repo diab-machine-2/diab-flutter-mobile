@@ -4,9 +4,9 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_event.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 
 class BmiInputRangeChart extends StatelessWidget {
   const BmiInputRangeChart({
@@ -55,7 +55,7 @@ class BmiInputRangeChart extends StatelessWidget {
                     child: Text(
                       "$e",
                       textAlign: TextAlign.center,
-                      style: R.style.normalTextStyle.neutral3,
+                      style: R.style.normalTextStyle.neutral4,
                     )))
                 .toList(),
             const SizedBox(width: widthOfThresholdValue / 2),
@@ -91,9 +91,16 @@ class _BmiMarkerState extends State<_BmiMarker> {
             state is BmiInputDataChangedState &&
             state.event == BmiInputDataChangeEvent.weightChanged,
         builder: (context, state) {
-          return Text(
-            "${_bmiInputBloc.bmi}",
-            style: R.style.boldNormalStyle.mainColor,
+          return Text.rich(
+            TextSpan(
+                text: "BMI ",
+                style: R.style.normalTextStyle.neutral4,
+                children: [
+                  TextSpan(
+                    text: "${_bmiInputBloc.bmi}",
+                    style: R.style.boldNormalStyle.mainColor,
+                  )
+                ]),
           );
         });
   }

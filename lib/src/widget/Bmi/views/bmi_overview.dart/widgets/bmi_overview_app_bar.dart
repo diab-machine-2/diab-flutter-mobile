@@ -5,8 +5,10 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_page.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
 
 class BmiOverviewAppBar extends StatelessWidget implements PreferredSizeWidget {
   const BmiOverviewAppBar({
@@ -16,6 +18,7 @@ class BmiOverviewAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final BmiInputBloc _bmiInputBloc = context.read();
+    final BmiBloc bmiBloc = context.read();
     final DateFormat _dateFormat = DateFormat(Const.DATE_FORMAT_POST);
 
     return CustomAppBar(
@@ -41,8 +44,12 @@ class BmiOverviewAppBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.only(right: 8.0),
             child: InkWell(
               onTap: () {
-                Navigator.of(context)
-                    .pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+                Navigator.of(context).pushNamed(
+                  NavigatorName.bmiInstructionPage,
+                  arguments: {
+                    BmiInstructionPage.bmiBlocKey: bmiBloc,
+                  },
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

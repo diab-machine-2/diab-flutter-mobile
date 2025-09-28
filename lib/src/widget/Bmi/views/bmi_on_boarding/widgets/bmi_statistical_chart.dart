@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +8,6 @@ import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
-import 'package:collection/collection.dart';
 
 class BmiStatisticalChart extends StatelessWidget {
   const BmiStatisticalChart({

@@ -1,10 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
@@ -13,7 +10,6 @@ import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/service/resource.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/enum.dart';
@@ -43,12 +39,12 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   List<BmiWeightLesson> _lessons = [];
   List<BmiWeightLesson> get lessons => _lessons;
 
-  BmiGetWeightListResponse? _historicalWeightResponse;
+  // BmiGetWeightListResponse? _historicalWeightResponse;
   List<BmiGetWeightRecord> _historicalWeightList = [];
 
   late DateTime _currentTime;
   DateTime? _selectedTimeOnChart;
-  BmiDateFilterType _periodType = BmiDateFilterType.aWeek;
+  BmiDateFilterType _periodType = BmiDateFilterType.aMonth;
   BmiDateFilterType get periodType => _periodType;
 
   BmiWeightStatistical? _weightStatistical;
@@ -56,7 +52,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   BmiWaistStatistical? _bmiWaistStatistical;
 
   String _aiAnalysicTrend = "";
-  String _aiAnalysicIndex = "";
+  String _aiAnalysicWeightRecord = "";
 
   // getter & setter
   double? get avgBmi => _bmiStatistical?.value;
@@ -73,17 +69,14 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   List<BmiGetWeightRecord> get historicalWeightList => _historicalWeightList;
 
   String get aiAnalysicTrend => _aiAnalysicTrend;
-  String get aiAnalysicIndex => _aiAnalysicIndex;
+  String get aiAnalysicWeightRecord => _aiAnalysicWeightRecord;
 
   double? get height => _bmiStatistical?.height;
   double get weightGoal => AppSettings.weightGoal;
 
   bool hasNewData = false;
 
-  bool get hasStatisticalData =>
-      _weightStatistical != null ||
-      _bmiStatistical != null ||
-      _bmiWaistStatistical != null;
+  bool get hasStatisticalData => _weightStatistical != null;
 
   DateTime? get selectedTimeOnChart => _selectedTimeOnChart;
 
@@ -153,11 +146,11 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     // _weightStatistical = result;
     // return;
 
-    final response = await _weightRepository.analyzeWeightIndex("");
+    final response = await _weightRepository.analyzeWeightIndex(event.recordId);
 
     response.when(
         success: (data) {
-          _aiAnalysicIndex = data;
+          _aiAnalysicWeightRecord = data;
           emit(BmiGetAIIndexAnalysicState(Resource.success(data)));
         },
         failure: (error) =>
@@ -256,7 +249,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   ) async {
     emit(BmiGetWeightLessonsState(Resource.loading()));
     // final String raw =
-    //     await rootBundle.loadString('assets/dummy/bmi_weight_lesson.json');
+    //     await rootBundle.loadString('assets/dummy/weight_lessons.json');
 
     // final result = (jsonDecode(raw)["data"] as List)
     //     .map((e) => BmiWeightLesson.fromJson(e))
@@ -335,8 +328,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiGetWeightRecordsEvent());
   }
 
-  void analyzeBmiRecord() {
-    add(BmiGetAIIndexAnalysicEvent());
+  void getAIAnalysicWeightRecord(String recordId) {
+    add(BmiGetAIIndexAnalysicEvent(recordId));
   }
 
   void selectPointChart(DateTime time) {

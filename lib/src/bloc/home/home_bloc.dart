@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,6 +11,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -24,10 +27,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
-import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
@@ -566,8 +566,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? 0xFF008479
           : _noValueColor,
       unit: model?.weightCard?.unit ?? "kg",
-      navigatorName:
-          haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      navigatorName: NavigatorName.add_bmi,
       args: haveWeight ? null : {'type': 'input'},
     );
 
@@ -581,8 +580,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       color: model?.bmiCard?.color != null
           ? _convertHexStringToInt(model!.bmiCard!.color)
           : _noValueColor,
-      navigatorName:
-          haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      navigatorName: NavigatorName.add_bmi,
       args: haveBmi ? null : {'type': 'input'},
     );
 

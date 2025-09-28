@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_images_list_view.dart';
 
 class AddBmiNoteSession extends StatelessWidget {
@@ -58,26 +60,38 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
-        hintStyle: R.style.normalTextStyle.copyWith(color: AppColors.neutral4),
-        focusedBorder: _border,
-        enabledBorder: _border,
-        suffixIcon: GestureDetector(
-          onTap: _pickImages,
-          child: Icon(
-            Icons.photo_rounded,
-            color: R.color.mainColor,
+    return BlocListener<BmiInputBloc, BmiInputState>(
+      listenWhen: (previous, state) => state is BmiInputDataChangedState,
+      listener: (context, state) {
+        if (state is BmiInputDataChangedState) {
+          if (state.event == BmiInputDataChangeEvent.noteChanged) {
+            _controller.text = state.data;
+          }
+        }
+      },
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
+          hintStyle: R.style.normalTextStyle.copyWith(color: AppColors.neutral4),
+          focusedBorder: _border,
+          enabledBorder: _border,
+          suffixIcon: GestureDetector(
+            onTap: _pickImages,
+            child: Icon(
+              Icons.image_outlined,
+              color: R.color.mainColor,
+            ),
           ),
+          counterText: "${_controller.text.length} / $maxLength",
+          counterStyle:
+              R.style.smallTextStyle.copyWith(color: AppColors.neutral4),
         ),
-        counterText: "${_controller.text.length} / $maxLength",
-        counterStyle:
-            R.style.smallTextStyle.copyWith(color: AppColors.neutral4),
+        minLines: 1,
+        maxLines: null,
+        style: R.style.normalTextStyle,
+        controller: _controller,
+        onChanged: (value) => _bmiInputBloc.note = value,
       ),
-      style: R.style.normalTextStyle,
-      controller: _controller,
-      onChanged: (value) => _bmiInputBloc.note = value,
     );
   }
 

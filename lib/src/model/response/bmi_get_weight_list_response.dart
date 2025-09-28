@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'dart:convert';
-
 import 'package:medical/src/utils/utils.dart';
 
 part 'bmi_get_weight_list_response.g.dart';
@@ -29,17 +27,17 @@ class BmiGetWeightRecord {
   @JsonKey(name: "id")
   final String? id;
   @JsonKey(name: "images")
-  final List<Image>? images;
+  final List<WeightRecordImage>? images;
   @JsonKey(name: "date")
   final int? date;
   @JsonKey(name: "weight")
-  final int? weight;
+  final double? weight;
   @JsonKey(name: "waist")
-  final int? waist;
+  final double? waist;
   @JsonKey(name: "height")
-  final int? height;
+  final double? height;
   @JsonKey(name: "bmi")
-  final int? bmi;
+  final double? bmi;
   @JsonKey(name: "note")
   final String? note;
   @JsonKey(name: "timeFrameId")
@@ -99,20 +97,20 @@ class BmiGetWeightRecord {
 }
 
 @JsonSerializable()
-class Image {
+class WeightRecordImage {
   @JsonKey(name: "id")
   final String? id;
   @JsonKey(name: "url")
   final String? url;
 
-  Image({
+  WeightRecordImage({
     this.id,
     this.url,
   });
 
-  factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
+  factory WeightRecordImage.fromJson(Map<String, dynamic> json) => _$WeightRecordImageFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ImageToJson(this);
+  Map<String, dynamic> toJson() => _$WeightRecordImageToJson(this);
 }
 
 @JsonSerializable()

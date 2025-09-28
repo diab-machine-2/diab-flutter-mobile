@@ -1,16 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/app_decoration_styles.dart';
-import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/utils/app_storages.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_input_type_bottom_sheet.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
 class BmiOnBoardingIntroducingSession extends StatelessWidget {
@@ -93,15 +90,39 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
   }
 
   void _onSelectMethodInput(BuildContext context) {
-    BmiHeightInputDialog.show(
+    BmiBloc bmiBloc = context.read();
+
+    if (bmiBloc.height != null) {
+      _redirectToInputPage(context, height: bmiBloc.height!);
+    } else {
+      BmiHeightInputDialog.show(
+        context,
+        onConfirmed: (height) {
+          _redirectToInputPage(context, height: height);
+        },
+      );
+    }
+  }
+
+  void _redirectToInputPage(
+    BuildContext context, {
+    required double height,
+  }) async {
+    BmiBloc bmiBloc = context.read();
+
+    final result = await Navigator.pushNamed(
       context,
-      onConfirmed: (height) {
-        Navigator.pushNamed(
-          context,
-          NavigatorName.bmiInputPage,
-          arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
-        );
+      NavigatorName.bmiInputPage,
+      arguments: {
+        AddBmiPage.bmiInputCurrentHeightKey: height,
+        AddBmiPage.bmiBlocKey: bmiBloc,
       },
     );
+
+    if (result == true) {
+      bmiBloc
+        ..hasNewData = true
+        ..init();
+    }
   }
 }

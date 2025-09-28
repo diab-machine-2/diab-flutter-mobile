@@ -2,7 +2,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:easy_localization/easy_localization.dart';
+
 
 class Strings {
   String get ok => 'ok';
@@ -1392,4 +1392,12 @@ class Strings {
   String get averageBmi => 'average_bmi';
   String get chieuCao => 'chieu_cao';
   String get input_manual_des => 'input_manual_des';
+  String get range_bmi_title => 'range_bmi_title';
+  String get bmi_type => 'bmi_type';
+  String get bmi_threshold => 'bmi_threshold';
+  String get under_weight => 'under_weight';
+  String get normal_weight => 'normal_weight';
+  String get over_weight => 'over_weight';
+  String get class_1_obesity => 'class_1_obesity';
+  String get class_2_obesity => 'class_2_obesity';
 }

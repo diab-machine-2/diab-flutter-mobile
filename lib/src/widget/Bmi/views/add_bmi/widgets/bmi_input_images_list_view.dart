@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/dimens.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_event.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 
 class BmiInputImagesListView extends StatelessWidget {
   const BmiInputImagesListView({
@@ -20,22 +21,47 @@ class BmiInputImagesListView extends StatelessWidget {
     return BlocBuilder<BmiInputBloc, BmiInputState>(
         buildWhen: (_, state) =>
             state is BmiInputDataChangedState &&
-            state.event == BmiInputDataChangeEvent.noteImagesChanged,
+            [
+              BmiInputDataChangeEvent.noteImagesChanged,
+              BmiInputDataChangeEvent.noteImagesFromRecordChanged,
+            ].contains(state.event),
         builder: (context, state) {
-          if (_bmiInputBloc.noteImages.isEmpty) return const SizedBox();
+          if (_bmiInputBloc.noteImages.isEmpty &&
+              _bmiInputBloc.noteImagesFromRecord.isEmpty)
+            return const SizedBox();
 
           return SizedBox(
             height: 56,
-            child: ListView.separated(
-              itemBuilder: (context, index) => _BmiImageThumbnail(
-                path: _bmiInputBloc.noteImages[index],
-              ),
-              separatorBuilder: (context, index) => const SizedBox(
-                width: 12,
-              ),
-              itemCount: _bmiInputBloc.noteImages.length,
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                if (_bmiInputBloc.noteImagesFromRecord.isNotEmpty)
+                  ListView.separated(
+                    itemBuilder: (context, index) => _BmiUrlImageThumbnail(
+                      url: _bmiInputBloc.noteImagesFromRecord[index].url ?? "",
+                      onRemove: () {
+                        _bmiInputBloc.removeRecordImage(
+                            _bmiInputBloc.noteImagesFromRecord[index]);
+                      },
+                    ),
+                    separatorBuilder: (context, index) => const SizedBox(
+                      width: 12,
+                    ),
+                    itemCount: _bmiInputBloc.noteImagesFromRecord.length,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                  ),
+                ListView.separated(
+                  itemBuilder: (context, index) => _BmiImageThumbnail(
+                    path: _bmiInputBloc.noteImages[index],
+                  ),
+                  separatorBuilder: (context, index) => const SizedBox(
+                    width: 12,
+                  ),
+                  itemCount: _bmiInputBloc.noteImages.length,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                ),
+              ],
             ),
           );
         });
@@ -74,6 +100,53 @@ class _BmiImageThumbnail extends StatelessWidget {
             onTap: () {
               _bmiInputBloc.removeImage(path);
             },
+            child: Icon(
+              Icons.remove_circle,
+              color: R.color.red,
+              size: removeIcon,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _BmiUrlImageThumbnail extends StatelessWidget {
+  const _BmiUrlImageThumbnail({
+    super.key,
+    required this.url,
+    this.onRemove,
+  });
+
+  final String url;
+  final Function()? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    const double removeIcon = 20;
+    // BmiInputBloc _bmiInputBloc = context.read();
+
+    return SizedBox.square(
+      dimension: 56,
+      child: Stack(
+        alignment: Alignment.topRight,
+        children: [
+          Container(
+            // width: 56,
+            // height: 56,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: CachedNetworkImageProvider(
+                      url,
+                    ),
+                    fit: BoxFit.cover),
+                borderRadius: BorderRadius.circular(AppDimens.smallRadius)),
+            margin:
+                const EdgeInsets.fromLTRB(0, removeIcon / 3, removeIcon / 3, 0),
+          ),
+          GestureDetector(
+            onTap: onRemove,
             child: Icon(
               Icons.remove_circle,
               color: R.color.red,

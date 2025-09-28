@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 
 class BmiOnBoardingPostCard extends StatelessWidget {
@@ -74,43 +75,63 @@ class BmiOnBoardingPostCard extends StatelessWidget {
               height: 8.0,
             ),
             Divider(),
-            _ShareButton()
+            _ShareButton(
+              onTap: () => _onShareTapped(
+                context,
+                sharedUrl: lesson.linkShare,
+              ),
+            )
           ],
         ),
       ),
     );
+  }
+
+  void _onShareTapped(
+    BuildContext context, {
+    String? sharedUrl,
+  }) {
+    if (sharedUrl != null) {
+      AppShare.instance.userReferralCode(context, sharedUrl);
+    }
   }
 }
 
 class _ShareButton extends StatelessWidget {
   const _ShareButton({
     super.key,
+    this.onTap,
   });
+
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 12,
-        top: 4,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            R.drawable.ic_lesson_share,
-            width: 20.0,
-            height: 20.0,
-            color: AppColors.neutral4,
-          ),
-          const SizedBox(
-            width: 12,
-          ),
-          Text(
-            R.string.share.tr(),
-            style: R.style.normalTextStyle,
-          ),
-        ],
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          bottom: 12,
+          top: 4,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              R.drawable.ic_lesson_share,
+              width: 20.0,
+              height: 20.0,
+              color: AppColors.neutral4,
+            ),
+            const SizedBox(
+              width: 12,
+            ),
+            Text(
+              R.string.share.tr(),
+              style: R.style.normalTextStyle,
+            ),
+          ],
+        ),
       ),
     );
   }

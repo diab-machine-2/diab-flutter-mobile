@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
+import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
@@ -14,22 +15,22 @@ import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_app_bar.dar
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_note_session.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_waist_circumference_input_session.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_weight_input_session.dart';
-import 'package:medical/src/widget/Bmi/views/bmi_input_waist_confirm_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
+import 'package:medical/src/widgets/button/outlined_rounded_button.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/custom_dialog.dart';
 
-class AddBmiPage extends StatefulWidget {
-  const AddBmiPage({super.key});
+class ReviseWeightPage extends StatefulWidget {
+  const ReviseWeightPage({super.key});
 
   @override
-  State<AddBmiPage> createState() => _AddBmiPageState();
+  State<ReviseWeightPage> createState() => _ReviseWeightPageState();
 
-  static const bmiInputCurrentHeightKey = "bmi_input_current_height_key";
   static const bmiBlocKey = "bmi_bloc_key";
+  static const dataKey = "data_key";
 }
 
-class _AddBmiPageState extends State<AddBmiPage> {
+class _ReviseWeightPageState extends State<ReviseWeightPage> {
   late BmiInputBloc _bmiInputBloc;
 
   @override
@@ -40,11 +41,11 @@ class _AddBmiPageState extends State<AddBmiPage> {
 
   @override
   void didChangeDependencies() {
-    super.didChangeDependencies();
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    double initialCurrentHeight =
-        arguments[AddBmiPage.bmiInputCurrentHeightKey];
-    _bmiInputBloc.currentHeight = initialCurrentHeight;
+    BmiGetWeightRecord initialData = arguments[ReviseWeightPage.dataKey];
+    _bmiInputBloc.initRevisingData(initialData);
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -86,21 +87,22 @@ class _AddBmiPageState extends State<AddBmiPage> {
           ),
         ),
       ),
-      bottomNavigationBar: _SaveButton(),
+      bottomNavigationBar: _ActionButtons(),
     );
   }
 
   void _handleListener(BuildContext context, BmiInputState state) {
-    if (state is BmiWaistValidatedState) {
-      if (state.hasWaist) {
-        _bmiInputBloc.submitWeightRecord();
-      } else {
-        BmiInputWaistConfirmDialog.show(
-          context,
-          onConfirmed: _bmiInputBloc.submitWeightRecord,
-        );
-      }
-    } else if (state is BmiInputErrorState) {
+    // if (state is BmiWaistValidatedState) {
+    //   if (state.hasWaist) {
+    //     _bmiInputBloc.submitWeightRecord();
+    //   } else {
+    //     BmiInputWaistConfirmDialog.show(
+    //       context,
+    //       onConfirmed: _bmiInputBloc.submitWeightRecord,
+    //     );
+    //   }
+    // } else
+    if (state is BmiInputErrorState) {
       CustomDialog.showErrorDialog(
         context,
         message: state.error,
@@ -113,6 +115,24 @@ class _AddBmiPageState extends State<AddBmiPage> {
         CustomDialog.showSuccessDialog(
           context,
           onPrimaryButtonTap: () => _redirectToNextStep(state.result.data!),
+        );
+      } else {
+        CustomDialog.hideLoadingDialog(context);
+        CustomDialog.showErrorDialog(
+          context,
+          message: state.result.error.toString(),
+        );
+      }
+    } else if (state is BmiInputRecordDeletedState) {
+      if (state.result.isLoading) {
+        CustomDialog.showLoadingDialog(context);
+      } else if (state.result.isSuccess) {
+        CustomDialog.hideLoadingDialog(context);
+        CustomDialog.showSuccessDialog(
+          context,
+          onPrimaryButtonTap: () {
+            Navigator.pop(context, true);
+          },
         );
       } else {
         CustomDialog.hideLoadingDialog(context);
@@ -142,8 +162,8 @@ class _AddBmiPageState extends State<AddBmiPage> {
   }
 }
 
-class _SaveButton extends StatelessWidget {
-  const _SaveButton({
+class _ActionButtons extends StatelessWidget {
+  const _ActionButtons({
     super.key,
   });
 
@@ -152,14 +172,38 @@ class _SaveButton extends StatelessWidget {
     final BmiInputBloc _bmiInputBloc = context.read();
 
     return SafeArea(
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 12,
           vertical: 16,
         ),
-        child: PrimaryRoundedButton(
-          title: R.string.confirm.tr(),
-          onPressed: _bmiInputBloc.validate,
+        color: R.color.white,
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedRoundedButton(
+                title: R.string.delete.tr(),
+                onPressed: () {
+                  CustomDialog.showConfirmDialog(
+                    context,
+                    message: R.string.confirm_to_remove_data.tr(),
+                    onPrimaryButtonTap: () {
+                      _bmiInputBloc.deleteWeightRecord();
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(
+              width: 8,
+            ),
+            Expanded(
+              child: PrimaryRoundedButton(
+                title: R.string.confirm.tr(),
+                onPressed: _bmiInputBloc.reviseWeightRecord,
+              ),
+            ),
+          ],
         ),
       ),
     );

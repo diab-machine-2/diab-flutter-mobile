@@ -2301,7 +2301,36 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<CommonResponse> submitWeightRecord({
+  Future<CalculateBmiResponse> calculateBmi({
+    required weight,
+    required height,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'weight': weight,
+      r'height': height,
+    };
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<CalculateBmiResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Bmi/Calculate-Bmi',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = CalculateBmiResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SubmitWeightRecordResponse> submitWeightRecord({
     images,
     required date,
     required weight,
@@ -2362,8 +2391,8 @@ class _AppApi implements AppApi {
         thresholdType.toString(),
       ));
     }
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<CommonResponse>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SubmitWeightRecordResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -2376,7 +2405,121 @@ class _AppApi implements AppApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = CommonResponse.fromJson(_result.data!);
+    final value = SubmitWeightRecordResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<SubmitWeightRecordResponse> reviseWeightRecord({
+    required id,
+    images,
+    required date,
+    required weight,
+    waist,
+    height,
+    note,
+    timeFrameValue,
+    timeFrameId,
+    thresholdType,
+    removalImageIds,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry(
+      'id',
+      id,
+    ));
+    if (images != null) {
+      _data.files.addAll(images.map((i) => MapEntry('images', i)));
+    }
+    _data.fields.add(MapEntry(
+      'date',
+      date.toString(),
+    ));
+    _data.fields.add(MapEntry(
+      'weight',
+      weight.toString(),
+    ));
+    if (waist != null) {
+      _data.fields.add(MapEntry(
+        'waist',
+        waist.toString(),
+      ));
+    }
+    if (height != null) {
+      _data.fields.add(MapEntry(
+        'height',
+        height.toString(),
+      ));
+    }
+    if (note != null) {
+      _data.fields.add(MapEntry(
+        'note',
+        note,
+      ));
+    }
+    if (timeFrameValue != null) {
+      _data.fields.add(MapEntry(
+        'timeFrameValue',
+        timeFrameValue.toString(),
+      ));
+    }
+    if (timeFrameId != null) {
+      _data.fields.add(MapEntry(
+        'timeFrameId',
+        timeFrameId,
+      ));
+    }
+    if (thresholdType != null) {
+      _data.fields.add(MapEntry(
+        'thresholdType',
+        thresholdType.toString(),
+      ));
+    }
+    removalImageIds?.forEach((i) {
+      _data.fields.add(MapEntry('removalImageIds', i));
+    });
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SubmitWeightRecordResponse>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Input',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = SubmitWeightRecordResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<DeleteWeightRecordResponse> deleteWeightRecord({required id}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<DeleteWeightRecordResponse>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/Input/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = DeleteWeightRecordResponse.fromJson(_result.data!);
     return value;
   }
 

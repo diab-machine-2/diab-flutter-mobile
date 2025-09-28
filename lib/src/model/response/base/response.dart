@@ -39,18 +39,6 @@ class SingleResponse<T> {
   }
 }
 
-// class Meta {
-//   final bool success;
-//   Meta({required this.success});
-
-//   factory Meta.fromJson(Map<String, dynamic> json) {
-//     return Meta(
-//       success: json['success'],
-//     );
-//   }
-// }
-
-
 @JsonSerializable()
 class Meta {
     @JsonKey(name: "success")

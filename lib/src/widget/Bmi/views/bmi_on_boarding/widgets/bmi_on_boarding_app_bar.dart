@@ -1,17 +1,21 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_page.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 
-class BmiOnBoardingAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const BmiOnBoardingAppBar({
-    super.key
-  });
+class BmiOnBoardingAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const BmiOnBoardingAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    BmiBloc bmiBloc = context.read();
+
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
       title: Text(
@@ -35,8 +39,12 @@ class BmiOnBoardingAppBar extends StatelessWidget implements PreferredSizeWidget
             padding: const EdgeInsets.only(right: 8.0),
             child: InkWell(
               onTap: () {
-                Navigator.of(context)
-                    .pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+                Navigator.of(context).pushNamed(
+                  NavigatorName.bmiInstructionPage,
+                  arguments: {
+                    BmiInstructionPage.bmiBlocKey: bmiBloc,
+                  },
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -51,7 +59,7 @@ class BmiOnBoardingAppBar extends StatelessWidget implements PreferredSizeWidget
       ],
     );
   }
-  
+
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

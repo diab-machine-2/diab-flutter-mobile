@@ -45,5 +45,7 @@ class BmiGetAIAnalysicEvent extends BmiEvent {
 }
 
 class BmiGetAIIndexAnalysicEvent extends BmiEvent {
-  const BmiGetAIIndexAnalysicEvent();
+  final String recordId;
+  
+  const BmiGetAIIndexAnalysicEvent(this.recordId);
 }

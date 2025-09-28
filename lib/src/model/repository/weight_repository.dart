@@ -1,9 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/revise_weight_record_request.dart';
 import 'package:medical/src/model/request/submit_weight_record_request.dart';
-import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/model/response/bmi_get_analyze_weight_index_response.dart';
 import 'package:medical/src/model/response/bmi_get_analyze_weight_trend_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_detail_response.dart';
@@ -12,7 +10,9 @@ import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
-import 'package:medical/src/model/response/common_response.dart';
+import 'package:medical/src/model/response/calculate_bmi_response.dart';
+import 'package:medical/src/model/response/delete_weight_record_response.dart';
+import 'package:medical/src/model/response/submit_weight_record_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 
@@ -53,10 +53,26 @@ class WeightRepository {
     }
   }
 
-  Future<ApiResult<CommonResponse>> submitWeightRecord(
+  Future<ApiResult<CaculateBmiModel>> calculateBmi({
+    required double weight,
+    required int height,
+  }) async {
+    try {
+      final response = await appClient.calculateBmi(
+        weight: weight,
+        height: height,
+      );
+      return ApiResult.success(data: response.data!);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SubmitWeightRecordResponse>> submitWeightRecord(
       SubmitWeightRecordRequest request) async {
     try {
-      final CommonResponse response = await appClient.submitWeightRecord(
+      final SubmitWeightRecordResponse response =
+          await appClient.submitWeightRecord(
         date: request.date ~/ 1000,
         weight: request.weight,
         height: request.height,
@@ -66,6 +82,39 @@ class WeightRepository {
             request.images?.map((e) => MultipartFile.fromFileSync(e)).toList(),
       );
       return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SubmitWeightRecordResponse>> reviseWeightRecord(
+      ReviseWeightRecordRequest request) async {
+    try {
+      final SubmitWeightRecordResponse response =
+          await appClient.reviseWeightRecord(
+        id: request.id,
+        date: request.date ~/ 1000,
+        weight: request.weight,
+        height: request.height,
+        waist: request.waist,
+        note: request.note,
+        removalImageIds: request.removalImageIds,
+        images:
+            request.images?.map((e) => MultipartFile.fromFileSync(e)).toList(),
+      );
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<bool>> deleteWeightRecord({
+    required String id,
+  }) async {
+    try {
+      final DeleteWeightRecordResponse response =
+          await appClient.deleteWeightRecord(id: id);
+      return ApiResult.success(data: response.data ?? false);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

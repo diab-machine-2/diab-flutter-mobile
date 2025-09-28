@@ -18,6 +18,7 @@ class BmiDateFilterBar extends StatefulWidget {
 class _BmiDateFilterBarState extends State<BmiDateFilterBar>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late BmiBloc _bmiBloc;
 
   final List<Widget> _tabs = BmiDateFilterType.values
       .map((e) => Padding(
@@ -31,7 +32,12 @@ class _BmiDateFilterBarState extends State<BmiDateFilterBar>
 
   @override
   void initState() {
-    _tabController = TabController(length: _tabs.length, vsync: this);
+    _bmiBloc = context.read();
+    _tabController = TabController(
+      length: _tabs.length,
+      vsync: this,
+      initialIndex: _bmiBloc.periodType.index,
+    );
     super.initState();
   }
 

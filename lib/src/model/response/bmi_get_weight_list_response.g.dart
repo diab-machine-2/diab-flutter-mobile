@@ -28,13 +28,13 @@ BmiGetWeightRecord _$BmiGetWeightRecordFromJson(Map<String, dynamic> json) =>
     BmiGetWeightRecord(
       id: json['id'] as String?,
       images: (json['images'] as List<dynamic>?)
-          ?.map((e) => Image.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => WeightRecordImage.fromJson(e as Map<String, dynamic>))
           .toList(),
       date: (json['date'] as num?)?.toInt(),
-      weight: (json['weight'] as num?)?.toInt(),
-      waist: (json['waist'] as num?)?.toInt(),
-      height: (json['height'] as num?)?.toInt(),
-      bmi: (json['bmi'] as num?)?.toInt(),
+      weight: (json['weight'] as num?)?.toDouble(),
+      waist: (json['waist'] as num?)?.toDouble(),
+      height: (json['height'] as num?)?.toDouble(),
+      bmi: (json['bmi'] as num?)?.toDouble(),
       note: json['note'] as String?,
       timeFrameId: json['timeFrameId'] as String?,
       timeFrameText: json['timeFrameText'] as String?,
@@ -70,12 +70,14 @@ Map<String, dynamic> _$BmiGetWeightRecordToJson(BmiGetWeightRecord instance) =>
       'isPregnancy': instance.isPregnancy,
     };
 
-Image _$ImageFromJson(Map<String, dynamic> json) => Image(
+WeightRecordImage _$WeightRecordImageFromJson(Map<String, dynamic> json) =>
+    WeightRecordImage(
       id: json['id'] as String?,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{
+Map<String, dynamic> _$WeightRecordImageToJson(WeightRecordImage instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'url': instance.url,
     };

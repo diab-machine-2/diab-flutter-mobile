@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/enum.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_record_card.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_statistical_data_app_bar.dart';
@@ -24,10 +26,12 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
   void initState() {
     super.initState();
     _bmiBloc = context.read();
-    _bmiBloc.changePeriodTime(
-      BmiDateFilterType.aWeek,
-      isStatisticalView: false,
-    );
+    _bmiBloc
+      ..changePeriodTime(
+        BmiDateFilterType.aWeek,
+        isStatisticalView: false,
+      )
+      ..hasNewData = false;
   }
 
   @override
@@ -58,10 +62,6 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
                     },
                   ),
                 ),
-                const SizedBox(
-                  height: 12,
-                ),
-
                 Expanded(child: _HistoricalWeightListView())
               ],
             );
@@ -83,9 +83,27 @@ class _HistoricalWeightListView extends StatelessWidget {
         buildWhen: (previous, state) => state is BmiGetWeightIndexListState,
         builder: (context, state) {
           return ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
             itemBuilder: (context, index) => BmiRecordCard(
               data: _bmiBloc.historicalWeightList[index],
+              onTap: () async {
+                final updateResult = await Navigator.pushNamed(
+                  context,
+                  NavigatorName.bmiReviseRecordPage,
+                  arguments: {
+                    ReviseWeightPage.bmiBlocKey: _bmiBloc,
+                    ReviseWeightPage.dataKey:
+                        _bmiBloc.historicalWeightList[index],
+                  },
+                );
+
+                if (updateResult == true) {
+                  _bmiBloc.fetchHistoricalWeight();
+                }
+              },
             ),
             separatorBuilder: (context, index) => const SizedBox(
               height: 12,

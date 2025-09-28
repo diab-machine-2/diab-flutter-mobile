@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
@@ -23,6 +24,7 @@ import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_post_se
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
+import 'package:medical/src/widgets/custom_dialog.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 // import 'widgets/bloodpresure_lesson_section.dart';
@@ -54,22 +56,7 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
     _bmiBloc = context.read<BmiBloc>();
     _bmiBloc.init();
     super.initState();
-    // _loadLessons();
   }
-
-  // void _loadLessons() async {
-  //   try {
-  //     _pinedLessons.clear();
-  //     final lessons = await BloodPressureClient().fetchBloodPressureLessons();
-  //     if (lessons != null) {
-  //       setState(() {
-  //         _pinedLessons.addAll(lessons);
-  //       });
-  //     }
-  //   } catch (e, s) {
-  //     TrackingManager.recordError(e, s);
-  //   }
-  // }
 
   void _navigateToInputSelection() async {
     // bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
@@ -106,8 +93,17 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (_, state) => state is BmiGetWaistStatisticalState,
+    return BlocConsumer<BmiBloc, BmiState>(
+        buildWhen: (_, state) => state is BmiGetWeightStatisticalState,
+        listener: (context, state) {
+          if (state is BmiGetWeightStatisticalState) {
+            if (state.data.isLoading) {
+              CustomDialog.showLoadingDialog(context);
+            } else {
+              CustomDialog.hideLoadingDialog(context);
+            }
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             backgroundColor: R.color.glucose_bg_color,
@@ -116,33 +112,45 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  if (!_bmiBloc.hasStatisticalData) ...[
-                    const SizedBox(height: 24),
-                    const BmiOnBoardingIntroducingSession(),
-                    const SizedBox(height: 12),
-                    const BmiInstructionSession(),
-                    const SizedBox(height: 12),
-                  ] else ...[
-                    const BmiOnBoardingChartSession(),
-                    const SizedBox(height: 12),
-                    const BmiOnboardingAvarageBmiSession(),
-                    const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Row(
-                        children: [
-                          const Expanded(
-                              child: BmiOnboardingCurrentHeightWidget()),
-                          const SizedBox(
-                            width: 12,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 1000),
+                    child: !_bmiBloc.hasStatisticalData
+                        ? Column(
+                            children: [
+                              const SizedBox(height: 24),
+                              const BmiOnBoardingIntroducingSession(),
+                              const SizedBox(height: 12),
+                              const BmiInstructionSession(),
+                              const SizedBox(height: 12),
+                            ],
+                          )
+                        : Column(
+                            children: [
+                              const BmiOnBoardingChartSession(),
+                              const SizedBox(height: 12),
+                              const BmiOnboardingAvarageBmiSession(),
+                              const SizedBox(height: 12),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: Row(
+                                  children: [
+                                    const Expanded(
+                                        child:
+                                            BmiOnboardingCurrentHeightWidget()),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                    const Expanded(
+                                        child: BmiOnboardingWeightGoalWidget()),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
                           ),
-                          const Expanded(
-                              child: BmiOnboardingWeightGoalWidget()),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
+                  ),
+
                   // _buildPinnedLessonsSection()
                   const BmiPostSession(),
                   const SizedBox(height: 24),
@@ -304,25 +312,36 @@ class _BottomBar extends StatelessWidget {
 
     if (bmiBloc.height != null) {
       _redirectToInputPage(context, height: bmiBloc.height!);
+    } else {
+      BmiHeightInputDialog.show(
+        context,
+        onConfirmed: (height) {
+          _redirectToInputPage(context, height: height);
+        },
+      );
     }
-
-    BmiHeightInputDialog.show(
-      context,
-      onConfirmed: (height) {
-        _redirectToInputPage(context, height: height);
-      },
-    );
   }
 
   void _redirectToInputPage(
     BuildContext context, {
     required double height,
-  }) {
-    Navigator.pushNamed(
+  }) async {
+    BmiBloc bmiBloc = context.read();
+
+    final result = await Navigator.pushNamed(
       context,
       NavigatorName.bmiInputPage,
-      arguments: {AddBmiPage.bmiInputCurrentHeightKey: height},
+      arguments: {
+        AddBmiPage.bmiInputCurrentHeightKey: height,
+        AddBmiPage.bmiBlocKey: bmiBloc,
+      },
     );
+
+    if (result == true) {
+      bmiBloc
+        ..hasNewData = true
+        ..init();
+    }
   }
 }
 
@@ -339,31 +358,39 @@ class _StatisticalDataViewButton extends StatelessWidget {
       onTap: () {
         _bmiBloc.fetchHistoricalWeight();
 
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                    value: _bmiBloc, child: BmiStatisticalDataPage())));
+        Navigator.pushNamed(
+          context,
+          NavigatorName.bmiHistoricalPage,
+          arguments: {
+            BmiStatisticalDataPage.bmiBlocKey: _bmiBloc,
+          },
+        );
       },
       child: Stack(
         alignment: Alignment.topRight,
         children: [
           Container(
-            child: Icon(Icons.list_rounded),
+            child: SvgPicture.asset("lib/res/icons/icon_historical_data.svg"),
             height: R.dimen.default_button_height,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(
                 color: R.color.backgroundColorNew,
                 borderRadius: BorderRadius.all(Radius.circular(50))),
           ),
-          Container(
-            height: 12,
-            width: 12,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.red,
-            ),
-          )
+          if (_bmiBloc.hasNewData)
+            BlocBuilder<BmiBloc, BmiState>(
+                buildWhen: (previous, current) =>
+                    current is BmiGetWeightStatisticalState,
+                builder: (context, state) {
+                  return Container(
+                    height: 12,
+                    width: 12,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red,
+                    ),
+                  );
+                })
         ],
       ),
     );
