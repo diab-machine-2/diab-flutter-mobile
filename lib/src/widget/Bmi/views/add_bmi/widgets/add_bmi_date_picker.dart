@@ -8,7 +8,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custom_datetime_picker.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/custom_datetime_picker.dart';
 
 class AddBmiDatePicker extends StatefulWidget {
   const AddBmiDatePicker({
