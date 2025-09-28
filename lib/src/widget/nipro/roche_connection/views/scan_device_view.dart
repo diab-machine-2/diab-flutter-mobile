@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -23,6 +22,7 @@ import '../blocs/rocheConnection_cubit.dart';
 import '../data/models/GlucoseMeasurementRecord.dart';
 import '../data/models/glucose_config.dart';
 import '../data/models/glucose_functions.dart';
+import '../utils/glucose_sync_cache.dart';
 import '../widgets/condition_widget.dart';
 import '../widgets/result_sync_data_new.dart';
 
@@ -32,7 +32,10 @@ enum AppStatus {
   isConnecting,
   isSyncing,
   isSyncCompleted,
-  isNoDeviceFound
+  isNoDeviceFound,
+  isManualForget, // Case 2.1: Xóa history bluetooth trên điện thoại
+  isDeviceUnpair, // Case 3.1: Xóa pair trên máy đường huyết
+  isDeviceAlreadyPaired // Device đã pair - show solution screen
 }
 
 class ScanDeviceView extends StatefulWidget {
@@ -61,34 +64,119 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   List<Map<String, String>> glucosedList = [];
   bool deviceFound = false;
   int previousDataCount = 0;
+  bool isConnectionInProgress = false; // Track if connection is in progress
   late GlucoseUnitsFlag glucoseUnits;
   String? modelName;
   String? modelNumber;
 
   @override
   void initState() {
-    _startScan();
-    _checkAppStatus();
     super.initState();
     _controller = AnimationController(
       duration: Duration(seconds: 3),
       vsync: this,
     )..repeat();
+    _clearCacheIfNeeded(); // Clear cache khi app mới cài
+    _startScan();
+    _checkAppStatus();
+  }
+
+  /// Clear cache khi app mới cài để đảm bảo sync đầy đủ
+  Future<void> _clearCacheIfNeeded() async {
+    try {
+      // Kiểm tra xem có phải lần đầu mở app không
+      final isFirstLaunch = await GlucoseSyncCache.isFirstLaunch();
+      if (isFirstLaunch) {
+        print('🔄 First launch detected - clearing sync cache');
+        await GlucoseSyncCache.clearAllCache();
+        await GlucoseSyncCache.setFirstLaunchCompleted();
+      }
+    } catch (e) {
+      print('⚠️ Error clearing cache: $e');
+    }
+  }
+
+  /// Build RACP (Record Access Control Point) request command
+  /// Uses cache time for incremental sync if available
+  Future<List<int>> _buildRACPRequest() async {
+    // Check if we should do incremental sync
+    final deviceId = device?.remoteId.str ?? '';
+    final userId = AppSettings.userInfo?.id ?? '';
+
+    if (deviceId.isEmpty || userId.isEmpty) {
+      print(
+          '📋 RACP REQUEST: Missing deviceId or userId, fallback to full sync');
+      return [0x01, 0x01]; // Fallback to full sync
+    }
+
+    final shouldFullSync =
+        await GlucoseSyncCache.shouldFullSync(deviceId, userId);
+
+    if (shouldFullSync) {
+      print('📋 RACP REQUEST: Full sync - Request all stored records');
+      return [0x01, 0x01]; // OpCode: Report all stored records
+    } else {
+      // Incremental sync - get start time from cache
+      final startTime =
+          await GlucoseSyncCache.getIncrementalSyncStartTime(deviceId, userId);
+      if (startTime != null) {
+        print(
+            '📋 RACP REQUEST: Incremental sync from ${startTime.toIso8601String()}');
+        // Build RACP request with time filter
+        return _buildRACPRequestWithTimeFilter(startTime);
+      } else {
+        print(
+            '📋 RACP REQUEST: No start time available, fallback to full sync');
+        return [0x01, 0x01]; // Fallback to full sync
+      }
+    }
+  }
+
+  /// Build RACP request with time filter for incremental sync
+  List<int> _buildRACPRequestWithTimeFilter(DateTime startTime) {
+    // Convert DateTime to Bluetooth time format (seconds since 2000-01-01)
+    final bluetoothEpoch = DateTime(2000, 1, 1);
+    final secondsSinceEpoch = startTime.difference(bluetoothEpoch).inSeconds;
+
+    // RACP request with time filter: OpCode(0x01) + Operator(0x03 = Greater than or equal) + FilterType(0x02 = User facing time) + Time(4 bytes)
+    final timeBytes = [
+      (secondsSinceEpoch >> 24) & 0xFF,
+      (secondsSinceEpoch >> 16) & 0xFF,
+      (secondsSinceEpoch >> 8) & 0xFF,
+      secondsSinceEpoch & 0xFF,
+    ];
+
+    return [0x01, 0x03, 0x02, ...timeBytes];
+  }
+
+  Timer? _statusTimer;
+
+  void _safeSetState(VoidCallback fn) {
+    if (mounted) {
+      setState(fn);
+    }
   }
 
   void _checkAppStatus() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      secondsStreamController.add(DateTime.now().second);
+    _statusTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (!secondsStreamController.isClosed) {
+        secondsStreamController.add(DateTime.now().second);
+      } else {
+        timer.cancel();
+      }
     });
   }
 
   @override
   void dispose() {
+    _statusTimer?.cancel();
     if (device != null) {
       device!.disconnect();
     }
     characteristicListener?.cancel();
-    secondsStreamController.close();
+    if (!secondsStreamController.isClosed) {
+      secondsStreamController.close();
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -119,6 +207,12 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                     return _scanDeviceWidget();
                   case AppStatus.isConnecting:
                     return _enterPinCode();
+                  case AppStatus.isManualForget:
+                    return _manualForgetDeviceWidget(); // Case 2.1
+                  case AppStatus.isDeviceUnpair:
+                    return _deviceUnpairWidget(); // Case 3.1
+                  case AppStatus.isDeviceAlreadyPaired:
+                    return _deviceAlreadyPairedWidget(); // Device đã pair
                   case AppStatus.isSyncCompleted:
                     return _selectData(context);
                   default:
@@ -165,17 +259,56 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   Future<void> submitSyncDataNew(
       List<Map<String, String>> selectedGlucose) async {
-    setState(() {
-      isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
     bool result = await GlucoseClient().postGlucoseInputs(selectedGlucose,
         modelName: modelName, modelNumber: modelNumber);
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
     if (result) {
       Message.showToastMessage(
           context, "Đồng bộ chỉ số đường huyết thành công!");
+
+      // API postGlucoseInputs() successful
+
+      // Save cache time and device info after successful sync
+      if (device != null) {
+        final syncTime = DateTime.now();
+        final deviceId = device!.remoteId.str;
+        final userId = AppSettings.userInfo?.id ?? '';
+
+        // Lưu cache mới với deviceId + userId + lastSyncTime
+        if (deviceId.isNotEmpty && userId.isNotEmpty) {
+          await GlucoseSyncCache.saveSyncCache(
+            deviceId: deviceId,
+            userId: userId,
+            lastSyncTime: syncTime,
+            deviceName: device!.platformName,
+            modelName: modelName,
+            modelNumber: modelNumber,
+          );
+          print(
+              '💾 New cache saved: Device=$deviceId, User=$userId, Time=${syncTime.toIso8601String()}');
+        }
+
+        // Giữ lại cache cũ để backward compatibility
+        await GlucoseSyncCache.saveLastSyncTime(syncTime);
+        await GlucoseSyncCache.saveLastSyncDevice(
+          deviceId: deviceId,
+          deviceName: device!.platformName,
+          modelName: modelName,
+          modelNumber: modelNumber,
+        );
+        print(
+            '💾 Legacy cache updated: Sync time saved at ${syncTime.toIso8601String()}');
+      }
+
       Set<String> uniqueDays = selectedGlucose.map((e) => e['date']!).toSet();
       await TrackingManager.trackEvent(
         'glucose_sync',
@@ -196,6 +329,8 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           .notifyObservers([],
               notifyName: "glucose_change_data", map: {'index': 1}));
     } else {
+      // API postGlucoseInputs() failed
+
       await TrackingManager.trackEvent(
         'glucose_sync',
         'kpi_glucose_sync',
@@ -261,7 +396,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                       } else {
                         selectedGlucose.add(glucoseData);
                       }
-                      setState(() {
+                      _safeSetState(() {
                         selectAllData =
                             selectedGlucose.length == glucosedList.length;
                       });
@@ -292,14 +427,44 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
         ),
         Container(
           margin: EdgeInsets.only(top: 25),
-          width: double.infinity,
-          child: ButtonWidget(
-            title: 'Xác nhận & Xem dữ liệu',
-            onPressed: selectedGlucose.isEmpty
-                ? null
-                : () {
-                    submitSyncDataNew(selectedGlucose);
-                  },
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Xác nhận & Xem dữ liệu',
+                  onPressed: selectedGlucose.isEmpty
+                      ? null
+                      : () {
+                          submitSyncDataNew(selectedGlucose);
+                        },
+                ),
+              ),
+              if (glucosedList.isEmpty &&
+                  GlucoseSyncCache.isAccuChekDevice(modelNumber)) ...[
+                SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  child: ButtonWidget(
+                    title: 'Xóa Cache & Thử lại',
+                    backgroundColor: Colors.grey,
+                    onPressed: () async {
+                      print('🔄 Manual cache clear requested from sync screen');
+                      await GlucoseSyncCache.clearAllCache();
+                      await FlutterBluePlus.stopScan();
+                      setState(() {
+                        deviceFound = false;
+                        appStatus = AppStatus.isScanning;
+                        isConnectionInProgress = false;
+                      });
+                      _startScan();
+                      Message.showToastMessage(
+                          context, 'Đã xóa cache, kết nối lại...');
+                    },
+                  ),
+                ),
+              ],
+            ],
           ),
         )
       ],
@@ -436,69 +601,441 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _btnClose(context),
-        Container(
-          constraints: BoxConstraints(
-              minHeight: AppMediaQuery.deviceHeigthAvailable - 100),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                children: [
-                  Image.asset(
-                    R.drawable.img_error,
-                    width: 170,
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 20),
+                Image.asset(
+                  R.drawable.img_error,
+                  width: 150,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Không tìm thấy thiết bị',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
                   ),
-                  Text(
-                    'Không tìm thấy thiết bị',
+                ),
+                SizedBox(height: 10),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'Hãy đảm bảo thiết bị kết nối đang ở trạng thái "Paring"',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: Color(0xFF777E90),
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: 281,
-                    ),
-                    child: Text(
-                      'Hãy đảm bảo thiết bị kết nối đang ở trạng thái “Paring”',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF777E90),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+                SizedBox(height: 30),
+                Divider(),
+                SizedBox(height: 10),
+                ConditionWidget(deviceInfo: widget.cubit.deviceInfo!),
+                SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 20),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Kết nối lại',
+                  onPressed: () async {
+                    await FlutterBluePlus.stopScan();
+                    setState(() {
+                      deviceFound = false;
+                      appStatus = AppStatus.isScanning;
+                      isConnectionInProgress = false; // Reset connection flag
+                    });
+                    _startScan();
+                  },
+                ),
               ),
-              Column(
-                children: [
-                  SizedBox(
-                    height: 30,
-                    child: Divider(),
+              if (GlucoseSyncCache.isAccuChekDevice(modelNumber)) ...[
+                SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  child: ButtonWidget(
+                    title: 'Xóa Cache & Kết nối lại',
+                    backgroundColor: Colors.orange,
+                    onPressed: () async {
+                      print('🔄 Manual cache clear requested');
+                      await GlucoseSyncCache.clearAllCache();
+                      await FlutterBluePlus.stopScan();
+                      setState(() {
+                        deviceFound = false;
+                        appStatus = AppStatus.isScanning;
+                        isConnectionInProgress = false;
+                      });
+                      _startScan();
+                      Message.showToastMessage(
+                          context, 'Đã xóa cache, kết nối lại...');
+                    },
                   ),
-                  ConditionWidget(deviceInfo: widget.cubit.deviceInfo!),
-                ],
+                ),
+              ],
+            ],
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _manualForgetDeviceWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _btnClose(context),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                Icon(
+                  Icons.bluetooth,
+                  size: 120,
+                  color: Color(0xFF007AFF),
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'Cần xóa thiết bị khỏi Bluetooth',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Thiết bị đã được ghép nối trước đó',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF6C757D),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Color(0xFFE9ECEF)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hướng dẫn xử lý:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF495057),
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      _buildStep('1', 'Vào Settings > Bluetooth trên iPhone'),
+                      _buildStep('2',
+                          'Tìm thiết bị "${device?.platformName ?? "máy đo đường huyết"}" trong "MY DEVICES"'),
+                      _buildStep(
+                          '3', 'Nhấn vào biểu tượng (i) bên cạnh tên thiết bị'),
+                      _buildStep('4', 'Chọn "Forget This Device" và xác nhận'),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFF3CD),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Color(0xFFFFE69C)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline,
+                          color: Color(0xFF856404), size: 20),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Sau khi xóa thiết bị khỏi Bluetooth, quay lại ứng dụng để kết nối lại.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF856404),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(
+            left: 15,
+            right: 15,
+            bottom: MediaQuery.of(context).padding.bottom + 15,
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Tìm kiếm lại thiết bị',
+                  onPressed: () async {
+                    try {
+                      _safeSetState(() {
+                        isLoading = true;
+                        appStatus = AppStatus.isScanning;
+                      });
+                      // Restart scan để tìm device lại
+                      _startScan();
+                    } catch (e) {
+                      _safeSetState(() {
+                        isLoading = false;
+                      });
+                    }
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Thử lại kết nối',
+                  backgroundColor: Colors.transparent,
+                  textColor: Color(0xFF007AFF),
+                  borderColor: Color(0xFF007AFF),
+                  onPressed: () async {
+                    if (device != null) {
+                      try {
+                        print(
+                            '=== CASE 2.1: USER PRESSED "THỬ LẠI KẾT NỐI" ===');
+                        print('Device: ${device!.platformName}');
+                        print('Retrying connection after manual forget...');
+                        _safeSetState(() {
+                          isLoading = true;
+                        });
+                        await connectDevice(device!);
+                      } finally {
+                        _safeSetState(() {
+                          isLoading = false;
+                        });
+                      }
+                    }
+                  },
+                ),
               ),
             ],
           ),
         ),
-        Container(
-          width: double.infinity,
-          child: ButtonWidget(
-            title: 'Kết nối lại',
-            onPressed: () async {
-              await FlutterBluePlus.stopScan();
-              setState(() {
-                deviceFound = false;
-                appStatus = AppStatus.isScanning;
-              });
-              _startScan();
-            },
-          ),
-        )
       ],
+    );
+  }
+
+  Widget _deviceUnpairWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _btnClose(context),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                Icon(
+                  Icons.bluetooth,
+                  size: 120,
+                  color: Color(0xFF007AFF),
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'Lỗi kết nối thiết bị',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Máy đường huyết đang kết nối với điện thoại\nnhưng điện thoại đã bị xóa kết nối',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF6C757D),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Color(0xFFE9ECEF)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hướng dẫn xử lý:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF495057),
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      _buildStep('1', 'Mở máy đường huyết'),
+                      _buildStep('2',
+                          'Chọn cài đặt và xóa pair với điện thoại đang kết nối'),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFF3CD),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Color(0xFFFFE69C)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline,
+                          color: Color(0xFF856404), size: 20),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Sau khi xóa pair trên máy, quay lại ứng dụng và thử kết nối lại.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF856404),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(
+            left: 15,
+            right: 15,
+            bottom: MediaQuery.of(context).padding.bottom + 15,
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Đã xóa pair trên máy',
+                  onPressed: () async {
+                    try {
+                      _safeSetState(() {
+                        isLoading = true;
+                        appStatus = AppStatus.isScanning;
+                      });
+                      // Restart scan để tìm device lại
+                      _startScan();
+                    } catch (e) {
+                      _safeSetState(() {
+                        isLoading = false;
+                      });
+                    }
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Thử lại kết nối',
+                  backgroundColor: Colors.transparent,
+                  textColor: Color(0xFF007AFF),
+                  borderColor: Color(0xFF007AFF),
+                  onPressed: () async {
+                    if (device != null) {
+                      try {
+                        print(
+                            '=== CASE 3.1: USER PRESSED "THỬ LẠI KẾT NỐI" ===');
+                        print('Device: ${device!.platformName}');
+                        print('Retrying connection after device unpair...');
+                        _safeSetState(() {
+                          isLoading = true;
+                        });
+                        await connectDevice(device!);
+                      } finally {
+                        _safeSetState(() {
+                          isLoading = false;
+                        });
+                      }
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStep(String number, String text) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: Color(0xFF007AFF),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF495057),
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -558,26 +1095,28 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           child: ButtonWidget(
             title: 'Tôi đã hiểu',
             onPressed: () async {
-              if (device != null) {
+              if (device != null && !isConnectionInProgress) {
                 try {
-                  setState(() {
-                    isLoading = true; // Show loading indicator
+                  print('=== USER PRESSED "TÔI ĐÃ HIỂU" ===');
+                  print('Device: ${device!.platformName}');
+                  print('Starting connection attempt...');
+                  _safeSetState(() {
+                    isLoading = true;
+                    isConnectionInProgress = true;
                   });
-                  await device!.connect();
+                  // Chỉ gọi connectDevice() - nó đã có logic error handling
                   await connectDevice(device!);
-                } catch (e, s) {
-                  setState(() {
-                    isLoading = false;
-                    appStatus = AppStatus.isNoDeviceFound;
-                  });
-                  TrackingManager.recordError(e, s);
-                  Message.showToastMessage(
-                      context, 'Kết nối thất bại, xin vui lòng thử lại.');
                 } finally {
-                  setState(() {
+                  _safeSetState(() {
                     isLoading = false;
+                    isConnectionInProgress = false;
                   });
                 }
+              } else if (isConnectionInProgress) {
+                print(
+                    '⚠️ Connection already in progress, ignoring duplicate tap');
+                Message.showToastMessage(
+                    context, 'Đang kết nối, vui lòng đợi...');
               }
             },
           ),
@@ -630,17 +1169,145 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   void connectToAvailableDevice(List<ScanResult> scanResultList) async {
-    for (var i = 0; i < scanResultList.length; i++) {
-      final result = scanResultList[i];
-      if (result.device.platformName.contains('meter')) {
-        setState(() {
+    if (scanResultList.isNotEmpty) {
+      final result = scanResultList.first;
+      // Since startScan is already filtered with required service UUIDs,
+      // any result here should be a valid glucose device. Do not rely on name.
+      setState(() {
+        deviceFound = true;
+        device = result.device;
+        appStatus = AppStatus.isConnecting;
+      });
+      await FlutterBluePlus.stopScan();
+
+      // Skip auto-detection for Transfer Data flow - go directly to PIN UI
+      print('🔄 Proceeding with Transfer Data flow (no name check)');
+    }
+  }
+
+  /// Check if device is already paired
+  /// If paired, show solution screen instead of PIN UI
+  /// Check if device is paired at iOS system level
+  /// iOS doesn't have bondedDevices API, so we use connection behavior to detect pairing
+  Future<bool> _checkIfDeviceIsSystemPaired(
+      BluetoothDevice targetDevice) async {
+    try {
+      print('🔍 iOS pairing detection: Testing connection behavior...');
+      print(
+          '📱 Device: ${targetDevice.platformName} (${targetDevice.remoteId})');
+
+      // On iOS, if device is paired, connection will either:
+      // 1. Connect immediately (already paired)
+      // 2. Fail with specific pairing-related error
+      await targetDevice.connect(timeout: Duration(seconds: 2));
+
+      // If we reach here, device connected = already paired
+      print('✅ Device connected immediately - already paired!');
+      await targetDevice.disconnect();
+      return true;
+    } catch (e) {
+      print('⚠️ Connection test failed: $e');
+
+      // Check for iOS pairing-related errors that indicate device is known but needs auth
+      String errorStr = e.toString().toLowerCase();
+      bool isPairingError = errorStr.contains('pairing') ||
+          errorStr.contains('authentication') ||
+          errorStr.contains('bonding') ||
+          errorStr.contains('fbp-code: 10') ||
+          errorStr.contains(
+              'fbp-code: 1'); // iOS quick timeout when device is paired
+
+      if (isPairingError) {
+        print(
+            '✅ Pairing error detected - device is known to iOS but needs re-auth');
+        return true; // Device is known to system
+      }
+
+      print('❌ Pure connection timeout - device not paired');
+      return false;
+    }
+  }
+
+  Future<void> _checkIfDeviceAlreadyPaired(BluetoothDevice targetDevice) async {
+    if (isConnectionInProgress) {
+      print('⚠️ Connection already in progress, skipping pairing check');
+      return;
+    }
+
+    try {
+      print(
+          '🔍 Checking if device is already paired: ${targetDevice.platformName}');
+      print('📱 Device ID: ${targetDevice.remoteId.str}');
+
+      isConnectionInProgress = true;
+
+      // Show loading state during auto-detection
+      _safeSetState(() {
+        isLoading = true;
+      });
+
+      // First: Check if device is in iOS bonded devices list
+      bool isSystemPaired = await _checkIfDeviceIsSystemPaired(targetDevice);
+
+      if (isSystemPaired) {
+        print('✅ Device found in iOS bonded devices - already paired!');
+        print('📱 System pairing detected → Show solution screen');
+
+        _safeSetState(() {
           deviceFound = true;
-          device = result.device;
-          appStatus = AppStatus.isConnecting;
+          device = targetDevice;
+          appStatus = AppStatus.isDeviceAlreadyPaired; // Show solution screen
         });
-        await FlutterBluePlus.stopScan();
+
+        print(
+            '🎯 AUTO-DETECT SUCCESS: System pairing detected → Solution screen');
         return;
       }
+
+      // Fallback: Try quick connection with optimized timeout to detect pairing status
+      await targetDevice.connect(timeout: Duration(seconds: 5)).timeout(
+        Duration(seconds: 5),
+        onTimeout: () {
+          print(
+              '⏰ Quick connection check timed out after 5s - device not paired');
+          throw TimeoutException('Quick pairing check timed out');
+        },
+      );
+
+      print('✅ Device is already paired! Showing solution screen');
+      print(
+          '🎯 AUTO-DETECT SUCCESS: Device connected within 5s → Already paired');
+
+      // Disconnect immediately since we only want to check pairing status
+      try {
+        await targetDevice.disconnect();
+        print('📱 Disconnected after pairing check');
+      } catch (_) {}
+
+      // Device is paired - show solution screen
+      _safeSetState(() {
+        appStatus = AppStatus.isDeviceAlreadyPaired;
+      });
+    } catch (e) {
+      print('⚠️ Device not paired yet, showing PIN UI: $e');
+      print(
+          '🎯 AUTO-DETECT FAILED: Device timeout within 5s → Need manual pairing');
+
+      // Connection failed - device needs pairing, show PIN UI
+      try {
+        await targetDevice.disconnect();
+      } catch (_) {}
+
+      // Show PIN code UI for user to complete pairing
+      _safeSetState(() {
+        appStatus = AppStatus.isConnecting;
+      });
+    } finally {
+      isConnectionInProgress = false;
+      // Hide loading state
+      _safeSetState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -655,12 +1322,173 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
     return isSelected;
   }
 
+  Widget _deviceAlreadyPairedWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _btnClose(context),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 20),
+                // Bluetooth icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF007AFF).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: Icon(
+                    Icons.bluetooth_connected,
+                    size: 40,
+                    color: Color(0xFF007AFF),
+                  ),
+                ),
+                SizedBox(height: 24),
+
+                // Title
+                Text(
+                  'Thiết bị đã được ghép nối',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 8),
+
+                // Subtitle
+                Text(
+                  'Thiết bị "${device?.platformName ?? "máy đo đường huyết"}" đã sẵn sàng chuyển dữ liệu',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF6C757D),
+                  ),
+                ),
+                SizedBox(height: 40),
+
+                // Instructions box
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Color(0xFFE9ECEF)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Color(0xFF6C757D),
+                            size: 20,
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Hướng dẫn kết nối',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF495057),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        '1. Máy đường huyết chuyển qua chế độ "Transfer Data" (không phải "Pair Data")',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF6C757D),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        '2. Sau khi chuyển xong, nhấn nút "Kết nối thiết bị" bên dưới',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF6C757D),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+
+        // Buttons
+        Container(
+          margin:
+              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          child: Column(
+            children: [
+              // Main button - Continue to data transfer
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Kết nối thiết bị',
+                  onPressed: () async {
+                    if (device != null && !isLoading) {
+                      try {
+                        _safeSetState(() {
+                          isLoading = true;
+                        });
+                        print('🔄 User chose to continue with data transfer');
+                        await connectDevice(device!);
+                      } finally {
+                        _safeSetState(() {
+                          isLoading = false;
+                        });
+                      }
+                    }
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+
+              // Secondary button - Scan for other devices
+              Container(
+                width: double.infinity,
+                child: ButtonWidget(
+                  title: 'Tìm thiết bị khác',
+                  backgroundColor: Colors.transparent,
+                  textColor: Color(0xFF007AFF),
+                  borderColor: Color(0xFF007AFF),
+                  onPressed: () async {
+                    await FlutterBluePlus.stopScan();
+                    setState(() {
+                      deviceFound = false;
+                      appStatus = AppStatus.isScanning;
+                    });
+                    _startScan();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Future<void> connectDevice(BluetoothDevice deviceFounded) async {
     try {
-      await deviceFounded.connect(timeout: Duration(seconds: 60)).timeout(
-        Duration(seconds: 60),
+      await deviceFounded.connect(timeout: Duration(seconds: 15)).timeout(
+        Duration(seconds: 15),
         onTimeout: () {
-          throw TimeoutException('Connection timed out after 60 seconds');
+          throw TimeoutException('Connection timed out after 15 seconds');
         },
       );
 
@@ -685,7 +1513,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
       // Bật noti cho 0x2A18
       await charGlucoseMeasurement.setNotifyValue(true);
-      setState(() {
+      _safeSetState(() {
         appStatus = AppStatus.isConnected;
       });
 
@@ -712,6 +1540,11 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
               return;
             }
           });
+
+          // Store model info for caching
+          this.modelName = modelName;
+          this.modelNumber = modelNo;
+
           await updateGlucoseUnit(glucoseUnits,
               modelNameParam: modelName, modelNoParam: modelNo);
         }
@@ -724,7 +1557,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             GlucoseProfileConfiguration
                 .GLUCOSE_MEASUREMENT_CHARACTERISTIC_UUID) {
           await characteristic.setNotifyValue(true);
-          setState(() {
+          _safeSetState(() {
             appStatus = AppStatus.isSyncing;
           });
           previousDataCount = 0;
@@ -732,12 +1565,26 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
           characteristicListener =
               characteristic.lastValueStream.listen((data) async {
             if (data.isEmpty) {
+              print('🔍 DEBUG: Received empty data from device');
               return;
             }
+            print(
+                '🔍 DEBUG: Received data from device, length: ${data.length}');
+            print(
+                '🔍 DEBUG: Data bytes: ${data.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ')}');
+
             GlucoseMeasurementRecord glucoseMeasurementRecord =
                 GlucoseFunctions().readDataFrom2A18(data);
+
+            print(
+                '🔍 DEBUG: Parsed record - calendar: ${glucoseMeasurementRecord.calendar}, isBloodGlucose: ${glucoseMeasurementRecord.isBloodGlucose}');
+
             if (glucoseMeasurementRecord.isBloodGlucose) {
               glucoseMeasurementRecordList.add(glucoseMeasurementRecord);
+              print(
+                  '🔍 DEBUG: Added blood glucose record. Total records: ${glucoseMeasurementRecordList.length}');
+            } else {
+              print('🔍 DEBUG: Skipped non-blood glucose record');
             }
           });
         }
@@ -747,26 +1594,215 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             GlucoseProfileConfiguration
                 .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
           await characteristic.setNotifyValue(true);
-          List<int> requestData = [0x01, 0x01];
-          await characteristic.write(requestData);
-          await Future.delayed(Duration(seconds: 5));
-          await TrackingManager.trackEvent(
-            'glucose_pair',
-            'kpi_glucose_device',
-            params: {
-              'status': 'success',
-            },
-          );
-          startCheckingData();
+
+          // Đợi một chút để đảm bảo notification đã được setup
+          await Future.delayed(Duration(milliseconds: 500));
+
+          // Thử gửi lệnh request data với retry mechanism (Cải tiến cho case 1.1)
+          bool dataRequestSuccess = false;
+          int retryCount = 0;
+          const maxRetries = 3;
+
+          while (!dataRequestSuccess && retryCount < maxRetries) {
+            try {
+              // Build RACP request for all data
+              List<int> requestData = await _buildRACPRequest();
+              print('📡 RACP Request: $requestData');
+              await characteristic.write(requestData);
+
+              // Đợi lâu hơn cho lần đầu tiên để device có thời gian xử lý
+              int delaySeconds = retryCount == 0 ? 8 : 5;
+              await Future.delayed(Duration(seconds: delaySeconds));
+
+              dataRequestSuccess = true;
+              print(
+                  'Data request sent successfully on attempt ${retryCount + 1}');
+              print(
+                  '🔍 DEBUG: RACP request completed, dataRequestSuccess = true');
+            } catch (e) {
+              retryCount++;
+              print('Data request failed on attempt $retryCount: $e');
+              if (retryCount < maxRetries) {
+                await Future.delayed(Duration(seconds: 2));
+              }
+            }
+          }
+
+          if (dataRequestSuccess) {
+            print('🔍 DEBUG: Data request successful, starting data check');
+            await TrackingManager.trackEvent(
+              'glucose_pair',
+              'kpi_glucose_device',
+              params: {
+                'status': 'success',
+              },
+            );
+            print('🔍 DEBUG: About to call startCheckingData()');
+            startCheckingData();
+            print('🔍 DEBUG: startCheckingData() called');
+          } else {
+            // Hết số lần retry: về màn hình lỗi
+            try {
+              await deviceFounded.disconnect();
+            } catch (_) {}
+            _safeSetState(() {
+              appStatus = AppStatus.isNoDeviceFound;
+            });
+            Message.showToastMessage(
+                context, 'Không thể lấy dữ liệu từ thiết bị, xin thử lại.');
+            return;
+          }
         }
       }
     } catch (e, s) {
-      setState(() {
-        appStatus = AppStatus.isNoDeviceFound;
-      });
-      TrackingManager.recordError(e, s);
-      Message.showToastMessage(
-          context, 'Không thể kết nối thiết bị, xin vui lòng thử lại.');
+      // Debug logging để track error patterns
+      print('=== CONNECTION ERROR DEBUG ===');
+      print('Error: $e');
+      print('Error type: ${e.runtimeType}');
+      print('Stack trace: $s');
+      print('===============================');
+
+      // Phân biệt giữa Case 2.1 và Case 3.1
+      bool isNonConnectionError = e.toString().contains('Service not found') ||
+          e.toString().contains('Characteristic not found') ||
+          e.toString().contains('Permission denied') ||
+          e.toString().contains('Invalid') ||
+          e.toString().contains('Parse error');
+
+      if (isNonConnectionError) {
+        // Những lỗi technical không liên quan đến pairing
+        print('Technical error (non-pairing): $e');
+        _safeSetState(() {
+          appStatus = AppStatus.isNoDeviceFound;
+        });
+        TrackingManager.recordError(e, s);
+        Message.showToastMessage(
+            context, 'Lỗi kỹ thuật, xin vui lòng thử lại.');
+      } else {
+        // Phân biệt Case 2.1 vs 3.1 dựa trên error patterns cụ thể
+        bool isCase21 = e.toString().contains('Peer removed pairing') ||
+            e.toString().contains('pairing information') ||
+            e.toString().contains('authentication failed') ||
+            e
+                .toString()
+                .contains('apple-code: 14'); // iOS specific pairing error
+
+        // Check for specific pairing-in-progress error (fbp-code: 10) or iOS paired device timeout (fbp-code: 1)
+        bool isPairingInProgress = (e.toString().contains('fbp-code: 10') &&
+                e.toString().contains('connection canceled')) ||
+            (e.toString().contains('fbp-code: 1') &&
+                e.toString().contains('Timed out'));
+
+        // Alternative check: any connection canceled might indicate device is ready
+        bool isConnectionCanceled =
+            e.toString().contains('connection canceled') ||
+                e.toString().contains('FlutterBluePlusException');
+
+        // Check if this is a paired device with connection issues
+        bool isPairedDeviceConnectionDrop =
+            e.toString().contains('TimeoutException') &&
+                e.toString().contains('Connection timed out') &&
+                !e.toString().contains(
+                    'Quick pairing check'); // Exclude auto-detection timeouts
+
+        // Debug: Print detailed error analysis
+        print('🔍 ERROR ANALYSIS:');
+        print(
+            '   - Contains fbp-code: 10: ${e.toString().contains('fbp-code: 10')}');
+        print(
+            '   - Contains fbp-code: 1: ${e.toString().contains('fbp-code: 1')}');
+        print(
+            '   - Contains fbp-code: 6: ${e.toString().contains('fbp-code: 6')}');
+        print(
+            '   - Contains connection canceled: ${e.toString().contains('connection canceled')}');
+        print('   - Contains Timed out: ${e.toString().contains('Timed out')}');
+        print(
+            '   - Contains FlutterBluePlusException: ${e.toString().contains('FlutterBluePlusException')}');
+        print(
+            '   - Contains TimeoutException: ${e.toString().contains('TimeoutException')}');
+        print(
+            '   - Contains Connection timed out: ${e.toString().contains('Connection timed out')}');
+        print(
+            '   - Contains Device is disconnected: ${e.toString().contains('Device is disconnected')}');
+        print(
+            '   - Contains discoverServices: ${e.toString().contains('discoverServices')}');
+        print('   - isPairingInProgress: $isPairingInProgress');
+        print('   - isConnectionCanceled: $isConnectionCanceled');
+        print(
+            '   - isPairedDeviceConnectionDrop: $isPairedDeviceConnectionDrop');
+
+        // Calculate isCase31 before printing
+        bool isCase31 = (e.toString().contains('Failed to connect') ||
+                e.toString().contains('didFailToConnectPeripheral') ||
+                e
+                    .toString()
+                    .contains('fbp-code: 6') || // Device is disconnected
+                e.toString().contains('Device is disconnected') ||
+                e.toString().contains('discoverServices') ||
+                e.toString().contains('Connection timeout') ||
+                e.toString().contains('TimeoutException')) &&
+            !isPairingInProgress && // Exclude pairing-in-progress errors
+            !isPairedDeviceConnectionDrop; // Exclude paired device connection drops
+
+        print('   - isCase21: ${isCase21}');
+        print('   - isCase31: $isCase31');
+        print('   - Full error: $e');
+
+        if (isPairingInProgress) {
+          // Connection canceled - device đã paired và ready for data transfer
+          print(
+              '✅ EXACT MATCH: Connection canceled (fbp-code: 10) - device already paired and ready for data transfer: $e');
+          print(
+              '📱 Phone has history + Device is connected → Show solution screen');
+          _safeSetState(() {
+            deviceFound = true; // Giữ device info để có thể transfer
+            appStatus = AppStatus.isDeviceAlreadyPaired; // Show solution screen
+          });
+        } else if (isPairedDeviceConnectionDrop) {
+          // Paired device with connection drop - show solution screen
+          print(
+              '✅ PAIRED DEVICE CONNECTION DROP: Device is paired but connection dropped: $e');
+          print(
+              '📱 Device paired + Connection interrupted → Show solution screen for retry');
+          _safeSetState(() {
+            deviceFound = true; // Giữ device info để có thể transfer
+            appStatus = AppStatus.isDeviceAlreadyPaired; // Show solution screen
+          });
+        } else if (isConnectionCanceled &&
+            e.toString().contains('fbp-code: 10')) {
+          // Fallback: Any connection canceled with fbp-code: 10
+          print(
+              '✅ FALLBACK MATCH: Connection canceled with fbp-code: 10 - device may be ready: $e');
+          print('📱 Trying alternative detection → Show solution screen');
+          _safeSetState(() {
+            deviceFound = true; // Giữ device info để có thể transfer
+            appStatus = AppStatus.isDeviceAlreadyPaired; // Show solution screen
+          });
+        } else if (isCase21) {
+          // Case 2.1: Máy xóa pair, phone giữ history → Xóa trên phone
+          print('Detected Case 2.1 (phone forget device): $e');
+          _safeSetState(() {
+            deviceFound = true; // Giữ device info để có thể retry
+            appStatus = AppStatus.isManualForget;
+          });
+        } else if (isCase31) {
+          // Case 3.1: Phone xóa history, máy vẫn nhớ → Xóa trên máy
+          print('Detected Case 3.1 (device unpair): $e');
+          _safeSetState(() {
+            deviceFound = true; // Giữ device info để có thể retry
+            appStatus = AppStatus.isDeviceUnpair;
+          });
+        } else {
+          // Fallback: Lỗi không xác định → về no device found để user thử lại
+          print('Unknown connection error: $e');
+          _safeSetState(() {
+            appStatus = AppStatus.isNoDeviceFound;
+          });
+          TrackingManager.recordError(e, s);
+          Message.showToastMessage(
+              context, 'Lỗi kết nối không xác định, xin vui lòng thử lại.');
+        }
+      }
     }
   }
 
@@ -803,12 +1839,45 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   void startCheckingData() {
+    int noDataCount = 0;
+    const maxNoDataCount = 5; // Giảm timeout xuống 5 giây
+    bool hasReceivedData = false; // Flag để track xem đã nhận được dữ liệu chưa
+
+    print(
+        '🔍 DEBUG: startCheckingData called, initial records: ${glucoseMeasurementRecordList.length}');
+
     Timer.periodic(Duration(seconds: 1), (timer) {
+      print(
+          '🔍 DEBUG: Checking data - current: ${glucoseMeasurementRecordList.length}, previous: $previousDataCount, noDataCount: $noDataCount, hasReceivedData: $hasReceivedData');
+
       if (glucoseMeasurementRecordList.length > previousDataCount) {
         previousDataCount = glucoseMeasurementRecordList.length;
+        noDataCount = 0; // Reset counter khi có dữ liệu mới
+        hasReceivedData = true; // Đánh dấu đã nhận được dữ liệu
+        print('🔍 DEBUG: New data detected, reset counter');
+
+        // Nếu đã có dữ liệu, đợi thêm 2 giây để xem có dữ liệu mới không, rồi xử lý
+        if (glucoseMeasurementRecordList.length >= 1) {
+          print('🔍 DEBUG: Data available, will process after 2 seconds');
+        }
       } else {
-        timer.cancel();
-        fetchGlucoseInputNotExist();
+        noDataCount++;
+        print('🔍 DEBUG: No new data, counter: $noDataCount/$maxNoDataCount');
+
+        // Nếu đã có dữ liệu và đợi đủ lâu, xử lý ngay
+        if (hasReceivedData && noDataCount >= 2) {
+          print(
+              '🔍 DEBUG: Data available and waited enough, calling fetchGlucoseInputNotExist');
+          timer.cancel();
+          fetchGlucoseInputNotExist();
+        }
+        // Nếu chưa nhận được dữ liệu gì và timeout, cũng gọi fetchGlucoseInputNotExist
+        else if (!hasReceivedData && noDataCount >= maxNoDataCount) {
+          print(
+              '🔍 DEBUG: Timeout reached without receiving any data, calling fetchGlucoseInputNotExist');
+          timer.cancel();
+          fetchGlucoseInputNotExist();
+        }
       }
     });
   }
@@ -819,38 +1888,98 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
     Set<DateTime> uniqueValues = Set<DateTime>();
 
-    if (glucoseMeasurementRecordList.isNotEmpty) {
-      glucoseMeasurementRecordList.forEach((element) {
-        final glucose = roundAsFixed(roundDouble(element
-            .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+    print('🔍 DEBUG: fetchGlucoseInputNotExist called');
+    print(
+        '🔍 DEBUG: glucoseMeasurementRecordList.length = ${glucoseMeasurementRecordList.length}');
 
-        if (!uniqueValues.contains(element.calendar)) {
-          glucoseDataRequest.add(GlucoseData(
-            glucose: glucose.toString(),
-            date: DateUtil.getDayInMillis(element.calendar!).toString(),
-          ));
-          uniqueValues.add(element.calendar!);
+    if (glucoseMeasurementRecordList.isNotEmpty) {
+      // Process all records from device (original behavior)
+      List<GlucoseMeasurementRecord> recordsToProcess =
+          glucoseMeasurementRecordList;
+
+      print('📊 Processing ${recordsToProcess.length} records from device');
+
+      recordsToProcess.forEach((element) {
+        print(
+            '🔍 DEBUG: Processing record - calendar: ${element.calendar}, isBloodGlucose: ${element.isBloodGlucose}');
+
+        if (element.calendar != null && element.isBloodGlucose) {
+          final glucose = roundAsFixed(roundDouble(element
+              .convertGlucoseConcentrationValueToMilligramsPerDeciliter()));
+
+          print(
+              '🔍 DEBUG: Glucose value: $glucose, calendar: ${element.calendar}');
+
+          if (!uniqueValues.contains(element.calendar)) {
+            glucoseDataRequest.add(GlucoseData(
+              glucose: glucose.toString(),
+              date: DateUtil.getDayInMillis(element.calendar!).toString(),
+            ));
+            uniqueValues.add(element.calendar!);
+            print(
+                '🔍 DEBUG: Added to request - glucose: $glucose, date: ${DateUtil.getDayInMillis(element.calendar!)}');
+          } else {
+            print('🔍 DEBUG: Skipped duplicate calendar: ${element.calendar}');
+          }
+        } else {
+          print(
+              '🔍 DEBUG: Skipped record - calendar: ${element.calendar}, isBloodGlucose: ${element.isBloodGlucose}');
         }
       });
 
-      final result =
-          await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
+      print(
+          '🔍 DEBUG: glucoseDataRequest.length = ${glucoseDataRequest.length}');
 
-      result.forEach((element) {
-        glucoseDataList.add({
-          'glucose': element['glucose'].toString(),
-          'date': element['createDate'].toString()
+      if (glucoseDataRequest.isNotEmpty) {
+        print(
+            '🔍 DEBUG: Calling API with data: ${glucoseDataRequest.map((e) => 'glucose: ${e.glucose}, date: ${e.date}').toList()}');
+        final result =
+            await GlucoseClient().fetchGlucoseInputNotExist(glucoseDataRequest);
+
+        print('🔍 DEBUG: API result.length = ${result.length}');
+        print('🔍 DEBUG: API result content: $result');
+
+        // Nếu API trả về dữ liệu, sử dụng dữ liệu từ API
+        if (result.isNotEmpty) {
+          result.forEach((element) {
+            glucoseDataList.add({
+              'glucose': element['glucose'].toString(),
+              'date': element['createDate'].toString()
+            });
+            print(
+                '🔍 DEBUG: Added to display list from API - glucose: ${element['glucose']}, date: ${element['createDate']}');
+          });
+        } else {
+          // Nếu API trả về empty, sử dụng dữ liệu từ thiết bị trực tiếp
+          print('🔍 DEBUG: API returned empty, using device data directly');
+          glucoseDataRequest.forEach((element) {
+            glucoseDataList.add({
+              'glucose': element.glucose.toString(),
+              'date': element.date.toString()
+            });
+            print(
+                '🔍 DEBUG: Added to display list from device - glucose: ${element.glucose}, date: ${element.date}');
+          });
+        }
+
+        print(
+            '🔍 DEBUG: Final glucoseDataList.length = ${glucoseDataList.length}');
+
+        _safeSetState(() {
+          selectAllData = true;
+          glucosedList = glucoseDataList;
+          appStatus = AppStatus.isSyncCompleted;
+          selectedGlucose = [...glucoseDataList];
         });
-      });
-
-      setState(() {
-        selectAllData = true;
-        glucosedList = glucoseDataList;
-        appStatus = AppStatus.isSyncCompleted;
-        selectedGlucose = [...glucoseDataList];
-      });
+      } else {
+        print('🔍 DEBUG: No valid data to process, showing empty list');
+        _safeSetState(() {
+          appStatus = AppStatus.isSyncCompleted;
+        });
+      }
     } else {
-      setState(() {
+      print('🔍 DEBUG: No records from device, showing empty list');
+      _safeSetState(() {
         appStatus = AppStatus.isSyncCompleted;
       });
     }

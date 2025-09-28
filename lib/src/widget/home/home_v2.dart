@@ -511,12 +511,7 @@ class _HomeControllerState extends State<HomeController>
                 _showWelcomeDialog(model?.packageAccount, zaloGroup);
               });
             }
-            //
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
-                    true &&
-                state.model.measurements?.first.value1?.isNotEmpty == true &&
-                state.model.measurements?.first.value1 != "--";
-            //
+
             if (state.model.measurements?.isNotEmpty == true) {
               List<HomeMeasurementData> huyetAps = state.model.measurements!
                   .where((e) => e.title.toLowerCase() == "huyết áp")
@@ -525,7 +520,7 @@ class _HomeControllerState extends State<HomeController>
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
             }
-            //
+
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
                     true &&
                 state.model.measurements?.first.value1?.isNotEmpty == true &&
@@ -1174,7 +1169,9 @@ class _HomeControllerState extends State<HomeController>
       } else if (lastOpenedGlucoseInputType == 'manual') {
         Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
             arguments: {'type': 'input', 'goalId': smartGoalId});
-        // or can return "true" to next page
+      } else if (lastOpenedGlucoseInputType == 'camera') {
+        Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture,
+            arguments: {'goalId': smartGoalId});
       }
       return false;
     }

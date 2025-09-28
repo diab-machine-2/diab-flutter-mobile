@@ -220,7 +220,7 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handleExercise(
       BuildContext context, SmartGoalList? smartGoal) async {
-    await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+    await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
         arguments: {'type': 'input', 'goalId': smartGoal?.id});
   }
 

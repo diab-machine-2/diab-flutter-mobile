@@ -15,7 +15,8 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-typedef BloodPressureChartCallback = void Function(BloodPressureRangeType rangeType);
+typedef BloodPressureChartCallback = void Function(
+    BloodPressureRangeType rangeType);
 
 class BloodPressureChart extends StatefulWidget {
   BloodPressureChart({
@@ -74,7 +75,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
         if (trends.isEmpty) {
           Future.delayed(Duration(milliseconds: 500)).then((value) {
             if (!mounted) return;
-            Navigator.pushReplacementNamed(context, NavigatorName.add_blood_pressure,
+            Navigator.pushReplacementNamed(
+                context, NavigatorName.add_blood_pressure,
                 arguments: {'type': 'input'});
           });
         }
@@ -92,7 +94,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   Future<bool> _refresh() async {
-    BlocProvider.of<BloodPressureBloc>(currentContext).add(FetchBloodPressureTrend(
+    BlocProvider.of<BloodPressureBloc>(currentContext)
+        .add(FetchBloodPressureTrend(
       currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000),
       periodFilterType: _periodFilterType,
     ));
@@ -100,9 +103,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
   }
 
   void _viewHistory() {
-    Navigator.pushNamed(currentContext, NavigatorName.detail_bloodpressure_listing, arguments: {
-      'initPeriodFilterType': _periodFilterType,
-    });
+    Navigator.pushNamed(
+        currentContext, NavigatorName.detail_bloodpressure_listing,
+        arguments: {
+          'initPeriodFilterType': _periodFilterType,
+        });
   }
 
   List<SubTrendItemModel> _getTrends(BloodPressureTrendModel model) {
@@ -126,13 +131,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
     double paddingOutSideBoth = 12 * 2;
     double leftTitleWidth = 50;
     double leftTitleMargin = 2;
-    double chartWidth =
-        MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
+    double chartWidth = MediaQuery.of(context).size.width -
+        paddingOutSideBoth -
+        leftTitleWidth -
+        leftTitleMargin;
     final width = chartWidth / 18;
     final itemWidth = width + 12; // same as used in chart
 
     // Get the trends list from the current state
-    final BloodPressureState state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
+    final BloodPressureState state =
+        BlocProvider.of<BloodPressureBloc>(currentContext).state;
     List<SubTrendItemModel> trends = [];
     if (state is BloodPressureTrendLoaded) {
       trends = _getTrends(state.model);
@@ -157,7 +165,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
       });
     } else {
       // Normal left-to-right scrolling
-      final targetOffset = (_focusIndex * itemWidth) - (chartWidth / 2) + (itemWidth / 2);
+      final targetOffset =
+          (_focusIndex * itemWidth) - (chartWidth / 2) + (itemWidth / 2);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
@@ -182,7 +191,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
           BloodPressureTrendModel? model;
 
           if (state is BloodPressureInitial) {
-            BlocProvider.of<BloodPressureBloc>(context).add(FetchBloodPressureTrend(
+            BlocProvider.of<BloodPressureBloc>(context)
+                .add(FetchBloodPressureTrend(
               currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000),
               periodFilterType: _periodFilterType,
             ));
@@ -201,7 +211,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
             if (_focusIndex == -1 || _focusIndex >= trends.length) {
               _focusIndex = (trends.length - 1);
-              final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+              final rangeType = BloodPressureRangeType.fromTitle(
+                  trends[_focusIndex].type ?? '');
               Future.delayed(Duration(milliseconds: 200)).then((value) {
                 widget.bloodPressureChartCallback(rangeType);
               });
@@ -236,7 +247,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     EmptyDataBox(
                       text: 'chỉ số huyết áp',
                       onTap: () {
-                        Navigator.pushNamed(context, NavigatorName.add_blood_pressure,
+                        Navigator.pushNamed(
+                            context, NavigatorName.add_blood_pressure,
                             arguments: {'type': 'input', 'id': null});
                       },
                     )
@@ -278,8 +290,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
     if (_focusIndex != -1 && _focusIndex < trends.length) {
       final selectedTrend = trends[_focusIndex];
-      final date =
-          DateTime.fromMillisecondsSinceEpoch((selectedTrend.date ?? 0) * 1000, isUtc: true);
+      final date = DateTime.fromMillisecondsSinceEpoch(
+          (selectedTrend.date ?? 0) * 1000,
+          isUtc: true);
       selectedDate = DateFormat('dd/MM').format(date);
       selectedDateTime = DateFormat('HH:mm').format(date);
       selectedType = selectedTrend.type ?? '';
@@ -306,7 +319,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   decoration: BoxDecoration(
                     color: R.color.white,
                     borderRadius: BorderRadius.circular(19),
-                    border: Border.all(color: R.color.color0xffE5E5E5, width: 1),
+                    border:
+                        Border.all(color: R.color.color0xffE5E5E5, width: 1),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -351,7 +365,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         borderRadius: BorderRadius.circular(18),
                         border: Border.all(color: R.color.color0xffE5E5E5),
                       ),
-                      child: Center(child: Icon(Icons.history, color: R.color.textDark, size: 20)),
+                      child: Center(
+                          child: Icon(Icons.history,
+                              color: R.color.textDark, size: 20)),
                     ),
                   ),
                 ),
@@ -369,7 +385,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           setState(() {
                             _focusIndex = max(0, _focusIndex - 1);
                           });
-                          final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                          final rangeType = BloodPressureRangeType.fromTitle(
+                              trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
                           if (_focusIndex > 0) {
                             _scrollToFocusIndex();
@@ -390,7 +407,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     child: Icon(
                       Icons.chevron_left,
                       size: 20,
-                      color: _focusIndex > 0 ? R.color.textDark : R.color.color0xffE5E5E5,
+                      color: _focusIndex > 0
+                          ? R.color.textDark
+                          : R.color.color0xffE5E5E5,
                     ),
                   ),
                 ),
@@ -404,7 +423,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: selectedColor.isNotEmpty
-                          ? Color(int.parse('0xff${selectedColor.split('#').join()}'))
+                          ? Color(int.parse(
+                              '0xff${selectedColor.split('#').join()}'))
                           : null,
                       height: 36 / 24,
                     ),
@@ -415,9 +435,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   onTap: _focusIndex < trends.length - 1
                       ? () {
                           setState(() {
-                            _focusIndex = min(trends.length - 1, _focusIndex + 1);
+                            _focusIndex =
+                                min(trends.length - 1, _focusIndex + 1);
                           });
-                          final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                          final rangeType = BloodPressureRangeType.fromTitle(
+                              trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
                           if (_focusIndex < trends.length - 1) {
                             _scrollToFocusIndex();
@@ -484,12 +506,15 @@ class BloodPressureChartState extends State<BloodPressureChart>
     );
   }
 
-  Widget _buildChart(BloodPressureTrendModel model, List<SubTrendItemModel> trends) {
+  Widget _buildChart(
+      BloodPressureTrendModel model, List<SubTrendItemModel> trends) {
     double paddingOutSideBoth = 12 * 2;
     double leftTitleWidth = 50;
     double leftTitleMargin = 2;
-    double chartWidth =
-        MediaQuery.of(context).size.width - paddingOutSideBoth - leftTitleWidth - leftTitleMargin;
+    double chartWidth = MediaQuery.of(context).size.width -
+        paddingOutSideBoth -
+        leftTitleWidth -
+        leftTitleMargin;
     // Calculate width to show 11 points on the page
     final width = chartWidth / 18;
 
@@ -533,7 +558,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       style: TextStyle(color: R.color.black, fontSize: 14)),
                   Spacer(flex: 2),
                   // Icon(Icons.heat_pump_rounded, size: 20),
-                  Image.asset(R.drawable.ic_bloodpressure_pulse, width: 20, height: 20),
+                  Image.asset(R.drawable.ic_bloodpressure_pulse,
+                      width: 20, height: 20),
                 ],
               ),
             ),
@@ -550,10 +576,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   child: LineChart(
                     LineChartData(
                       lineTouchData: LineTouchData(
-                          getTouchLineStart: (barData, index) => -double.infinity,
+                          getTouchLineStart: (barData, index) =>
+                              -double.infinity,
                           getTouchLineEnd: (barData, index) => double.infinity,
-                          getTouchedSpotIndicator:
-                              (LineChartBarData barData, List<int> spotIndexes) {
+                          getTouchedSpotIndicator: (LineChartBarData barData,
+                              List<int> spotIndexes) {
                             return spotIndexes.map((index) {
                               return TouchedSpotIndicatorData(
                                 FlLine(color: R.color.black, strokeWidth: 0.5),
@@ -565,15 +592,18 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             showOnTopOfTheChartBoxArea: true,
                             fitInsideVertically: true,
                             fitInsideHorizontally: true,
-                            tooltipBgColor: toColor(model.colors!.first).withOpacity(0.2),
+                            tooltipBgColor:
+                                toColor(model.colors!.first).withOpacity(0.2),
                             tooltipRoundedRadius: 8,
                             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                               return lineBarsSpot.map((lineBarSpot) {
                                 if (lineBarSpot.barIndex == 0) {
                                   if (lineBarSpot.spotIndex < 0 ||
                                       lineBarSpot.spotIndex >= trends.length ||
-                                      trends[lineBarSpot.spotIndex].systolic == null ||
-                                      trends[lineBarSpot.spotIndex].diastolic == null) {
+                                      trends[lineBarSpot.spotIndex].systolic ==
+                                          null ||
+                                      trends[lineBarSpot.spotIndex].diastolic ==
+                                          null) {
                                     return LineTooltipItem(
                                       '0/0',
                                       TextStyle(
@@ -587,21 +617,26 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                         '/' +
                                         trend.diastolic!.round().toString(),
                                     TextStyle(
-                                        color: toColor(trend.color), fontWeight: FontWeight.bold),
+                                        color: toColor(trend.color),
+                                        fontWeight: FontWeight.bold),
                                   );
                                 }
                               }).toList();
                             },
                           ),
-                          touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                          touchCallback: (FlTouchEvent event,
+                              LineTouchResponse? lineTouch) {
                             previousDate = 0;
-                            if (event is! FlLongPressEnd && event is! FlPanEndEvent) {
+                            if (event is! FlLongPressEnd &&
+                                event is! FlPanEndEvent) {
                               final value = lineTouch?.lineBarSpots?[0].x;
                               if (value != null) {
                                 setState(() {
                                   _focusIndex = value.toInt();
                                 });
-                                final rangeType = BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+                                final rangeType =
+                                    BloodPressureRangeType.fromTitle(
+                                        trends[_focusIndex].type ?? '');
                                 widget.bloodPressureChartCallback(rangeType);
                               }
                             } else {
@@ -627,7 +662,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           },
                           getTitles: (double value) {
                             // padding left
-                            if (value <= -0.5 || value >= (trends.length - 0.5)) return '';
+                            if (value <= -0.5 || value >= (trends.length - 0.5))
+                              return '';
                             int index = value.toInt();
                             if (index < 0 ||
                                 index >= trends.length ||
@@ -665,13 +701,13 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         horizontalLines: [
                           HorizontalLine(
                             y: _customYTransform(_mediumLow),
-                            color: Colors.grey,
+                            color: R.color.color0xff636A6B,
                             dashArray: [8, 4],
                             strokeWidth: 1,
                           ),
                           HorizontalLine(
                             y: _customYTransform(_mediumHigh),
-                            color: Colors.grey,
+                            color: R.color.color0xff636A6B,
                             dashArray: [8, 4],
                             strokeWidth: 1,
                           ),
@@ -726,7 +762,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
     return [
       LineChartBarData(
         spots: List.generate(trends.length, (index) {
-          double value = trends[index].systolic! > 180 ? 180 : trends[index].systolic!;
+          double value =
+              trends[index].systolic! > 180 ? 180 : trends[index].systolic!;
           return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
@@ -742,14 +779,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 radius: 4,
                 color: color,
                 strokeWidth: index == _focusIndex ? 12 : 0,
-                strokeColor: index == _focusIndex ? color.withOpacity(0.5) : null,
+                strokeColor:
+                    index == _focusIndex ? color.withOpacity(0.5) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),
       ),
       LineChartBarData(
         spots: List.generate(trends.length, (index) {
-          double value = trends[index].diastolic! > 180 ? 180 : trends[index].diastolic!;
+          double value =
+              trends[index].diastolic! > 180 ? 180 : trends[index].diastolic!;
           return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
@@ -765,7 +804,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 radius: 4,
                 color: color,
                 strokeWidth: index == _focusIndex ? 12 : 0,
-                strokeColor: index == _focusIndex ? color.withOpacity(0.5) : null,
+                strokeColor:
+                    index == _focusIndex ? color.withOpacity(0.5) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),

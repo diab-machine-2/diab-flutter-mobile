@@ -10,13 +10,17 @@ class PageAddBloodPressureResultNote extends StatefulWidget {
   final List<dynamic>? files;
 
   @override
-  State<PageAddBloodPressureResultNote> createState() => _PageAddBloodPressureResultNoteState();
+  State<PageAddBloodPressureResultNote> createState() =>
+      _PageAddBloodPressureResultNoteState();
 }
 
-class _PageAddBloodPressureResultNoteState extends State<PageAddBloodPressureResultNote> {
+class _PageAddBloodPressureResultNoteState
+    extends State<PageAddBloodPressureResultNote> {
   final FocusNode _focusNode = FocusNode();
-  late TextEditingController _controllerNote = TextEditingController(text: widget.note);
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  late TextEditingController _controllerNote =
+      TextEditingController(text: widget.note);
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
 
   @override
   void dispose() {
@@ -29,14 +33,8 @@ class _PageAddBloodPressureResultNoteState extends State<PageAddBloodPressureRes
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: R.color.backgroundColor,
+        backgroundColor: R.color.glucose_bg_color,
         body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(R.drawable.bg_splash),
-              fit: BoxFit.cover,
-            ),
-          ),
           child: Column(
             children: [
               _appBarSection(),
@@ -63,7 +61,8 @@ class _PageAddBloodPressureResultNoteState extends State<PageAddBloodPressureRes
       backgroundColor: R.color.transparent,
       title: Text(
         R.string.them_ghi_chu.tr(),
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w600, color: R.color.textDark),
       ),
       leadingIcon: IconButton(
         splashColor: R.color.transparent,

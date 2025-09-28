@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
@@ -47,7 +48,7 @@ class AIHelpButton extends StatelessWidget {
       child: Center(
         child: Text(
           _isLowPressure
-              ? 'Hỏi đáp cùng Trợ lý sống khoẻ'
+              ? R.string.chat_with_AI.tr()
               : 'Đặt lịch tư vấn với chuyên gia',
           style: TextStyle(
             color: R.color.mainColor,

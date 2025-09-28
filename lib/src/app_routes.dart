@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
+import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
@@ -121,6 +122,10 @@ class AppRoutes {
           glucoseDistributionType: data?['glucoseDistributionType'],
         );
         break;
+      case NavigatorName.blood_sugar_image_capture:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BloodSugarImageCapture();
+        break;
       case NavigatorName.paywall_screen:
         {
           page = PaywallScreen();
@@ -201,6 +206,8 @@ class AppRoutes {
           value: data?[BmiInstructionPage.bmiBlocKey],
           child: const BmiInstructionPage(),
         );
+      // end region weight
+
       default:
         break;
     }
