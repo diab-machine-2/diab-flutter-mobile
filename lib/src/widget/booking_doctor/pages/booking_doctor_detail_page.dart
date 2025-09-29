@@ -210,7 +210,7 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${data.graduateName} ${data.displayName}",
+                        _getDoctorNameWithPrefix(data),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -257,6 +257,24 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                                 color: R.color.greenGradientBottom,
                               ),
                             ),
+                            GapW(12),
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFBFC6C6),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            GapW(12),
+                            Text(
+                              '30 ${R.string.minute.tr()}',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: R.color.greenGradientBottom,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -265,50 +283,52 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                 ),
               ],
             ),
-            GapH(24),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(R.drawable.ic_introduce),
-                    ),
-                    GapW(8),
-                    Flexible(
-                      child: Text(
-                        R.string.introduce.tr(),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+            if (data.experience != null && data.experience!.isNotEmpty)
+              GapH(24),
+            if (data.experience != null && data.experience!.isNotEmpty)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: Image.asset(R.drawable.ic_introduce),
+                      ),
+                      GapW(8),
+                      Flexible(
+                        child: Text(
+                          R.string.introduce.tr(),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                GapH(8),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: R.color.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      Utils.getBoxShadowDropCard(),
                     ],
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  child: ExpandableHtmlWidget(
-                    htmlContent: data.experience ?? '',
-                    textStyle: TextStyle(
-                      fontSize: 15,
-                      color: R.color.color0xff111515,
+                  GapH(8),
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: R.color.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        Utils.getBoxShadowDropCard(),
+                      ],
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    child: ExpandableHtmlWidget(
+                      htmlContent: data.experience ?? '',
+                      textStyle: TextStyle(
+                        fontSize: 15,
+                        color: R.color.color0xff111515,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             GapH(24),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -738,5 +758,28 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
         ],
       ),
     );
+  }
+
+  String _getDoctorNameWithPrefix(BookingDoctorModel data) {
+    String prefix = 'BS';
+    final graduate = data.graduateName; // Map<String, String>? after parsing
+    if (graduate != null) {
+      final currentLocale = context.locale.languageCode;
+      if (currentLocale == 'vi' && (graduate['name_vi'] ?? '').isNotEmpty) {
+        prefix = graduate['name_vi']!;
+      } else if (currentLocale == 'en' &&
+          (graduate['name_en'] ?? '').isNotEmpty) {
+        prefix = graduate['name_en']!;
+      } else if ((graduate['name_vi'] ?? '').isNotEmpty) {
+        prefix = graduate['name_vi']!;
+      } else if ((graduate['name_en'] ?? '').isNotEmpty) {
+        prefix = graduate['name_en']!;
+      }
+    }
+
+    final display = (data.displayName != null && data.displayName!.isNotEmpty)
+        ? data.displayName!
+        : data.name;
+    return '$prefix $display';
   }
 }

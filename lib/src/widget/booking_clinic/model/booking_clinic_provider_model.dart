@@ -27,6 +27,8 @@ class BookingClinicProvider {
   final String? clinicName;
   final String? clinicAddress;
   final DoctorClinicInfo? doctorClinicInfo;
+  final Map<String, String>? graduateName;
+  final int? totalReview;
 
   BookingClinicProvider({
     required this.id,
@@ -56,6 +58,8 @@ class BookingClinicProvider {
     this.clinicName,
     this.clinicAddress,
     this.doctorClinicInfo,
+    this.graduateName,
+    this.totalReview,
   });
 
   factory BookingClinicProvider.fromJson(Map<String, dynamic> json) {
@@ -115,6 +119,8 @@ class BookingClinicProvider {
       doctorClinicInfo: json['clinic'] is Map
           ? DoctorClinicInfo.fromJson(json['clinic'])
           : null,
+      graduateName: _parseGraduateName(json['graduate_name']),
+      totalReview: json['total_review'] ?? 0,
     );
   }
 
@@ -127,6 +133,23 @@ class BookingClinicProvider {
     }
     return null;
   }
+}
+
+Map<String, String>? _parseGraduateName(dynamic graduateName) {
+  if (graduateName == null) return null;
+
+  if (graduateName is String) {
+    // If it's a string, create a map with both vi and en as the same value
+    return {
+      'name_vi': graduateName,
+      'name_en': graduateName,
+    };
+  } else if (graduateName is Map) {
+    // If it's already a map, convert it
+    return Map<String, String>.from(graduateName);
+  }
+
+  return null;
 }
 
 class ServiceAvailable {

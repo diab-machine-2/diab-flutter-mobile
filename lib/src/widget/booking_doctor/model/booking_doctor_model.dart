@@ -31,13 +31,14 @@ class BookingDoctorModel {
   final List<ServiceAvailable>
       svAvailable; // 'at_clinic', 'telemedicine', 'at_home'
   final String profileType; // 'booking' or 'premium'
-  final String? graduateName;
+  final Map<String, String>? graduateName;
   final List<Education>? education;
   final List<OwnerClinic>? ownerClinics;
   final List<OwnerClinic>? ownerClinic;
   final List<OwnerClinic>? staffClinic;
   final String? displayName; // doctor name
   final String? experience;
+  final int? totalReview;
 
   BookingDoctorModel({
     required this.id,
@@ -74,6 +75,7 @@ class BookingDoctorModel {
     this.staffClinic,
     this.displayName,
     this.experience,
+    this.totalReview,
   });
 
   factory BookingDoctorModel.fromJson(Map<String, dynamic> json) {
@@ -128,7 +130,7 @@ class BookingDoctorModel {
               .toList() ??
           [],
       profileType: json['profile_type'] ?? '',
-      graduateName: json['graduate_name'] ?? '',
+      graduateName: _parseGraduateName(json['graduate_name']),
       education: (json['education'] as List?)
               ?.map((e) => Education.fromJson(e))
               .toList() ??
@@ -147,6 +149,7 @@ class BookingDoctorModel {
           [],
       displayName: json['display_name'] ?? '',
       experience: json['experience'] ?? '',
+      totalReview: json['total_review'] ?? 0,
     );
   }
 
@@ -290,4 +293,21 @@ class SpecialtyPivot {
         doctorId: json['doctor_id'] ?? 0,
         specialtyId: json['specialty_id'] ?? 0);
   }
+}
+
+Map<String, String>? _parseGraduateName(dynamic graduateName) {
+  if (graduateName == null) return null;
+
+  if (graduateName is String) {
+    // If it's a string, create a map with both vi and en as the same value
+    return {
+      'name_vi': graduateName,
+      'name_en': graduateName,
+    };
+  } else if (graduateName is Map) {
+    // If it's already a map, convert it
+    return Map<String, String>.from(graduateName);
+  }
+
+  return null;
 }

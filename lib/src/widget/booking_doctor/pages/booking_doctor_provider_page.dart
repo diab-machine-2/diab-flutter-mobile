@@ -435,7 +435,7 @@ class _BookingDoctorProvidersPageState
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        data.name,
+                        _getDoctorNameWithPrefix(data),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -456,6 +456,15 @@ class _BookingDoctorProvidersPageState
                           GapW(6),
                           Text(
                             '${(data.star ?? 5.0).toStringAsFixed(1)}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: R.color.color0xff5E6566,
+                            ),
+                          ),
+                          GapW(4),
+                          Text(
+                            '(${data.totalReview ?? 0})',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w400,
@@ -549,21 +558,35 @@ class _BookingDoctorProvidersPageState
                           Expanded(
                             child: Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.all(10),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 0),
                               decoration: BoxDecoration(
                                 color: R.color.color0xffE7FDFB,
                                 borderRadius: BorderRadius.circular(200),
                               ),
-                              child: Text(
-                                Utils.formatMoney(consultService == null
-                                        ? 0
-                                        : consultService.fromPrice) ??
-                                    '',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: R.color.greenGradientBottom,
-                                ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    Utils.formatMoney(consultService == null
+                                            ? 0
+                                            : consultService.fromPrice) ??
+                                        '',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.greenGradientBottom,
+                                    ),
+                                  ),
+                                  Text(
+                                    '30 ${R.string.minute.tr()}',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w400,
+                                      color: R.color.color0xff5E6566,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -939,31 +962,35 @@ class _BookingDoctorProvidersPageState
                         _buildFilterItem(R.string.all.tr(), '', 'timeframe'),
                       ],
                     ),
-                    GapH(24),
-                    Text(
-                      R.string.hinh_thuc.tr(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                    if (widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
+                      GapH(24),
+                    if (widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
+                      Text(
+                        R.string.hinh_thuc.tr(),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                    GridView.count(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 5 / 1,
-                      children: [
-                        ...DsmesAppointmentMode.values.map((serviceType) {
-                          return _buildFilterItem(
-                              getClinicServiceTypeDisplay(serviceType),
-                              serviceType.toString(),
-                              'serviceType');
-                        }).toList(),
-                        _buildFilterItem(R.string.all.tr(), '', 'serviceType'),
-                      ],
-                    ),
+                    if (widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 5 / 1,
+                        children: [
+                          ...DsmesAppointmentMode.values.map((serviceType) {
+                            return _buildFilterItem(
+                                getClinicServiceTypeDisplay(serviceType),
+                                serviceType.toString(),
+                                'serviceType');
+                          }).toList(),
+                          _buildFilterItem(
+                              R.string.all.tr(), '', 'serviceType'),
+                        ],
+                      ),
                     GapH(80),
                   ],
                 ),
@@ -1355,5 +1382,24 @@ class _BookingDoctorProvidersPageState
         ),
       ),
     );
+  }
+
+  String _getDoctorNameWithPrefix(BookingClinicProvider data) {
+    String prefix = 'BS'; // Default prefix
+    if (data.graduateName != null) {
+      // Check current locale and use appropriate language
+      final currentLocale = context.locale.languageCode;
+      if (currentLocale == 'vi' && data.graduateName!['name_vi'] != null) {
+        prefix = data.graduateName!['name_vi']!;
+      } else if (currentLocale == 'en' &&
+          data.graduateName!['name_en'] != null) {
+        prefix = data.graduateName!['name_en']!;
+      } else if (data.graduateName!['name_vi'] != null) {
+        prefix = data.graduateName!['name_vi']!;
+      } else if (data.graduateName!['name_en'] != null) {
+        prefix = data.graduateName!['name_en']!;
+      }
+    }
+    return '$prefix ${data.name}';
   }
 }
