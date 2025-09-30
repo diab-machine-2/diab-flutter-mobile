@@ -124,7 +124,7 @@ class ExercrisesRankingChartState extends State<ExercrisesRankingChart>
                                 text: "chỉ số HbA1C",
                                 onTap: () {
                                   Navigator.pushNamed(
-                                      context, NavigatorName.add_exercrises,
+                                      context, NavigatorName.exercrise_add_v2,
                                       arguments: {
                                         'type': 'input',
                                       });

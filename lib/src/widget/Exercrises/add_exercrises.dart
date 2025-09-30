@@ -1019,7 +1019,6 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
     final response = await ExercrisesClient().fetchCalories(
         selectedCategory[index].categoryId,
         selectedCategory[index].exerciseIntensityId,
-        selectedCategory[index].exerciseId,
         duration);
     BotToast.closeAllLoading();
     print(response);
@@ -1169,9 +1168,10 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,
           note,
-          selectedCategory,
+          selectedCategory.first,
           removeIDs,
-          paths);
+          paths,
+          '');
       if (result == true) {
         Observable.instance
             .notifyObservers([], notifyName: "active_change_data");
@@ -1216,8 +1216,8 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           selectedTimeFrame!.id,
           note,
-          selectedCategory,
-          paths);
+          selectedCategory.first,
+          paths,'');
       if (result == true) {
         // await TrackingManager.analytics.logEvent(
         //   name: 'kpi_add_success',
@@ -1543,7 +1543,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
   _openCamera(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 512,
           maxHeight: 512,
           source: ImageSource.camera,
@@ -1561,7 +1561,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
   _openGallery(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
         files.add(pickedFile);

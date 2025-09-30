@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/subscription/pages/package_program_detail_page.dart';
+import 'package:medical/src/widget/subscription/pages/welcome_program_page.dart';
+import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
@@ -17,6 +23,10 @@ import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PaywallScreen extends StatefulWidget {
+  final bool autoTriggerBasicBottomSheet;
+  const PaywallScreen({Key? key, this.autoTriggerBasicBottomSheet = false})
+      : super(key: key);
+
   @override
   _PaywallScreenState createState() => _PaywallScreenState();
 }
@@ -29,11 +39,14 @@ class _PaywallScreenState extends State<PaywallScreen> {
   String _currentRoute = '/';
   late SubscriptionCubit _cubit;
 
+  bool _autoTriggerBasicBottomSheet = false;
+
   @override
   void initState() {
     super.initState();
     final AppRepository repository = AppRepository();
     _cubit = SubscriptionCubit(repository);
+    _autoTriggerBasicBottomSheet = widget.autoTriggerBasicBottomSheet;
     _loadPackages();
   }
 
@@ -42,24 +55,54 @@ class _PaywallScreenState extends State<PaywallScreen> {
     super.dispose();
   }
 
-  Future<void> _loadPackages() async {
+  void _triggerBasicBottomSheet() {
+    int basicIndex = _localPackages.indexWhere((p) => p.id == 'co_ban');
+    if (basicIndex == -1) return;
     setState(() {
-      _isLoading = true;
+      _selectedPackageIndex = basicIndex;
     });
+    final package = _localPackages[_selectedPackageIndex];
+    _cubit.setSelectedPackage(package);
+    SubscriptionTracking.programServiceRegister(
+      screenName: 'program_service',
+      objectTitle: package.title,
+    );
+    if (package.id == 'co_ban' && _revenueCatPackages.isNotEmpty) {
+      SubscriptionService.showSubscriptionOptionsSheet(context, package);
+    } else {
+      SubscriptionNavigationMixin.navigationKey.currentState
+          ?.pushNamed(NavigatorName.package_program_list);
+    }
+  }
 
+  Future<void> _loadPackages() async {
     try {
-      // Always load local package data first
-      final localPackages = await SubscriptionService.getLocalPackages();
+      // Try to load from Firebase Remote Config first, fallback to local packages
+      List<SubscriptionPackage> localPackages = [];
+      try {
+        final packageInfo =
+            FirebaseRemoteSetting.instance.subscriptionPackageInfo;
+        if (packageInfo != null && packageInfo.isNotEmpty) {
+          localPackages =
+              SubscriptionPackage.fromList(jsonDecode(packageInfo)['packages']);
+        }
+        if (localPackages.isEmpty) {
+          localPackages = await SubscriptionService.getLocalPackages();
+        }
+      } catch (e) {
+        print('Error loading remote packages, falling back to local: $e');
+        localPackages = await SubscriptionService.getLocalPackages();
+      }
 
-      // TODO: Uncomment this line when Basic Package flow is ready
-      // _revenueCatPackages = await RevenueCatService.getOfferings();
+      _revenueCatPackages = await RevenueCatService.getOfferings();
 
       setState(() {
         _localPackages = localPackages;
-      });
-
-      setState(() {
         _isLoading = false;
+        if (_autoTriggerBasicBottomSheet) {
+          _autoTriggerBasicBottomSheet = false;
+          _triggerBasicBottomSheet();
+        }
       });
 
       if (_localPackages.isNotEmpty) {
@@ -84,11 +127,24 @@ class _PaywallScreenState extends State<PaywallScreen> {
       builder: (context) => PackageDetailBottomSheet(
         package: package,
         onPurchase: () async {
+          Navigator.pop(context);
           _cubit.setSelectedPackage(_localPackages[_selectedPackageIndex]);
 
-          Navigator.pop(context);
-          SubscriptionNavigationMixin.navigationKey.currentState
-              ?.pushNamed(NavigatorName.package_program_list);
+          SubscriptionTracking.programServiceRegister(
+              screenName: 'program_service',
+              objectTitle: _localPackages[_selectedPackageIndex].title);
+
+          if (_localPackages[_selectedPackageIndex].id == 'co_ban' &&
+              _revenueCatPackages.isNotEmpty) {
+            // Show subscription options sheet only for "cơ bản" package
+            SubscriptionService.showSubscriptionOptionsSheet(context, package);
+
+            return;
+          } else {
+            // Navigate to package program list using the SubscriptionNavigationMixin for other packages
+            SubscriptionNavigationMixin.navigationKey.currentState
+                ?.pushNamed(NavigatorName.package_program_list);
+          }
         },
       ),
     );
@@ -104,6 +160,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
           // Check if the inner navigator can handle the back button press
           final NavigatorState? navigator =
               SubscriptionNavigationMixin.navigationKey.currentState;
+
+          if (widget.autoTriggerBasicBottomSheet) {
+            Observable.instance
+                .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+          }
 
           if (navigator != null && navigator.canPop()) {
             navigator.pop();
@@ -145,6 +206,15 @@ class _PaywallScreenState extends State<PaywallScreen> {
                         program: args?['program'],
                       ),
                     );
+                  case NavigatorName.welcome_program:
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      WelcomeProgramPage(
+                        program: args?['program'],
+                      ),
+                    );
                   default:
                     return null;
                 }
@@ -175,22 +245,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ),
                   ),
 
-                  // Back arrow positioned at top
-                  Positioned(
-                    top: 40,
-                    left: 16,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back,
-                          color: R.color.greenGradientTop02),
-                      onPressed: () {
-                        // Make sure bottom bar shows when navigating back
-                        Observable.instance
-                            .notifyObservers([], notifyName: 'show_bottom_bar');
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-
                   // Main content aligned to bottom
                   Positioned(
                     left: 0,
@@ -218,6 +272,23 @@ class _PaywallScreenState extends State<PaywallScreen> {
                               _localPackages[_selectedPackageIndex]),
                         ],
                       ),
+                    ),
+                  ),
+
+                  // Back arrow positioned at top
+                  Positioned(
+                    top: 32,
+                    left: 16,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back,
+                          color: R.color.greenGradientTop02),
+                      onPressed: () {
+                        if (widget.autoTriggerBasicBottomSheet) {
+                          Observable.instance.notifyObservers([],
+                              notifyName: Const.NAVIGATE_TO_LESSON_TAB);
+                        }
+                        Navigator.of(context).pop();
+                      },
                     ),
                   ),
                 ],

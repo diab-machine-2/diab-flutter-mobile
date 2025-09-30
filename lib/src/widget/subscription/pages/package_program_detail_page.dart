@@ -1,16 +1,22 @@
+// Updated package_program_detail_page.dart with phone validation
 // screens/package_program_detail_page.dart
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/subscription/model/package_program_model.dart';
+import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
 import 'package:medical/src/widget/subscription/services/package_program_service.dart';
+import 'package:medical/src/widget/subscription/services/subscription_activate_service.dart';
 import 'package:medical/src/widget/subscription/services/subscription_service.dart';
 import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
@@ -31,11 +37,34 @@ class ProgramDetailPage extends StatefulWidget {
 
 class _ProgramDetailPageState extends State<ProgramDetailPage> {
   late SubscriptionCubit _cubit;
+  final _subscriptionActivateService = SubscriptionActivateService();
 
   @override
   void initState() {
     super.initState();
     _cubit = context.read<SubscriptionCubit>();
+  }
+
+  Future<bool> _activateSubscription(BuildContext context) async {
+    final accountId = AppSettings.userInfo?.accountId ?? '';
+    if (accountId.isEmpty) {
+      return false;
+    }
+
+    final packageId = widget.program.id;
+
+    if (packageId == null) {
+      return false;
+    }
+
+    BotToast.showLoading();
+
+    // Use new subscription service for improved UX
+    final isActivated = await _subscriptionActivateService.activateSubscription(
+        accountId, packageId, context);
+
+    BotToast.closeAllLoading();
+    return isActivated;
   }
 
   @override
@@ -76,18 +105,42 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           ? R.string.join_now.tr()
                           : R.string.consult_request.tr(),
                       onTap: () async {
+                        final isBasicPackage =
+                            SubscriptionService.isBasicPackage(
+                                _cubit.selectedPackage);
+                        // Add phone validation before proceeding
+                        SubscriptionTracking.programRequest(
+                            screenName: 'program_detail',
+                            objectTitle: widget.program.title);
+
+                        String phoneNumber =
+                            AppSettings.userInfo?.phoneNumber ?? '';
+
+                        if (!isBasicPackage) {
+                          phoneNumber = await PhoneValidationHelper
+                              .validatePhoneAndShowDialog(context);
+                          if (phoneNumber.isEmpty) return;
+                        }
+
                         if (SubscriptionService.isBasicPackage(
                             _cubit.selectedPackage)) {
                           ProgramService.showPopupConfirmBasicSubscription(
                               title: widget.program.title,
                               subtitle: R.string.basic_program_confirm.tr(),
-                              onConfirm: () {
-                                // Navigator.of(context, rootNavigator: true)
-                                //     .pushNamedAndRemoveUntil(
-                                //   NavigatorName.tabbar,
-                                //   (route) =>
-                                //       false, // This removes all routes from stack
-                                // );
+                              onConfirm: () async {
+                                final isActivated =
+                                    await _activateSubscription(context);
+                                if (isActivated == false) {
+                                  Message.showToastMessage(context,
+                                      R.string.activate_program_failed.tr());
+                                  return;
+                                }
+                                await SubscriptionNavigationMixin
+                                    .navigationKey.currentState
+                                    ?.pushNamed(
+                                  NavigatorName.welcome_program,
+                                  arguments: {'program': widget.program},
+                                );
                               },
                               context: context);
                           return;
@@ -106,8 +159,8 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                             servicePackage:
                                 subscriptionCubit.selectedPackage!.title,
                             programName: widget.program.title);
-                        await subscriptionCubit
-                            .notifySubscriptionSuccess(request);
+                        await subscriptionCubit.notifySubscriptionSuccess(
+                            phoneNumber: phoneNumber, request: request);
 
                         ProgramService.showPopupRequestConsultSubscription(
                           context: context,
@@ -131,13 +184,6 @@ class _ProgramDetailPageState extends State<ProgramDetailPage> {
                           onContact: () async {
                             SubscriptionTracking.supportClick(
                                 screenName: 'program_detail');
-                            // final launchUri =
-                            //     Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
-                            // if (await canLaunchUrl(launchUri)) {
-                            //   await launchUrl(launchUri);
-                            // } else {
-                            //   throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
-                            // }
                             HomeSupportFunctions.showModalAddData(context);
                           },
                         );
@@ -415,8 +461,9 @@ class AudienceCard extends StatelessWidget {
               alignment: Alignment.center,
               child: MediaQuery(
                 data: MediaQuery.of(context).copyWith(
-                  textScaler: TextScaler.linear(
-                      MediaQuery.of(context).textScaleFactor.clamp(1.0, 1.3)),
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                 ),
                 child: Text(
                   audience.title,
@@ -528,9 +575,9 @@ class ActionCard extends StatelessWidget {
                 child: Center(
                   child: MediaQuery(
                     data: MediaQuery.of(context).copyWith(
-                      textScaler: TextScaler.linear(MediaQuery.of(context)
-                          .textScaleFactor
-                          .clamp(1.0, 1.3)),
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                     ),
                     child: Text(
                       action.title,

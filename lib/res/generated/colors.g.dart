@@ -49,6 +49,7 @@ class Colors {
   Color get greenLight => Color(0xff9CD9B8);
   Color get redLight => Color(0xffFFCDD2);
   Color get red => Color(0xffE53935);
+  Color get red_2 => Color(0xffD02424);
   Color get greenbg => Color(0xffE6F6ED);
   Color get gray => Color(0xffA1A3A6);
   Color get gray_btn => Color(0xffE4E4E7);
@@ -188,6 +189,9 @@ class Colors {
   Color get conversation_typing_broder => Color(0xffD4D4D8);
   Color get conversation_bubble_author_broder => Color(0xff8FEBE0);
   Color get conversation_bubble_bot_broder => Color(0xffDFE4E4);
+  Color get infographic_color => Color(0xff23C559);
   Color get color0xffB4802D => Color(0xffB4802D);
   Color get color0xff5E6566 => Color(0xff5E6566);
+  Color get color0xffDCFFFC => Color(0xffDCFFFC);
+  Color get color0xff830000 => Color(0xff830000);
 }

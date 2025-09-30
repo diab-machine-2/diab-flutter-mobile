@@ -96,7 +96,8 @@ class DsmesClinicModel {
       clinicId: json['clinic_id'] ?? 0,
       serviceType: json['service_type'] ?? [],
       serviceList: ServiceList.fromJson(json['service_list'] ?? {}),
-      schedule: _parseSchedule(json['schedule'] ?? {}),
+      schedule: _parseSchedule(
+          json['schedule'] is List ? {} : json['schedule'] ?? {}),
       aptInterval: json['apt_interval'] ?? '',
       extraAvatar: (json['extra_avatar'] as List?)
               ?.map((e) => ExtraAvatar.fromJson(e))

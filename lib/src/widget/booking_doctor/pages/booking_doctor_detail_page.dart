@@ -329,50 +329,51 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                   ),
                 ],
               ),
-            GapH(24),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(R.drawable.ic_archivement),
-                    ),
-                    GapW(8),
-                    Flexible(
-                      child: Text(
-                        R.string.doctor_good_at.tr(),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+            if (goodAtList.isNotEmpty) GapH(24),
+            if (goodAtList.isNotEmpty)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: Image.asset(R.drawable.ic_archivement),
+                      ),
+                      GapW(8),
+                      Flexible(
+                        child: Text(
+                          R.string.doctor_good_at.tr(),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                GapH(8),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: R.color.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      Utils.getBoxShadowDropCard(),
                     ],
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  child: Text(
-                    goodAtList.map((e) => e.name).join('  |  '),
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: R.color.color0xff111515,
+                  GapH(8),
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: R.color.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        Utils.getBoxShadowDropCard(),
+                      ],
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    child: Text(
+                      goodAtList.map((e) => e.name).join('  |  '),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: R.color.color0xff111515,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             if (educationList.isNotEmpty) GapH(24),
             if (educationList.isNotEmpty)
               Column(
@@ -488,11 +489,15 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                       return Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SvgPicture.asset(
-                            Utils.getLanguageFlag(e),
-                            width: 20,
-                            height: 20,
-                            fit: BoxFit.scaleDown,
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: SvgPicture.asset(
+                                Utils.getLanguageFlag(e),
+                              ),
+                            ),
                           ),
                           GapW(8), // Gap between flag and text
                           Text(

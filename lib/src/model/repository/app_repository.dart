@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/exercrises/exercises_intensity.dart';
 import 'package:medical/src/model/docosan_api.dart';
@@ -24,6 +26,7 @@ import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
@@ -31,6 +34,8 @@ import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/request/update_quiz_lesson_request.dart';
 import 'package:medical/src/model/request/update_shared_profile_request.dart';
 import 'package:medical/src/model/request/zoom_token_request.dart';
+import 'package:medical/src/model/request/update_exercise_request.dart';
+import 'package:medical/src/model/request/add_exercise_request.dart';
 import 'package:medical/src/model/response/blood_sugar_template_response.dart';
 import 'package:medical/src/model/response/booking_doctor_detail_response.dart';
 import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
@@ -48,7 +53,11 @@ import 'package:medical/src/model/response/diabetes_status_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_detail_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_list_response.dart';
 import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
+import 'package:medical/src/model/response/exercise_analysis_response.dart';
+import 'package:medical/src/model/response/exercise_category_response.dart';
+import 'package:medical/src/model/response/exercise_intensity_response.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/src/model/response/exercise_summary_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/filter_data_response.dart';
 import 'package:medical/src/model/response/food_suggest_response.dart';
@@ -57,6 +66,7 @@ import 'package:medical/src/model/response/get_diab_clinics_schedule_response.da
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
+import 'package:medical/src/model/response/get_vnpay_transaction_info_response.dart';
 import 'package:medical/src/model/response/is_exist_docosan_user_response.dart';
 import 'package:medical/src/model/response/latest_hba1c_input_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
@@ -93,6 +103,8 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:medical/src/model/response/exercise_lesson_response.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
@@ -1212,9 +1224,145 @@ class AppRepository {
   }
 
   Future<ApiResult<CommonResponse>> notifySubscription(
-      NotifySubscriptionRequest request) async {
+      {required String phoneNumber,
+      required NotifySubscriptionRequest request}) async {
     try {
-      final response = await appClient.notifySubscription(request);
+      final response = await appClient.notifySubscription(phoneNumber, request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> subscriptionActivePackage(
+      {required String accountId, required String packageId}) async {
+    try {
+      final response = await appClient.subscriptionActivePackage(
+          accountId: accountId, packageId: packageId);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> addExercise(
+      AddExerciseRequest request) async {
+    try {
+      final response = await appClient.addExercise(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<CommonResponse>> updateExercise(
+      UpdateExerciseRequest request, String id) async {
+    try {
+      final response = await appClient.updateExercise(request, id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<ExerciseIntensity>>> getExerciseIntensities() async {
+    try {
+      final response = await appClient.getExerciseIntensities();
+      return ApiResult.success(data: response.data!);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<ExerciseCategory>>> getExerciseCategories() async {
+    try {
+      final response = await appClient.getExerciseCategories();
+      return ApiResult.success(data: response.data!);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExerciseAnalysis>> getExerciseAnalysis(
+      String exerciseId) async {
+    try {
+      final response = await appClient.getExerciseAnalysis(exerciseId);
+      return ApiResult.success(data: response.data!);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<ExerciseSummary>> getExerciseSummary(
+      DateTime currentDateTime) async {
+    try {
+      final response =
+          await appClient.getExerciseSummary(currentDateTime.toIso8601String());
+      return ApiResult.success(data: response.data!);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<ExerciseLesson>>> getSupportExercises() async {
+    try {
+      final response = await appClient.getSupportExercises();
+      return ApiResult.success(data: response.data ?? []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<String>> getExerciseHealthTrend(
+      String currentDateTime, int periodFilterType) async {
+    try {
+      final response = await appClient.getExerciseHealthTrend(
+          currentDateTime, periodFilterType);
+      return ApiResult.success(data: response.data);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+    Future<bool> saveVnpayTransactionInfo(VnpayPaymentRequest request) async {
+    try {
+      log('[VNPAY] saveVnpayTransactionInfo payload: $request');
+      final response = await FetchClient().postHttp(
+          path: '/App/PaymentMethodVnpay', params: request.toFormData());
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      throw e is Error ? e : "Lưu thông tin thanh toán không thành công";
+    }
+  }
+
+  Future<bool> updateVnpayTransactionInfo(
+      {required int appointmentId, required String txnRef}) async {
+    try {
+      log('[VNPAY] updateVnpayTransactionInfo payload: appointmentId $appointmentId txnRef $txnRef');
+      final response = await FetchClient().putData(
+          url: '/App/PaymentMethodVnpay/update-by-refcode',
+          params: {},
+          queryParams: {
+            'appointmentId': appointmentId.toString(),
+            'refCode': txnRef,
+          });
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      throw e is Error ? e : "Cập nhật thông tin thanh toán không thành công";
+    }
+  }
+
+  Future<ApiResult<GetVnpayTransactionInfoResponse>>
+      getPaymentVnpayTransactionInfo({required String txnRef}) async {
+    try {
+      final response =
+          await appClient.getPaymentVnpayTransactionInfo(txnRef: txnRef);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

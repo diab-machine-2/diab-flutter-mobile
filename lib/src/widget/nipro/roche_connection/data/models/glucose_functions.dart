@@ -182,7 +182,12 @@ class GlucoseFunctions {
 
     int timeOffset = 0;
     if ((flag & (1 << 0)) > 0) {
-      timeOffset = (values[11] * 256) + values[10];
+      // Time Offset is a 16-bit signed integer (minutes), little-endian per BLE spec
+      final lo = values[10];
+      final hi = values[11];
+      int signed = (hi << 8) | lo;
+      if (signed >= 0x8000) signed -= 0x10000; // two's complement to int16
+      timeOffset = signed;
       offset += 2; // offset is 12
     }
     glucoseMeasurementRecord.timeOffset = timeOffset;

@@ -12,6 +12,7 @@ import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -19,6 +20,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -30,8 +32,9 @@ import '../../widgets/network_image_widget.dart';
 class AddHBA1CController extends StatefulWidget {
   final String? type;
   final String? id;
+  final String? goalId;
 
-  AddHBA1CController({this.type, this.id});
+  AddHBA1CController({this.type, this.id, this.goalId});
   @override
   _AddHBA1CControllerState createState() => _AddHBA1CControllerState();
 }
@@ -49,11 +52,11 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   List<int> rangeValue = [0, 60, 65, 75];
   List<String> _rangeLabel = ["Tuyệt vời", "Tốt", "Khá cao", "Rất cao"];
   List<Color> _colorList = [
-      Color(0xFF20A468),
-      Color(0xFF9CD9B8),
-      Color(0xFFFFCCD1),
-      Color(0xFFE53935),
-    ];
+    Color(0xFF20A468),
+    Color(0xFF9CD9B8),
+    Color(0xFFFFCCD1),
+    Color(0xFFE53935),
+  ];
   InputHbA1CModel? model;
   List<String?> removeIDs = [];
   bool isLoading = true;
@@ -919,6 +922,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         //     'object_title': 'Chỉ số HBA1C'
         //   },
         // );
+        HomeClient().completeSmartGoal(DateTime.now(), widget.goalId, 1,
+            ScheduleType.hba1c_recommend.typeIndex);
         Observable.instance
             .notifyObservers([], notifyName: "hba1c_change_data");
       }
@@ -1148,7 +1153,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   _openCamera(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 512,
           maxHeight: 512,
           source: ImageSource.camera,
@@ -1166,7 +1171,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   _openGallery(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
         files.add(pickedFile);

@@ -32,17 +32,23 @@ class Utils {
   }
 
   static String getNewTitle(String title) {
-    if (title.length > 1) {
-      var temp = title.substring(title.length - 1, title.length);
-      var tempInt = 0;
-      try {
-        tempInt = int.parse(temp);
-        tempInt = tempInt + 1;
-      } catch (error) {}
-      return title.substring(0, title.length - 1) + tempInt.toString();
-    } else {
-      return title;
+    if (title.isEmpty) return title;
+
+    // Use regex to find the last number in the string
+    final RegExp numberRegex = RegExp(r'(\d+)(?!.*\d)');
+    final Match? match = numberRegex.firstMatch(title);
+
+    if (match != null) {
+      final String numberStr = match.group(1)!;
+      final int currentNumber = int.parse(numberStr);
+      final int newNumber = currentNumber + 1;
+
+      // Replace the last number with the incremented value
+      return title.replaceRange(match.start, match.end, newNumber.toString());
     }
+
+    // If no number found, return original title
+    return title;
   }
 
   static void setStatusColor(Color color) {
@@ -147,7 +153,7 @@ class Utils {
       String? contentText,
       String? submitText,
       VoidCallback? submitCallback,
-      bool dismissible: false}) {
+      bool dismissible = false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
@@ -180,7 +186,7 @@ class Utils {
       Widget? contentWidget,
       String? submitText,
       VoidCallback? submitCallback,
-      bool dismissible: false}) {
+      bool dismissible = false}) {
     return showDialog(
         barrierDismissible: dismissible,
         context: context,
@@ -255,15 +261,23 @@ class Utils {
     }
   }
 
-  static String? formatMoney(dynamic amount) {
+  static String? formatMoney(dynamic amount, {String? currency = 'đ'}) {
     if (amount == null) {
       return null;
+    }
+
+    if (currency == null || currency.isEmpty) {
+      currency = 'đ';
+    }
+
+    if (currency.contains('VND')) {
+      currency = 'đ';
     }
 
     if (amount is String) {
       amount = double.parse(amount);
     }
-    return NumberFormat("#,##0đ").format(amount);
+    return NumberFormat("#,##0$currency").format(amount);
   }
 
   static void showToast(String text) {
@@ -505,7 +519,7 @@ class Utils {
     var user = AppSettings.userInfo!;
     if (user.levelOfDiabetesRuleList != null) {
       int indexWhere = user.levelOfDiabetesRuleList!.indexWhere(
-          (element) => element.selected == true && element.value == '3');
+          (element) => element.selected == true && element.value == '4');
       return !indexWhere.isNegative;
     }
     return result;
@@ -528,10 +542,15 @@ class Utils {
         return R.string.nutrition.tr();
       case ScheduleType.exercise:
       case ScheduleType.exercise_recommend:
+      case ScheduleType.goal_setting_recommend:
         return R.string.exercise.tr();
       case ScheduleType.book_1_1:
       case ScheduleType.io_evaluate:
       case ScheduleType.output_assessment:
+      case ScheduleType.screening_interview:
+      case ScheduleType.evaluate_interview:
+      case ScheduleType.booking_solo:
+      case ScheduleType.book_1_n:
         return R.string.event.tr();
       case ScheduleType.survey:
       case ScheduleType.update_profile:
@@ -539,10 +558,7 @@ class Utils {
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
         return R.string.knowledge.tr();
-      case ScheduleType.book_1_n:
-        return R.string.huong_dan.tr();
       case ScheduleType.custom:
-      case ScheduleType.goal_setting_recommend:
         return R.string.target.tr();
       case ScheduleType.emotion:
         return R.string.cam_xuc.tr();
@@ -554,6 +570,8 @@ class Utils {
         return R.string.chieu_cao.tr();
       case ScheduleType.weight_recommend:
         return R.string.can_nang.tr();
+      case ScheduleType.infographic:
+        return R.string.infographic.tr();
       default:
         return "";
     }
@@ -575,10 +593,15 @@ class Utils {
         return R.color.nutrition_color;
       case ScheduleType.exercise:
       case ScheduleType.exercise_recommend:
+      case ScheduleType.goal_setting_recommend:
         return R.color.exercise_color;
       case ScheduleType.book_1_1:
       case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
+      case ScheduleType.book_1_n:
+      case ScheduleType.booking_solo:
+      case ScheduleType.screening_interview:
+      case ScheduleType.evaluate_interview:
         return R.color.event_color;
       case ScheduleType.survey:
         return R.color.survey_color;
@@ -587,10 +610,7 @@ class Utils {
         return R.color.lesson_color;
       case ScheduleType.update_profile:
         return R.color.survey_color;
-      case ScheduleType.book_1_n:
-        return R.color.knowledge_color;
       case ScheduleType.custom:
-      case ScheduleType.goal_setting_recommend:
         return R.color.target_color;
       case ScheduleType.emotion:
         return R.color.emotion_color;
@@ -604,6 +624,8 @@ class Utils {
         return R.color.height_color;
       case ScheduleType.weight_recommend:
         return R.color.weight_color;
+      case ScheduleType.infographic:
+        return R.color.infographic_color;
       default:
         return R.color.black;
     }
@@ -641,6 +663,7 @@ class Utils {
     Map<String, String> languageMap = {
       'vi': R.string.vietnamese.tr(),
       'en': R.string.english.tr(),
+      'fr': R.string.french.tr(),
       // Add more languages as needed
     };
 
@@ -651,6 +674,7 @@ class Utils {
     Map<String, String> languageMap = {
       'vi': R.icons.ic_flag_vn,
       'en': R.icons.ic_flag_en,
+      'fr': R.icons.ic_flag_fr,
       // Add more languages as needed
     };
 

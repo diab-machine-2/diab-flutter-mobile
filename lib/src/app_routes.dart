@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/booking_doctor/booking_doctor_page.dart';
@@ -49,8 +50,11 @@ class AppRoutes {
         }
       case NavigatorName.food_menu:
         {
+          final data = settings.arguments as Map<String, dynamic>?;
           // empty goal
-          page = FoodMenuPage();
+          page = FoodMenuPage(
+            smartGoal: data?['smartGoal'],
+          );
           break;
         }
       case NavigatorName.utilities:
@@ -99,7 +103,10 @@ class AppRoutes {
             data: settings.arguments as BloodSugarResultDto);
         break;
       case NavigatorName.glucose_intro_1st_page:
-        page = GlucoseIntro1stPage();
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = GlucoseIntro1stPage(
+          goalId: data?['goalId'],
+        );
         break;
       case NavigatorName.glucose_intro_2nd_page:
         page = GlucoseIntro2ndPage();
@@ -119,7 +126,10 @@ class AppRoutes {
         }
       // ~ Huyet Ap (mới) ~
       case NavigatorName.blood_pressure_intro_1st_page:
-        page = BloodPressureIntro1stPage();
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BloodPressureIntro1stPage(
+          goalId: data?['goalId'],
+        );
         break;
       case NavigatorName.blood_pressure_intro_2nd_page:
         page = BloodPressureIntro2ndPage();
@@ -137,6 +147,11 @@ class AppRoutes {
         );
         break;
       // ~ END: Huyet Ap (mới) ~
+      case NavigatorName.blood_sugar_image_capture:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BloodSugarImageCapture();
+        break;
+
       default:
         break;
     }

@@ -56,14 +56,27 @@ class ProgramService {
     }
   }
 
-  static String getProgramImage(String programId) {
-    switch (programId) {
-      case "program1":
+  static String getProgramImage(String programCode) {
+    switch (programCode) {
+      case "SUBS":
         return R.drawable.subscription_program_1;
-      case "program2":
+      case "SUBSPREVENT":
         return R.drawable.subscription_program_2;
-      case "program3":
+      case "SUBSMOM":
         return R.drawable.subscription_program_3;
+      default:
+        return "";
+    }
+  }
+
+  static String getProgramImageFull(String programCode) {
+    switch (programCode) {
+      case "SUBS":
+        return R.drawable.subscription_program_full_1;
+      case "SUBSPREVENT":
+        return R.drawable.subscription_program_full_2;
+      case "SUBSMOM":
+        return R.drawable.subscription_program_full_3;
       default:
         return "";
     }
@@ -497,6 +510,7 @@ class ProgramService {
                       children: [
                         InkWell(
                           onTap: () {
+                            Navigator.pop(context);
                             onConfirm.call();
                           },
                           child: Container(

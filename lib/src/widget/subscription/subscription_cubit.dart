@@ -1,16 +1,24 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/subscription/model/subscription_banner_model.dart';
 import 'package:medical/src/widget/subscription/model/subscription_package_model.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:medical/src/widget/subscription/subscription_state.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 
 class SubscriptionCubit extends Cubit<SubscriptionState> {
   final AppRepository repository;
@@ -130,9 +138,10 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   }
 
   Future<void> notifySubscriptionSuccess(
-      NotifySubscriptionRequest request) async {
-    final ApiResult<CommonResponse> apiResult =
-        await repository.notifySubscription(request);
+      {required String phoneNumber,
+      required NotifySubscriptionRequest request}) async {
+    final ApiResult<CommonResponse> apiResult = await repository
+        .notifySubscription(phoneNumber: phoneNumber, request: request);
     apiResult.when(success: (CommonResponse response) async {
       return;
     }, failure: (NetworkExceptions error) {

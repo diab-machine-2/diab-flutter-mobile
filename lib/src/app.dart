@@ -27,9 +27,17 @@ import 'package:medical/src/widget/Emotion/widget/add_symbo.dart';
 import 'package:medical/src/widget/Emotion/widget/add_work.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_table.dart';
 import 'package:medical/src/widget/Exercrises/add_exercrises.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_add_v2.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_dashboard.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_detail_tabbar.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_detail_v2.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_guide.dart';
+import 'package:medical/src/widget/Exercrises/exercrises_result.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
+import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
+import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Food/add_food.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
@@ -125,7 +133,10 @@ class App extends StatelessWidget {
                 //   child: child!,
                 // );
                 child = BotToastInit()(context, child);
-                return child;
+                return SafeArea(
+                  top: false,
+                  child: child,
+                );
               },
               navigatorKey: navigatorKey,
               navigatorObservers: [
@@ -172,7 +183,7 @@ class App extends StatelessWidget {
                       sharedCode = settings.arguments! as String;
                     }
                     return _buildRoute(settings, LoginController(sharedCode),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.register:
                     final data = settings.arguments as Map<String, dynamic>?;
                     // String sharedCode = '';
@@ -185,7 +196,7 @@ class App extends StatelessWidget {
                           sharedCode: data?['referalCode'],
                           phone: data?['phone'],
                         ),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.register_success:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -222,7 +233,7 @@ class App extends StatelessWidget {
                         settings,
                         NewPasswordController(
                             phone: data?['phone'], token: data?['token']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.verify:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -244,14 +255,14 @@ class App extends StatelessWidget {
                     return _buildRoute(settings, ChangePasswordController());
                   case NavigatorName.policy:
                     return _buildRoute(settings, PolicyController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.step_list:
                     String sharedCode = '';
                     if (settings.arguments != null) {
                       sharedCode = settings.arguments! as String;
                     }
                     return _buildRoute(settings, StepListController(sharedCode),
-                        isPresent: true);
+                        isPresent: false);
                   // case NavigatorName.rules:
                   //   final data = settings.arguments as Map<String, dynamic>?;
                   //   return _buildRoute(
@@ -267,21 +278,23 @@ class App extends StatelessWidget {
                         AddHBA1CController(
                           type: data?['type'],
                           id: data?['id'],
+                          goalId: data?['goalId'],
                         ));
                   case NavigatorName.detail_hba1c:
                     return _buildRoute(settings, Hba1cDetailTabbarController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.detail_exercrises:
                     return _buildRoute(
                         settings, ExercrisesDetailTabbarController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.detail_blood_sugar:
                     final data = settings.arguments as Map<dynamic, dynamic>?;
                     return _buildRoute(
                         settings, BloodSugarDetailTabbarController(data: data),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.hba1c_tabble:
-                    return _buildRoute(settings, HbA1CTable(), isPresent: true);
+                    return _buildRoute(settings, HbA1CTable(),
+                        isPresent: false);
                   case NavigatorName.add_blood_sugar:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -299,6 +312,11 @@ class App extends StatelessWidget {
                           type: data?['type'],
                           id: data?['id'],
                           goalId: data?['goalId'],
+                          prefilledValue: data?['prefilledValue'],
+                          prefilledUnit: data?['prefilledUnit'],
+                          selectedImages: data?['selectedImages'] != null
+                              ? List<String>.from(data!['selectedImages'])
+                              : null,
                         ));
                   case NavigatorName.add_exercrises:
                     final data = settings.arguments as Map<String, dynamic>?;
@@ -343,7 +361,7 @@ class App extends StatelessWidget {
                             bloodPressureType: data?['bloodPressureType'],
                             periodFilterType: data?['periodFilterType'],
                             isPulseRate: data?['isPulseRate']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.blood_sugar_table:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -354,7 +372,7 @@ class App extends StatelessWidget {
                             periodFilterType: data?['periodFilterType'],
                             glucoseDistributionType:
                                 data?['glucoseDistributionType']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.blood_sugar_distribution_table:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -365,7 +383,7 @@ class App extends StatelessWidget {
                             periodFilterType: data?['periodFilterType'],
                             glucoseDistributionType:
                                 data?['glucoseDistributionType']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.blood_sugar_compare_table:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -376,17 +394,17 @@ class App extends StatelessWidget {
                           comparerType: data?['comparerType'],
                           periodFilterType: data?['periodFilterType'],
                         ),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.detail_blood_pressure:
                     return _buildRoute(
                         settings, BloodPressureDetailTabbarController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.detail_bmi:
                     return _buildRoute(settings, BmiDetailTabbarController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.bmi:
                     return _buildRoute(settings, FoodDetailTabbarController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.add_bmi:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -449,7 +467,7 @@ class App extends StatelessWidget {
                   case NavigatorName.detail_emotion:
                     return _buildRoute(
                         settings, EmotionDetailTabbarController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.profile:
                     return _buildRoute(settings, const ProfileController());
                   case NavigatorName.profile_info:
@@ -467,7 +485,7 @@ class App extends StatelessWidget {
                             communicationId: data?['communicationId']));
                   case NavigatorName.detail_food:
                     return _buildRoute(settings, FoodDetailTabbarController(),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.add_food:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -484,9 +502,14 @@ class App extends StatelessWidget {
                             title: data?['title'],
                             emotionId: data?['emotionId'],
                             periodFilterType: data?['periodFilterType']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.goal_setting:
-                    return _buildRoute(settings, GoalSettingController());
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        GoalSettingController(
+                          smartGoal: data?['smartGoal'],
+                        ));
                   case NavigatorName.notification:
                     return _buildRoute(
                         settings, NotificationTabbarController());
@@ -513,8 +536,12 @@ class App extends StatelessWidget {
                         AddReminderController(
                             type: data?['type'], id: data?['id']));
                   case NavigatorName.schedule_glucose:
+                    final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
-                        settings, const ScheduleGlucoseController());
+                        settings,
+                        ScheduleGlucoseController(
+                          smartGoal: data?['smartGoal'],
+                        ));
                   case NavigatorName.setting_schedule_glucose:
                     return _buildRoute(
                         settings, SettingScheduleGlucoseController());
@@ -522,14 +549,14 @@ class App extends StatelessWidget {
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(settings,
                         PhotoView(files: data?['files'], index: data?['index']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.make_question:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
                         settings,
                         MakeQuestionPage(
                             lessonModuleItems: data!['lessonModuleItems']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.question_detail:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -537,7 +564,7 @@ class App extends StatelessWidget {
                         QuestionDetailPage(
                             questionModel: data!['questionModel'],
                             isAll: data['isAll']),
-                        isPresent: true);
+                        isPresent: false);
                   case NavigatorName.news_detail:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -612,6 +639,9 @@ class App extends StatelessWidget {
                         CalendarBookingController(
                           courseId: arguments?['courseId'] as String? ?? '',
                           endTime: arguments?['endTime'] as String? ?? '',
+                          interviewType:
+                              arguments?['interviewType'] as int? ?? 30,
+                          smartGoal: arguments?['smartGoal'],
                         ),
                       );
                     }
@@ -627,6 +657,7 @@ class App extends StatelessWidget {
                             args["courseId"],
                             args["endTime"],
                             args["bookingQuantity"],
+                            args["interviewType"],
                           ));
                     }
 
@@ -696,6 +727,45 @@ class App extends StatelessWidget {
                         ConversationSetting(
                           conversation: conversation,
                         ));
+                  case NavigatorName.exercrise_onboarding:
+                    return _buildRoute(settings, ExercriseOnboarding());
+                  case NavigatorName.exercrise_dashboard:
+                    return _buildRoute(settings, ExercriseDashboard());
+                  case NavigatorName.exercrise_step_detail_v2:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings,
+                        ExercrisesDetailV2(
+                          periodFilterType: args['periodFilterType'],
+                        ));
+                  case NavigatorName.exercrise_add_v2:
+                    Map<String, dynamic>? args =
+                        settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        ExercrisesAddV2(
+                          isUpdate: args?['isUpdate'],
+                          exerciseInputId: args?['exerciseInputId'],
+                          datetime: args?['datetime'],
+                        ));
+                  case NavigatorName.exercrise_select_category:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings,
+                        ExercisesSelectCategory(
+                            key: args['key'],
+                            onChanged: (args['onChanged']),
+                            selected: args['selected']));
+                  case NavigatorName.exercrise_result:
+                    final args = settings.arguments as Map<String, dynamic>;
+                    return _buildRoute(
+                        settings,
+                        ExercisesResult(
+                          date: args['date'] ?? DateTime.now(),
+                          periodFilterType: args['periodFilterType'] ?? 1,
+                        ));
+                  case NavigatorName.exercrise_guide:
+                    return _buildRoute(settings, ExercisesGuide());
                   default:
                     return null;
                 }

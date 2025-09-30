@@ -14,6 +14,7 @@ import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
 import 'package:medical/src/model/response/booking_doctor_detail_response.dart';
+import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
@@ -23,6 +24,7 @@ import 'package:medical/src/model/response/dsmes_clinic_rating_response.dart';
 import 'package:medical/src/model/response/get_diab_clinics_schedule_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_detail_response.dart';
 import 'package:medical/src/model/response/get_dsmes_appointment_response.dart';
+import 'package:medical/src/model/response/get_vnpay_transaction_info_response.dart';
 import 'package:medical/src/model/response/search_list_clinic_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -111,7 +113,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     final email = AppSettings.userInfo?.email ?? '';
     final request = RegisterDocosanUserRequest(
       phoneNumber: Utils.formatPhoneNumber(phoneNumber),
-      displayName: displayName,
+      displayName: displayName.length <= 6 ? "$displayName-$phoneNumber" : displayName,
       gender: gender,
       isGetCaresOrderInfo: '0',
       email: email,
@@ -787,5 +789,32 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       default:
         return R.color.white;
     }
+  }
+
+  Future<bool> saveVnpayTransactionInfo(VnpayPaymentRequest request) async {
+    final result = await appRepository.saveVnpayTransactionInfo(request);
+
+    return result;
+  }
+
+  Future<bool> updateVnpayTransactionInfo(
+      {required int appointmentId, required String txnRef}) async {
+    final result = await appRepository.updateVnpayTransactionInfo(
+        appointmentId: appointmentId, txnRef: txnRef);
+
+    return result;
+  }
+
+  Future<GetVnpayTransactionInfoResponse?> getPaymentVnpayTransactionInfo(
+      {required String txnRef}) async {
+    GetVnpayTransactionInfoResponse? result;
+    ApiResult<GetVnpayTransactionInfoResponse> apiResult =
+        await appRepository.getPaymentVnpayTransactionInfo(txnRef: txnRef);
+    apiResult.when(success: (GetVnpayTransactionInfoResponse response) {
+      result = response;
+    }, failure: (NetworkExceptions error) {
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    return result;
   }
 }

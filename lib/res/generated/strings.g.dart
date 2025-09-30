@@ -1302,12 +1302,50 @@ class Strings {
       'conversation_setting_delete_failed';
   String get conversation_message_placeholder =>
       'conversation_message_placeholder';
+  String get exercrise_step_onboarding_title =>
+      'exercrise_step_onboarding_title';
+  String get exercrise_step_onboarding_action_btn =>
+      'exercrise_step_onboarding_action_btn';
+  String get exercrise_step_onboarding_input_step_btn =>
+      'exercrise_step_onboarding_input_step_btn';
+  String get exercrise_step_guide_title => 'exercrise_step_guide_title';
+  //exercrise_step_guide_add
+  String get exercrise_step_guide_add => 'exercrise_step_guide_add';
+  //exercrise_step_dashboard_title
+  String get exercrise_step_dashboard_title => 'exercrise_step_dashboard_title';
+  String get exercrise_dashboard_title => 'exercrise_dashboard_title';
+  //exercrise_step_detail_title
+  String get exercrise_step_detail_title => 'exercrise_step_detail_title';
+  String get exercrise_detail_v2_title => 'exercrise_detail_v2_title';
+  String get exercrise_add_v2_title => 'exercrise_add_v2_title';
+  String get exercrise_select_category_title =>
+      'exercrise_select_category_title';
+  String get exercrise_result_title => 'exercrise_result_title';
+  String get exercise_help_title => 'exercise_help_title';
+  String get exercise_delete_popup_title => 'exercise_delete_popup_title';
+  String get exercise_delete_popup_body => 'exercise_delete_popup_body';
+  String get exercise_delete_success => 'exercise_delete_success';
+  String get setup_personal_exercise => 'setup_personal_exercise';
+  String get connect_to_health => 'connect_to_health';
+  String get no_data_available => 'no_data_available';
+  String get add_exercise_successfully => 'add_exercise_successfully';
+  String get add_exercise_failed => 'add_exercise_failed';
+  String get kcal_burned_per_day => 'kcal_burned_per_day';
+  String get minute_upperCase_first_character =>
+      'minute_upperCase_first_character';
+  String get chat_with_AI => 'chat_with_AI';
+  String get roadmap_for_beginners => 'roadmap_for_beginners';
+  String get invalid_duration_exercise => 'invalid_duration_exercise';
+  String get steps => 'steps';
+  String get please_enter_exercise_duration => 'please_enter_exercise_duration';
+  String get enter_manually_details => 'enter_manually_details';
+  String get enter_healt_connect_details => 'enter_healt_connect_details';
   String get chuong_trinh_dong_hanh => 'chuong_trinh_dong_hanh';
   String get chuong_trinh_thau_cam => 'chuong_trinh_thau_cam';
   String get subscription_title_1 => 'subscription_title_1';
   String get subscription_title_2 => 'subscription_title_2';
   String get subscription_subtitle => 'subscription_subtitle';
-  String get tiet_kiem_nhat => 'tiet_kiem_nhat';
+String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get begin_program => 'begin_program';
   String get loading_subscription_packages => 'loading_subscription_packages';
   String get basic_program_confirm => 'basic_program_confirm';
@@ -1319,4 +1357,48 @@ class Strings {
   String get vietnamese => 'vietnamese';
   String get english => 'english';
   String get doctor_name => 'doctor_name';
+  String get screening_interview => 'screening_interview';
+  String get evaluate_interview => 'evaluate_interview';
+  String get booking_screening_interview => 'booking_screening_interview';
+  String get booking_evaluate_interview => 'booking_evaluate_interview';
+  String get booking_solo => 'booking_solo';
+  String get infographic => 'infographic';
+  String get welcome_program => 'welcome_program';
+  String get subscription_already_active => 'subscription_already_active';
+  String get subscription_already_active_content =>
+      'subscription_already_active_content';
+  String get waiting_active_subscription_content_1 =>
+      'waiting_active_subscription_content_1';
+  String get waiting_active_subscription_content_2 =>
+      'waiting_active_subscription_content_2';
+  String get explore_program => 'explore_program';
+  String get welcome_dialog_title_1 => 'welcome_dialog_title_1';
+  String get welcome_dialog_title_2 => 'welcome_dialog_title_2';
+  String get welcome_dialog_subtitle_1 => 'welcome_dialog_subtitle_1';
+  String get welcome_dialog_subtitle_2 => 'welcome_dialog_subtitle_2';
+  String get booking_consult => 'booking_consult';
+  String get activate_program_failed => 'activate_program_failed';
+  String get unlock_advanced_lessons => 'unlock_advanced_lessons';
+  String get membership_benefits => 'membership_benefits';
+  String get program => 'program';
+  String get premium_lesson => 'premium_lesson';
+  String get pathology_nutrition_exercise_psychology_knowledge_diverse => 'pathology_nutrition_exercise_psychology_knowledge_diverse';
+  String get pathology_nutrition_knowledge => 'pathology_nutrition_knowledge';
+  String get personalized_healthy_lifestyle_roadmap => 'personalized_healthy_lifestyle_roadmap';
+  String get healthy_lifestyle_roadmap => 'healthy_lifestyle_roadmap';
+  String get use_all_advanced_features => 'use_all_advanced_features';
+  String get advanced_features => 'advanced_features';
+  String get retry => 'retry';
+  String get no_data_blood_sugar_trend_chart => 'no_data_blood_sugar_trend_chart';
+  String get connect_from_device => 'connect_from_device';
+  String get glucose_connect_device_title => 'glucose_connect_device_title';
+  String get glucose_connect_device_subtitle => 'glucose_connect_device_subtitle';
+  String get glucose_photo_title => 'glucose_photo_title';
+  String get glucose_photo_subtitle => 'glucose_photo_subtitle';
+  String get glucose_manual_title => 'glucose_manual_title';
+  String get glucose_manual_subtitle => 'glucose_manual_subtitle';
+  String get analyzing_blood_glucose => 'analyzing_blood_glucose';
+  String get result_from_blood_glucose_device => 'result_from_blood_glucose_device';
+  String get supported_devices => 'supported_devices';
+  String get french => 'french';
 }

@@ -323,20 +323,29 @@ class FetchClient {
     return response;
   }
 
-  Future<Response> putData(
-      {bool baseIdentify = false,
-      required String url,
-      Map<String, dynamic>? params}) async {
+  Future<Response> putData({
+    bool baseIdentify = false,
+    required String url,
+    Map<String, dynamic>? params,
+    bool? hasAuthen = false,
+    Map<String, dynamic>? queryParams,
+  }) async {
     final option = await options();
     final domain = baseIdentify ? identifyBaseURL : baseURL;
     final Dio dio = Dio();
     logRequest(dio);
     Console.logJson('API', url);
     Console.logJson('Request', params);
+    if (hasAuthen == true) {
+      final token = await AppSettings.getToken();
+      final headers = {'Authorization': 'Bearer $token'};
+      dio.options.headers = headers;
+    }
     Response response = await dio.putUri(
         Uri.https(
           domain,
           url,
+          queryParams,
         ),
         data: params,
         options: option);

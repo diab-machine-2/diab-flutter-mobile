@@ -11,7 +11,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/manual.dart';
 import 'package:medical/src/modal/user/secure.dart';
@@ -477,7 +477,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
         } else if (index == 5) {
           Navigator.pushNamed(context, NavigatorName.change_password);
         } else if (index == 6) {
-          String? shareLink = DynamicLinkConfig.instance.shareLink;
+          String? shareLink = BranchioLinkConfig.instance.shareLink;
           if (shareLink != null) {
             AppShare.instance.userReferralCode(context, shareLink);
           }

@@ -229,7 +229,8 @@ class _DsmesConfirmCreateInformationState
                     // Check if it's telemedicine clinic booking
                     bool isTelemedicineClinic = widget.serviceType ==
                             DsmesAppointmentMode.telemedicine.toString() &&
-                        widget.bookingType == Const.BOOKING_TYPE_CLINIC;
+                        (widget.bookingType == Const.BOOKING_TYPE_CLINIC ||
+                            widget.bookingType == Const.BOOKING_TYPE_DOCTOR);
 
                     // Handle reschedule case
                     if (widget.action == 'reschedule' &&
@@ -289,25 +290,25 @@ class _DsmesConfirmCreateInformationState
       _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
           symptomAttachments: data?.fileNetworkName ?? []);
 
-      // // Calculate total price
-      // int totalPrice = _calculateTotalPrice();
+      // Calculate total price
+      int totalPrice = _calculateTotalPrice();
 
-      // // Initialize VNPay service
-      // VNPayService paymentService = VNPayService(
-      //   context: context,
-      //   totalPrice: totalPrice,
-      //   bookingType: widget.bookingType,
-      //   serviceType: widget.serviceType,
-      //   cubit: _cubit,
-      // );
+      // Initialize VNPay service
+      VNPayService paymentService = VNPayService(
+        context: context,
+        totalPrice: totalPrice,
+        bookingType: widget.bookingType,
+        serviceType: widget.serviceType,
+        cubit: _cubit,
+      );
 
-      // bool initialized = await paymentService.initializePayment();
+      bool initialized = await paymentService.initializePayment();
 
-      // if (initialized) {
-      //   // Process payment directly
-      //   await paymentService.openVNPaySDK();
-      // }
-      _handleCreateBooking();
+      if (initialized) {
+        // Process payment directly
+        await paymentService.openVNPaySDK();
+      }
+      // _handleCreateBooking();
     } finally {
       setState(() => isProcessing['confirmBooking'] = false);
     }

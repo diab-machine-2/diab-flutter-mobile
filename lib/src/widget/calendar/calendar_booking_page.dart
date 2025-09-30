@@ -2,21 +2,25 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_calendar_request.dart';
 import 'package:medical/src/model/request/delete_calendar_request.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
-import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_state.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
+import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
 import 'package:medical/src/widgets/CalendarPicker/picker_helper.dart';
 
@@ -25,8 +29,14 @@ import '../../model/repository/app_repository.dart';
 class CalendarBookingController extends StatefulWidget {
   final String courseId;
   final String endTime;
+  final int interviewType;
+  final SmartGoalList? smartGoal;
   const CalendarBookingController(
-      {Key? key, required this.courseId, required this.endTime})
+      {Key? key,
+      required this.courseId,
+      required this.endTime,
+      required this.interviewType,
+      this.smartGoal})
       : super(key: key);
   @override
   _CalendarBookingControllerState createState() =>
@@ -46,32 +56,52 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
 
   late DateTime seletedDate = DateTime.now();
   final AppRepository repository = AppRepository();
+  late WelcomePackageScreenCubit _welcomPackageCubit;
+
+  bool _hasSetInitialSelectedDate = false;
 
   @override
   void initState() {
     super.initState();
     _cubit = CalendarBookingCubit(repository);
+    _welcomPackageCubit = WelcomePackageScreenCubit(repository);
     setUpCalendar();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setInitialSelectedDate();
+    });
+  }
+
+  @override
+  void dispose() {
+    print('[CALENDAR] dispose called');
+    super.dispose();
   }
 
   Future<void> setUpCalendar() async {
-    await _cubit.initializeMyCalendar(
-      courseId: widget.courseId,
-      // endDate: DateTime.fromMillisecondsSinceEpoch(
-      //     int.parse(widget.endTime) * 1000)
-    );
+    try {
+      await _cubit.initializeMyCalendar(
+        courseId: widget.courseId,
+        interviewType: widget.interviewType,
+      );
 
-    myCalendar = CalendarBookingCubit.myCalendar;
-    seletedDate = myCalendar != null
-        ? _parseToDateTime(myCalendar!.appointmentDate)
-        : seletedDate;
+      myCalendar = CalendarBookingCubit.myCalendar;
+      seletedDate = myCalendar != null
+          ? _parseToDateTime(myCalendar!.appointmentDate)
+          : seletedDate;
 
-    if (myCalendar != null) {
-      // Khi đã có calendar rồi, back lại sẽ render lại slot lịch của calendar đó
-      initpickSlots();
-    } else {
-      // Chưa có calendar nào
-      await _cubit.getCalendarCoach(widget.courseId, widget.endTime);
+      if (myCalendar != null) {
+        print('[CALENDAR] myCalendar exists, calling initpickSlots');
+        initpickSlots();
+      } else {
+        print('[CALENDAR] myCalendar is null, calling getCalendarCoach');
+        if (widget.courseId.isNotEmpty) {
+          final _ =
+              await _cubit.getCalendarCoach(widget.courseId, widget.endTime);
+        }
+      }
+      print('[CALENDAR] setUpCalendar COMPLETED');
+    } catch (e) {
+      print('[CALENDAR] setUpCalendar ERROR: $e');
     }
   }
 
@@ -109,6 +139,69 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       final isMorning = _parseToDateTime(pickSlot!.startTime).hour < 12;
       isMorningSelected = isMorning;
     });
+  }
+
+  void _setInitialSelectedDate() {
+    if (_hasSetInitialSelectedDate) return;
+
+    // Get active dates (same logic as in _buildSectionCalendarBooking)
+    List<DateTime> activeDates = _cubit.calendarCoachs
+        .map((model) => DateTime.fromMillisecondsSinceEpoch(
+              model.startTime * 1000,
+              isUtc: true,
+            ))
+        .where((date) {
+          DateTime today = DateTime.now();
+          DateTime startOfToday = DateTime(today.year, today.month, today.day);
+          DateTime endDate = startOfToday.add(Duration(days: 21));
+          return date.isAfter(startOfToday) && date.isBefore(endDate);
+        })
+        .map((dateTime) => DateTime(
+              dateTime.year,
+              dateTime.month,
+              dateTime.day,
+              dateTime.hour,
+              dateTime.minute,
+              dateTime.second,
+            ))
+        .toSet()
+        .toList();
+
+    if (activeDates.isNotEmpty) {
+      activeDates.sort((a, b) {
+        int yearComparison = a.year.compareTo(b.year);
+        if (yearComparison != 0) return yearComparison;
+        int monthComparison = a.month.compareTo(b.month);
+        if (monthComparison != 0) return monthComparison;
+        return a.day.compareTo(b.day);
+      });
+
+      setState(() {
+        seletedDate = activeDates.first;
+        _hasSetInitialSelectedDate = true;
+
+        // Also update pickSlots for the selected date
+        var targets = _cubit.calendarCoachs
+            .where((model) => DateUtil.isSameDate(
+                  DateTime.fromMillisecondsSinceEpoch(
+                    model.startTime * 1000,
+                    isUtc: true,
+                  ),
+                  seletedDate,
+                ))
+            .toList();
+        pickSlots = targets;
+      });
+
+      print('[CALENDAR] Initial selectedDate set to: $seletedDate');
+    } else {
+      // If no active dates yet, schedule another check
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (mounted && !_hasSetInitialSelectedDate) {
+          _setInitialSelectedDate();
+        }
+      });
+    }
   }
 
   @override
@@ -150,6 +243,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                                     "endTime": widget.endTime,
                                     "bookingQuantity":
                                         CalendarBookingCubit.updateCount,
+                                    "interviewType": widget.interviewType,
                                   })
                             }
                         },
@@ -203,6 +297,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   onPressed: () {
                     CalendarBookingCubit.myCalendar = null;
                     CalendarBookingCubit.updateCount = 0;
+                    Observable.instance
+                        .notifyObservers([], notifyName: 'refresh_home');
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   }),
             ),
@@ -271,6 +367,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                                   'endTime': widget.endTime,
                                   "bookingQuantity":
                                       CalendarBookingCubit.updateCount,
+                                  "type": widget.interviewType,
                                 });
                             BotToast.closeAllLoading();
                             return;
@@ -353,8 +450,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       accountId: AppSettings.userInfo!.accountId!,
       modelStatus: 3, // ModelStatusEnum => 3  is New
     );
+    final title = getGoalTitle(widget.interviewType);
     CreateCalendarRequest request = new CreateCalendarRequest(
-      name: "Phỏng Vấn Đầu Vào - ${AppSettings.userInfo!.fullName}",
+      name: "${Utils.capitalize(title)} - ${AppSettings.userInfo!.fullName}",
       startTime: pickSlot!.startTime,
       endTime: pickSlot!.endTime,
       courseId: widget.courseId,
@@ -366,13 +464,37 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
       modelStatus: 3,
       meetingLink: "",
       zoomTypeId: 1, // auto generate link zoom
-      type: "1", // CalendarTypeEnums = 1 is DanhGiaDauVao
+      type: widget.interviewType
+          .toString(), // 30 is DanhGiaDauVao, 31 is DanhGiaDauRa
       calendarAccounts: [account],
-      goal: "Phỏng vấn đầu vào",
+      goal: title,
       trainingGroupIds: [],
       userId: pickSlot!.zoomUserId,
     );
-    _cubit.createCalendar(request);
+
+    _cubit.createCalendar(request).then((value) async {
+      // Mark complete smart goal when create calendar success
+      if (value == false) return;
+
+      await _welcomPackageCubit.markDisplayedWelcome();
+
+      if (widget.smartGoal?.id != null) {
+        await HomeClient().completeSmartGoal(
+            DateTime.now(), widget.smartGoal?.id, 1, widget.interviewType);
+      }
+    });
+  }
+
+  String getGoalTitle(int type) {
+    if (type == ScheduleType.screening_interview.typeIndex) {
+      return R.string.screening_interview.tr();
+    } else if (type == ScheduleType.evaluate_interview.typeIndex) {
+      return R.string.evaluate_interview.tr();
+    } else if (type == ScheduleType.booking_solo.typeIndex) {
+      return R.string.booking_solo.tr();
+    } else {
+      return "";
+    }
   }
 
   Widget _buildButton(String text, VoidCallback onTap) {
