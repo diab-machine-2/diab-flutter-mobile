@@ -11,12 +11,12 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
+import 'package:medical/src/modal/medicine/prescription_schedule_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -35,6 +35,7 @@ import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
+import 'package:medical/src/widget/medicine/widgets/medicine_session_bottom_sheet.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
@@ -42,7 +43,9 @@ import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.da
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../modal/medicine/daily_medicine_model.dart';
 import '../../repo/home/home_client.dart';
+import '../../repo/medicine/medicine_client.dart';
 import '../../service/rating_service.dart';
 import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -105,8 +108,9 @@ class _HomeControllerState extends State<HomeController>
     _firebaseSetup();
     _initHealthApp();
     initTarget();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkExerciseData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await checkExerciseData();
+      await checkMedicineSchedule();
     });
 
     SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
@@ -145,6 +149,58 @@ class _HomeControllerState extends State<HomeController>
       _hasExerciseData = isChecked;
     }
     setState(() {});
+  }
+
+  Future<void> checkMedicineSchedule() async {
+    final medicineClient = MedicineClient();
+    final currentDateTime = DateTime.now();
+    final today = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
+    final medicineSchedule = await medicineClient.fetchMedicineScheduleByDate(timestamp: (today.millisecondsSinceEpoch / 1000).round());
+    final medicineScheduleAlert = filterDailyMedicines(medicineSchedule.daily);
+    final sessions = PrescriptionsBySessionModel.fromDailyList(medicineScheduleAlert);
+
+    if (sessions.isNotEmpty) {
+      final List<String> ids = medicineScheduleAlert.map((e) => e.id).toList();
+      showMedicineSessionBottomSheet(
+        context,
+        ids: ids,
+        sessionList: sessions,
+      );
+    }
+  }
+
+  List<DailyMedicineModel> filterDailyMedicines(List<DailyMedicineModel> dailyList) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return dailyList.where((daily) {
+      if (daily.completedDate != null) return false;
+
+      // convert timestamp -> DateTime
+      final appt = DateTime.fromMillisecondsSinceEpoch(daily.appointmentDate * 1000);
+      final apptDay = DateTime(appt.year, appt.month, appt.day);
+
+      return apptDay == today && appt.isBefore(now);
+    }).toList();
+  }
+
+
+  Future<void> showMedicineSessionBottomSheet(BuildContext context,
+      {required List<PrescriptionsBySessionModel> sessionList, required List<String> ids}) {
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      isScrollControlled: true,
+      builder: (context) {
+        return MedicineSessionBottomSheet(
+          ids: ids,
+          sessionList: sessionList,
+        );
+      },
+    );
   }
 
   void _initHealthApp() async {

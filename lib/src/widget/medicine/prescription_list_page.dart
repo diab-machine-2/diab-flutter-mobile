@@ -12,6 +12,7 @@ import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
 import '../../modal/medicine/daily_medicine_model.dart';
 import '../../modal/medicine/prescription_model.dart';
+import '../../service/medicine_service.dart';
 import '../../utils/navigator_name.dart';
 import '../helper/helper.dart';
 import 'prescription_add_page.dart';
@@ -48,10 +49,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     _selectedDate = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
     _tabController = TabController(length: 2, vsync: this);
     _bloc = MedicineBloc()
-      ..add(FetchPrescriptionsEvent())
-      ..add(FetchMedicineScheduleEvent(
-        (DateTime.now().millisecondsSinceEpoch / 1000).round(),
-      ));
+      ..add(FetchPrescriptionsEvent());
+      // ..add(FetchMedicineScheduleEvent(
+      //   (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+      // ));
   }
 
   @override
@@ -193,6 +194,9 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           children: [
             GestureDetector(
               onTap: () {
+                _bloc.add(FetchMedicineScheduleEvent(
+                  (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+                ));
                 setState(() {
                   bottomIndex = 0;
                 });
@@ -221,6 +225,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
             ),
             GestureDetector(
               onTap: () {
+                _bloc.add(FetchPrescriptionsEvent());
                 setState(() {
                   bottomIndex = 1;
                 });
@@ -258,7 +263,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     if (state is MedicineLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (state is FetchMedicineScheduleSuccess) {
-      _sessionList = convertDailyToPrescriptionsBySession(state.medicineScheduleResult.daily);
+      _sessionList = PrescriptionsBySessionModel.fromDailyList(state.medicineScheduleResult.daily);
       _sessionExpandedList = _sessionList.map((e) => false).toList();
     }
 
@@ -298,25 +303,23 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
 
   /*----------------------------ĐƠN THUỐC PAGE----------------------------*/
   Widget _buildBodyForPrescriptionTab(MedicineState state) {
-    return BlocBuilder<MedicineBloc, MedicineState>(builder: (context, state) {
-      if (state is MedicineLoading) {
-        return const Center(child: CircularProgressIndicator());
-      } else if (state is FetchPrescriptionsSuccess) {
-        final prescriptionsIsUsing =
-            state.prescriptionsResult.where((prescription) => prescription.status == 0).toList();
-        final prescriptionsIsStop =
-            state.prescriptionsResult.where((prescription) => prescription.status == 1).toList();
-        return TabBarView(
-          controller: _tabController,
-          children: [
-            _buildPrescriptions(prescriptionsIsUsing, true),
-            _buildPrescriptions(prescriptionsIsStop, false),
-          ],
-        );
-      }
+    if (state is MedicineLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (state is FetchPrescriptionsSuccess) {
+      final prescriptionsIsUsing =
+      state.prescriptionsResult.where((prescription) => prescription.status == 0).toList();
+      final prescriptionsIsStop =
+      state.prescriptionsResult.where((prescription) => prescription.status == 1).toList();
+      return TabBarView(
+        controller: _tabController,
+        children: [
+          _buildPrescriptions(prescriptionsIsUsing, true),
+          _buildPrescriptions(prescriptionsIsStop, false),
+        ],
+      );
+    }
 
-      return Container();
-    });
+    return Container();
   }
 
   Widget _buildPrescriptions(List<PrescriptionModel> prescriptions, bool isUsing) {
@@ -459,14 +462,16 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                     ),
                                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                   ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, NavigatorName.prescription_add, arguments: {
-                                      'mode': 1,
-                                      // 'prescription':
+                                  onPressed: () async {
+                                    await Navigator.pushNamed(context, NavigatorName.prescription_add, arguments: {
+                                      'mode': PrescriptionMode.edit,
+                                      'prescription': prescription,
                                     });
+                                    // MedicineScheduleService().refreshTodaySchedules();
+                                    MedicineScheduleService().showTestNotification();
                                   },
-                                  child: const Text(
-                                    "Chỉnh sửa",
+                                  child: Text(
+                                    R.string.chinh_sua.tr(),
                                     style:
                                         TextStyle(color: Color(0xFF008479), fontWeight: FontWeight.bold, fontSize: 15),
                                   ),
@@ -515,79 +520,5 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           ),
       ],
     );
-  }
-
-  List<PrescriptionsBySessionModel> convertDailyToPrescriptionsBySession(List<DailyMedicineModel> dailyList) {
-    // Nhóm theo session
-    final Map<MedicineSession, List<DailyMedicineModel>> bySession = {};
-
-    for (var daily in dailyList) {
-      // map executeDayTimes -> MedicineSession
-      MedicineSession session;
-      switch (daily.executeDayTimes) {
-        case 1:
-          session = MedicineSession.MORNING;
-          break;
-        case 2:
-          session = MedicineSession.NOON;
-          break;
-        case 3:
-          session = MedicineSession.AFTERNOON;
-          break;
-        case 4:
-        default:
-          session = MedicineSession.EVENING;
-          break;
-      }
-
-      bySession.putIfAbsent(session, () => []).add(daily);
-    }
-
-    // Convert thành List<PrescriptionsBySessionModel>
-    return bySession.entries.map((sessionEntry) {
-      final session = sessionEntry.key;
-      final sessionDailies = sessionEntry.value;
-
-      // Nhóm tiếp theo prescriptionId
-      final Map<String, List<DailyMedicineModel>> byPrescription = {};
-      for (var daily in sessionDailies) {
-        final presId = daily.prescriptionId ?? "unknown";
-        byPrescription.putIfAbsent(presId, () => []).add(daily);
-      }
-
-      final prescriptions = byPrescription.entries.map((presEntry) {
-        final presId = presEntry.key;
-        final presDailies = presEntry.value;
-
-        // Lấy prescriptionName và note từ daily (chung 1 đơn thuốc)
-        final presName = presDailies.first.prescriptionName;
-        final note = presDailies.first.description;
-        final time = DateTime.fromMillisecondsSinceEpoch(presDailies.first.appointmentDate * 1000);
-
-        // Convert list DailyMedicineModel -> MedicationInSession
-        final medications = presDailies.map((d) {
-          return MedicationInSession(
-            id: d.id,
-            medicineName: d.name,
-            dosage: "${d.dosage} ${d.dosageUnit} - ${d.moment == 1 ? "Trước ăn" : "Sau ăn"}",
-            isTaken: d.completedDate != null
-          );
-        }).toList();
-
-        return PrescriptionInSessionModel(
-          prescriptionId: presId,
-          prescriptionName: presName,
-          time: time,
-          medications: medications,
-          note: note,
-        );
-      }).toList();
-
-      return PrescriptionsBySessionModel(
-        id: session.name, // hoặc generate id riêng
-        session: session,
-        prescriptions: prescriptions,
-      );
-    }).toList();
   }
 }

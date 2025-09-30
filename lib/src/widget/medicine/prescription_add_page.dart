@@ -15,16 +15,17 @@ import 'medicine_add_page.dart';
 import 'widgets/medicine_card.dart';
 
 enum PrescriptionMode {
-  create,   // Tạo đơn thuốc
-  edit,     // chỉnh sửa đơn thuốc
-  reuse,    // sử dụng lại đơn thuốc
+  create, // Tạo đơn thuốc
+  edit, // chỉnh sửa đơn thuốc
+  reuse, // sử dụng lại đơn thuốc
 }
 
 class PrescriptionAddPage extends StatefulWidget {
-  PrescriptionAddPage({super.key, this.prescriptionMode, this.medicineItem, this.prescription});
+  PrescriptionAddPage({super.key, this.prescriptionMode, this.medicineItem, this.prescription, this.medicineItems});
 
   final PrescriptionMode? prescriptionMode;
   final MedicineItemModel? medicineItem;
+  final List<MedicineItemModel>? medicineItems;
   final PrescriptionModel? prescription;
 
   @override
@@ -46,6 +47,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   @override
   void initState() {
     super.initState();
+    selectedDate = DateTime.now();
     if (widget.prescriptionMode == null) {
       _prescriptionMode = PrescriptionMode.create;
     } else {
@@ -53,6 +55,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
     }
 
     if (widget.medicineItem != null) _medicines.add(widget.medicineItem!);
+    if (widget.medicineItems != null) _medicines.addAll(widget.medicineItems!);
     if (widget.prescription != null) initPrescription(widget.prescription!);
   }
 
@@ -67,10 +70,14 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   }
 
   Future<void> _addMedicine() async {
-    final MedicineItemModel? result = await Navigator.pushNamed(context, NavigatorName.medicine_search, arguments: {
-      'mode': MedicineMode.addMore,
-    });
-    if (result != null) {
+    final result = await Navigator.pushNamed(
+      context,
+      NavigatorName.medicine_search,
+      arguments: {
+        'mode': MedicineMode.addMore,
+      },
+    );
+    if (result != null && result is MedicineItemModel) {
       setState(() {
         _medicines.add(result);
       });
@@ -100,7 +107,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             highlightColor: R.color.transparent,
             icon: Icon(Icons.arrow_back, color: R.color.white),
             onPressed: () {
-              Navigator.of(context, rootNavigator: true).pop();
+              Navigator.of(context).pop();
             }),
         title: Transform(
           transform: Matrix4.translationValues(-20, 0.0, 0.0),
@@ -298,28 +305,27 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
           itemBuilder: (context, index) {
             return MedicineCard(
-              medicine: _medicines[index],
-              onEdit: () async {
-                final result = await Navigator.pushNamed(
-                  context,
-                  NavigatorName.medicine_add,
-                  arguments: {
-                    'mode': MedicineMode.edit,
-                    'medicine': _medicines[index],
-                  },
-                );
-                if (result is MedicineItemModel) {
+                medicine: _medicines[index],
+                onEdit: () async {
+                  final result = await Navigator.pushNamed(
+                    context,
+                    NavigatorName.medicine_add,
+                    arguments: {
+                      'mode': MedicineMode.edit,
+                      'medicine': _medicines[index],
+                    },
+                  );
+                  if (result is MedicineItemModel) {
+                    setState(() {
+                      _medicines[index] = result; // update lại item đã sửa
+                    });
+                  }
+                },
+                onDelete: () {
                   setState(() {
-                    _medicines[index] = result; // update lại item đã sửa
+                    _medicines.removeAt(index);
                   });
-                }
-              },
-              onDelete: () {
-                setState(() {
-                  _medicines.removeAt(index);
                 });
-              }
-            );
           },
         ),
       ],
@@ -346,6 +352,8 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       child: GestureDetector(
         onTap: () {
+          if (_controllerPrescriptionName.text.isEmpty) return;
+
           _prescription = _prescription.copyWith(
             prescriptionName: _controllerPrescriptionName.text,
             note: _controllerNote.text,
@@ -358,8 +366,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             Navigator.pop(context, true);
             context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(_prescription));
           } else {
-            Navigator.pushNamed(context, NavigatorName.prescription_remind,
-                arguments: {'prescription': _prescription});
+            Navigator.pushNamed(context, NavigatorName.prescription_remind, arguments: {'prescription': _prescription});
           }
         },
         child: Container(
@@ -375,9 +382,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           ),
           child: Center(
             child: Text(
-              _prescriptionMode == PrescriptionMode.reuse
-                ? R.string.reuse_prescription.tr()
-                : R.string.set_time.tr(),
+              _prescriptionMode == PrescriptionMode.reuse ? R.string.reuse_prescription.tr() : R.string.set_time.tr(),
               style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
             ),
           ),

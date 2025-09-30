@@ -26,6 +26,22 @@ enum MedicineUnit {
         return R.string.other.tr();
     }
   }
+
+  static MedicineUnit fromString(String? value) {
+    if (value == null) return MedicineUnit.other;
+    switch (value.toLowerCase()) {
+      case "viên":
+        return MedicineUnit.pill;
+      case "gói":
+        return MedicineUnit.package;
+      case "ống":
+        return MedicineUnit.tube;
+      case "ml":
+        return MedicineUnit.ml;
+      default:
+        return MedicineUnit.other;
+    }
+  }
 }
 
 enum DayTime {

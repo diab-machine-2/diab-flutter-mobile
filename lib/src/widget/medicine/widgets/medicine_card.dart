@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
@@ -49,33 +50,21 @@ class MedicineCard extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "${medicine.amount} Viên  •  ", //${medicine.mealTime}  •  ${medicine.frequency}",
+                    "${medicine.amount} ${medicine.unit}  •  ${getMomentNameFromValue(medicine.moment)}  •  ${getFrequencyNameFromValue(medicine.frequency)}",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566),
                   ),
                   SizedBox(height: 12),
-                  Container(
-                    width: 48,
-                    height: 52,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: R.color.backgroundColorNew,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '', //medicine.times[0],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566),
-                        ),
-                        Text(
-                          '', //medicine.dose.toString(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff5E6566),
-                        ),
-                      ],
-                    ),
+                  Row(
+                    children: [
+                      if ((medicine.morning ?? 0.0) > 0.0)
+                        buildDose(momentName: R.string.the_morning2.tr(), amount: medicine.morning!),
+                      if ((medicine.midDay ?? 0.0) > 0.0)
+                        buildDose(momentName: R.string.the_noon2.tr(), amount: medicine.midDay!),
+                      if ((medicine.afternoon ?? 0.0) > 0.0)
+                        buildDose(momentName: R.string.the_afternoon2.tr(), amount: medicine.afternoon!),
+                      if ((medicine.night ?? 0.0) > 0.0)
+                        buildDose(momentName: R.string.the_night2.tr(), amount: medicine.night!),
+                    ],
                   ),
                   if (medicine.note != null) ...[
                     SizedBox(height: 8),
@@ -110,5 +99,61 @@ class MedicineCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Container buildDose({required String momentName, required double amount}) {
+    return Container(
+      width: 60,
+      height: 52,
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(right: 8),
+      decoration: BoxDecoration(
+        color: R.color.backgroundColorNew,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            momentName,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566),
+          ),
+          Text(
+            amount.toStringAsFixed(0),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff5E6566),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String getMomentNameFromValue(int? moment) {
+    if (moment == null) return '';
+    switch (moment) {
+      case 1:
+        return R.string.truoc_an.tr();
+      case 2:
+        return R.string.sau_an.tr();
+      case 3:
+        return R.string.during_meal.tr();
+      default:
+        return R.string.truoc_an.tr();
+    }
+  }
+
+  String getFrequencyNameFromValue(int? frequency) {
+    if (frequency == null) return '';
+    switch (frequency) {
+      case 1:
+        return R.string.everyday.tr();
+      case 2:
+        return R.string.ngay_trong_tuan.tr();
+      case 3:
+        return R.string.every_other_day.tr();
+      default:
+        return R.string.everyday.tr();
+    }
   }
 }

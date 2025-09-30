@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../../res/R.dart';
@@ -17,6 +18,7 @@ class PhotoPickerPage extends StatefulWidget {
 class _PhotoPickerPageState extends State<PhotoPickerPage> {
   List<AssetEntity> _photos = [];
   AssetEntity? _selected; // chỉ giữ 1 ảnh được chọn
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -89,7 +91,7 @@ class _PhotoPickerPageState extends State<PhotoPickerPage> {
         ),
         actions: [
           InkWell(
-            onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
+            onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_search),
             child: Container(
               padding: const EdgeInsets.all(6),
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -144,7 +146,7 @@ class _PhotoPickerPageState extends State<PhotoPickerPage> {
                   // Ô chụp ảnh
                   return GestureDetector(
                     onTap: () {
-                      // TODO: gọi camera
+                      _captureFromCamera();
                     },
                     child: Container(
                       color: Colors.grey[300],
@@ -240,5 +242,10 @@ class _PhotoPickerPageState extends State<PhotoPickerPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _captureFromCamera() async {
+    await _picker.pickImage(source: ImageSource.camera);
+    _loadPhotos();
   }
 }

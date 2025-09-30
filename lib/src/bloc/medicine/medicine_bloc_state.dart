@@ -34,8 +34,14 @@ class MedicineSearchSuccess extends MedicineState {
   MedicineSearchSuccess(this.searchResult);
 }
 
+class AddNewMedicineSuccess extends MedicineState {
+  final SearchMedicineResultModel? searchResult;
+
+  AddNewMedicineSuccess(this.searchResult);
+}
+
 class UploadPrescriptionPhotoSuccess extends MedicineState {
-  final bool createResult;
+  final List<MedicineItemModel> createResult;
 
   UploadPrescriptionPhotoSuccess(this.createResult);
 }
@@ -83,4 +89,10 @@ class UseMedicineSuccess extends MedicineState {
   final bool isSuccess;
 
   UseMedicineSuccess(this.isSuccess);
+}
+
+class UseMedicinesSuccess extends MedicineState {
+  final bool isSuccess;
+
+  UseMedicinesSuccess(this.isSuccess);
 }

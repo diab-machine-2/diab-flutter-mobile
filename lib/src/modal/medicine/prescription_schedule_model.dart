@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 
+import 'daily_medicine_model.dart';
+
 /*----------------- LỊCH DÙNG THUỐC TAB -----------------*/
 class PrescriptionsBySessionModel {
   final String id;
@@ -12,6 +14,80 @@ class PrescriptionsBySessionModel {
     required this.session,
     required this.prescriptions,
   });
+
+  static List<PrescriptionsBySessionModel>  fromDailyList(List<DailyMedicineModel> dailyList) {
+    // Nhóm theo session
+    final Map<MedicineSession, List<DailyMedicineModel>> bySession = {};
+
+    for (var daily in dailyList) {
+      // map executeDayTimes -> MedicineSession
+      MedicineSession session;
+      switch (daily.executeDayTimes) {
+        case 1:
+          session = MedicineSession.MORNING;
+          break;
+        case 2:
+          session = MedicineSession.NOON;
+          break;
+        case 3:
+          session = MedicineSession.AFTERNOON;
+          break;
+        case 4:
+        default:
+          session = MedicineSession.EVENING;
+          break;
+      }
+
+      bySession.putIfAbsent(session, () => []).add(daily);
+    }
+
+    // Convert thành List<PrescriptionsBySessionModel>
+    return bySession.entries.map((sessionEntry) {
+      final session = sessionEntry.key;
+      final sessionDailies = sessionEntry.value;
+
+      // Nhóm tiếp theo prescriptionId
+      final Map<String, List<DailyMedicineModel>> byPrescription = {};
+      for (var daily in sessionDailies) {
+        final presId = daily.prescriptionId ?? "unknown";
+        byPrescription.putIfAbsent(presId, () => []).add(daily);
+      }
+
+      final prescriptions = byPrescription.entries.map((presEntry) {
+        final presId = presEntry.key;
+        final presDailies = presEntry.value;
+
+        // Lấy prescriptionName và note từ daily (chung 1 đơn thuốc)
+        final presName = presDailies.first.prescriptionName;
+        final note = presDailies.first.description;
+        final time = DateTime.fromMillisecondsSinceEpoch(presDailies.first.appointmentDate * 1000);
+
+        // Convert list DailyMedicineModel -> MedicationInSession
+        final medications = presDailies.map((d) {
+          return MedicationInSession(
+              id: d.id,
+              medicineName: d.name,
+              dosage: "${d.dosage} ${d.dosageUnit} - ${d.moment == 1 ? "Trước ăn" : "Sau ăn"}",
+              isTaken: d.completedDate != null
+          );
+        }).toList();
+
+        return PrescriptionInSessionModel(
+          prescriptionId: presId,
+          prescriptionName: presName,
+          time: time,
+          medications: medications,
+          note: note,
+        );
+      }).toList();
+
+      return PrescriptionsBySessionModel(
+        id: session.name, // hoặc generate id riêng
+        session: session,
+        prescriptions: prescriptions,
+      );
+    }).toList();
+  }
 }
 
 class PrescriptionInSessionModel {
@@ -48,7 +124,7 @@ enum MedicineSession {
       case MedicineSession.AFTERNOON:
         return R.string.the_afternoon.tr();
       case MedicineSession.EVENING:
-        return R.string.the_evening.tr();
+        return R.string.the_night.tr();
     }
   }
 }

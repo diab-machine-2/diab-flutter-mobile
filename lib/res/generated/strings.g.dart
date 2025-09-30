@@ -603,7 +603,12 @@ class Strings {
   String get day_in_week => 'day_in_week';
   String get the_morning => 'the_morning';
   String get the_noon => 'the_noon';
-  String get the_evening => 'the_evening';
+  String get the_afternoon => 'the_afternoon';
+  String get the_night => 'the_night';
+  String get the_morning2 => 'the_morning2';
+  String get the_noon2 => 'the_noon2';
+  String get the_afternoon2 => 'the_afternoon2';
+  String get the_night2 => 'the_night2';
   String get sleep_time => 'sleep_time';
   String get before_sleep => 'before_sleep';
   String get setup_reminder_time_and_unit => 'setup_reminder_time_and_unit';
@@ -1177,7 +1182,6 @@ class Strings {
   String get reminder => 'reminder';
   String get target => 'target';
   String get select_hour => 'select_hour';
-  String get the_afternoon => 'the_afternoon';
   String get change_booking => 'change_booking';
   String get back_home_page => 'back_home_page';
   String get customer_information => 'customer_information';
@@ -1455,4 +1459,10 @@ class Strings {
   String get reuse_prescription => 'reuse_prescription';
   String get input_medicine => 'input_medicine';
   String get should_capture_advice => 'should_capture_advice';
+  String get can_not_read_prescription => 'can_not_read_prescription';
+  String get please_take_another_photo => 'please_take_another_photo';
+  String get used_all => 'used_all';
+  String get unused_all => 'unused_all';
+  String get analyzing_prescription => 'analyzing_prescription';
+  String get reshoot => 'reshoot';
 }

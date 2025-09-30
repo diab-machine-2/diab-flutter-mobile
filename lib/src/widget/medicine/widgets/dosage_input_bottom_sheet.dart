@@ -83,17 +83,16 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
 
   void _checkEnableSubmitBtnState() {
     setState(() {
+      final morningQuantity = double.tryParse(_quantityInMorning.text) ?? 0.0;
+      final noonQuantity = double.tryParse(_quantityInNoon.text) ?? 0.0;
+      final afternoonQuantity = double.tryParse(_quantityInAfternoon.text) ?? 0.0;
+      final eveningQuantity = double.tryParse(_quantityInEvening.text) ?? 0.0;
       if (_selectedFrequency == FrequencyType.everyday) {
-        final morningQuantity = double.tryParse(_quantityInMorning.text) ?? 0.0;
-        final noonQuantity = double.tryParse(_quantityInNoon.text) ?? 0.0;
-        final afternoonQuantity = double.tryParse(_quantityInAfternoon.text) ?? 0.0;
-        final eveningQuantity = double.tryParse(_quantityInEvening.text) ?? 0.0;
-
         _submitBtnEnabled = morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0;
       } else if (_selectedFrequency == FrequencyType.weekDays) {
-        _submitBtnEnabled = _selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0;
+        _submitBtnEnabled = (_selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0) && (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
       } else {
-        _submitBtnEnabled = _everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0;
+        _submitBtnEnabled = (_everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0) && (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
       }
     });
   }
@@ -259,7 +258,6 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                     style: TextStyle(
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
                       fontSize: 15,
-                      height: 1.46,
                       color: isSelected ? Colors.white : Color(0xFF5E6566),
                     ),
                   ),
@@ -301,7 +299,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   child: Text(
                     frequency.label,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                      fontSize: 15,
+                      color: isSelected ? Colors.white : Color(0xFF5E6566),
                     ),
                   ),
                 ),
@@ -330,7 +330,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         _quantityInAfternoon.text = value;
         _checkEnableSubmitBtnState();
       })),
-      _buildDosageRow(R.string.the_evening.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
+      _buildDosageRow(R.string.the_night.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
         _quantityInEvening.text = value;
         _checkEnableSubmitBtnState();
       })),
@@ -561,7 +561,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         _quantityInAfternoon.text = value;
         _checkEnableSubmitBtnState();
       })),
-      _buildDosageRow(R.string.the_evening.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
+      _buildDosageRow(R.string.the_night.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
         _quantityInEvening.text = value;
         _checkEnableSubmitBtnState();
       })),
@@ -645,7 +645,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         _quantityInAfternoon.text = value;
         _checkEnableSubmitBtnState();
       })),
-      _buildDosageRow(R.string.the_evening.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
+      _buildDosageRow(R.string.the_night.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
         _quantityInEvening.text = value;
         _checkEnableSubmitBtnState();
       })),
@@ -818,6 +818,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
               frequency: _selectedFrequency.index + 1,
               selectedDaysInWeek: _selectedDayIndexes,
               quantityForDaysInWeek: _quantityOnDayInWeek,
+              quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+              quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
+              quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+              quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
             );
           } else {
             dosage = DosageModel(
@@ -827,6 +831,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
               frequency: _selectedFrequency.index + 1,
               everyOtherDayNumber: _everyOtherDayNumber,
               quantityForEveryOtherDay: _quantityOnEveryOtherDay,
+              quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+              quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
+              quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+              quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
             );
           }
           Navigator.of(context).pop(dosage);

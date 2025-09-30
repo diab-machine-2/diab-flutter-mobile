@@ -16,7 +16,11 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/subscription/services/revenue_cat_service.dart';
 import 'package:device_preview/device_preview.dart';
+import 'src/service/medicine_service.dart';
 import 'src/utils/app_log.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class SimpleBlocObserver extends BlocObserver {
   @override
@@ -112,6 +116,13 @@ Future<void> main() async {
   await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
 
   await RevenueCatService.initialize();
+
+  tz.initializeTimeZones();
+  final timeZoneName = await FlutterTimezone.getLocalTimezone();
+  final location = tz.getLocation(timeZoneName);
+  tz.setLocalLocation(location);
+
+  await MedicineScheduleService().init();
 
   // var zoom = ZoomVideoSdk();
   // InitConfig initConfig = InitConfig(

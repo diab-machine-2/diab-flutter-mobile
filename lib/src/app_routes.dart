@@ -168,7 +168,9 @@ class AppRoutes {
         page = PhotoPickerPage();
         break;
       case NavigatorName.medicine_search:
-        page = MedicineSearchPage();
+        final data = settings.arguments as Map<String, dynamic>?;
+        final mode = data?['mode'] as MedicineMode?;
+        page = MedicineSearchPage(medicineMode: mode);
         break;
       case NavigatorName.medicine_add:
         final data = settings.arguments as Map<String, dynamic>?;
@@ -181,8 +183,14 @@ class AppRoutes {
         final data = settings.arguments as Map<String, dynamic>?;
         final mode = data?['mode'] as PrescriptionMode?;
         final medicineItem = data?['medicineItem'];
+        final medicineItems = data?['medicineItems'];
         final prescription = data?['prescription'];
-        page = PrescriptionAddPage(prescriptionMode: mode, medicineItem: medicineItem, prescription: prescription,);
+        page = PrescriptionAddPage(
+          prescriptionMode: mode,
+          medicineItem: medicineItem,
+          medicineItems: medicineItems,
+          prescription: prescription,
+        );
         break;
       case NavigatorName.prescription_remind:
         final data = settings.arguments as Map<String, dynamic>?;

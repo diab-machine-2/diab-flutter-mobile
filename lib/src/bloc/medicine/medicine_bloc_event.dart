@@ -8,6 +8,11 @@ class SearchMedicineEvent extends MedicineEvent {
   SearchMedicineEvent(this.searchText);
 }
 
+class AddNewMedicineEvent extends MedicineEvent {
+  final String medicineName;
+  AddNewMedicineEvent(this.medicineName);
+}
+
 class UploadPrescriptionPhotoEvent extends MedicineEvent {
   final File photo;
   UploadPrescriptionPhotoEvent(this.photo);
@@ -45,4 +50,9 @@ class FetchMedicineScheduleEvent extends MedicineEvent {
 class UseMedicineEvent extends MedicineEvent {
   final String id;
   UseMedicineEvent(this.id);
+}
+
+class UseMedicinesEvent extends MedicineEvent {
+  final List<String> ids;
+  UseMedicinesEvent(this.ids);
 }

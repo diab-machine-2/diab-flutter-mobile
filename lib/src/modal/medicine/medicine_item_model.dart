@@ -15,10 +15,10 @@ class MedicineItemModel {
   final double? night;
 
   final String? unit; // viên, gói, ống, ml, khác
-  final double? amount;
+  final int? amount;
 
   final String? customDay;
-  final int? breakDay;
+  final double? breakDay;
 
   final String? note;
 
@@ -44,14 +44,22 @@ class MedicineItemModel {
       medicationName: json['medicationName'],
       moment: json['moment'],
       frequency: json['frequency'],
-      morning: json['morning'],
-      afternoon: json['afternoon'],
-      midDay: json['midDay'],
-      night: json['night'],
+      morning: (json['morning'] as num?)?.toDouble(),
+      afternoon: (json['afternoon'] as num?)?.toDouble(),
+      midDay: (json['midDay'] as num?)?.toDouble(),
+      night: (json['night'] as num?)?.toDouble(),
       unit: json['unit'],
-      amount: (json['amount'] as num?)?.toDouble(),
+      amount: (json['amount'] as num?)?.toInt(),
+      customDay: json['customDay'],
+      breakDay: json['breakDay'],
       note: json['note'],
     );
+  }
+
+  static List<MedicineItemModel> fromJsonList(List<dynamic> jsonList) {
+    return jsonList
+        .map((json) => MedicineItemModel.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 
   Map<String, dynamic> toJson() => {
@@ -64,6 +72,9 @@ class MedicineItemModel {
     'night': night,
     'unit': unit,
     'amount': amount,
+    'moment': moment,
+    'customDay': customDay,
+    'breakDay': breakDay,
     'note': note,
   };
 
@@ -77,9 +88,9 @@ class MedicineItemModel {
     double? midDay,
     double? night,
     String? unit,
-    double? amount,
+    int? amount,
     String? customDay,
-    int? breakDay,
+    double? breakDay,
     String? note,
   }) {
     return MedicineItemModel(
@@ -107,3 +118,74 @@ extension MedicineItemValidator on MedicineItemModel {
     return true;
   }
 }
+
+extension MedicineItemModelMapper on MedicineItemModel {
+  static List<MedicineItemModel> fromJsonList(Map<String, dynamic> json) {
+    final items = json['data']?['items'] as List<dynamic>?;
+
+    if (items == null) return [];
+
+    return items.map((e) {
+      final map = e as Map<String, dynamic>;
+
+      // Parse amount "63 viên" => 63
+      final amount = int.tryParse(
+        (map['amount'] as String?)?.replaceAll(RegExp(r'[^0-9]'), '') ?? '',
+      );
+
+      // Parse frequency
+      final freq = int.parse((map['frequency'] as String?) ?? '1');
+
+      double morning = 0, afternoon = 0, midDay = 0, night = 0;
+
+      switch (freq) {
+        case 1:
+          morning = 1;
+          break;
+        case 2:
+          morning = 1;
+          afternoon = 1;
+          break;
+        case 3:
+          morning = 1;
+          afternoon = 1;
+          midDay = 1;
+          break;
+        case 4:
+          morning = 1;
+          afternoon = 1;
+          midDay = 1;
+          night = 1;
+          break;
+      }
+
+      return MedicineItemModel(
+        id: map['id'] as String?,
+        medicationName: map['name'] as String?,
+        note: map['instruction'] as String?,
+        amount: amount,
+        frequency: freq,
+        moment: 1, // bạn có thể map thêm từ usageTime
+        unit: 'viên',//parseUnit(map['amount']),
+        morning: morning,
+        afternoon: afternoon,
+        midDay: midDay,
+        night: night,
+      );
+    }).toList();
+  }
+
+  static String? parseUnit(String amount) {
+    if (amount.isEmpty) return null;
+
+    // Tách ra bằng regex: số + chữ
+    final regex = RegExp(r'([\d.,]+)\s*(\D+)');
+    final match = regex.firstMatch(amount.trim());
+
+    if (match != null) {
+      return match.group(2)?.trim(); // nhóm 2 là phần chữ (unit)
+    }
+    return null;
+  }
+}
+

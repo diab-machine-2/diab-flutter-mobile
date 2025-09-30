@@ -13,6 +13,7 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show File, Platform;
 
+import '../../modal/medicine/medicine_item_model.dart';
 import '../../modal/medicine/medicine_schedule_model.dart';
 import '../../widget/home/fliter_enum.dart';
 
@@ -30,16 +31,32 @@ class MedicineClient extends FetchClient {
     }
   }
 
-  Future<bool> uploadPrescriptionPhoto({required File file}) async {
+  Future<SearchMedicineResultModel?> addNewMedicine({required String medicineName}) async {
+    final Response response = await super.fetchData(
+        url: '/App/Medications/GetListMedicine',
+        params: {'Name': medicineName});
+
+    if (response.statusCode == 200) {
+      return SearchMedicineResultModel.fromJson(response.data);
+    } else {
+      final error = Error.fromJson(response);
+      throw error;
+    }
+  }
+
+  Future<List<MedicineItemModel>?> uploadPrescriptionPhoto({required File file}) async {
     try {
       final response = await super.postHttp(
           path: '/App/Image/UploadAI/Medications',
           files: [file.path],
-          params: null
+          params: {'filePath': file.path}
       );
 
       if (response.statusCode == 200) {
-        return true;
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        final list = MedicineItemModelMapper.fromJsonList(jsonData);
+        return list;
       } else {
         throw response.reasonPhrase!;
       }
@@ -173,6 +190,29 @@ class MedicineClient extends FetchClient {
     try {
       final response = await super.putData(
         url: '/App/Target/Medication/$id',
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.statusMessage!;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> usedAllMedicinesToday({required int status}) async {
+    try {
+      final currentDateTime = DateTime.now();
+      final today = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
+
+      final response = await super.putData(
+        url: '/App/Target/Medication/CurrentRemind',
+        params: {
+          'currentDate': (today.millisecondsSinceEpoch / 1000).round(),
+          'status': status,
+        }
       );
 
       if (response.statusCode == 200) {

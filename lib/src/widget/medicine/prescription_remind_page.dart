@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
 import '../../modal/medicine/prescription_model.dart';
+import '../../modal/medicine/reminder_model.dart';
 import '../../utils/navigator_name.dart';
 import '../../modal/medicine/medicine_add_model.dart';
 
@@ -22,15 +23,31 @@ class PrescriptionRemindPage extends StatefulWidget {
 
 class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
   List<DayTimeSchedule> _schedules = [
-    DayTimeSchedule(dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)),
-    DayTimeSchedule(dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 30)),
+    // DayTimeSchedule(dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)),
+    // DayTimeSchedule(dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 30)),
   ];
-  final TextEditingController _daysController = TextEditingController();
+  bool isNotification = true;
+  int remindDays = 5;
 
   @override
   void initState() {
-    _daysController.text = '1';
+    initDayTimeSchedule();
     super.initState();
+  }
+
+  void initDayTimeSchedule() {
+    if (widget.prescription.patientMedications!.any((medication) => (medication.morning ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)));
+    }
+    if (widget.prescription.patientMedications!.any((medication) => (medication.midDay ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(dayTime: DayTime.noon, time: TimeOfDay(hour: 12, minute: 0)));
+    }
+    if (widget.prescription.patientMedications!.any((medication) => (medication.afternoon ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(dayTime: DayTime.afternoon, time: TimeOfDay(hour: 14, minute: 0)));
+    }
+    if (widget.prescription.patientMedications!.any((medication) => (medication.night ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 0)));
+    }
   }
 
   @override
@@ -119,13 +136,13 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
       child: DayTimeList(
         schedules: _schedules,
-        onPickTime: (schedule) async {
+        onPickTime: (schedule, index) async {
           final picked = await showCustomTimePicker(
             context: context,
             initialTime: schedule.time,
           );
           if (picked != null) {
-            // update schedule
+            _schedules[index] = schedule;
           }
         },
       ),
@@ -164,7 +181,12 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         GestureDetector(
-          // onTap: _decrementQuantity,
+          onTap: () {
+            if (remindDays > 1) {
+              remindDays--;
+            }
+            setState(() {});
+          },
           child: Container(
             width: 34,
             height: 32,
@@ -188,7 +210,7 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  '5',
+                  remindDays.toString(),
                   style: TextStyle(color: R.color.color0xff008479, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -198,7 +220,10 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
               ],
             )),
         GestureDetector(
-          // onTap: _incrementQuantity,
+          onTap: () {
+            remindDays++;
+            setState(() {});
+          },
           child: Container(
             width: 34,
             height: 32,
@@ -233,7 +258,14 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
                 R.string.enable_medicine_notification.tr(),
                 style: TextStyle(color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Switch(value: true, onChanged: (_) {}),
+              Switch(
+                value: isNotification,
+                onChanged: (value) {
+                  setState(() {
+                    isNotification = value;
+                  });
+                },
+              ),
             ],
           ),
           const SizedBox(height: 4),
@@ -246,15 +278,34 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
     );
   }
 
+  String formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return "$hour:$minute";
+  }
+
   Widget _buildConfirmButton() {
-    return BlocBuilder<MedicineBloc, MedicineState>(
-        builder: (context, state) {
+    return BlocBuilder<MedicineBloc, MedicineState>(builder: (context, state) {
       return Container(
         color: Colors.white,
         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         child: GestureDetector(
           onTap: () {
-            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(widget.prescription));
+            final reminderTimes = _schedules.map(
+                    (e) =>
+                    ReminderModel(
+                      type: e.dayTime.index + 1,
+                      timeSchedule: formatTimeOfDay(e.time),
+                    )
+            ).toList();
+
+            final PrescriptionModel prescription = widget.prescription.copyWith(
+              remainDays: remindDays,
+              isNotify: isNotification,
+              reminderTimes: reminderTimes,
+            );
+
+            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(prescription));
             Navigator.pushNamed(context, NavigatorName.prescription);
           },
           child: Container(
@@ -375,7 +426,7 @@ class DayTimeHelper {
       case DayTime.afternoon:
         return R.string.the_afternoon.tr();
       case DayTime.night:
-        return R.string.the_evening.tr();
+        return R.string.the_night.tr();
     }
   }
 
@@ -407,7 +458,7 @@ class DayTimeHelper {
 
 class DayTimeList extends StatelessWidget {
   final List<DayTimeSchedule> schedules;
-  final void Function(DayTimeSchedule schedule) onPickTime;
+  final void Function(DayTimeSchedule schedule, int index) onPickTime;
 
   const DayTimeList({
     super.key,
@@ -444,7 +495,7 @@ class DayTimeList extends StatelessWidget {
                   side: BorderSide(color: Colors.teal),
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 ),
-                onPressed: () => onPickTime(schedule),
+                onPressed: () => onPickTime(schedule, index),
                 icon: Icon(Icons.access_time, size: 16, color: Colors.teal),
                 label: Text(
                   schedule.time.format(context),

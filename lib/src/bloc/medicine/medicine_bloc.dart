@@ -32,6 +32,7 @@ import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/mod
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import '../../modal/medicine/medicine_item_model.dart';
 import '../../modal/medicine/search_medicine_result_model.dart';
 import '../../repo/medicine/medicine_client.dart';
 
@@ -41,6 +42,7 @@ part 'medicine_bloc_state.dart';
 class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
   MedicineBloc() : super(MedicineInitial()) {
     on<SearchMedicineEvent>(_onSearchMedicine);
+    on<AddNewMedicineEvent>(_onAddNewMedicine);
     on<UploadPrescriptionPhotoEvent>(_onUploadPrescriptionPhoto);
     on<CreateNewPrescriptionEvent>(_onCreateNewPrescription);
     on<UpdatePrescriptionEvent>(_onUpdatePrescription);
@@ -49,6 +51,7 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
     on<FetchPrescriptionEvent>(_onFetchPrescription);
     on<FetchMedicineScheduleEvent>(_onFetchMedicineSchedule);
     on<UseMedicineEvent>(_onUseMedicine);
+    on<UseMedicinesEvent>(_onUseMedicines);
   }
 
   Future<void> _onSearchMedicine(
@@ -63,13 +66,29 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
     }
   }
 
+  Future<void> _onAddNewMedicine(
+      AddNewMedicineEvent event, Emitter<MedicineState> emit) async {
+    emit(MedicineLoading());
+    final client = MedicineClient();
+    try {
+      final result = await client.addNewMedicine(medicineName: event.medicineName);
+      emit(MedicineSearchSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
   Future<void> _onUploadPrescriptionPhoto(
       UploadPrescriptionPhotoEvent event, Emitter<MedicineState> emit) async {
     emit(MedicineLoading());
     final client = MedicineClient();
     try {
       final result = await client.uploadPrescriptionPhoto(file: event.photo);
-      emit(UploadPrescriptionPhotoSuccess(result));
+      if (result != null) {
+        emit(UploadPrescriptionPhotoSuccess(result));
+      } else {
+        emit(MedicineError(message: R.string.can_not_read_prescription.tr()));
+      }
     } catch (e) {
       emit(MedicineError(message: e.toString()));
     }
@@ -145,6 +164,20 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
     try {
       final result = await client.useMedicine(id: event.id);
       emit(UseMedicineSuccess(result));
+    } catch (e) {
+      emit(MedicineError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUseMedicines(UseMedicinesEvent event, Emitter<MedicineState> emit) async {
+    final client = MedicineClient();
+    bool result = false;
+    try {
+      event.ids.forEach((id) async {
+        result = await client.useMedicine(id: id);
+      });
+
+      emit(UseMedicinesSuccess(true));
     } catch (e) {
       emit(MedicineError(message: e.toString()));
     }
