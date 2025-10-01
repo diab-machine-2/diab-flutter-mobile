@@ -1398,4 +1398,6 @@ class Strings {
   String get lan_sau => 'lan_sau';
   String get nhap_4_so_trong_tin_nhan => 'nhap_4_so_trong_tin_nhan';
   String get ban_muon_dong_bo_so_dien_thoai => 'ban_muon_dong_bo_so_dien_thoai';
+  String get login_with_phone => 'login_with_phone';
+  String get login_with_zalo => 'login_with_zalo';
 }
