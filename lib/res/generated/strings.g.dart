@@ -1411,4 +1411,6 @@ class Strings {
   String get analyzing_blood_glucose => 'analyzing_blood_glucose';
   String get result_from_blood_glucose_device => 'result_from_blood_glucose_device';
   String get supported_devices => 'supported_devices';
+  String get login_with_phone => 'login_with_phone';
+  String get login_with_zalo => 'login_with_zalo';
 }

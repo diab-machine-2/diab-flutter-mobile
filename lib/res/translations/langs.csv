@@ -1361,4 +1361,6 @@ glucose_manual_title,Nhập thủ công,Manual input,
 glucose_manual_subtitle,Nhập thủ công chỉ số đã đo,Manually enter measured readings,
 analyzing_blood_glucose,Đang phân tích chỉ số đường huyết,Analyzing your blood glucose index,
 result_from_blood_glucose_device,"*Kết quả chụp từ máy đo đường huyết","*Result from blood glucose device",
-supported_devices,"Loại máy hỗ trợ kết nối","Supported devices"
+supported_devices,"Loại máy hỗ trợ kết nối","Supported devices",
+login_with_phone,"Đăng nhập qua số điện thoại","Login with phone number",
+login_with_zalo,"Đăng nhập qua Zalo","Login with Zalo"
