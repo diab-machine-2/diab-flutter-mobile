@@ -187,14 +187,10 @@ class _DsmesConfirmCreateInformationState
                           GapH(12),
                           _buildConsultingInformation(),
                           if (widget.serviceType ==
-                                  DsmesAppointmentMode.telemedicine
-                                      .toString() &&
-                              widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
+                              DsmesAppointmentMode.telemedicine.toString())
                             GapH(12),
                           if (widget.serviceType ==
-                                  DsmesAppointmentMode.telemedicine
-                                      .toString() &&
-                              widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
+                              DsmesAppointmentMode.telemedicine.toString())
                             widget.bookingType == Const.BOOKING_TYPE_CENTER
                                 ? _buildSelectedServiceInformation()
                                 : _buildBookingClinicSelectedServicesInformation(),
@@ -796,7 +792,8 @@ class _DsmesConfirmCreateInformationState
                     }
                   },
                   child: Visibility(
-                    visible: !isReschedule,
+                    visible: !isReschedule &&
+                        widget.bookingType != Const.BOOKING_TYPE_DOCTOR,
                     child: Container(
                       alignment: Alignment.center,
                       height: 20,
@@ -920,7 +917,8 @@ class _DsmesConfirmCreateInformationState
                     }
                   },
                   child: Visibility(
-                    visible: !isReschedule,
+                    visible: !isReschedule &&
+                        widget.bookingType != Const.BOOKING_TYPE_DOCTOR,
                     child: Container(
                       alignment: Alignment.center,
                       height: 20,
@@ -982,7 +980,7 @@ class _DsmesConfirmCreateInformationState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    R.string.estimated_cost.tr(),
+                    R.string.total_price.tr().replaceAll(':', ''),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w400,

@@ -82,7 +82,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                R.string.notice_symptom.tr(),
+                R.string.ghi_chu.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
