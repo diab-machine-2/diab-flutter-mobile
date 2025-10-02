@@ -156,21 +156,21 @@ class _HomeControllerState extends State<HomeController>
     // _checkShowRating();
 
     Future.delayed(Duration.zero, () async {
-      String? username = AppSettings.userInfo!.userName;
-      String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
-      bool isFirstDownload = await AppSettings.getIsFirstDownload();
-      bool isZaloAccountAndNotSynchronized = firstLinked != null &&
-          firstLinked.toLowerCase() == "zalo" &&
-          username != null &&
-          !username.startsWith("+84");
-      if (isZaloAccountAndNotSynchronized && isFirstDownload) {
-        _showModalSyncAccount();
-      }
-      if (AppSettings.isSyncSuccess) {
-        _showDialogSuccess();
-        AppSettings.isSyncSuccess = false;
-      }
-      _checkPhoneNumberValidation();
+      // String? username = AppSettings.userInfo!.userName;
+      // String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
+      // bool isFirstDownload = await AppSettings.getIsFirstDownload();
+      // bool isZaloAccountAndNotSynchronized = firstLinked != null &&
+      //     firstLinked.toLowerCase() == "zalo" &&
+      //     username != null &&
+      //     !username.startsWith("+84");
+      // if (isZaloAccountAndNotSynchronized && isFirstDownload) {
+      //   _showModalSyncAccount();
+      // }
+      // if (AppSettings.isSyncSuccess) {
+      //   _showDialogSuccess();
+      //   AppSettings.isSyncSuccess = false;
+      // }
+      await _checkPhoneNumberValidation();
     });
 
     if (lessonId == null && meetingId == null && activityId == null) {

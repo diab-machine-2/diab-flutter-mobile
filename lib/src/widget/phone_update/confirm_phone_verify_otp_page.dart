@@ -532,14 +532,17 @@ class _ConfirmPhoneNumberVerifyOTPPageState
       await AppSettings.logout(isNavigateToStepListScreen: false, isSync: true);
 
       // Determine provider and perform login again to refresh token
-      if (providerName.toLowerCase() == 'google') {
-        // await _loginWithGoogleSilently();
-        await _loginWithPhoneNumber();
-      } else if (providerName.toLowerCase() == 'zalo') {
-        await _loginWithZalo();
-      } else if (providerName.toLowerCase() == 'apple') {
-        // Optional: handle Apple if needed in future
-      }
+      // if (providerName.toLowerCase() == 'google') {
+      //   // await _loginWithGoogleSilently();
+      //   await _loginWithPhoneNumber();
+      // } else if (providerName.toLowerCase() == 'zalo') {
+      //   await _loginWithZalo();
+      // } else {
+      //   await _loginWithPhoneNumber();
+      // }
+
+      // Use phone number to re-login after sync social account with phone number
+      await _loginWithPhoneNumber();
 
       // Fetch fresh user tied to the new token
       await UserClient().fetchUser();
