@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class HorizontalSelector extends StatefulWidget {
   final Function(int) onSelected;
@@ -65,6 +66,7 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
           child: Text(
             entry.value,
             style: TextStyle(
+              fontFamily: R.font.sfpro,
               color: isSelected ? Colors.white : Colors.grey[700],
               fontSize: 15,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,

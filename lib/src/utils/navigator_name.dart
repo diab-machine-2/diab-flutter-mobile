@@ -129,11 +129,21 @@ class NavigatorName {
   static const String package_program_detail = '/package_program_detail';
   static const String welcome_program = '/welcome_program';
   // New Blood Pressure
-  static const String blood_pressure_intro_1st_page = '/blood_pressure_intro_1st_page';
-  static const String blood_pressure_intro_2nd_page = '/blood_pressure_intro_2nd_page';
+  static const String blood_pressure_intro_1st_page =
+      '/blood_pressure_intro_1st_page';
+  static const String blood_pressure_intro_2nd_page =
+      '/blood_pressure_intro_2nd_page';
   static const String add_bloodpressure_result = '/add_bloodpressure_result';
-  static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
+  static const String detail_bloodpressure_listing =
+      '/detail_bloodpressure_listing';
   // New Blood Sugar
   static const String confirm_blood_sugar = '/confirm_blood_sugar';
   static const String blood_sugar_image_capture = '/blood_sugar_image_capture';
+
+  // New HbA1C
+  static const String hba1c_dashboard = '/hba1c_dashboard';
+  static const String hba1c_detail_page = '/hba1c_detail_page';
+  static const String hba1c_intro_1st_page = '/hba1c_intro_1st_page';
+  static const String hba1c_intro_2nd_page = '/hba1c_intro_2nd_page';
+  static const String add_hba1c_result = '/add_hba1c_result';
 }

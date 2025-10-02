@@ -2,11 +2,18 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 typedef MeasurementCallback = void Function(
     String? routeName, dynamic args, String title);
+
+// Special callback for HbA1C that receives context for smart navigation
+typedef HbA1cCallback = void Function(
+    BuildContext context, String? routeName, dynamic args, String title);
 
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({
@@ -16,6 +23,7 @@ class MeasurementSummary extends StatelessWidget {
     required this.onAddMeasurement,
     required this.onHealthProfile,
     required this.onMeasurement,
+    this.onHbA1cTap,
     this.loading = false,
   });
 
@@ -27,6 +35,9 @@ class MeasurementSummary extends StatelessWidget {
   final VoidCallback onAddMeasurement;
   final VoidCallback onHealthProfile;
   final MeasurementCallback onMeasurement;
+
+  // Special callback for HbA1C that receives context for smart navigation
+  final HbA1cCallback? onHbA1cTap;
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +109,23 @@ class MeasurementSummary extends StatelessWidget {
 
   Widget _buildInlineMeasurementWidget(HomeMeasurementInlineData data) {
     return InkWell(
-      onTap: () =>
-          onMeasurement(data.navigatorName, data.args, data.title ?? ""),
+      onTap: () {
+        // Special handling for HbA1C based on data availability
+        if (data.title?.toLowerCase() == "hba1c" && onHbA1cTap != null) {
+          // Use WidgetsBinding to access context after frame is built
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final context = _getCurrentContext();
+            if (context != null) {
+              onHbA1cTap!(
+                  context, data.navigatorName, data.args, data.title ?? "");
+            } else {
+              onMeasurement(data.navigatorName, data.args, data.title ?? "");
+            }
+          });
+        } else {
+          onMeasurement(data.navigatorName, data.args, data.title ?? "");
+        }
+      },
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -187,7 +213,22 @@ class MeasurementSummary extends StatelessWidget {
       );
     }
     return InkWell(
-      onTap: () => onMeasurement(data.navigatorName, data.args, data.title),
+      onTap: () {
+        // Special handling for HbA1C based on data availability
+        if (data.title.toLowerCase() == "hba1c" && onHbA1cTap != null) {
+          // Use WidgetsBinding to access context after frame is built
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final context = _getCurrentContext();
+            if (context != null) {
+              onHbA1cTap!(context, data.navigatorName, data.args, data.title);
+            } else {
+              onMeasurement(data.navigatorName, data.args, data.title);
+            }
+          });
+        } else {
+          onMeasurement(data.navigatorName, data.args, data.title);
+        }
+      },
       child: Container(
         width: 88.0 * textScaleFactor,
         child: Column(
@@ -289,5 +330,44 @@ class MeasurementSummary extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Helper method to get current context using WidgetsBinding
+  BuildContext? _getCurrentContext() {
+    try {
+      // Try to get the current context from the navigator
+      final context = WidgetsBinding.instance.focusManager.rootScope?.context;
+      return context;
+    } catch (e) {
+      // If that fails, try to get it from the render tree
+      try {
+        final element = WidgetsBinding.instance.renderViewElement;
+        if (element != null) {
+          return element;
+        }
+      } catch (e2) {
+        // Ignore errors
+      }
+    }
+    return null;
+  }
+
+  // Static helper method to create HbA1C callback for smart navigation
+  static HbA1cCallback createHbA1cCallback(BuildContext context) {
+    return (BuildContext ctx, String? routeName, dynamic args,
+        String title) async {
+      try {
+        // Small delay to ensure data is updated after any recent changes
+        await Future.delayed(Duration(milliseconds: 300));
+
+        // Use the unified HbA1cNavigationHelper for consistent behavior
+        // This handles first-time users, data availability, and proper navigation
+        await HbA1cNavigationHelper.navigateToHbA1C(ctx);
+      } catch (e) {
+        // Fallback to original navigation if there's any error
+        Navigator.pushNamed(ctx, routeName ?? NavigatorName.detail_hba1c,
+            arguments: args);
+      }
+    };
   }
 }

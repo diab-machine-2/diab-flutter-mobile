@@ -27,9 +27,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -44,7 +42,7 @@ class HbA1CClient extends FetchClient {
       );
       return listResponse.data;
     }
-    
+
     return null;
   }
 
@@ -67,9 +65,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -89,9 +85,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -106,9 +100,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -131,9 +123,7 @@ class HbA1CClient extends FetchClient {
         throw Error.fromString(error);
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -161,9 +151,7 @@ class HbA1CClient extends FetchClient {
         throw Error.fromString(error);
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -178,9 +166,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -196,9 +182,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -216,6 +200,59 @@ class HbA1CClient extends FetchClient {
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<String?> fetchHbA1CInputAnalysis({
+    String? id,
+    required String hba1cValue,
+    required int date,
+    String? note,
+  }) async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/HbA1C/Analysis/Index',
+        params: {
+          'id': id ?? '',
+          'hba1cValue': hba1cValue,
+          'date': date.toString(),
+          'note': note ?? '',
+        },
+      );
+      if (response.statusCode == 200) {
+        return response.data['data'] as String?;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<String?> fetchHbA1CTrendAnalysis(int periodFilterType) async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/HbA1C/Analysis/Trend',
+        params: {
+          'periodFilterType': periodFilterType.toString(),
+          'currentDateTime':
+              (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+          'page': '1',
+          'size': '100',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final singleResponse = SingleResponse.fromJsonTypeString(
+          response.data as Map<String, dynamic>,
+        );
+        return singleResponse.data;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching HbA1C trend analysis: $e');
+      return null;
     }
   }
 }

@@ -7,11 +7,11 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_hba1c_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail.dart';
 import 'package:medical/src/widget/HbA1C/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_filter.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_functions.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
@@ -44,6 +44,8 @@ class _Hba1cDetailTabbarControllerState
   ShortGuiModel? des;
 
   int periodFilterType = 1;
+  bool _argsInitialized = false;
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +69,21 @@ class _Hba1cDetailTabbarControllerState
         }
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_argsInitialized) return;
+    // Get arguments from navigation if available
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args['initPeriodFilterType'] != null) {
+      // Map UI index to API trendType (1-3 only)
+      int uiIndex = args['initPeriodFilterType'];
+      periodFilterType = (uiIndex + 1).clamp(1, 3);
+    }
+    _argsInitialized = true;
   }
 
   @override
@@ -180,9 +197,8 @@ class _Hba1cDetailTabbarControllerState
     );
   }
 
-  _showMaterialDialog() {
-    Navigator.pushNamed(context, NavigatorName.add_hba1c,
-        arguments: {'type': 'input', 'id': null});
+  _showMaterialDialog() async {
+    await showHbA1cInputMethodModal(context);
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
