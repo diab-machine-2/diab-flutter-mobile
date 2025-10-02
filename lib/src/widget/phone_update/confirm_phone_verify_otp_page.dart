@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/repo/login/login_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/login/routing.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class ConfirmPhoneNumberVerifyOTPPage extends StatefulWidget {
@@ -412,10 +415,7 @@ class _ConfirmPhoneNumberVerifyOTPPageState
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.popUntil(context, (route) => route.isFirst);
-                        },
+                        onTap: _navigateBackToHome,
                         child: Container(
                           height: 43,
                           decoration: BoxDecoration(
@@ -479,19 +479,137 @@ class _ConfirmPhoneNumberVerifyOTPPageState
     );
   }
 
+  void _navigateBackToHome() {
+    Navigator.pop(context);
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
   Future<void> _syncAccount() async {
     try {
-     Navigator.pushNamed(context, NavigatorName.sync_screen);
+      BotToast.showLoading();
 
-      // // Notify back to home
-      // Observable.instance
-      //     .notifyObservers([], notifyName: "subscription_back_to_home");
+      final userInfo = AppSettings.userInfo!;
+      final providerName = userInfo.firstLinkedAccount;
+      final providerKey = userInfo.userName;
 
-      // Navigator.popUntil(context, (route) => route.isFirst);
+      if (providerName == null ||
+          providerKey == null ||
+          providerName.isEmpty ||
+          providerKey.isEmpty) {
+        BotToast.closeAllLoading();
+        _navigateBackToHome();
+        return;
+      }
+
+      await LoginClient().syncAccount(widget.phone, providerName, providerKey);
+
+      // After sync, the social email/ID may now point to another account.
+      // We must refresh auth by logging out (without navigation) and logging in again
+      // with the same provider to get a new token, then fetch the user.
+      await _reloginAfterSync(providerName);
+
+      BotToast.closeAllLoading();
+
+      // Notify back to home
+      Observable.instance
+          .notifyObservers([], notifyName: "subscription_back_to_home");
+
+      // Navigate to root
+      Navigator.popUntil(context, (route) => route.isFirst);
     } catch (e) {
       BotToast.closeAllLoading();
+      // Show specific error message for sync account failure
+      Message.showToastMessage(context,
+          "Quá trình đồng bộ tài khoản thất bại.\n Vui lòng liên hệ với diaB để được xử lý.");
+      // Navigate back to home page
+      Navigator.popUntil(context, (route) => route.isFirst);
+    }
+  }
+
+  Future<void> _reloginAfterSync(String providerName) async {
+    try {
+      // Logout without navigating away from current flow
+      await AppSettings.logout(isNavigateToStepListScreen: false, isSync: true);
+
+      // Determine provider and perform login again to refresh token
+      if (providerName.toLowerCase() == 'google') {
+        // await _loginWithGoogleSilently();
+        await _loginWithPhoneNumber();
+      } else if (providerName.toLowerCase() == 'zalo') {
+        await _loginWithZalo();
+      } else if (providerName.toLowerCase() == 'apple') {
+        // Optional: handle Apple if needed in future
+      }
+
+      // Fetch fresh user tied to the new token
+      await UserClient().fetchUser();
+      LoginRouting().navigateToHome(context);
+    } catch (e) {
+      // Best effort; surface error for visibility
       Message.showToastMessage(context, e.toString());
     }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    final GoogleSignIn _googleSignIn = GoogleSignIn(
+      scopes: [
+        R.string.email.tr(),
+        'profile',
+      ],
+    );
+
+    // After logout, silent sign-in will always fail, so skip it
+    // and go directly to interactive sign-in
+    GoogleSignInAccount? account = await _googleSignIn.signIn();
+    if (account == null) {
+      // User cancelled or error occurred
+      throw Exception('Google sign-in cancelled or failed');
+    }
+
+    final authen = await account.authentication;
+    await LoginClient().login({
+      "client_id": Const.CLIENT_ID,
+      "client_secret": Const.CLIENT_SECRET,
+      "grant_type": "external",
+      "external_token": authen.accessToken,
+      "provider": 'Google'
+    });
+  }
+
+  Future<void> _loginWithZalo() async {
+    // Use saved Zalo external token if exists; otherwise trigger login flow
+    String? externalToken = await AppSettings.getZaloExternalToken();
+    if (externalToken == null || externalToken.isEmpty) {
+      try {
+        final result = await ZaloService().login();
+        externalToken = result.accessToken;
+        await AppSettings.setZaloExternalToken(result.accessToken);
+        await AppSettings.setZaloId(result.id);
+      } catch (_) {
+        rethrow;
+      }
+    }
+
+    await LoginClient().login({
+      "client_id": Const.CLIENT_ID,
+      "client_secret": Const.CLIENT_SECRET,
+      "grant_type": "external",
+      "external_token": externalToken,
+      "provider": 'Zalo'
+    });
+  }
+
+  Future<void> _loginWithPhoneNumber() async {
+    const String masterPassword =
+        "GQlLFRRkHKpvqzYlRBWvxXCMJZ5lsTvS97SCHp8gikqck8vl8i";
+
+    await LoginClient().login({
+      "client_id": Const.CLIENT_ID,
+      "client_secret": Const.CLIENT_SECRET,
+      "grant_type": "phone_number_password",
+      "password": masterPassword,
+      "phone_number": widget.phone
+    });
   }
 
   resendOTP() async {
@@ -506,7 +624,8 @@ class _ConfirmPhoneNumberVerifyOTPPageState
     BotToast.showLoading();
     try {
       // Call resend OTP API
-      await LoginClient().submitRegister(widget.phone);
+      await LoginClient().submitRegister(widget.phone,
+          isSyncAccount: widget.isPhoneNumberExist);
       BotToast.closeAllLoading();
       _showDialogSuccess();
     } catch (e, _) {

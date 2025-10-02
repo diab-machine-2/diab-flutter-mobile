@@ -169,6 +169,9 @@ class _UpdatePhoneNumberPageState extends State<UpdatePhoneNumberPage> {
       bool phoneNumberConfirmed = resultIsExits[2];
       bool isExist = isExistAccount && isActive && phoneNumberConfirmed;
 
+      // Call submitRegister to send OTP before navigating
+      await LoginClient().submitRegister(phone, isSyncAccount: isExist);
+
       BotToast.closeAllLoading();
 
       Navigator.pushNamed(context, NavigatorName.confirm_phone_verify_otp,

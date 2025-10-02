@@ -1416,8 +1416,8 @@ class _DsmesConfirmCreateInformationState
   _showDialogUpdatePhone() {
     PhoneValidationHelper.showBottomSheetUpdatePhone(context).then((phone) {
       if (phone.isEmpty) return;
-      final UserModel userInfo = AppSettings.userInfo!;
-      updateUserInfo(userInfo.copyWith(phoneNumber: phone));
+      // final UserModel userInfo = AppSettings.userInfo!;
+      // updateUserInfo(userInfo.copyWith(phoneNumber: phone));
       _cubit.updateCreateDsmesBookingRequestRequesterInfo(
           name: nameController.text, phone: phone);
       phoneController.text = phone;
