@@ -1,0 +1,77 @@
+import 'package:flutter/material.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/utils/app_storages.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/helper/helper.dart';
+
+class HbA1cNavigationHelper {
+  /// Handle HbA1C navigation - check if user has data and route accordingly
+  /// - First time users or users without data: navigate to intro page
+  /// - Users with data: navigate to dashboard
+  /// - Fallback: navigate to detail page
+  static Future<void> navigateToHbA1C(BuildContext context) async {
+    try {
+      bool isFirstTime = await AppStorages.isFirstTimeHbA1C();
+
+      // Small delay to ensure data is updated after HbA1C input
+      await Future.delayed(Duration(milliseconds: 300));
+
+      // Check if user has HbA1c data from home model
+      bool hasHbA1cData = false;
+      final homeModel = await AppSettings.getHome();
+      if (homeModel != null &&
+          homeModel.hbA1CIndex.index != null &&
+          homeModel.hbA1CIndex.index! > 0) {
+        hasHbA1cData = true;
+      }
+
+      if (isFirstTime || !hasHbA1cData) {
+        // Navigate to onboarding for first time users or users without data
+        Navigator.pushNamed(context, NavigatorName.hba1c_intro_1st_page);
+      } else if (hasHbA1cData && homeModel != null) {
+        // User has data, navigate to dashboard instead of detail view
+        Navigator.pushNamed(context, NavigatorName.hba1c_dashboard, arguments: {
+          'currentValue': homeModel.hbA1CIndex.index,
+          'currentLevel': _getHbA1cLevel(homeModel.hbA1CIndex.index ?? 0),
+          'currentColor': _getHbA1cColor(homeModel.hbA1CIndex.color)
+        });
+      } else {
+        // Fallback: navigate to detail view (which will show empty state)
+        Navigator.pushNamed(context, NavigatorName.detail_hba1c);
+      }
+    } catch (e) {
+      // Fallback to dashboard if there's any error
+      Navigator.pushNamed(context, NavigatorName.hba1c_dashboard);
+    }
+  }
+
+  /// Call this when user completes onboarding
+  static Future<void> completeOnboarding(BuildContext context) async {
+    await AppStorages.setHbA1COnboardingCompleted();
+    Navigator.pushReplacementNamed(context, NavigatorName.hba1c_dashboard);
+  }
+
+  /// Reset onboarding status (for testing purposes)
+  static Future<void> resetOnboardingStatus() async {
+    await AppStorages.resetHbA1COnboarding();
+  }
+
+  /// Get HbA1c level text based on value
+  static String _getHbA1cLevel(double value) {
+    if (value < 5.7) {
+      return 'Bình thường';
+    } else if (value < 6.5) {
+      return 'Tiền tiểu đường';
+    } else {
+      return 'Tiểu đường';
+    }
+  }
+
+  /// Get HbA1c color based on color string
+  static Color _getHbA1cColor(String? colorString) {
+    if (colorString != null && colorString.isNotEmpty) {
+      return toColor(colorString);
+    }
+    return const Color(0xFF17B545); // Default green color
+  }
+}

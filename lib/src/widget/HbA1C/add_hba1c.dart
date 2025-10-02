@@ -4,6 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
@@ -14,6 +15,8 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
+import 'package:medical/src/widget/HbA1C/widget/hba1c_warning_popup.dart';
+import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -21,13 +24,13 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/widgets/btn_add_photo.dart';
-import 'package:medical/src/widgets/spacing_row.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 
 import '../../utils/app_media_query.dart';
+import '../../utils/app_storages.dart';
+import '../../utils/navigator_name.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
-import '../../widgets/network_image_widget.dart';
+import 'hba1c_result.dto.dart';
 
 class AddHBA1CController extends StatefulWidget {
   final String? type;
@@ -42,27 +45,31 @@ class AddHBA1CController extends StatefulWidget {
 class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   TextEditingController _controller = TextEditingController();
   TextEditingController _controllerNote = TextEditingController();
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
+  final FocusNode _focusNode = FocusNode();
   DateTime time = DateTime.now();
   int maxMedia = 5;
-  List<dynamic> files = []; //PickedFile
+  int maxLength = 250;
+  List<dynamic> files = []; // Keep for initialization only
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
   DateTime today = DateTime.now();
   bool btnAction = true;
   List<int> rangeValue = [0, 60, 65, 75];
-  List<String> _rangeLabel = ["Tuyệt vời", "Tốt", "Khá cao", "Rất cao"];
+  List<String> _rangeLabel = ["Lý tưởng", "Tốt", "Cao", "Rất cao"];
   List<Color> _colorList = [
-    Color(0xFF20A468),
-    Color(0xFF9CD9B8),
-    Color(0xFFFFCCD1),
-    Color(0xFFE53935),
+    Color(0xFF64E18E), // #64E18E - Lý tưởng
+    Color(0xFF23C559), // #23C559 - Tốt
+    Color(0xFFF86F6F), // #F86F6F - Cao
+    Color(0xFFD02424), // #D02424 - Rất cao
   ];
   InputHbA1CModel? model;
-  List<String?> removeIDs = [];
   bool isLoading = true;
   ShortGuiModel? des;
 
   int clickTime = 0;
+
   void initState() {
     initData();
     super.initState();
@@ -72,6 +79,13 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
     loadDescription();
     firebaseSetup();
+
+    // Auto-focus to text field when page opens (only for input, not update)
+    if (widget.type == 'input') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FocusScope.of(context).requestFocus(_focusNode);
+      });
+    }
   }
 
   showGuide(BuildContext context) async {
@@ -119,6 +133,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   void dispose() {
     _controller.dispose();
     _controllerNote.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -131,8 +146,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         ? model!.hbA1C!.round().toString()
         : model!.hbA1C.toString();
     _controllerNote.text = model!.description ?? '';
-    time = DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
+    time = DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000,
+            isUtc: true)
+        .toLocal();
     files.addAll(model!.images);
+    if (_sectionAddNoteKey.currentState != null) {
+      _sectionAddNoteKey.currentState!
+          .updateFilesAndNote(files, model?.description ?? '');
+    }
     setState(() {});
   }
 
@@ -141,448 +162,456 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     setState(() {});
   }
 
+  void _doHealthConnect() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RocheConnectionView()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
-      child: WillPopScope(
-        onWillPop: () async {
-          _showDialogSave();
-          return false;
-        },
+      child: PopScope(
+        canPop: false,
         child: Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage(R.drawable.bg_splash),
-                    fit: BoxFit.cover)),
-            child: Column(
-              children: [
-                CustomAppBar(
-                  backgroundColor: R.color.transparent,
-                  title: Text(
-                      widget.type == 'update'
-                          ? R.string.cap_nhat_chi_so_hba1c.tr()
-                          : R.string.nhap_chi_so_hba1c.tr(),
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: R.color.textDark)),
-                  leadingIcon: IconButton(
-                      splashColor: R.color.transparent,
-                      highlightColor: R.color.transparent,
-                      icon: Icon(Icons.arrow_back, color: R.color.textDark),
-                      onPressed: () {
-                        _showDialogSave();
-                      }),
-                  actions: [
-                    GestureDetector(
-                      onTap: () async {
-                        if (clickTime >= 2) {
-                          await showGuide(context);
-                        } else {
-                          setState(() {
-                            isClicked = !isClicked;
-                            clickTime = clickTime + 1;
-                          });
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: isClicked
-                            ? Image.asset(R.drawable.ic_help_circle_active,
-                                width: 24, height: 24)
-                            : Image.asset(R.drawable.ic_help_circle,
-                                width: 24, height: 24),
+          backgroundColor: R.color.glucose_bg_color,
+          resizeToAvoidBottomInset: true,
+          body: Column(
+            children: [
+              _appBarSection(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      // Description section
+                      if (isClicked && clickTime < 2)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Description(
+                              input: true,
+                              isCreateData: true,
+                              data: des,
+                              titleDetail: R
+                                  .string.chi_so_hba1c_doi_voi_benh_tieu_duong
+                                  .tr()),
+                        ),
+                      if (isClicked && clickTime < 2)
+                        const SizedBox(height: 16),
+                      // Main input container
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: R.color.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            _dateTimeSectionV2(),
+                            const SizedBox(height: 24),
+                            _inputSection(),
+                            const SizedBox(height: 12),
+                            if (!isLoading)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                child: _hba1cRange(),
+                              ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      // Notes section
+                      _noteSection(),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: _showInputWithHealthConnect(),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
                 ),
-                Expanded(
-                  child: ListView(
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: EdgeInsets.all(0),
-                      // physics: NeverScrollableScrollPhysics(),
+              ),
+              _buildButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 16, left: 16, right: 16),
-                            child: isClicked && clickTime < 2
-                                ? Description(
-                                    input: true,
-                                    isCreateData: true,
-                                    data: des,
-                                    titleDetail: R.string
-                                        .chi_so_hba1c_doi_voi_benh_tieu_duong
-                                        .tr())
-                                : SizedBox()),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            width: 100,
-                                            child: TextField(
-                                                controller: _controller,
-                                                maxLength: 4,
-                                                onChanged: (value) {
-                                                  setState(() {});
-                                                },
-                                                textAlign: TextAlign.center,
-                                                inputFormatters: [],
-                                                keyboardType: TextInputType
-                                                    .numberWithOptions(
-                                                        decimal: true),
-                                                style: TextStyle(
-                                                    color: R.color.black,
-                                                    fontSize: 34,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                                decoration: InputDecoration(
-                                                    counterText: '',
-                                                    hintText: '0,0',
-                                                    contentPadding:
-                                                        EdgeInsets.only(
-                                                            bottom: 8),
-                                                    border: InputBorder.none,
-                                                    hintStyle: TextStyle(
-                                                        color: R.color
-                                                            .captionColorGray,
-                                                        fontSize: 34,
-                                                        fontWeight:
-                                                            FontWeight.w500))),
-                                          ),
-                                          Text('%')
-                                        ]),
-                                  ),
-                                  Center(
-                                      child: Container(
-                                          height: 1,
-                                          width: 74,
-                                          color: R.color.color0xffE5E5E5)),
-                                  SizedBox(height: 8),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  isLoading ? SizedBox() : _hba1cRange(),
-                                ]),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(children: [
-                              GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    barrierColor: R.color.color0xff003F38
-                                        .withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => DateMultiPicker(
-                                        initDate: time,
-                                        callback: (value) {
-                                          if (value != null)
-                                            setState(() {
-                                              time = value;
-                                            });
-                                        }),
-                                  );
-                                },
-                                child: Container(
-                                  color: R.color.transparent,
-                                  child: Column(children: [
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Image.asset(R.drawable.ic_calendar,
-                                              width: 24, height: 24),
-                                          SizedBox(width: 8),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                  getStringToday(
-                                                          time.millisecondsSinceEpoch ~/
-                                                              1000) +
-                                                      (getStringToday(
-                                                                  time.millisecondsSinceEpoch ~/
-                                                                      1000)
-                                                              .isEmpty
-                                                          ? ''
-                                                          : ', ') +
-                                                      convertToUTC(
-                                                          time.millisecondsSinceEpoch ~/
-                                                              1000,
-                                                          'dd/MM/yyyy'),
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w400)),
-                                            ],
-                                          )
-                                          // : Text(
-                                          //     convertToUTC(widget.model.date,
-                                          //         'dd/MM/yyyy'),
-                                          //     style: TextStyle(
-                                          //         fontSize: 16,
-                                          //         fontWeight:
-                                          //             FontWeight.w400)),
-                                        ]),
-                                    SizedBox(height: 16),
-                                    Container(
-                                        height: 1,
-                                        color: R.color.color0xffE5E5E5),
-                                    SizedBox(height: 8),
-                                  ]),
-                                ),
-                              )
-                            ]),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 16, left: 16, right: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: R.color.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(children: [
-                                    Image.asset(R.drawable.ic_note_text,
-                                        width: 24, height: 24),
-                                    SizedBox(width: 8),
-                                    Text(R.string.ghi_chu.tr(),
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600))
-                                  ]),
-                                  SizedBox(height: 24),
-                                  TextField(
-                                      controller: _controllerNote,
-                                      maxLines: 3,
-                                      keyboardType: TextInputType.multiline,
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400),
-                                      decoration: InputDecoration(
-                                          hintText: R
-                                              .string.nhap_ghi_chu_cua_ban
-                                              .tr(),
-                                          contentPadding:
-                                              EdgeInsets.only(bottom: 8),
-                                          border: InputBorder.none,
-                                          hintStyle: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              color:
-                                                  R.color.primaryGreyColor))),
-                                  Container(
-                                      height: 1,
-                                      color: R.color.color0xffE5E5E5),
-                                  SizedBox(height: 16),
-                                  GridView.builder(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: files.length + 1,
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 3,
-                                              childAspectRatio: 1,
-                                              crossAxisSpacing: 16,
-                                              mainAxisSpacing: 16),
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return GestureDetector(
-                                            onTap: () {
-                                              if (index == files.length) {
-                                                showActionSheet(context);
-                                              }
-                                            },
-                                            child: index == files.length
-                                                ? ButtonAddPhoto()
-                                                : GestureDetector(
-                                                    onTap: () {
-                                                      Navigator.pushNamed(
-                                                          context,
-                                                          '/photo_view',
-                                                          arguments: {
-                                                            'files': files,
-                                                            'index': index
-                                                          });
-                                                    },
-                                                    child: Stack(
-                                                        alignment:
-                                                            AlignmentDirectional
-                                                                .topEnd,
-                                                        children: [
-                                                          Positioned.fill(
-                                                            child: files[index]
-                                                                    is PickedFile
-                                                                ? Image.file(
-                                                                    File(files[
-                                                                            index]
-                                                                        .path),
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  )
-                                                                : NetWorkImageWidget(
-                                                                    imageUrl:
-                                                                        files[index]
-                                                                            .url,
-                                                                    fit: BoxFit
-                                                                        .cover),
-                                                          ),
-                                                          IconButton(
-                                                              icon: Image.asset(R
-                                                                  .drawable
-                                                                  .ic_trash),
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  if (files[
-                                                                          index]
-                                                                      is PickedFile) {
-                                                                    files.removeAt(
-                                                                        index);
-                                                                  } else {
-                                                                    removeIDs.add(
-                                                                        files[index]
-                                                                            .id);
-                                                                    files.removeAt(
-                                                                        index);
-                                                                  }
-                                                                });
-                                                              })
-                                                        ]),
-                                                  ));
-                                      })
-                                ]),
-                          ),
-                        ),
-                      ]),
+  Widget _appBarSection() {
+    return CustomAppBar(
+      backgroundColor: R.color.greenGradientBottom,
+      centerTitle: false,
+      title: Text(
+        widget.type == 'update'
+            ? R.string.cap_nhat_chi_so_hba1c.tr()
+            : R.string.nhap_chi_so_hba1c.tr(),
+        style: TextStyle(
+          fontFamily: R.font.sfpro,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: R.color.white,
+        ),
+      ),
+      leadingIcon: IconButton(
+          splashColor: R.color.white,
+          highlightColor: R.color.white,
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+          onPressed: () {
+            _showDialogSave();
+          }),
+      actions: [
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.pushNamed(
+                    context, NavigatorName.hba1c_intro_1st_page);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(
+                      fontFamily: R.font.sfpro,
+                      color: R.color.white,
+                      fontSize: 15),
                 ),
-                widget.type == 'input'
-                    ? GestureDetector(
-                        onTap: () async {
-                          _submitData();
-                        },
-                        child: SafeArea(
-                          top: false,
-                          child: Container(
-                              margin: EdgeInsets.only(bottom: 16, top: 16),
-                              height: 48,
-                              width: 195,
-                              decoration: BoxDecoration(
-                                  color: R.color.mainColor,
-                                  borderRadius: BorderRadius.circular(200),
-                                  gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerRight,
-                                      colors: [
-                                        R.color.greenGradientTop,
-                                        R.color.greenGradientBottom
-                                      ])),
-                              child: Center(
-                                  child: Text(R.string.save.tr(),
-                                      style: TextStyle(
-                                          color: R.color.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 16)))),
-                        ),
-                      )
-                    : SafeArea(
-                        child: Container(
-                          margin: EdgeInsets.only(bottom: 16),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 16, right: 16),
-                            child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      _showDialogDelete(context);
-                                    },
-                                    child: Container(
-                                        height: 48,
-                                        width: 164,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(200),
-                                            border: Border.all(
-                                                color: R.color.red, width: 2)),
-                                        child: Center(
-                                          child: Text(R.string.xoa_du_lieu.tr(),
-                                              style: TextStyle(
-                                                  color: R.color.red,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w600)),
-                                        )),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      editData();
-                                    },
-                                    child: Container(
-                                      height: 48,
-                                      width: 164,
-                                      decoration: BoxDecoration(
-                                          color: R.color.mainColor,
-                                          borderRadius:
-                                              BorderRadius.circular(200),
-                                          gradient: LinearGradient(
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.centerRight,
-                                              colors: [
-                                                R.color.greenGradientTop,
-                                                R.color.greenGradientBottom
-                                              ])),
-                                      child: Center(
-                                        child: Text(R.string.save.tr(),
-                                            style: TextStyle(
-                                                color: R.color.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                          ),
-                        ),
-                      ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _dateTimeSectionV2() {
+    return Center(
+      child: InkWell(
+        onTap: () {
+          showDialog(
+            barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+            context: context,
+            builder: (_) => DateMultiPicker(
+                initDate: time,
+                callback: (value) {
+                  if (value != null)
+                    setState(() {
+                      time = value;
+                    });
+                }),
+          );
+        },
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: R.color.color0xffE5E5E5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  convertToUTC(time.millisecondsSinceEpoch ~/ 1000,
+                      'HH:mm - dd/MM/yyyy'),
+                  style: TextStyle(
+                    fontFamily: R.font.sfpro,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.textDark,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: R.color.textDark,
+                  size: 20,
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _inputSection() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: R.color.color0xffDFE4E4,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 120,
+            child: TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                maxLength: 4,
+                onChanged: (value) {
+                  setState(() {});
+                },
+                textAlign: TextAlign.center,
+                inputFormatters: [],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                style: TextStyle(
+                    color: R.color.black,
+                    fontSize: 48,
+                    fontFamily: R.font.sfpro,
+                    fontWeight: FontWeight.w700),
+                decoration: InputDecoration(
+                    counterText: '',
+                    hintText: '0.0',
+                    contentPadding: EdgeInsets.only(bottom: 8),
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                        fontFamily: R.font.sfpro,
+                        color: R.color.captionColorGray,
+                        fontSize: 48,
+                        fontWeight: FontWeight.w700))),
+          ),
+          Text('%',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+        ],
+      ),
+    );
+  }
+
+  Widget _noteSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: SectionAddNote(
+        key: _sectionAddNoteKey,
+        controllerNote: _controllerNote,
+        maxMedia: maxMedia,
+        maxLength: maxLength,
+        initialFiles: files,
+        noteTitle: R.string.ghi_chu.tr(),
+        horizontalPadding: 16,
+      ),
+    );
+  }
+
+  Widget _showInputWithHealthConnect() {
+    return FutureBuilder(
+      future: AppStorages.getHealthAppPermission(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.hasError) {
+          return SizedBox.shrink();
+        }
+
+        if (snapshot.hasData) {
+          bool? hasPermission = snapshot.data as bool?;
+          if (hasPermission == true) {
+            return SizedBox.shrink();
+          }
+        }
+
+        String healthIcon = Platform.isIOS
+            ? R.drawable.logo_healthkit
+            : R.drawable.logo_healthConnect;
+        String healthTitle = Platform.isIOS
+            ? R.string.connect_from_Apple_Health.tr()
+            : R.string.connect_from_Health_Connect.tr();
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 235,
+              height: 20,
+              alignment: Alignment.center,
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Container(
+                          height: 1, color: R.color.greenGradientBottom)),
+                  Text(
+                    '   ${R.string.or.tr()}   ',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                  Expanded(
+                      child: Container(
+                          height: 1, color: R.color.greenGradientBottom)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            InkWell(
+              onTap: _doHealthConnect,
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                height: 64,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(healthIcon, width: 40, height: 40),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        healthTitle,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: R.color.dark,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(
+                      Icons.chevron_right,
+                      color: R.color.primaryGreyColor,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildButton() {
+    // Kiểm tra input có hợp lệ không
+    final validationResult = _validateHbA1cInput(_controller.text);
+    final bool _isInputValid =
+        validationResult['isValid'] && _controller.text.isNotEmpty;
+
+    return widget.type == 'input'
+        ? GestureDetector(
+            onTap: _isInputValid
+                ? () async {
+                    _submitData();
+                  }
+                : null,
+            child: SafeArea(
+              top: false,
+              child: Container(
+                  margin:
+                      EdgeInsets.only(top: 0, bottom: 16, left: 12, right: 12),
+                  height: 48,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: _isInputValid
+                          ? R.color.greenGradientBottom
+                          : R.color.grayBorder,
+                      borderRadius: BorderRadius.circular(200),
+                      gradient: _isInputValid
+                          ? LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom
+                                ])
+                          : null),
+                  child: Center(
+                      child: Text(R.string.confirm.tr(),
+                          style: TextStyle(
+                              color: _isInputValid
+                                  ? R.color.white
+                                  : R.color.textDark,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16)))),
+            ),
+          )
+        : SafeArea(
+            top: false,
+            child: Container(
+                margin: EdgeInsets.all(16),
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  GestureDetector(
+                    onTap: () {
+                      _showDialogDelete(context);
+                    },
+                    child: Container(
+                        height: 48,
+                        width: 164,
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFFFE9E9),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: R.color.attentionText, width: 1)),
+                        child: Center(
+                          child: Text(R.string.xoa_du_lieu.tr(),
+                              style: TextStyle(
+                                  fontFamily: R.font.sfpro,
+                                  color: R.color.hba1c_detail_text,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.46,
+                                  letterSpacing: 0.4)),
+                        )),
+                  ),
+                  const SizedBox(width: 11),
+                  GestureDetector(
+                    onTap: _isInputValid
+                        ? () {
+                            editData();
+                          }
+                        : null,
+                    child: Container(
+                      height: 48,
+                      width: 164,
+                      decoration: BoxDecoration(
+                          color: _isInputValid
+                              ? R.color.greenGradientBottom
+                              : R.color.grayBorder,
+                          borderRadius: BorderRadius.circular(200),
+                          gradient: _isInputValid
+                              ? LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom
+                                    ])
+                              : null),
+                      child: Center(
+                        child: Text('Lưu',
+                            style: TextStyle(
+                                color: _isInputValid
+                                    ? R.color.white
+                                    : R.color.textDark,
+                                fontSize: 15,
+                                fontFamily: R.font.sfpro,
+                                fontWeight: FontWeight.w700,
+                                height: 1.46,
+                                letterSpacing: 0.4)),
+                      ),
+                    ),
+                  ),
+                ])),
+          );
   }
 
   _showDialogDelete(BuildContext context) {
@@ -598,71 +627,67 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
+                      // Image.asse t(R.drawable.ic_earse, width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_xoa_du_lieu.tr(),
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600)),
+                              fontFamily: R.font.sfpro,
+                              color: R.color.textDark,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              height: 1.3,
+                              letterSpacing: 0.2,
+                            )),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
-                            style: R.style.normalTextStyle),
+                            style: TextStyle(
+                              fontFamily: R.font.sfpro,
+                              color: R.color.hba1c_desc_delete_text,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                              height: 1.46,
+                              letterSpacing: 0.4,
+                            )),
                       ),
                       Container(
-                        margin: EdgeInsets.only(top: 16),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Container(
-                                      height: 43,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(200),
-                                          color: R.color.grayBorder),
-                                      child: Center(
-                                        child: Text(R.string.back.tr(),
-                                            style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                      )),
+                        margin: EdgeInsets.only(top: 24),
+                        child: Column(
+                          children: [
+                            // Nút Xác nhận (màu đỏ)
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                                deleteData();
+                              },
+                              child: Container(
+                                width: 137,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: R.color.attentionText,
+                                  borderRadius: BorderRadius.circular(24),
                                 ),
-                              ),
-                              SizedBox(width: 14),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    deleteData();
-                                  },
-                                  child: Container(
-                                    height: 43,
-                                    decoration: BoxDecoration(
-                                      color: R.color.red,
-                                      borderRadius: BorderRadius.circular(200),
-                                    ),
-                                    child: Center(
-                                      child: Text(R.string.delete.tr(),
-                                          style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                child: Center(
+                                  child: Text(
+                                    'Xác nhận',
+                                    style: TextStyle(
+                                      color: R.color.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: R.font.sfpro,
+                                      height: 1.46,
+                                      letterSpacing: 0.4,
                                     ),
                                   ),
                                 ),
                               ),
-                            ]),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -685,6 +710,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   _showDialogSave() {
     final note = _controllerNote.text;
     final numberInput = _controller.text;
+    final data = _sectionAddNoteKey.currentState?.getNote();
+
     if (model != null) {
       final des = model!.description ?? '';
       final parseTime =
@@ -692,12 +719,14 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       if (note == des &&
           double.parse(numberInput) == model!.hbA1C &&
           parseTime.millisecondsSinceEpoch == time.millisecondsSinceEpoch &&
-          removeIDs.length == 0 &&
-          files.length == model!.images.length) {
+          (data?.removeIDs.length ?? 0) == 0 &&
+          (data?.files.length ?? 0) == model!.images.length) {
         Navigator.pop(context);
         return;
       }
-    } else if (note.isEmpty && numberInput.isEmpty && files.length == 0) {
+    } else if (note.isEmpty &&
+        numberInput.isEmpty &&
+        (data?.files.length ?? 0) == 0) {
       Navigator.pop(context);
       return;
     }
@@ -775,7 +804,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                               R.color.greenGradientBottom
                                             ])),
                                     child: Center(
-                                      child: Text(R.string.exit.tr(),
+                                      child: Text(R.string.confirm.tr(),
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
@@ -808,8 +837,26 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       final result = await HbA1CClient().deleteIndexHbA1C(model!.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance
-            .notifyObservers([], notifyName: "hba1c_change_data");
+
+        // Navigate to dashboard first, then notify observers
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          NavigatorName.hba1c_dashboard,
+          (route) => route.isFirst,
+        );
+
+        // Notify observers AFTER navigation to prevent any interference
+        Future.delayed(Duration(milliseconds: 100), () {
+          Observable.instance.notifyObservers(
+            [],
+            notifyName: "hba1c_change_data",
+            map: {
+              'isNew': false,
+              'skipNavigation': true
+            }, // Skip any navigation logic
+          );
+        });
+        return;
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -824,23 +871,37 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
   editData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text;
     String numberInput = _controller.text;
-    numberInput = numberInput.split(',').join('.');
 
-    if (numberInput == null) {
+    if (numberInput.isEmpty) {
       Message.showToastMessage(
           context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
-    if (double.parse(numberInput) > 30) {
+
+    // Sử dụng hàm validation
+    final validationResult = _validateHbA1cInput(numberInput);
+    if (!validationResult['isValid']) {
       Message.showToastMessage(context, R.string.invalid_hba1c.tr());
       return;
     }
-    if (time == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
+
+    // Kiểm tra nếu chỉ số nguy hiểm, hiển thị popup cảnh báo
+    if (validationResult['isDangerous']) {
+      _showHbA1cEditWarningPopup();
       return;
     }
+
+    // Nếu không nguy hiểm, tiếp tục edit bình thường
+    _editDataAfterWarning();
+  }
+
+  _editDataAfterWarning() async {
+    String numberInput = _controller.text;
+
+    // Convert back to original format for API
+    numberInput = numberInput.split(',').join('.');
+    // 'time' is always initialized; no null check needed
     // if (note == '') {
     //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
     //   return;
@@ -849,22 +910,55 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
     try {
       List<String> paths = [];
-      for (var file in files) {
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in (data.files)) {
         if (file is PickedFile) {
           paths.add(file.path);
         }
       }
+
+      // Use exact user-selected timestamp (consistent with _submitData)
+      final exactTimestamp = time.millisecondsSinceEpoch ~/ 1000;
+
+      print("HbA1C Edit - User Time: ${time.toIso8601String()}");
+      print("HbA1C Edit - Timestamp: $exactTimestamp");
+
       final result = await HbA1CClient().putIndexHbA1C(
           model!.id,
-          (time.millisecondsSinceEpoch ~/ 1000).toInt(),
+          exactTimestamp,
           numberInput,
-          note,
-          removeIDs,
+          data.note, // updated to use data.note
+          data.removeIDs,
           paths);
       if (result == true) {
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
-        Observable.instance
-            .notifyObservers([], notifyName: "hba1c_change_data");
+        // Navigate back to dashboard after successful edit first, before notifying observers
+        // This prevents any home screen navigation logic from interfering
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          NavigatorName.hba1c_dashboard,
+          (route) => route.isFirst,
+          arguments: {
+            'currentValue': double.parse(numberInput),
+            'currentLevel': _getHbA1cLevelFromValue(double.parse(numberInput)),
+            'currentColor': _getHbA1cColorFromValue(double.parse(numberInput)),
+          },
+        );
+
+        // Notify observers AFTER navigation to prevent any interference
+        // Use a delayed notification to ensure navigation completes first
+        Future.delayed(Duration(milliseconds: 100), () {
+          Observable.instance.notifyObservers(
+            [],
+            notifyName: "hba1c_change_data",
+            map: {
+              'isNew': false,
+              'skipNavigation': true
+            }, // Skip any navigation logic
+          );
+        });
+
+        return;
       }
 
       BotToast.closeAllLoading();
@@ -880,23 +974,37 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
   _submitData() async {
     FocusScope.of(context).unfocus();
-    final note = _controllerNote.text;
     String numberInput = _controller.text;
-    numberInput = numberInput.split(',').join('.');
 
     if (numberInput.isEmpty) {
       Message.showToastMessage(
           context, R.string.ban_chua_nhap_chi_so_hba1c.tr());
       return;
     }
-    if (double.parse(numberInput) > 30) {
+
+    // Sử dụng hàm validation
+    final validationResult = _validateHbA1cInput(numberInput);
+    if (!validationResult['isValid']) {
       Message.showToastMessage(context, R.string.invalid_hba1c.tr());
       return;
     }
-    if (time == null) {
-      Message.showToastMessage(context, R.string.ban_chua_nhap_thoi_gian.tr());
+
+    // Kiểm tra nếu chỉ số nguy hiểm, hiển thị popup cảnh báo
+    if (validationResult['isDangerous']) {
+      _showHbA1cWarningPopup();
       return;
     }
+
+    // Nếu không nguy hiểm, tiếp tục submit bình thường
+    _submitDataAfterWarning();
+  }
+
+  _submitDataAfterWarning() async {
+    String numberInput = _controller.text;
+
+    // Convert back to original format for API
+    numberInput = numberInput.split(',').join('.');
+    // 'time' is always initialized; no null check needed
     // if (note == '') {
     //   Message.showToastMessage(context, R.string.ban_chua_nhap_ghi_chu.tr());
     //   return;
@@ -905,14 +1013,21 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
 
     try {
       List<String> paths = [];
-      for (var file in files) {
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in (data.files)) {
+        // newly add from system
         paths.add(file.path);
       }
-      final result = await HbA1CClient().postIndexHbA1C(
-          (time.millisecondsSinceEpoch ~/ 1000).toInt(),
-          numberInput,
-          note,
-          paths);
+
+      // Use exact user-selected timestamp with milliseconds for uniqueness
+      // This approach is similar to BloodPressure and more reliable than static counter
+      final exactTimestamp = time.millisecondsSinceEpoch ~/ 1000;
+
+      print("HbA1C Submit - User Time: ${time.toIso8601String()}");
+      print("HbA1C Submit - Timestamp: $exactTimestamp");
+
+      final result = await HbA1CClient()
+          .postIndexHbA1C(exactTimestamp, numberInput, data.note, paths);
       if (result == true) {
         // await TrackingManager.analytics.logEvent(
         //   name: 'kpi_add_success',
@@ -924,8 +1039,22 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         // );
         HomeClient().completeSmartGoal(DateTime.now(), widget.goalId, 1,
             ScheduleType.hba1c_recommend.typeIndex);
-        Observable.instance
-            .notifyObservers([], notifyName: "hba1c_change_data");
+
+        // Mark user as not first time after successful HbA1C input
+        await AppStorages.setHbA1COnboardingCompleted();
+
+        // Notify listeners to refresh HbA1C lists
+        Observable.instance.notifyObservers(
+          [],
+          notifyName: "hba1c_change_data",
+          map: {'isNew': true},
+        );
+
+        BotToast.closeAllLoading();
+
+        // Navigate to result page
+        _navigateToResult(double.parse(numberInput), data.note, data.files);
+        return;
       }
 
       BotToast.closeAllLoading();
@@ -939,6 +1068,29 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     }
   }
 
+  void _navigateToResult(double hba1cValue, String note, List<dynamic> files) {
+    // Create result DTO
+    final resultDto = HbA1CResultDto.fromData(
+      id: '', // No ID for new records, will use parameters for analysis
+      hba1c: hba1cValue,
+      dateTime: time,
+      note: note,
+      files: files,
+      rangeValue:
+          rangeValue.map((e) => e / 10.0).toList(), // Convert back to double
+      rangeLabels: _rangeLabel,
+      colorList: _colorList,
+      isNew: true,
+      isFetchAnalysis: true,
+    );
+
+    // Navigate to result page
+    Navigator.of(context).pushReplacementNamed(
+      NavigatorName.add_hba1c_result,
+      arguments: resultDto,
+    );
+  }
+
   int findIndexInRanges(double number, List<int> ranges) {
     for (int i = 0; i < ranges.length - 1; i++) {
       if (number >= ranges[i] && number < ranges[i + 1]) {
@@ -949,268 +1101,279 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
     return ranges.length - 1;
   }
 
-  Widget _hba1cRange() {
-    double _number = 0;
+  String _getHbA1cLevelFromValue(double value) {
+    // Updated level names to match 4 ranges:
+    if (value < 5.7) return 'Lý tưởng';
+    if (value < 6.5) return 'Tốt';
+    if (value < 9.0) return 'Cao';
+    return 'Rất cao';
+  }
+
+  Color _getHbA1cColorFromValue(double value) {
+    // Updated color scheme matching dashboard and chart:
+    if (value < 5.7) {
+      // Lý tưởng - Light Green
+      return const Color(0xFF64E18E); // #64E18E
+    } else if (value < 6.5) {
+      // Tốt - Green
+      return const Color(0xFF23C559); // #23C559
+    } else if (value < 9.0) {
+      // Cao - Light Red
+      return const Color(0xFFF86F6F); // #F86F6F
+    } else {
+      // Rất cao - Dark Red
+      return const Color(0xFFD02424); // #D02424
+    }
+  }
+
+  /// Kiểm tra input HbA1c có hợp lệ không
+  /// Returns: Map với keys 'isValid' (bool), 'value' (double), 'isDangerous' (bool)
+  Map<String, dynamic> _validateHbA1cInput(String inputText) {
+    bool isValid = true;
+    double value = 0;
+    bool isDangerous = false;
+
     try {
-      _number = double.tryParse(_controller.text.replaceAll(",", ".") != ""
-              ? _controller.text.replaceAll(",", ".")
-              : "0")! *
-          10;
-    } catch (e) {}
-
-    int index = -1;
-    int indexRange = findIndexInRanges(_number, rangeValue);
-    num widthRange = (AppMediaQuery.deviceWidth - 64) / (rangeValue.length);
-    print('hihi widthRange: $widthRange');
-    num width = _number == 0 ? 0 : widthRange * (indexRange);
-
-    // lấy pxPerValue = max - min => 55 - 0
-    // lấy pxPerValue * value
-
-    if (_number != null && _number != 0) {
-      num min = rangeValue[indexRange];
-      print('hihi min: $min');
-      num max = indexRange + 1 >= rangeValue.length
-          ? rangeValue[indexRange] + min
-          : rangeValue[indexRange + 1];
-      print('hihi max: $max');
-      // giá trị từ 0 -> 55 sẽ nằm ở mức 0
-
-      // sau đó tính toán mỗi px trên 1 mức value
-      num maximumValue = max - min;
-      print('hihi maximumValue: $maximumValue');
-      num pxPerValue = widthRange / maximumValue;
-      print('hihi pxPerValue: $pxPerValue');
-      num widthPlus = pxPerValue * (_number - min);
-      print('hihi widthPlus: $widthPlus');
-      width += widthPlus;
-
-      width = width > (widthRange * rangeValue.length)
-          ? widthRange * rangeValue.length
-          : width;
-
-      //   print('hihi number: $number');
+      String cleanInput = inputText.replaceAll(",", ".");
+      if (cleanInput.isNotEmpty) {
+        double? parsedValue = double.tryParse(cleanInput);
+        if (parsedValue == null) {
+          isValid = false; // Ký tự không phải số
+        } else if (parsedValue > 30) {
+          isValid = false; // Số quá lớn (>30%)
+        } else {
+          value = parsedValue * 10; // Convert to internal format
+          isValid = true;
+          // Kiểm tra nguy hiểm: HbA1c >= 9%
+          isDangerous = parsedValue >= 9.0;
+        }
+      }
+    } catch (e) {
+      isValid = false;
     }
 
-    return SpacingColumn(
-      spacing: 30,
-      children: [
-        if (_number != 0)
-          RichText(
-            text: TextSpan(
-              text: 'HbA1c đang ở mức ',
-              style: TextStyle(
-                  color: R.color.textDark,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16),
-              children: <TextSpan>[
-                TextSpan(
-                  text: '“${_rangeLabel[indexRange]}”',
-                  style: TextStyle(
-                    color: _colorList[indexRange],
-                    fontWeight: FontWeight.w700,
+    return {
+      'isValid': isValid,
+      'value': value,
+      'isDangerous': isDangerous,
+    };
+  }
+
+  /// Hiển thị popup cảnh báo HbA1c nguy hiểm
+  void _showHbA1cWarningPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return HbA1cWarningPopup(
+          onReInput: () {
+            Navigator.of(context).pop();
+            // Focus vào input field để user nhập lại
+            FocusScope.of(context).requestFocus(_focusNode);
+          },
+          onConfirm: () {
+            Navigator.of(context).pop();
+            // Tiếp tục submit data sau khi user đã hiểu
+            _submitDataAfterWarning();
+          },
+        );
+      },
+    );
+  }
+
+  /// Hiển thị popup cảnh báo HbA1c nguy hiểm cho edit
+  void _showHbA1cEditWarningPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return HbA1cWarningPopup(
+          onReInput: () {
+            Navigator.of(context).pop();
+            // Focus vào input field để user nhập lại
+            FocusScope.of(context).requestFocus(_focusNode);
+          },
+          onConfirm: () {
+            Navigator.of(context).pop();
+            // Tiếp tục edit data sau khi user đã hiểu
+            _editDataAfterWarning();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _hba1cRange() {
+    // Sử dụng hàm validation
+    final validationResult = _validateHbA1cInput(_controller.text);
+    final bool _isValidInput = validationResult['isValid'];
+    final double _number = validationResult['value'];
+
+    int indexRange = _isValidInput ? findIndexInRanges(_number, rangeValue) : 0;
+
+    // Calculate width for each range segment
+    double totalWidth =
+        AppMediaQuery.deviceWidth - 48; // 24px padding on each side
+    double segmentWidth = totalWidth / 4; // 4 segments
+
+    // Calculate arrow position
+    double arrowPosition = 0;
+    if (_number != 0 && _isValidInput) {
+      // Calculate position within the current range
+      double min = rangeValue[indexRange].toDouble();
+      double max = indexRange + 1 >= rangeValue.length
+          ? rangeValue[indexRange] + 50.0 // fallback for last segment
+          : rangeValue[indexRange + 1].toDouble();
+
+      double positionInSegment = (_number - min) / (max - min);
+      arrowPosition =
+          (indexRange * segmentWidth) + (positionInSegment * segmentWidth);
+
+      // Ensure arrow stays within bounds - limit to range bar width
+      arrowPosition =
+          arrowPosition.clamp(0.0, totalWidth - 40); // 40 = arrow icon width
+    }
+
+    return Container(
+      margin:
+          const EdgeInsets.only(top: 16), // 50px margin top from line height
+      child: Column(
+        children: [
+          // Status text
+          if (_controller.text.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: !_isValidInput
+                  ? Text(
+                      'Chỉ số không hợp lệ!',
+                      style: TextStyle(
+                        color: Color(0xFFFF3C3C),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: R.font.sfpro,
+                      ),
+                    )
+                  : RichText(
+                      text: TextSpan(
+                        text: 'HbA1c đang ở mức ',
+                        style: TextStyle(
+                            fontFamily: R.font.sfpro,
+                            color: R.color.textDark,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16),
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: '"${_rangeLabel[indexRange]}"',
+                            style: TextStyle(
+                              color: _colorList[indexRange],
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+
+          // Range bar with arrow
+          Container(
+            height: 84,
+            child: Stack(
+              children: [
+                // Arrow pointing down to current value
+                Positioned(
+                  left: (() {
+                    // Keep arrow fully visible within the range width
+                    // Calculate left position with arrow centered
+                    double leftPosition =
+                        arrowPosition - 20; // 20 = half arrow width
+
+                    // Clamp to keep arrow within visible bounds
+                    // Left boundary: -14 (small negative offset for start position)
+                    // Right boundary: totalWidth - 40 (full arrow width from right edge)
+                    return leftPosition.clamp(-14.0, totalWidth - 40.0);
+                  })(),
+                  top: -10,
+                  child: Icon(
+                    Icons.arrow_drop_down_rounded,
+                    size: 40,
+                    color: Colors.black87,
+                  ),
+                ),
+
+                // Percentage labels below the range bar
+                Positioned(
+                  top: 60,
+                  left: 0,
+                  right: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 30,
+                        alignment: Alignment.center,
+                        child: Text(
+                          '6.5%',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: R.font.sfpro,
+                            color: R.color.textDark,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 30,
+                        alignment: Alignment.center,
+                        child: Text(
+                          '7%',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: R.font.sfpro,
+                            color: R.color.textDark,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 30,
+                        alignment: Alignment.center,
+                        child: Text(
+                          '8%',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: R.font.sfpro,
+                            color: R.color.textDark,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Color segments (at the bottom)
+                Positioned(
+                  top: 45,
+                  left: 0,
+                  right: 0,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Row(
+                      children: List.generate(4, (index) {
+                        return Container(
+                          height: 8,
+                          width: segmentWidth,
+                          color: _colorList[index],
+                        );
+                      }),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Row(
-                  children: _colorList.map(
-                    (e) {
-                      index++;
-                      return Container(
-                        height: 8,
-                        width: widthRange.toDouble(),
-                        color: _colorList[index],
-                      );
-                    },
-                  ).toList(),
-                ),
-              ),
-            ),
-            Positioned(
-              left: width.toDouble() - 20,
-              bottom: 40,
-              child: Container(
-                  child: Icon(Icons.arrow_drop_down_rounded, size: 40)),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 20,
-              child: Row(
-                  children: rangeValue
-                      .map(
-                        (e) => Expanded(
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              SizedBox(),
-                              Positioned(
-                                left: e.toString().length == 2 ? -9 : -7,
-                                child: Text('${e == 0 ? '' : '${e / 10}%'}'),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList()),
-            ),
-            Positioned(
-              left: -3,
-              right: 0,
-              bottom: 25,
-              child: Row(
-                  children: rangeValue
-                      .map(
-                        (e) => Expanded(
-                          child: Container(
-                            width: 30,
-                            child: Text(
-                              '|',
-                              style: TextStyle(
-                                color: e == 0
-                                    ? Colors.transparent
-                                    : Color(0xFFD7D7D7),
-                                fontSize: 10,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList()),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  showActionSheet(BuildContext context) {
-    FocusScope.of(context).unfocus();
-    if (files.length < maxMedia) {
-      final action = CupertinoActionSheet(
-        actions: <Widget>[
-          CupertinoActionSheetAction(
-            child: Padding(
-              padding: EdgeInsets.only(left: 8, right: 8),
-              child: Row(
-                children: [
-                  Image.asset(R.drawable.ic_photo, width: 24, height: 24),
-                  SizedBox(width: 16),
-                  Text(R.string.chon_trong_thu_vien.tr(),
-                      style: TextStyle(
-                          color: R.color.color0xff333333, fontSize: 14)),
-                ],
-              ),
-            ),
-            onPressed: () {
-              _openGallery(context);
-              Navigator.pop(context);
-            },
-          ),
-          CupertinoActionSheetAction(
-            child: Padding(
-              padding: EdgeInsets.only(left: 8, right: 8),
-              child: Row(
-                children: [
-                  Image.asset(R.drawable.ic_camera_black,
-                      width: 24, height: 24),
-                  SizedBox(width: 16),
-                  Text(R.string.chup_anh.tr(),
-                      style: TextStyle(
-                          color: R.color.color0xff333333, fontSize: 14)),
-                ],
-              ),
-            ),
-            onPressed: () {
-              _openCamera(context);
-              Navigator.pop(context);
-            },
-          )
         ],
-        cancelButton: CupertinoActionSheetAction(
-          child: Text(R.string.cancel.tr(),
-              style: TextStyle(color: R.color.color0xff333333, fontSize: 14)),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      );
-      showCupertinoModalPopup(context: context, builder: (context) => action);
-    } else {
-      //Message.showToastMessage(context, R.string.max_image_select.tr());
-    }
-  }
-
-  _openCamera(BuildContext context) async {
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(
-          maxWidth: 512,
-          maxHeight: 512,
-          source: ImageSource.camera,
-          preferredCameraDevice: CameraDevice.rear);
-      if (pickedFile != null) {
-        files.add(pickedFile);
-
-        setState(() {});
-      }
-    } catch (_) {
-      showAlertDialog(context);
-    }
-  }
-
-  _openGallery(BuildContext context) async {
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(
-          maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
-      if (pickedFile != null) {
-        files.add(pickedFile);
-
-        setState(() {});
-      }
-    } catch (_) {
-      showAlertDialog(context);
-    }
-  }
-
-  showAlertDialog(BuildContext context) {
-    Widget cancelButton = TextButton(
-      child: Text(R.string.cancel.tr()),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text(R.string.allowed.tr()),
-      onPressed: () {
-        Navigator.pop(context);
-        openAppSettings();
-      },
-    );
-
-    AlertDialog alert = AlertDialog(
-      title: Text(R.string.notification.tr()),
-      content: Text(R.string.ask_for_permission.tr()),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
+      ),
     );
   }
 }
@@ -1226,14 +1389,24 @@ class DateMultiPicker extends StatefulWidget {
 }
 
 class _DateMultiPickerState extends State<DateMultiPicker> {
-  DateTime? selectedDate = DateTime.now();
+  DateTime? selectedDate;
+  int selectedHour = DateTime.now().hour;
+  int selectedMinute = DateTime.now().minute;
+  final GlobalKey<CustomTimePickerState> _calendarDatePickerKey =
+      GlobalKey<CustomTimePickerState>();
 
   @override
   void initState() {
+    super.initState();
     if (widget.initDate != null) {
       selectedDate = widget.initDate;
+      selectedHour = widget.initDate!.hour;
+      selectedMinute = widget.initDate!.minute;
+    } else {
+      selectedDate = DateTime.now();
+      selectedHour = DateTime.now().hour;
+      selectedMinute = DateTime.now().minute;
     }
-    super.initState();
   }
 
   @override
@@ -1282,9 +1455,33 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
-                          // setState(() {
-                          selectedDate = datetime;
-                          // });
+                          selectedDate = datetime ?? DateTime.now();
+                          if (_calendarDatePickerKey.currentState != null) {
+                            _calendarDatePickerKey.currentState!
+                                .setSelectedDate(selectedDate!);
+                          }
+                        }),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Text(R.string.pick_time.tr(),
+                            style: TextStyle(
+                                color: R.color.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    CustomTimePicker(
+                        key: _calendarDatePickerKey,
+                        initSelectedDate: selectedDate,
+                        selectedHour: selectedHour,
+                        selectedMinute: selectedMinute,
+                        callback: (hour, minute) {
+                          selectedHour = hour ?? DateTime.now().hour;
+                          selectedMinute = minute ?? DateTime.now().minute;
                         }),
                     SizedBox(height: 20),
                     Row(children: [
@@ -1295,29 +1492,41 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             Navigator.pop(context);
                           },
                           child: Container(
-                              height: 43,
-                              decoration: BoxDecoration(
-                                  color: R.color.grayBorder,
-                                  borderRadius: BorderRadius.circular(21.5)),
-                              child: Center(
-                                  child: Text(R.string.cancel.tr(),
-                                      style: TextStyle(
-                                          color: R.color.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700)))),
+                            height: 43,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(21.5),
+                              border: Border.all(
+                                  color: R.color.greenGradientBottom),
+                            ),
+                            child: Center(
+                              child: Text(R.string.cancel.tr(),
+                                  style: TextStyle(
+                                      color: R.color.greenGradientBottom,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700)),
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(width: 16),
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
+                            selectedDate = DateTime(
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
+                                selectedHour,
+                                selectedMinute);
+
                             widget.callback!(selectedDate);
+
                             Navigator.pop(context);
                           },
                           child: Container(
                               height: 43,
                               decoration: BoxDecoration(
-                                  color: R.color.mainColor,
+                                  color: R.color.greenGradientBottom,
                                   borderRadius: BorderRadius.circular(21.5)),
                               child: Center(
                                   child: Text(R.string.yes.tr(),
@@ -1337,6 +1546,145 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
           ),
         ),
       ),
+    );
+  }
+}
+
+typedef TimeHourCallback = Function(int?, int?);
+
+class CustomTimePicker extends StatefulWidget {
+  final int? selectedHour;
+  final int? selectedMinute;
+  final TimeHourCallback? callback;
+  final DateTime? initSelectedDate;
+  CustomTimePicker(
+      {Key? key,
+      this.selectedHour,
+      this.selectedMinute,
+      this.callback,
+      this.initSelectedDate})
+      : super(key: key);
+  @override
+  CustomTimePickerState createState() => CustomTimePickerState();
+}
+
+class CustomTimePickerState extends State<CustomTimePicker> {
+  FixedExtentScrollController? hourController;
+  FixedExtentScrollController? minuteController;
+  int? selectedHour = 1;
+  int? selectedMinute = 1;
+  DateTime now = DateTime.now();
+  DateTime? selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = widget.initSelectedDate;
+    selectedHour = now.hour;
+    selectedMinute = now.minute;
+    if (widget.selectedHour != null) {
+      selectedHour = widget.selectedHour;
+    }
+    if (widget.selectedMinute != null) {
+      selectedMinute = widget.selectedMinute;
+    }
+    hourController = FixedExtentScrollController(initialItem: selectedHour!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
+  }
+
+  void setSelectedDate(DateTime date) {
+    selectedDate = date;
+    if (_isTimeInFuture(selectedHour!, selectedMinute!)) {
+      selectedHour = now.hour;
+      selectedMinute = now.minute;
+      hourController!.jumpToItem(selectedHour!);
+      minuteController!.jumpToItem(selectedMinute!);
+    }
+    setState(() {});
+  }
+
+  // Check if a time is in the future
+  bool _isTimeInFuture(int hour, int minute) {
+    final now = DateTime.now();
+    if (selectedDate != null &&
+        selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
+      return false;
+    }
+    return now.hour < hour || (now.hour == hour && now.minute < minute);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+            height: 150,
+            width: 106,
+            child: CupertinoPicker(
+                scrollController: hourController,
+                selectionOverlay: null,
+                onSelectedItemChanged: (value) {
+                  setState(() {
+                    // Prevent selecting future hours on current date
+                    if (_isTimeInFuture(value, selectedMinute ?? 0)) {
+                      // Reset to current hour and minute
+                      selectedHour = now.hour;
+                      selectedMinute = now.minute;
+                      hourController!.jumpToItem(selectedHour!);
+                      minuteController!.jumpToItem(selectedMinute!);
+                    } else {
+                      selectedHour = value;
+                      widget.callback!(selectedHour, selectedMinute);
+                    }
+                  });
+                },
+                itemExtent: 47.0,
+                children: List<int>.generate(24, (i) => i)
+                    .map((e) => Center(
+                          child: Text(e.toString().length == 1 ? '0$e' : '$e',
+                              style: TextStyle(
+                                  color: selectedHour == e
+                                      ? R.color.greenGradientBottom
+                                      : R.color.color0xffC0C2C5,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold)),
+                        ))
+                    .toList())),
+        SizedBox(width: 24),
+        Container(
+            height: 150,
+            width: 106,
+            child: CupertinoPicker(
+                scrollController: minuteController,
+                selectionOverlay: null,
+                onSelectedItemChanged: (value) {
+                  setState(() {
+                    // Prevent selecting future minutes in the current hour
+                    if (_isTimeInFuture(selectedHour ?? 0, value)) {
+                      // Reset to current minute
+                      selectedMinute = now.minute;
+                      minuteController!.jumpToItem(selectedMinute!);
+                    } else {
+                      selectedMinute = value;
+                      widget.callback!(selectedHour, selectedMinute);
+                    }
+                  });
+                },
+                itemExtent: 47.0,
+                children: List<int>.generate(60, (i) => i)
+                    .map((e) => Center(
+                          child: Text(e.toString().length == 1 ? '0$e' : '$e',
+                              style: TextStyle(
+                                  color: selectedMinute == e
+                                      ? R.color.greenGradientBottom
+                                      : R.color.color0xffC0C2C5,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold)),
+                        ))
+                    .toList()))
+      ],
     );
   }
 }

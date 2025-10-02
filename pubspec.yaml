@@ -229,6 +229,7 @@ flutter:
     - lib/res/drawables/bloodpressure/
     - lib/res/drawables/tab/
     - lib/res/drawables/zoom/
+    - lib/res/drawables/hba1c/
     - lib/res/translations/
     - lib/res/generated/
     - lib/res/icons/

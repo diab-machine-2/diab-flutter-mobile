@@ -64,6 +64,9 @@ class Colors {
   Color get grey_2 => Color(0xff787A7D);
   Color get main_6 => Color(0xFFE4F5F5);
   Color get attentionText => Color(0xffAF0000);
+  Color get hba1c_detail_text => Color(0xffAF0000);
+  Color get hba1c_desc_delete_text => Color(0xff787A7D);
+  Color get hba1c_text_color => Color(0xff666666);
   Color get blue_6 => Color(0xffD5EFFF);
   Color get labelColor => Color(0xff3C3C43);
   Color get orange_1 => Color(0xffF58220);

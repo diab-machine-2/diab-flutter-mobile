@@ -549,9 +549,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? _convertHexStringToInt(model!.hbA1CIndex.color!)
           : _noValueColor,
       unit: model?.hbA1CIndex.unit ?? "%",
-      navigatorName:
-          haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
-      args: haveHba1c ? null : {'type': 'input'},
+      navigatorName: haveHba1c
+          ? NavigatorName.detail_hba1c
+          : NavigatorName.hba1c_intro_1st_page,
+      args: null,
     );
 
     // Weight

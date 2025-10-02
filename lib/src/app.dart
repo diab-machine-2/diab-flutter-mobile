@@ -42,8 +42,14 @@ import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.d
 import 'package:medical/src/widget/Food/add_food.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_dashboard.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
+import 'package:medical/src/widget/HbA1C/add_hba1c_result.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_detail_page.dart';
+import 'package:medical/src/widget/HbA1C/intro/hba1c_intro_1st_page.dart';
+import 'package:medical/src/widget/HbA1C/intro/hba1c_intro_2nd_page.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_result.dto.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
@@ -285,6 +291,32 @@ class App extends StatelessWidget {
                   case NavigatorName.detail_hba1c:
                     return _buildRoute(settings, Hba1cDetailTabbarController(),
                         isPresent: false);
+                  case NavigatorName.hba1c_dashboard:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        HbA1cDashboard(
+                          currentValue: data?['currentValue'],
+                          currentLevel: data?['currentLevel'],
+                          currentColor: data?['currentColor'],
+                        ));
+                  case NavigatorName.hba1c_intro_1st_page:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings, HbA1cIntro1stPage(goalId: data?['goalId']));
+                  case NavigatorName.hba1c_intro_2nd_page:
+                    return _buildRoute(settings, HbA1cIntro2ndPage());
+                  case NavigatorName.hba1c_detail_page:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        HbA1cDetailPage(
+                            initPeriodFilterType:
+                                data?['initPeriodFilterType']));
+                  case NavigatorName.add_hba1c_result:
+                    final data = settings.arguments as HbA1CResultDto?;
+                    return _buildRoute(
+                        settings, PageAddHbA1CResult(data: data!));
                   case NavigatorName.detail_exercrises:
                     return _buildRoute(
                         settings, ExercrisesDetailTabbarController(),

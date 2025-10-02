@@ -28,6 +28,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -366,7 +367,8 @@ class _HomeControllerState extends State<HomeController>
     }
     if (notifyName == 'hba1c_change_data') {
       _refresh();
-      _checkScreen(NavigatorName.detail_hba1c);
+      // Only refresh data, don't auto-navigate as it disrupts user experience
+      // User can manually navigate to HbA1C when they want to see it
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
       _refresh();
@@ -677,6 +679,8 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () =>
                                 _showAddMeasurement(context),
                             onHealthProfile: () {},
+                            onHbA1cTap:
+                                MeasurementSummary.createHbA1cCallback(context),
                             onMeasurement: (routeName, args, title) async {
                               // track event
                               final String eventName = "home_select_kpi";
@@ -706,6 +710,14 @@ class _HomeControllerState extends State<HomeController>
                               if (await _showExercriseAddBottomSheet(
                                       routeName) ==
                                   false) {
+                                return;
+                              }
+                              // case HbA1C navigation with data checking
+                              if (routeName == NavigatorName.detail_hba1c ||
+                                  (title != null &&
+                                      title.toLowerCase().contains('hba1c'))) {
+                                await HbA1cNavigationHelper.navigateToHbA1C(
+                                    context);
                                 return;
                               }
                               // others
