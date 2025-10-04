@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/widgets/bmi_overview_ai_evaluation.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/widgets/bmi_overview_app_bar.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/widgets/bmi_overview_evaluated_chart_session.dart';
@@ -122,7 +125,14 @@ class _BottomActionButtons extends StatelessWidget {
                   //   context,
                   //   (route) => route.settings.name == NavigatorName.add_bmi,
                   // );
-                  Navigator.pop(context);
+                  // Navigator.pop(context);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      NavigatorName.add_bmi,
+                      (route) => route.settings.name == NavigatorName.tabbar,
+                      arguments: {
+                        AddBmiPage.bmiBlocKey: context.read<BmiBloc>(),
+                      });
                 },
               ),
             ),

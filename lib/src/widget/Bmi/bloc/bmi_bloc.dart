@@ -301,12 +301,26 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiInstructionFetchingEvent());
     add(BmiGetWeightLessonsEvent());
 
-    // add(BmiGetBmiStatisticalEvent());
     add(BmiGetWeightStatisticalEvent());
     add(BmiGetWaistStatisticalEvent());
 
     Future.delayed(Duration(milliseconds: 1000))
         .then((value) => add(BmiGetAIAnalysicEvent()));
+  }
+
+  Future<bool> checkRecordExisted() async {
+    _currentTime = DateTime.now();
+    final response = await _weightRepository.getWeightStatisticalData(
+      currentTime: _currentTime.millisecondsSinceEpoch,
+      periodFilterType: BmiDateFilterType.threeMonths.requestValue,
+      page: 1,
+    );
+    add(BmiGetBmiStatisticalEvent(_currentTime));
+
+    return response.when(
+      success: (data) => data.trendItems?.isNotEmpty ?? false,
+      failure: (error) => false,
+    );
   }
 
   void changePeriodTime(BmiDateFilterType period,

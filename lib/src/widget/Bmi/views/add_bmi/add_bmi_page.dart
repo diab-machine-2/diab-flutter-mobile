@@ -31,11 +31,13 @@ class AddBmiPage extends StatefulWidget {
 
 class _AddBmiPageState extends State<AddBmiPage> {
   late BmiInputBloc _bmiInputBloc;
+  late BmiBloc _bmiBloc;
 
   @override
   void initState() {
     super.initState();
     _bmiInputBloc = context.read();
+    _bmiBloc = context.read();
   }
 
   @override
@@ -43,7 +45,9 @@ class _AddBmiPageState extends State<AddBmiPage> {
     super.didChangeDependencies();
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     double initialCurrentHeight =
-        arguments[AddBmiPage.bmiInputCurrentHeightKey];
+        arguments[AddBmiPage.bmiInputCurrentHeightKey] ??
+            _bmiBloc.height ??
+            0.0;
     _bmiInputBloc.currentHeight = initialCurrentHeight;
   }
 

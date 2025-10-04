@@ -3,11 +3,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_routes.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
-import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/theme/app_theme.dart';
 import 'package:medical/src/utils/app_log.dart';
@@ -19,7 +19,6 @@ import 'package:medical/src/widget/BloodSugar/bloodSugar_detail_tabbar_v2.dart';
 import 'package:medical/src/widget/BloodSugar/bloodSugar_table_distribution.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table_compare.dart';
-import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bmi_detail_tabbar.dart';
 import 'package:medical/src/widget/Emotion/emotion_detail_tabbar.dart';
 import 'package:medical/src/widget/Emotion/widget/add_emo.dart';
@@ -28,6 +27,7 @@ import 'package:medical/src/widget/Emotion/widget/add_symbo.dart';
 import 'package:medical/src/widget/Emotion/widget/add_work.dart';
 import 'package:medical/src/widget/Emotion/widget/emotion_table.dart';
 import 'package:medical/src/widget/Exercrises/add_exercrises.dart';
+import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_add_v2.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_dashboard.dart';
@@ -37,15 +37,12 @@ import 'package:medical/src/widget/Exercrises/exercrises_guide.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_result.dart';
 import 'package:medical/src/widget/Exercrises/input_detail_exercrise.dart';
 import 'package:medical/src/widget/Exercrises/search_exercrises.dart';
-import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
-import 'package:medical/src/widget/Exercrises/widget/exercrises_contain_detail.dart';
 import 'package:medical/src/widget/Food/add_food.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/add_hba1c.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail_tabbar.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/base/base_state.dart';
-import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
 import 'package:medical/src/widget/calendar/interview_success.dart';
@@ -67,9 +64,9 @@ import 'package:medical/src/widget/login/step_list.dart';
 import 'package:medical/src/widget/login/update_info.dart';
 import 'package:medical/src/widget/login/verify_phone.dart';
 import 'package:medical/src/widget/meeting/meeting_page.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/nipro/connect_device_app.dart';
 import 'package:medical/src/widget/nipro/connection_instructions.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/notification/notification_detail.dart';
 import 'package:medical/src/widget/notification/notification_tabbar.dart';
 import 'package:medical/src/widget/profile/add_reminder.dart';
@@ -91,7 +88,7 @@ import 'package:medical/src/widget/tabbar/tabbar.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:flutter_in_app_pip/flutter_in_app_pip.dart';
+
 import 'utils/navigator_name.dart';
 import 'widget/BloodSugar/add_bloodSugar_new.dart';
 import 'widget/helper/photo_view.dart';
@@ -401,20 +398,20 @@ class App extends StatelessWidget {
                   case NavigatorName.bmi:
                     return _buildRoute(settings, FoodDetailTabbarController(),
                         isPresent: true);
-                  case NavigatorName.add_bmi:
-                    final data = settings.arguments as Map<String, dynamic>?;
-                    return _buildRoute(
-                        settings,
-                        BlocProvider(
-                          create: (_) => BmiBloc(WeightRepository.instance),
-                          child: BmiOnBoardingPage(
-                            // AddBmiController(
-                            type: data?['type'],
-                            id: data?['id'],
-                            goalId: data?['goalId'],
-                            isCurrentBmi: data?['isCurrentBmi'],
-                          ),
-                        ));
+                  // case NavigatorName.add_bmi:
+                  //   final data = settings.arguments as Map<String, dynamic>?;
+                  //   return _buildRoute(
+                  //       settings,
+                  //       BlocProvider(
+                  //         create: (_) => BmiBloc(WeightRepository.instance),
+                  //         child: BmiOnBoardingPage(
+                  //           // AddBmiController(
+                  //           type: data?['type'],
+                  //           id: data?['id'],
+                  //           goalId: data?['goalId'],
+                  //           isCurrentBmi: data?['isCurrentBmi'],
+                  //         ),
+                  //       ));
                   case NavigatorName.add_emo:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(

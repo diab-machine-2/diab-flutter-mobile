@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
@@ -25,7 +24,6 @@ import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistica
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/custom_dialog.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 
 // import 'widgets/bloodpresure_lesson_section.dart';
 
@@ -45,6 +43,8 @@ class BmiOnBoardingPage extends StatefulWidget {
 
   @override
   State<BmiOnBoardingPage> createState() => _BmiOnBoardingPageState();
+
+  static const String bmiBlocKey = "bmi_bloc_key";
 }
 
 class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
@@ -95,15 +95,7 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<BmiBloc, BmiState>(
         buildWhen: (_, state) => state is BmiGetWeightStatisticalState,
-        listener: (context, state) {
-          if (state is BmiGetWeightStatisticalState) {
-            if (state.data.isLoading) {
-              CustomDialog.showLoadingDialog(context);
-            } else {
-              CustomDialog.hideLoadingDialog(context);
-            }
-          }
-        },
+        listener: _handleListener,
         builder: (context, state) {
           return Scaffold(
             backgroundColor: R.color.glucose_bg_color,
@@ -163,55 +155,84 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
         });
   }
 
-  Widget _buildPinnedLessonsSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              R.string.bloodpressure_intro_help_title.tr(),
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                height: 24 / 18,
-                color: R.color.dark,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          if (_pinedLessons.isNotEmpty) ...[
-            Row(
-              children: [
-                Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
-                const SizedBox(width: 8),
-                Expanded(
-                    child: _pinedLessons.length > 1
-                        ? _buildPinnedLessonItem(_pinedLessons[1])
-                        : const SizedBox()),
-              ],
-            ),
-            const SizedBox(height: 8),
-          ],
-          if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
-            Row(
-              children: [
-                Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
-                const SizedBox(width: 8),
-                Expanded(
-                    child: _pinedLessons.length > 3
-                        ? _buildPinnedLessonItem(_pinedLessons[3])
-                        : const SizedBox()),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
+  void _handleListener(BuildContext context, BmiState state) {
+    if (state is BmiGetWeightStatisticalState) {
+      if (state.data.isLoading) {
+        CustomDialog.showLoadingDialog(context);
+      } else {
+        CustomDialog.hideLoadingDialog(context);
+      }
+    }
   }
+
+  // void _redirectToInputPage(BuildContext context) async {
+  //   BmiBloc bmiBloc = context.read();
+
+  //   final result = await Navigator.pushNamed(
+  //     context,
+  //     NavigatorName.bmiInputPage,
+  //     arguments: {
+  //       AddBmiPage.bmiInputCurrentHeightKey: bmiBloc.height!,
+  //       AddBmiPage.bmiBlocKey: bmiBloc,
+  //     },
+  //   );
+
+  //   if (result == true) {
+  //     bmiBloc
+  //       ..hasNewData = true
+  //       ..init();
+  //   }
+  // }
+
+  // Widget _buildPinnedLessonsSection() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 12),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 16),
+  //           child: Text(
+  //             R.string.bloodpressure_intro_help_title.tr(),
+  //             style: TextStyle(
+  //               fontSize: 18,
+  //               fontWeight: FontWeight.w700,
+  //               height: 24 / 18,
+  //               color: R.color.dark,
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         if (_pinedLessons.isNotEmpty) ...[
+  //           Row(
+  //             children: [
+  //               Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
+  //               const SizedBox(width: 8),
+  //               Expanded(
+  //                   child: _pinedLessons.length > 1
+  //                       ? _buildPinnedLessonItem(_pinedLessons[1])
+  //                       : const SizedBox()),
+  //             ],
+  //           ),
+  //           const SizedBox(height: 8),
+  //         ],
+  //         if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+  //           Row(
+  //             children: [
+  //               Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
+  //               const SizedBox(width: 8),
+  //               Expanded(
+  //                   child: _pinedLessons.length > 3
+  //                       ? _buildPinnedLessonItem(_pinedLessons[3])
+  //                       : const SizedBox()),
+  //             ],
+  //           ),
+  //         ],
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Widget _buildLessonSection() {
   //   return Padding(
@@ -223,45 +244,45 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
   //   );
   // }
 
-  Widget _buildPinnedLessonItem(BloodPressureLesson lesson) {
-    String title = lesson.name;
-    String? imageUrl = lesson.imageUrl;
-    return InkWell(
-      onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        height: 152.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          border: Border.all(color: R.color.grayComponentBorder),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NetWorkImageWidget(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              width: 72,
-              height: 72,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                height: 20 / 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _buildPinnedLessonItem(BloodPressureLesson lesson) {
+  //   String title = lesson.name;
+  //   String? imageUrl = lesson.imageUrl;
+  //   return InkWell(
+  //     onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
+  //     child: Container(
+  //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+  //       height: 152.h,
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.all(Radius.circular(16)),
+  //         border: Border.all(color: R.color.grayComponentBorder),
+  //       ),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           NetWorkImageWidget(
+  //             imageUrl: imageUrl,
+  //             fit: BoxFit.cover,
+  //             width: 72,
+  //             height: 72,
+  //           ),
+  //           const SizedBox(height: 8),
+  //           Text(
+  //             title,
+  //             textAlign: TextAlign.center,
+  //             style: TextStyle(
+  //               fontSize: 14,
+  //               height: 20 / 14,
+  //               fontWeight: FontWeight.w400,
+  //               color: R.color.primaryGreyColor,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 class _BottomBar extends StatelessWidget {

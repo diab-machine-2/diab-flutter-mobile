@@ -8,6 +8,7 @@ import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
@@ -49,9 +50,14 @@ class AppRoutes {
               isRedirectFromNotification = data!['isRedirectFromNotification'];
             }
           }
-          page = TabbarController(
-            sharedCode: sharedCode,
-            isRedirectFromNotification: isRedirectFromNotification,
+
+          // Wrap with Weight (BMI) Bloc
+          page = BlocProvider(
+            create: (_) => BmiBloc(WeightRepository.instance),
+            child: TabbarController(
+              sharedCode: sharedCode,
+              isRedirectFromNotification: isRedirectFromNotification,
+            ),
           );
           break;
         }
@@ -149,6 +155,17 @@ class AppRoutes {
         );
         break;
       // ~ END: Huyet Ap (mới) ~
+      case NavigatorName.add_bmi:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BlocProvider<BmiBloc>.value(
+          value: data?[BmiOnBoardingPage.bmiBlocKey],
+          child: BmiOnBoardingPage(
+            type: data?['type'],
+            id: data?['id'],
+            goalId: data?['goalId'],
+            isCurrentBmi: data?['isCurrentBmi'],
+          ),
+        );
       case NavigatorName.bmiInputPage:
         final data = settings.arguments as Map<String, dynamic>?;
         page = MultiBlocProvider(

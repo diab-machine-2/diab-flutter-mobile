@@ -2,11 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 typedef MeasurementCallback = void Function(
-    String? routeName, dynamic args, String title);
+    String? routeName, Map<String, dynamic>? args, String title);
 
 class MeasurementSummary extends StatelessWidget {
   const MeasurementSummary({

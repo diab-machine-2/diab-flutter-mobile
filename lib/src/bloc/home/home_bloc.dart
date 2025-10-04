@@ -42,6 +42,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeLoaded? _cached;
   bool _firstLoad = false;
 
+  // weight
+  bool _hasWeightData = false;
+  bool get hasWeightData => _hasWeightData;
+  set hasWeightData(bool value) => _hasWeightData = value;
+
   int get _currentWeek {
     if (AppSettings.userInfo?.ownPackage?.ownRoadmap?.currentWeek != null) {
       int week = AppSettings.userInfo!.ownPackage!.ownRoadmap!.currentWeek!;
@@ -482,6 +487,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   List<HomeMeasurementIndex> getAllMeasurements() {
+    String weightNavigatorName =
+        _hasWeightData ? NavigatorName.bmiInputPage : NavigatorName.add_bmi;
+
     return [
       HomeMeasurementIndex(
         title: R.string.duong_huyet.tr(),
@@ -522,7 +530,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeMeasurementIndex(
         title: R.string.can_nang.tr(),
         icon: R.drawable.ic_home_measurement_weight,
-        navigatorName: NavigatorName.add_bmi,
+        navigatorName: weightNavigatorName,
         args: {'type': 'input'},
       ),
     ];
