@@ -22,6 +22,7 @@ import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_onboard
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_post_session.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/custom_dialog.dart';
 
@@ -312,7 +313,8 @@ class _BottomBar extends StatelessWidget {
               onPressed: () {
                 BmiInputTypeBottomSheet.show(
                   context,
-                  onManualInputSelected: () => _onSelectMethodInput(context),
+                  onManualInputSelected: () => onManualInputSelected(context),
+                  onAutoInputSelected: () => _onAutoInputSelected(context),
                 ).then((value) {
                   if (value == true) {
                     bmiBloc
@@ -328,7 +330,7 @@ class _BottomBar extends StatelessWidget {
     );
   }
 
-  void _onSelectMethodInput(BuildContext context) {
+  void onManualInputSelected(BuildContext context) {
     BmiBloc bmiBloc = context.read();
 
     if (bmiBloc.height != null) {
@@ -341,6 +343,13 @@ class _BottomBar extends StatelessWidget {
         },
       );
     }
+  }
+
+  void _onAutoInputSelected(BuildContext context) {
+    RequestHealthConnect.showModal(
+      context,
+      callback: () => Navigator.pop(context),
+    );
   }
 
   void _redirectToInputPage(

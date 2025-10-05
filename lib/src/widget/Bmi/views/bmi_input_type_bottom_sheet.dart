@@ -1,23 +1,24 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
 import 'package:medical/res/text_styles_extension.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 
 class BmiInputTypeBottomSheet {
   static Future show(
     BuildContext context, {
     Function()? onManualInputSelected,
+    Function()? onAutoInputSelected,
   }) {
     return showModalBottomSheet(
         context: context,
         builder: (context) => _BmiInputTypeBottomSheetView(
               onManualInputSelected: onManualInputSelected,
+              onAutoInputSelected: onAutoInputSelected,
             ),
         backgroundColor: Colors.transparent,
         useRootNavigator: true);
@@ -28,9 +29,11 @@ class _BmiInputTypeBottomSheetView extends StatelessWidget {
   const _BmiInputTypeBottomSheetView({
     super.key,
     this.onManualInputSelected,
+    this.onAutoInputSelected,
   });
 
   final Function()? onManualInputSelected;
+  final Function()? onAutoInputSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -73,22 +76,12 @@ class _BmiInputTypeBottomSheetView extends StatelessWidget {
           _BmiInputOptionItem(
             name: R.string.connect_from_Health_Connect.tr(),
             description: R.string.enter_healt_connect_details.tr(),
-            image: R.drawable.logo_healthConnect,
-            onTap: () async {
-              if (await AppSettings.getLastOpenedBloodPressureInputType() ==
-                  null) {
-                AppSettings.setLastOpenedBloodPressureInputType('device');
-              }
-              // TODO: BLOOD PRESSURE
-              // TrackingManager.trackEvent(
-              //   'glucose_select_method',
-              //   'kpi_glucose',
-              //   params: {
-              //     'method': 'device',
-              //   },
-              // );
+            image: Platform.isIOS
+                ? R.drawable.logo_healthkit
+                : R.drawable.logo_healthConnect,
+            onTap: () {
               Navigator.pop(context);
-              BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+              onAutoInputSelected?.call();
             },
           ),
           const SizedBox(

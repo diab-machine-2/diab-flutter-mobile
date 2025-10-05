@@ -10,6 +10,7 @@ import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/service/resource.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
@@ -32,6 +33,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     on<BmiGetAIIndexAnalysicEvent>(_onGetAIIndexAnalysis);
 
     SharedPreferences.getInstance().then((value) => preferences = value);
+    AppStorages.getHealthAppPermission().then(
+      (value) => _hasHealthAppPermission = value ?? false,
+    );
   }
 
   final WeightRepository _weightRepository;
@@ -83,6 +87,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   double get weightGoal => AppSettings.weightGoal;
 
   bool hasNewData = false;
+  late bool _hasHealthAppPermission;
+  bool get hasHealthAppPermission => _hasHealthAppPermission;
 
   bool get hasStatisticalData =>
       preferences.getBool(Const.hasWeightRecord) ?? false;
