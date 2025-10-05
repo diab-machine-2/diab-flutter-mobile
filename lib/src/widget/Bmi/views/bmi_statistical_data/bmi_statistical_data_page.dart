@@ -1,6 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
@@ -62,7 +65,7 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
                     },
                   ),
                 ),
-                Expanded(child: _HistoricalWeightListView())
+                Expanded(child: const _HistoricalWeightListView())
               ],
             );
           }),
@@ -75,6 +78,8 @@ class _HistoricalWeightListView extends StatelessWidget {
     super.key,
   });
 
+  static final _dateFormat = DateFormat(Const.DATE_FORMAT);
+
   @override
   Widget build(BuildContext context) {
     BmiBloc _bmiBloc = context.read();
@@ -82,33 +87,63 @@ class _HistoricalWeightListView extends StatelessWidget {
     return BlocBuilder<BmiBloc, BmiState>(
         buildWhen: (previous, state) => state is BmiGetWeightIndexListState,
         builder: (context, state) {
-          return ListView.separated(
+          Map<DateTime, List<BmiGetWeightRecord>> groupedData =
+              _bmiBloc.getGroupedWeightRecords();
+
+          return ListView.builder(
             padding: const EdgeInsets.symmetric(
               horizontal: 12,
-              vertical: 12,
+              vertical: 8,
             ),
-            itemBuilder: (context, index) => BmiRecordCard(
-              data: _bmiBloc.historicalWeightList[index],
-              onTap: () async {
-                final updateResult = await Navigator.pushNamed(
-                  context,
-                  NavigatorName.bmiReviseRecordPage,
-                  arguments: {
-                    ReviseWeightPage.bmiBlocKey: _bmiBloc,
-                    ReviseWeightPage.dataKey:
-                        _bmiBloc.historicalWeightList[index],
-                  },
-                );
+            itemBuilder: (context, index) {
+              DateTime now = DateTime.now();
+              DateTime dateTime = groupedData.keys.elementAt(index);
+              String date = _dateFormat.format(dateTime);
+              bool isToday = now.year == dateTime.year &&
+                  now.month == dateTime.month &&
+                  now.day == dateTime.day;
 
-                if (updateResult == true) {
-                  _bmiBloc.fetchHistoricalWeight();
-                }
-              },
-            ),
-            separatorBuilder: (context, index) => const SizedBox(
-              height: 12,
-            ),
-            itemCount: _bmiBloc.historicalWeightList.length,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isToday ? R.string.today.tr() : date,
+                    style: R.style.boldXLargeStyle,
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  ...groupedData.values.elementAt(index).map(
+                    (record) => Column(
+                      children: [
+                        BmiRecordCard(
+                          data: _bmiBloc.historicalWeightList[index],
+                          onTap: () async {
+                            final updateResult = await Navigator.pushNamed(
+                              context,
+                              NavigatorName.bmiReviseRecordPage,
+                              arguments: {
+                                ReviseWeightPage.bmiBlocKey: _bmiBloc,
+                                ReviseWeightPage.dataKey:
+                                    _bmiBloc.historicalWeightList[index],
+                              },
+                            );
+
+                            if (updateResult == true) {
+                              _bmiBloc.fetchHistoricalWeight();
+                            }
+                          },
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              );
+            },
+            itemCount: groupedData.length,
             shrinkWrap: true,
           );
         });

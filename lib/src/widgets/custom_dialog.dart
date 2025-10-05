@@ -327,4 +327,97 @@ class CustomDialog {
       },
     );
   }
+
+  static void showDeleteConfirmDialog(
+    BuildContext context, {
+    String title = "Xác nhận",
+    String message = "",
+    Function()? onPrimaryButtonTap,
+    Function()? onSecondaryButtonTap,
+  }) {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Success',
+      pageBuilder: (context, _, __) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // kính mờ
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.5), // nền liquid glass
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.7),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Icon thành công
+                      Image.asset(R.drawable.ic_x, width: 48,),
+                      const SizedBox(height: 16),
+                      // Title
+                      Text(
+                        title,
+                        style: R.style.boldXXLargeStyle,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      // Message
+                      Text(
+                        message,
+                        style: R.style.normalTextStyle.neutral3,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      // Nút Đóng
+                      SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedRoundedButton(
+                                title: 'Đóng',
+                                onPressed: () {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
+                                  onSecondaryButtonTap?.call();
+                                },
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: PrimaryRoundedButton(
+                                title: 'Xóa',
+                                color: AppColors.red,
+                                onPressed: () {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
+                                  onPrimaryButtonTap?.call();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

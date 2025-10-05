@@ -260,4 +260,6 @@ class Const {
     25,
     30
   ];
+
+  static const hasInputedWaist = "has_inputed_waist";
 }

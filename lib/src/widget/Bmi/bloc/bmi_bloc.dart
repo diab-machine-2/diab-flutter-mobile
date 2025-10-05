@@ -370,4 +370,21 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     _selectedTimeOnChart = time;
     add(BmiGetBmiStatisticalEvent(time));
   }
+
+  Map<DateTime, List<BmiGetWeightRecord>> getGroupedWeightRecords() {
+    Map<DateTime, List<BmiGetWeightRecord>> result = {};
+
+    for (var item in _historicalWeightList) {
+      final time = DateTime.fromMillisecondsSinceEpoch(item.date! * 1000);
+      final DateTime date = DateTime(time.year, time.month, time.day);
+
+      result.update(
+        date,
+        (value) => [item],
+        ifAbsent: () => [item],
+      );
+    }
+
+    return result;
+  }
 }

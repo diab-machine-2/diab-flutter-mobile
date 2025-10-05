@@ -190,7 +190,7 @@ class _ActionButtons extends StatelessWidget {
               child: OutlinedRoundedButton(
                 title: R.string.delete.tr(),
                 onPressed: () {
-                  CustomDialog.showConfirmDialog(
+                  CustomDialog.showDeleteConfirmDialog(
                     context,
                     message: R.string.confirm_to_remove_data.tr(),
                     onPrimaryButtonTap: () {

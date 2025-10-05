@@ -20,7 +20,7 @@ class BmiStatisticalDataAppBar extends StatelessWidget implements PreferredSizeW
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
       title: Text(
-        R.string.weight.tr(),
+        R.string.detail.tr(),
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,

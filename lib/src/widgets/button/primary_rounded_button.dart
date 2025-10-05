@@ -6,11 +6,14 @@ class PrimaryRoundedButton extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
   final double height;
+  final Color? color;
+
   const PrimaryRoundedButton({
     super.key,
     required this.title,
     required this.onPressed,
     this.height = 48.0,
+    this.color,
   });
 
   @override
@@ -24,14 +27,13 @@ class PrimaryRoundedButton extends StatelessWidget {
         alignment: Alignment.center,
         height: height,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF0DAB9C),
-              R.color.mainColor,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter
-          ),
+          color: color,
+          gradient: color == null
+              ? LinearGradient(colors: [
+                  Color(0xFF0DAB9C),
+                  R.color.mainColor,
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+              : null,
           borderRadius: borderRadius,
         ),
         child: Text(
