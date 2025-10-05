@@ -64,33 +64,40 @@ class _AddBmiPageState extends State<AddBmiPage> {
       appBar: const AddBmiAppBar(),
       body: BlocListener<BmiInputBloc, BmiInputState>(
         listener: _handleListener,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AddBmiWeightInputSession(),
-              const SizedBox(
-                height: 12,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AddBmiWeightInputSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    const AddBmiWaistCircumferenceInputSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    const AddBmiNoteSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    _Seperator(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    _ConnectToHealthConnectButton()
+                  ],
+                ),
               ),
-              const AddBmiWaistCircumferenceInputSession(),
-              const SizedBox(
-                height: 12,
-              ),
-              const AddBmiNoteSession(),
-              const SizedBox(
-                height: 12,
-              ),
-              _Seperator(),
-              const SizedBox(
-                height: 12,
-              ),
-              _ConnectToHealthConnectButton()
-            ],
-          ),
+            ),
+            const _SaveButton()
+          ],
         ),
       ),
-      bottomNavigationBar: _SaveButton(),
     );
   }
 
