@@ -7,7 +7,6 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_record_card.dart';
@@ -30,10 +29,10 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
     super.initState();
     _bmiBloc = context.read();
     _bmiBloc
-      ..changePeriodTime(
-        BmiDateFilterType.aWeek,
-        isStatisticalView: false,
-      )
+      // ..changePeriodTime(
+      //   BmiDateFilterType.aWeek,
+      //   isStatisticalView: false,
+      // )
       ..hasNewData = false;
   }
 

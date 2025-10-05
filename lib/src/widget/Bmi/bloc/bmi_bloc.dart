@@ -316,6 +316,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   // public func
   void init() {
     _currentTime = DateTime.now();
+    _periodType = BmiDateFilterType.aMonth;
+
     add(BmiInstructionFetchingEvent());
     add(BmiGetWeightLessonsEvent());
 
