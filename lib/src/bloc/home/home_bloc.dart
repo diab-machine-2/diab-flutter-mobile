@@ -22,12 +22,14 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
@@ -565,6 +567,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // Weight
     final haveWeight =
         model?.weightCard?.weight != null && model!.weightCard!.weight! > 0;
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool(Const.hasWeightRecord, haveWeight);
+    });
     final weight = HomeMeasurementInlineData(
       title: "Cân nặng",
       icon: R.drawable.ic_home_weight,

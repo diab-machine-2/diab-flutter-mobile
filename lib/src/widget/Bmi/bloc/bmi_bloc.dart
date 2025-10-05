@@ -84,7 +84,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   bool hasNewData = false;
 
-  bool get hasStatisticalData => _weightStatistical != null;
+  bool get hasStatisticalData =>
+      preferences.getBool(Const.hasWeightRecord) ?? false;
 
   DateTime? get selectedTimeOnChart => _selectedTimeOnChart;
 

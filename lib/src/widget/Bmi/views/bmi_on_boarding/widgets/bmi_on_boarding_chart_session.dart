@@ -145,6 +145,10 @@ class _DateTimeLabel extends StatelessWidget {
     return BlocBuilder<BmiBloc, BmiState>(
         buildWhen: (previous, state) => state is BmiGetBmiStatisticalState,
         builder: (context, state) {
+          if (bmiBloc.selectedTimeOnChart == null) {
+            return const SizedBox();
+          }
+
           String time =
               DateFormat(_timeFormat).format(bmiBloc.selectedTimeOnChart!);
           String date =

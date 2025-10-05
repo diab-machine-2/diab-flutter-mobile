@@ -1400,4 +1400,5 @@ class Strings {
   String get over_weight => 'over_weight';
   String get class_1_obesity => 'class_1_obesity';
   String get class_2_obesity => 'class_2_obesity';
+  String get weight_introducing_text => 'weight_introducing_text';
 }

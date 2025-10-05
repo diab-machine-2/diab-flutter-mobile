@@ -24,7 +24,7 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-            R.drawable.im_bloodpressure_intro,
+            R.drawable.weight_intro_img,
             width: 319,
           ),
           Container(
@@ -43,7 +43,7 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  R.string.bloodpressure_benefit_observe.tr(),
+                  R.string.weight_introducing_text.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     height: 24 / 15,
