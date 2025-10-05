@@ -161,6 +161,7 @@ class _SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final BmiInputBloc _bmiInputBloc = context.read();
+    final BmiBloc _bmiBloc = context.read();
 
     return SafeArea(
       child: Padding(
@@ -170,7 +171,7 @@ class _SaveButton extends StatelessWidget {
         ),
         child: PrimaryRoundedButton(
           title: R.string.confirm.tr(),
-          onPressed: _bmiInputBloc.validate,
+          onPressed: () => _bmiInputBloc.validate(_bmiBloc.hasInputedWaist),
         ),
       ),
     );

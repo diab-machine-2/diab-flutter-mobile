@@ -217,11 +217,13 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
     add(BmiInputErrorEvent(error));
   }
 
-  void validate() {
+  void validate(bool hasInputedWaist) {
     if (_weight <= 0) {
       error("Vui lòng nhập cân nặng");
-    } else {
+    } else if (!hasInputedWaist) {
       add(BmiWaistValidatingEvent());
+    } else {
+      submitWeightRecord();
     }
   }
 

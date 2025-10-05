@@ -10,10 +10,12 @@ import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/service/resource.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widget/Bmi/models/weight_instruction_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BmiBloc extends Bloc<BmiEvent, BmiState> {
   BmiBloc(WeightRepository repository)
@@ -28,9 +30,12 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     on<BmiGetWeightRecordsEvent>(_onFetchWeightRecords);
     on<BmiGetAIAnalysicEvent>(_onGetAIAnalysis);
     on<BmiGetAIIndexAnalysicEvent>(_onGetAIIndexAnalysis);
+
+    SharedPreferences.getInstance().then((value) => preferences = value);
   }
 
   final WeightRepository _weightRepository;
+  late SharedPreferences preferences;
 
   // data
   List<WeightInstructionModel> _weightInstructions = [];
@@ -53,6 +58,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   String _aiAnalysicTrend = "";
   String _aiAnalysicWeightRecord = "";
+
+  bool _hasInputedWaist = false;
+  bool get hasInputedWaist => _hasInputedWaist;
 
   // getter & setter
   double? get avgBmi => _bmiStatistical?.value;
@@ -208,9 +216,19 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
         page: 1);
 
     response.when(
-        success: (data) {
+        success: (data) async {
           _bmiWaistStatistical = data;
           emit(BmiGetWaistStatisticalState(Resource.success(data)));
+
+          if ((data.trendItems?.isNotEmpty ?? false) &&
+              [
+                BmiDateFilterType.aMonth,
+                BmiDateFilterType.threeMonths,
+              ].contains(_periodType)) {
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            preferences.setBool(Const.hasInputedWaist, true);
+          }
         },
         failure: (error) =>
             emit(BmiGetWaistStatisticalState(Resource.error(error))));
@@ -304,8 +322,10 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiGetWeightStatisticalEvent());
     add(BmiGetWaistStatisticalEvent());
 
-    Future.delayed(Duration(milliseconds: 1000))
-        .then((value) => add(BmiGetAIAnalysicEvent()));
+    Future.delayed(Duration(milliseconds: 1000)).then((value) {
+      add(BmiGetAIAnalysicEvent());
+      _hasInputedWaist = preferences.getBool(Const.hasInputedWaist) ?? false;
+    });
   }
 
   Future<bool> checkRecordExisted() async {
