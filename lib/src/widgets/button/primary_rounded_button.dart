@@ -19,7 +19,7 @@ class PrimaryRoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double halfHeight = (height / 2).roundToDouble();
-    BorderRadius borderRadius = BorderRadius.circular(halfHeight);
+    BorderRadius borderRadius = BorderRadius.circular(halfHeight - 2);
     return InkWell(
       borderRadius: borderRadius,
       onTap: onPressed,
@@ -31,8 +31,8 @@ class PrimaryRoundedButton extends StatelessWidget {
           gradient: color == null
               ? LinearGradient(colors: [
                   Color(0xFF0DAB9C),
-                  R.color.mainColor,
-                ], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+                  Color(0xFF01847A),
+                ], begin: Alignment.centerLeft, end: Alignment.centerRight)
               : null,
           borderRadius: borderRadius,
         ),

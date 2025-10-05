@@ -38,7 +38,7 @@ class AppColors {
   static const grayBorder = Color(0xffE2E4E7);
   static const grayComponentBorder = Color(0xffDDDDDD);
   static const blueText = Color(0xff004D84);
-  static const mainColor = Color(0xff01645A);
+  static const mainColor = Color(0xff008479);
   static const notActiveGreen = Color(0xff7EC8C3);
   static const yellow = Color(0xffFDB913);
   static const green = Color(0xff21A567);

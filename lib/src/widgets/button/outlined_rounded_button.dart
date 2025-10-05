@@ -16,7 +16,7 @@ class OutlinedRoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double halfHeight = (height / 2).roundToDouble();
-    BorderRadius borderRadius = BorderRadius.circular(halfHeight);
+    BorderRadius borderRadius = BorderRadius.circular(halfHeight - 2);
     return InkWell(
       borderRadius: borderRadius,
       onTap: onPressed,
