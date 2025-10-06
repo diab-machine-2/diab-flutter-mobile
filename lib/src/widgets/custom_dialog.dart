@@ -15,12 +15,12 @@ class CustomDialog {
   static void showLoadingDialog(BuildContext context) {
     if (_isShowLoading) return;
 
-    _isShowLoading = true;
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
       barrierLabel: 'Loading',
       pageBuilder: (context, _, __) {
+        _isShowLoading = true;
         return Center(
           child: Material(
             color: Colors.transparent,
@@ -362,7 +362,10 @@ class CustomDialog {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Icon thành công
-                      Image.asset(R.drawable.ic_x, width: 48,),
+                      Image.asset(
+                        R.drawable.ic_x,
+                        width: 48,
+                      ),
                       const SizedBox(height: 16),
                       // Title
                       Text(

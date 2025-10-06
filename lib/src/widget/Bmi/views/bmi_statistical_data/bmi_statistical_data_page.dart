@@ -113,32 +113,34 @@ class _HistoricalWeightListView extends StatelessWidget {
                     height: 12,
                   ),
                   ...groupedData.values.elementAt(index).map(
-                    (record) => Column(
-                      children: [
-                        BmiRecordCard(
-                          data: _bmiBloc.historicalWeightList[index],
-                          onTap: () async {
-                            final updateResult = await Navigator.pushNamed(
-                              context,
-                              NavigatorName.bmiReviseRecordPage,
-                              arguments: {
-                                ReviseWeightPage.bmiBlocKey: _bmiBloc,
-                                ReviseWeightPage.dataKey:
-                                    _bmiBloc.historicalWeightList[index],
-                              },
-                            );
+                        (record) => Column(
+                          children: [
+                            BmiRecordCard(
+                              data: _bmiBloc.historicalWeightList[index],
+                              onTap: () async {
+                                final updateResult = await Navigator.pushNamed(
+                                  context,
+                                  NavigatorName.bmiReviseRecordPage,
+                                  arguments: {
+                                    ReviseWeightPage.bmiBlocKey: _bmiBloc,
+                                    ReviseWeightPage.dataKey:
+                                        _bmiBloc.historicalWeightList[index],
+                                  },
+                                );
 
-                            if (updateResult == true) {
-                              _bmiBloc.fetchHistoricalWeight();
-                            }
-                          },
+                                if (updateResult == true) {
+                                  _bmiBloc
+                                    ..fetchHistoricalWeight()
+                                    ..refresh();
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                      ],
-                    ),
-                  )
+                      )
                 ],
               );
             },

@@ -95,7 +95,9 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<BmiBloc, BmiState>(
-        buildWhen: (_, state) => state is BmiGetWeightStatisticalState,
+        buildWhen: (_, state) =>
+            state is BmiGetWeightStatisticalState ||
+            state is BmiCheckStatisticalDataExistedState,
         listener: _handleListener,
         builder: (context, state) {
           return Scaffold(
@@ -163,6 +165,12 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
       } else {
         CustomDialog.hideLoadingDialog(context);
       }
+    } else if (state is BmiCheckStatisticalDataExistedState) {
+      // if (state.data.isLoading) {
+      //   CustomDialog.showLoadingDialog(context);
+      // } else {
+      //   CustomDialog.hideLoadingDialog(context);
+      // }
     }
   }
 

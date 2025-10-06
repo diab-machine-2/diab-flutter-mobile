@@ -43,6 +43,12 @@ class BmiGetWaistStatisticalState extends BmiState {
   final Resource<BmiWaistStatistical> data;
 }
 
+class BmiCheckStatisticalDataExistedState extends BmiState {
+  const BmiCheckStatisticalDataExistedState(this.data);
+
+  final Resource<bool> data;
+}
+
 // weight index
 
 class BmiGetWeightIndexListState extends BmiState {

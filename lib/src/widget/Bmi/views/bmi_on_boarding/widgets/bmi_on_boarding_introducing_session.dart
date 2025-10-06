@@ -92,7 +92,7 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
   void onManualInputSelected(BuildContext context) {
     BmiBloc bmiBloc = context.read();
 
-    if (bmiBloc.height != null) {
+    if (bmiBloc.height != null && bmiBloc.height! > 0) {
       _redirectToInputPage(context, height: bmiBloc.height!);
     } else {
       BmiHeightInputDialog.show(
