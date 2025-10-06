@@ -1401,4 +1401,17 @@ class Strings {
   String get class_1_obesity => 'class_1_obesity';
   String get class_2_obesity => 'class_2_obesity';
   String get weight_introducing_text => 'weight_introducing_text';
+  String get no_data_blood_sugar_trend_chart => 'no_data_blood_sugar_trend_chart';
+  String get connect_from_device => 'connect_from_device';
+  String get glucose_connect_device_title => 'glucose_connect_device_title';
+  String get glucose_connect_device_subtitle => 'glucose_connect_device_subtitle';
+  String get glucose_photo_title => 'glucose_photo_title';
+  String get glucose_photo_subtitle => 'glucose_photo_subtitle';
+  String get glucose_manual_title => 'glucose_manual_title';
+  String get glucose_manual_subtitle => 'glucose_manual_subtitle';
+  String get analyzing_blood_glucose => 'analyzing_blood_glucose';
+  String get result_from_blood_glucose_device => 'result_from_blood_glucose_device';
+  String get supported_devices => 'supported_devices';
+  String get login_with_phone => 'login_with_phone';
+  String get login_with_zalo => 'login_with_zalo';
 }

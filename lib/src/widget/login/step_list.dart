@@ -26,6 +26,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
 import 'package:medical/src/widget/home/widget/sync_modal.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:package_info/package_info.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -322,53 +323,66 @@ class _StepListControllerState extends State<StepListController>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Container(
-                                    height: 52,
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 20),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                        colors: [
-                                          R.color.greenGradientTop,
-                                          R.color.greenGradientBottom
+                                  GestureDetector(
+                                    onTap: () async {
+                                      // Navigator.pushReplacementNamed(
+                                      //     context, NavigatorName.register,
+                                      //     arguments: {
+                                      //       'phone': '0909202394',
+                                      //     });
+                                      await TrackingManager.trackEvent(
+                                        'login_select',
+                                        'welcome',
+                                        params: {
+                                          'method': 'phone',
+                                        },
+                                      );
+
+                                      Navigator.pushNamed(
+                                        context,
+                                        NavigatorName.login,
+                                        arguments: sharedCode,
+                                      );
+                                    },
+                                    child: Container(
+                                      height: 52,
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            R.color.greenGradientTop,
+                                            R.color.greenGradientBottom
+                                          ],
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            width: 28,
+                                            height: 28,
+                                            R.icons.ic_device,
+                                            color: R.color.white,
+                                          ),
+                                          GapW(12),
+                                          AutoSizeText(
+                                            R.string.login_with_phone.tr(),
+                                            maxLines: 1,
+                                            style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
                                         ],
                                       ),
-                                      borderRadius: BorderRadius.circular(200),
                                     ),
-                                    child: GestureDetector(
-                                        onTap: () async {
-                                          await TrackingManager.trackEvent(
-                                            'login_select',
-                                            'welcome',
-                                            params: {
-                                              'method': 'zalo',
-                                            },
-                                          );
-                                          loginZalo();
-                                        },
-                                        child: Row(
-                                          children: [
-                                            SvgPicture.asset(
-                                              width: 24,
-                                              height: 24,
-                                              R.icons.ic_zalo,
-                                            ),
-                                            Expanded(
-                                              child: AutoSizeText(
-                                                'Đăng nhập qua Zalo',
-                                                maxLines: 1,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: R.color.white,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        )),
                                   ),
                                   // Expanded(
                                   //   child: GestureDetector(
@@ -410,60 +424,47 @@ class _StepListControllerState extends State<StepListController>
                                   //   ),
                                   // ),
                                   // SizedBox(width: 16),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      // Navigator.pushReplacementNamed(
-                                      //     context, NavigatorName.register,
-                                      //     arguments: {
-                                      //       'phone': '0909202394',
-                                      //     });
-                                      await TrackingManager.trackEvent(
-                                        'login_select',
-                                        'welcome',
-                                        params: {
-                                          'method': 'phone',
-                                        },
-                                      );
-
-                                      Navigator.pushNamed(
-                                        context,
-                                        NavigatorName.login,
-                                        arguments: sharedCode,
-                                      );
-                                    },
-                                    child: Container(
-                                      height: 52,
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFFE8F9F7),
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            width: 24,
-                                            height: 24,
-                                            R.icons.ic_device,
-                                            color: R.color.mainColor,
-                                          ),
-                                          Expanded(
-                                            child: Center(
-                                              child: AutoSizeText(
-                                                'Đăng nhập qua số điện thoại',
-                                                maxLines: 1,
-                                                style: TextStyle(
-                                                  color: R.color.mainColor,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                  Container(
+                                    height: 52,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFE8F9F7),
+                                      borderRadius: BorderRadius.circular(200),
                                     ),
+                                    child: GestureDetector(
+                                        onTap: () async {
+                                          await TrackingManager.trackEvent(
+                                            'login_select',
+                                            'welcome',
+                                            params: {
+                                              'method': 'zalo',
+                                            },
+                                          );
+                                          loginZalo();
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SvgPicture.asset(
+                                              width: 28,
+                                              height: 28,
+                                              R.icons.ic_zalo,
+                                            ),
+                                            GapW(12),
+                                            AutoSizeText(
+                                              R.string.login_with_zalo.tr(),
+                                              maxLines: 1,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: R.color.mainColor,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            )
+                                          ],
+                                        )),
                                   ),
                                 ]),
                           ),

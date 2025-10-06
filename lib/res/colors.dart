@@ -165,4 +165,8 @@ class AppColors {
   static const bmiOverThreshold1Color = Color(0xFFF86F6F);
   static const bmiOverThreshold2Color = Color(0xFFD02424);
   static const bmiOverThreshold3Color = Color(0xFFAF0000);
+  
+  static const color0xff5E6566 = Color(0xff5E6566);
+  static const color0xffDCFFFC = Color(0xffDCFFFC);
+  static const color0xff830000 = Color(0xff830000);
 }

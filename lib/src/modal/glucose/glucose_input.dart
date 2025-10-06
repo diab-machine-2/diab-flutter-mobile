@@ -20,6 +20,7 @@ class InputGlucoseModel {
   final List<ImagesModel> images;
   final bool byDevice;
   final String? healthRecommendation;
+  final String? modelName;
 
   InputGlucoseModel({
     required this.id,
@@ -38,6 +39,7 @@ class InputGlucoseModel {
     required this.images,
     required this.byDevice,
     this.healthRecommendation,
+    this.modelName,
   });
 
   factory InputGlucoseModel.fromJson(Map<String, dynamic> json) {
@@ -63,6 +65,7 @@ class InputGlucoseModel {
       images: ImagesModel.toList(json['images']),
       byDevice: json['byDevice'] ?? false,
       healthRecommendation: json['healthRecommendation'],
+      modelName: json['modelName'],
     );
   }
 

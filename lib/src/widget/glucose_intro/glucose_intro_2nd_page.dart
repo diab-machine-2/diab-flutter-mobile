@@ -62,7 +62,9 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CommonPage(
-        background: R.drawable.bg_glucose,
+        appbarColor: R.color.greenGradientBottom,
+        textColor: R.color.white,
+        backgroundColor: R.color.backgroundColorNew,
         title: R.string.huong_dan.tr(),
         child: _composeLayout(),
       ),
@@ -95,7 +97,7 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_pinedLessons.isNotEmpty) ...[
+      if (_pinedLessons.isNotEmpty) ...[
           Row(
             children: [
               Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
@@ -133,6 +135,13 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
       'Cao': Color(0xFFD24D4C),
       'Rất Cao': Color(0xFF9F3838),
     };
+    final Map<String, Color> _subColorMap = {
+      'Rất Thấp': Color(0xFFFFE9D6),
+      'Thấp': Color(0xFFFFFAEB),
+      'Bình thường': Color(0xFFEAFFEC),
+      'Cao': Color(0xFFFFE9E9B2).withOpacity(0.7),
+      'Rất Cao': Color(0xFFFFCDD2).withOpacity(0.6),
+    };
     // Mức độ,      Trước ăn, Sau ăn, Đường huyết đói, Đường huyết thai kỳ
     // Rất Cao:     >130,     >180,     >130,           >130
     // Cao:         >130,     >180,     >130,           >130
@@ -140,7 +149,13 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
     // Thấp:        54 - 69
     // Rất Thấp:    54 - 69
     List<List<String>> rangeTable = [
-      ['Mức độ', 'Trước ăn', 'Sau ăn', 'Đường huyết đói', 'Đường huyết thai kỳ'],
+      [
+        'Mức độ',
+        'Trước ăn',
+        'Sau ăn',
+        'Đường huyết đói',
+        'Đường huyết thai kỳ'
+      ],
       ['Rất Cao', '>130', '>180', '>130', '>130'],
       ['Cao', '>130', '>180', '>130', '>130'],
       ['Bình thường', '70-130', '70-179', '70-130', '70-130'],
@@ -206,8 +221,9 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
                     child: Container(
                       color: j == 0
                           ? _colorMap[rangeTable[i][0]]
-                          : _colorMap[rangeTable[i][0]]?.withOpacity(0.1),
-                      alignment: j == 0 ? Alignment.centerLeft : Alignment.center,
+                          : _subColorMap[rangeTable[i][0]],
+                      alignment:
+                          j == 0 ? Alignment.centerLeft : Alignment.center,
                       padding: j == 0 ? const EdgeInsets.only(left: 12) : null,
                       child: Text(
                         rangeTable[i][j],
@@ -244,14 +260,15 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
                 ),
                 children: [
                   TextSpan(
-                    text: 'Nguồn tham khảo:\nTesting for Diabetes | Diabetes. (2024, May 15).' +
-                        ' CDC. Tham khảo ngày 21, Tháng 8, 2024, từ ',
+                    text:
+                        'Nguồn tham khảo:\nTesting for Diabetes | Diabetes. (2024, May 15).' +
+                            ' CDC. Tham khảo ngày 21, Tháng 8, 2024, từ ',
                   ),
                   TextSpan(
                     text: 'https://www.cdc.gov/diabetes/diabetes-testing/',
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () =>
-                          launchUrl(Uri.parse('https://www.cdc.gov/diabetes/diabetes-testing/')),
+                      ..onTap = () => launchUrl(Uri.parse(
+                          'https://www.cdc.gov/diabetes/diabetes-testing/')),
                   ),
                 ],
               ),
@@ -291,8 +308,8 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
-                height: 20 / 14,
+                fontSize: 13,
+                height: 20 / 13,
                 fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
               ),

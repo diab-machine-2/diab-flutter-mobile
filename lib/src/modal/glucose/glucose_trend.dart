@@ -1,5 +1,6 @@
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:meta/meta.dart';
+
 @immutable
 class TrendItemModel {
   final int? date;
@@ -24,6 +25,7 @@ class TrendModel {
   final String? color;
   final int? date;
   final String? timeFrameName;
+  final String? id;
 
   TrendModel({
     required this.glucose,
@@ -31,6 +33,7 @@ class TrendModel {
     required this.color,
     required this.date,
     required this.timeFrameName,
+    this.id,
   });
   @override
   factory TrendModel.fromJson(Map<String, dynamic> json) {
@@ -42,6 +45,7 @@ class TrendModel {
       color: json['color'],
       date: json['date'],
       timeFrameName: json['timeFrameName'],
+      id: json['id'],
     );
   }
 

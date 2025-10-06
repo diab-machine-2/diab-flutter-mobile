@@ -141,4 +141,7 @@ class NavigatorName {
   static const String bmiOverviewPage = '/add_bmi/bmi_input/bmi_overview';
   static const String bmiHistoricalPage = '/add_bmi/bmi_historical';
   static const String bmiInstructionPage = '/bmi_instruction';
+  // New Blood Sugar
+  static const String confirm_blood_sugar = '/confirm_blood_sugar';
+  static const String blood_sugar_image_capture = '/blood_sugar_image_capture';
 }

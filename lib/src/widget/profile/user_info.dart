@@ -1118,7 +1118,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
   _openCamera(BuildContext context) async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 1024,
           maxHeight: 1024,
           source: ImageSource.camera,
@@ -1134,7 +1134,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
   showGallery() async {
     try {
       final picker = ImagePicker();
-      final pickedFile = await picker.getImage(
+      final pickedFile = await picker.pickImage(
           maxWidth: 1024, maxHeight: 1024, source: ImageSource.gallery);
       if (pickedFile != null) {
         await _cropImage(pickedFile.path);

@@ -112,18 +112,19 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                         ),
-                        child: _cubit.videoManager.controller != null
+                        child: _cubit.videoManager.controller != null &&
+                                _cubit.resolvedVideoUrl.isNotEmpty
                             ? ExerciseVideoWidget(
                                 callbackEventListener: (event, videoDuration) {
                                   ExcerciseDetailTracking.playVideo(
                                     eventType: event,
                                     videoDuration: videoDuration,
-                                    objectId: widget.exerciseData!.id,
-                                    objectTitle: widget.exerciseData!.name,
+                                    objectId: widget.exerciseData?.id,
+                                    objectTitle: widget.exerciseData?.name,
                                   );
 
                                   if (!_cubit.exerciseCompleted &&
-                                      widget.exerciseData!.completionStatus !=
+                                      widget.exerciseData?.completionStatus !=
                                           CompletionStatus.completed &&
                                       event ==
                                           CustomPlayerEventType
@@ -133,10 +134,10 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                                         '[EXERCISE] Marking exercise as completed through event listener');
                                     _cubit.exerciseCompleted = true;
                                     _cubit.completeExercise(
-                                        widget.exerciseData!.id ?? '');
+                                        widget.exerciseData?.id ?? '');
                                   }
                                 },
-                                url: widget.exerciseData!.videoUrl!,
+                                url: _cubit.resolvedVideoUrl,
                                 onPlay: () {
                                   debugPrint(
                                       '[EXERCISE] Video started playing');
@@ -144,18 +145,18 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                                 onComplete: () {
                                   debugPrint('[EXERCISE] Video completed');
                                   if (!_cubit.exerciseCompleted &&
-                                      widget.exerciseData!.completionStatus !=
+                                      widget.exerciseData?.completionStatus !=
                                           CompletionStatus.completed) {
                                     debugPrint(
                                         '[EXERCISE] Marking exercise as completed through onComplete');
                                     _cubit.exerciseCompleted = true;
                                     _cubit.completeExercise(
-                                        widget.exerciseData!.id ?? '');
+                                        widget.exerciseData?.id ?? '');
                                   }
                                 },
                                 percentCallbackDefault: 1.0,
-                                videoTitle: widget.exerciseData!.name,
-                                videoThumbnail: widget.exerciseData!.image?.url,
+                                videoTitle: widget.exerciseData?.name ?? '',
+                                videoThumbnail: widget.exerciseData?.image?.url,
                                 exerciseData: widget.exerciseData,
                                 videoManager: _cubit.videoManager,
                               )
