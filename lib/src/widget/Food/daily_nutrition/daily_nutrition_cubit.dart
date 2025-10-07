@@ -17,6 +17,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 
 import '../../../repo/home/home_client.dart';
 import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
@@ -328,10 +329,14 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
               : selectedFoods,
           paths);
       if (result == true) {
-      //  if(goalId != null && goalId?.isNotEmpty == true){
+        //  if(goalId != null && goalId?.isNotEmpty == true){
           await HomeClient().completeSmartGoal(selectedDate, goalId ?? '', 1, ScheduleType.food.typeIndex);
-      //  }
+        //  }
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
+
+        // Set flag to show phone validation after successful nutrition input
+        PhoneValidationManager.setShouldShowPhoneValidation();
+
         emit(const DailyNutritionSubmitSuccess());
       }
       emit(const DailyNutritionSuccess());
