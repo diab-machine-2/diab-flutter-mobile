@@ -98,6 +98,10 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   DateTime? get selectedTimeOnChart => _selectedTimeOnChart;
 
+  bool _hasModifiedData = false;
+  bool get hasModifiedData => _hasModifiedData;
+  set hasModifiedData(bool value) => _hasModifiedData = value;
+
   void _onGetInstruction(
     BmiInstructionFetchingEvent event,
     Emitter<BmiState> emit,
@@ -195,7 +199,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
           emit(BmiCheckStatisticalDataExistedState(Resource.success(hasData)));
         },
         failure: (error) =>
-            emit(BmiGetWeightStatisticalState(Resource.error(error))));
+            emit(BmiCheckStatisticalDataExistedState(Resource.error(error))));
   }
 
   void _onFetchWeightStatistical(

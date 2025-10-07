@@ -123,7 +123,10 @@ class _AddBmiPageState extends State<AddBmiPage> {
         CustomDialog.hideLoadingDialog(context);
         CustomDialog.showSuccessDialog(
           context,
-          onPrimaryButtonTap: () => _redirectToNextStep(state.result.data!),
+          onPrimaryButtonTap: () {
+            _bmiBloc.hasModifiedData = true;
+            _redirectToNextStep(state.result.data!);
+          },
         );
       } else {
         CustomDialog.hideLoadingDialog(context);

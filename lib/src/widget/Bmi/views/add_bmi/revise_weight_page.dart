@@ -32,11 +32,13 @@ class ReviseWeightPage extends StatefulWidget {
 
 class _ReviseWeightPageState extends State<ReviseWeightPage> {
   late BmiInputBloc _bmiInputBloc;
+  late BmiBloc _bmiBloc;
 
   @override
   void initState() {
     super.initState();
     _bmiInputBloc = context.read();
+    _bmiBloc = context.read();
   }
 
   @override
@@ -98,16 +100,6 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
   }
 
   void _handleListener(BuildContext context, BmiInputState state) {
-    // if (state is BmiWaistValidatedState) {
-    //   if (state.hasWaist) {
-    //     _bmiInputBloc.submitWeightRecord();
-    //   } else {
-    //     BmiInputWaistConfirmDialog.show(
-    //       context,
-    //       onConfirmed: _bmiInputBloc.submitWeightRecord,
-    //     );
-    //   }
-    // } else
     if (state is BmiInputErrorState) {
       CustomDialog.showErrorDialog(
         context,
@@ -120,7 +112,10 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
         CustomDialog.hideLoadingDialog(context);
         CustomDialog.showSuccessDialog(
           context,
-          onPrimaryButtonTap: () => _redirectToNextStep(state.result.data!),
+          onPrimaryButtonTap: () {
+            _bmiBloc.hasModifiedData = true;
+            _redirectToNextStep(state.result.data!);
+          },
         );
       } else {
         CustomDialog.hideLoadingDialog(context);
@@ -137,6 +132,7 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
         CustomDialog.showSuccessDialog(
           context,
           onPrimaryButtonTap: () {
+            _bmiBloc.hasModifiedData = true;
             Navigator.pop(context, true);
           },
         );

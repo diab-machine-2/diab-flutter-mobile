@@ -715,9 +715,9 @@ class _HomeControllerState extends State<HomeController>
                               }
 
                               if (routeName == NavigatorName.add_bmi) {
+                                BmiBloc _bmiBloc = context.read();
                                 var additionalArg = {
-                                  AddBmiPage.bmiBlocKey:
-                                      context.read<BmiBloc>(),
+                                  AddBmiPage.bmiBlocKey: _bmiBloc,
                                 };
                                 var newArgs = (args?..addAll(additionalArg)) ??
                                     additionalArg;
@@ -725,7 +725,11 @@ class _HomeControllerState extends State<HomeController>
                                   context,
                                   routeName!,
                                   arguments: newArgs,
-                                );
+                                ).then((value) {
+                                  if (_bmiBloc.hasModifiedData)
+                                    _homeBloc.add(FetchHome());
+                                  _bmiBloc.hasModifiedData = false;
+                                });
                                 return;
                               }
                               // others
@@ -1140,7 +1144,11 @@ class _HomeControllerState extends State<HomeController>
             context,
             item.navigatorName,
             arguments: args,
-          );
+          ).then((value) {
+            BmiBloc _bmiBloc = context.read();
+            if (_bmiBloc.hasModifiedData) _homeBloc.add(FetchHome());
+            _bmiBloc.hasModifiedData = false;
+          });
         } else {
           Navigator.pushNamed(context, item.navigatorName,
               arguments: item.args);

@@ -15,12 +15,12 @@ class CustomDialog {
   static void showLoadingDialog(BuildContext context) {
     if (_isShowLoading) return;
 
+    _isShowLoading = true;
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
       barrierLabel: 'Loading',
       pageBuilder: (context, _, __) {
-        _isShowLoading = true;
         return Center(
           child: Material(
             color: Colors.transparent,
