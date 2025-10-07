@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class PhoneUpdateBottomSheet extends StatelessWidget {
@@ -92,6 +93,8 @@ class PhoneUpdateBottomSheet extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
+              // Set the flag to false when user clicks "Next Time"
+              PhoneValidationManager.resetShouldShowPhoneValidation();
               },
               child: Container(
                 height: 44,
@@ -119,6 +122,7 @@ class PhoneUpdateBottomSheet extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      isDismissible: false,
       builder: (context) => PhoneUpdateBottomSheet(),
     );
   }

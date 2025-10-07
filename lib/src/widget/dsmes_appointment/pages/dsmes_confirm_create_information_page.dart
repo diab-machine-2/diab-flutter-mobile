@@ -20,6 +20,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
 
@@ -365,8 +366,12 @@ class _DsmesConfirmCreateInformationState
       isShowImg: true,
       primaryButtonTitle: R.string.back_home_page.tr(),
       secondaryButtonTitle: R.string.recheck_information.tr(),
-      onNavigateHome: () {
+      onNavigateHome: () async {
         BranchioLinkConfig.instance.resetPageTracking();
+
+        // Set flag to show phone validation after successful request booking
+        await PhoneValidationManager.setShouldShowPhoneValidation();
+
         // Back to homepage
         Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
           NavigatorName.tabbar,
@@ -379,6 +384,9 @@ class _DsmesConfirmCreateInformationState
             await _cubit.getDsmesAppointmentDetail(appointmentId: resp!.id);
 
         if (myAppointment == null) return;
+
+        // Set flag to show phone validation after successful request booking
+        await PhoneValidationManager.setShouldShowPhoneValidation();
 
         DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
           NavigatorName.dsmes_booking_detail,

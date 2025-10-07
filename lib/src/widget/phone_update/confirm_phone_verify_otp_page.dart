@@ -13,6 +13,7 @@ import 'package:medical/src/service/zalo_service.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class ConfirmPhoneNumberVerifyOTPPage extends StatefulWidget {
@@ -372,6 +373,9 @@ class _ConfirmPhoneNumberVerifyOTPPageState
       await UserClient().fetchUser();
 
       BotToast.closeAllLoading();
+
+      // Reset phone validation flag after successful phone number update
+      PhoneValidationManager.resetShouldShowPhoneValidation();
 
       // Notify back to home
       Observable.instance
