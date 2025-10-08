@@ -54,7 +54,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   List<BmiGetWeightRecord> _historicalWeightList = [];
 
   late DateTime _currentTime;
-  DateTime? _selectedTimeOnChart;
+  BmiGetWeightRecord? _selectedPointChart;
   BmiDateFilterType _periodType = BmiDateFilterType.aMonth;
   BmiDateFilterType get periodType => _periodType;
 
@@ -96,7 +96,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   bool get hasStatisticalData =>
       preferences.getBool(Const.hasWeightRecord) ?? false;
 
-  DateTime? get selectedTimeOnChart => _selectedTimeOnChart;
+  BmiGetWeightRecord? get selectedPointChart => _selectedPointChart;
 
   bool _hasModifiedData = false;
   bool get hasModifiedData => _hasModifiedData;
@@ -225,10 +225,10 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
         success: (data) {
           _weightStatistical = data;
           if (data.trendItems?.isNotEmpty ?? false) {
-            _selectedTimeOnChart = DateTime.fromMillisecondsSinceEpoch(
-                data.trendItems!.first.date! * 1000);
+            // _selectedPointChart = DateTime.fromMillisecondsSinceEpoch(
+            //     data.trendItems!.first.date! * 1000);
             preferences.setBool(Const.hasWeightRecord, true);
-            add(BmiGetBmiStatisticalEvent(_selectedTimeOnChart!));
+            // add(BmiGetBmiStatisticalEvent(_selectedPointChart!));
           }
           emit(BmiGetWeightStatisticalState(Resource.success(data)));
         },
@@ -346,6 +346,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     response.when(
         success: (data) {
           _historicalWeightList = data.data ?? [];
+          _selectedPointChart = _historicalWeightList.firstOrNull;
           emit(BmiGetWeightIndexListState(Resource.success(data)));
         },
         failure: (error) =>
@@ -362,6 +363,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
     add(BmiGetWeightStatisticalEvent());
     add(BmiGetWaistStatisticalEvent());
+
+    add(BmiGetWeightRecordsEvent());
 
     Future.delayed(Duration(milliseconds: 1000)).then((value) {
       add(BmiGetAIAnalysicEvent());
@@ -405,8 +408,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     _periodType = period;
     if (isStatisticalView) {
       // add(BmiGetBmiStatisticalEvent());
-      add(BmiGetWeightStatisticalEvent());
-      add(BmiGetWaistStatisticalEvent());
+      // add(BmiGetWeightStatisticalEvent());
+      // add(BmiGetWaistStatisticalEvent());
+      add(BmiGetWeightRecordsEvent());
       add(BmiGetAIAnalysicEvent());
     } else {
       //load detail
@@ -422,9 +426,10 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiGetAIIndexAnalysicEvent(recordId));
   }
 
-  void selectPointChart(DateTime time) {
-    _selectedTimeOnChart = time;
-    add(BmiGetBmiStatisticalEvent(time));
+  void selectPointChart(BmiGetWeightRecord point) {
+    _selectedPointChart = point;
+    // add(BmiGetBmiStatisticalEvent(point));
+    add(BmiDataChangeEvent(BmiDataChangeEvent.selectedPointChanged, point));
   }
 
   Map<DateTime, List<BmiGetWeightRecord>> getGroupedWeightRecords() {

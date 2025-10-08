@@ -11,6 +11,8 @@ class BmiDataChangeEvent extends BmiEvent {
   final dynamic data;
 
   const BmiDataChangeEvent(this.event, [this.data]);
+
+  static const String selectedPointChanged = "selected_point_changed";
 }
 
 class BmiGetWeightLessonsEvent extends BmiEvent {
