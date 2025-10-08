@@ -17,6 +17,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
@@ -286,7 +287,19 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                     .lessonsList![index]!.name,
                                               );
 
-                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Navigating to LessonDetailPage for id='+(_cubit.lessonsList![index]!.id ?? '')+' name='+(_cubit.lessonsList![index]!.name ?? ''));
+                                              debugPrint(
+                                                  '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Navigating to LessonDetailPage for id=' +
+                                                      (_cubit
+                                                              .lessonsList![
+                                                                  index]!
+                                                              .id ??
+                                                          '') +
+                                                      ' name=' +
+                                                      (_cubit
+                                                              .lessonsList![
+                                                                  index]!
+                                                              .name ??
+                                                          ''));
                                               var result = await NavigationUtil
                                                   .navigatePage(
                                                 context,
@@ -307,7 +320,10 @@ class _LessonTabPageState extends State<LessonTabPage>
                                                   },
                                                 ),
                                               );
-                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Returned from LessonDetailPage with result=' + (result?.toString() ?? 'null'));
+                                              debugPrint(
+                                                  '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Returned from LessonDetailPage with result=' +
+                                                      (result?.toString() ??
+                                                          'null'));
                                               // if (result == 0) {
                                               // _controller.requestRefresh();
                                               // }
@@ -578,6 +594,8 @@ class _LessonTabPageState extends State<LessonTabPage>
           Expanded(
             child: InkWell(
               onTap: () {
+                // Set flag to show phone validation after view detail lesson
+                PhoneValidationManager.setShouldShowPhoneValidation();
                 if (lessonDetail?.learningStatus ==
                     Const.LESSON_CAN_NOT_LEARN) {
                   showUpdateRequirePopup(context: context);
@@ -820,12 +838,15 @@ class _LessonTabPageState extends State<LessonTabPage>
                     ),
                     GapH(12),
                     _benefitRow(
-                      R.string.pathology_nutrition_exercise_psychology_knowledge_diverse.tr(),
-                      R.string.pathology_nutrition_knowledge.tr()),
-                    _benefitRow(R.string.personalized_healthy_lifestyle_roadmap.tr(),
-                      R.string.healthy_lifestyle_roadmap.tr()),
+                        R.string
+                            .pathology_nutrition_exercise_psychology_knowledge_diverse
+                            .tr(),
+                        R.string.pathology_nutrition_knowledge.tr()),
+                    _benefitRow(
+                        R.string.personalized_healthy_lifestyle_roadmap.tr(),
+                        R.string.healthy_lifestyle_roadmap.tr()),
                     _benefitRow(R.string.use_all_advanced_features.tr(),
-                      R.string.advanced_features.tr()),
+                        R.string.advanced_features.tr()),
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
@@ -862,7 +883,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                             child: Text(
                               R.string.tim_hieu_them.tr(),
                               style: TextStyle(
-                                color: R.color.white, 
+                                color: R.color.white,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
                               ),

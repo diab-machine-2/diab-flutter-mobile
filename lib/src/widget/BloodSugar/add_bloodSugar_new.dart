@@ -25,6 +25,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
@@ -150,7 +151,7 @@ class _AddBloodSugarControllerNewState
       } else {
         _controller.text = widget.prefilledValue!;
       }
-  }
+    }
 
     if (widget.prefilledUnit != null && widget.prefilledUnit!.isNotEmpty) {
       // Set unit based on prefilled unit
@@ -233,6 +234,10 @@ class _AddBloodSugarControllerNewState
                 : BloodSugarRangeType.normal,
         isFetchAnalysis: isDataChange,
         healthRecommendation: model?.healthRecommendation);
+
+    // Set flag to show phone validation after successful blood sugar input
+    PhoneValidationManager.setShouldShowPhoneValidation();
+
     Navigator.of(context).pushReplacementNamed(
         NavigatorName.add_blood_sugar_result,
         arguments: data);
@@ -552,67 +557,72 @@ class _AddBloodSugarControllerNewState
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    _showDialogDelete(context);
-                                  },
-                                  child: Container(
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _showDialogDelete(context);
+                                    },
+                                    child: Container(
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                            color: R.color.color0xffFFE9E9,
+                                            borderRadius:
+                                                BorderRadius.circular(200),
+                                            border: Border.all(
+                                                color: R.color.attentionText,
+                                                width: 2)),
+                                        child: Center(
+                                          child: Text(R.string.xoa_du_lieu.tr(),
+                                              style: TextStyle(
+                                                color: R.color.color0xff830000,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w700)),
+                                        )),
+                                  ),
+                                ),
+                                GapW(8),
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      // Prevent editing blood glucose index to 0 when type is 'update'
+                                      if (number != null && number == 0) {
+                                        Message.showToastMessage(
+                                            context,
+                                            R.string.mes_blood_sugar_empty
+                                                .tr());
+                                        return;
+                                      }
+                                      int indexRange = findIndexInRanges(
+                                          number, _rangeValue);
+                                      if (indexRange == 4 || indexRange == 0) {
+                                        _showDialogWarning(
+                                          onConfirm: () => _editData(),
+                                          range: indexRange,
+                                        );
+                                      } else {
+                                        _editData();
+                                      }
+                                    },
+                                    child: Container(
                                       height: 48,
-                                      width: 164,
                                       decoration: BoxDecoration(
-                                          color: R.color.color0xffFFE9E9,
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          border: Border.all(
-                                              color: R.color.attentionText,
-                                              width: 2)),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.centerRight,
+                                              colors: [
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
+                                              ])),
                                       child: Center(
-                                        child: Text(R.string.xoa_du_lieu.tr(),
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
-                                                color: R.color.color0xff830000,
+                                                color: R.color.white,
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w700)),
-                                      )),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    // Prevent editing blood glucose index to 0 when type is 'update'
-                                    if (number != null && number == 0) {
-                                      Message.showToastMessage(context,
-                                          R.string.mes_blood_sugar_empty.tr());
-                                      return;
-                                    }
-                                    int indexRange =
-                                        findIndexInRanges(number, _rangeValue);
-                                    if (indexRange == 4 || indexRange == 0) {
-                                      _showDialogWarning(
-                                        onConfirm: () => _editData(),
-                                        range: indexRange,
-                                      );
-                                    } else {
-                                      _editData();
-                                    }
-                                  },
-                                  child: Container(
-                                    height: 48,
-                                    width: 164,
-                                    decoration: BoxDecoration(
-                                        color: R.color.mainColor,
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                        gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              R.color.greenGradientTop,
-                                              R.color.greenGradientBottom
-                                            ])),
-                                    child: Center(
-                                      child: Text(R.string.save.tr(),
-                                          style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w700)),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1306,7 +1316,7 @@ class _AddBloodSugarControllerNewState
                   _lastUnitIndex = index;
                   _changedUnit = true;
                   await _changeUnit();
-                  
+
                   // Refresh glucose range after unit change
                   if (selectedTimeFrame != null) {
                     await _getGlucoseRange(selectedTimeFrame!);

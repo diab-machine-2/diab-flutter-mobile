@@ -29,6 +29,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -1014,6 +1015,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         // );
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
+        PhoneValidationManager.setShouldShowPhoneValidation();
         Navigator.pop(context);
         if (widget.type == 'input') {
           NavigationUtil.navigatePage(context, FoodDetailTabbarController());
