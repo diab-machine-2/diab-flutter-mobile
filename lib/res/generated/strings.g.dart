@@ -1412,6 +1412,12 @@ class Strings {
   String get analyzing_blood_glucose => 'analyzing_blood_glucose';
   String get result_from_blood_glucose_device => 'result_from_blood_glucose_device';
   String get supported_devices => 'supported_devices';
+  String get cap_nhat_so_dien_thoai => 'cap_nhat_so_dien_thoai';
+  String get giup_bao_ve_tai_khoan => 'giup_bao_ve_tai_khoan';
+  String get cap_nhat_ngay => 'cap_nhat_ngay';
+  String get lan_sau => 'lan_sau';
+  String get nhap_4_so_trong_tin_nhan => 'nhap_4_so_trong_tin_nhan';
+  String get ban_muon_dong_bo_so_dien_thoai => 'ban_muon_dong_bo_so_dien_thoai';
   String get login_with_phone => 'login_with_phone';
   String get login_with_zalo => 'login_with_zalo';
 }

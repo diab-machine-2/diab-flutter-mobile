@@ -19,6 +19,8 @@ import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
+import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
+import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 
 import 'utils/navigator_name.dart';
 import 'widget/BloodPressure/add_bloodpressure_result.dart';
@@ -223,6 +225,17 @@ class AppRoutes {
       case NavigatorName.blood_sugar_image_capture:
         final data = settings.arguments as Map<String, dynamic>?;
         page = BloodSugarImageCapture();
+        break;
+      // Phone Update Flow
+      case NavigatorName.update_phone_number:
+        page = UpdatePhoneNumberPage();
+        break;
+      case NavigatorName.confirm_phone_verify_otp:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = ConfirmPhoneNumberVerifyOTPPage(
+          phone: data?['phone'] ?? '',
+          isPhoneNumberExist: data?['isPhoneNumberExist'] ?? false,
+        );
         break;
 
       default:
