@@ -11,7 +11,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/widget/home/schema/home_schema.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:path/path.dart';
 import 'package:url_launcher/url_launcher.dart';

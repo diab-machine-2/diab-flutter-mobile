@@ -23,6 +23,7 @@ import 'package:medical/src/widget/subscription/subscription_cubit.dart';
 import 'package:medical/src/widget/subscription/subscription_navigation_mixin.dart';
 import 'package:medical/src/widget/subscription/subscription_tracking.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 
 // Import the phone validation helper
 // import 'phone_validation_helper.dart';
@@ -483,9 +484,12 @@ class ProgramCard extends StatelessWidget {
                     isShowImg: true,
                     primaryButtonTitle: R.string.back_home_page.tr(),
                     secondaryButtonTitle: R.string.support.tr(),
-                    onNavigateHome: () {
+                    onNavigateHome: () async {
                       SubscriptionTracking.homeReturn(
                           screenName: 'program_listing');
+
+                                                      // Set flag to show phone validation after successful request consult
+                      await PhoneValidationManager.setShouldShowPhoneValidation();
 
                       Navigator.of(context, rootNavigator: true)
                           .pushNamedAndRemoveUntil(

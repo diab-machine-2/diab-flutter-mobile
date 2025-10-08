@@ -20,7 +20,9 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
 
 class DsmesConfirmCreateInformation extends StatefulWidget {
   final String serviceType;
@@ -246,8 +248,10 @@ class _DsmesConfirmCreateInformationState
                       final phoneNumber = AppSettings.userInfo?.phoneNumber ??
                           phoneController.text;
 
-                      if (phoneNumber.isEmpty) {
-                        await _showDialogUpdatePhone();
+                      if (PhoneValidationHelper.isValidPhoneNumber(
+                              phoneNumber) ==
+                          false) {
+                        _showDialogUpdatePhone();
                         return;
                       }
 
@@ -363,8 +367,12 @@ class _DsmesConfirmCreateInformationState
       isShowImg: true,
       primaryButtonTitle: R.string.back_home_page.tr(),
       secondaryButtonTitle: R.string.recheck_information.tr(),
-      onNavigateHome: () {
+      onNavigateHome: () async {
         BranchioLinkConfig.instance.resetPageTracking();
+
+        // Set flag to show phone validation after successful request booking
+        await PhoneValidationManager.setShouldShowPhoneValidation();
+
         // Back to homepage
         Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
           NavigatorName.tabbar,
@@ -377,6 +385,9 @@ class _DsmesConfirmCreateInformationState
             await _cubit.getDsmesAppointmentDetail(appointmentId: resp!.id);
 
         if (myAppointment == null) return;
+
+        // Set flag to show phone validation after successful request booking
+        await PhoneValidationManager.setShouldShowPhoneValidation();
 
         DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
           NavigatorName.dsmes_booking_detail,
@@ -1418,168 +1429,17 @@ class _DsmesConfirmCreateInformationState
   }
 
   _showDialogUpdatePhone() {
-    final width = MediaQuery.of(context).size.width;
-    final TextEditingController textEditingController = TextEditingController();
-    final FocusNode phoneDialogFocusNode = FocusNode();
-
-    textEditingController.text = AppSettings.userInfo?.phoneNumber ?? '';
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text(R.string.phone_number.tr(),
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600)),
-              GestureDetector(
-                  child: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                  onTap: () {
-                    Navigator.of(context).pop(false);
-                  })
-            ]),
-            const SizedBox(height: 16),
-            Container(
-                height: 54,
-                width: width - 36,
-                child: TextField(
-                    controller: textEditingController,
-                    focusNode: phoneDialogFocusNode,
-                    autofocus: true,
-                    keyboardType: TextInputType.number,
-                    minLines: 1,
-                    maxLines: 1,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
-                    ],
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      fillColor: R.color.textDark,
-                      counterText: '',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: R.color.grayComponentBorder, width: 1.0),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: R.color.mainColor, width: 1.0),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      contentPadding:
-                          const EdgeInsets.only(top: 0, left: 16, right: 16),
-                    ),
-                    onChanged: (value) {})),
-            Container(
-              margin: const EdgeInsets.only(top: 16),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                            height: 48,
-                            width: 119,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(200),
-                                color: R.color.grayBorder),
-                            child: Center(
-                              child: Text(R.string.cancel.tr(),
-                                  style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            )),
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {
-                          String phone = textEditingController.text;
-                          if (phone.isEmpty) {
-                            Message.showToastMessage(context,
-                                R.string.ban_chua_nhap_so_dien_thoai.tr());
-                            return;
-                          } else {
-                            const String pattern =
-                                r'(^(?:[+0]9)?[0-9]{9}|\d{10}$)';
-                            final RegExp regExp = RegExp(pattern);
-                            if (!regExp.hasMatch(phone)) {
-                              Message.showToastMessage(
-                                  context, R.string.phone_not_valid.tr());
-                              return;
-                            }
-
-                            if (phone.length != 9 && phone.length != 10) {
-                              Message.showToastMessage(
-                                  context, R.string.phone_not_valid.tr());
-                              return;
-                            }
-
-                            final UserModel userInfo = AppSettings.userInfo!;
-
-                            phone = Utils.formatPhoneNumber(phone);
-
-                            updateUserInfo(
-                              userInfo.copyWith(
-                                phoneNumber: phone,
-                              ),
-                            );
-
-                            _cubit.updateCreateDsmesBookingRequestRequesterInfo(
-                                name: nameController.text, phone: phone);
-
-                            phoneController.text = phone;
-                            setState(() {
-                              requesterPhone = phone;
-                            });
-
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Container(
-                          height: 48,
-                          width: 119,
-                          decoration: BoxDecoration(
-                              color: R.color.red,
-                              borderRadius: BorderRadius.circular(200),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    R.color.greenGradientTop,
-                                    R.color.greenGradientBottom
-                                  ])),
-                          child: Center(
-                            child: Text(
-                              R.string.save.tr(),
-                              style: TextStyle(
-                                color: R.color.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ]),
-            ),
-          ],
-        ),
-      ),
-    );
+    PhoneValidationHelper.showBottomSheetUpdatePhone(context).then((phone) {
+      if (phone.isEmpty) return;
+      // final UserModel userInfo = AppSettings.userInfo!;
+      // updateUserInfo(userInfo.copyWith(phoneNumber: phone));
+      _cubit.updateCreateDsmesBookingRequestRequesterInfo(
+          name: nameController.text, phone: phone);
+      phoneController.text = phone;
+      setState(() {
+        requesterPhone = phone;
+      });
+    });
   }
 
   void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {
