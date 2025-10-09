@@ -1352,4 +1352,7 @@ nhap_4_so_trong_tin_nhan,Nhập 4 số trong tin nhắn văn bản đã gửi đ
 ban_muon_dong_bo_so_dien_thoai,Bạn muốn đồng bộ số điện thoại với tài khoản hiện tại?,You want to sync phone number with current account?,
 login_with_phone,"Đăng nhập qua số điện thoại","Login with phone number",
 login_with_zalo,"Đăng nhập qua Zalo","Login with Zalo",
-french,"Tiếng Pháp",French
+french,"Tiếng Pháp",French,
+chon_bac_si,"Chọn bác sĩ","Choose doctor",
+exchange_return_policy,"Chính sách đổi trả","Exchange and Return Policy"
+

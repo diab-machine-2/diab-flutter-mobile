@@ -144,8 +144,12 @@ class NavigatorName {
   // New Blood Sugar
   static const String confirm_blood_sugar = '/confirm_blood_sugar';
   static const String blood_sugar_image_capture = '/blood_sugar_image_capture';
-  
+
   // Phone Update Flow
   static const String update_phone_number = '/update_phone_number';
   static const String confirm_phone_verify_otp = '/confirm_phone_verify_otp';
+
+  // Policy Pages
+  static const String cancellation_refund_policy =
+      '/cancellation_refund_policy';
 }

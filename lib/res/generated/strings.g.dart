@@ -1409,4 +1409,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get ban_muon_dong_bo_so_dien_thoai => 'ban_muon_dong_bo_so_dien_thoai';
   String get login_with_phone => 'login_with_phone';
   String get login_with_zalo => 'login_with_zalo';
+  String get exchange_return_policy => 'exchange_return_policy';
 }

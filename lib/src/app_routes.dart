@@ -11,6 +11,7 @@ import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
+import 'package:medical/src/widget/profile/cancellation_refund_policy.dart';
 
 import 'utils/navigator_name.dart';
 import 'widget/BloodPressure/add_bloodpressure_result.dart';
@@ -150,7 +151,6 @@ class AppRoutes {
         break;
       // ~ END: Huyet Ap (mới) ~
       case NavigatorName.blood_sugar_image_capture:
-        final data = settings.arguments as Map<String, dynamic>?;
         page = BloodSugarImageCapture();
         break;
       // Phone Update Flow
@@ -163,6 +163,9 @@ class AppRoutes {
           phone: data?['phone'] ?? '',
           isPhoneNumberExist: data?['isPhoneNumberExist'] ?? false,
         );
+        break;
+      case NavigatorName.cancellation_refund_policy:
+        page = CancellationRefundPolicyController();
         break;
 
       default:

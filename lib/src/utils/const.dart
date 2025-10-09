@@ -1,5 +1,5 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "staging"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT = "product"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -218,7 +218,7 @@ class Const {
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
   static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
   static const String ORGANIZATION_API_KEY = 'organization_api_key';
-  static const String ORGANIZATION_API_KEY_VALUE = 'diab-heath-center-9a3cefac-136caaef';
+  static const String ORGANIZATION_API_KEY_VALUE = 'diab-yb-5c3bae30-712c4ffc';
   static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 30; // In minutes
   static const String CLINIC_TYPE_CLINIC = 'clinic';
   static const String CLINIC_TYPE_HOSPITAL = 'hospital';
