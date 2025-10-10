@@ -808,4 +808,6 @@ class Drawables {
   String get im_glucose_from_photo => "lib/res/drawables/glucose/im_glucose_from_photo.png";
   String get ic_camera_white => "lib/res/drawables/ic_camera_white.png";
   String get ic_camera_green => "lib/res/drawables/ic_camera_green.png";
+  String get ic_phone_security => "lib/res/drawables/ic_phone_security.png";
+  String get ic_phone_illustration => "lib/res/drawables/ic_phone_illustration.png";
 }

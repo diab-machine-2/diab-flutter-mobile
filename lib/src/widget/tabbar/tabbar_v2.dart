@@ -34,6 +34,8 @@ import 'package:medical/src/widget/conversation/conversations.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/home/home_v2.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/activity_tab.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
@@ -47,6 +49,15 @@ import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:package_info/package_info.dart';
 import 'package:store_redirect/store_redirect.dart';
+
+// Lightweight global accessor for current tab index
+class TabbarRouteState {
+  static int currentIndex = 0;
+}
+
+bool isHomeTabActive() {
+  return TabbarRouteState.currentIndex == TabBarType.home.index;
+}
 
 class TabbarController extends StatefulWidget {
   const TabbarController(
@@ -80,6 +91,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   int _initialPage = 0;
   late int _lastIndex = _initialPage;
   bool _initComplete = false;
+  bool _pendingPhoneValidation = false;
 
   @override
   void initState() {
@@ -192,11 +204,64 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       // _showMaterialDialog();
     } else {
       _jumpTo(index);
+      TabbarRouteState.currentIndex = index;
+
+      // Check phone validation when switching to home tab
+      if (index == TabBarType.home.index) {
+        if (_pendingPhoneValidation) {
+          // Ensure we are at the tabbar route before showing
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _checkPhoneValidationOnHomeTab();
+          });
+        }
+      }
     }
   }
 
   void _onChatWithAI() {
     Navigator.pushNamed(context, NavigatorName.conversation_chatbot_ai);
+  }
+
+  /// Check phone validation when home tab becomes active
+  Future<void> _checkPhoneValidationOnHomeTab() async {
+    try {
+      // Ensure this tabbar route is the top-most
+      final route = ModalRoute.of(context);
+      if (route == null || route.isCurrent != true) return;
+
+      final isHomeRoute = route.settings.name == NavigatorName.tabbar;
+
+      // Ensure we are at tabbar route and Home tab
+      log('isHomeRoute: $isHomeRoute');
+      log('isHomeTabActive: ${isHomeTabActive()}');
+      if (!isHomeRoute) return;
+      if (!isHomeTabActive()) return;
+
+      // Check if we're actually on the app's root (not on a detail page)
+      // by checking if there are any routes pushed on top of the tabbar
+      // IMPORTANT: use rootNavigator to detect routes above the tabbar
+      final rootNavigator = Navigator.of(context, rootNavigator: true);
+      final canPop = rootNavigator.canPop();
+
+      // Only show phone validation if we're truly on the home screen
+      // (no routes pushed on top of tabbar)
+      if (canPop) {
+        log('Phone validation skipped - user is on detail page');
+        return;
+      }
+
+      final shouldShow =
+          await PhoneValidationManager.shouldShowAndResetPhoneValidation();
+
+      if (shouldShow) {
+        // Show phone update bottom sheet
+        PhoneUpdateBottomSheet.show(context);
+        _pendingPhoneValidation = false; // consume pending flag
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
   }
 
   void _checkExistZoomId() async {
@@ -317,8 +382,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       BotToast.showLoading();
-      final user =
-          await UserClient().fetchUser().then((value) {
+      final user = await UserClient().fetchUser().then((value) {
         BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
@@ -360,8 +424,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
     if (notifyName == 'subscription_back_to_home') {
       BotToast.showLoading();
-      final user =
-          await UserClient().fetchUser().then((value) {
+      final user = await UserClient().fetchUser().then((value) {
         BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
@@ -403,12 +466,22 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
   }
 
-  void _jumpTo(int index) {
+  void _jumpTo(int index) async {
     if (_lastIndex != TabBarType.home.index && index == TabBarType.home.index) {
       Observable.instance.notifyObservers([], notifyName: "back_to_home");
+      // Check phone validation when programmatically navigating to home tab
+      final shouldShow =
+          await PhoneValidationManager.shouldShowPhoneValidation();
+      if (index == TabBarType.home.index && shouldShow) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _checkPhoneValidationOnHomeTab();
+        });
+      }
     }
     _lastIndex = index;
     pageController!.jumpToPage(index);
+    TabbarRouteState.currentIndex = index;
   }
 
   @override

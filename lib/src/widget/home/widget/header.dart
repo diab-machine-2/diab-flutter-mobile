@@ -207,11 +207,11 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                        (user?.packageName != null &&
-                                                user?.packageName?.isNotEmpty ==
-                                                    true)
-                                            ? user?.packageName ?? ''
-                                            : R.string.thanh_vien_co_ban.tr(),
+                                        (user?.tranServicePackageName != null && user?.tranServicePackageName?.isNotEmpty == true)
+                                            ? user?.tranServicePackageName ?? ''
+                                            : (user?.packageName != null && user?.packageName?.isNotEmpty == true)
+                                                ? user?.packageName ?? ''
+                                                : R.string.thanh_vien_co_ban.tr(),
                                         style: TextStyle(
                                             color: R.color.white,
                                             fontSize: 14,

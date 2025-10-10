@@ -481,15 +481,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
     return Positioned.fill(
       bottom: paddingBottom,
-      child: OverflowBox(
-        maxHeight: MediaQuery.of(context).size.height - paddingBottom,
-        alignment: Alignment.topCenter,
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: _controller!.value.previewSize?.height ?? MediaQuery.of(context).size.width,
-            height: _controller!.value.previewSize?.width ?? MediaQuery.of(context).size.height,
-            child: CameraPreview(_controller!),
+      child: ClipRect(
+        child: OverflowBox(
+          maxHeight: MediaQuery.of(context).size.height - paddingBottom,
+          alignment: Alignment.topCenter,
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: _controller!.value.previewSize?.height ??
+                  MediaQuery.of(context).size.width,
+              height: _controller!.value.previewSize?.width ??
+                  MediaQuery.of(context).size.height,
+              child: CameraPreview(_controller!),
+            ),
           ),
         ),
       ),
