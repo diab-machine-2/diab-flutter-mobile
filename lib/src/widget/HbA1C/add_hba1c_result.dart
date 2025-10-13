@@ -189,8 +189,8 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
   }
 
   void _doGuide() async {
-    // Navigate to HbA1C guide page if available
-    Navigator.of(context).pushNamed(NavigatorName.hba1c_intro_1st_page);
+    // Navigate to HbA1C guide page
+    Navigator.of(context).pushNamed(NavigatorName.hba1c_intro_2nd_page);
   }
 
   @override

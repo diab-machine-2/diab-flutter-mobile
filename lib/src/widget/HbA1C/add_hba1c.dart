@@ -277,7 +277,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
             child: InkWell(
               onTap: () {
                 Navigator.pushNamed(
-                    context, NavigatorName.hba1c_intro_1st_page);
+                    context, NavigatorName.hba1c_intro_2nd_page);
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -286,6 +286,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   style: TextStyle(
                       fontFamily: R.font.sfpro,
                       color: R.color.white,
+                      fontWeight: FontWeight.w700,
                       fontSize: 15),
                 ),
               ),
