@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:camera/camera.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,13 +31,13 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
   bool _isInitialized = false;
-  bool _isLoading = false;
   final ImagePicker _picker = ImagePicker();
   File? _lastCapturedImage;
 
   // Animation properties
   bool _showFlashEffect = false;
   bool _requestingPermission = false;
+  bool _isAnalyzing = false;
 
   @override
   void initState() {
@@ -82,27 +83,41 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       await _controller?.dispose();
       _controller = null;
 
-      BotToast.showLoading();
+      // Show analyzing overlay
+      setState(() {
+        _isAnalyzing = true;
+      });
+
       final result = await FoodClient().postFoodImages(paths);
+      print("API call completed with result: ${result.length} items");
+
+      // Hide analyzing overlay
+      setState(() {
+        _isAnalyzing = false;
+      });
 
       // Navigate to the food detail page with the new food ID
       if (result.isNotEmpty) {
-        Navigator.pushReplacementNamed(context, NavigatorName.confirm_food, arguments: {
-          'timeframe': widget.timeframe,
-          'timeframeId': widget.timeframeId,
-          'foods': result,
-          'files': paths,
-        });
+        BotToast.closeAllLoading(); // Close all toasts including custom text
+        Navigator.pushReplacementNamed(context, NavigatorName.confirm_food,
+            arguments: {
+              'timeframe': widget.timeframe,
+              'timeframeId': widget.timeframeId,
+              'foods': result,
+              'files': paths,
+            });
       } else {
-        BotToast.closeAllLoading();
+        BotToast.closeAllLoading(); // Close all toasts including custom text
         BotToast.showText(text: 'Không tìm thấy thực phẩm nào để đồng bộ');
       }
     } catch (e) {
+      print("Error occurred: $e");
+      setState(() {
+        _isAnalyzing = false;
+      });
       BotToast.showText(text: 'Lỗi khi đồng bộ thực phẩm: $e');
       // restart camera
       _initializeCamera();
-    } finally {
-      BotToast.closeAllLoading();
     }
   }
 
@@ -171,17 +186,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   Future<void> _switchCamera() async {
     if (_cameras.length < 2) return;
 
-    setState(() {
-      _isLoading = true;
-    });
-
     final newIndex = (_selectedCameraIndex + 1) % _cameras.length;
     _selectedCameraIndex = newIndex;
     await _setupCamera(newIndex);
-
-    setState(() {
-      _isLoading = false;
-    });
 
     // Haptic feedback
     HapticFeedback.lightImpact();
@@ -193,10 +200,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         _controller!.value.isStreamingImages) return;
 
     try {
-      setState(() {
-        _isLoading = true;
-      });
-
       final XFile file = await _controller!.takePicture();
       final imageFile = File(file.path);
 
@@ -214,12 +217,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     } catch (e) {
       if (mounted) {
         _showErrorDialog('Lỗi khi chụp ảnh: $e');
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
       }
     }
   }
@@ -313,7 +310,16 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       );
 
       if (pickedFiles.isNotEmpty) {
-        return pickedFiles.map((e) => e.path).toList();
+        // Enforce a maximum of 5 images even if the picker allows more
+        final List<XFile> limited =
+            pickedFiles.length > 5 ? pickedFiles.sublist(0, 5) : pickedFiles;
+
+        if (pickedFiles.length > 5) {
+          BotToast.showText(
+              text: 'Chỉ chọn tối đa 5 ảnh. Đã lấy 5 ảnh đầu tiên.');
+        }
+
+        return limited.map((e) => e.path).toList();
       }
     } catch (e) {
       _showPermissionDialog();
@@ -371,39 +377,43 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   void _manualInputSelect() {
     Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.pushNamed(context, NavigatorName.add_food, arguments: {'type': 'input'});
+    Navigator.pushNamed(context, NavigatorName.add_food,
+        arguments: {'type': 'input'});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.black,
-      body: Column(
+      body: Stack(
         children: [
-          _appBarSection(),
-          Expanded(
-            child: Stack(
-              children: [
-                // Camera Preview
-                _buildCameraPreview(),
+          Column(
+            children: [
+              _appBarSection(),
+              Expanded(
+                child: Stack(
+                  children: [
+                    // Camera Preview
+                    _buildCameraPreview(),
 
-                // Top overlay guide
-                _buildTopOverlay(),
+                    // Top overlay guide
+                    _buildTopOverlay(),
 
-                // Bottom controls
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _buildBottomControls(),
+                    // Bottom controls
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: _buildBottomControls(),
+                    ),
+
+                    // Flash effect
+                    if (_showFlashEffect) _buildFlashEffect(),
+                  ],
                 ),
-
-                // Flash effect
-                if (_showFlashEffect) _buildFlashEffect(),
-
-                // Loading indicator
-                if (_isLoading) _buildLoadingOverlay(),
-              ],
-            ),
+              ),
+            ],
           ),
+          // Full screen analyzing overlay
+          if (_isAnalyzing) _buildAnalyzingOverlay(),
         ],
       ),
     );
@@ -415,7 +425,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       centerTitle: false,
       title: Text(
         widget.timeframe,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.white),
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w600, color: R.color.white),
       ),
       leadingIcon: IconButton(
         splashColor: R.color.transparent,
@@ -446,16 +457,16 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                   children: [
                     Image.asset(
                       R.drawable.ic_food_edit_raw,
-                      width: 24,
-                      height: 24,
+                      width: 16,
+                      height: 16,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Nhập món ăn',
+                      R.string.nhap_mon_an.tr(),
                       style: TextStyle(
                         color: R.color.greenGradientBottom,
                         fontSize: 13,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                       ),
                     )
                   ],
@@ -469,7 +480,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   Widget _buildCameraPreview() {
-    if (!_isInitialized || _controller == null || !_controller!.value.isInitialized) {
+    if (!_isInitialized ||
+        _controller == null ||
+        !_controller!.value.isInitialized) {
       return const Center(
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -540,7 +553,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(R.drawable.ic_image_placeholder, width: 24, height: 24),
+                Image.asset(R.drawable.ic_image_placeholder,
+                    width: 24, height: 24),
                 const SizedBox(height: 4),
                 Text(
                   'Tối đa 5 ảnh',
@@ -620,7 +634,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 const SizedBox(height: 13),
                 _buildControlButton(
                   icon: R.drawable.im_food_capture_rotate,
-                  onTap: _cameras.length > 1 && _isInitialized ? _switchCamera : null,
+                  onTap: _cameras.length > 1 && _isInitialized
+                      ? _switchCamera
+                      : null,
                   size: 56,
                 ),
                 const SizedBox(height: 6),
@@ -733,21 +749,40 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Widget _buildLoadingOverlay() {
-    return Container(
-      color: Colors.black.withOpacity(0.5),
-      child: const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        ),
-      ),
-    );
-  }
-
   Widget _buildFlashEffect() {
     return Positioned.fill(
       child: Container(
         color: Colors.white.withOpacity(0.8),
+      ),
+    );
+  }
+
+  Widget _buildAnalyzingOverlay() {
+    return Positioned.fill(
+      child: AbsorbPointer(
+        child: Container(
+          color: Colors.black.withOpacity(0.7),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  R.string.analyzing_your_meal.tr(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

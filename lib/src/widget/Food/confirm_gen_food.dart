@@ -10,6 +10,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -111,8 +112,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                     children: [
                                       Positioned.fill(
                                         child: widget.files.length > 0 ? Image.file(
-                                          File(widget.files.first),
-                                          fit: BoxFit.cover,
+                                                File(widget.files.first),
+                                                fit: BoxFit.cover,
                                         ) : SizedBox(),
                                       ),
                                       Container(
@@ -604,8 +605,15 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
+                              Navigator.pop(context); // Close dialog
+                              Navigator.pop(context); // Close confirm_gen_food
+                              // Navigate back to food image capture screen
+                              Navigator.pushNamed(
+                                  context, NavigatorName.food_image_capture,
+                                  arguments: {
+                                    'timeframe': widget.timeframe,
+                                    'timeframeId': widget.timeframeId,
+                                  });
                             },
                             child: Container(
                               height: 43,
@@ -711,15 +719,15 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                     Padding(
                       padding: EdgeInsets.only(left: 16, right: 4),
                       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Text(R.string.pick_date.tr(),
-                            style: TextStyle(
+                            Text(R.string.pick_date.tr(),
+                                style: TextStyle(
                                 color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)),
-                        IconButton(
+                            IconButton(
                             icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                })
+                          ]),
                     ),
                     CustomCalendarDatePicker(
                         initialDate: widget.initDate == null ? DateTime.now() : widget.initDate!,
@@ -738,7 +746,9 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         ),
                         Text(R.string.pick_time.tr(),
                             style: TextStyle(
-                                color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)),
+                                color: R.color.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700)),
                       ],
                     ),
                     SizedBox(height: 20),
@@ -779,8 +789,12 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            selectedDate = DateTime(selectedDate!.year, selectedDate!.month,
-                                selectedDate!.day, selectedHour, selectedMinute);
+                            selectedDate = DateTime(
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
+                                selectedHour,
+                                selectedMinute);
 
                             widget.callback!(selectedDate);
 
@@ -821,7 +835,11 @@ class CustomTimePicker extends StatefulWidget {
   final TimeHourCallback? callback;
   final DateTime? initSelectedDate;
   CustomTimePicker(
-      {Key? key, this.selectedHour, this.selectedMinute, this.callback, this.initSelectedDate})
+      {Key? key,
+      this.selectedHour,
+      this.selectedMinute,
+      this.callback,
+      this.initSelectedDate})
       : super(key: key);
   @override
   CustomTimePickerState createState() => CustomTimePickerState();
