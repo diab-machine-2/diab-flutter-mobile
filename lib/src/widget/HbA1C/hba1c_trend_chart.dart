@@ -295,7 +295,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         widget.focusSubIndex >= widget.groupedPoints[widget.focusIndex].length)
       return false;
 
-    // Find the corresponding flat index for the selected point 
+    // Find the corresponding flat index for the selected point
     int currentFlatIndex = 0;
     for (int dayIndex = 0; dayIndex < widget.groupedPoints.length; dayIndex++) {
       final group = widget.groupedPoints[dayIndex];
