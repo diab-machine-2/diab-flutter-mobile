@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -11,7 +12,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
@@ -29,9 +29,13 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
+import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/app.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_reminder.dart';
@@ -64,7 +68,7 @@ class HomeController extends StatefulWidget {
 }
 
 class _HomeControllerState extends State<HomeController>
-    with Observer, AutomaticKeepAliveClientMixin<HomeController> {
+    with Observer, AutomaticKeepAliveClientMixin<HomeController>, RouteAware {
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
   final HomeBloc _homeBloc = HomeBloc();
   final String _screenName = "home";
@@ -130,6 +134,69 @@ class _HomeControllerState extends State<HomeController>
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPopNext() {
+    // A route above this one was popped, and home is visible again
+    // Check phone validation when returning to home screen (defer to ensure we're really at home)
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await Future.delayed(Duration(milliseconds: 80));
+      if (!mounted) return;
+      _checkPhoneValidationWhenHomeVisible();
+    });
+    super.didPopNext();
+  }
+
+  Future<void> _checkPhoneValidationWhenHomeVisible() async {
+    try {
+      // Ensure this route is current
+      final route = ModalRoute.of(context);
+      if (route == null || route.isCurrent != true) return;
+
+      // Ensure we are at tabbar route and Home tab
+      log('isCurrentRoute: ${_isCurrentRoute(NavigatorName.tabbar)}');
+      log('isHomeTabActive: ${isHomeTabActive()}');
+      if (!_isCurrentRoute(NavigatorName.tabbar)) return;
+      if (!isHomeTabActive()) return;
+
+      // Check if we're actually on the home screen (not on a detail page)
+      // by checking if there are any routes pushed on top of the tabbar
+      final navigator = Navigator.of(context);
+      final canPop = navigator.canPop();
+
+      // Only show phone validation if we're truly on the home screen
+      // (no routes pushed on top of tabbar)
+      if (canPop) {
+        log('Phone validation skipped - user is on detail page');
+        return;
+      }
+
+      // Check if phone validation should be shown and reset flag if shown
+      final shouldShow =
+          await PhoneValidationManager.shouldShowAndResetPhoneValidation();
+      if (shouldShow) {
+        PhoneUpdateBottomSheet.show(context);
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  bool _isCurrentRoute(String routeName) {
+    final currentRoute = ModalRoute.of(context);
+    log('[ROUTE] ${currentRoute?.settings.name ?? ""}');
+    return currentRoute?.settings.name == routeName;
+  }
+
   Future<void> initTarget() async {
     var model = await UserClient().fetchGoalInfo();
     if (model == null) return;
@@ -156,20 +223,21 @@ class _HomeControllerState extends State<HomeController>
     // _checkShowRating();
 
     Future.delayed(Duration.zero, () async {
-      String? username = AppSettings.userInfo!.userName;
-      String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
-      bool isFirstDownload = await AppSettings.getIsFirstDownload();
-      bool isZaloAccountAndNotSynchronized = firstLinked != null &&
-          firstLinked.toLowerCase() == "zalo" &&
-          username != null &&
-          !username.startsWith("+84");
-      if (isZaloAccountAndNotSynchronized && isFirstDownload) {
-        _showModalSyncAccount();
-      }
-      if (AppSettings.isSyncSuccess) {
-        _showDialogSuccess();
-        AppSettings.isSyncSuccess = false;
-      }
+      // String? username = AppSettings.userInfo!.userName;
+      // String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
+      // bool isFirstDownload = await AppSettings.getIsFirstDownload();
+      // bool isZaloAccountAndNotSynchronized = firstLinked != null &&
+      //     firstLinked.toLowerCase() == "zalo" &&
+      //     username != null &&
+      //     !username.startsWith("+84");
+      // if (isZaloAccountAndNotSynchronized && isFirstDownload) {
+      //   _showModalSyncAccount();
+      // }
+      // if (AppSettings.isSyncSuccess) {
+      //   _showDialogSuccess();
+      //   AppSettings.isSyncSuccess = false;
+      // }
+      await _checkPhoneValidationWhenHomeVisible();
     });
 
     if (lessonId == null && meetingId == null && activityId == null) {
@@ -444,6 +512,8 @@ class _HomeControllerState extends State<HomeController>
     // Set state tabbar in order to rebuild data of program tab if have activated new package
     Observable.instance.notifyObservers([],
         notifyName: Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM);
+
+    // Phone validation is handled by PhoneValidationManager in _checkPhoneValidationOnRouteChange()
 
     return true;
   }

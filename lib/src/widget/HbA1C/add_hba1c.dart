@@ -23,6 +23,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
 
@@ -1051,6 +1052,9 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         );
 
         BotToast.closeAllLoading();
+
+        // Set flag to show phone validation after successful HbA1C input
+        PhoneValidationManager.setShouldShowPhoneValidation();
 
         // Navigate to result page
         _navigateToResult(double.parse(numberInput), data.note, data.files);

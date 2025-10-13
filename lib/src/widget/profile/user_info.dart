@@ -26,7 +26,10 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
 import 'package:medical/src/widget/profile/address.dart';
+import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/select_bottom_sheet_widget.dart';
 import 'package:medical/src/widgets/user_icon_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -823,10 +826,21 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                   ? Image.asset(R.drawable.ic_ok,
                                       width: 24, height: 24)
                                   : null,
-                              callback: (selectedIndexList) {
-                                if (user.phoneNumber == null ||
-                                    user.phoneNumber == "")
-                                  _showDialogUpdatePhone();
+                              callback: (selectedIndexList) async {
+                                // if (user.phoneNumber == null ||
+                                //     user.phoneNumber == "")
+                                //   _showDialogUpdatePhone();
+
+                                await PhoneValidationManager
+                                    .setShouldShowPhoneValidation();
+
+                                final shouldShow = await PhoneValidationManager
+                                    .shouldShowPhoneValidation();
+                                final isPhoneValid = await PhoneValidationHelper
+                                    .isValidUserPhoneNumber();
+                                if (shouldShow && !isPhoneValid) {
+                                  PhoneUpdateBottomSheet.show(context);
+                                }
                               },
                             ),
                             _buildItemProfile(
@@ -2369,7 +2383,7 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                     return;
                                   }
                                 }
-                                
+
                                 final UserModel userInfo =
                                     AppSettings.userInfo!;
 

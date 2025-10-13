@@ -1,10 +1,8 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/bmi/weight_input.dart';
@@ -17,13 +15,11 @@ import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/repo/weight/weight_client.dart';
-import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/models/weight_ranger_model.dart';
 import 'package:medical/src/widget/base/cubit_base_state.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 
 class AddBmiCubit extends Cubit<CubitBaseState> {
   final String? type;
@@ -151,6 +147,10 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
         }
         Observable.instance
             .notifyObservers([], notifyName: "Weight_change_data");
+
+        // Set flag to show phone validation after successful BMI/Weight input
+        PhoneValidationManager.setShouldShowPhoneValidation();
+
         emit(DataLoadedState());
       }
     } catch (e) {

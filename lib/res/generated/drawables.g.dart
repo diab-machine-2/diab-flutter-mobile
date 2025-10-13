@@ -819,4 +819,6 @@ class Drawables {
       "lib/res/drawables/hba1c/im_hba1c_supports_3.png";
   String get im_hba1c_supports_4 =>
       "lib/res/drawables/hba1c/im_hba1c_supports_4.png";
+  String get ic_phone_security => "lib/res/drawables/ic_phone_security.png";
+  String get ic_phone_illustration => "lib/res/drawables/ic_phone_illustration.png";
 }

@@ -20,6 +20,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 
 import '../../modal/exercrises/exercrise_Input_detail_model.dart';
 import '../../modal/glucose/glucose_timeFrame.dart';
@@ -928,6 +929,10 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
               context, R.string.add_exercise_successfully.tr());
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data_v2");
+
+          // Set flag to show phone validation after successful exercise input
+          PhoneValidationManager.setShouldShowPhoneValidation();
+
           Navigator.pushNamed(context, NavigatorName.exercrise_result,
               arguments: {
                 'date': selectedDate,

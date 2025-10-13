@@ -29,6 +29,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/toggle_buttons.dart';
 
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
@@ -400,6 +401,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       goalId: widget.goalId,
       isNew: widget.type == 'update' ? false : true,
     );
+    
+    // Set flag to show phone validation after successful blood pressure input
+    PhoneValidationManager.setShouldShowPhoneValidation();
     Navigator.of(context)
         .pushReplacementNamed(NavigatorName.add_bloodpressure_result, arguments: data);
   }
