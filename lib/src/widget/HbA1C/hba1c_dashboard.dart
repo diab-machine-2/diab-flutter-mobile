@@ -44,6 +44,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   int _selectedUIIndex =
       0; // Track UI selection separately (default to "Tất cả")
   String? _aiSuggestion;
+  bool _isLoadingAI = false; // Track if AI is being loaded to prevent loops
   int _focusIndex = -1; // Focused time-group index (x axis group)
   int _focusSubIndex = 0; // Focused item within the time group
 
@@ -96,6 +97,10 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   Future<void> _loadAITrend() async {
+    // Prevent loading if already in progress
+    if (_isLoadingAI) return;
+
+    _isLoadingAI = true;
     if (mounted) {
       setState(() {
         _aiSuggestion = null; // Show loading state
@@ -118,6 +123,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
             // Fallback to local analysis if API returns empty
             _generateLocalAISuggestion();
           }
+          _isLoadingAI = false;
         });
       }
     } catch (e) {
@@ -125,6 +131,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       if (mounted) {
         setState(() {
           _generateLocalAISuggestion();
+          _isLoadingAI = false;
         });
       }
     }
@@ -202,6 +209,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       // 3 (24 tháng) -> 3
       _periodFilterType = periodFilter == 0 ? 3 : periodFilter;
       _focusIndex = -1;
+      _isLoadingAI = false; // Reset flag to allow new AI load
     });
     _loadTrendData();
     _loadAITrend();
@@ -256,15 +264,15 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       _groupedPoints.add(group);
     }
 
-    // Debug: Print grouped data for verification
-    print("HbA1C Grouped Data:");
-    for (int i = 0; i < _groupedPoints.length; i++) {
-      final group = _groupedPoints[i];
-      print("Day $i: ${group.length} readings");
-      for (int j = 0; j < group.length; j++) {
-        print("  Reading $j: ${group[j].value}% at ${group[j].timeOfDay}");
-      }
-    }
+    // Debug: Print grouped data for verification (commented to reduce log spam)
+    // print("HbA1C Grouped Data:");
+    // for (int i = 0; i < _groupedPoints.length; i++) {
+    //   final group = _groupedPoints[i];
+    //   print("Day $i: ${group.length} readings");
+    //   for (int j = 0; j < group.length; j++) {
+    //     print("  Reading $j: ${group[j].value}% at ${group[j].timeOfDay}");
+    //   }
+    // }
 
     // Focus most recent group by default
     if (_groupedPoints.isNotEmpty) {
@@ -273,10 +281,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           : _focusIndex.clamp(0, _groupedPoints.length - 1);
       _focusSubIndex =
           _focusSubIndex.clamp(0, _groupedPoints[_focusIndex].length - 1);
-      // Load AI trend asynchronously without setState during build
-      if (_aiSuggestion == null) {
-        Future.microtask(() => _loadAITrend());
-      }
+      // Don't load AI here - it's loaded in reloadData() to prevent infinite loops
     } else {
       _focusIndex = -1;
       _focusSubIndex = 0;
