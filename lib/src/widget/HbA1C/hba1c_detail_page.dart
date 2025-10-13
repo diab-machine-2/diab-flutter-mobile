@@ -59,6 +59,7 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   }
 
   void _loadData() {
+    // Add loading event to show loading indicator
     _hbA1CBloc.add(FetchInputHbA1C(
       currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       periodFilterType: _periodFilterType,
@@ -67,6 +68,8 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   }
 
   void _onFilterChanged(int index) {
+    if (_selectedUIIndex == index) return; // Prevent unnecessary reload
+
     setState(() {
       _selectedUIIndex = index;
       // Map UI index to API periodFilterType:
@@ -388,6 +391,8 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   }
 
   Widget _buildEmptyState() {
+    String emptyMessage = _getEmptyStateText();
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -412,7 +417,7 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Hãy nhập chỉ số HbA1c để theo dõi\nsức khỏe của bạn',
+            emptyMessage,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -425,5 +430,20 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
         ],
       ),
     );
+  }
+
+  String _getEmptyStateText() {
+    switch (_selectedUIIndex) {
+      case 0: // Tất cả (maps to 6 months)
+        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
+      case 1: // 6 tháng
+        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
+      case 2: // 12 tháng
+        return 'Không có dữ liệu\ntrong 12 tháng gần nhất';
+      case 3: // 24 tháng
+        return 'Không có dữ liệu\ntrong 24 tháng gần nhất';
+      default:
+        return 'Không có dữ liệu\nHãy nhập chỉ số HbA1c để theo dõi';
+    }
   }
 }
