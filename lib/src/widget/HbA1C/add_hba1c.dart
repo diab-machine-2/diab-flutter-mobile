@@ -1149,8 +1149,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         } else {
           value = parsedValue * 10; // Convert to internal format
           isValid = true;
-          // Kiểm tra nguy hiểm: HbA1c >= 9%
-          isDangerous = parsedValue >= 9.0;
+          // Kiểm tra nguy hiểm: HbA1c >= 8% (mức "Cao" và "Rất cao")
+          isDangerous = parsedValue >= 8.0;
         }
       }
     } catch (e) {
