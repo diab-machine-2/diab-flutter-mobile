@@ -39,7 +39,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   String? currentLevel;
   Color? currentColor;
 
-  int _periodFilterType = 1; // Default to 1 for "Tất cả"
+  int _periodFilterType =
+      3; // Default to 3 (24 months, used with takeAll for "Tất cả")
   int _selectedUIIndex =
       0; // Track UI selection separately (default to "Tất cả")
   String? _aiSuggestion;
@@ -102,9 +103,12 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     }
 
     try {
+      // When "Tất cả" (index 0) is selected, use takeAll = true
+      bool useTakeAll = _selectedUIIndex == 0;
+
       // Gọi API để lấy gợi ý AI từ backend
-      final aiResult =
-          await HbA1CClient().fetchHbA1CTrendAnalysis(_periodFilterType);
+      final aiResult = await HbA1CClient()
+          .fetchHbA1CTrendAnalysis(_periodFilterType, takeAll: useTakeAll);
 
       if (mounted) {
         setState(() {
@@ -180,19 +184,23 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   void _loadTrendData() {
-    _hbA1CBloc.add(FetchHbA1CTrend(type: _periodFilterType));
+    // When "Tất cả" (index 0) is selected, use takeAll = true
+    bool useTakeAll = _selectedUIIndex == 0;
+    _hbA1CBloc.add(FetchHbA1CTrend(
+      type: _periodFilterType,
+      takeAll: useTakeAll,
+    ));
   }
 
   void reloadData(int periodFilter) {
     setState(() {
       _selectedUIIndex = periodFilter; // Track UI selection
       // Map UI index to API trendType:
-      // API only supports 1, 2, 3 (not 0 or 4)
-      // 0 (Tất cả) -> 1 (6 months - shows most data)
+      // 0 (Tất cả) -> use takeAll=true with periodFilterType=3 (24 months) + size=1000
       // 1 (6 tháng) -> 1
       // 2 (12 tháng) -> 2
       // 3 (24 tháng) -> 3
-      _periodFilterType = periodFilter == 0 ? 1 : periodFilter;
+      _periodFilterType = periodFilter == 0 ? 3 : periodFilter;
       _focusIndex = -1;
     });
     _loadTrendData();
@@ -305,7 +313,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   String _getEmptyStateText() {
     switch (_selectedUIIndex) {
       case 0: // Tất cả
-        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
+        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
       case 1: // 6 tháng
         return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
       case 2: // 12 tháng
@@ -313,7 +321,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       case 3: // 24 tháng
         return 'Không có dữ liệu\ntrong 24 tháng gần nhất';
       default:
-        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
+        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
     }
   }
 

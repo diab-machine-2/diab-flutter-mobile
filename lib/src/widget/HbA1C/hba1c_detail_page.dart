@@ -37,7 +37,8 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
 
   HbA1CBloc _hbA1CBloc = HbA1CBloc();
   int _selectedUIIndex = 0; // Default to "Tất cả"
-  int _periodFilterType = 1; // API period filter type (1 = 6 months)
+  int _periodFilterType =
+      3; // API period filter type (3 = 24 months, used with takeAll for "Tất cả")
 
   @override
   void initState() {
@@ -46,8 +47,8 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
     if (widget.initPeriodFilterType != null) {
       _selectedUIIndex = widget.initPeriodFilterType!;
       // Map UI index to API periodFilterType:
-      // 0 (Tất cả) -> 1, 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
-      _periodFilterType = _selectedUIIndex == 0 ? 1 : _selectedUIIndex;
+      // 0 (Tất cả) -> 3 (with takeAll=true), 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
+      _periodFilterType = _selectedUIIndex == 0 ? 3 : _selectedUIIndex;
     }
     _loadData();
   }
@@ -59,11 +60,13 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   }
 
   void _loadData() {
-    // Add loading event to show loading indicator
+    // When "Tất cả" (index 0) is selected, use takeAll = true
+    bool useTakeAll = _selectedUIIndex == 0;
     _hbA1CBloc.add(FetchInputHbA1C(
       currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       periodFilterType: _periodFilterType,
       page: 1,
+      takeAll: useTakeAll,
     ));
   }
 
@@ -73,8 +76,11 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
     setState(() {
       _selectedUIIndex = index;
       // Map UI index to API periodFilterType:
-      // 0 (Tất cả) -> 1, 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
-      _periodFilterType = index == 0 ? 1 : index;
+      // 0 (Tất cả) -> use takeAll=true with periodFilterType=3 (24 months) + size=1000
+      // 1 (6 tháng) -> 1
+      // 2 (12 tháng) -> 2
+      // 3 (24 tháng) -> 3
+      _periodFilterType = index == 0 ? 3 : index;
     });
     _loadData();
   }
@@ -434,8 +440,8 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
 
   String _getEmptyStateText() {
     switch (_selectedUIIndex) {
-      case 0: // Tất cả (maps to 6 months)
-        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
+      case 0: // Tất cả
+        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
       case 1: // 6 tháng
         return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
       case 2: // 12 tháng
@@ -443,7 +449,7 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
       case 3: // 24 tháng
         return 'Không có dữ liệu\ntrong 24 tháng gần nhất';
       default:
-        return 'Không có dữ liệu\nHãy nhập chỉ số HbA1c để theo dõi';
+        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
     }
   }
 }

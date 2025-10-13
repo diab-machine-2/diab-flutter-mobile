@@ -21,11 +21,12 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
       yield* fetchLastestSumary(event.currentDateTime, event.periodFilterType);
     }
     if (event is FetchHbA1CTrend) {
-      yield* fetchTrend(event.type);
+      yield* fetchTrend(event.type, takeAll: event.takeAll);
     }
     if (event is FetchInputHbA1C) {
       yield* fetchInputHbA1C(
-          event.currentDateTime, event.periodFilterType, event.page);
+          event.currentDateTime, event.periodFilterType, event.page,
+          takeAll: event.takeAll);
     }
   }
 
@@ -48,11 +49,12 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
     }
   }
 
-  Stream<HbA1CState> fetchTrend(int type) async* {
+  Stream<HbA1CState> fetchTrend(int type, {bool takeAll = false}) async* {
     try {
       final client = HbA1CClient();
       yield HbA1CLoading();
-      yield HbA1CTrendLoaded(trendModel: await client.fetchTrend(type));
+      yield HbA1CTrendLoaded(
+          trendModel: await client.fetchTrend(type, takeAll: takeAll));
     } catch (e, _) {
       if (e is Error) {
         yield HbA1CError(message: e.message);
@@ -64,7 +66,8 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
   }
 
   Stream<HbA1CState> fetchInputHbA1C(
-      int currentDateTime, int periodFilterType, int page) async* {
+      int currentDateTime, int periodFilterType, int page,
+      {bool takeAll = false}) async* {
     try {
       // Use the periodFilterType passed from the event, don't override it
       final client = HbA1CClient();
@@ -75,8 +78,9 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
         yield HbA1CLoading();
       }
 
-      var model =
-          await client.fetchInput(currentDateTime, periodFilterType, page);
+      var model = await client.fetchInput(
+          currentDateTime, periodFilterType, page,
+          takeAll: takeAll);
 
       if (currenState is HbA1CDetailLoaded) {
         if (page != 1) {
