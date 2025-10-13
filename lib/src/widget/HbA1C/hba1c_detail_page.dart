@@ -37,7 +37,7 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
 
   HbA1CBloc _hbA1CBloc = HbA1CBloc();
   int _selectedUIIndex = 0; // Default to "Tất cả"
-  int _periodFilterType = 1; // API period filter type
+  int _periodFilterType = 1; // API period filter type (1 = 6 months)
 
   @override
   void initState() {
@@ -45,7 +45,9 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
     // Initialize with passed filter type or default
     if (widget.initPeriodFilterType != null) {
       _selectedUIIndex = widget.initPeriodFilterType!;
-      _periodFilterType = (_selectedUIIndex + 1).clamp(1, 3);
+      // Map UI index to API periodFilterType:
+      // 0 (Tất cả) -> 1, 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
+      _periodFilterType = _selectedUIIndex == 0 ? 1 : _selectedUIIndex;
     }
     _loadData();
   }
@@ -67,7 +69,9 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   void _onFilterChanged(int index) {
     setState(() {
       _selectedUIIndex = index;
-      _periodFilterType = (index + 1).clamp(1, 3);
+      // Map UI index to API periodFilterType:
+      // 0 (Tất cả) -> 1, 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
+      _periodFilterType = index == 0 ? 1 : index;
     });
     _loadData();
   }

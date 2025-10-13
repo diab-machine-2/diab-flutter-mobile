@@ -39,7 +39,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   String? currentLevel;
   Color? currentColor;
 
-  int _periodFilterType = 1; // Default to "Tất cả" mapping (trendType = 1)
+  int _periodFilterType = 1; // Default to 1 for "Tất cả"
   int _selectedUIIndex =
       0; // Track UI selection separately (default to "Tất cả")
   String? _aiSuggestion;
@@ -186,9 +186,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   void reloadData(int periodFilter) {
     setState(() {
       _selectedUIIndex = periodFilter; // Track UI selection
-      // Map UI index to API trendType (1-3 only)
-      // 0->1, 1->2, 2->3, 3->3 (24 tháng maps to same as 12 tháng)
-      _periodFilterType = (periodFilter + 1).clamp(1, 3);
+      // Map UI index to API trendType:
+      // API only supports 1, 2, 3 (not 0 or 4)
+      // 0 (Tất cả) -> 1 (6 months - shows most data)
+      // 1 (6 tháng) -> 1
+      // 2 (12 tháng) -> 2
+      // 3 (24 tháng) -> 3
+      _periodFilterType = periodFilter == 0 ? 1 : periodFilter;
       _focusIndex = -1;
     });
     _loadTrendData();
@@ -261,8 +265,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           : _focusIndex.clamp(0, _groupedPoints.length - 1);
       _focusSubIndex =
           _focusSubIndex.clamp(0, _groupedPoints[_focusIndex].length - 1);
+      // Load AI trend asynchronously without setState during build
       if (_aiSuggestion == null) {
-        _loadAITrend();
+        Future.microtask(() => _loadAITrend());
       }
     } else {
       _focusIndex = -1;
