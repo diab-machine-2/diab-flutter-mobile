@@ -114,18 +114,18 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
 
     String analysis = "Chỉ số HbA1c ${hba1c}% của bạn đang ở mức $rangeLabel. ";
 
-    if (hba1c < 6.5) {
+    if (hba1c <= 6.5) {
       analysis +=
-          "Đây là một kết quả tuyệt vời! Hãy duy trì lối sống lành mạnh hiện tại với chế độ ăn cân bằng và tập thể dục đều đặn.";
-    } else if (hba1c < 7.0) {
+          "Đây là một kết quả tuyệt vời! Chỉ số HbA1c của bạn nằm trong mức lý tưởng, cho thấy không có nguy cơ tiểu đường. Hãy duy trì lối sống lành mạnh hiện tại với chế độ ăn cân bằng và tập thể dục đều đặn.";
+    } else if (hba1c <= 7.0) {
       analysis +=
-          "Chỉ số này cho thấy việc kiểm soát đường huyết đang tốt. Tiếp tục duy trì chế độ ăn uống và vận động phù hợp.";
-    } else if (hba1c < 8.0) {
+          "Chỉ số này cho thấy việc kiểm soát đường huyết đang tốt, tuy nhiên có nguy cơ tiền tiểu đường thấp. Tiếp tục duy trì chế độ ăn uống lành mạnh và tập luyện thể dục đều đặn.";
+    } else if (hba1c <= 8.0) {
       analysis +=
-          "Chỉ số này cần được cải thiện. Hãy tham khảo ý kiến bác sĩ về điều chỉnh thuốc và lối sống để đạt mục tiêu tốt hơn.";
+          "Chỉ số này đang ở mức cao, có nguy cơ tiểu đường. Cần cải thiện lối sống và chế độ ăn uống. Hãy tham khảo ý kiến bác sĩ về điều chỉnh thuốc và chế độ sinh hoạt để đạt mục tiêu tốt hơn.";
     } else {
       analysis +=
-          "Chỉ số này cần được theo dõi và điều trị chặt chẽ. Vui lòng liên hệ với bác sĩ điều trị để được tư vấn cụ thể.";
+          "Chỉ số này đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Cần được theo dõi và điều trị chặt chẽ. Vui lòng liên hệ ngay với bác sĩ điều trị để được tư vấn và điều trị kịp thời.";
     }
 
     return analysis;

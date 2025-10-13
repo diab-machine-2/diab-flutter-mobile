@@ -58,12 +58,16 @@ class HbA1cNavigationHelper {
 
   /// Get HbA1c level text based on value
   static String _getHbA1cLevel(double value) {
-    if (value < 5.7) {
-      return 'Bình thường';
-    } else if (value < 6.5) {
-      return 'Tiền tiểu đường';
+    // Match the standard HbA1c range classification
+    // ≤ 6.5: Lý tưởng, > 6.5 và ≤ 7.0: Tốt, > 7.0 và ≤ 8.0: Cao, > 8.0: Rất cao
+    if (value <= 6.5) {
+      return 'Lý tưởng';
+    } else if (value <= 7.0) {
+      return 'Tốt';
+    } else if (value <= 8.0) {
+      return 'Cao';
     } else {
-      return 'Tiểu đường';
+      return 'Rất cao';
     }
   }
 

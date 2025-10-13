@@ -326,18 +326,19 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   // Get color based on HbA1C value ranges with new color scheme
   Color _getHbA1cRangeColor(double value) {
     // Updated color scheme for 4 ranges:
-    if (value < 5.7) {
+    // ≤ 6.5: Lý tưởng, > 6.5 và ≤ 7.0: Tốt, > 7.0 và ≤ 8.0: Cao, > 8.0: Rất cao
+    if (value <= 6.5) {
       // Lý tưởng - Light Green
-      return Color(0xFF64E18E);
-    } else if (value < 6.5) {
+      return Color(0xFF64E18E); // #64E18E
+    } else if (value <= 7.0) {
       // Tốt - Green
-      return Color(0xFF23C559);
-    } else if (value < 9.0) {
+      return Color(0xFF23C559); // #23C559
+    } else if (value <= 8.0) {
       // Cao - Light Red
-      return Color(0xFFF86F6F);
+      return Color(0xFFF86F6F); // #F86F6F
     } else {
       // Rất cao - Dark Red
-      return Color(0xFFD02424);
+      return Color(0xFFD02424); // #D02424
     }
   }
 }

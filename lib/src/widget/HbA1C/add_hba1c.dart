@@ -57,7 +57,12 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   bool isClicked = false;
   DateTime today = DateTime.now();
   bool btnAction = true;
-  List<int> rangeValue = [0, 60, 65, 75];
+  List<int> rangeValue = [
+    0,
+    65,
+    70,
+    80
+  ]; // Updated: 0-6.5%, 6.5-7.0%, 7.0-8.0%, >8.0%
   List<String> _rangeLabel = ["Lý tưởng", "Tốt", "Cao", "Rất cao"];
   List<Color> _colorList = [
     Color(0xFF64E18E), // #64E18E - Lý tưởng
@@ -1097,32 +1102,39 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   }
 
   int findIndexInRanges(double number, List<int> ranges) {
-    for (int i = 0; i < ranges.length - 1; i++) {
-      if (number >= ranges[i] && number < ranges[i + 1]) {
-        return i;
-      }
-    }
-    // If the number is greater than or equal to the last range value
-    return ranges.length - 1;
+    // Handle boundary values to match visual display as requested:
+    // number is already multiplied by 10 (e.g., 65 for 6.5%)
+    // ranges = [0, 65, 70, 80] representing [0%, 6.5%, 7.0%, 8.0%]
+    // ≤ 65 (≤ 6.5%): Lý tưởng (index 0)
+    // > 65 và ≤ 70 (> 6.5% và ≤ 7.0%): Tốt (index 1)
+    // > 70 và ≤ 80 (> 7.0% và ≤ 8.0%): Cao (index 2)
+    // > 80 (> 8.0%): Rất cao (index 3)
+
+    if (number <= 65) return 0; // Lý tưởng
+    if (number <= 70) return 1; // Tốt
+    if (number <= 80) return 2; // Cao
+    return 3; // Rất cao
   }
 
   String _getHbA1cLevelFromValue(double value) {
-    // Updated level names to match 4 ranges:
-    if (value < 5.7) return 'Lý tưởng';
-    if (value < 6.5) return 'Tốt';
-    if (value < 9.0) return 'Cao';
+    // Match the visual range bar display as requested:
+    // 6.5 shows in Lý tưởng, 7.0 shows in Tốt, 8.0 shows in Cao
+    if (value <= 6.5) return 'Lý tưởng';
+    if (value <= 7.0) return 'Tốt';
+    if (value <= 8.0) return 'Cao';
     return 'Rất cao';
   }
 
   Color _getHbA1cColorFromValue(double value) {
-    // Updated color scheme matching dashboard and chart:
-    if (value < 5.7) {
+    // Match the visual range bar display as requested:
+    // 6.5 shows in Lý tưởng, 7.0 shows in Tốt, 8.0 shows in Cao
+    if (value <= 6.5) {
       // Lý tưởng - Light Green
       return const Color(0xFF64E18E); // #64E18E
-    } else if (value < 6.5) {
+    } else if (value <= 7.0) {
       // Tốt - Green
       return const Color(0xFF23C559); // #23C559
-    } else if (value < 9.0) {
+    } else if (value <= 8.0) {
       // Cao - Light Red
       return const Color(0xFFF86F6F); // #F86F6F
     } else {
@@ -1149,8 +1161,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         } else {
           value = parsedValue * 10; // Convert to internal format
           isValid = true;
-          // Kiểm tra nguy hiểm: HbA1c >= 8% (mức "Cao" và "Rất cao")
-          isDangerous = parsedValue >= 8.0;
+          // Kiểm tra nguy hiểm: HbA1c >= 8.1% (mức "Rất cao")
+          isDangerous = parsedValue >= 8.1;
         }
       }
     } catch (e) {

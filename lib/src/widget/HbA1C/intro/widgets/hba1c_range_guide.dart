@@ -81,24 +81,24 @@ class HbA1cRangeGuide extends StatelessWidget {
         'color': const Color(0xFF4F7F7),
       },
       {
-        'level': 'Tốt',
-        'range': '< 6.5',
-        'color': const Color(0xFF61D48A),
+        'level': 'Lý tưởng',
+        'range': '≤ 6.5',
+        'color': const Color(0xFF64E18E), // #64E18E
       },
       {
-        'level': 'Rất tốt',
-        'range': '6.5 - 7',
-        'color': const Color(0xFF17B545),
+        'level': 'Tốt',
+        'range': '6.5 - 7.0',
+        'color': const Color(0xFF23C559), // #23C559
       },
       {
         'level': 'Cao',
-        'range': '7 - 8',
-        'color': const Color(0xFFF06969),
+        'range': '7.0 - 8.0',
+        'color': const Color(0xFFF86F6F), // #F86F6F
       },
       {
         'level': 'Rất cao',
-        'range': '> 8',
-        'color': const Color(0xFFD04E4E),
+        'range': '> 8.0',
+        'color': const Color(0xFFD02424), // #D02424
       },
     ];
 

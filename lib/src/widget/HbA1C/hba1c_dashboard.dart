@@ -148,18 +148,18 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       String level = _getHbA1cLevelFromValue(currentHbA1cValue);
       String advice = "";
 
-      if (currentHbA1cValue < 5.7) {
+      if (currentHbA1cValue <= 6.5) {
         advice =
-            "cho thấy kiểm soát đường huyết lý tưởng và chưa có dấu hiệu tiểu đường. Hãy duy trì lối sống lành mạnh.";
-      } else if (currentHbA1cValue < 6.5) {
+            "cho thấy kiểm soát đường huyết lý tưởng và không có dấu hiệu tiểu đường. Chỉ số này rất tốt! Hãy tiếp tục duy trì lối sống lành mạnh với chế độ ăn cân bằng và tập thể dục đều đặn.";
+      } else if (currentHbA1cValue <= 7.0) {
         advice =
-            "cho thấy bạn đang ở mức tốt, có nguy cơ tiền tiểu đường thấp. Tiếp tục duy trì chế độ ăn uống và tập luyện.";
-      } else if (currentHbA1cValue < 9.0) {
+            "cho thấy việc kiểm soát đường huyết đang ở mức tốt, tuy nhiên có nguy cơ tiền tiểu đường thấp. Hãy tiếp tục duy trì chế độ ăn uống lành mạnh và tập luyện thể dục đều đặn.";
+      } else if (currentHbA1cValue <= 8.0) {
         advice =
-            "cho thấy bạn đang ở mức cao, có nguy cơ tiểu đường. Cần theo dõi và điều trị kịp thời theo hướng dẫn của bác sĩ.";
+            "cho thấy chỉ số đang ở mức cao, có nguy cơ tiểu đường. Bạn cần cải thiện lối sống và chế độ ăn uống. Hãy tham khảo ý kiến bác sĩ để được hướng dẫn điều chỉnh phù hợp.";
       } else {
         advice =
-            "cho thấy bạn đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Cần điều trị y tế ngay lập tức.";
+            "cho thấy chỉ số đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Bạn cần được theo dõi và điều trị y tế ngay lập tức. Vui lòng liên hệ với bác sĩ để được tư vấn kịp thời.";
       }
 
       // Check if there are multiple readings
@@ -234,10 +234,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         final date =
             DateTime.fromMillisecondsSinceEpoch(item.date! * 1000, isUtc: true);
         final value = item.hbA1C!;
-        final level = item.type ?? _getHbA1cLevelFromValue(value);
-        final color = item.color != null
-            ? Color(int.parse('0xff${item.color!.split('#').join()}'))
-            : _getHbA1cColorFromValue(value);
+        final level = _getHbA1cLevelFromValue(value);
+        final color = _getHbA1cColorFromValue(value);
 
         final timeOfDay = DateFormat('HH:mm').format(date);
         final dp = HbA1cDataPoint(
@@ -291,22 +289,24 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   String _getHbA1cLevelFromValue(double value) {
-    // Updated level names to match 4 ranges:
-    if (value < 5.7) return 'Lý tưởng';
-    if (value < 6.5) return 'Tốt';
-    if (value < 9.0) return 'Cao';
+    // Match the visual range bar display as requested:
+    // 6.5 shows in Lý tưởng, 7.0 shows in Tốt, 8.0 shows in Cao
+    if (value <= 6.5) return 'Lý tưởng';
+    if (value <= 7.0) return 'Tốt';
+    if (value <= 8.0) return 'Cao';
     return 'Rất cao';
   }
 
   Color _getHbA1cColorFromValue(double value) {
-    // Updated color scheme matching chart component:
-    if (value < 5.7) {
+    // Match the visual range bar display as requested:
+    // 6.5 shows in Lý tưởng, 7.0 shows in Tốt, 8.0 shows in Cao
+    if (value <= 6.5) {
       // Lý tưởng - Light Green
       return const Color(0xFF64E18E); // #64E18E
-    } else if (value < 6.5) {
+    } else if (value <= 7.0) {
       // Tốt - Green
       return const Color(0xFF23C559); // #23C559
-    } else if (value < 9.0) {
+    } else if (value <= 8.0) {
       // Cao - Light Red
       return const Color(0xFFF86F6F); // #F86F6F
     } else {
