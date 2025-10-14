@@ -11,6 +11,8 @@ class BmiDataChangeEvent extends BmiEvent {
   final dynamic data;
 
   const BmiDataChangeEvent(this.event, [this.data]);
+
+  static const String selectedPointChanged = "selected_point_changed";
 }
 
 class BmiGetWeightLessonsEvent extends BmiEvent {
@@ -33,6 +35,10 @@ class BmiGetWaistStatisticalEvent extends BmiEvent {
   const BmiGetWaistStatisticalEvent();
 }
 
+class BmiCheckStatisticalDataExistedEvent extends BmiEvent {
+  const BmiCheckStatisticalDataExistedEvent();
+}
+
 // weight index
 
 class BmiGetWeightRecordsEvent extends BmiEvent {
@@ -46,6 +52,6 @@ class BmiGetAIAnalysicEvent extends BmiEvent {
 
 class BmiGetAIIndexAnalysicEvent extends BmiEvent {
   final String recordId;
-  
+
   const BmiGetAIIndexAnalysicEvent(this.recordId);
 }

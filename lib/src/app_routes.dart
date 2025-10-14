@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
+import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
+import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
@@ -17,6 +20,8 @@ import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
+import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
+import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 
 import 'utils/navigator_name.dart';
 import 'widget/BloodPressure/add_bloodpressure_result.dart';
@@ -50,9 +55,14 @@ class AppRoutes {
               isRedirectFromNotification = data!['isRedirectFromNotification'];
             }
           }
-          page = TabbarController(
-            sharedCode: sharedCode,
-            isRedirectFromNotification: isRedirectFromNotification,
+
+          // Wrap with Weight (BMI) Bloc
+          page = BlocProvider(
+            create: (_) => BmiBloc(WeightRepository.instance),
+            child: TabbarController(
+              sharedCode: sharedCode,
+              isRedirectFromNotification: isRedirectFromNotification,
+            ),
           );
           break;
         }
@@ -154,6 +164,17 @@ class AppRoutes {
         );
         break;
       // ~ END: Huyet Ap (mới) ~
+      case NavigatorName.add_bmi:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BlocProvider<BmiBloc>.value(
+          value: data?[BmiOnBoardingPage.bmiBlocKey],
+          child: BmiOnBoardingPage(
+            type: data?['type'],
+            id: data?['id'],
+            goalId: data?['goalId'],
+            isCurrentBmi: data?['isCurrentBmi'],
+          ),
+        );
       case NavigatorName.bmiInputPage:
         final data = settings.arguments as Map<String, dynamic>?;
         page = MultiBlocProvider(
@@ -207,6 +228,17 @@ class AppRoutes {
           child: const BmiInstructionPage(),
         );
       // end region weight
+      // Phone Update Flow
+      case NavigatorName.update_phone_number:
+        page = UpdatePhoneNumberPage();
+        break;
+      case NavigatorName.confirm_phone_verify_otp:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = ConfirmPhoneNumberVerifyOTPPage(
+          phone: data?['phone'] ?? '',
+          isPhoneNumberExist: data?['isPhoneNumberExist'] ?? false,
+        );
+        break;
 
       default:
         break;

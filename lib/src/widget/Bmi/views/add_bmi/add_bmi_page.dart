@@ -31,11 +31,13 @@ class AddBmiPage extends StatefulWidget {
 
 class _AddBmiPageState extends State<AddBmiPage> {
   late BmiInputBloc _bmiInputBloc;
+  late BmiBloc _bmiBloc;
 
   @override
   void initState() {
     super.initState();
     _bmiInputBloc = context.read();
+    _bmiBloc = context.read();
   }
 
   @override
@@ -43,7 +45,9 @@ class _AddBmiPageState extends State<AddBmiPage> {
     super.didChangeDependencies();
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     double initialCurrentHeight =
-        arguments[AddBmiPage.bmiInputCurrentHeightKey];
+        arguments[AddBmiPage.bmiInputCurrentHeightKey] ??
+            _bmiBloc.height ??
+            0.0;
     _bmiInputBloc.currentHeight = initialCurrentHeight;
   }
 
@@ -60,33 +64,40 @@ class _AddBmiPageState extends State<AddBmiPage> {
       appBar: const AddBmiAppBar(),
       body: BlocListener<BmiInputBloc, BmiInputState>(
         listener: _handleListener,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AddBmiWeightInputSession(),
-              const SizedBox(
-                height: 12,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AddBmiWeightInputSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    const AddBmiWaistCircumferenceInputSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    const AddBmiNoteSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    _Seperator(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    _ConnectToHealthConnectButton()
+                  ],
+                ),
               ),
-              const AddBmiWaistCircumferenceInputSession(),
-              const SizedBox(
-                height: 12,
-              ),
-              const AddBmiNoteSession(),
-              const SizedBox(
-                height: 12,
-              ),
-              _Seperator(),
-              const SizedBox(
-                height: 12,
-              ),
-              _ConnectToHealthConnectButton()
-            ],
-          ),
+            ),
+            const _SaveButton()
+          ],
         ),
       ),
-      bottomNavigationBar: _SaveButton(),
     );
   }
 
@@ -112,7 +123,10 @@ class _AddBmiPageState extends State<AddBmiPage> {
         CustomDialog.hideLoadingDialog(context);
         CustomDialog.showSuccessDialog(
           context,
-          onPrimaryButtonTap: () => _redirectToNextStep(state.result.data!),
+          onPrimaryButtonTap: () {
+            _bmiBloc.hasModifiedData = true;
+            _redirectToNextStep(state.result.data!);
+          },
         );
       } else {
         CustomDialog.hideLoadingDialog(context);
@@ -150,6 +164,7 @@ class _SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final BmiInputBloc _bmiInputBloc = context.read();
+    final BmiBloc _bmiBloc = context.read();
 
     return SafeArea(
       child: Padding(
@@ -159,7 +174,7 @@ class _SaveButton extends StatelessWidget {
         ),
         child: PrimaryRoundedButton(
           title: R.string.confirm.tr(),
-          onPressed: _bmiInputBloc.validate,
+          onPressed: () => _bmiInputBloc.validate(_bmiBloc.hasInputedWaist),
         ),
       ),
     );

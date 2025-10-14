@@ -2,14 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
 
 typedef MeasurementCallback = void Function(
-    String? routeName, dynamic args, String title);
+    String? routeName, Map<String, dynamic>? args, String title);
 
 // Special callback for HbA1C that receives context for smart navigation
 typedef HbA1cCallback = void Function(

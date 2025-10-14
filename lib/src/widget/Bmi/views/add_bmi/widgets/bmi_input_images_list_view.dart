@@ -9,6 +9,8 @@ import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 
+const double _imgThumbnailSize = 64;
+
 class BmiInputImagesListView extends StatelessWidget {
   const BmiInputImagesListView({
     super.key,
@@ -31,7 +33,7 @@ class BmiInputImagesListView extends StatelessWidget {
             return const SizedBox();
 
           return SizedBox(
-            height: 56,
+            height: _imgThumbnailSize,
             child: Row(
               children: [
                 if (_bmiInputBloc.noteImagesFromRecord.isNotEmpty)
@@ -82,13 +84,11 @@ class _BmiImageThumbnail extends StatelessWidget {
     BmiInputBloc _bmiInputBloc = context.read();
 
     return SizedBox.square(
-      dimension: 56,
+      dimension: _imgThumbnailSize,
       child: Stack(
         alignment: Alignment.topRight,
         children: [
           Container(
-            // width: 56,
-            // height: 56,
             decoration: BoxDecoration(
                 image: DecorationImage(
                     image: Image.file(File(path)).image, fit: BoxFit.cover),
@@ -101,7 +101,7 @@ class _BmiImageThumbnail extends StatelessWidget {
               _bmiInputBloc.removeImage(path);
             },
             child: Icon(
-              Icons.remove_circle,
+              Icons.cancel_rounded,
               color: R.color.red,
               size: removeIcon,
             ),
@@ -128,7 +128,7 @@ class _BmiUrlImageThumbnail extends StatelessWidget {
     // BmiInputBloc _bmiInputBloc = context.read();
 
     return SizedBox.square(
-      dimension: 56,
+      dimension: _imgThumbnailSize,
       child: Stack(
         alignment: Alignment.topRight,
         children: [
@@ -148,7 +148,7 @@ class _BmiUrlImageThumbnail extends StatelessWidget {
           GestureDetector(
             onTap: onRemove,
             child: Icon(
-              Icons.remove_circle,
+              Icons.cancel_rounded,
               color: R.color.red,
               size: removeIcon,
             ),

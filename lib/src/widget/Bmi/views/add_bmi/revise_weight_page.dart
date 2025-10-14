@@ -32,11 +32,13 @@ class ReviseWeightPage extends StatefulWidget {
 
 class _ReviseWeightPageState extends State<ReviseWeightPage> {
   late BmiInputBloc _bmiInputBloc;
+  late BmiBloc _bmiBloc;
 
   @override
   void initState() {
     super.initState();
     _bmiInputBloc = context.read();
+    _bmiBloc = context.read();
   }
 
   @override
@@ -61,47 +63,43 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
       appBar: const AddBmiAppBar(),
       body: BlocListener<BmiInputBloc, BmiInputState>(
         listener: _handleListener,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AddBmiWeightInputSession(),
-              const SizedBox(
-                height: 12,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AddBmiWeightInputSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    const AddBmiWaistCircumferenceInputSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    const AddBmiNoteSession(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    _Seperator(),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    _ConnectToHealthConnectButton()
+                  ],
+                ),
               ),
-              const AddBmiWaistCircumferenceInputSession(),
-              const SizedBox(
-                height: 12,
-              ),
-              const AddBmiNoteSession(),
-              const SizedBox(
-                height: 12,
-              ),
-              _Seperator(),
-              const SizedBox(
-                height: 12,
-              ),
-              _ConnectToHealthConnectButton()
-            ],
-          ),
+            ),
+            const _ActionButtons()
+          ],
         ),
       ),
-      bottomNavigationBar: _ActionButtons(),
     );
   }
 
   void _handleListener(BuildContext context, BmiInputState state) {
-    // if (state is BmiWaistValidatedState) {
-    //   if (state.hasWaist) {
-    //     _bmiInputBloc.submitWeightRecord();
-    //   } else {
-    //     BmiInputWaistConfirmDialog.show(
-    //       context,
-    //       onConfirmed: _bmiInputBloc.submitWeightRecord,
-    //     );
-    //   }
-    // } else
     if (state is BmiInputErrorState) {
       CustomDialog.showErrorDialog(
         context,
@@ -114,7 +112,10 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
         CustomDialog.hideLoadingDialog(context);
         CustomDialog.showSuccessDialog(
           context,
-          onPrimaryButtonTap: () => _redirectToNextStep(state.result.data!),
+          onPrimaryButtonTap: () {
+            _bmiBloc.hasModifiedData = true;
+            _redirectToNextStep(state.result.data!);
+          },
         );
       } else {
         CustomDialog.hideLoadingDialog(context);
@@ -131,6 +132,7 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
         CustomDialog.showSuccessDialog(
           context,
           onPrimaryButtonTap: () {
+            _bmiBloc.hasModifiedData = true;
             Navigator.pop(context, true);
           },
         );
@@ -184,7 +186,7 @@ class _ActionButtons extends StatelessWidget {
               child: OutlinedRoundedButton(
                 title: R.string.delete.tr(),
                 onPressed: () {
-                  CustomDialog.showConfirmDialog(
+                  CustomDialog.showDeleteConfirmDialog(
                     context,
                     message: R.string.confirm_to_remove_data.tr(),
                     onPrimaryButtonTap: () {

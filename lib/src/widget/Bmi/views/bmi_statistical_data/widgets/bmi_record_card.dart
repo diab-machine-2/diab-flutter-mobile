@@ -22,7 +22,7 @@ class BmiRecordCard extends StatelessWidget {
     int dateInTimestamp = (data.date ?? 0) * 1000;
     String timeInText = DateUtil.parseDateToString(
       DateTime.fromMillisecondsSinceEpoch(dateInTimestamp),
-      Const.DATE_FORMAT_POST,
+      Const.HOUR_MIN,
     );
 
     return InkWell(

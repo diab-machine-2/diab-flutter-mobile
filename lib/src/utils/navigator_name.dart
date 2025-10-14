@@ -153,4 +153,8 @@ class NavigatorName {
   static const String hba1c_intro_1st_page = '/hba1c_intro_1st_page';
   static const String hba1c_intro_2nd_page = '/hba1c_intro_2nd_page';
   static const String add_hba1c_result = '/add_hba1c_result';
+  
+  // Phone Update Flow
+  static const String update_phone_number = '/update_phone_number';
+  static const String confirm_phone_verify_otp = '/confirm_phone_verify_otp';
 }

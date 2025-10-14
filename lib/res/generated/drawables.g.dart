@@ -793,10 +793,9 @@ class Drawables {
       "lib/res/drawables/subscription/subscription_program_full_2.png";
   String get subscription_program_full_3 =>
       "lib/res/drawables/subscription/subscription_program_full_3.png";
-  String get img_upgrade_package_v2 =>
-      "lib/res/drawables/img_upgrade_package_v2.png";
-  String get ic_lesson_can_not_learn_v2 =>
-      "lib/res/drawables/ic_lesson_can_not_learn_v2.png";
+  String get weight_intro_img => "lib/res/drawables/weight_intro_img.png";
+  String get img_upgrade_package_v2 => "lib/res/drawables/img_upgrade_package_v2.png";
+  String get ic_lesson_can_not_learn_v2 => "lib/res/drawables/ic_lesson_can_not_learn_v2.png";
   String get ic_view_detail => "lib/res/drawables/ic_view_detail.png";
   String get im_glucose_from_photo =>
       "lib/res/drawables/glucose/im_glucose_from_photo.png";
@@ -819,4 +818,6 @@ class Drawables {
       "lib/res/drawables/hba1c/im_hba1c_supports_3.png";
   String get im_hba1c_supports_4 =>
       "lib/res/drawables/hba1c/im_hba1c_supports_4.png";
+  String get ic_phone_security => "lib/res/drawables/ic_phone_security.png";
+  String get ic_phone_illustration => "lib/res/drawables/ic_phone_illustration.png";
 }

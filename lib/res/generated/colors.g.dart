@@ -42,7 +42,7 @@ class Colors {
   Color get grayBorder => Color(0xffE2E4E7);
   Color get grayComponentBorder => Color(0xffDDDDDD);
   Color get blueText => Color(0xff004D84);
-  Color get mainColor => Color(0xff01645A);
+  Color get mainColor => Color(0xff008479);
   Color get notActiveGreen => Color(0xff7EC8C3);
   Color get yellow => Color(0xffFDB913);
   Color get green => Color(0xff21A567);
@@ -197,4 +197,5 @@ class Colors {
   Color get color0xff5E6566 => Color(0xff5E6566);
   Color get color0xffDCFFFC => Color(0xffDCFFFC);
   Color get color0xff830000 => Color(0xff830000);
+  Color get color0xffDADEDF => Color(0xffDADEDF);
 }

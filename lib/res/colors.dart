@@ -38,7 +38,7 @@ class AppColors {
   static const grayBorder = Color(0xffE2E4E7);
   static const grayComponentBorder = Color(0xffDDDDDD);
   static const blueText = Color(0xff004D84);
-  static const mainColor = Color(0xff01645A);
+  static const mainColor = Color(0xff008479);
   static const notActiveGreen = Color(0xff7EC8C3);
   static const yellow = Color(0xffFDB913);
   static const green = Color(0xff21A567);
@@ -152,9 +152,9 @@ class AppColors {
   static const infographic_color = Color(0xff23C559);
   static const color0xffB4802D = Color(0xffB4802D);
   static const color0xff5E6566 = Color(0xff5E6566);
-  static const color0xffDCFFFC = Color(0xffDCFFFC);
-  static const color0xff830000 = Color(0xff830000);
-
+static const color0xffDCFFFC = Color(0xffDCFFFC);
+static const color0xff830000 = Color(0xff830000);
+  static const color0xffDADEDF = Color(0xffDADEDF);
   static const cardShadowColor = Color(0x14042B28);
 
   // static const neutral2 = Color(0xFF5E6566);

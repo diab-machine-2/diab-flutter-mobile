@@ -10,10 +10,13 @@ import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/service/resource.dart';
+import 'package:medical/src/utils/app_storages.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widget/Bmi/models/weight_instruction_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BmiBloc extends Bloc<BmiEvent, BmiState> {
   BmiBloc(WeightRepository repository)
@@ -24,13 +27,21 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     on<BmiGetWeightStatisticalEvent>(_onFetchWeightStatistical);
     on<BmiGetWaistStatisticalEvent>(_onFetchWaistStatistical);
     on<BmiGetBmiStatisticalEvent>(_onFetchBmiStatistical);
+    on<BmiCheckStatisticalDataExistedEvent>(
+        _onCheckWeightStatisticalDataExisted);
     on<BmiGetWeightLessonsEvent>(_onFetchWeightLessons);
     on<BmiGetWeightRecordsEvent>(_onFetchWeightRecords);
     on<BmiGetAIAnalysicEvent>(_onGetAIAnalysis);
     on<BmiGetAIIndexAnalysicEvent>(_onGetAIIndexAnalysis);
+
+    SharedPreferences.getInstance().then((value) => preferences = value);
+    AppStorages.getHealthAppPermission().then(
+      (value) => _hasHealthAppPermission = value ?? false,
+    );
   }
 
   final WeightRepository _weightRepository;
+  late SharedPreferences preferences;
 
   // data
   List<WeightInstructionModel> _weightInstructions = [];
@@ -43,7 +54,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   List<BmiGetWeightRecord> _historicalWeightList = [];
 
   late DateTime _currentTime;
-  DateTime? _selectedTimeOnChart;
+  BmiGetWeightRecord? _selectedPointChart;
   BmiDateFilterType _periodType = BmiDateFilterType.aMonth;
   BmiDateFilterType get periodType => _periodType;
 
@@ -53,6 +64,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   String _aiAnalysicTrend = "";
   String _aiAnalysicWeightRecord = "";
+
+  bool _hasInputedWaist = false;
+  bool get hasInputedWaist => _hasInputedWaist;
 
   // getter & setter
   double? get avgBmi => _bmiStatistical?.value;
@@ -75,10 +89,18 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   double get weightGoal => AppSettings.weightGoal;
 
   bool hasNewData = false;
+  late bool _hasHealthAppPermission;
+  bool get hasHealthAppPermission => _hasHealthAppPermission;
 
-  bool get hasStatisticalData => _weightStatistical != null;
+  bool _hasStatisticalData = false;
+  bool get hasStatisticalData =>
+      preferences.getBool(Const.hasWeightRecord) ?? false;
 
-  DateTime? get selectedTimeOnChart => _selectedTimeOnChart;
+  BmiGetWeightRecord? get selectedPointChart => _selectedPointChart;
+
+  bool _hasModifiedData = false;
+  bool get hasModifiedData => _hasModifiedData;
+  set hasModifiedData(bool value) => _hasModifiedData = value;
 
   void _onGetInstruction(
     BmiInstructionFetchingEvent event,
@@ -157,6 +179,29 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
             emit(BmiGetAIIndexAnalysicState(Resource.error(error))));
   }
 
+  void _onCheckWeightStatisticalDataExisted(
+    BmiCheckStatisticalDataExistedEvent event,
+    Emitter<BmiState> emit,
+  ) async {
+    emit(BmiCheckStatisticalDataExistedState(Resource.loading()));
+
+    final response = await _weightRepository.getWeightStatisticalData(
+      currentTime: _currentTime.millisecondsSinceEpoch,
+      periodFilterType: 5,
+      page: 1,
+    );
+
+    response.when(
+        success: (data) {
+          bool hasData = data.trendItems?.isNotEmpty ?? false;
+          _hasStatisticalData = hasData;
+          preferences.setBool(Const.hasWeightRecord, hasData);
+          emit(BmiCheckStatisticalDataExistedState(Resource.success(hasData)));
+        },
+        failure: (error) =>
+            emit(BmiCheckStatisticalDataExistedState(Resource.error(error))));
+  }
+
   void _onFetchWeightStatistical(
     BmiGetWeightStatisticalEvent event,
     Emitter<BmiState> emit,
@@ -171,17 +216,19 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     // return;
 
     final response = await _weightRepository.getWeightStatisticalData(
-        currentTime: _currentTime.millisecondsSinceEpoch,
-        periodFilterType: _periodType.requestValue,
-        page: 1);
+      currentTime: _currentTime.millisecondsSinceEpoch,
+      periodFilterType: _periodType.requestValue,
+      page: 1,
+    );
 
     response.when(
         success: (data) {
           _weightStatistical = data;
           if (data.trendItems?.isNotEmpty ?? false) {
-            _selectedTimeOnChart = DateTime.fromMillisecondsSinceEpoch(
-                data.trendItems!.first.date! * 1000);
-            add(BmiGetBmiStatisticalEvent(_selectedTimeOnChart!));
+            // _selectedPointChart = DateTime.fromMillisecondsSinceEpoch(
+            //     data.trendItems!.first.date! * 1000);
+            preferences.setBool(Const.hasWeightRecord, true);
+            // add(BmiGetBmiStatisticalEvent(_selectedPointChart!));
           }
           emit(BmiGetWeightStatisticalState(Resource.success(data)));
         },
@@ -208,9 +255,19 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
         page: 1);
 
     response.when(
-        success: (data) {
+        success: (data) async {
           _bmiWaistStatistical = data;
           emit(BmiGetWaistStatisticalState(Resource.success(data)));
+
+          if ((data.trendItems?.isNotEmpty ?? false) &&
+              [
+                BmiDateFilterType.aMonth,
+                BmiDateFilterType.threeMonths,
+              ].contains(_periodType)) {
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            preferences.setBool(Const.hasInputedWaist, true);
+          }
         },
         failure: (error) =>
             emit(BmiGetWaistStatisticalState(Resource.error(error))));
@@ -289,6 +346,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     response.when(
         success: (data) {
           _historicalWeightList = data.data ?? [];
+          _selectedPointChart = _historicalWeightList.firstOrNull;
           emit(BmiGetWeightIndexListState(Resource.success(data)));
         },
         failure: (error) =>
@@ -298,16 +356,51 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   // public func
   void init() {
     _currentTime = DateTime.now();
+    _periodType = BmiDateFilterType.aMonth;
+
     add(BmiInstructionFetchingEvent());
     add(BmiGetWeightLessonsEvent());
 
-    // add(BmiGetBmiStatisticalEvent());
     add(BmiGetWeightStatisticalEvent());
     add(BmiGetWaistStatisticalEvent());
 
-    Future.delayed(Duration(milliseconds: 1000))
-        .then((value) => add(BmiGetAIAnalysicEvent()));
+    add(BmiGetWeightRecordsEvent());
+
+    Future.delayed(Duration(milliseconds: 1000)).then((value) {
+      add(BmiGetAIAnalysicEvent());
+      _hasInputedWaist = preferences.getBool(Const.hasInputedWaist) ?? false;
+    });
   }
+
+  void refresh() {
+    add(BmiGetWeightStatisticalEvent());
+    add(BmiGetWaistStatisticalEvent());
+    add(const BmiCheckStatisticalDataExistedEvent());
+
+    Future.delayed(Duration(milliseconds: 1000)).then((value) {
+      add(BmiGetAIAnalysicEvent());
+      _hasInputedWaist = preferences.getBool(Const.hasInputedWaist) ?? false;
+    });
+  }
+
+  Future<bool> checkRecordExisted() async {
+    _currentTime = DateTime.now();
+    final response = await _weightRepository.getWeightStatisticalData(
+      currentTime: _currentTime.millisecondsSinceEpoch,
+      periodFilterType: 5,
+      page: 1,
+    );
+    add(BmiGetBmiStatisticalEvent(_currentTime));
+
+    return response.when(
+      success: (data) => data.trendItems?.isNotEmpty ?? false,
+      failure: (error) => false,
+    );
+  }
+
+  // void checkRecordExistedWithEmit() {
+  //   add(const BmiCheckStatisticalDataExistedEvent());
+  // }
 
   void changePeriodTime(BmiDateFilterType period,
       {required bool isStatisticalView}) {
@@ -315,8 +408,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     _periodType = period;
     if (isStatisticalView) {
       // add(BmiGetBmiStatisticalEvent());
-      add(BmiGetWeightStatisticalEvent());
-      add(BmiGetWaistStatisticalEvent());
+      // add(BmiGetWeightStatisticalEvent());
+      // add(BmiGetWaistStatisticalEvent());
+      add(BmiGetWeightRecordsEvent());
       add(BmiGetAIAnalysicEvent());
     } else {
       //load detail
@@ -332,8 +426,26 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiGetAIIndexAnalysicEvent(recordId));
   }
 
-  void selectPointChart(DateTime time) {
-    _selectedTimeOnChart = time;
-    add(BmiGetBmiStatisticalEvent(time));
+  void selectPointChart(BmiGetWeightRecord point) {
+    _selectedPointChart = point;
+    // add(BmiGetBmiStatisticalEvent(point));
+    add(BmiDataChangeEvent(BmiDataChangeEvent.selectedPointChanged, point));
+  }
+
+  Map<DateTime, List<BmiGetWeightRecord>> getGroupedWeightRecords() {
+    Map<DateTime, List<BmiGetWeightRecord>> result = {};
+
+    for (var item in _historicalWeightList) {
+      final time = DateTime.fromMillisecondsSinceEpoch(item.date! * 1000);
+      final DateTime date = DateTime(time.year, time.month, time.day);
+
+      result.update(
+        date,
+        (value) => [item],
+        ifAbsent: () => [item],
+      );
+    }
+
+    return result;
   }
 }

@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_ai_weight_index_analysis.dart';
@@ -89,14 +90,18 @@ class _InfoHeader extends StatelessWidget {
     BmiBloc bmiBloc = context.read();
 
     return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (_, state) => state is BmiGetBmiStatisticalState,
+        buildWhen: (_, state) =>
+            state is BmiGetWeightIndexListState ||
+            (state is BmiDataChangedState &&
+                state.event == BmiDataChangeEvent.selectedPointChanged),
         builder: (context, state) {
           return Column(
             children: [
               Text(
-                bmiBloc.bmiStatistical?.bmiEvaluation ?? "--",
-                style: R.style.boldXXLargeStyle
-                    .copyWith(color: bmiBloc.bmiStatistical?.color),
+                bmiBloc.selectedPointChart?.bmiText ?? "--",
+                style: R.style.boldXXLargeStyle.copyWith(
+                  color: bmiBloc.selectedPointChart?.bmiBgColor,
+                ),
               ),
               const SizedBox(height: 8),
               Row(
@@ -107,7 +112,7 @@ class _InfoHeader extends StatelessWidget {
                     style: R.style.normalTextStyle.neutral4,
                   ),
                   Text(
-                    "${bmiBloc.avgBmi ?? "--"}",
+                    "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
                     style: R.style.boldNormalStyle.neutral3,
                   ),
                   Text(
@@ -115,7 +120,7 @@ class _InfoHeader extends StatelessWidget {
                     style: R.style.boldLargeStyle.neutral4,
                   ),
                   Text(
-                    "${bmiBloc.bmiStatistical?.weight ?? "--"}",
+                    "${bmiBloc.selectedPointChart?.weight ?? "--"}",
                     style: R.style.boldNormalStyle.neutral3,
                   ),
                   Text(
@@ -143,12 +148,19 @@ class _DateTimeLabel extends StatelessWidget {
     BmiBloc bmiBloc = context.read();
 
     return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (previous, state) => state is BmiGetBmiStatisticalState,
+        buildWhen: (previous, state) =>
+            state is BmiGetWeightIndexListState ||
+            (state is BmiDataChangedState &&
+                state.event == BmiDataChangeEvent.selectedPointChanged),
         builder: (context, state) {
-          String time =
-              DateFormat(_timeFormat).format(bmiBloc.selectedTimeOnChart!);
-          String date =
-              DateFormat(_dateFormat).format(bmiBloc.selectedTimeOnChart!);
+          if (bmiBloc.selectedPointChart == null) {
+            return const SizedBox();
+          }
+
+          DateTime datePoint = DateTime.fromMillisecondsSinceEpoch(
+              bmiBloc.selectedPointChart!.date! * 1000);
+          String time = DateFormat(_timeFormat).format(datePoint);
+          String date = DateFormat(_dateFormat).format(datePoint);
 
           return Container(
             decoration: BoxDecoration(
@@ -159,7 +171,7 @@ class _DateTimeLabel extends StatelessWidget {
               horizontal: 12,
             ),
             child: Text(
-              bmiBloc.selectedTimeOnChart != null ? "$time \u2022 $date" : "--",
+              bmiBloc.selectedPointChart != null ? "$time \u2022 $date" : "--",
               style: R.style.normalTextStyle.neutral3,
             ),
           );

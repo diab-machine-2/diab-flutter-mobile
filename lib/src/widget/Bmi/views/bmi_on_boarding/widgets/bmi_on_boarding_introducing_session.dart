@@ -8,6 +8,7 @@ import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_input_type_bottom_sheet.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
 class BmiOnBoardingIntroducingSession extends StatelessWidget {
@@ -24,7 +25,7 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
-            R.drawable.im_bloodpressure_intro,
+            R.drawable.weight_intro_img,
             width: 319,
           ),
           Container(
@@ -43,7 +44,7 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  R.string.bloodpressure_benefit_observe.tr(),
+                  R.string.weight_introducing_text.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     height: 24 / 15,
@@ -81,18 +82,17 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
   }
 
   void _onInputBmiTapped(BuildContext context) async {
-    // bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
-
     BmiInputTypeBottomSheet.show(
       context,
-      onManualInputSelected: () => _onSelectMethodInput(context),
+      onManualInputSelected: () => onManualInputSelected(context),
+      onAutoInputSelected: () => _onAutoInputSelected(context),
     );
   }
 
-  void _onSelectMethodInput(BuildContext context) {
+  void onManualInputSelected(BuildContext context) {
     BmiBloc bmiBloc = context.read();
 
-    if (bmiBloc.height != null) {
+    if (bmiBloc.height != null && bmiBloc.height! > 0) {
       _redirectToInputPage(context, height: bmiBloc.height!);
     } else {
       BmiHeightInputDialog.show(
@@ -102,6 +102,13 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
         },
       );
     }
+  }
+
+  void _onAutoInputSelected(BuildContext context) {
+    RequestHealthConnect.showModal(
+      context,
+      callback: () => Navigator.pop(context),
+    );
   }
 
   void _redirectToInputPage(
