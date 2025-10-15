@@ -52,7 +52,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   DateTime time = DateTime.now();
   int maxMedia = 5;
   int maxLength = 250;
-  List<dynamic> files = []; // Keep for initialization only
+  List<dynamic> files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
   DateTime today = DateTime.now();
