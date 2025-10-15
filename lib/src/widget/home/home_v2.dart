@@ -1179,6 +1179,22 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
+        // case HbA1C - check if user has data
+        if (item.navigatorName == NavigatorName.add_hba1c ||
+            (item.title.toLowerCase().contains('hba1c'))) {
+          // Check if user has HbA1C data
+          bool hasHbA1cData = await _checkHasHbA1cData();
+
+          if (hasHbA1cData) {
+            // User has data, navigate to input page directly
+            Navigator.pushNamed(context, NavigatorName.add_hba1c,
+                arguments: {'type': 'input'});
+          } else {
+            // User has no data, navigate to onboarding
+            Navigator.pushNamed(context, NavigatorName.hba1c_intro_1st_page);
+          }
+          return;
+        }
         // others
         // CHEAT CODE : Vận Động -> Vận Động Bước 1
         if (item.title == "Vận động") {
@@ -1482,5 +1498,28 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance
         .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
     Observable.instance.notifyObservers([], notifyName: "activity_tab_reload");
+  }
+
+  /// Check if user has HbA1C data
+  Future<bool> _checkHasHbA1cData() async {
+    try {
+      final homeModel = await AppSettings.getHome();
+
+      if (homeModel != null) {
+        final hasValidDateTime = homeModel.hbA1CIndex.createDateTime != null &&
+            homeModel.hbA1CIndex.createDateTime! > 0;
+
+        final hasHbA1cData = homeModel.hbA1CIndex.index != null &&
+            homeModel.hbA1CIndex.index! > 0 &&
+            hasValidDateTime;
+
+        return hasHbA1cData;
+      }
+
+      return false;
+    } catch (e) {
+      // In case of error, assume no data
+      return false;
+    }
   }
 }

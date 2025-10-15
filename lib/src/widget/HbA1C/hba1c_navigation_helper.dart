@@ -6,38 +6,54 @@ import 'package:medical/src/widget/helper/helper.dart';
 
 class HbA1cNavigationHelper {
   /// Handle HbA1C navigation - check if user has data and route accordingly
+  /// - Users with data: navigate to dashboard (priority check)
   /// - First time users or users without data: navigate to intro page
-  /// - Users with data: navigate to dashboard
   /// - Fallback: navigate to detail page
   static Future<void> navigateToHbA1C(BuildContext context) async {
     try {
-      bool isFirstTime = await AppStorages.isFirstTimeHbA1C();
-
       // Small delay to ensure data is updated after HbA1C input
       await Future.delayed(Duration(milliseconds: 300));
 
-      // Check if user has HbA1c data from home model
+      // Check if user has HbA1c data from home model (priority check)
+      // Check both index value and createDateTime to determine if there's real data
+      // Backend may return default value (e.g., 9.0) even when there's no actual data
       bool hasHbA1cData = false;
       final homeModel = await AppSettings.getHome();
-      if (homeModel != null &&
-          homeModel.hbA1CIndex.index != null &&
-          homeModel.hbA1CIndex.index! > 0) {
-        hasHbA1cData = true;
+
+      if (homeModel != null) {
+        final hasValidDateTime = homeModel.hbA1CIndex.createDateTime != null &&
+            homeModel.hbA1CIndex.createDateTime! > 0;
+
+        hasHbA1cData = homeModel.hbA1CIndex.index != null &&
+            homeModel.hbA1CIndex.index! > 0 &&
+            hasValidDateTime;
+
+        print('🔍 HbA1C Navigation Check:');
+        print('  index: ${homeModel.hbA1CIndex.index}');
+        print('  createDateTime: ${homeModel.hbA1CIndex.createDateTime}');
+        print('  hasValidDateTime: $hasValidDateTime');
+        print('  hasHbA1cData: $hasHbA1cData');
       }
 
-      if (isFirstTime || !hasHbA1cData) {
-        // Navigate to onboarding for first time users or users without data
-        Navigator.pushNamed(context, NavigatorName.hba1c_intro_1st_page);
-      } else if (hasHbA1cData && homeModel != null) {
-        // User has data, navigate to dashboard instead of detail view
+      // Priority: If user has data, always navigate to dashboard regardless of isFirstTime flag
+      if (hasHbA1cData && homeModel != null) {
+        // User has data, navigate to dashboard
         Navigator.pushNamed(context, NavigatorName.hba1c_dashboard, arguments: {
           'currentValue': homeModel.hbA1CIndex.index,
           'currentLevel': _getHbA1cLevel(homeModel.hbA1CIndex.index ?? 0),
           'currentColor': _getHbA1cColor(homeModel.hbA1CIndex.color)
         });
       } else {
-        // Fallback: navigate to detail view (which will show empty state)
-        Navigator.pushNamed(context, NavigatorName.detail_hba1c);
+        // No data - check if first time
+        bool isFirstTime = await AppStorages.isFirstTimeHbA1C();
+
+        if (isFirstTime || !hasHbA1cData) {
+          // Navigate to onboarding for first time users or users without data
+          Navigator.pushNamed(context, NavigatorName.hba1c_intro_1st_page);
+        } else {
+          // Fallback: navigate to detail view (which will show empty state)
+          Navigator.pushNamed(context, NavigatorName.detail_hba1c);
+        }
       }
     } catch (e) {
       // Fallback to dashboard if there's any error

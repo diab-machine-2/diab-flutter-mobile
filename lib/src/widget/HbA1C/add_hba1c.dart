@@ -25,7 +25,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/widget/nipro/roche_connection/roche_connection_view.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 
 import '../../utils/app_media_query.dart';
 import '../../utils/app_storages.dart';
@@ -169,9 +169,12 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   }
 
   void _doHealthConnect() async {
-    Navigator.push(
+    // Show Health Connect/Apple Health connection modal
+    RequestHealthConnect.showModal(
       context,
-      MaterialPageRoute(builder: (context) => RocheConnectionView()),
+      callback: () {
+        // After successful connection, data will be synced automatically
+      },
     );
   }
 
@@ -845,24 +848,23 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
 
-        // Navigate to dashboard first, then notify observers
+        // Notify observers FIRST to ensure home refreshes data
+        Observable.instance.notifyObservers(
+          [],
+          notifyName: "hba1c_change_data",
+          map: {'isNew': false, 'skipNavigation': true},
+        );
+
+        // Small delay to let home start refreshing
+        await Future.delayed(Duration(milliseconds: 50));
+
+        // Then navigate to dashboard
         Navigator.pushNamedAndRemoveUntil(
           context,
           NavigatorName.hba1c_dashboard,
           (route) => route.isFirst,
         );
 
-        // Notify observers AFTER navigation to prevent any interference
-        Future.delayed(Duration(milliseconds: 100), () {
-          Observable.instance.notifyObservers(
-            [],
-            notifyName: "hba1c_change_data",
-            map: {
-              'isNew': false,
-              'skipNavigation': true
-            }, // Skip any navigation logic
-          );
-        });
         return;
       }
       BotToast.closeAllLoading();
@@ -939,8 +941,18 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
           paths);
       if (result == true) {
         Message.showToastMessage(context, R.string.luu_thanh_cong.tr());
-        // Navigate back to dashboard after successful edit first, before notifying observers
-        // This prevents any home screen navigation logic from interfering
+
+        // Notify observers FIRST to ensure home refreshes data
+        Observable.instance.notifyObservers(
+          [],
+          notifyName: "hba1c_change_data",
+          map: {'isNew': false, 'skipNavigation': true},
+        );
+
+        // Small delay to let home start refreshing
+        await Future.delayed(Duration(milliseconds: 50));
+
+        // Then navigate back to dashboard
         Navigator.pushNamedAndRemoveUntil(
           context,
           NavigatorName.hba1c_dashboard,
@@ -951,19 +963,6 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
             'currentColor': _getHbA1cColorFromValue(double.parse(numberInput)),
           },
         );
-
-        // Notify observers AFTER navigation to prevent any interference
-        // Use a delayed notification to ensure navigation completes first
-        Future.delayed(Duration(milliseconds: 100), () {
-          Observable.instance.notifyObservers(
-            [],
-            notifyName: "hba1c_change_data",
-            map: {
-              'isNew': false,
-              'skipNavigation': true
-            }, // Skip any navigation logic
-          );
-        });
 
         return;
       }
@@ -1156,6 +1155,8 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
         double? parsedValue = double.tryParse(cleanInput);
         if (parsedValue == null) {
           isValid = false; // Ký tự không phải số
+        } else if (parsedValue < 1.0) {
+          isValid = false; // Số quá nhỏ (<1%)
         } else if (parsedValue > 30) {
           isValid = false; // Số quá lớn (>30%)
         } else {

@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 
 Future<void> showHbA1cInputMethodModal(
   BuildContext context, {
@@ -29,7 +30,7 @@ Future<void> showHbA1cInputMethodModal(
       Navigator.pop(context);
     }
     Navigator.pushNamed(context, NavigatorName.add_hba1c,
-        arguments: {'type': 'input', 'goalId': goalId});  
+        arguments: {'type': 'input', 'goalId': goalId});
     return;
   }
   Widget buildContentItem(
@@ -163,8 +164,14 @@ Future<void> showHbA1cInputMethodModal(
                     if (popPrevious) {
                       Navigator.pop(context);
                     }
-                    Navigator.pushNamed(
-                        context, NavigatorName.connect_device_app);
+                    // Show Health Connect/Apple Health connection modal
+                    RequestHealthConnect.showModal(
+                      context,
+                      callback: () {
+                        // After successful connection, user can input HbA1C manually
+                        // or the data will be synced automatically from Health Connect
+                      },
+                    );
                   },
                 ),
                 const SizedBox(height: 16),

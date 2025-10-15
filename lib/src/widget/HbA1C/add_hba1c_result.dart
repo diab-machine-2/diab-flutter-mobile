@@ -111,9 +111,16 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
   String _generateFallbackAnalysis() {
     final hba1c = widget.data.hba1c;
     final rangeLabel = widget.data.rangeType.title;
+    final measurementDate = widget.data.dateTime;
 
-    String analysis = "Chỉ số HbA1c ${hba1c}% của bạn đang ở mức $rangeLabel. ";
+    // Format measurement date
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final formattedDate = dateFormat.format(measurementDate);
 
+    String analysis =
+        "Chỉ số HbA1c ${hba1c.toStringAsFixed(1)}% ($rangeLabel) đo ngày $formattedDate. ";
+
+    // Main advice based on HbA1c level
     if (hba1c <= 6.5) {
       analysis +=
           "Đây là một kết quả tuyệt vời! Chỉ số HbA1c của bạn nằm trong mức lý tưởng, cho thấy không có nguy cơ tiểu đường. Hãy duy trì lối sống lành mạnh hiện tại với chế độ ăn cân bằng và tập thể dục đều đặn.";
@@ -147,11 +154,21 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
       // Mark user as not first time after completing HbA1C input
       await AppStorages.setHbA1COnboardingCompleted();
 
-      // Complete and navigate
+      // Complete smart goal
       HomeClient().completeSmartGoal(
           DateTime.now(), '', 1, ScheduleType.hba1c_recommend.typeIndex);
 
-      // Navigate to HbA1c Dashboard instead of popping to first route
+      // Notify observers FIRST to ensure home refreshes data
+      Observable.instance.notifyObservers(
+        [],
+        notifyName: "hba1c_change_data",
+        map: {'isNew': widget.data.isNew},
+      );
+
+      // Small delay to let home start refreshing
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Then navigate to HbA1c Dashboard
       Navigator.pushNamedAndRemoveUntil(
         context,
         NavigatorName.hba1c_dashboard,
@@ -161,12 +178,6 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
           'currentLevel': widget.data.rangeType.title,
           'currentColor': widget.data.rangeType.color,
         },
-      );
-
-      Observable.instance.notifyObservers(
-        [],
-        notifyName: "hba1c_change_data",
-        map: {'isNew': widget.data.isNew},
       );
     } catch (e, s) {
       TrackingManager.recordError(e, s);

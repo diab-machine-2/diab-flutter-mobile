@@ -63,8 +63,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   void initState() {
     super.initState();
     _firebaseSetup();
-    _loadAITrend();
-    // Load real data from API instead of generating mock data
+    // Load trend data first, then AI will be loaded after data is available
     _loadTrendData();
   }
 
@@ -111,6 +110,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       // When "Tất cả" (index 0) is selected, use takeAll = true
       bool useTakeAll = _selectedUIIndex == 0;
 
+      print('🔄 Loading AI Trend Analysis from API...');
+      print('   Period Filter: $_periodFilterType, TakeAll: $useTakeAll');
+
       // Gọi API để lấy gợi ý AI từ backend
       final aiResult = await HbA1CClient()
           .fetchHbA1CTrendAnalysis(_periodFilterType, takeAll: useTakeAll);
@@ -119,15 +121,18 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         setState(() {
           if (aiResult != null && aiResult.isNotEmpty) {
             _aiSuggestion = aiResult;
+            print('✅ AI Analysis from API loaded successfully');
           } else {
             // Fallback to local analysis if API returns empty
+            print('⚠️ API returned empty result, using backup analysis');
             _generateLocalAISuggestion();
           }
           _isLoadingAI = false;
         });
       }
     } catch (e) {
-      print('Error loading AI trend: $e');
+      print('❌ Error loading AI trend: $e');
+      print('🔄 Falling back to backup analysis...');
       if (mounted) {
         setState(() {
           _generateLocalAISuggestion();
@@ -138,16 +143,30 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   void _generateLocalAISuggestion() {
-    // Get current HbA1c value from the most recent data point
+    // Get the most recent HbA1c value (dataPoints is sorted descending - newest first)
     double? currentHbA1cValue = currentValue;
+    DateTime? measurementDate;
+
+    // Check if we have data points available
     if (_dataPoints.isNotEmpty) {
+      // _dataPoints.first is the most recent reading (sorted descending by date)
       currentHbA1cValue = _dataPoints.first.value;
+      measurementDate = _dataPoints.first.date;
+
+      print('📊 Backup Analysis - Most Recent HbA1C:');
+      print('   Value: ${currentHbA1cValue.toStringAsFixed(1)}%');
+      print('   Date: ${DateFormat('dd/MM/yyyy').format(measurementDate)}');
     }
 
-    if (currentHbA1cValue != null) {
+    if (currentHbA1cValue != null && measurementDate != null) {
       String level = _getHbA1cLevelFromValue(currentHbA1cValue);
       String advice = "";
 
+      // Format measurement date
+      final dateFormat = DateFormat('dd/MM/yyyy');
+      final formattedDate = dateFormat.format(measurementDate);
+
+      // Main advice based on current level
       if (currentHbA1cValue <= 6.5) {
         advice =
             "cho thấy kiểm soát đường huyết lý tưởng và không có dấu hiệu tiểu đường. Chỉ số này rất tốt! Hãy tiếp tục duy trì lối sống lành mạnh với chế độ ăn cân bằng và tập thể dục đều đặn.";
@@ -162,27 +181,16 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
             "cho thấy chỉ số đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Bạn cần được theo dõi và điều trị y tế ngay lập tức. Vui lòng liên hệ với bác sĩ để được tư vấn kịp thời.";
       }
 
-      // Check if there are multiple readings
-      String multipleReadingsNote = "";
-      if (_groupedPoints.isNotEmpty) {
-        int totalReadings = _dataPoints.length;
-        int daysWithData = _groupedPoints.length;
-        int daysWithMultipleReadings =
-            _groupedPoints.where((group) => group.length > 1).length;
-
-        if (daysWithMultipleReadings > 0) {
-          multipleReadingsNote =
-              "\n\nBạn có $totalReadings chỉ số trong $daysWithData ngày. " +
-                  "Có $daysWithMultipleReadings ngày có nhiều hơn 1 lần đo. " +
-                  "Việc đo nhiều lần sẽ giúp theo dõi chính xác hơn.";
-        }
-      }
-
+      // Simple message referring to the most recent measurement
       _aiSuggestion =
-          "Chỉ số HbA1c ${currentHbA1cValue.toStringAsFixed(1)}% ($level) $advice$multipleReadingsNote";
+          "Chỉ số HbA1c ${currentHbA1cValue.toStringAsFixed(1)}% ($level) đo ngày $formattedDate $advice";
+
+      print('✅ Backup Analysis Generated Successfully');
     } else {
       _aiSuggestion =
           "Chưa có dữ liệu HbA1c để phân tích. Hãy nhập chỉ số HbA1c để nhận được lời khuyên từ AI.";
+
+      print('⚠️ No HbA1C data available for backup analysis');
     }
   }
 
@@ -210,9 +218,10 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       _periodFilterType = periodFilter == 0 ? 3 : periodFilter;
       _focusIndex = -1;
       _isLoadingAI = false; // Reset flag to allow new AI load
+      _aiSuggestion = null; // Reset suggestion to trigger reload
     });
     _loadTrendData();
-    _loadAITrend();
+    // AI will be loaded automatically after data is available (in BlocBuilder)
   }
 
   Future<bool> _refresh() async {
@@ -261,6 +270,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       group.sort((a, b) => a.date.compareTo(b.date));
       _groupedPoints.add(group);
     }
+
+    // IMPORTANT: Sort _dataPoints by date DESCENDING (newest first) for correct analysis
+    _dataPoints.sort((a, b) => b.date.compareTo(a.date));
 
     // Debug: Print grouped data for verification (commented to reduce log spam)
     // print("HbA1C Grouped Data:");
@@ -354,6 +366,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
             if (state is HbA1CTrendLoaded) {
               final trendData = state.trendModel.trendItems?.items ?? [];
               _convertApiDataToDataPoints(trendData);
+
+              // Load AI suggestion after data is available (only if not already loading)
+              if (!_isLoadingAI && _aiSuggestion == null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _loadAITrend();
+                });
+              }
             }
 
             return Container(
