@@ -45,13 +45,16 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   int maxMedia = 5;
   DateTime selectedDate = DateTime.now();
   final FocusNode _focusNode = FocusNode();
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
 
   bool get _haveFood => _selectedFoods.isNotEmpty;
 
   double get totalKcal => _selectedFoods.fold(
-      0, (sum, food) => sum + (food.calorie ?? 0) * (food.portion?.toDouble() ?? 0));
+      0,
+      (sum, food) =>
+          sum + (food.calorie ?? 0) * (food.portion?.toDouble() ?? 0));
 
   @override
   void initState() {
@@ -111,10 +114,12 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                   child: Stack(
                                     children: [
                                       Positioned.fill(
-                                        child: widget.files.length > 0 ? Image.file(
+                                        child: widget.files.length > 0
+                                            ? Image.file(
                                                 File(widget.files.first),
                                                 fit: BoxFit.cover,
-                                        ) : SizedBox(),
+                                              )
+                                            : SizedBox(),
                                       ),
                                       Container(
                                         width: double.infinity,
@@ -135,7 +140,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                         top: 16,
                                         left: 0,
                                         right: 0,
-                                        child: Center(child: _dateTimePickerOverlay()),
+                                        child: Center(
+                                            child: _dateTimePickerOverlay()),
                                       ),
                                     ],
                                   ),
@@ -194,25 +200,25 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           _showDialogSave();
         },
       ),
-      actions: [
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: InkWell(
-              onTap: () {
-                // Show guide or instructions
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text(
-                  R.string.huong_dan.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
+      // actions: [
+      //   Center(
+      //     child: Padding(
+      //       padding: const EdgeInsets.only(right: 12.0),
+      //       child: InkWell(
+      //         onTap: () {
+      //           // Show guide or instructions
+      //         },
+      //         child: Padding(
+      //           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      //           child: Text(
+      //             R.string.huong_dan.tr(),
+      //             style: TextStyle(color: R.color.white, fontSize: 15),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      // ],
     );
   }
 
@@ -338,7 +344,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                       ),
                                     ),
                                     Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 10),
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 10),
                                       width: 6,
                                       height: 6,
                                       decoration: BoxDecoration(
@@ -439,7 +446,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   Widget _buildButton() {
     return Container(
       margin: EdgeInsets.only(top: 8, bottom: 8, left: 12, right: 12),
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom / 2 + 12),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       height: 44,
       width: double.infinity,
       constraints: BoxConstraints(
@@ -510,7 +518,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           widget.timeframeId,
           note,
-          _selectedFoods, paths);
+          _selectedFoods,
+          paths);
       if (result == true) {
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         Navigator.pop(context);
@@ -718,25 +727,33 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(left: 16, right: 4),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             Text(R.string.pick_date.tr(),
                                 style: TextStyle(
-                                color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)),
+                                    color: R.color.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700)),
                             IconButton(
-                            icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 })
                           ]),
                     ),
                     CustomCalendarDatePicker(
-                        initialDate: widget.initDate == null ? DateTime.now() : widget.initDate!,
+                        initialDate: widget.initDate == null
+                            ? DateTime.now()
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
                           selectedDate = datetime ?? DateTime.now();
                           if (_calendarDatePickerKey.currentState != null) {
-                            _calendarDatePickerKey.currentState!.setSelectedDate(selectedDate!);
+                            _calendarDatePickerKey.currentState!
+                                .setSelectedDate(selectedDate!);
                           }
                         }),
                     Row(
@@ -773,7 +790,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             height: 43,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(21.5),
-                              border: Border.all(color: R.color.greenGradientBottom),
+                              border: Border.all(
+                                  color: R.color.greenGradientBottom),
                             ),
                             child: Center(
                               child: Text(R.string.cancel.tr(),
@@ -866,7 +884,8 @@ class CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   void setSelectedDate(DateTime date) {
@@ -883,7 +902,8 @@ class CustomTimePickerState extends State<CustomTimePicker> {
   // Check if a time is in the future
   bool _isTimeInFuture(int hour, int minute) {
     final now = DateTime.now();
-    if (selectedDate != null && selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
+    if (selectedDate != null &&
+        selectedDate!.isBefore(DateTime(now.year, now.month, now.day))) {
       return false;
     }
     return now.hour < hour || (now.hour == hour && now.minute < minute);

@@ -4,12 +4,13 @@ import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/Food/food_gallery_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,7 +32,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
   bool _isInitialized = false;
-  final ImagePicker _picker = ImagePicker();
   File? _lastCapturedImage;
 
   // Animation properties
@@ -43,8 +43,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _initializeCamera();
-    _loadLastCapturedImage();
+    _requestAllPermissions();
   }
 
   @override
@@ -70,69 +69,48 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Future<void> _syncFood() async {
-    final paths = await _selectImageToPost();
-    if (paths.isEmpty) {
+  Future<void> _requestAllPermissions() async {
+    if (_requestingPermission) {
       return;
     }
+
     try {
-      // stop camera
-      setState(() {
-        _isInitialized = false;
-      });
-      await _controller?.dispose();
-      _controller = null;
+      _requestingPermission = true;
 
-      // Show analyzing overlay
-      setState(() {
-        _isAnalyzing = true;
-      });
-
-      final result = await FoodClient().postFoodImages(paths);
-      print("API call completed with result: ${result.length} items");
-
-      // Hide analyzing overlay
-      setState(() {
-        _isAnalyzing = false;
-      });
-
-      // Navigate to the food detail page with the new food ID
-      if (result.isNotEmpty) {
-        BotToast.closeAllLoading(); // Close all toasts including custom text
-        Navigator.pushReplacementNamed(context, NavigatorName.confirm_food,
-            arguments: {
-              'timeframe': widget.timeframe,
-              'timeframeId': widget.timeframeId,
-              'foods': result,
-              'files': paths,
-            });
-      } else {
-        BotToast.closeAllLoading(); // Close all toasts including custom text
-        BotToast.showText(text: 'Không tìm thấy thực phẩm nào để đồng bộ');
+      // Request camera permission
+      if (!(await Permission.camera.isGranted)) {
+        await Permission.camera.request();
       }
+
+      // Request photo library permission using photo_manager
+      final PermissionState photoPermission =
+          await PhotoManager.requestPermissionExtend();
+      final bool photoGranted = photoPermission == PermissionState.authorized ||
+          photoPermission == PermissionState.limited ||
+          photoPermission.isAuth;
+      print('Photo permission status (authorized/limited): $photoGranted');
+
+      // Fallback for older SDKs or permanently denied
+      if (!photoGranted) {
+        final bool fallbackGranted = await _requestGalleryPermission();
+        print(
+            'Fallback photo permission via permission_handler: $fallbackGranted');
+      }
+
+      _requestingPermission = false;
+
+      // Initialize camera after permissions are granted
+      await _initializeCamera();
+      _loadLastCapturedImage();
     } catch (e) {
-      print("Error occurred: $e");
-      setState(() {
-        _isAnalyzing = false;
-      });
-      BotToast.showText(text: 'Lỗi khi đồng bộ thực phẩm: $e');
-      // restart camera
-      _initializeCamera();
+      _requestingPermission = false;
+      _showErrorDialog('Lỗi khi yêu cầu quyền: $e');
     }
   }
 
   Future<void> _initializeCamera() async {
-    if (_requestingPermission) {
-      return;
-    }
     try {
-      // request permission
-      if (!(await Permission.camera.isGranted)) {
-        _requestingPermission = true;
-        await Permission.camera.request();
-      }
       final granted = await Permission.camera.isGranted;
-      _requestingPermission = false;
       _cameras = !granted ? [] : await availableCameras();
       if (_cameras.isEmpty) {
         _showErrorDialog('Không tìm thấy camera nào');
@@ -214,6 +192,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
       // Haptic feedback
       HapticFeedback.mediumImpact();
+
+      // Auto-open gallery after capture
+      await _openGalleryPicker();
     } catch (e) {
       if (mounted) {
         _showErrorDialog('Lỗi khi chụp ảnh: $e');
@@ -300,33 +281,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Future<List<String>> _selectImageToPost() async {
-    try {
-      final List<XFile> pickedFiles = await _picker.pickMultiImage(
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 100,
-        limit: 5,
-      );
-
-      if (pickedFiles.isNotEmpty) {
-        // Enforce a maximum of 5 images even if the picker allows more
-        final List<XFile> limited =
-            pickedFiles.length > 5 ? pickedFiles.sublist(0, 5) : pickedFiles;
-
-        if (pickedFiles.length > 5) {
-          BotToast.showText(
-              text: 'Chỉ chọn tối đa 5 ảnh. Đã lấy 5 ảnh đầu tiên.');
-        }
-
-        return limited.map((e) => e.path).toList();
-      }
-    } catch (e) {
-      _showPermissionDialog();
-    }
-    return [];
-  }
-
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -340,33 +294,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showPermissionDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Thông báo'),
-          content: const Text('Ứng dụng cần quyền truy cập camera/thư viện để chọn ảnh'),
-          actions: [
-            TextButton(
-              child: const Text('Hủy'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
-              child: const Text('Cho phép'),
-              onPressed: () {
-                Navigator.pop(context);
-                openAppSettings();
               },
             ),
           ],
@@ -691,12 +618,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     if (_lastCapturedImage == null) {
       return _buildControlButton(
         icon: R.drawable.im_food_snack,
-        onTap: _syncFood,
+        onTap: _openGalleryPicker,
         size: 56,
       );
     } else {
       return GestureDetector(
-        onTap: _syncFood,
+        onTap: _openGalleryPicker,
         child: Container(
           width: 56,
           height: 56,
@@ -891,6 +818,82 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       await prefs.setString(_refImagePathKey, imagePath);
     } catch (e) {
       print('Error saving image path to preferences: $e');
+    }
+  }
+
+  Future<void> _openGalleryPicker() async {
+    try {
+      // Stop camera
+      setState(() {
+        _isInitialized = false;
+      });
+      await _controller?.dispose();
+      _controller = null;
+
+      // Open gallery picker
+      final List<String>? selectedImages = await Navigator.push<List<String>>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FoodGalleryPicker(
+            timeframe: widget.timeframe,
+            timeframeId: widget.timeframeId,
+          ),
+        ),
+      );
+
+      if (selectedImages != null && selectedImages.isNotEmpty) {
+        // Process selected images
+        await _processSelectedImages(selectedImages);
+      } else {
+        // Restart camera if no images selected
+        _initializeCamera();
+      }
+    } catch (e) {
+      print('Error opening gallery picker: $e');
+      // Restart camera on error
+      _initializeCamera();
+    }
+  }
+
+  Future<void> _processSelectedImages(List<String> imagePaths) async {
+    try {
+      // Show analyzing overlay
+      setState(() {
+        _isAnalyzing = true;
+      });
+
+      final result = await FoodClient().postFoodImages(imagePaths);
+      print("API call completed with result: ${result.length} items");
+
+      // Hide analyzing overlay
+      setState(() {
+        _isAnalyzing = false;
+      });
+
+      // Navigate to the food detail page with the new food ID
+      if (result.isNotEmpty) {
+        BotToast.closeAllLoading(); // Close all toasts including custom text
+        Navigator.pushReplacementNamed(context, NavigatorName.confirm_food,
+            arguments: {
+              'timeframe': widget.timeframe,
+              'timeframeId': widget.timeframeId,
+              'foods': result,
+              'files': imagePaths,
+            });
+      } else {
+        BotToast.closeAllLoading(); // Close all toasts including custom text
+        BotToast.showText(text: 'Không tìm thấy thực phẩm nào để đồng bộ');
+        // Restart camera
+        _initializeCamera();
+      }
+    } catch (e) {
+      print("Error occurred: $e");
+      setState(() {
+        _isAnalyzing = false;
+      });
+      BotToast.showText(text: 'Lỗi khi đồng bộ thực phẩm: $e');
+      // Restart camera
+      _initializeCamera();
     }
   }
 }

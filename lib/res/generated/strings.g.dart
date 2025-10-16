@@ -1402,4 +1402,7 @@ class Strings {
   String get login_with_phone => 'login_with_phone';
   String get login_with_zalo => 'login_with_zalo';
   String get analyzing_your_meal => 'analyzing_your_meal';
+  String get choose_meal_image => 'choose_meal_image';
+  String get please_select_at_least_one_image => 'please_select_at_least_one_image';
+  String get max_image_select_dynamic => 'max_image_select_dynamic';
 }
