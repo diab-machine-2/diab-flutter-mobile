@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/const.dart';
@@ -33,6 +35,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     on<BmiGetWeightRecordsEvent>(_onFetchWeightRecords);
     on<BmiGetAIAnalysicEvent>(_onGetAIAnalysis);
     on<BmiGetAIIndexAnalysicEvent>(_onGetAIIndexAnalysis);
+    on<BmiUpdateWeightGoalEvent>(_onUpdateWeightGoal);
 
     SharedPreferences.getInstance().then((value) => preferences = value);
     AppStorages.getHealthAppPermission().then(
@@ -54,7 +57,10 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   List<BmiGetWeightRecord> _historicalWeightList = [];
 
   late DateTime _currentTime;
+
   BmiGetWeightRecord? _selectedPointChart;
+  int? _selectedIndexPointChart;
+
   BmiDateFilterType _periodType = BmiDateFilterType.aMonth;
   BmiDateFilterType get periodType => _periodType;
 
@@ -69,12 +75,25 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   bool get hasInputedWaist => _hasInputedWaist;
 
   // getter & setter
-  double? get avgBmi => _bmiStatistical?.value;
-  double? get highestBmi => null;
-  double? get lowestBmi => null;
+  double get highestWeight => _weightStatistical?.highest ?? 0;
+  double get lowestWeight => _weightStatistical?.lowest ?? 0;
 
-  // double? get highestWeight => _weightStatistical?.highest;
-  // double? get lowestWeight => _weightStatistical?.lowest;
+  double? get avgBmi => _bmiStatistical?.value;
+  double? get highestBmi {
+    if (height != null && height! > 0) {
+      double result = highestWeight / pow(height! / 100, 2);
+      return double.parse(result.toStringAsFixed(2));
+    }
+    return null;
+  }
+
+  double? get lowestBmi {
+    if (height != null && height! > 0) {
+      double result = lowestWeight / pow(height! / 100, 2);
+      return double.parse(result.toStringAsFixed(2));
+    }
+    return null;
+  }
 
   BmiWeightStatistical? get weightStatistical => _weightStatistical;
   BmiStatistical? get bmiStatistical => _bmiStatistical;
@@ -85,8 +104,23 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   String get aiAnalysicTrend => _aiAnalysicTrend;
   String get aiAnalysicWeightRecord => _aiAnalysicWeightRecord;
 
-  double? get height => _bmiStatistical?.height;
-  double get weightGoal => AppSettings.weightGoal;
+  double? get height => AppSettings.userInfo?.height;
+  set height(double? value) {
+    add(BmiDataChangeEvent(BmiDataChangeEvent.heightChanged, value));
+  }
+
+  double? get weightGoal {
+    if (AppSettings.userInfo?.goalWeight == null ||
+        AppSettings.userInfo?.goalWeight == 0) {
+      return null;
+    }
+    return AppSettings.userInfo!.goalWeight!;
+  }
+
+  set weightGoal(double? value) {
+    AppSettings.userInfo = AppSettings.userInfo?.copyWith(goalWeight: value);
+    add(BmiDataChangeEvent(BmiDataChangeEvent.weightGoalChanged, value));
+  }
 
   bool hasNewData = false;
   late bool _hasHealthAppPermission;
@@ -97,6 +131,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
       preferences.getBool(Const.hasWeightRecord) ?? false;
 
   BmiGetWeightRecord? get selectedPointChart => _selectedPointChart;
+  int? get selectedIndexPointChart => _selectedIndexPointChart;
+  bool get isLastSelectedPoint => selectedIndexPointChart == 0;
 
   bool _hasModifiedData = false;
   bool get hasModifiedData => _hasModifiedData;
@@ -347,10 +383,29 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
         success: (data) {
           _historicalWeightList = data.data ?? [];
           _selectedPointChart = _historicalWeightList.firstOrNull;
+          _selectedIndexPointChart = 0;
           emit(BmiGetWeightIndexListState(Resource.success(data)));
         },
         failure: (error) =>
             emit(BmiGetWeightIndexListState(Resource.error(error))));
+  }
+
+  void _onUpdateWeightGoal(
+    BmiUpdateWeightGoalEvent event,
+    Emitter<BmiState> emit,
+  ) async {
+    emit(BmiUpdatedWeightGoalState(Resource.loading()));
+
+    try {
+      var currentGoal = await UserClient().fetchGoalInfo();
+      final result = await UserClient().updateGoalInfo(currentGoal!.copyWith(
+        goalWeight: event.weightGoal,
+      ));
+
+      emit(BmiUpdatedWeightGoalState(Resource.success(result)));
+    } catch (err) {
+      emit(BmiUpdatedWeightGoalState(Resource.error(err)));
+    }
   }
 
   // public func
@@ -426,10 +481,30 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiGetAIIndexAnalysicEvent(recordId));
   }
 
-  void selectPointChart(BmiGetWeightRecord point) {
+  void selectPointChart(int index) {
+    var point = _historicalWeightList.elementAtOrNull(index);
+    if (point == null) return;
+
     _selectedPointChart = point;
-    // add(BmiGetBmiStatisticalEvent(point));
-    add(BmiDataChangeEvent(BmiDataChangeEvent.selectedPointChanged, point));
+    _selectedIndexPointChart = index;
+    add(BmiDataChangeEvent(
+      BmiDataChangeEvent.selectedPointChanged,
+      _selectedPointChart,
+    ));
+  }
+
+  void backToPreviousPoint() {
+    if (_selectedIndexPointChart == null) {
+      return;
+    }
+    selectPointChart(_selectedIndexPointChart! + 1);
+  }
+
+  void goToNextPoint() {
+    if (_selectedIndexPointChart == null || _selectedIndexPointChart! <= 0) {
+      return;
+    }
+    selectPointChart(_selectedIndexPointChart! - 1);
   }
 
   Map<DateTime, List<BmiGetWeightRecord>> getGroupedWeightRecords() {
@@ -447,5 +522,10 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     }
 
     return result;
+  }
+
+  Future<void> updateGoalWeight(double goal) async {
+    add(BmiUpdateWeightGoalEvent(goal));
+    weightGoal = goal;
   }
 }

@@ -17,7 +17,7 @@ class CustomDialog {
 
     _isShowLoading = true;
     showGeneralDialog(
-      context: context,
+      context: Navigator.of(context, rootNavigator: true).context,
       barrierDismissible: false,
       barrierLabel: 'Loading',
       pageBuilder: (context, _, __) {
@@ -73,8 +73,8 @@ class CustomDialog {
 
   static void hideLoadingDialog(BuildContext context) {
     if (_isShowLoading) {
-      Navigator.pop(context);
       _isShowLoading = false;
+      Navigator.pop(context);
     }
   }
 

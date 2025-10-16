@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -23,6 +24,7 @@ import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_post_se
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
+import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/custom_dialog.dart';
 
@@ -165,12 +167,13 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
       } else {
         CustomDialog.hideLoadingDialog(context);
       }
-    } else if (state is BmiCheckStatisticalDataExistedState) {
-      // if (state.data.isLoading) {
-      //   CustomDialog.showLoadingDialog(context);
-      // } else {
-      //   CustomDialog.hideLoadingDialog(context);
-      // }
+    } else if (state is BmiUpdatedWeightGoalState) {
+      if (state.result.isLoading) {
+        CustomDialog.showLoadingDialog(context);
+      } else {
+        CustomDialog.hideLoadingDialog(context);
+        
+      }
     }
   }
 
@@ -347,6 +350,11 @@ class _BottomBar extends StatelessWidget {
       BmiHeightInputDialog.show(
         context,
         onConfirmed: (height) {
+          final userInfo = AppSettings.userInfo!;
+          ProfileInfoController.updateUserInfo(
+            context,
+            userInfo.copyWith(height: height),
+          );
           _redirectToInputPage(context, height: height);
         },
       );

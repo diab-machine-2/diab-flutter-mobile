@@ -2,15 +2,17 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 
 class BmiStatisticalChart extends StatelessWidget {
   const BmiStatisticalChart({
     super.key,
   });
+
+  static final double _heightOfChart = 160;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,10 @@ class BmiStatisticalChart extends StatelessWidget {
     );
 
     return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (_, state) => state is BmiGetWeightIndexListState,
+        buildWhen: (_, state) =>
+            state is BmiGetWeightIndexListState ||
+            (state is BmiDataChangedState &&
+                state.event == BmiDataChangeEvent.selectedPointChanged),
         builder: (context, state) {
           List<BmiGetWeightRecord> data =
               List.from(_bmiBloc.historicalWeightList);
@@ -32,23 +37,44 @@ class BmiStatisticalChart extends StatelessWidget {
           double widthChart = enableScroll
               ? data.length * intervalWidth
               : MediaQuery.of(context).size.width - 24;
+          double _minWeightOnChart = _bmiBloc.lowestWeight - 15;
+          double _maxWeightOnChart = _bmiBloc.highestWeight + 15;
 
-          Future.delayed(Durations.extralong4, () {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: Durations.medium2,
-              curve: Curves.easeInOut,
-            );
-          });
+          if (_bmiBloc.isLastSelectedPoint) {
+            Future.delayed(Durations.extralong4, () {
+              _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: Durations.medium2,
+                curve: Curves.easeInOut,
+              );
+            });
+          }
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: Image.asset(
-                  "lib/res/drawables/icon_waist.png",
-                  width: 18,
+                child: Column(
+                  children: [
+                    if (_bmiBloc.weightGoal != null)
+                      Padding(
+                        padding: EdgeInsets.only(
+                          bottom: (_heightOfChart /
+                                      (_maxWeightOnChart - _minWeightOnChart)) *
+                                  (60 - _minWeightOnChart) -
+                              15,
+                        ),
+                        child: Text(
+                          "${_bmiBloc.weightGoal} kg",
+                          style: R.style.smallBodyStyle,
+                        ),
+                      ),
+                    Image.asset(
+                      "lib/res/drawables/icon_waist.png",
+                      width: 18,
+                    ),
+                  ],
                 ),
               ),
               Expanded(
@@ -57,12 +83,12 @@ class BmiStatisticalChart extends StatelessWidget {
                   controller: _scrollController,
                   child: Container(
                     width: widthChart,
-                    height: 160,
+                    height: _heightOfChart,
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     child: LineChart(
                       LineChartData(
-                        minY: 30,
-                        maxY: 100,
+                        minY: _minWeightOnChart,
+                        maxY: _maxWeightOnChart,
                         gridData: FlGridData(show: false),
                         titlesData: FlTitlesData(
                           leftTitles: SideTitles(showTitles: false),
@@ -127,22 +153,20 @@ class BmiStatisticalChart extends StatelessWidget {
                             // response.lineBarSpots chứa danh sách điểm được chạm
                             final spot = response.lineBarSpots!.first;
                             debugPrint('Tap vào điểm x=${spot.x}, y=${spot.y}');
-                            _bmiBloc.selectPointChart(data[spot.spotIndex]);
+                            var index = data.length - 1 - spot.spotIndex;
+                            _bmiBloc.selectPointChart(index);
                           },
                         ),
-                        extraLinesData: ExtraLinesData(horizontalLines: [
-                          HorizontalLine(
-                              y: 60,
-                              color: Colors.grey,
-                              strokeWidth: 1,
-                              dashArray: [5, 5],
-                              label: HorizontalLineLabel(
-                                show: true,
-                                style: R.style.smallBodyStyle.neutral4,
-                                labelResolver: (label) =>
-                                    "${label.y.toStringAsFixed(0)} kg",
-                              )),
-                        ]),
+                        extraLinesData: _bmiBloc.weightGoal != null
+                            ? ExtraLinesData(horizontalLines: [
+                                HorizontalLine(
+                                  y: 60,
+                                  color: Colors.grey,
+                                  strokeWidth: 1,
+                                  dashArray: [5, 5],
+                                ),
+                              ])
+                            : null,
                       ),
                     ),
                   ),

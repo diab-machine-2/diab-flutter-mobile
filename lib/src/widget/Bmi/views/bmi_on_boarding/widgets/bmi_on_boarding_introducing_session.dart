@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_input_type_bottom_sheet.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
+import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
 class BmiOnBoardingIntroducingSession extends StatelessWidget {
@@ -98,6 +100,11 @@ class BmiOnBoardingIntroducingSession extends StatelessWidget {
       BmiHeightInputDialog.show(
         context,
         onConfirmed: (height) {
+          final userInfo = AppSettings.userInfo!;
+          ProfileInfoController.updateUserInfo(
+            context,
+            userInfo.copyWith(height: height),
+          );
           _redirectToInputPage(context, height: height);
         },
       );

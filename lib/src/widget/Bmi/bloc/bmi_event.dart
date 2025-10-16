@@ -13,6 +13,8 @@ class BmiDataChangeEvent extends BmiEvent {
   const BmiDataChangeEvent(this.event, [this.data]);
 
   static const String selectedPointChanged = "selected_point_changed";
+  static const String heightChanged = "height_changed";
+  static const String weightGoalChanged = "weight_goal_changed";
 }
 
 class BmiGetWeightLessonsEvent extends BmiEvent {
@@ -54,4 +56,11 @@ class BmiGetAIIndexAnalysicEvent extends BmiEvent {
   final String recordId;
 
   const BmiGetAIIndexAnalysicEvent(this.recordId);
+}
+
+
+class BmiUpdateWeightGoalEvent extends BmiEvent {
+  final double weightGoal;
+
+  const BmiUpdateWeightGoalEvent(this.weightGoal);
 }

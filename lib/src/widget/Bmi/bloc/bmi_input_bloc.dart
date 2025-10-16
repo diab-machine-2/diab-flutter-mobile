@@ -7,6 +7,7 @@ import 'package:medical/src/model/request/submit_weight_record_request.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/model/response/calculate_bmi_response.dart';
 import 'package:medical/src/service/resource.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 
@@ -100,6 +101,19 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   List<WeightRecordImage> _noteImagesFromRecord = [];
   List<WeightRecordImage> get noteImagesFromRecord => _noteImagesFromRecord;
 
+  int? getThresholdIndex() {
+    if (_calculatedBmi?.bmi != null) {
+      double bmi = _calculatedBmi!.bmi!;
+      var threshold = Const.bmiThreshold;
+      for (int i = 0; i < threshold.length - 1; i++) {
+        if (bmi > threshold[i] && bmi <= threshold[i + 1]) {
+          return i + 1;
+        }
+      }
+      return null;
+    }
+    return null;
+  }
   // Handle event
 
   void _onDataChanged(

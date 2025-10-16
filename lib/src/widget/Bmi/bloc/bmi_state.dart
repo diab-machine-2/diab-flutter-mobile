@@ -76,3 +76,9 @@ class BmiGetAIIndexAnalysicState extends BmiState {
 
   final Resource<String> data;
 }
+
+class BmiUpdatedWeightGoalState extends BmiState {
+  const BmiUpdatedWeightGoalState(this.result);
+
+  final Resource<bool> result;
+}

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
@@ -105,27 +106,74 @@ class _InfoHeader extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "BMI ",
-                    style: R.style.normalTextStyle.neutral4,
+                  IconButton(
+                    onPressed: () {
+                      bmiBloc.backToPreviousPoint();
+                    },
+                    icon: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                              )
+                            ]),
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: AppColors.neutral3,
+                          size: 18,
+                        )),
                   ),
-                  Text(
-                    "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
-                    style: R.style.boldNormalStyle.neutral3,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "BMI ",
+                        style: R.style.normalTextStyle.neutral4,
+                      ),
+                      Text(
+                        "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
+                        style: R.style.boldNormalStyle.neutral3,
+                      ),
+                      Text(
+                        " \u2022 ",
+                        style: R.style.boldLargeStyle.neutral4,
+                      ),
+                      Text(
+                        "${bmiBloc.selectedPointChart?.weight ?? "--"}",
+                        style: R.style.boldNormalStyle.neutral3,
+                      ),
+                      Text(
+                        " kg",
+                        style: R.style.normalTextStyle.neutral4,
+                      ),
+                    ],
                   ),
-                  Text(
-                    " \u2022 ",
-                    style: R.style.boldLargeStyle.neutral4,
-                  ),
-                  Text(
-                    "${bmiBloc.selectedPointChart?.weight ?? "--"}",
-                    style: R.style.boldNormalStyle.neutral3,
-                  ),
-                  Text(
-                    " kg",
-                    style: R.style.normalTextStyle.neutral4,
+                  IconButton(
+                    onPressed: () {
+                      bmiBloc.goToNextPoint();
+                    },
+                    icon: Container(
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                              )
+                            ]),
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: AppColors.neutral3,
+                          size: 18,
+                        )),
                   ),
                 ],
               )

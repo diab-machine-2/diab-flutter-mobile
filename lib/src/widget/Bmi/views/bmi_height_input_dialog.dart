@@ -9,10 +9,12 @@ class BmiHeightInputDialog {
   static Future show(
     BuildContext context, {
     Function(double height)? onConfirmed,
+    int? initialHeight,
   }) {
     return showGeneralDialog(
       context: context,
       pageBuilder: (context, _, __) => _BmiHeightInputDialogView(
+        initialHeight: initialHeight,
         onConfirmed: onConfirmed,
       ),
       barrierDismissible: true,
@@ -22,13 +24,18 @@ class BmiHeightInputDialog {
 }
 
 class _BmiHeightInputDialogView extends StatefulWidget {
-  const _BmiHeightInputDialogView({super.key, this.onConfirmed});
+  const _BmiHeightInputDialogView({
+    super.key,
+    this.onConfirmed,
+    this.initialHeight,
+  });
 
   @override
   State<_BmiHeightInputDialogView> createState() =>
       _BmiHeightInputDialogViewState();
 
   final Function(double height)? onConfirmed;
+  final int? initialHeight;
 }
 
 class _BmiHeightInputDialogViewState extends State<_BmiHeightInputDialogView> {
@@ -67,6 +74,7 @@ class _BmiHeightInputDialogViewState extends State<_BmiHeightInputDialogView> {
               SizedBox(
                   height: 164,
                   child: BmiHeightPicker(
+                    initialValue: widget.initialHeight,
                     onChanged: (height) => _height = height,
                   )),
               const SizedBox(
