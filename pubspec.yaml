@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: "none"
 
-version: 2.4.4+3
+version: 2.4.8+2
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -151,7 +151,7 @@ dependencies:
   purchases_ui_flutter: 8.10.6
   youtube_explode_dart: 2.5.2
   saver_gallery: 1.0.8
-  photo_manager: 3.0.0
+  photo_manager: 3.7.1
 
   # Social login
   # zalo_flutter: ^0.0.6
