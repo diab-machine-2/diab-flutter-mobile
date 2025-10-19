@@ -28,11 +28,11 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -255,9 +255,6 @@ class _HomeControllerState extends State<HomeController>
       //   _showPopupStore();
       // });
     }
-
-    BmiBloc _bmiBloc = context.read();
-    _homeBloc.hasWeightData = await _bmiBloc.checkRecordExisted();
   }
 
   void _showDialogSuccess() {

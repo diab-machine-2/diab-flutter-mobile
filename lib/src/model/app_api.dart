@@ -605,6 +605,9 @@ abstract class AppApi {
   @GET("/App/Weight/Lessons")
   Future<BmiGetWeightLessonsResponse> getWeightLessons();
 
+  @GET("/App/Lesson/LessonSupport")
+  Future<BmiGetWeightLessonsResponse> getWeightLessonsSupport();
+
   @GET("/App/Weight/Statistic/Bmi")
   Future<BmiStatisticalResponse> getBmiStatisticalData({
     @Query('currentDateTime') required int currentTime,

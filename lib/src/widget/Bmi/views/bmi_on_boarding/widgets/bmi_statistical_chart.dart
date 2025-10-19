@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
@@ -13,6 +14,8 @@ class BmiStatisticalChart extends StatelessWidget {
   });
 
   static final double _heightOfChart = 160;
+  static final double _widthOfSideBar = 32;
+  static final double _marginOfWeight = 15;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,7 @@ class BmiStatisticalChart extends StatelessWidget {
         builder: (context, state) {
           List<BmiGetWeightRecord> data =
               List.from(_bmiBloc.historicalWeightList);
+
           data = data.reversed.toList();
           double intervalWidth = 48;
           bool enableScroll =
@@ -36,11 +40,15 @@ class BmiStatisticalChart extends StatelessWidget {
 
           double widthChart = enableScroll
               ? data.length * intervalWidth
-              : MediaQuery.of(context).size.width - 24;
-          double _minWeightOnChart = _bmiBloc.lowestWeight - 15;
-          double _maxWeightOnChart = _bmiBloc.highestWeight + 15;
+              : MediaQuery.of(context).size.width - _widthOfSideBar - 24;
+          double _minWeightOnChart = _bmiBloc.getLowestOfChart(_marginOfWeight);
+          double _maxWeightOnChart = _bmiBloc.getHighestOfChart(_marginOfWeight);
+          double _bendmarkPadding =
+              (_heightOfChart / (_maxWeightOnChart - _minWeightOnChart)) *
+                      (60 - _minWeightOnChart) -
+                  _marginOfWeight;
 
-          if (_bmiBloc.isLastSelectedPoint) {
+          if (_bmiBloc.isLastSelectedPoint && data.length > 1) {
             Future.delayed(Durations.extralong4, () {
               _scrollController.animateTo(
                 _scrollController.position.maxScrollExtent,
@@ -53,21 +61,21 @@ class BmiStatisticalChart extends StatelessWidget {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              SizedBox(
+                width: _widthOfSideBar,
+                // padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                 child: Column(
                   children: [
                     if (_bmiBloc.weightGoal != null)
                       Padding(
                         padding: EdgeInsets.only(
-                          bottom: (_heightOfChart /
-                                      (_maxWeightOnChart - _minWeightOnChart)) *
-                                  (60 - _minWeightOnChart) -
-                              15,
+                          bottom: _bendmarkPadding >= _heightOfChart
+                              ? _heightOfChart / 2
+                              : _bendmarkPadding,
                         ),
                         child: Text(
                           "${_bmiBloc.weightGoal} kg",
-                          style: R.style.smallBodyStyle,
+                          style: R.style.smallTextStyle.copyWith(color: AppColors.neutral3),
                         ),
                       ),
                     Image.asset(
@@ -89,6 +97,8 @@ class BmiStatisticalChart extends StatelessWidget {
                       LineChartData(
                         minY: _minWeightOnChart,
                         maxY: _maxWeightOnChart,
+                        minX: data.length == 1 ? -0.5 : 0,
+                        maxX: data.length == 1 ? 0 : data.length - 1,
                         gridData: FlGridData(show: false),
                         titlesData: FlTitlesData(
                           leftTitles: SideTitles(showTitles: false),
@@ -100,6 +110,7 @@ class BmiStatisticalChart extends StatelessWidget {
                               final int index = value.toInt();
                               if (index >= 0 && index < data.length) {
                                 if (data[index].waist == 0) return '-';
+                                if (value < 0) return '';
                                 return data[index].waist?.toStringAsFixed(0) ??
                                     '';
                               }
@@ -118,26 +129,27 @@ class BmiStatisticalChart extends StatelessWidget {
                               (i) => FlSpot(i.toDouble(), data[i].weight ?? 0),
                             ),
                             isCurved: true,
-                            colors: [Colors.green],
+                            colors: data.map((e) => e.bmiColor).toList(),
                             barWidth: 2,
                             dotData: FlDotData(
                               show: true,
                               getDotPainter: (spot, percent, barData, index) {
                                 final isSelected =
                                     data[index] == _bmiBloc.selectedPointChart;
+
                                 return FlDotCirclePainter(
                                   radius: 4,
-                                  color: isSelected ? Colors.red : Colors.green,
+                                  color: data[index].bmiColor,
                                   strokeWidth: isSelected ? 6 : 0,
                                   strokeColor: isSelected
-                                      ? Colors.red.withOpacity(0.4)
+                                      ? data[index].bmiColor.withOpacity(0.4)
                                       : null,
                                 );
                               },
                             ),
                             belowBarData: BarAreaData(
                               show: true,
-                              colors: [Colors.green.withOpacity(0.1)],
+                              colors: data.map((e) => e.bmiColor.withOpacity(0.1)).toList(),
                             ),
                           ),
                         ],
@@ -160,7 +172,7 @@ class BmiStatisticalChart extends StatelessWidget {
                         extraLinesData: _bmiBloc.weightGoal != null
                             ? ExtraLinesData(horizontalLines: [
                                 HorizontalLine(
-                                  y: 60,
+                                  y: _bmiBloc.weightGoal ?? 0,
                                   color: Colors.grey,
                                   strokeWidth: 1,
                                   dashArray: [5, 5],

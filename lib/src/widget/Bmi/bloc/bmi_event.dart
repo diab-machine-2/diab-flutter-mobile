@@ -28,9 +28,9 @@ class BmiGetWeightStatisticalEvent extends BmiEvent {
 }
 
 class BmiGetBmiStatisticalEvent extends BmiEvent {
-  final DateTime time;
+  // final DateTime time;
 
-  const BmiGetBmiStatisticalEvent(this.time);
+  const BmiGetBmiStatisticalEvent();
 }
 
 class BmiGetWaistStatisticalEvent extends BmiEvent {

@@ -42,10 +42,10 @@ class BmiInstructionSession extends StatelessWidget {
                     crossAxisSpacing: 12,
                     childAspectRatio: 1 / 1),
                 itemBuilder: (context, index) => _BmiInstructionCard(
-                  lesson: _bmiBloc.lessons[index],
+                  lesson: _bmiBloc.lessonsSupport[index],
                   onTap: (lesson) => _onTap(context, lesson),
                 ),
-                itemCount: _bmiBloc.lessons.length,
+                itemCount: _bmiBloc.lessonsSupport.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
               );
@@ -99,7 +99,7 @@ class _BmiInstructionCard extends StatelessWidget {
                     child: Icon(
                       Icons.image_not_supported_rounded,
                       size: 56,
-                      color: AppColors.neutral3,
+                      color: AppColors.neutral4,
                     ),
                   ),
                   fit: BoxFit.cover,

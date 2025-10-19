@@ -39,15 +39,12 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
     super.initState();
     _bmiInputBloc = context.read();
     _bmiBloc = context.read();
-  }
 
-  @override
-  void didChangeDependencies() {
-    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    BmiGetWeightRecord initialData = arguments[ReviseWeightPage.dataKey];
-    _bmiInputBloc.initRevisingData(initialData);
-
-    super.didChangeDependencies();
+    Future.delayed(const Duration(milliseconds: 200)).then((value) {
+      Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+      BmiGetWeightRecord initialData = arguments[ReviseWeightPage.dataKey];
+      _bmiInputBloc.initRevisingData(initialData);
+    });
   }
 
   @override
@@ -67,7 +64,8 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

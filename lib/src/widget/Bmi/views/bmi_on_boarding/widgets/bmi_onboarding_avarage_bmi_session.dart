@@ -74,7 +74,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                 BmiThresholdBarChart(
                   thresholds: Const.bmiThreshold,
                   colors: _bmiBloc.bmiStatistical?.thresholdColors ?? [],
-                  currentValue: 23,
+                  currentValue: _bmiBloc.avgBmi ?? 0,
                   markerWidget:
                       const Icon(Icons.arrow_drop_down, color: Colors.black),
                   barHeight: 24,
@@ -88,7 +88,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text.rich(TextSpan(
-                        text: "${R.string.highest.tr()}: ",
+                        text: "${R.string.lowest.tr()}: ",
                         style: R.style.normalTextStyle.neutral3,
                         children: [
                           TextSpan(
@@ -97,7 +97,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                           )
                         ])),
                     Text.rich(TextSpan(
-                        text: "${R.string.lowest.tr()}: ",
+                        text: "${R.string.highest.tr()}: ",
                         style: R.style.normalTextStyle.neutral3,
                         children: [
                           TextSpan(

@@ -161,6 +161,16 @@ class WeightRepository {
     }
   }
 
+  Future<ApiResult<List<BmiWeightLesson>>> getWeightLessonsSupport() async {
+    try {
+      final BmiGetWeightLessonsResponse response =
+          await appClient.getWeightLessonsSupport();
+      return ApiResult.success(data: response.data ?? []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<BmiStatistical>> getBmiStatisticalData({
     required int currentTime,
     required int periodFilterType,

@@ -2604,6 +2604,29 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<BmiGetWeightLessonsResponse> getWeightLessonsSupport() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<BmiGetWeightLessonsResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Lesson/LessonSupport',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = BmiGetWeightLessonsResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<BmiStatisticalResponse> getBmiStatisticalData({
     required currentTime,
     required periodFilterType,

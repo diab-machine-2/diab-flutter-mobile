@@ -53,6 +53,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   List<BmiWeightLesson> _lessons = [];
   List<BmiWeightLesson> get lessons => _lessons;
 
+  List<BmiWeightLesson> _lessonsSupport = [];
+  List<BmiWeightLesson> get lessonsSupport => _lessonsSupport;
+
   // BmiGetWeightListResponse? _historicalWeightResponse;
   List<BmiGetWeightRecord> _historicalWeightList = [];
 
@@ -78,11 +81,29 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   double get highestWeight => _weightStatistical?.highest ?? 0;
   double get lowestWeight => _weightStatistical?.lowest ?? 0;
 
+  double getHighestOfChart(double margin) {
+    if (weightGoal == null) return highestWeight + margin;
+    if (highestWeight + margin < weightGoal!) {
+      return weightGoal! + margin;
+    } else {
+      return highestWeight + margin;
+    }
+  }
+
+  double getLowestOfChart(double margin) {
+    if (weightGoal == null) return lowestWeight - margin;
+    if (lowestWeight - margin > weightGoal!) {
+      return weightGoal! - margin;
+    } else {
+      return lowestWeight - margin;
+    }
+  }
+
   double? get avgBmi => _bmiStatistical?.value;
   double? get highestBmi {
     if (height != null && height! > 0) {
       double result = highestWeight / pow(height! / 100, 2);
-      return double.parse(result.toStringAsFixed(2));
+      return double.parse(result.toStringAsFixed(1));
     }
     return null;
   }
@@ -90,7 +111,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   double? get lowestBmi {
     if (height != null && height! > 0) {
       double result = lowestWeight / pow(height! / 100, 2);
-      return double.parse(result.toStringAsFixed(2));
+      return double.parse(result.toStringAsFixed(1));
     }
     return null;
   }
@@ -264,7 +285,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
             // _selectedPointChart = DateTime.fromMillisecondsSinceEpoch(
             //     data.trendItems!.first.date! * 1000);
             preferences.setBool(Const.hasWeightRecord, true);
-            // add(BmiGetBmiStatisticalEvent(_selectedPointChart!));
+            add(BmiGetBmiStatisticalEvent());
           }
           emit(BmiGetWeightStatisticalState(Resource.success(data)));
         },
@@ -323,7 +344,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     // return;
 
     final response = await _weightRepository.getBmiStatisticalData(
-        currentTime: event.time.millisecondsSinceEpoch,
+        currentTime: _currentTime.millisecondsSinceEpoch,
         periodFilterType: _periodType.requestValue,
         page: 1);
 
@@ -341,20 +362,24 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     Emitter<BmiState> emit,
   ) async {
     emit(BmiGetWeightLessonsState(Resource.loading()));
-    // final String raw =
-    //     await rootBundle.loadString('assets/dummy/weight_lessons.json');
-
-    // final result = (jsonDecode(raw)["data"] as List)
-    //     .map((e) => BmiWeightLesson.fromJson(e))
-    //     .toList();
-    // emit(BmiGetWeightLessonsState(Resource.success(result)));
-    // _lessons = result;
-    // return;
 
     final response = await _weightRepository.getWeightLessons();
+    final lessonsSupportResponse =
+        await _weightRepository.getWeightLessonsSupport();
+
     response.when(
-        success: (data) =>
-            emit(BmiGetWeightLessonsState(Resource.success(data))),
+        success: (data) {
+          _lessons = data;
+          emit(BmiGetWeightLessonsState(Resource.success(data)));
+        },
+        failure: (error) =>
+            emit(BmiGetWeightLessonsState(Resource.error(error))));
+
+    lessonsSupportResponse.when(
+        success: (data) {
+          _lessonsSupport = data;
+          emit(BmiGetWeightLessonsState(Resource.success(data)));
+        },
         failure: (error) =>
             emit(BmiGetWeightLessonsState(Resource.error(error))));
   }
@@ -438,21 +463,6 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     });
   }
 
-  Future<bool> checkRecordExisted() async {
-    _currentTime = DateTime.now();
-    final response = await _weightRepository.getWeightStatisticalData(
-      currentTime: _currentTime.millisecondsSinceEpoch,
-      periodFilterType: 5,
-      page: 1,
-    );
-    add(BmiGetBmiStatisticalEvent(_currentTime));
-
-    return response.when(
-      success: (data) => data.trendItems?.isNotEmpty ?? false,
-      failure: (error) => false,
-    );
-  }
-
   // void checkRecordExistedWithEmit() {
   //   add(const BmiCheckStatisticalDataExistedEvent());
   // }
@@ -462,7 +472,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     if (period == _periodType) return;
     _periodType = period;
     if (isStatisticalView) {
-      // add(BmiGetBmiStatisticalEvent());
+      add(BmiGetBmiStatisticalEvent());
       // add(BmiGetWeightStatisticalEvent());
       // add(BmiGetWaistStatisticalEvent());
       add(BmiGetWeightRecordsEvent());
@@ -524,8 +534,20 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     return result;
   }
 
-  Future<void> updateGoalWeight(double goal) async {
-    add(BmiUpdateWeightGoalEvent(goal));
+  Future<void> updateGoalWeight({double? goal}) async {
+    // add(BmiUpdateWeightGoalEvent(goal));
     weightGoal = goal;
+  }
+
+  String? getImageUrl(String? imgId) {
+    if (imgId == null) {
+      return null;
+    } else if (Const.ENVIRONMENT_DEFAULT == 'product') {
+      return Uri.https(Const.DOMAIN, 'App/Image/$imgId').toString();
+    } else if (Const.ENVIRONMENT_DEFAULT == 'staging') {
+      return Uri.https(Const.DOMAIN_STAGING, 'App/Image/$imgId').toString();
+    } else {
+      return Uri.https(Const.DOMAIN_DEV, 'App/Image/$imgId').toString();
+    }
   }
 }

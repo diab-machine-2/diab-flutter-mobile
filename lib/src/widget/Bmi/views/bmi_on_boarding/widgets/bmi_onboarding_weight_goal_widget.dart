@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi/views/bmi_goal_weight_input_dialog.dart';
 
 class BmiOnboardingWeightGoalWidget extends StatelessWidget {
   const BmiOnboardingWeightGoalWidget({
@@ -17,15 +18,22 @@ class BmiOnboardingWeightGoalWidget extends StatelessWidget {
     BmiBloc _bmiBloc = context.read();
 
     return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (previous, current) => current is BmiUpdatedWeightGoalState,
+        buildWhen: (previous, current) =>
+            current is BmiUpdatedWeightGoalState ||
+            (current is BmiDataChangedState &&
+                current.event == BmiDataChangeEvent.weightGoalChanged),
         builder: (context, state) {
           return InkWell(
             onTap: () {
-              BmiGoalWeightInputDialog.show(
-                context,
-                currentGoal: _bmiBloc.weightGoal,
-                onConfirmed: _bmiBloc.updateGoalWeight,
-              );
+              // BmiGoalWeightInputDialog.show(
+              //   context,
+              //   currentGoal: _bmiBloc.weightGoal,
+              //   onConfirmed: _bmiBloc.updateGoalWeight,
+              // );
+              Navigator.pushNamed(context, NavigatorName.goal_setting)
+                  .then((value) {
+                    _bmiBloc.updateGoalWeight();
+                  });
             },
             child: Container(
               decoration: R.decorationStyle.mediumRadiusCardStyles,

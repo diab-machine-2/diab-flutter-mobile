@@ -43,11 +43,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   HomeLoaded? _cached;
   bool _firstLoad = false;
-
-  // weight
-  bool _hasWeightData = false;
-  bool get hasWeightData => _hasWeightData;
-  set hasWeightData(bool value) => _hasWeightData = value;
+  bool _hasWeightRecord = false;
 
   int get _currentWeek {
     if (AppSettings.userInfo?.ownPackage?.ownRoadmap?.currentWeek != null) {
@@ -97,6 +93,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             measurementLoading: false,
             reminderLoading: false,
           );
+          _hasWeightRecord = model.weightCard?.weight != null;
           yield _cached!;
         } else {
           // if no cache
@@ -490,7 +487,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   List<HomeMeasurementIndex> getAllMeasurements() {
     String weightNavigatorName =
-        _hasWeightData ? NavigatorName.bmiInputPage : NavigatorName.add_bmi;
+        _hasWeightRecord ? NavigatorName.bmiInputPage : NavigatorName.add_bmi;
 
     return [
       HomeMeasurementIndex(

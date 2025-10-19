@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 
 class BmiOnBoardingPostCard extends StatelessWidget {
   const BmiOnBoardingPostCard({
@@ -21,6 +23,8 @@ class BmiOnBoardingPostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BmiBloc _bmiBloc = context.read();
+    
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -31,6 +35,7 @@ class BmiOnBoardingPostCard extends StatelessWidget {
             border: Border.all(color: R.color.color0xffDFE4E4),
             borderRadius: BorderRadius.circular(AppDimens.mediumRadius)),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: ClipRRect(
@@ -38,13 +43,13 @@ class BmiOnBoardingPostCard extends StatelessWidget {
                     topLeft: Radius.circular(AppDimens.mediumRadius),
                     topRight: Radius.circular(AppDimens.mediumRadius)),
                 child: CachedNetworkImage(
-                  imageUrl: lesson.image?.url ?? "",
+                  imageUrl: _bmiBloc.getImageUrl(lesson.image?.url) ?? "",
                   errorWidget: (context, url, error) => Container(
                     color: AppColors.neutral5,
                     child: Icon(
                       Icons.image_not_supported_rounded,
                       size: 56,
-                      color: AppColors.neutral3,
+                      color: AppColors.neutral4,
                     ),
                   ),
                   fit: BoxFit.cover,
@@ -56,9 +61,9 @@ class BmiOnBoardingPostCard extends StatelessWidget {
               height: 8.0,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
-                lesson.description ?? "--",
+                lesson.name ?? lesson.description ?? "--",
                 style: R.style.normalTextStyle,
               ),
             ),
@@ -68,7 +73,7 @@ class BmiOnBoardingPostCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: _Category(
-                category: lesson.code ?? "--",
+                category: lesson.lessonModule?.name ?? "--",
               ),
             ),
             const SizedBox(
