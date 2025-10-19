@@ -108,6 +108,10 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
       for (int i = 0; i < threshold.length - 1; i++) {
         if (bmi > threshold[i] && bmi <= threshold[i + 1]) {
           return i + 1;
+        } else if (bmi <= threshold.first) {
+          return 0;
+        } else if (bmi > threshold.last) {
+          return threshold.length;
         }
       }
       return null;
