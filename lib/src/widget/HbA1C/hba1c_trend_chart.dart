@@ -61,7 +61,14 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       maxY = center + 1.0;
     }
 
+    // Ensure Y-axis always includes 6.5 as reference point
+    if (minY > 6.5) minY = 6.5 - padding;
+    if (maxY < 6.5) maxY = 6.5 + padding;
+
     List<LineChartBarData> lineBarsData = _generateMultipleHbA1cLines();
+
+    // Calculate the Y position for 6.5% label based on chart Y-axis
+    double labelYPosition = _calculateYPosition(6.5, minY, maxY, 140);
 
     return SizedBox(
       height: 140,
@@ -76,10 +83,10 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
               height: 140,
               child: Stack(
                 children: [
-                  // Single value label - 6.5%, centered vertically
+                  // Single value label - 6.5%, positioned at reference line
                   Positioned(
-                    top: (140 / 2) -
-                        8, // Center vertically, subtract half of text height
+                    top: labelYPosition -
+                        8, // Position at reference line, subtract half of text height
                     right: 0,
                     child: Text(
                       '6.5%',
@@ -139,11 +146,12 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                         tooltipRoundedRadius: 8,
                         getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                           return lineBarsSpot.map((lineBarSpot) {
-                            if (lineBarSpot.spotIndex >= 0 &&
-                                lineBarSpot.spotIndex <
-                                    widget.dataPoints.length) {
+                            // Get the flat index from the spot's x position
+                            int flatIndex = lineBarSpot.x.toInt();
+                            if (flatIndex >= 0 &&
+                                flatIndex < _getFlattenedDataPoints().length) {
                               final dataPoint =
-                                  widget.dataPoints[lineBarSpot.spotIndex];
+                                  _getFlattenedDataPoints()[flatIndex];
                               return LineTooltipItem(
                                 '${dataPoint.value.toStringAsFixed(1)}%',
                                 TextStyle(
@@ -174,7 +182,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                     lineBarsData: lineBarsData,
                     extraLinesData: ExtraLinesData(
                       horizontalLines: [
-                        // Single dashed line at 6.5%
+                        // Single dashed line at 6.5% reference point
                         HorizontalLine(
                           y: 6.5,
                           color: Color(0xFF5E6566),
@@ -272,6 +280,17 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       }
     }
     return false;
+  }
+
+  List<HbA1cDataPoint> _getFlattenedDataPoints() {
+    List<HbA1cDataPoint> flattenedPoints = [];
+    for (int dayIndex = 0; dayIndex < widget.groupedPoints.length; dayIndex++) {
+      final group = widget.groupedPoints[dayIndex];
+      for (int subIndex = 0; subIndex < group.length; subIndex++) {
+        flattenedPoints.add(group[subIndex]);
+      }
+    }
+    return flattenedPoints;
   }
 
   double _calculateYPosition(
