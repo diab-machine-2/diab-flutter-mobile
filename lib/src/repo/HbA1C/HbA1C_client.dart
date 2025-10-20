@@ -27,9 +27,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -44,20 +42,30 @@ class HbA1CClient extends FetchClient {
       );
       return listResponse.data;
     }
-    
+
     return null;
   }
 
   Future<InputHbA1CDataModel> fetchInput(
-      int currentDateTime, int periodFilterType, int page) async {
+      int currentDateTime, int periodFilterType, int page,
+      {bool takeAll = false}) async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/HbA1C/Input', params: {
+      Map<String, String> params = {
         'currentDateTime': currentDateTime.toString(),
-        'periodFilterType': periodFilterType.toString(),
         'page': '$page',
-        'size': '10'
-      });
+        'size': takeAll ? '1000' : '10', // Increase size when taking all
+      };
+
+      // When takeAll is true, use periodFilterType = 3 (24 months) with large size
+      // This effectively gets "all" data within a reasonable timeframe
+      if (takeAll) {
+        params['periodFilterType'] = '3'; // 24 months
+      } else {
+        params['periodFilterType'] = periodFilterType.toString();
+      }
+
+      final Response response =
+          await super.fetchData(url: '/App/HbA1C/Input', params: params);
       if (response.statusCode == 200) {
         return InputHbA1CDataModel(
             inputs: InputHbA1CModel.toList(response.data['data']),
@@ -67,17 +75,15 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
-  Future<TrendModel> fetchTrend(int type) async {
+  Future<TrendModel> fetchTrend(int type, {bool takeAll = false}) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/HbA1C/Trend', params: {
-        'takeAll': true.toString(),
+        'takeAll': takeAll.toString(),
         'currentDateTime':
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         'trendType': type.toString()
@@ -89,9 +95,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -106,9 +110,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -131,9 +133,7 @@ class HbA1CClient extends FetchClient {
         throw Error.fromString(error);
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -161,9 +161,7 @@ class HbA1CClient extends FetchClient {
         throw Error.fromString(error);
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -178,9 +176,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -196,9 +192,7 @@ class HbA1CClient extends FetchClient {
         throw error;
       }
     } catch (e) {
-      throw e is Error
-          ? e
-          : R.string.error_can_not_connect_to_server.tr();
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 
@@ -216,6 +210,68 @@ class HbA1CClient extends FetchClient {
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<String?> fetchHbA1CInputAnalysis({
+    String? id,
+    required String hba1cValue,
+    required int date,
+    String? note,
+  }) async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/HbA1C/Analysis/Index',
+        params: {
+          'id': id ?? '',
+          'hba1cValue': hba1cValue,
+          'date': date.toString(),
+          'note': note ?? '',
+        },
+      );
+      if (response.statusCode == 200) {
+        return response.data['data'] as String?;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<String?> fetchHbA1CTrendAnalysis(int periodFilterType,
+      {bool takeAll = false}) async {
+    try {
+      Map<String, String> params = {
+        'currentDateTime':
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        'page': '1',
+        'size': takeAll ? '1000' : '100',
+      };
+
+      // When takeAll is true, use periodFilterType = 3 (24 months) with large size
+      if (takeAll) {
+        params['periodFilterType'] = '3'; // 24 months
+      } else {
+        params['periodFilterType'] = periodFilterType.toString();
+      }
+
+      final Response response = await super.fetchData(
+        url: '/App/HbA1C/Analysis/Trend',
+        params: params,
+      );
+
+      if (response.statusCode == 200) {
+        final singleResponse = SingleResponse.fromJsonTypeString(
+          response.data as Map<String, dynamic>,
+        );
+        return singleResponse.data;
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching HbA1C trend analysis: $e');
+      return null;
     }
   }
 }

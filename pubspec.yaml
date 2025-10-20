@@ -230,6 +230,7 @@ flutter:
     - lib/res/drawables/food/
     - lib/res/drawables/tab/
     - lib/res/drawables/zoom/
+    - lib/res/drawables/hba1c/
     - lib/res/translations/
     - lib/res/generated/
     - lib/res/icons/
