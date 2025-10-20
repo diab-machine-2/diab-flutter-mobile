@@ -28,6 +28,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
@@ -433,7 +434,8 @@ class _HomeControllerState extends State<HomeController>
     }
     if (notifyName == 'hba1c_change_data') {
       _refresh();
-      _checkScreen(NavigatorName.detail_hba1c);
+      // Only refresh data, don't auto-navigate as it disrupts user experience
+      // User can manually navigate to HbA1C when they want to see it
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
       _refresh();
@@ -746,6 +748,8 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () =>
                                 _showAddMeasurement(context),
                             onHealthProfile: () {},
+                            onHbA1cTap:
+                                MeasurementSummary.createHbA1cCallback(context),
                             onMeasurement: (routeName, args, title) async {
                               // track event
                               final String eventName = "home_select_kpi";
@@ -775,6 +779,14 @@ class _HomeControllerState extends State<HomeController>
                               if (await _showExercriseAddBottomSheet(
                                       routeName) ==
                                   false) {
+                                return;
+                              }
+                              // case HbA1C navigation with data checking
+                              if (routeName == NavigatorName.detail_hba1c ||
+                                  (title != null &&
+                                      title.toLowerCase().contains('hba1c'))) {
+                                await HbA1cNavigationHelper.navigateToHbA1C(
+                                    context);
                                 return;
                               }
                               // others
@@ -1167,6 +1179,22 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
+        // case HbA1C - check if user has data
+        if (item.navigatorName == NavigatorName.add_hba1c ||
+            (item.title.toLowerCase().contains('hba1c'))) {
+          // Check if user has HbA1C data
+          bool hasHbA1cData = await _checkHasHbA1cData();
+
+          if (hasHbA1cData) {
+            // User has data, navigate to input page directly
+            Navigator.pushNamed(context, NavigatorName.add_hba1c,
+                arguments: {'type': 'input'});
+          } else {
+            // User has no data, navigate to onboarding
+            Navigator.pushNamed(context, NavigatorName.hba1c_intro_1st_page);
+          }
+          return;
+        }
         // others
         // CHEAT CODE : Vận Động -> Vận Động Bước 1
         if (item.title == "Vận động") {
@@ -1470,5 +1498,28 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance
         .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
     Observable.instance.notifyObservers([], notifyName: "activity_tab_reload");
+  }
+
+  /// Check if user has HbA1C data
+  Future<bool> _checkHasHbA1cData() async {
+    try {
+      final homeModel = await AppSettings.getHome();
+
+      if (homeModel != null) {
+        final hasValidDateTime = homeModel.hbA1CIndex.createDateTime != null &&
+            homeModel.hbA1CIndex.createDateTime! > 0;
+
+        final hasHbA1cData = homeModel.hbA1CIndex.index != null &&
+            homeModel.hbA1CIndex.index! > 0 &&
+            hasValidDateTime;
+
+        return hasHbA1cData;
+      }
+
+      return false;
+    } catch (e) {
+      // In case of error, assume no data
+      return false;
+    }
   }
 }

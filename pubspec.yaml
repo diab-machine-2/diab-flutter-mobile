@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: "none"
 
-version: 2.4.4+3
+version: 2.4.7+2
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -228,6 +228,7 @@ flutter:
     - lib/res/drawables/bloodpressure/
     - lib/res/drawables/tab/
     - lib/res/drawables/zoom/
+    - lib/res/drawables/hba1c/
     - lib/res/translations/
     - lib/res/generated/
     - lib/res/icons/

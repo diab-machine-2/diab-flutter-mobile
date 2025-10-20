@@ -37,6 +37,22 @@ class AppStorages {
     prefs.remove("referralCode");
   }
 
+  // HbA1C Onboarding Methods
+  static Future<bool> isFirstTimeHbA1C() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isFirstTimeHbA1C') ?? true;
+  }
+
+  static Future<void> setHbA1COnboardingCompleted() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isFirstTimeHbA1C', false);
+  }
+
+  static Future<void> resetHbA1COnboarding() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isFirstTimeHbA1C');
+  }
+
   static final AppStorages _instance = AppStorages._internal();
   factory AppStorages() {
     return _instance;

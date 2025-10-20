@@ -7,11 +7,11 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_hba1c_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_detail.dart';
 import 'package:medical/src/widget/HbA1C/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
 import 'package:medical/src/widget/HbA1C/widget/hba1c_filter.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_functions.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
@@ -43,7 +43,9 @@ class _Hba1cDetailTabbarControllerState
   bool isClicked = false;
   ShortGuiModel? des;
 
-  int periodFilterType = 1;
+  int periodFilterType = 1; // Default to 1 (6 months)
+  bool _argsInitialized = false;
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +69,22 @@ class _Hba1cDetailTabbarControllerState
         }
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_argsInitialized) return;
+    // Get arguments from navigation if available
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args['initPeriodFilterType'] != null) {
+      // Map UI index to API trendType:
+      // 0 (Tất cả) -> 1, 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
+      int uiIndex = args['initPeriodFilterType'];
+      periodFilterType = uiIndex == 0 ? 1 : uiIndex;
+    }
+    _argsInitialized = true;
   }
 
   @override
@@ -180,9 +198,8 @@ class _Hba1cDetailTabbarControllerState
     );
   }
 
-  _showMaterialDialog() {
-    Navigator.pushNamed(context, NavigatorName.add_hba1c,
-        arguments: {'type': 'input', 'id': null});
+  _showMaterialDialog() async {
+    await showHbA1cInputMethodModal(context);
     // showDialog(
     //   barrierColor: R.color.color0xff003F38.withOpacity(0.8),
     //   useSafeArea: false,
