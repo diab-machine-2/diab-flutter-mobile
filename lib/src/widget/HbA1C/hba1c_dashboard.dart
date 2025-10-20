@@ -393,8 +393,6 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                           const SizedBox(height: 12),
                           _buildCombinedMainSection(state),
                           const SizedBox(height: 12),
-                          _buildScheduleButton(),
-                          const SizedBox(height: 12),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: _buildKnowledgeSection(),
@@ -1035,68 +1033,6 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           ),
         ],
       ],
-    );
-  }
-
-  Widget _buildScheduleButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: InkWell(
-        onTap: () {
-          // Navigate to HbA1c schedule
-          Navigator.pushNamed(context, NavigatorName.schedule_glucose,
-              arguments: {'type': 'hba1c'});
-        },
-        child: Container(
-          height: 76,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: R.color.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xff01696114),
-                offset: const Offset(2, -4),
-                blurRadius: 8,
-                spreadRadius: 0,
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: Row(
-            children: [
-              const SizedBox(width: 17),
-              SizedBox(
-                width: 40,
-                height: 40,
-                child: Image.asset(
-                  R.drawable.im_hba1c_measurement_reminder,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(right: 8),
-                  child: Text(
-                    'Nhắc nhở lịch đo HbA1c',
-                    style: TextStyle(
-                      fontFamily: R.font.sfpro,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: R.color.textDark,
-                      letterSpacing: 0.2,
-                    ),
-                  ),
-                ),
-              ),
-              Icon(Icons.arrow_forward_ios,
-                  color: R.color.primaryGreyColor, size: 20),
-              const SizedBox(width: 16),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
