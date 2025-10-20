@@ -62,12 +62,18 @@ class HbA1CResultDto {
   }
 
   static int _findIndexInRanges(double number, List<int> ranges) {
-    for (int i = 0; i < ranges.length - 1; i++) {
-      if (number >= ranges[i] && number < ranges[i + 1]) {
-        return i;
-      }
-    }
-    return ranges.length - 1;
+    // Handle boundary values to match visual display:
+    // number is already multiplied by 10 (e.g., 65 for 6.5%)
+    // ranges = [0, 65, 70, 80] representing [0%, 6.5%, 7.0%, 8.0%]
+    // ≤ 65 (≤ 6.5%): Lý tưởng (index 0)
+    // > 65 và ≤ 70 (> 6.5% và ≤ 7.0%): Tốt (index 1)
+    // > 70 và ≤ 80 (> 7.0% và ≤ 8.0%): Cao (index 2)
+    // > 80 (> 8.0%): Rất cao (index 3)
+
+    if (number <= 65) return 0; // Lý tưởng
+    if (number <= 70) return 1; // Tốt
+    if (number <= 80) return 2; // Cao
+    return 3; // Rất cao
   }
 }
 

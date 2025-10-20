@@ -111,21 +111,28 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
   String _generateFallbackAnalysis() {
     final hba1c = widget.data.hba1c;
     final rangeLabel = widget.data.rangeType.title;
+    final measurementDate = widget.data.dateTime;
 
-    String analysis = "Chỉ số HbA1c ${hba1c}% của bạn đang ở mức $rangeLabel. ";
+    // Format measurement date
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final formattedDate = dateFormat.format(measurementDate);
 
-    if (hba1c < 6.5) {
+    String analysis =
+        "Chỉ số HbA1c ${hba1c.toStringAsFixed(1)}% ($rangeLabel) đo ngày $formattedDate. ";
+
+    // Main advice based on HbA1c level
+    if (hba1c <= 6.5) {
       analysis +=
-          "Đây là một kết quả tuyệt vời! Hãy duy trì lối sống lành mạnh hiện tại với chế độ ăn cân bằng và tập thể dục đều đặn.";
-    } else if (hba1c < 7.0) {
+          "Đây là một kết quả tuyệt vời! Chỉ số HbA1c của bạn nằm trong mức lý tưởng, cho thấy không có nguy cơ tiểu đường. Hãy duy trì lối sống lành mạnh hiện tại với chế độ ăn cân bằng và tập thể dục đều đặn.";
+    } else if (hba1c <= 7.0) {
       analysis +=
-          "Chỉ số này cho thấy việc kiểm soát đường huyết đang tốt. Tiếp tục duy trì chế độ ăn uống và vận động phù hợp.";
-    } else if (hba1c < 8.0) {
+          "Chỉ số này cho thấy việc kiểm soát đường huyết đang tốt, tuy nhiên có nguy cơ tiền tiểu đường thấp. Tiếp tục duy trì chế độ ăn uống lành mạnh và tập luyện thể dục đều đặn.";
+    } else if (hba1c <= 8.0) {
       analysis +=
-          "Chỉ số này cần được cải thiện. Hãy tham khảo ý kiến bác sĩ về điều chỉnh thuốc và lối sống để đạt mục tiêu tốt hơn.";
+          "Chỉ số này đang ở mức cao, có nguy cơ tiểu đường. Cần cải thiện lối sống và chế độ ăn uống. Hãy tham khảo ý kiến bác sĩ về điều chỉnh thuốc và chế độ sinh hoạt để đạt mục tiêu tốt hơn.";
     } else {
       analysis +=
-          "Chỉ số này cần được theo dõi và điều trị chặt chẽ. Vui lòng liên hệ với bác sĩ điều trị để được tư vấn cụ thể.";
+          "Chỉ số này đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Cần được theo dõi và điều trị chặt chẽ. Vui lòng liên hệ ngay với bác sĩ điều trị để được tư vấn và điều trị kịp thời.";
     }
 
     return analysis;
@@ -147,11 +154,21 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
       // Mark user as not first time after completing HbA1C input
       await AppStorages.setHbA1COnboardingCompleted();
 
-      // Complete and navigate
+      // Complete smart goal
       HomeClient().completeSmartGoal(
           DateTime.now(), '', 1, ScheduleType.hba1c_recommend.typeIndex);
 
-      // Navigate to HbA1c Dashboard instead of popping to first route
+      // Notify observers FIRST to ensure home refreshes data
+      Observable.instance.notifyObservers(
+        [],
+        notifyName: "hba1c_change_data",
+        map: {'isNew': widget.data.isNew},
+      );
+
+      // Small delay to let home start refreshing
+      await Future.delayed(Duration(milliseconds: 50));
+
+      // Then navigate to HbA1c Dashboard
       Navigator.pushNamedAndRemoveUntil(
         context,
         NavigatorName.hba1c_dashboard,
@@ -161,12 +178,6 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
           'currentLevel': widget.data.rangeType.title,
           'currentColor': widget.data.rangeType.color,
         },
-      );
-
-      Observable.instance.notifyObservers(
-        [],
-        notifyName: "hba1c_change_data",
-        map: {'isNew': widget.data.isNew},
       );
     } catch (e, s) {
       TrackingManager.recordError(e, s);
@@ -189,8 +200,8 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
   }
 
   void _doGuide() async {
-    // Navigate to HbA1C guide page if available
-    Navigator.of(context).pushNamed(NavigatorName.hba1c_intro_1st_page);
+    // Navigate to HbA1C guide page
+    Navigator.of(context).pushNamed(NavigatorName.hba1c_intro_2nd_page);
   }
 
   @override

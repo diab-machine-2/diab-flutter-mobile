@@ -546,8 +546,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   List<HomeMeasurementInlineData>? _castInlineMeasurements(HomeModel? model) {
     // Hb1Ac
-    final haveHba1c =
-        model?.hbA1CIndex.index != null && model!.hbA1CIndex.index! > 0;
+    // Check both index value and createDateTime to determine if there's real data
+    // Backend may return default value (e.g., 9.0) even when there's no actual data
+    // createDateTime will be null or 0 when there's no data
+
+    // Debug log to check actual values
+    print('🔍 HbA1C Data Check:');
+    print('  index: ${model?.hbA1CIndex.index}');
+    print('  createDateTime: ${model?.hbA1CIndex.createDateTime}');
+    print('  color: ${model?.hbA1CIndex.color}');
+
+    // Check if there's real data:
+    // 1. Index must exist and > 0
+    // 2. CreateDateTime must exist and > 0 (not null or 0)
+    // 3. Exclude default value of 9.0 when createDateTime is null/0
+    final hasValidDateTime = model?.hbA1CIndex.createDateTime != null &&
+        model!.hbA1CIndex.createDateTime! > 0;
+
+    final haveHba1c = model?.hbA1CIndex.index != null &&
+        model!.hbA1CIndex.index! > 0 &&
+        hasValidDateTime;
+
+    print('  hasValidDateTime: $hasValidDateTime');
+    print('  haveHba1c: $haveHba1c');
+
     final hba1c = HomeMeasurementInlineData(
       title: "HbA1C",
       titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,

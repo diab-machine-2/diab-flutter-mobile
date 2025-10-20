@@ -39,10 +39,12 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   String? currentLevel;
   Color? currentColor;
 
-  int _periodFilterType = 1; // Default to "Tất cả" mapping (trendType = 1)
+  int _periodFilterType =
+      3; // Default to 3 (24 months, used with takeAll for "Tất cả")
   int _selectedUIIndex =
       0; // Track UI selection separately (default to "Tất cả")
   String? _aiSuggestion;
+  bool _isLoadingAI = false; // Track if AI is being loaded to prevent loops
   int _focusIndex = -1; // Focused time-group index (x axis group)
   int _focusSubIndex = 0; // Focused item within the time group
 
@@ -61,8 +63,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   void initState() {
     super.initState();
     _firebaseSetup();
-    _loadAITrend();
-    // Load real data from API instead of generating mock data
+    // Load trend data first, then AI will be loaded after data is available
     _loadTrendData();
   }
 
@@ -95,6 +96,10 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   Future<void> _loadAITrend() async {
+    // Prevent loading if already in progress
+    if (_isLoadingAI) return;
+
+    _isLoadingAI = true;
     if (mounted) {
       setState(() {
         _aiSuggestion = null; // Show loading state
@@ -102,76 +107,90 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     }
 
     try {
+      // When "Tất cả" (index 0) is selected, use takeAll = true
+      bool useTakeAll = _selectedUIIndex == 0;
+
+      print('🔄 Loading AI Trend Analysis from API...');
+      print('   Period Filter: $_periodFilterType, TakeAll: $useTakeAll');
+
       // Gọi API để lấy gợi ý AI từ backend
-      final aiResult =
-          await HbA1CClient().fetchHbA1CTrendAnalysis(_periodFilterType);
+      final aiResult = await HbA1CClient()
+          .fetchHbA1CTrendAnalysis(_periodFilterType, takeAll: useTakeAll);
 
       if (mounted) {
         setState(() {
           if (aiResult != null && aiResult.isNotEmpty) {
             _aiSuggestion = aiResult;
+            print('✅ AI Analysis from API loaded successfully');
           } else {
             // Fallback to local analysis if API returns empty
+            print('⚠️ API returned empty result, using backup analysis');
             _generateLocalAISuggestion();
           }
+          _isLoadingAI = false;
         });
       }
     } catch (e) {
-      print('Error loading AI trend: $e');
+      print('❌ Error loading AI trend: $e');
+      print('🔄 Falling back to backup analysis...');
       if (mounted) {
         setState(() {
           _generateLocalAISuggestion();
+          _isLoadingAI = false;
         });
       }
     }
   }
 
   void _generateLocalAISuggestion() {
-    // Get current HbA1c value from the most recent data point
+    // Get the most recent HbA1c value (dataPoints is sorted descending - newest first)
     double? currentHbA1cValue = currentValue;
+    DateTime? measurementDate;
+
+    // Check if we have data points available
     if (_dataPoints.isNotEmpty) {
+      // _dataPoints.first is the most recent reading (sorted descending by date)
       currentHbA1cValue = _dataPoints.first.value;
+      measurementDate = _dataPoints.first.date;
+
+      print('📊 Backup Analysis - Most Recent HbA1C:');
+      print('   Value: ${currentHbA1cValue.toStringAsFixed(1)}%');
+      print('   Date: ${DateFormat('dd/MM/yyyy').format(measurementDate)}');
     }
 
-    if (currentHbA1cValue != null) {
+    if (currentHbA1cValue != null && measurementDate != null) {
       String level = _getHbA1cLevelFromValue(currentHbA1cValue);
       String advice = "";
 
-      if (currentHbA1cValue < 5.7) {
+      // Format measurement date
+      final dateFormat = DateFormat('dd/MM/yyyy');
+      final formattedDate = dateFormat.format(measurementDate);
+
+      // Main advice based on current level
+      if (currentHbA1cValue <= 6.5) {
         advice =
-            "cho thấy kiểm soát đường huyết lý tưởng và chưa có dấu hiệu tiểu đường. Hãy duy trì lối sống lành mạnh.";
-      } else if (currentHbA1cValue < 6.5) {
+            "cho thấy kiểm soát đường huyết lý tưởng và không có dấu hiệu tiểu đường. Chỉ số này rất tốt! Hãy tiếp tục duy trì lối sống lành mạnh với chế độ ăn cân bằng và tập thể dục đều đặn.";
+      } else if (currentHbA1cValue <= 7.0) {
         advice =
-            "cho thấy bạn đang ở mức tốt, có nguy cơ tiền tiểu đường thấp. Tiếp tục duy trì chế độ ăn uống và tập luyện.";
-      } else if (currentHbA1cValue < 9.0) {
+            "cho thấy việc kiểm soát đường huyết đang ở mức tốt, tuy nhiên có nguy cơ tiền tiểu đường thấp. Hãy tiếp tục duy trì chế độ ăn uống lành mạnh và tập luyện thể dục đều đặn.";
+      } else if (currentHbA1cValue <= 8.0) {
         advice =
-            "cho thấy bạn đang ở mức cao, có nguy cơ tiểu đường. Cần theo dõi và điều trị kịp thời theo hướng dẫn của bác sĩ.";
+            "cho thấy chỉ số đang ở mức cao, có nguy cơ tiểu đường. Bạn cần cải thiện lối sống và chế độ ăn uống. Hãy tham khảo ý kiến bác sĩ để được hướng dẫn điều chỉnh phù hợp.";
       } else {
         advice =
-            "cho thấy bạn đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Cần điều trị y tế ngay lập tức.";
+            "cho thấy chỉ số đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Bạn cần được theo dõi và điều trị y tế ngay lập tức. Vui lòng liên hệ với bác sĩ để được tư vấn kịp thời.";
       }
 
-      // Check if there are multiple readings
-      String multipleReadingsNote = "";
-      if (_groupedPoints.isNotEmpty) {
-        int totalReadings = _dataPoints.length;
-        int daysWithData = _groupedPoints.length;
-        int daysWithMultipleReadings =
-            _groupedPoints.where((group) => group.length > 1).length;
-
-        if (daysWithMultipleReadings > 0) {
-          multipleReadingsNote =
-              "\n\nBạn có $totalReadings chỉ số trong $daysWithData ngày. " +
-                  "Có $daysWithMultipleReadings ngày có nhiều hơn 1 lần đo. " +
-                  "Việc đo nhiều lần sẽ giúp theo dõi chính xác hơn.";
-        }
-      }
-
+      // Simple message referring to the most recent measurement
       _aiSuggestion =
-          "Chỉ số HbA1c ${currentHbA1cValue.toStringAsFixed(1)}% ($level) $advice$multipleReadingsNote";
+          "Chỉ số HbA1c ${currentHbA1cValue.toStringAsFixed(1)}% ($level) đo ngày $formattedDate $advice";
+
+      print('✅ Backup Analysis Generated Successfully');
     } else {
       _aiSuggestion =
           "Chưa có dữ liệu HbA1c để phân tích. Hãy nhập chỉ số HbA1c để nhận được lời khuyên từ AI.";
+
+      print('⚠️ No HbA1C data available for backup analysis');
     }
   }
 
@@ -180,19 +199,29 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   void _loadTrendData() {
-    _hbA1CBloc.add(FetchHbA1CTrend(type: _periodFilterType));
+    // When "Tất cả" (index 0) is selected, use takeAll = true
+    bool useTakeAll = _selectedUIIndex == 0;
+    _hbA1CBloc.add(FetchHbA1CTrend(
+      type: _periodFilterType,
+      takeAll: useTakeAll,
+    ));
   }
 
   void reloadData(int periodFilter) {
     setState(() {
       _selectedUIIndex = periodFilter; // Track UI selection
-      // Map UI index to API trendType (1-3 only)
-      // 0->1, 1->2, 2->3, 3->3 (24 tháng maps to same as 12 tháng)
-      _periodFilterType = (periodFilter + 1).clamp(1, 3);
+      // Map UI index to API trendType:
+      // 0 (Tất cả) -> use takeAll=true with periodFilterType=3 (24 months) + size=1000
+      // 1 (6 tháng) -> 1
+      // 2 (12 tháng) -> 2
+      // 3 (24 tháng) -> 3
+      _periodFilterType = periodFilter == 0 ? 3 : periodFilter;
       _focusIndex = -1;
+      _isLoadingAI = false; // Reset flag to allow new AI load
+      _aiSuggestion = null; // Reset suggestion to trigger reload
     });
     _loadTrendData();
-    _loadAITrend();
+    // AI will be loaded automatically after data is available (in BlocBuilder)
   }
 
   Future<bool> _refresh() async {
@@ -214,10 +243,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         final date =
             DateTime.fromMillisecondsSinceEpoch(item.date! * 1000, isUtc: true);
         final value = item.hbA1C!;
-        final level = item.type ?? _getHbA1cLevelFromValue(value);
-        final color = item.color != null
-            ? Color(int.parse('0xff${item.color!.split('#').join()}'))
-            : _getHbA1cColorFromValue(value);
+        final level = _getHbA1cLevelFromValue(value);
+        final color = _getHbA1cColorFromValue(value);
 
         final timeOfDay = DateFormat('HH:mm').format(date);
         final dp = HbA1cDataPoint(
@@ -244,15 +271,18 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       _groupedPoints.add(group);
     }
 
-    // Debug: Print grouped data for verification
-    print("HbA1C Grouped Data:");
-    for (int i = 0; i < _groupedPoints.length; i++) {
-      final group = _groupedPoints[i];
-      print("Day $i: ${group.length} readings");
-      for (int j = 0; j < group.length; j++) {
-        print("  Reading $j: ${group[j].value}% at ${group[j].timeOfDay}");
-      }
-    }
+    // IMPORTANT: Sort _dataPoints by date DESCENDING (newest first) for correct analysis
+    _dataPoints.sort((a, b) => b.date.compareTo(a.date));
+
+    // Debug: Print grouped data for verification (commented to reduce log spam)
+    // print("HbA1C Grouped Data:");
+    // for (int i = 0; i < _groupedPoints.length; i++) {
+    //   final group = _groupedPoints[i];
+    //   print("Day $i: ${group.length} readings");
+    //   for (int j = 0; j < group.length; j++) {
+    //     print("  Reading $j: ${group[j].value}% at ${group[j].timeOfDay}");
+    //   }
+    // }
 
     // Focus most recent group by default
     if (_groupedPoints.isNotEmpty) {
@@ -261,9 +291,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           : _focusIndex.clamp(0, _groupedPoints.length - 1);
       _focusSubIndex =
           _focusSubIndex.clamp(0, _groupedPoints[_focusIndex].length - 1);
-      if (_aiSuggestion == null) {
-        _loadAITrend();
-      }
+      // Don't load AI here - it's loaded in reloadData() to prevent infinite loops
     } else {
       _focusIndex = -1;
       _focusSubIndex = 0;
@@ -273,22 +301,24 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   String _getHbA1cLevelFromValue(double value) {
-    // Updated level names to match 4 ranges:
-    if (value < 5.7) return 'Lý tưởng';
-    if (value < 6.5) return 'Tốt';
-    if (value < 9.0) return 'Cao';
+    // Match the visual range bar display as requested:
+    // 6.5 shows in Lý tưởng, 7.0 shows in Tốt, 8.0 shows in Cao
+    if (value <= 6.5) return 'Lý tưởng';
+    if (value <= 7.0) return 'Tốt';
+    if (value <= 8.0) return 'Cao';
     return 'Rất cao';
   }
 
   Color _getHbA1cColorFromValue(double value) {
-    // Updated color scheme matching chart component:
-    if (value < 5.7) {
+    // Match the visual range bar display as requested:
+    // 6.5 shows in Lý tưởng, 7.0 shows in Tốt, 8.0 shows in Cao
+    if (value <= 6.5) {
       // Lý tưởng - Light Green
       return const Color(0xFF64E18E); // #64E18E
-    } else if (value < 6.5) {
+    } else if (value <= 7.0) {
       // Tốt - Green
       return const Color(0xFF23C559); // #23C559
-    } else if (value < 9.0) {
+    } else if (value <= 8.0) {
       // Cao - Light Red
       return const Color(0xFFF86F6F); // #F86F6F
     } else {
@@ -300,7 +330,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   String _getEmptyStateText() {
     switch (_selectedUIIndex) {
       case 0: // Tất cả
-        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
+        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
       case 1: // 6 tháng
         return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
       case 2: // 12 tháng
@@ -308,7 +338,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       case 3: // 24 tháng
         return 'Không có dữ liệu\ntrong 24 tháng gần nhất';
       default:
-        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
+        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
     }
   }
 
@@ -336,6 +366,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
             if (state is HbA1CTrendLoaded) {
               final trendData = state.trendModel.trendItems?.items ?? [];
               _convertApiDataToDataPoints(trendData);
+
+              // Load AI suggestion after data is available (only if not already loading)
+              if (!_isLoadingAI && _aiSuggestion == null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _loadAITrend();
+                });
+              }
             }
 
             return Container(

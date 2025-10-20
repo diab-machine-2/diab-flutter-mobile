@@ -43,7 +43,7 @@ class _Hba1cDetailTabbarControllerState
   bool isClicked = false;
   ShortGuiModel? des;
 
-  int periodFilterType = 1;
+  int periodFilterType = 1; // Default to 1 (6 months)
   bool _argsInitialized = false;
 
   @override
@@ -79,9 +79,10 @@ class _Hba1cDetailTabbarControllerState
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     if (args != null && args['initPeriodFilterType'] != null) {
-      // Map UI index to API trendType (1-3 only)
+      // Map UI index to API trendType:
+      // 0 (Tất cả) -> 1, 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
       int uiIndex = args['initPeriodFilterType'];
-      periodFilterType = (uiIndex + 1).clamp(1, 3);
+      periodFilterType = uiIndex == 0 ? 1 : uiIndex;
     }
     _argsInitialized = true;
   }

@@ -26,6 +26,17 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
   late int _selectedValue = widget.initialValue;
 
   @override
+  void didUpdateWidget(HorizontalSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update selected value when initialValue changes from parent
+    if (widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        _selectedValue = widget.initialValue;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
