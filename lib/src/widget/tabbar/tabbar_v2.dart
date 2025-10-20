@@ -153,7 +153,8 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
   // Check for pending deeplinks after initialization
   void _checkPendingDeeplinks() {
-    if (BranchioLinkConfig.instance.hasPendingDeeplink) {
+    if (BranchioLinkConfig.instance.hasPendingDeeplink ||
+        BranchioLinkConfig.instance.hasPendingActivityDeeplink) {
       print(
           "[ROUTE] TabbarController found pending deeplink, scheduling navigation");
       BranchioLinkConfig.instance.scheduleDeeplinkNavigation();
