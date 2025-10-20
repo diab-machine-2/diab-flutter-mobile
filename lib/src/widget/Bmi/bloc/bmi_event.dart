@@ -15,6 +15,7 @@ class BmiDataChangeEvent extends BmiEvent {
   static const String selectedPointChanged = "selected_point_changed";
   static const String heightChanged = "height_changed";
   static const String weightGoalChanged = "weight_goal_changed";
+  static const String hasDataChanged = "has_data_changed";
 }
 
 class BmiGetWeightLessonsEvent extends BmiEvent {

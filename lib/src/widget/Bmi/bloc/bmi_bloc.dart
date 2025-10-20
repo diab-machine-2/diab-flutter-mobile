@@ -143,7 +143,13 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiDataChangeEvent(BmiDataChangeEvent.weightGoalChanged, value));
   }
 
-  bool hasNewData = false;
+  bool _hasNewData = false;
+  bool get hasNewData => _hasNewData;
+  set hasNewData(bool value) {
+    _hasNewData = value;
+    add(BmiDataChangeEvent(BmiDataChangeEvent.hasDataChanged, value));
+  }
+
   late bool _hasHealthAppPermission;
   bool get hasHealthAppPermission => _hasHealthAppPermission;
 

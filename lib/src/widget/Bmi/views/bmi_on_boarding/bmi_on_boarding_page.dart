@@ -9,6 +9,7 @@ import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
@@ -172,7 +173,6 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
         CustomDialog.showLoadingDialog(context);
       } else {
         CustomDialog.hideLoadingDialog(context);
-        
       }
     }
   }
@@ -423,11 +423,13 @@ class _StatisticalDataViewButton extends StatelessWidget {
                 color: R.color.backgroundColorNew,
                 borderRadius: BorderRadius.all(Radius.circular(50))),
           ),
-          if (_bmiBloc.hasNewData)
-            BlocBuilder<BmiBloc, BmiState>(
-                buildWhen: (previous, current) =>
-                    current is BmiGetWeightStatisticalState,
-                builder: (context, state) {
+          BlocBuilder<BmiBloc, BmiState>(
+              buildWhen: (previous, current) =>
+                  current is BmiGetWeightStatisticalState ||
+                  (current is BmiDataChangedState &&
+                      current.event == BmiDataChangeEvent.hasDataChanged),
+              builder: (context, state) {
+                if (_bmiBloc.hasNewData)
                   return Container(
                     height: 12,
                     width: 12,
@@ -436,7 +438,8 @@ class _StatisticalDataViewButton extends StatelessWidget {
                       color: Colors.red,
                     ),
                   );
-                })
+                return const SizedBox();
+              })
         ],
       ),
     );

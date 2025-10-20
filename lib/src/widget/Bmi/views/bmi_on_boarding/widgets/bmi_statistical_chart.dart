@@ -42,10 +42,11 @@ class BmiStatisticalChart extends StatelessWidget {
               ? data.length * intervalWidth
               : MediaQuery.of(context).size.width - _widthOfSideBar - 24;
           double _minWeightOnChart = _bmiBloc.getLowestOfChart(_marginOfWeight);
-          double _maxWeightOnChart = _bmiBloc.getHighestOfChart(_marginOfWeight);
+          double _maxWeightOnChart =
+              _bmiBloc.getHighestOfChart(_marginOfWeight);
           double _bendmarkPadding =
               (_heightOfChart / (_maxWeightOnChart - _minWeightOnChart)) *
-                      (60 - _minWeightOnChart) -
+                      ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
                   _marginOfWeight;
 
           if (_bmiBloc.isLastSelectedPoint && data.length > 1) {
@@ -71,11 +72,12 @@ class BmiStatisticalChart extends StatelessWidget {
                         padding: EdgeInsets.only(
                           bottom: _bendmarkPadding >= _heightOfChart
                               ? _heightOfChart / 2
-                              : _bendmarkPadding,
+                              : _bendmarkPadding * 0.9,
                         ),
                         child: Text(
                           "${_bmiBloc.weightGoal} kg",
-                          style: R.style.smallTextStyle.copyWith(color: AppColors.neutral3),
+                          style: R.style.smallTextStyle
+                              .copyWith(color: AppColors.neutral3),
                         ),
                       ),
                     Image.asset(
@@ -149,7 +151,9 @@ class BmiStatisticalChart extends StatelessWidget {
                             ),
                             belowBarData: BarAreaData(
                               show: true,
-                              colors: data.map((e) => e.bmiColor.withOpacity(0.1)).toList(),
+                              colors: data
+                                  .map((e) => e.bmiColor.withOpacity(0.1))
+                                  .toList(),
                             ),
                           ),
                         ],
