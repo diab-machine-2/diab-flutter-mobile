@@ -638,7 +638,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         margin: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
-            const SizedBox(height: 24),
+            const SizedBox(height: 0),
             _buildChartContent(state),
             const SizedBox(height: 8),
             Divider(height: 1, color: R.color.color0xffE5E5E5),
@@ -689,7 +689,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 180, // Increased width to accommodate reading counter
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               height: 38,
               decoration: BoxDecoration(
                 color: R.color.white,
@@ -697,15 +697,18 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                 border: Border.all(color: R.color.color0xffE5E5E5, width: 1),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     currentDataPoint.timeOfDay,
                     style: TextStyle(
                       fontFamily: R.font.sfpro,
-                      fontSize: 14,
+                      fontSize: 15,
                       fontWeight: FontWeight.w400,
                       color: Color(0xFF636A6B),
+                      height: 1.46,
+                      letterSpacing: 0.4,
                     ),
                   ),
                   Container(
@@ -718,12 +721,14 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                     ),
                   ),
                   Text(
-                    "${currentDataPoint.date.day.toString().padLeft(2, '0')}/${currentDataPoint.date.month.toString().padLeft(2, '0')}/${currentDataPoint.date.year}",
+                    "${currentDataPoint.date.day.toString().padLeft(2, '0')}/${currentDataPoint.date.month.toString().padLeft(2, '0')}",
                     style: TextStyle(
                       fontFamily: R.font.sfpro,
-                      fontSize: 14,
+                      fontSize: 15,
                       fontWeight: FontWeight.w400,
                       color: Color(0xFF636A6B),
+                      height: 1.46,
+                      letterSpacing: 0.4,
                     ),
                   ),
                   // Reading counter for multiple readings same day
@@ -751,26 +756,6 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                     ),
                   ],
                 ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, NavigatorName.hba1c_detail_page);
-              },
-              child: SizedBox(
-                width: 36,
-                height: 36,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: R.color.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: R.color.color0xffE5E5E5),
-                  ),
-                  child: Center(
-                      child: Icon(Icons.history,
-                          color: R.color.textDark, size: 20)),
-                ),
               ),
             ),
           ],
@@ -888,8 +873,6 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         ),
         const SizedBox(height: 16),
         _buildChart(),
-        const SizedBox(height: 8),
-        _buildChartLegend(),
       ],
     );
   }
@@ -922,34 +905,6 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         currentFlatIndex++;
       }
     }
-  }
-
-  Widget _buildChartLegend() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 23,
-            height: 1,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(1),
-              color: Colors.black, // Match line color
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'Chỉ số HbA1c',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.black,
-              fontFamily: R.font.sfpro,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildLegendItem(String label, Color color) {
