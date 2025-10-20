@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class HorizontalSelector extends StatefulWidget {
   final Function(int) onSelected;
@@ -23,6 +24,17 @@ class HorizontalSelector extends StatefulWidget {
 
 class _HorizontalSelectorState extends State<HorizontalSelector> {
   late int _selectedValue = widget.initialValue;
+
+  @override
+  void didUpdateWidget(HorizontalSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update selected value when initialValue changes from parent
+    if (widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        _selectedValue = widget.initialValue;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +77,7 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
           child: Text(
             entry.value,
             style: TextStyle(
+              fontFamily: R.font.sfpro,
               color: isSelected ? Colors.white : Colors.grey[700],
               fontSize: 15,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
