@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/utils/app_media_query.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -16,6 +14,7 @@ import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_note_sessio
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_waist_circumference_input_session.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_weight_input_session.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
+import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widgets/button/outlined_rounded_button.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/custom_dialog.dart';
@@ -219,19 +218,10 @@ class _ConnectToHealthConnectButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () async {
-        if (await AppSettings.getLastOpenedBloodPressureInputType() == null) {
-          AppSettings.setLastOpenedBloodPressureInputType('device');
-        }
-        // TODO: BLOOD PRESSURE
-        // TrackingManager.trackEvent(
-        //   'glucose_select_method',
-        //   'kpi_glucose',
-        //   params: {
-        //     'method': 'device',
-        //   },
-        // );
-        Navigator.pop(context);
-        BlocProvider.of<NiproBloc>(context).tryAutoConnect();
+        RequestHealthConnect.showModal(
+          context,
+          callback: () => Navigator.pop(context),
+        );
       },
       child: Container(
         decoration: R.decorationStyle.mediumRadiusCardStyles,
