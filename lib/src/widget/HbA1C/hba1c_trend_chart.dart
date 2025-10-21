@@ -61,7 +61,14 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       maxY = center + 1.0;
     }
 
+    // Ensure Y-axis always includes 6.5 as reference point
+    if (minY > 6.5) minY = 6.5 - padding;
+    if (maxY < 6.5) maxY = 6.5 + padding;
+
     List<LineChartBarData> lineBarsData = _generateMultipleHbA1cLines();
+
+    // Calculate the Y position for 6.5% label based on chart Y-axis
+    double labelYPosition = _calculateYPosition(6.5, minY, maxY, 140);
 
     return SizedBox(
       height: 140,
@@ -76,41 +83,15 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
               height: 140,
               child: Stack(
                 children: [
-                  // Max value label
+                  // Single value label - 6.5%, positioned at reference line
                   Positioned(
-                    top: _calculateYPosition(maxY, minY, maxY, 140),
+                    top: labelYPosition -
+                        8, // Position at reference line, subtract half of text height
                     right: 0,
                     child: Text(
-                      '${maxY.toStringAsFixed(0)}%',
+                      '6.5%',
                       style: TextStyle(
-                        color: Colors.black38,
-                        fontSize: 10,
-                        fontFamily: R.font.sfpro,
-                      ),
-                    ),
-                  ),
-                  // Middle value label
-                  Positioned(
-                    top:
-                        _calculateYPosition((maxY + minY) / 2, minY, maxY, 140),
-                    right: 0,
-                    child: Text(
-                      '${((maxY + minY) / 2).toStringAsFixed(0)}%',
-                      style: TextStyle(
-                        color: Colors.black38,
-                        fontSize: 10,
-                        fontFamily: R.font.sfpro,
-                      ),
-                    ),
-                  ),
-                  // Min value label
-                  Positioned(
-                    top: _calculateYPosition(minY, minY, maxY, 140),
-                    right: 0,
-                    child: Text(
-                      '${minY.toStringAsFixed(0)}%',
-                      style: TextStyle(
-                        color: Colors.black38,
+                        color: Color(0xFF5E6566),
                         fontSize: 10,
                         fontFamily: R.font.sfpro,
                       ),
@@ -165,11 +146,12 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                         tooltipRoundedRadius: 8,
                         getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                           return lineBarsSpot.map((lineBarSpot) {
-                            if (lineBarSpot.spotIndex >= 0 &&
-                                lineBarSpot.spotIndex <
-                                    widget.dataPoints.length) {
+                            // Get the flat index from the spot's x position
+                            int flatIndex = lineBarSpot.x.toInt();
+                            if (flatIndex >= 0 &&
+                                flatIndex < _getFlattenedDataPoints().length) {
                               final dataPoint =
-                                  widget.dataPoints[lineBarSpot.spotIndex];
+                                  _getFlattenedDataPoints()[flatIndex];
                               return LineTooltipItem(
                                 '${dataPoint.value.toStringAsFixed(1)}%',
                                 TextStyle(
@@ -200,22 +182,10 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                     lineBarsData: lineBarsData,
                     extraLinesData: ExtraLinesData(
                       horizontalLines: [
-                        // Dashed lines from Y-axis labels to chart area
+                        // Single dashed line at 6.5% reference point
                         HorizontalLine(
-                          y: maxY,
-                          color: Colors.black26,
-                          dashArray: [2, 2],
-                          strokeWidth: 0.3,
-                        ),
-                        HorizontalLine(
-                          y: (maxY + minY) / 2,
-                          color: Colors.black26,
-                          dashArray: [2, 2],
-                          strokeWidth: 0.3,
-                        ),
-                        HorizontalLine(
-                          y: minY,
-                          color: Colors.black26,
+                          y: 6.5,
+                          color: Color(0xFF5E6566),
                           dashArray: [2, 2],
                           strokeWidth: 0.3,
                         ),
@@ -235,7 +205,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   List<LineChartBarData> _generateMultipleHbA1cLines() {
     if (widget.groupedPoints.isEmpty) return [];
 
-    // Flatten all data points
+    // Flatten all data points - use all data points in order
     List<HbA1cDataPoint> flattenedPoints = [];
     for (int dayIndex = 0; dayIndex < widget.groupedPoints.length; dayIndex++) {
       final group = widget.groupedPoints[dayIndex];
@@ -244,11 +214,15 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       }
     }
 
+    // Generate spots for the single line connecting all points
+    List<FlSpot> spots = [];
+    for (int i = 0; i < flattenedPoints.length; i++) {
+      spots.add(FlSpot(i.toDouble(), flattenedPoints[i].value));
+    }
+
     return [
       LineChartBarData(
-        spots: List.generate(flattenedPoints.length, (index) {
-          return FlSpot(index.toDouble(), flattenedPoints[index].value);
-        }),
+        spots: spots,
         isCurved: false,
         colors: [Color(0xFF23C559)], // Main line color - green #23C559
         barWidth: 2,
@@ -265,8 +239,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
             final bool isFirst = index == 0;
             final bool isLast = index == flattenedPoints.length - 1;
 
-            // Determine dot color based on HbA1C value range only
-            // All points (including first/last) use range-based colors
+            // Determine dot color based on HbA1C value range
             Color dotColor = _getHbA1cRangeColor(dp.value);
 
             return FlDotCirclePainter(
@@ -307,6 +280,17 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       }
     }
     return false;
+  }
+
+  List<HbA1cDataPoint> _getFlattenedDataPoints() {
+    List<HbA1cDataPoint> flattenedPoints = [];
+    for (int dayIndex = 0; dayIndex < widget.groupedPoints.length; dayIndex++) {
+      final group = widget.groupedPoints[dayIndex];
+      for (int subIndex = 0; subIndex < group.length; subIndex++) {
+        flattenedPoints.add(group[subIndex]);
+      }
+    }
+    return flattenedPoints;
   }
 
   double _calculateYPosition(
