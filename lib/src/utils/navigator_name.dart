@@ -39,6 +39,8 @@ class NavigatorName {
   static const String add_work = '/add_work';
   static const String add_insight = '/add_insight';
   static const String add_food = '/add_food';
+  static const String confirm_food = '/confirm_food';
+  static const String food_image_capture = '/food_image_capture';
   static const String detail_food = '/detail_food';
   static const String detail_emotion = '/detail_emotion';
   static const String emotion_table = '/emotion_table';

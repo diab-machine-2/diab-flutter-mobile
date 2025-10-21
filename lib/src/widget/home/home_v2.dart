@@ -29,13 +29,13 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/base/base_state.dart';
-import 'package:medical/src/app.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_reminder.dart';
@@ -83,6 +83,7 @@ class _HomeControllerState extends State<HomeController>
   bool _haveInputGlucoseAlready = false;
   bool _haveInputExerciseAlready = false;
   bool _haveInputBloodpressureAlready = false;
+  bool _haveInputFoodAlready = false;
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
@@ -590,6 +591,13 @@ class _HomeControllerState extends State<HomeController>
               _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
+
+              List<HomeMeasurementData> dinduongs =
+                  state.model.measurements!.where((e) => e.title.toLowerCase() == "dinh dưỡng").toList();
+              _haveInputFoodAlready = dinduongs.isNotEmpty &&
+                  dinduongs.first.value1?.isNotEmpty == true &&
+                  dinduongs.first.value1 != "--";
+
             }
 
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
@@ -769,10 +777,15 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // check first time open blood pressure intro
-                              if (routeName == "/add_blood_pressure" &&
+                              if (routeName == NavigatorName.add_blood_pressure &&
                                   !_haveInputBloodpressureAlready) {
-                                Navigator.of(context).pushNamed(NavigatorName
-                                    .blood_pressure_intro_1st_page);
+                                Navigator.of(context)
+                                    .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                                return;
+                              }
+                              // check first time open dinh duong
+                              if (routeName == NavigatorName.add_food && !_haveInputFoodAlready) {
+                                FoodActionPopup.show(context);
                                 return;
                               }
                               // case input exercise
@@ -1177,6 +1190,11 @@ class _HomeControllerState extends State<HomeController>
         }
         // case input glucose
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
+          return;
+        }
+        // case dinh duong
+        if (item.navigatorName == NavigatorName.add_food) {
+          FoodActionPopup.show(context);
           return;
         }
         // case HbA1C - check if user has data

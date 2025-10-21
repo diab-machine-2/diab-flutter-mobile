@@ -1351,4 +1351,9 @@ lan_sau,Lần sau,Next time,
 nhap_4_so_trong_tin_nhan,Nhập 4 số trong tin nhắn văn bản đã gửi đến,Enter 4 digits from the text message sent to,
 ban_muon_dong_bo_so_dien_thoai,Bạn muốn đồng bộ số điện thoại với tài khoản hiện tại?,You want to sync phone number with current account?,
 login_with_phone,"Đăng nhập qua số điện thoại","Login with phone number",
-login_with_zalo,"Đăng nhập qua Zalo","Login with Zalo"
+login_with_zalo,"Đăng nhập qua Zalo","Login with Zalo",
+bua_an_gom,"Bữa ăn gồm","Meal include",
+analyzing_your_meal,Đang phân tích bữa ăn của bạn...,Analyzing your meal...,
+choose_meal_image,Chọn ảnh món ăn,Select meal image,
+please_select_at_least_one_image,Vui lòng chọn ít nhất 1 ảnh,Please select at least 1 image,
+max_image_select_dynamic,Chỉ được chọn tối đa {} ảnh,Only up to {} photos can be selected

@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
 import 'daily_nutrition/daily_nutrition.dart';
+import 'widget/food_action_popup.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   @override
@@ -202,8 +203,9 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
         ]),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            NavigationUtil.navigatePage(
-                context, DailyNutritionPage(type: 'input', id: null));
+            FoodActionPopup.show(context, fromDashboard: true);
+            // NavigationUtil.navigatePage(
+            //     context, DailyNutritionPage(type: 'input', id: null));
           },
           child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
         ));
