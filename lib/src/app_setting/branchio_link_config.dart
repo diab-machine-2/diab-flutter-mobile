@@ -49,7 +49,6 @@ class BranchioLinkConfig {
   int? _pendingMode; // 0 = online, 1 = offline
   String? _pendingType; // dsmes, clinic, doctor
   bool _hasPendingLoginDeeplink = false;
-  bool _hasPendingActivityDeeplink = false;
   Timer? _navigationTimer;
   String? _pendingMeasurementScreen;
 
@@ -70,7 +69,6 @@ class BranchioLinkConfig {
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
   bool get hasPendingLoginDeeplink => _hasPendingLoginDeeplink;
-  bool get hasPendingActivityDeeplink => _hasPendingActivityDeeplink;
   int? get pendingClinicId => _pendingClinicId;
   int? get pendingMode => _pendingMode;
   String? get pendingType => _pendingType;
@@ -142,9 +140,6 @@ class BranchioLinkConfig {
         if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
           Observable.instance.notifyObservers([],
               notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
-        } else {
-          // Set flag to handle navigation after app initialization
-          _hasPendingActivityDeeplink = true;
         }
         return;
       }
@@ -620,7 +615,6 @@ class BranchioLinkConfig {
     _pendingMode = null;
     _pendingType = null;
     _hasPendingDeeplink = false;
-    _hasPendingActivityDeeplink = false;
     _pendingTargetType = null;
     _pendingSmartGoalId = null;
     _pendingSurveyId = null;
@@ -797,8 +791,6 @@ class BranchioLinkConfig {
       print('[ROUTE] Executing pending activity navigation: $_activityId');
       Observable.instance
           .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
-      // Clear the pending activity deeplink flag to prevent duplicate navigation
-      _hasPendingActivityDeeplink = false;
     }
 
     if (_pendingTargetType != null &&
