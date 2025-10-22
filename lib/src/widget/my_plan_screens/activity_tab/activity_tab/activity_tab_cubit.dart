@@ -44,6 +44,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
   List<SmartGoalList?> smartGoalDayList = [];
   List<SmartGoalList?> smartGoalWeekList = [];
+  List<SmartGoalList?> smartGoalNotCompleteInWeekly = [];
+  List<SmartGoalList?> lessonsWeekly = [];
 
   List<WeekStatesResponseData?> get weekStatesList => statistic?.weeks ?? [];
   List<DayStatesResponseData?> get dayStatesList =>
@@ -184,6 +186,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
+      smartGoalNotCompleteInWeekly =
+          response.data?.activitiesNotCompleteInWeekly ?? [];
+      lessonsWeekly = response.data?.lessonsWeekly ?? [];
 
       // smartGoalDayList.removeWhere((element) => element?.state == 4);
       // smartGoalWeekList.removeWhere((element) => element?.state == 4);

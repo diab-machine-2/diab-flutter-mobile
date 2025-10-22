@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 
@@ -14,36 +15,60 @@ class CustomProgressWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double progress = total == 0 ? 0.0 : count.toDouble() / total.toDouble();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+    final double progress =
+        total == 0 ? 0.0 : count.toDouble() / total.toDouble();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        RichText(
-          text: TextSpan(
-              text: '$count',
-              style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700),
-              children: [
-                TextSpan(
-                  text: '/$total',
-                  style: TextStyle(
-                      color: R.color.captionColorGray,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400),
+        Flexible(
+          fit: FlexFit.loose,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                R.string.complete_lesson.tr(),
+                style: TextStyle(
+                  color: R.color.captionColorGray,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
                 ),
-              ]),
-        ),
-        const SizedBox(height: 4),
-        SizedBox(
-          width: chartSize.width,
-          height: chartSize.height,
-          child: CustomPaint(
-            painter: MyPainter(
-              progress: progress,
-            ),
+              ),
+              SizedBox(
+                width: 65,
+                height: 6,
+                child: CustomPaint(
+                  painter: MyPainter(
+                    progress: progress,
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RichText(
+              text: TextSpan(
+                  text: '$count',
+                  style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700),
+                  children: [
+                    TextSpan(
+                      text: '/$total',
+                      style: TextStyle(
+                          color: R.color.captionColorGray,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ]),
+            ),
+          ],
         ),
       ],
     );

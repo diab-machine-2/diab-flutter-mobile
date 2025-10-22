@@ -62,8 +62,8 @@ extension WeekStatus on CompletionStatus {
           height: 16,
           color: R.color.white,
         ),
-        color: R.color.green,
-        isSelected: isSelected,
+        color: R.color.accentColor,
+        isSelected: isSelected, // Use the actual isSelected parameter
       );
     } else {
       switch (this) {
@@ -74,8 +74,8 @@ extension WeekStatus on CompletionStatus {
               color: R.color.white,
               size: 16,
             ),
-            color: R.color.greenGradientBottom,
-            isSelected: isSelected,
+            color: R.color.accentColor,
+            isSelected: isSelected, // Use the actual isSelected parameter
           );
         case CompletionStatus.not_completed:
           return _dayIconLayout(
@@ -84,8 +84,8 @@ extension WeekStatus on CompletionStatus {
               color: R.color.white,
               size: 16,
             ),
-            color: R.color.orange_1,
-            isSelected: isSelected,
+            color: R.color.accentColor,
+            isSelected: isSelected, // Use the actual isSelected parameter
           );
         case CompletionStatus.studying:
           return _dayIconLayout(
@@ -95,8 +95,8 @@ extension WeekStatus on CompletionStatus {
               height: 16,
               color: R.color.white,
             ),
-            color: R.color.green,
-            isSelected: isSelected,
+            color: R.color.accentColor,
+            isSelected: isSelected, // Use the actual isSelected parameter
           );
         case CompletionStatus.not_start_yet:
           return _dayIconLayout(
@@ -104,8 +104,8 @@ extension WeekStatus on CompletionStatus {
               width: 16,
               height: 16,
             ),
-            color: R.color.gray,
-            isSelected: isSelected,
+            color: R.color.white,
+            isSelected: isSelected, // Use the actual isSelected parameter
           );
       }
     }
@@ -159,30 +159,49 @@ extension WeekStatus on CompletionStatus {
     required Color color,
     required bool isSelected,
   }) {
-    return Stack(
-      children: [
-        Positioned(
-          top: 4,
-          left: 4,
-          child: Container(
-            padding: const EdgeInsets.all(3),
+    return SizedBox(
+      width: 32,
+      height: 32,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Outer ring when selected: renders outside the 26x26 inner circle
+          if (isSelected)
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: R.color.transparent,
+                border:
+                    Border.all(color: R.color.greenGradientBottom, width: 2),
+              ),
+            ),
+          // White padding between the outer ring and the inner circle
+          if (isSelected)
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: R.color.white,
+              ),
+            ),
+          // Inner filled circle (26x26)
+          Container(
+            width: isSelected ? 26 : 32,
+            height: isSelected ? 26 : 32,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
-              //  color: color,
+              border: color == R.color.white
+                  ? Border.all(color: R.color.color0xffE5E5E5, width: 2)
+                  : null,
             ),
-            child: child,
+            child: Center(child: child),
           ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: R.color.transparent,
-            border: Border.all(color: isSelected ? R.color.green : R.color.transparent, width: 2),
-          ),
-          child: SizedBox(width: 26, height: 26),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

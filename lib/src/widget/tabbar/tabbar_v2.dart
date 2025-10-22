@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -34,6 +35,7 @@ import 'package:medical/src/widget/conversation/conversations.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/home/home_v2.dart';
@@ -47,6 +49,7 @@ import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:package_info/package_info.dart';
 import 'package:store_redirect/store_redirect.dart';
 
@@ -548,10 +551,59 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
         child: BlocBuilder<MyPlanCubit, MyPlanState>(
           builder: (context, state) {
             return CommonPage(
-              title: R.string.title_activity.tr(),
-              background: R.drawable.bg_welcome,
-              appbarColor: R.color.white,
+              title: R.string.program.tr(),
+              // background: R.drawable.bg_welcome,
+              backgroundColor: R.color.backgroundColorNew,
+              appbarColor: R.color.greenGradientBottom,
+              textColor: R.color.white,
               hideAllBackButton: true,
+              appBarAction: InkWell(
+                onTap: () async {
+                  HomeSupportFunctions.showModalAddData(context);
+                },
+                child: Container(
+                  height: 36,
+                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: R.color.color0xffCAFAF5,
+                    border: Border.all(
+                      color: R.color.color0xff8FEBE0,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        R.icons.ic_telephone,
+                        width: 16,
+                        height: 16,
+                        color: R.color.greenGradientBottom,
+                        fit: BoxFit.scaleDown,
+                      ),
+                      GapW(8),
+                      MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                        ),
+                        child: Text(
+                          R.string.contact.tr(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'sfpro',
+                            fontWeight: FontWeight.w700,
+                            color: R.color.greenGradientBottom,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               child: ActivityTabPage(extendTabbar: true),
             );
           },

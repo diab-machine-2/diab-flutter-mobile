@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 
 class DayInWeekWidget extends StatelessWidget {
   const DayInWeekWidget({
@@ -9,12 +10,18 @@ class DayInWeekWidget extends StatelessWidget {
     required this.mark,
     required this.currentDayIndex,
     this.showDateTime = false,
+    this.dashHeight = 1,
+    this.activeDashColor,
+    this.inactiveDashColor,
     required this.onSelectDay,
   }) : super(key: key);
   final List<DayInWeekData> data;
   final int mark;
   final int currentDayIndex;
   final bool showDateTime;
+  final double dashHeight;
+  final Color? activeDashColor;
+  final Color? inactiveDashColor;
   final Function(int selectedDay) onSelectDay;
 
   @override
@@ -32,12 +39,18 @@ class DayInWeekWidget extends StatelessWidget {
                     (index) {
                       return index.isOdd
                           ? Container(
-                              margin: const EdgeInsets.only(bottom: 14.5),
+                              margin: EdgeInsets.only(
+                                  bottom: index ~/ 2 >= mark
+                                      ? 15
+                                      : 13), // Center the dash line with the circle
                               width: _getDashLength(constraints.maxWidth),
-                              height: 1,
+                              height: index ~/ 2 >= mark
+                                  ? 2
+                                  : 4, // Future days: thickness 1, Past days: thickness 2
                               color: index ~/ 2 >= mark
-                                  ? R.color.grayBorder
-                                  : R.color.green,
+                                  ? (inactiveDashColor ??
+                                      R.color.color0xffE5E5E5)
+                                  : (activeDashColor ?? R.color.accentColor),
                             )
                           : _buildSingleDay(
                               status: data[index ~/ 2].dayStatus,
@@ -110,7 +123,7 @@ class DayInWeekWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 4),
+          GapH(4),
           status.dayStatusIcon(isSelected, isToday ?? false),
         ],
       ),
