@@ -32,7 +32,7 @@ class BmiInstructionSession extends StatelessWidget {
           ),
         ),
         BlocBuilder<BmiBloc, BmiState>(
-            buildWhen: (_, state) => state is BmiGetInstructionState,
+            buildWhen: (_, state) => state is BmiGetWeightLessonsState,
             builder: (context, state) {
               return GridView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 12),

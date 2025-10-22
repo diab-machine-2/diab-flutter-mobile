@@ -12,6 +12,7 @@ import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
 import 'package:medical/src/model/response/calculate_bmi_response.dart';
 import 'package:medical/src/model/response/delete_weight_record_response.dart';
+import 'package:medical/src/model/response/get_weight_threshold_response.dart';
 import 'package:medical/src/model/response/submit_weight_record_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -22,6 +23,28 @@ class WeightRepository {
   static final WeightRepository _instance = WeightRepository._();
 
   static WeightRepository get instance => _instance;
+
+  Future<ApiResult<List<WeightThreshold>>> getWeightThreshold({
+    int? thresholdType,
+    int? date,
+    double? height,
+    double? weight,
+    double? waist,
+  }) async {
+    try {
+      final GetWeightThresholdResponse response =
+          await appClient.getWeightThreshold(
+        thresholdType: thresholdType,
+        date: date != null ? date ~/ 1000 : null,
+        height: height,
+        weight: weight,
+        waist: waist,
+      );
+      return ApiResult.success(data: response.data ?? []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 
   Future<ApiResult<String>> analyzeWeightIndex(String id) async {
     try {

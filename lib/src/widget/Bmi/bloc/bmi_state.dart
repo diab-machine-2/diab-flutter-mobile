@@ -3,6 +3,7 @@ import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
+import 'package:medical/src/model/response/get_weight_threshold_response.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/widget/Bmi/models/weight_instruction_model.dart';
 
@@ -21,6 +22,12 @@ class BmiDataChangedState extends BmiState {
   final dynamic data;
 
   const BmiDataChangedState(this.event, [this.data]);
+}
+
+class BmiGetWeightThresholdState extends BmiState {
+  const BmiGetWeightThresholdState(this.resource);
+
+  final Resource<List<WeightThreshold>> resource;
 }
 
 // statistical

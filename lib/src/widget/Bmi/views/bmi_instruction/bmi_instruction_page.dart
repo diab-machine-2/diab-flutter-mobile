@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_threshold_model.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_instruction_session.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -81,66 +84,105 @@ class _ThresholdTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                  color: AppColors.neutral5,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  child: Text(
-                    R.string.bmi_type.tr(),
-                    style: R.style.boldNormalStyle,
-                  )),
-            ),
-            const SizedBox(
-              width: _dividerSize,
-            ),
-            Expanded(
-              child: Container(
-                  color: AppColors.neutral5,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                  child: Text(
-                    R.string.bmi_threshold.tr(),
-                    style: R.style.boldNormalStyle,
-                  )),
-            ),
-          ],
-        ),
-        ...BmiThresholds.thresholds.map((e) => Row(
-              children: [
-                Expanded(
-                  child: Container(
-                      color: e.thresholdColor,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 16),
-                      child: Text(
-                        e.thresholdName.tr(),
-                        style: R.style.boldNormalStyle
-                            .copyWith(color: e.textColor),
+    BmiBloc _bmiBloc = context.read();
+
+    return BlocBuilder<BmiBloc, BmiState>(
+        buildWhen: (previous, current) => current is BmiGetWeightThresholdState,
+        builder: (context, state) {
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                        color: AppColors.neutral5,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 12),
+                        child: Text(
+                          R.string.bmi_type.tr(),
+                          style: R.style.boldNormalStyle,
+                        )),
+                  ),
+                  const SizedBox(
+                    width: _dividerSize,
+                  ),
+                  Expanded(
+                    child: Container(
+                        color: AppColors.neutral5,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 12),
+                        child: Text(
+                          R.string.bmi_threshold.tr(),
+                          style: R.style.boldNormalStyle,
+                        )),
+                  ),
+                ],
+              ),
+              ...BmiThresholds.applyWith(_bmiBloc.weightThreshold)
+                  .map((e) => Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                                color: e.thresholdColor,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 16),
+                                child: Text(
+                                  e.thresholdName.tr(),
+                                  style: R.style.boldNormalStyle
+                                      .copyWith(color: e.textColor),
+                                )),
+                          ),
+                          const SizedBox(
+                            width: _dividerSize,
+                          ),
+                          Expanded(
+                            child: Container(
+                                color: e.thresholdColor.withOpacity(0.2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 16),
+                                child: Text(
+                                  e.description,
+                                  style: R.style.boldNormalStyle,
+                                  textAlign: TextAlign.center,
+                                )),
+                          ),
+                        ],
                       )),
-                ),
-                const SizedBox(
-                  width: _dividerSize,
-                ),
-                Expanded(
-                  child: Container(
-                      color: e.thresholdColor.withOpacity(0.2),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 16),
-                      child: Text(
-                        e.description,
-                        style: R.style.boldNormalStyle,
-                        textAlign: TextAlign.center,
-                      )),
-                ),
-              ],
-            ))
-      ],
-    );
+              // ..._bmiBloc.weightThreshold.mapIndexed(((index, e) => Row(
+              //       children: [
+              //         Expanded(
+              //           child: Container(
+              //               color: Utils.parseStringToColor(e.backgroundColorCode),
+              //               padding: const EdgeInsets.symmetric(
+              //                   horizontal: 12, vertical: 16),
+              //               child: Text(
+              //                 e.name?.tr() ?? "--",
+              //                 style: R.style.boldNormalStyle.copyWith(
+              //                   color: Colors.white,
+              //                 ),
+              //               )),
+              //         ),
+              //         const SizedBox(
+              //           width: _dividerSize,
+              //         ),
+              //         Expanded(
+              //           child: Container(
+              //               color: Utils.parseStringToColor(e.backgroundColorCode)
+              //                   .withOpacity(0.2),
+              //               padding: const EdgeInsets.symmetric(
+              //                   horizontal: 12, vertical: 16),
+              //               child: Text(
+
+              //                 e.weight?.toString() ?? "--",
+              //                 style: R.style.boldNormalStyle,
+              //                 textAlign: TextAlign.center,
+              //               )),
+              //         ),
+              //       ],
+              //     )))
+            ],
+          );
+        });
   }
 }
 

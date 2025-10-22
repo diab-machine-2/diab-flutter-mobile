@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/text_styles_extension.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi/bmi_utils.dart';
 
 class BmiGaugeChart extends StatelessWidget {
   final List<double> thresholds;
@@ -23,7 +23,7 @@ class BmiGaugeChart extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width * 0.75;
     BmiInputBloc _bmiInputBloc = context.read();
-    Color thresholdColor = BmiUtils.getAvgBmiThresholdColor(_bmiInputBloc.bmi);
+    Color thresholdColor = Utils.parseStringToColor(_bmiInputBloc.calculatedBmi?.colorCode);
 
     return Stack(
       alignment: Alignment.bottomCenter,

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/utils.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
@@ -15,13 +16,8 @@ class BmiInputRangeChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const bmiStatusColors = [
-      AppColors.bmiUnderThresholdColor,
-      AppColors.bmiNormalColor,
-      AppColors.bmiOverThreshold1Color,
-      AppColors.bmiOverThreshold2Color,
-      AppColors.bmiOverThreshold3Color,
-    ];
+    BmiBloc _bmiBloc = context.read();
+
     const double chartHeight = 8.0;
     const widthOfThresholdValue = 48.0;
 
@@ -37,8 +33,11 @@ class BmiInputRangeChart extends StatelessWidget {
             height: chartHeight,
             width: double.maxFinite,
             child: Row(
-                children: bmiStatusColors
-                    .map((color) => Expanded(child: Container(color: color)))
+                children: _bmiBloc.weightThreshold
+                    .map((threshold) => Expanded(
+                        child: Container(
+                            color: Utils.parseStringToColor(
+                                threshold.backgroundColorCode))))
                     .toList()),
           ),
         ),

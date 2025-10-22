@@ -1,11 +1,14 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/get_weight_threshold_response.dart';
+import 'package:medical/src/utils/utils.dart';
 
 class BmiThresholdModel {
-  final String thresholdName;
-  final String description;
-  final Color thresholdColor;
-  final Color textColor;
+  String thresholdName;
+  String description;
+  Color thresholdColor;
+  Color textColor;
 
   BmiThresholdModel({
     required this.thresholdName,
@@ -23,7 +26,7 @@ class BmiThresholds {
       thresholdName: R.string.under_weight,
       description: "< 18.5",
       thresholdColor: Color(0xFFFFCD57),
-      textColor: Color(0xFF95682E),
+      textColor: Color(0xFFFFFFFF),
     ),
     BmiThresholdModel(
       thresholdName: R.string.normal_weight,
@@ -50,4 +53,15 @@ class BmiThresholds {
       textColor: Color(0xFFFFFFFF),
     ),
   ];
+
+  static List<BmiThresholdModel> applyWith(List<WeightThreshold> t) {
+    var defaultThreshold = List<BmiThresholdModel>.from(thresholds);
+    defaultThreshold = defaultThreshold.mapIndexed((index, e) {
+      return e
+        ..thresholdName = t[index].name ?? ""
+        ..thresholdColor =
+            Utils.parseStringToColor(t[index].backgroundColorCode);
+    }).toList();
+    return defaultThreshold;
+  }
 }

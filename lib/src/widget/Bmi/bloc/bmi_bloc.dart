@@ -10,6 +10,7 @@ import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/model/response/bmi_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
 import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
+import 'package:medical/src/model/response/get_weight_threshold_response.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/utils/app_storages.dart';
@@ -25,6 +26,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
       : _weightRepository = repository,
         super(BmiGetInstructionState(Resource.loading())) {
     on<BmiInstructionFetchingEvent>(_onGetInstruction);
+    on<BmiGetWeightThresholdEvent>(_onThresholdFetched);
     on<BmiDataChangeEvent>(_onDataChanged);
     on<BmiGetWeightStatisticalEvent>(_onFetchWeightStatistical);
     on<BmiGetWaistStatisticalEvent>(_onFetchWaistStatistical);
@@ -47,6 +49,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   late SharedPreferences preferences;
 
   // data
+  List<WeightThreshold> _weightThreshold = [];
+  List<WeightThreshold> get weightThreshold => _weightThreshold;
+
   List<WeightInstructionModel> _weightInstructions = [];
   List<WeightInstructionModel> get weightInstructions => _weightInstructions;
 
@@ -183,6 +188,28 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     } catch (e) {
       emit(BmiGetInstructionState(Resource.error(e)));
     }
+  }
+
+  void _onThresholdFetched(
+    BmiGetWeightThresholdEvent event,
+    Emitter<BmiState> emit,
+  ) async {
+    emit(BmiGetWeightThresholdState(Resource.loading()));
+    final response = await _weightRepository.getWeightThreshold(
+      // date: _currentTime.millisecondsSinceEpoch,
+      // height: height,
+    );
+
+    response.when(
+      success: (data) {
+        _weightThreshold = data;
+        emit(BmiGetWeightThresholdState(Resource.success(data)));
+      },
+      failure: (e) {
+        emit(BmiGetWeightThresholdState(Resource.error(e)));
+      },
+    );
+    
   }
 
   void _onDataChanged(
@@ -444,16 +471,17 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     _currentTime = DateTime.now();
     _periodType = BmiDateFilterType.aMonth;
 
-    add(BmiInstructionFetchingEvent());
-    add(BmiGetWeightLessonsEvent());
+    add(const BmiGetWeightThresholdEvent());
+    add(const BmiInstructionFetchingEvent());
+    add(const BmiGetWeightLessonsEvent());
 
-    add(BmiGetWeightStatisticalEvent());
-    add(BmiGetWaistStatisticalEvent());
+    add(const BmiGetWeightStatisticalEvent());
+    add(const BmiGetWaistStatisticalEvent());
 
-    add(BmiGetWeightRecordsEvent());
+    add(const BmiGetWeightRecordsEvent());
 
     Future.delayed(Duration(milliseconds: 1000)).then((value) {
-      add(BmiGetAIAnalysicEvent());
+      add(const BmiGetAIAnalysicEvent());
       _hasInputedWaist = preferences.getBool(Const.hasInputedWaist) ?? false;
     });
   }

@@ -2244,6 +2244,42 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<GetWeightThresholdResponse> getWeightThreshold({
+    thresholdType,
+    date,
+    height,
+    weight,
+    waist,
+  }) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'thresholdType': thresholdType,
+      r'date': date,
+      r'height': height,
+      r'weight': weight,
+      r'waist': waist,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<GetWeightThresholdResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/App/Weight/GetWeightThreshold',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = GetWeightThresholdResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'id': id};

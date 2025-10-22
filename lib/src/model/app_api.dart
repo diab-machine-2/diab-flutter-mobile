@@ -35,6 +35,7 @@ import 'package:medical/src/model/response/exercise_summary_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
+import 'package:medical/src/model/response/get_weight_threshold_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
@@ -529,6 +530,15 @@ abstract class AppApi {
   });
 
   // region weight
+
+  @GET("/App/Weight/GetWeightThreshold")
+  Future<GetWeightThresholdResponse> getWeightThreshold({
+    @Query("thresholdType") int? thresholdType,
+    @Query("date") int? date,
+    @Query("height") double? height,
+    @Query("weight") double? weight,
+    @Query("waist") double? waist,
+  });
 
   @GET("/App/Weight/Analysis/Index")
   Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(

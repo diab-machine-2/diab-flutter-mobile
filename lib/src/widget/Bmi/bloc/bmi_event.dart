@@ -18,6 +18,10 @@ class BmiDataChangeEvent extends BmiEvent {
   static const String hasDataChanged = "has_data_changed";
 }
 
+class BmiGetWeightThresholdEvent extends BmiEvent {
+  const BmiGetWeightThresholdEvent();
+}
+
 class BmiGetWeightLessonsEvent extends BmiEvent {
   const BmiGetWeightLessonsEvent();
 }
