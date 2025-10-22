@@ -453,8 +453,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                                         imageUrl: _cubit
                                                                 .selectedFoods[
                                                                     index]
-                                                                .image!
-                                                                .url ??
+                                                                .image
+                                                                ?.url ??
                                                             '',
                                                         width: 50,
                                                         height: 50,

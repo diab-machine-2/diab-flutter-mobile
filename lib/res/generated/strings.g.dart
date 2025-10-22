@@ -387,6 +387,7 @@ class Strings {
   String get che_do_dinh_duong_benh_tieu_duong =>
       'che_do_dinh_duong_benh_tieu_duong';
   String get luong_calo_ban_da_nap => 'luong_calo_ban_da_nap';
+  String get bua_an_gom => 'bua_an_gom';
   String get them_mon_an => 'them_mon_an';
   String get ban_chua_chon_mon_an => 'ban_chua_chon_mon_an';
   String get food_advice => 'food_advice';
@@ -1400,5 +1401,9 @@ class Strings {
   String get ban_muon_dong_bo_so_dien_thoai => 'ban_muon_dong_bo_so_dien_thoai';
   String get login_with_phone => 'login_with_phone';
   String get login_with_zalo => 'login_with_zalo';
+  String get analyzing_your_meal => 'analyzing_your_meal';
+  String get choose_meal_image => 'choose_meal_image';
+  String get please_select_at_least_one_image => 'please_select_at_least_one_image';
+  String get max_image_select_dynamic => 'max_image_select_dynamic';
   String get view_report => 'view_report';
 }

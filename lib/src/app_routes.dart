@@ -11,6 +11,7 @@ import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 
+import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodPressure/add_bloodpressure_result.dart';
 import 'widget/BloodPressure/bloodPressure_detail_listing.dart';
@@ -19,7 +20,9 @@ import 'widget/BloodPressure/intro/bloodpressure_intro_2nd_page.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
 import 'widget/BloodSugar/bloodSugar_detail.dart';
 import 'widget/BloodSugar/bloodSugar_result.dto.dart';
+import 'widget/Food/confirm_gen_food.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'widget/Food/food_image_capture.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/glucose_intro/glucose_intro_1st_page.dart';
 import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
@@ -143,6 +146,25 @@ class AppRoutes {
         );
         break;
       // ~ END: Huyet Ap (mới) ~
+      // 00 -- 00
+      // ~ Dinh Duong (mới) ~
+      case NavigatorName.confirm_food:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = ConfirmGeneratedFood(
+          generatedFoods: (data?['foods'] ?? []) as List<FoodModel>,
+          timeframe: data?['timeframe'] ?? '-',
+          timeframeId: data?['timeframeId'] ?? '-',
+          files: data?['files'] != null ? List<String>.from(data!['files']) : [],
+        );
+        break;
+      case NavigatorName.food_image_capture:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = FoodImageCapture(
+          timeframe: data?['timeframe'] ?? '-',
+          timeframeId: data?['timeframeId'] ?? '-',
+        );
+        break;
+      // ~ END: Dinh Duong (mới) ~
       case NavigatorName.blood_sugar_image_capture:
         final data = settings.arguments as Map<String, dynamic>?;
         page = BloodSugarImageCapture();
