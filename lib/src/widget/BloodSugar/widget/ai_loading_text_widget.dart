@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:medical/res/text_styles_extension.dart';
 
 import '../../../../res/R.dart';
 
@@ -12,12 +13,13 @@ class AILoadingTextWidget extends StatelessWidget {
       width: double.infinity,
       child: DefaultTextStyle(
         textAlign: TextAlign.start,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w400,
-          color: R.color.color0xffEDEEEE,
-          letterSpacing: 0.4,
-        ),
+        // style: TextStyle(
+        //   fontSize: 15,
+        //   fontWeight: FontWeight.w400,
+        //   color: R.color.color0xffEDEEEE,
+        //   letterSpacing: 0.4,
+        // ),
+        style: R.style.normalTextStyle.neutral4,
         child: AnimatedTextKit(
           animatedTexts: [
             TypewriterAnimatedText(

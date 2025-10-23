@@ -12,7 +12,7 @@ ExerciseLessonResponse _$ExerciseLessonResponseFromJson(
       data: (json['data'] as List<dynamic>?)
           ?.map((e) => ExerciseLesson.fromJson(e as Map<String, dynamic>))
           .toList(),
-      statusCode: json['statusCode'] as int?,
+      statusCode: (json['statusCode'] as num?)?.toInt(),
       message: json['message'] as String?,
     );
 

@@ -8,7 +8,7 @@ class Const {
   // static const String DOMAIN = "api.preprod.diab.com.vn";
   static const String DOMAIN = "api.diab.com.vn";
   static const String DOMAIN_STAGING = "api.staging.diab.com.vn";
-  static const String DOMAIN_DEV = "api.dev.diab.vn";
+  static const String DOMAIN_DEV = "api.debug.diab.vn";
 
   static const String HOST_URL = "https://$DOMAIN/";
   static const String HOST_URL_STAGING = "https://$DOMAIN_STAGING/";
@@ -252,4 +252,14 @@ class Const {
   static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
   static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
+
+  static const bmiThreshold = <double>[
+    18.5,
+    23,
+    25,
+    30
+  ];
+
+  static const hasInputedWaist = "has_inputed_waist";
+  static const hasWeightRecord = "has_weight_record";
 }

@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "success": true,
+    "total": 0,
+    "pageCount": 0,
+    "page": 0,
+    "size": 0,
+    "canNext": true,
+    "canPrev": true
+  },
+  "data": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "images": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "url": "string"
+        }
+      ],
+      "date": 0,
+      "weight": 0,
+      "waist": 0,
+      "height": 0,
+      "bmi": 0,
+      "note": "string",
+      "timeFrameId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "timeFrameText": "string",
+      "bmiId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "bmiText": "string",
+      "waistId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "bmiColorCode": "string",
+      "bmiBackgroundColorCode": "string",
+      "bmiTextColorCode": "string",
+      "waistColorCode": "string",
+      "isPregnancy": true
+    },
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "images": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "url": "string"
+        }
+      ],
+      "date": 0,
+      "weight": 66,
+      "waist": 80,
+      "height": 166,
+      "bmi": 20,
+      "note": "string",
+      "timeFrameId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "timeFrameText": "string",
+      "bmiId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "bmiText": "string",
+      "waistId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "bmiColorCode": "string",
+      "bmiBackgroundColorCode": "string",
+      "bmiTextColorCode": "string",
+      "waistColorCode": "string",
+      "isPregnancy": true
+    }
+  ]
+}

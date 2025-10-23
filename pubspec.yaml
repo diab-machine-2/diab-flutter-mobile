@@ -220,6 +220,7 @@ flutter:
     - assets/
     - assets/ca/
     - assets/images/
+    - assets/dummy/
     - lib/res/
     - lib/res/fonts/
     - lib/res/drawables/

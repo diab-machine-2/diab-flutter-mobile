@@ -28,6 +28,7 @@ class AppSettings {
   static bool isGetUser = false;
   static double targetDuration = 0.0;
   static double targetBurnedCalorie = 0.0;
+  static double weightGoal = 0.0;
   static List<SmartGoalList?> smartGoalDayList = [];
   static CategoryUserModel? categoryUserModel;
   static int? currentDateTime;
