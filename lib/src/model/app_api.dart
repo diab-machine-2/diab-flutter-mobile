@@ -11,10 +11,21 @@ import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/sync_index_from_zalo_request.dart';
 import 'package:medical/src/model/request/update_exercise_request.dart';
 import 'package:medical/src/model/response/app_version_response.dart';
+import 'package:medical/src/model/response/bmi_get_analyze_weight_index_response.dart';
+import 'package:medical/src/model/response/bmi_get_analyze_weight_trend_response.dart';
+import 'package:medical/src/model/response/bmi_get_weight_detail_response.dart';
+import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
+import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
+import 'package:medical/src/model/response/bmi_statistical_response.dart';
+import 'package:medical/src/model/response/bmi_waist_statistical_response.dart';
+import 'package:medical/src/model/response/bmi_weight_statistical_response.dart';
+import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
+import 'package:medical/src/model/response/calculate_bmi_response.dart';
 import 'package:medical/src/model/response/calendar_training_response.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/response/content_welcome_response.dart';
 import 'package:medical/src/model/response/create_calendar_response.dart';
+import 'package:medical/src/model/response/delete_weight_record_response.dart';
 import 'package:medical/src/model/response/exercise_analysis_response.dart';
 import 'package:medical/src/model/response/exercise_category_response.dart';
 import 'package:medical/src/model/response/exercise_health_trend_response.dart';
@@ -24,14 +35,16 @@ import 'package:medical/src/model/response/exercise_summary_response.dart';
 import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
+import 'package:medical/src/model/response/get_weight_threshold_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
-import 'package:medical/src/model/response/branchio_generate_zoom_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
 import 'package:medical/src/model/response/question_answer_response.dart';
 import 'package:medical/src/model/response/report_response.dart';
+import 'package:medical/src/model/response/submit_weight_record_response.dart';
 import 'package:retrofit/http.dart';
 import 'package:retrofit/retrofit.dart';
+
 import 'request/complete_exercise_request.dart';
 import 'request/complete_smart_goal_request.dart';
 import 'request/complete_video_request.dart';
@@ -46,8 +59,9 @@ import 'request/post_survey_request.dart';
 import 'request/send_feedback_course_request.dart';
 import 'request/send_interest_request.dart';
 import 'request/update_lesson_section_request.dart';
-import 'request/update_shared_profile_request.dart';
 import 'request/update_quiz_lesson_request.dart';
+import 'request/update_shared_profile_request.dart';
+import 'request/zoom_token_request.dart';
 import 'response/blood_sugar_template_response.dart';
 import 'response/common_response.dart';
 import 'response/create_menu_response.dart';
@@ -80,7 +94,6 @@ import 'response/upgrade_account_response.dart';
 import 'response/user_info_referral_code_response.dart';
 import 'response/user_info_response.dart';
 import 'response/week_states_response.dart';
-import 'request/zoom_token_request.dart';
 import 'response/zoom_token_response.dart';
 
 part 'app_api.g.dart';
@@ -488,7 +501,8 @@ abstract class AppApi {
       @Body() UpdateExerciseRequest request, @Path("id") String id);
 
   @GET("App/Exercise/Intensity")
-  Future<ExerciseIntensityResponse> getExerciseIntensities({@Query("shortname") int shortname = 1});
+  Future<ExerciseIntensityResponse> getExerciseIntensities(
+      {@Query("shortname") int shortname = 1});
   @GET("App/Exercise/Category")
   Future<ExerciseCategoryResponse> getExerciseCategories();
 
@@ -508,10 +522,137 @@ abstract class AppApi {
     @Query('CurrentDateTime') String currentDateTime,
     @Query('PeriodFilterType') int periodFilterType,
   );
-  
+
   @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
   Future<CommonResponse> subscriptionActivePackage({
     @Query("accountId") required String accountId,
     @Query("packageId") required String packageId,
   });
+
+  // region weight
+
+  @GET("/App/Weight/GetWeightThreshold")
+  Future<GetWeightThresholdResponse> getWeightThreshold({
+    @Query("thresholdType") int? thresholdType,
+    @Query("date") int? date,
+    @Query("height") double? height,
+    @Query("weight") double? weight,
+    @Query("waist") double? waist,
+  });
+
+  @GET("/App/Weight/Analysis/Index")
+  Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(
+    @Query("id") String id,
+  );
+
+  @GET("/App/Weight/Analysis/Trend")
+  Future<BmiGetAnalyzeWeightTrendResponse> analyzeWeightTrend({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+  });
+
+  @GET("/App/Bmi/Calculate-Bmi")
+  Future<CalculateBmiResponse> calculateBmi({
+    @Query('weight') required double weight,
+    @Query('height') required int height,
+  });
+
+  @MultiPart()
+  @POST("/App/Weight/Input")
+  Future<SubmitWeightRecordResponse> submitWeightRecord({
+    // @Body() SubmitWeightRecordRequest request,
+    @Part(name: "images") List<MultipartFile>? images,
+    @Part(name: "date") required int date,
+    @Part(name: "weight") required double weight,
+    @Part(name: "waist") double? waist,
+    @Part(name: "height") required double height,
+    @Part(name: "note") String? note,
+    @Part(name: "timeFrameValue") int? timeFrameValue,
+    @Part(name: "timeFrameId") String? timeFrameId,
+    @Part(name: "thresholdType") int? thresholdType,
+  });
+
+  @MultiPart()
+  @PUT("/App/Weight/Input")
+  Future<SubmitWeightRecordResponse> reviseWeightRecord({
+    @Part(name: "id") required String id,
+    @Part(name: "images") List<MultipartFile>? images,
+    @Part(name: "date") required int date,
+    @Part(name: "weight") required double weight,
+    @Part(name: "waist") double? waist,
+    @Part(name: "height") double? height,
+    @Part(name: "note") String? note,
+    @Part(name: "timeFrameValue") int? timeFrameValue,
+    @Part(name: "timeFrameId") String? timeFrameId,
+    @Part(name: "thresholdType") int? thresholdType,
+    @Part(name: "removalImageIds") List<String>? removalImageIds,
+  });
+
+  @DELETE("/App/Weight/Input/{id}")
+  Future<DeleteWeightRecordResponse> deleteWeightRecord({
+    @Path('id') required String id,
+  });
+
+  @GET("/App/Weight/Input")
+  Future<BmiGetWeightListResponse> getWeightIndexList({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+  });
+
+  @GET("/App/Weight/Input/{id}")
+  Future<BmiGetWeightDetailResponse> getWeightDetail(
+    @Path("id") String id,
+  );
+
+  //
+
+  //
+
+  @GET("/App/Weight/Lessons")
+  Future<BmiGetWeightLessonsResponse> getWeightLessons();
+
+  @GET("/App/Lesson/LessonSupport")
+  Future<BmiGetWeightLessonsResponse> getWeightLessonsSupport();
+
+  @GET("/App/Weight/Statistic/Bmi")
+  Future<BmiStatisticalResponse> getBmiStatisticalData({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+    @Query('reverseItems') bool? reverseItems,
+    @Query('thresholdType') int? thresholdType,
+    @Query('patientId') String? patientId,
+    @Query('takeAll') bool? takeAll,
+  });
+
+  @GET("/App/Weight/Statistic/Waist")
+  Future<BmiWaistStatisticalResponse> getWaistStatisticalData({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+    @Query('reverseItems') bool? reverseItems,
+    @Query('thresholdType') int? thresholdType,
+    @Query('patientId') String? patientId,
+    @Query('takeAll') bool? takeAll,
+  });
+
+  @GET("/App/Weight/Statistic/Weight")
+  Future<BmiWeightStatisticalResponse> getWeightStatisticalData({
+    @Query('currentDateTime') required int currentTime,
+    @Query('periodFilterType') required int periodFilterType,
+    @Query('page') int? page,
+    @Query('size') int? size,
+    @Query('reverseItems') bool? reverseItems,
+    @Query('thresholdType') int? thresholdType,
+    @Query('patientId') String? patientId,
+    @Query('takeAll') bool? takeAll,
+  });
+
+  // end region weight
 }

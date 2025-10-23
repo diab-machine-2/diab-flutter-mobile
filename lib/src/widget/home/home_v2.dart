@@ -28,31 +28,34 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
-import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
-import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/base/base_state.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
+import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../repo/home/home_client.dart';
 import '../../service/rating_service.dart';
 import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
-import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
-
 import 'widget/add_measurement.dart';
 import 'widget/home_activity.dart';
 import 'widget/home_measurement_summary.dart';
@@ -203,6 +206,7 @@ class _HomeControllerState extends State<HomeController>
     if (model == null) return;
     AppSettings.targetDuration = model.dailyTargetDuration ?? 0.0;
     AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
+    AppSettings.weightGoal = model.goalWeight ?? 0;
   }
 
   Future<void> checkExerciseData() async {
@@ -794,12 +798,32 @@ class _HomeControllerState extends State<HomeController>
                                   false) {
                                 return;
                               }
+
                               // case HbA1C navigation with data checking
                               if (routeName == NavigatorName.detail_hba1c ||
                                   (title != null &&
                                       title.toLowerCase().contains('hba1c'))) {
                                 await HbA1cNavigationHelper.navigateToHbA1C(
                                     context);
+                                return;
+                              }
+
+                              if (routeName == NavigatorName.add_bmi) {
+                                BmiBloc _bmiBloc = context.read();
+                                var additionalArg = {
+                                  AddBmiPage.bmiBlocKey: _bmiBloc,
+                                };
+                                var newArgs = (args?..addAll(additionalArg)) ??
+                                    additionalArg;
+                                Navigator.pushNamed(
+                                  context,
+                                  routeName!,
+                                  arguments: newArgs,
+                                ).then((value) {
+                                  if (_bmiBloc.hasModifiedData)
+                                    _homeBloc.add(FetchHome());
+                                  _bmiBloc.hasModifiedData = false;
+                                });
                                 return;
                               }
                               // others
@@ -1223,6 +1247,23 @@ class _HomeControllerState extends State<HomeController>
             Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
           }
           return;
+        } else if ([
+          NavigatorName.add_bmi,
+          NavigatorName.bmiInputPage,
+        ].contains(item.navigatorName)) {
+          Map<String, dynamic>? args = item.args;
+          args?.addAll({
+            BmiOnBoardingPage.bmiBlocKey: context.read<BmiBloc>(),
+          });
+          Navigator.pushNamed(
+            context,
+            item.navigatorName,
+            arguments: args,
+          ).then((value) {
+            BmiBloc _bmiBloc = context.read();
+            if (_bmiBloc.hasModifiedData) _homeBloc.add(FetchHome());
+            _bmiBloc.hasModifiedData = false;
+          });
         } else {
           Navigator.pushNamed(context, item.navigatorName,
               arguments: item.args);
