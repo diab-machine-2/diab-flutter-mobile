@@ -128,11 +128,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
     if (AppSettings.userInfo?.packageType == PackageType.free) {
       await _subscriptionCubit.getSubscriptionBanners();
-
-      final activityId = DynamicLinkConfig.instance.activityId ?? '';
-      if (activityId.isNotEmpty) {
-        _checkExistLessonId();
-      }
     }
 
     Future.delayed(Duration(seconds: 1), () async {
@@ -146,6 +141,19 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     _initComplete = true;
     print('[ROUTE] TabbarController initialization complete');
 
+    // Check for lesson/activity deeplinks after initialization is complete
+    // Use observer pattern for activity deeplinks, direct call for lesson deeplinks
+    final String? pendingLessonId = BranchioLinkConfig.instance.lessonId;
+    final String? pendingActivityId = BranchioLinkConfig.instance.activityId;
+
+    if (pendingLessonId != null) {
+      _checkExistLessonId();
+    } else if (pendingActivityId != null) {
+      // Use observer pattern for activity deeplinks to ensure proper timing
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
+    }
+
     // Check if we have any pending deeplinks to navigate to
     _checkPendingDeeplinks();
     BranchioLinkConfig.instance.checkPendingMeasurementScreen();
@@ -153,8 +161,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
   // Check for pending deeplinks after initialization
   void _checkPendingDeeplinks() {
-    if (BranchioLinkConfig.instance.hasPendingDeeplink ||
-        BranchioLinkConfig.instance.hasPendingActivityDeeplink) {
+    if (BranchioLinkConfig.instance.hasPendingDeeplink) {
       print(
           "[ROUTE] TabbarController found pending deeplink, scheduling navigation");
       BranchioLinkConfig.instance.scheduleDeeplinkNavigation();

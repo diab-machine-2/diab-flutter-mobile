@@ -10,6 +10,7 @@ import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 
 class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   BmiInputBloc(WeightRepository weightRepository)
@@ -168,8 +169,10 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
 
     final result = await _weightRepository.submitWeightRecord(event.request);
     result.when(
-      success: (data) =>
+      success: (data) => {
+          PhoneValidationManager.setShouldShowPhoneValidation(),
           emit(BmiInputSubmitedState(Resource.success(data.data))),
+      },
       failure: (error) => emit(BmiInputSubmitedState(Resource.error(error))),
     );
   }

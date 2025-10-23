@@ -131,6 +131,8 @@
 	<string>Vui lòng cho phép DiaB truy cập microphone của bạn.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Cho phép diaB truy cập thư viện để lưu thông tin các chỉ số</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Cho phép diaB truy cập định vi</string>
 	<key>NSLocationAlwaysUsageDescription</key>
