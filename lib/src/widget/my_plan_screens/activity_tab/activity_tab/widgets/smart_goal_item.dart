@@ -79,7 +79,7 @@ class SmartGoalItem extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.fromLTRB(7, 15, 15, 15),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
             decoration: BoxDecoration(
               color: R.color.white,
               borderRadius: BorderRadius.circular(8),

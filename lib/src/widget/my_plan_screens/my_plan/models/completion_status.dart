@@ -159,41 +159,19 @@ extension WeekStatus on CompletionStatus {
     required Color color,
     required bool isSelected,
   }) {
+    const double iconSize = 26;
     return SizedBox(
-      width: 32,
-      height: 32,
+      width: iconSize,
+      height: iconSize,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Outer ring when selected: renders outside the 26x26 inner circle
-          if (isSelected)
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: R.color.transparent,
-                border:
-                    Border.all(color: R.color.greenGradientBottom, width: 2),
-              ),
-            ),
-          // White padding between the outer ring and the inner circle
-          if (isSelected)
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: R.color.white,
-              ),
-            ),
-          // Inner filled circle (26x26)
           Container(
-            width: isSelected ? 26 : 32,
-            height: isSelected ? 26 : 32,
+            width: iconSize,
+            height: iconSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: color,
+              color: isSelected ? R.color.green : color,
               border: color == R.color.white
                   ? Border.all(color: R.color.color0xffE5E5E5, width: 2)
                   : null,

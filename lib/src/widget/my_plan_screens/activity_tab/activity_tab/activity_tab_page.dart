@@ -21,6 +21,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/expert_comment/expert_comment_page.dart';
 import 'package:medical/src/widget/survey_screens/introduce_survey/introduce_survey.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/calendar_navigation_bar.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -32,7 +33,6 @@ import '../../../../model/response/report_model.dart';
 
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
-import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../my_progress/my_progress.dart';
 import '../my_progress/widgets/report_list_widget.dart';
 import 'activity_tab.dart';
@@ -210,42 +210,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         ),
                       ),
                       if (_selectedTopTab == 0) _buildScheduleWidget(),
-                      if (_selectedTopTab == 0)
-                        Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.only(bottom: 12),
-                          child: InkWell(
-                            onTap: () async {
-                              ActivityListTracking.clickStatistical();
-                              Observable.instance.notifyObservers([],
-                                  notifyName: Const.HIDE_OVERLAY_KEY);
-                              _showSelectActionPopup();
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: R.color.white,
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(color: R.color.grayBorder),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    R.string.view_report.tr(),
-                                    style: TextStyle(
-                                      color: R.color.textDark,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
                     ],
                   ),
                 ),
@@ -260,17 +224,90 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       child: SingleChildScrollView(
                         controller: _scrollSmartGoalListController,
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(16, 32, 16,
+                          padding: EdgeInsets.fromLTRB(16, 8, 16,
                               MediaQuery.of(context).padding.bottom + 75),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              ..._buildSmartGoalDayList(
-                                dailyList: _cubit.smartGoalDayList,
-                              ),
-                              ..._buildNotDoneDailyList(
-                                activitiesNotCompleteInWeekly:
-                                    _cubit.smartGoalNotCompleteInWeekly,
-                              ),
+                              if (_cubit.smartGoalDayList.isNotEmpty)
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: R.color.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                        color: R.color.color0xffE5E5E5),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ..._buildSmartGoalDayList(
+                                        dailyList: _cubit.smartGoalDayList,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              if (_cubit
+                                  .smartGoalNotCompleteInWeekly.isNotEmpty)
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: R.color.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                        color: R.color.color0xffE5E5E5),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ..._buildNotDoneDailyList(
+                                        activitiesNotCompleteInWeekly:
+                                            _cubit.smartGoalNotCompleteInWeekly,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              if (_selectedTopTab == 0)
+                                Container(
+                                  alignment: Alignment.center,
+                                  margin:
+                                      const EdgeInsets.fromLTRB(0, 8, 0, 12),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      ActivityListTracking.clickStatistical();
+                                      Observable.instance.notifyObservers([],
+                                          notifyName: Const.HIDE_OVERLAY_KEY);
+                                      _showSelectActionPopup();
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 12),
+                                      decoration: BoxDecoration(
+                                        color: R.color.white,
+                                        borderRadius: BorderRadius.circular(50),
+                                        border: Border.all(
+                                            color: R.color.grayBorder),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            R.string.view_report.tr(),
+                                            style: TextStyle(
+                                              color: R.color.textDark,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               const SizedBox(height: 16),
                               // SizedBox(
                               //   width: 195.w,
@@ -372,18 +409,51 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   Widget _buildScheduleWidget() {
     if (_cubit.dayStatesList.isEmpty) return const SizedBox();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: true,
+            visible: false,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: _buildWeekListWidget(),
             ),
           ),
           _buildDayListWidget(),
+          GapH(8),
+          // Calendar Navigation Bar
+          CalendarNavigationBar(
+            currentDate: _cubit.currentDateTime,
+            onPreviousDay: () {
+              Observable.instance
+                  .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+              _cubit.onPreviousDay();
+            },
+            onNextDay: () {
+              Observable.instance
+                  .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+              _cubit.onNextDay();
+            },
+            onTodayPressed: () {
+              Observable.instance
+                  .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+              _cubit.onTodayPressed();
+            },
+            onDatePicked: (DateTime date) {
+              Observable.instance
+                  .notifyObservers([], notifyName: Const.HIDE_OVERLAY_KEY);
+              _cubit.onDatePicked(date);
+            },
+            minDate: DateTime(2020, 1, 1), // Set appropriate min date
+            maxDate: DateTime.now()
+                .add(const Duration(days: 365)), // Set appropriate max date
+            isTodayDisabled: _cubit.isCurrentDateToday,
+            selectedDate: _cubit.selectedDateForCalendar,
+            activeDates: _cubit.activeDatesForCalendar,
+            canNavigatePrevious: _cubit.canNavigatePrevious,
+            canNavigateNext: _cubit.canNavigateNext,
+          ),
         ],
       ),
     );
@@ -623,10 +693,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           },
         );
       }).toList(),
-      Visibility(
-        visible: dailyList.length > 0,
-        child: SizedBox(height: 32),
-      ),
     ];
     return children;
   }
@@ -718,7 +784,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         children: [
           Expanded(
             child: Text(
-              'Hoạt động chưa hoàn thành',
+              R.string.incomplete_activities.tr(),
               style: TextStyle(
                   color: R.color.grey_1,
                   fontSize: 16,

@@ -41,8 +41,8 @@ class DayInWeekWidget extends StatelessWidget {
                           ? Container(
                               margin: EdgeInsets.only(
                                   bottom: index ~/ 2 >= mark
-                                      ? 15
-                                      : 13), // Center the dash line with the circle
+                                      ? 12
+                                      : 10), // Center the dash line with the circle
                               width: _getDashLength(constraints.maxWidth),
                               height: index ~/ 2 >= mark
                                   ? 2

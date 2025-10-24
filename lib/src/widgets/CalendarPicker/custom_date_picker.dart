@@ -768,7 +768,7 @@ class _MonthPickerState extends State<_MonthPicker> {
         children: <Widget>[
           isContainActiveDay
               ? Container(
-                  //padding: const EdgeInsetsDirectional.only(start: 16, end: 4),
+                  padding: const EdgeInsetsDirectional.only(start: 16, end: 4),
                   height: _subHeaderHeight,
                   // color: R.color.red,
                   child: Row(
@@ -1153,6 +1153,7 @@ class _DayPickerState extends State<_DayPicker> {
                 shrinkWrap: true,
                 crossAxisCount: 7,
                 children: dayItems,
+                crossAxisSpacing: 4,
                 physics: const NeverScrollableScrollPhysics(),
               )
             : GridView.custom(
