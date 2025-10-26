@@ -4,26 +4,41 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 
-class BmiStatisticalChart extends StatelessWidget {
+class BmiStatisticalChart extends StatefulWidget {
   const BmiStatisticalChart({
     super.key,
   });
 
+  @override
+  State<BmiStatisticalChart> createState() => _BmiStatisticalChartState();
+}
+
+class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
   static final double _heightOfChart = 160;
   static final double _widthOfSideBar = 32;
   static final double _marginOfWeight = 15;
 
+  late BmiBloc _bmiBloc;
+  ScrollController _scrollController = ScrollController(
+    keepScrollOffset: true,
+  );
+
+  DateTime? _lastTapTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _bmiBloc = context.read();
+  }
+
   @override
   Widget build(BuildContext context) {
-    BmiBloc _bmiBloc = context.read();
-    ScrollController _scrollController = ScrollController(
-      keepScrollOffset: true,
-    );
-
     return BlocBuilder<BmiBloc, BmiState>(
         buildWhen: (_, state) =>
             state is BmiGetWeightIndexListState ||
@@ -49,15 +64,15 @@ class BmiStatisticalChart extends StatelessWidget {
                       ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
                   _marginOfWeight;
 
-          if (_bmiBloc.isLastSelectedPoint && data.length > 1) {
-            Future.delayed(Durations.extralong4, () {
-              _scrollController.animateTo(
-                _scrollController.position.maxScrollExtent,
-                duration: Durations.medium2,
-                curve: Curves.easeInOut,
-              );
-            });
-          }
+          // if (_bmiBloc.isLastSelectedPoint && data.length > 1) {
+          Future.delayed(Durations.extralong4, () {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: Durations.medium2,
+              curve: Curves.easeInOut,
+            );
+          });
+          // }
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -150,11 +165,11 @@ class BmiStatisticalChart extends StatelessWidget {
                               },
                             ),
                             belowBarData: BarAreaData(
-                              show: true,
-                              colors: data
-                                  .map((e) => e.bmiColor.withOpacity(0.1))
-                                  .toList(),
-                            ),
+                                show: true,
+                                // colors: data
+                                //     .map((e) => e.bmiColor.withOpacity(0.1))
+                                //     .toList(),
+                                colors: [Colors.green.withOpacity(0.1)]),
                           ),
                         ],
                         lineTouchData: LineTouchData(
@@ -164,13 +179,15 @@ class BmiStatisticalChart extends StatelessWidget {
                                 response == null ||
                                 response.lineBarSpots == null) {
                               return;
+                            } else if (event is FlTapDownEvent) {
+                              _touchCallback(event, response, data);
                             }
 
-                            // response.lineBarSpots chứa danh sách điểm được chạm
-                            final spot = response.lineBarSpots!.first;
-                            debugPrint('Tap vào điểm x=${spot.x}, y=${spot.y}');
-                            var index = data.length - 1 - spot.spotIndex;
-                            _bmiBloc.selectPointChart(index);
+                            // // response.lineBarSpots chứa danh sách điểm được chạm
+                            // final spot = response.lineBarSpots!.first;
+                            // debugPrint('Tap vào điểm x=${spot.x}, y=${spot.y}');
+                            // var index = data.length - 1 - spot.spotIndex;
+                            // _bmiBloc.selectPointChart(index);
                           },
                         ),
                         extraLinesData: _bmiBloc.weightGoal != null
@@ -193,27 +210,49 @@ class BmiStatisticalChart extends StatelessWidget {
         });
   }
 
-  // List<FlSpot> getSpots(BuildContext context) {
-  //   BmiBloc _bmiBloc = context.read();
-  //   List<FlSpot> spots = [];
-  //   List<WeightStatisticRecord> weightData =
-  //       _bmiBloc.weightStatistical?.trendItems ?? [];
-  //   List<WaistStatisticRecord> waistData =
-  //       _bmiBloc.bmiWaistStatistical?.trendItems ?? [];
-  //   int totalRecords = weightData.length;
+  void _touchCallback(
+    FlTapDownEvent event,
+    LineTouchResponse lineTouch,
+    List<BmiGetWeightRecord> records,
+  ) async {
+    final now = DateTime.now();
 
-  //   if (totalRecords == 0) return [];
+    // detect double press
+    if (_lastTapTime != null &&
+        now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
+      // Double press detected
+      if (lineTouch.lineBarSpots != null &&
+          lineTouch.lineBarSpots!.isNotEmpty) {
+        final touchedSpot = lineTouch.lineBarSpots!.first;
+        final selectedTrend = records[touchedSpot.spotIndex];
 
-  //   for (int i = 0; i <= totalRecords; i++) {
-  //     spots.add(FlSpot(
-  //       // waistData.elementAtOrNull(i)?.value?.toDouble() ?? 0,
-  //       weightData.elementAtOrNull(i)?.date?.toDouble() ?? 0,
-  //       weightData.elementAtOrNull(i)?.value?.toDouble() ?? 0,
-  //     ));
-  //   }
+        // Thực hiện hành động khi double press
+        if (selectedTrend == _bmiBloc.selectedPointChart) {
+          final updateResult = await Navigator.pushNamed(
+            context,
+            NavigatorName.bmiReviseRecordPage,
+            arguments: {
+              ReviseWeightPage.bmiBlocKey: _bmiBloc,
+              ReviseWeightPage.dataKey: selectedTrend,
+            },
+          );
 
-  //   return spots;
-  // }
+          if (updateResult == true) {
+            _bmiBloc
+              ..fetchHistoricalWeight()
+              ..refresh();
+          }
+        }
+      }
+    } else {
+      // Single press detected
+      final spot = lineTouch.lineBarSpots!.first;
+      debugPrint('Tap vào điểm x=${spot.x}, y=${spot.y}');
+      var index = records.length - 1 - spot.spotIndex;
+      _bmiBloc.selectPointChart(index);
+    }
+    _lastTapTime = now;
+  }
 }
 
 class WeightWaistData {

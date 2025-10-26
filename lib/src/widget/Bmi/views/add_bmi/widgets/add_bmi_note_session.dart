@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,7 +71,8 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
       child: TextField(
         decoration: InputDecoration(
           hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
-          hintStyle: R.style.normalTextStyle.copyWith(color: AppColors.neutral4),
+          hintStyle:
+              R.style.normalTextStyle.copyWith(color: AppColors.neutral4),
           focusedBorder: _border,
           enabledBorder: _border,
           suffixIcon: GestureDetector(
@@ -82,15 +82,24 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
               color: R.color.mainColor,
             ),
           ),
-          counterText: "${_controller.text.length} / $maxLength",
-          counterStyle:
-              R.style.smallTextStyle.copyWith(color: AppColors.neutral4),
         ),
         minLines: 1,
         maxLines: null,
+        maxLength: maxLength,
         style: R.style.normalTextStyle,
         controller: _controller,
         onChanged: (value) => _bmiInputBloc.note = value,
+        buildCounter: (
+          BuildContext context, {
+          required int currentLength,
+          required bool isFocused,
+          required int? maxLength,
+        }) {
+          return Text(
+            '$currentLength / $maxLength',
+            style: R.style.smallTextStyle.copyWith(color: AppColors.neutral4),
+          );
+        },
       ),
     );
   }

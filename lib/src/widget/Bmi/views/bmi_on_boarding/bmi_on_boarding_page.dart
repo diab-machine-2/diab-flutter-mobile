@@ -62,6 +62,12 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _bmiBloc.clearPoint();
+    super.dispose();
+  }
+
   void _navigateToInputSelection() async {
     // bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
     // // Grant access to HealthKit already

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
-import 'package:flutter/services.dart';
+import 'package:medical/src/utils/formater.dart';
 
 class BmiInputTextField extends StatelessWidget {
   const BmiInputTextField({
@@ -11,12 +12,15 @@ class BmiInputTextField extends StatelessWidget {
     this.suffixText,
     this.controller,
     this.onChanged,
+    this.focusNode,
   });
 
   final String? hintText;
   final String? suffixText;
 
   final TextEditingController? controller;
+
+  final FocusNode? focusNode;
 
   final void Function(String value)? onChanged;
 
@@ -38,10 +42,12 @@ class BmiInputTextField extends StatelessWidget {
       style: R.style.inputHealthIndexStyle,
       textAlign: TextAlign.center,
       controller: controller,
+      focusNode: focusNode,
       onChanged: onChanged,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+        CommaToDotFormatter(),
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*')),
       ],
     );
   }

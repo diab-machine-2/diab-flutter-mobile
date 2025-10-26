@@ -110,8 +110,8 @@ class _BmiGaugePainter extends CustomPainter {
 
     for (int i = 0; i < thresholds.length; i++) {
       final angle = math.pi + (i + 1) * segmentSweep;
-      final labelX = center.dx + (radius + 12) * math.cos(angle);
-      final labelY = center.dy + (radius + 12) * math.sin(angle);
+      final labelX = center.dx + (radius + 20) * math.cos(angle);
+      final labelY = center.dy + (radius + 20) * math.sin(angle);
       textPainter.text = TextSpan(
         text: thresholds[i].toStringAsFixed(1),
         style: const TextStyle(color: Colors.black54, fontSize: 12),
