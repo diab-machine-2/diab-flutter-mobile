@@ -220,7 +220,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                         HorizontalLine(
                           y: _customYTransform(6.5),
                           color: Color(0xFF636A6B),
-                          dashArray: [4, 3],
+                          dashArray: [8, 4],
                           strokeWidth: 1,
                         ),
                       ],
