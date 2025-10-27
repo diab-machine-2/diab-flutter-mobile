@@ -252,10 +252,19 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         ),
         belowBarData: BarAreaData(
           show: true,
+          // Gradient colors from top to bottom
+          // Reversed: green at top -> white/transparent at bottom
           colors: [
-            Color(0xFFC7F6D7),
-            Color(0xFFFDFDFD),
+            Color(0xFFC7F6D7).withOpacity(1), // Darker green at top
+            Color(0xFFC7F6D7).withOpacity(0.7), // Light green in middle
+            Color(0xFFFDFDFD)
+                .withOpacity(0.4), // Almost transparent white at bottom
           ],
+          gradientColorStops: [0.0, 0.5, 1.0], // Distribute colors evenly
+          gradientFrom: Offset(0, 0), // Start from line
+          gradientTo: Offset(0, 1), // End at bottom
+          // Ensure gradient always fills to a minimum depth for visibility
+          applyCutOffY: false, // Don't apply cutoff, fill to chart bottom
         ),
       ),
     ];
