@@ -84,7 +84,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
           children: [
             // Left Y-axis labels
             Container(
-              width: 40,
+              width: 30,
               height: 140,
               padding: EdgeInsets.only(top: 8, bottom: 8),
               child: Column(
@@ -96,7 +96,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                     '6.5%',
                     style: TextStyle(
                       color: R.color.black,
-                      fontSize: 14,
+                      fontSize: 12,
                       fontFamily: R.font.sfpro,
                       fontWeight: FontWeight.w500,
                     ),
@@ -220,7 +220,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                         HorizontalLine(
                           y: _customYTransform(6.5),
                           color: Color(0xFF636A6B),
-                          dashArray: [8, 4],
+                          dashArray: [4, 3],
                           strokeWidth: 1,
                         ),
                       ],
