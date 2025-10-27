@@ -48,6 +48,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   bool _isLoadingAI = false; // Track if AI is being loaded to prevent loops
   int _focusIndex = -1; // Focused time-group index (x axis group)
   int _focusSubIndex = 0; // Focused item within the time group
+  DateTime?
+      _selectedPointDate; // Store selected point date to maintain selection across time range changes
   bool _isDetailViewed = false; // Track if user has viewed HbA1c detail page
 
   // Grouped data by calendar day (UTC)
@@ -215,6 +217,14 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   void reloadData(int periodFilter) {
+    // Store current selected point date before resetting
+    if (_focusIndex >= 0 && _focusIndex < _groupedPoints.length) {
+      final group = _groupedPoints[_focusIndex];
+      if (_focusSubIndex < group.length) {
+        _selectedPointDate = group[_focusSubIndex].date;
+      }
+    }
+
     setState(() {
       _selectedUIIndex = periodFilter; // Track UI selection
       // Map UI index to API trendType:
@@ -223,7 +233,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       // 2 (12 tháng) -> 2
       // 3 (24 tháng) -> 3
       _periodFilterType = periodFilter == 0 ? 3 : periodFilter;
-      _focusIndex = -1;
+      _focusIndex = -1; // Temporarily reset, will be restored after data loads
+      _focusSubIndex = 0;
       _isLoadingAI = false; // Reset flag to allow new AI load
       _aiSuggestion = null; // Reset suggestion to trigger reload
     });
@@ -373,6 +384,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
             if (state is HbA1CTrendLoaded) {
               final trendData = state.trendModel.trendItems?.items ?? [];
               _convertApiDataToDataPoints(trendData);
+
+              // Try to restore selected point after data conversion
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _restoreSelectedPoint();
+                });
+              });
 
               // Load AI suggestion after data is available (only if not already loading)
               if (!_isLoadingAI && _aiSuggestion == null) {
@@ -887,12 +905,45 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           setState(() {
             _focusIndex = dayIndex;
             _focusSubIndex = subIndex;
+            // Update selected point date when user manually selects a point
+            _selectedPointDate = group[subIndex].date;
           });
           return;
         }
         currentFlatIndex++;
       }
     }
+  }
+
+  // Restore previously selected point when data is reloaded
+  void _restoreSelectedPoint() {
+    if (_selectedPointDate == null || _groupedPoints.isEmpty) {
+      return;
+    }
+
+    // Find the point with matching date in the new data
+    for (int dayIndex = 0; dayIndex < _groupedPoints.length; dayIndex++) {
+      final group = _groupedPoints[dayIndex];
+      for (int subIndex = 0; subIndex < group.length; subIndex++) {
+        final point = group[subIndex];
+        // Compare dates (ignoring milliseconds for robustness)
+        if (point.date.year == _selectedPointDate!.year &&
+            point.date.month == _selectedPointDate!.month &&
+            point.date.day == _selectedPointDate!.day &&
+            point.date.hour == _selectedPointDate!.hour &&
+            point.date.minute == _selectedPointDate!.minute) {
+          // Found the matching point, restore selection
+          _focusIndex = dayIndex;
+          _focusSubIndex = subIndex;
+          return;
+        }
+      }
+    }
+
+    // If point not found in new data, reset selection
+    _focusIndex = -1;
+    _focusSubIndex = 0;
+    _selectedPointDate = null;
   }
 
   Widget _buildLegendItem(String label, Color color) {
