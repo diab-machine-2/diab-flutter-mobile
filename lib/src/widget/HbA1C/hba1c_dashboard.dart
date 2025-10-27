@@ -296,6 +296,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       _groupedPoints.add(group);
     }
 
+    _applyTimeRangeFilter();
+
     // IMPORTANT: Sort _dataPoints by date DESCENDING (newest first) for correct analysis
     _dataPoints.sort((a, b) => b.date.compareTo(a.date));
 
@@ -316,6 +318,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           : _focusIndex.clamp(0, _groupedPoints.length - 1);
       _focusSubIndex =
           _focusSubIndex.clamp(0, _groupedPoints[_focusIndex].length - 1);
+      if (_selectedPointDate == null) {
+        _updateSelectedPointDateFromFocus();
+      }
       // Don't load AI here - it's loaded in reloadData() to prevent infinite loops
     } else {
       _focusIndex = -1;
@@ -323,6 +328,87 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     }
 
     return _dataPoints;
+  }
+
+  void _setFocusToLatest() {
+    if (_groupedPoints.isEmpty) {
+      _focusIndex = -1;
+      _focusSubIndex = 0;
+      _selectedPointDate = null;
+      return;
+    }
+
+    _focusIndex = _groupedPoints.length - 1;
+    _focusSubIndex = 0;
+    _updateSelectedPointDateFromFocus();
+  }
+
+  int? _getMonthsForSelectedRange() {
+    switch (_selectedUIIndex) {
+      case 1:
+        return 6;
+      case 2:
+        return 12;
+      case 3:
+        return 24;
+      default:
+        return null;
+    }
+  }
+
+  DateTime _calculateCutoffUtc(int months) {
+    final DateTime nowUtc = DateTime.now().toUtc();
+    final int totalMonths = nowUtc.year * 12 + (nowUtc.month - 1) - months;
+    final int cutoffYear = totalMonths ~/ 12;
+    final int cutoffMonth = totalMonths % 12 + 1;
+    final int maxDayOfTargetMonth =
+        DateTime.utc(cutoffYear, cutoffMonth + 1, 0).day;
+    final int cutoffDay = min(nowUtc.day, maxDayOfTargetMonth);
+    return DateTime.utc(cutoffYear, cutoffMonth, cutoffDay);
+  }
+
+  void _applyTimeRangeFilter() {
+    final months = _getMonthsForSelectedRange();
+    if (months == null || _groupedPoints.isEmpty) {
+      return;
+    }
+
+    final DateTime cutoff = _calculateCutoffUtc(months);
+
+    final List<List<HbA1cDataPoint>> filteredGroups = [];
+    final List<int> filteredTimestamps = [];
+    for (int i = 0; i < _groupedPoints.length; i++) {
+      final group = _groupedPoints[i];
+      if (group.isEmpty) continue;
+      final DateTime dayDate = group.last.date;
+      if (!dayDate.isBefore(cutoff)) {
+        filteredGroups.add(group);
+        filteredTimestamps.add(_timestamps[i]);
+      }
+    }
+
+    final List<HbA1cDataPoint> filteredDataPoints = _dataPoints
+        .where((dp) => !dp.date.isBefore(cutoff))
+        .toList();
+
+    _groupedPoints
+      ..clear()
+      ..addAll(filteredGroups);
+    _timestamps
+      ..clear()
+      ..addAll(filteredTimestamps);
+    _dataPoints
+      ..clear()
+      ..addAll(filteredDataPoints);
+  }
+
+  void _updateSelectedPointDateFromFocus() {
+    if (_focusIndex >= 0 && _focusIndex < _groupedPoints.length) {
+      final group = _groupedPoints[_focusIndex];
+      if (_focusSubIndex >= 0 && _focusSubIndex < group.length) {
+        _selectedPointDate = group[_focusSubIndex].date;
+      }
+    }
   }
 
   String _getHbA1cLevelFromValue(double value) {
@@ -788,6 +874,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                       setState(() {
                         _focusIndex = max(0, _focusIndex - 1);
                         _focusSubIndex = 0;
+                        _updateSelectedPointDateFromFocus();
                       });
                     }
                   : null,
@@ -816,6 +903,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                   if (len > 1) {
                     setState(() {
                       _focusSubIndex = (_focusSubIndex + 1) % len;
+                      _updateSelectedPointDateFromFocus();
                     });
                   }
                 }
@@ -861,6 +949,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                         final lastIndex = _groupedPoints.length - 1;
                         _focusIndex = min(lastIndex, _focusIndex + 1);
                         _focusSubIndex = 0;
+                        _updateSelectedPointDateFromFocus();
                       });
                     }
                   : null,
@@ -973,15 +1062,15 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           // Found the matching point, restore selection
           _focusIndex = dayIndex;
           _focusSubIndex = subIndex;
+          _selectedPointDate = point.date;
           return;
         }
       }
     }
 
     // If point not found in new data, reset selection
-    _focusIndex = -1;
-    _focusSubIndex = 0;
     _selectedPointDate = null;
+    _setFocusToLatest();
   }
 
   Widget _buildLegendItem(String label, Color color) {
