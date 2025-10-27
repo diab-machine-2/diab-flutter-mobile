@@ -554,47 +554,18 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),
-          child: BlocBuilder<HbA1CBloc, HbA1CState>(
-            buildWhen: (prev, curr) =>
-                curr is HbA1CLoading ||
-                curr is HbA1CTrendLoaded ||
-                curr is HbA1CError,
-            builder: (context, state) {
-              int readingsCount = 0;
-              if (state is HbA1CTrendLoaded) {
-                readingsCount = state.trendModel.trendItems?.items.length ?? 0;
-              }
-              final bool showDetail =
-                  readingsCount > 1 || _dataPoints.length > 1;
-              return TextButton(
-                onPressed: () async {
-                  if (showDetail) {
-                    // Đánh dấu đã xem chi tiết
-                    await AppStorages.setHbA1CDetailViewed();
-                    setState(() {
-                      _isDetailViewed = true;
-                    });
-
-                    Navigator.pushNamed(
-                        context, NavigatorName.hba1c_detail_page,
-                        arguments: {
-                          'initPeriodFilterType': _selectedUIIndex,
-                        });
-                  } else {
-                    Navigator.pushNamed(
-                        context, NavigatorName.hba1c_intro_2nd_page);
-                  }
-                },
-                child: Text(
-                  showDetail ? R.string.detail.tr() : R.string.huong_dan.tr(),
-                  style: TextStyle(
-                      fontSize: 15,
-                      color: R.color.white,
-                      fontFamily: R.font.sfpro,
-                      fontWeight: FontWeight.w700),
-                ),
-              );
+          child: TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, NavigatorName.hba1c_intro_2nd_page);
             },
+            child: Text(
+              R.string.huong_dan.tr(),
+              style: TextStyle(
+                  fontSize: 15,
+                  color: R.color.white,
+                  fontFamily: R.font.sfpro,
+                  fontWeight: FontWeight.w700),
+            ),
           ),
         ),
       ],
