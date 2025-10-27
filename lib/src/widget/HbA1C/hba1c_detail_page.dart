@@ -362,41 +362,7 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
     String emptyMessage = _getEmptyStateText();
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            child: Image.asset(
-              'lib/res/drawables/hba1c/im_hba1c_empty.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Chưa có chỉ số HbA1c',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: R.color.textDark,
-              fontFamily: R.font.sfpro,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            emptyMessage,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: R.color.primaryGreyColor,
-              fontFamily: R.font.sfpro,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
+      child: SizedBox.expand(),
     );
   }
 

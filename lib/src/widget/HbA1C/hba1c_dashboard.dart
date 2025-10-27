@@ -1271,7 +1271,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
 
   Widget _buildEmptyChartPlaceholder() {
     return SizedBox(
-      height: 140,
+      height: 97,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 0),
         child: Row(
@@ -1279,7 +1279,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           children: [
             Container(
               width: 40,
-              height: 140,
+              height: 97,
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1290,7 +1290,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                     '6.5%',
                     style: TextStyle(
                       color: R.color.black,
-                      fontSize: 14,
+                      fontSize: 12,
                       fontFamily: R.font.sfpro,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1302,13 +1302,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
             const SizedBox(width: 4),
             Expanded(
               child: Container(
-                height: 140,
+                height: 97,
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: CustomPaint(
                   painter: _DashedHorizontalLinePainter(
                     lineColor: const Color(0xFF636A6B),
-                    dashWidth: 3,
-                    dashGap: 2,
+                    dashWidth: 8,
+                    dashGap: 4,
                   ),
                 ),
               ),
