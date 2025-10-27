@@ -9,7 +9,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
+import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_functions.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
@@ -210,8 +210,11 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   void _loadTrendData() {
     // When "Tất cả" (index 0) is selected, use takeAll = true
     bool useTakeAll = _selectedUIIndex == 0;
-    _hbA1CBloc.add(FetchHbA1CTrend(
-      type: _periodFilterType,
+    // Use Input API instead of Trend API to get full data including ID
+    _hbA1CBloc.add(FetchInputHbA1C(
+      currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      periodFilterType: _periodFilterType,
+      page: 1,
       takeAll: useTakeAll,
     ));
   }
@@ -247,7 +250,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     return true;
   }
 
-  List<HbA1cDataPoint> _convertApiDataToDataPoints(List<HbA1CModel> apiData) {
+  // Convert InputHbA1CModel data to data points (with ID for editing)
+  List<HbA1cDataPoint> _convertInputDataToDataPoints(
+      List<InputHbA1CModel> apiData) {
     _dataPoints.clear();
     _timestamps.clear();
     _groupedPoints.clear();
@@ -265,12 +270,14 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         final color = _getHbA1cColorFromValue(value);
 
         final timeOfDay = DateFormat('HH:mm').format(date);
+
         final dp = HbA1cDataPoint(
           date: date,
           value: value,
           level: level,
           color: color,
           timeOfDay: timeOfDay,
+          id: item.id, // Keep as String to match InputHbA1CModel
         );
         final dayKey = DateTime.utc(date.year, date.month, date.day)
                 .millisecondsSinceEpoch ~/
@@ -381,9 +388,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
               Message.showToastMessage(context, state.message);
             }
 
-            if (state is HbA1CTrendLoaded) {
-              final trendData = state.trendModel.trendItems?.items ?? [];
-              _convertApiDataToDataPoints(trendData);
+            if (state is HbA1CDetailLoaded) {
+              final inputData = state.inputHbA1CModel;
+              _convertInputDataToDataPoints(inputData);
 
               // Try to restore selected point after data conversion
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -892,6 +899,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       onPointSelected: (flatIndex) {
         _convertFlatIndexToGroupIndex(flatIndex);
       },
+      onPointDoubleTapped: (flatIndex) {
+        _handlePointDoubleTap(flatIndex);
+      },
     );
   }
 
@@ -908,6 +918,34 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
             // Update selected point date when user manually selects a point
             _selectedPointDate = group[subIndex].date;
           });
+          return;
+        }
+        currentFlatIndex++;
+      }
+    }
+  }
+
+  // Handle double tap on a point to navigate to edit screen
+  void _handlePointDoubleTap(int flatIndex) {
+    // Convert flat index to actual data point to get the ID
+    int currentFlatIndex = 0;
+    for (int dayIndex = 0; dayIndex < _groupedPoints.length; dayIndex++) {
+      final group = _groupedPoints[dayIndex];
+      for (int subIndex = 0; subIndex < group.length; subIndex++) {
+        if (currentFlatIndex == flatIndex) {
+          final dataPoint = group[subIndex];
+
+          // Navigate to edit screen with the point's data
+          if (dataPoint.id != null) {
+            Navigator.pushNamed(
+              context,
+              NavigatorName.add_hba1c,
+              arguments: {
+                'type': 'update',
+                'id': dataPoint.id,
+              },
+            );
+          }
           return;
         }
         currentFlatIndex++;

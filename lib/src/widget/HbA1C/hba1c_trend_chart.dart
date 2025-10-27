@@ -8,6 +8,7 @@ class HbA1cDataPoint {
   final String level;
   final Color color;
   final String timeOfDay;
+  final String? id; // ID from API for editing (String to match InputHbA1CModel)
 
   HbA1cDataPoint({
     required this.date,
@@ -15,6 +16,7 @@ class HbA1cDataPoint {
     required this.level,
     required this.color,
     required this.timeOfDay,
+    this.id,
   });
 }
 
@@ -24,6 +26,7 @@ class HbA1cTrendChart extends StatefulWidget {
   final int focusIndex;
   final int focusSubIndex;
   final Function(int) onPointSelected;
+  final Function(int)? onPointDoubleTapped; // Optional callback for double tap
 
   const HbA1cTrendChart({
     Key? key,
@@ -32,6 +35,7 @@ class HbA1cTrendChart extends StatefulWidget {
     required this.focusIndex,
     required this.focusSubIndex,
     required this.onPointSelected,
+    this.onPointDoubleTapped,
   }) : super(key: key);
 
   @override
@@ -39,6 +43,9 @@ class HbA1cTrendChart extends StatefulWidget {
 }
 
 class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
+  int? _lastTappedIndex;
+  DateTime? _lastTapTime;
+
   // Custom Y transform để đặt đường kẻ 6.5% ở giữa chart
   // Tương tự như BloodPressure chart với đường kẻ 90 và 140
   double _customYTransform(double y) {
@@ -112,8 +119,37 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                       getTouchLineEnd: (barData, index) => double.infinity,
                       touchCallback: (FlTouchEvent event,
                           LineTouchResponse? touchResponse) {
-                        if (event is! FlLongPressEnd &&
+                        // Only handle tap up events for better double tap detection
+                        if (event is FlTapUpEvent) {
+                          final spot =
+                              touchResponse?.lineBarSpots?.isNotEmpty == true
+                                  ? touchResponse!.lineBarSpots!.first
+                                  : null;
+                          if (spot != null) {
+                            final touchedFlatIndex = spot.x.toInt();
+
+                            // Check for double tap
+                            final now = DateTime.now();
+                            if (_lastTappedIndex == touchedFlatIndex &&
+                                _lastTapTime != null &&
+                                now.difference(_lastTapTime!).inMilliseconds <
+                                    500) {
+                              // Double tap detected
+                              if (widget.onPointDoubleTapped != null) {
+                                widget.onPointDoubleTapped!(touchedFlatIndex);
+                              }
+                              _lastTappedIndex = null;
+                              _lastTapTime = null;
+                            } else {
+                              // Single tap
+                              widget.onPointSelected(touchedFlatIndex);
+                              _lastTappedIndex = touchedFlatIndex;
+                              _lastTapTime = now;
+                            }
+                          }
+                        } else if (event is! FlLongPressEnd &&
                             event is! FlPanEndEvent) {
+                          // For other events (pan, hover), just update selection without double tap logic
                           final spot =
                               touchResponse?.lineBarSpots?.isNotEmpty == true
                                   ? touchResponse!.lineBarSpots!.first
