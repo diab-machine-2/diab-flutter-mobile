@@ -13,6 +13,7 @@ import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_functions.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_trend_chart.dart';
 
 // Re-export HbA1cDataPoint for compatibility
@@ -47,6 +48,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   bool _isLoadingAI = false; // Track if AI is being loaded to prevent loops
   int _focusIndex = -1; // Focused time-group index (x axis group)
   int _focusSubIndex = 0; // Focused item within the time group
+  bool _isDetailViewed = false; // Track if user has viewed HbA1c detail page
 
   // Grouped data by calendar day (UTC)
   // Sorted by day ascending; x index = position in this list
@@ -63,6 +65,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   void initState() {
     super.initState();
     _firebaseSetup();
+    _loadDetailViewedState();
     // Load trend data first, then AI will be loaded after data is available
     _loadTrendData();
   }
@@ -86,6 +89,10 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     currentLevel = args?['currentLevel'] ?? widget.currentLevel;
     currentColor = args?['currentColor'] ?? widget.currentColor;
     _argsInitialized = true;
+  }
+
+  Future<void> _loadDetailViewedState() async {
+    _isDetailViewed = await AppStorages.isHbA1CDetailViewed();
   }
 
   Future<void> _firebaseSetup() async {
@@ -422,7 +429,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                             child: Stack(
                               children: [
                                 InkWell(
-                                  onTap: () {
+                                  onTap: () async {
+                                    // Đánh dấu đã xem chi tiết
+                                    await AppStorages.setHbA1CDetailViewed();
+                                    setState(() {
+                                      _isDetailViewed = true;
+                                    });
+
                                     Navigator.pushNamed(context,
                                         NavigatorName.hba1c_detail_page,
                                         arguments: {
@@ -458,8 +471,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                                     ),
                                   ),
                                 ),
-                                // Notification badge - chỉ hiển thị khi có data từ API
-                                if (_dataPoints.isNotEmpty)
+                                // Notification badge - chỉ hiển thị khi có data từ API và chưa xem chi tiết
+                                if (_dataPoints.isNotEmpty && !_isDetailViewed)
                                   Positioned(
                                     left: 45,
                                     bottom: 32,
@@ -554,8 +567,14 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
               final bool showDetail =
                   readingsCount > 1 || _dataPoints.length > 1;
               return TextButton(
-                onPressed: () {
+                onPressed: () async {
                   if (showDetail) {
+                    // Đánh dấu đã xem chi tiết
+                    await AppStorages.setHbA1CDetailViewed();
+                    setState(() {
+                      _isDetailViewed = true;
+                    });
+
                     Navigator.pushNamed(
                         context, NavigatorName.hba1c_detail_page,
                         arguments: {
