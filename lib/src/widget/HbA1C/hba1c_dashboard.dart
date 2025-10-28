@@ -257,14 +257,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     _timestamps.clear();
     _groupedPoints.clear();
 
-    // Group by calendar day (UTC) similar to BloodPressure behavior
+    // Group by calendar day (local time) similar to BloodPressure behavior
     final Map<int, List<HbA1cDataPoint>> byTs = {};
     for (int i = 0; i < apiData.length; i++) {
       final item = apiData[i];
       if (item.hbA1C != null && item.date != null) {
-        // Normalize to UTC to avoid timezone shifts (match BP behavior)
-        final date =
-            DateTime.fromMillisecondsSinceEpoch(item.date! * 1000, isUtc: true);
+        // Parse timestamp as local time (consistent with other modules)
+        final date = DateTime.fromMillisecondsSinceEpoch(item.date! * 1000);
         final value = item.hbA1C!;
         final level = _getHbA1cLevelFromValue(value);
         final color = _getHbA1cColorFromValue(value);
@@ -279,9 +278,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           timeOfDay: timeOfDay,
           id: item.id, // Keep as String to match InputHbA1CModel
         );
-        final dayKey = DateTime.utc(date.year, date.month, date.day)
-                .millisecondsSinceEpoch ~/
-            1000;
+        final dayKey =
+            DateTime(date.year, date.month, date.day).millisecondsSinceEpoch ~/
+                1000;
         byTs.putIfAbsent(dayKey, () => []).add(dp);
         _dataPoints.add(dp);
       }
