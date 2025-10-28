@@ -31,10 +31,32 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   final int _maxSelection = 5;
   bool _didAutoSelectMostRecent = false;
 
+  // Pagination variables
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 0;
+  final int _pageSize = 30; // Load 30 images per page instead of 50
+  bool _isLoadingMore = false;
+  bool _hasMorePhotos = true;
+  AssetPathEntity? _recentAlbum;
+
   @override
   void initState() {
     super.initState();
     _requestPermissionAndLoadPhotos();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMorePhotos();
+    }
   }
 
   Future<void> _requestPermissionAndLoadPhotos() async {
@@ -72,38 +94,19 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     try {
       setState(() {
         _isLoading = true;
+        _currentPage = 0;
+        _hasMorePhotos = true;
       });
 
-      // Get recent photos (last 50)
+      // Get recent photos album
       final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
         type: RequestType.image,
         onlyAll: true,
       );
 
       if (albums.isNotEmpty) {
-        final AssetPathEntity recentAlbum = albums.first;
-        final List<AssetEntity> photos = await recentAlbum.getAssetListPaged(
-          page: 0,
-          size: 50,
-        );
-
-        setState(() {
-          _recentPhotos = photos;
-          _isLoading = false;
-        });
-
-        // Auto-select the most recent captured image once
-        if (!_didAutoSelectMostRecent &&
-            _selectedImages.isEmpty &&
-            photos.isNotEmpty) {
-          final File? f = await photos.first.file;
-          if (f != null) {
-            setState(() {
-              _selectedImages.add(f.path);
-              _didAutoSelectMostRecent = true;
-            });
-          }
-        }
+        _recentAlbum = albums.first;
+        await _loadPhotosPage(0, isInitialLoad: true);
       } else {
         setState(() {
           _recentPhotos = [];
@@ -116,6 +119,68 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         _recentPhotos = [];
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadPhotosPage(int page, {bool isInitialLoad = false}) async {
+    if (_recentAlbum == null) return;
+
+    try {
+      if (isInitialLoad) {
+        setState(() {
+          _isLoading = true;
+        });
+      } else {
+        setState(() {
+          _isLoadingMore = true;
+        });
+      }
+
+      final List<AssetEntity> photos = await _recentAlbum!.getAssetListPaged(
+        page: page,
+        size: _pageSize,
+      );
+
+      setState(() {
+        if (isInitialLoad) {
+          _recentPhotos = photos;
+          _isLoading = false;
+        } else {
+          _recentPhotos.addAll(photos);
+          _isLoadingMore = false;
+        }
+        _currentPage = page;
+        _hasMorePhotos = photos.length == _pageSize;
+      });
+
+      // Auto-select the most recent captured image once (only on initial load)
+      if (isInitialLoad &&
+          !_didAutoSelectMostRecent &&
+          _selectedImages.isEmpty &&
+          photos.isNotEmpty) {
+        final File? f = await photos.first.file;
+        if (f != null) {
+          setState(() {
+            _selectedImages.add(f.path);
+            _didAutoSelectMostRecent = true;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading photos page: $e');
+      setState(() {
+        if (isInitialLoad) {
+          _isLoading = false;
+        } else {
+          _isLoadingMore = false;
+        }
+      });
+    }
+  }
+
+  Future<void> _loadMorePhotos() async {
+    if (!_isLoadingMore && _hasMorePhotos && _recentAlbum != null) {
+      await _loadPhotosPage(_currentPage + 1);
     }
   }
 
@@ -315,17 +380,25 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
   Widget _buildPhotosGrid() {
     return GridView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(8),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
         crossAxisSpacing: 2,
         mainAxisSpacing: 2,
       ),
-      itemCount: _recentPhotos.length + 1, // +1 for capture button
+      itemCount: _recentPhotos.length +
+          1 +
+          (_isLoadingMore
+              ? 1
+              : 0), // +1 for capture button, +1 for loading indicator
       itemBuilder: (context, index) {
         if (index == 0) {
           // Capture button as first item
           return _buildCaptureButton();
+        } else if (index == _recentPhotos.length + 1 && _isLoadingMore) {
+          // Loading indicator at the bottom
+          return _buildLoadingIndicator();
         } else {
           // Photo items
           final photoIndex = index - 1;
@@ -366,6 +439,23 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ),
         ),
       ),
     );
