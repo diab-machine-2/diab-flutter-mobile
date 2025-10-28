@@ -238,6 +238,8 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   void validate(bool hasInputedWaist) {
     if (_weight <= 0) {
       error("Vui lòng nhập cân nặng");
+    } else if (_waist != 0 && (_waist < 1 || _waist > 999)) {
+      error("Vui lòng nhập vòng eo hợp lệ");
     } else if (!hasInputedWaist) {
       add(BmiWaistValidatingEvent());
     } else {
@@ -310,6 +312,10 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
     add(BmiInputDataChangeEvent(
       BmiInputDataChangeEvent.noteImagesFromRecordChanged,
       _noteImagesFromRecord,
+    ));
+    add(BmiInputDataChangeEvent(
+      BmiInputDataChangeEvent.inputTimeChanged,
+      _currentInputTime,
     ));
   }
 }

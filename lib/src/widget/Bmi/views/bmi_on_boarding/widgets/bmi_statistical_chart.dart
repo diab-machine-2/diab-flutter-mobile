@@ -145,7 +145,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                               data.length,
                               (i) => FlSpot(i.toDouble(), data[i].weight ?? 0),
                             ),
-                            isCurved: true,
+                            isCurved: false,
                             colors: data.map((e) => e.bmiColor).toList(),
                             barWidth: 2,
                             dotData: FlDotData(
@@ -173,23 +173,55 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                           ),
                         ],
                         lineTouchData: LineTouchData(
-                          touchCallback: (event, response) {
-                            // Kiểm tra xem có tap vào 1 điểm không
-                            if (!event.isInterestedForInteractions ||
-                                response == null ||
-                                response.lineBarSpots == null) {
-                              return;
-                            } else if (event is FlTapDownEvent) {
-                              _touchCallback(event, response, data);
-                            }
-
-                            // // response.lineBarSpots chứa danh sách điểm được chạm
-                            // final spot = response.lineBarSpots!.first;
-                            // debugPrint('Tap vào điểm x=${spot.x}, y=${spot.y}');
-                            // var index = data.length - 1 - spot.spotIndex;
-                            // _bmiBloc.selectPointChart(index);
-                          },
-                        ),
+                            touchCallback: (event, response) {
+                              // Kiểm tra xem có tap vào 1 điểm không
+                              if (!event.isInterestedForInteractions ||
+                                  response == null ||
+                                  response.lineBarSpots == null) {
+                                return;
+                              } else if (event is FlTapDownEvent) {
+                                _touchCallback(event, response, data);
+                              }
+                            },
+                            handleBuiltInTouches: true,
+                            touchTooltipData: LineTouchTooltipData(
+                              tooltipBgColor: Colors.transparent,
+                              getTooltipItems: (touchedSpots) {
+                                return touchedSpots.map((spot) {
+                                  return LineTooltipItem(
+                                    '${spot.y.toStringAsFixed(1)} kg',
+                                    TextStyle(
+                                        color: data[spot.spotIndex].bmiColor,
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                }).toList();
+                              },
+                            ),
+                            getTouchedSpotIndicator: (LineChartBarData barData,
+                                List<int> spotIndexes) {
+                              return spotIndexes.map((index) {
+                                return TouchedSpotIndicatorData(
+                                  FlLine(
+                                    color: data[index]
+                                        .bmiColor, // màu line khi chạm
+                                    strokeWidth: 1,
+                                    dashArray: [4, 2],
+                                  ),
+                                  FlDotData(
+                                    show: true,
+                                    getDotPainter:
+                                        (spot, percent, barData, index) =>
+                                            FlDotCirclePainter(
+                                      radius: 6,
+                                      color: data[index]
+                                          .bmiColor, // màu chấm được chọn
+                                      strokeWidth: 1,
+                                      strokeColor: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              }).toList();
+                            }),
                         extraLinesData: _bmiBloc.weightGoal != null
                             ? ExtraLinesData(horizontalLines: [
                                 HorizontalLine(

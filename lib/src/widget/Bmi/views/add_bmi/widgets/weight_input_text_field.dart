@@ -5,8 +5,8 @@ import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/formater.dart';
 
-class BmiInputTextField extends StatelessWidget {
-  const BmiInputTextField({
+class WeightInputTextField extends StatelessWidget {
+  const WeightInputTextField({
     super.key,
     this.hintText,
     this.suffixText,
@@ -47,7 +47,8 @@ class BmiInputTextField extends StatelessWidget {
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
         CommaToDotFormatter(),
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*[.,]?\d*')),
+        DecimalTextInputFormatter(decimalRange: 1),
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*([.,]\d{0,1})?$')),
       ],
     );
   }

@@ -23,7 +23,8 @@ class BmiGaugeChart extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width * 0.75;
     BmiInputBloc _bmiInputBloc = context.read();
-    Color thresholdColor = Utils.parseStringToColor(_bmiInputBloc.calculatedBmi?.colorCode);
+    Color thresholdColor =
+        Utils.parseStringToColor(_bmiInputBloc.calculatedBmi?.colorCode);
 
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -110,17 +111,35 @@ class _BmiGaugePainter extends CustomPainter {
 
     for (int i = 0; i < thresholds.length; i++) {
       final angle = math.pi + (i + 1) * segmentSweep;
-      final labelX = center.dx + (radius + 20) * math.cos(angle);
-      final labelY = center.dy + (radius + 20) * math.sin(angle);
+      final labelX = center.dx + (radius + 28) * math.cos(angle);
+      final labelY = center.dy + (radius + 28) * math.sin(angle);
       textPainter.text = TextSpan(
         text: thresholds[i].toStringAsFixed(1),
         style: const TextStyle(color: Colors.black54, fontSize: 12),
       );
       textPainter.layout();
+      // textPainter.paint(
+      //   canvas,
+      //   Offset(labelX - textPainter.width / 2, labelY - textPainter.height * 2),
+      // );
+
+      // === Thêm đoạn này để xoay text ===
+      canvas.save(); // lưu trạng thái hiện tại của canvas
+
+      // Di chuyển gốc tọa độ đến vị trí vẽ text
+      canvas.translate(labelX, labelY);
+
+      // Xoay canvas quanh gốc theo góc mong muốn
+      // Nếu bạn muốn text "hướng ra ngoài" tâm:
+      canvas.rotate(angle + math.pi / 2);
+
+      // Vẽ text, vì ta đã translate rồi, nên vẽ tại ( -width/2, -height/2 )
       textPainter.paint(
         canvas,
-        Offset(labelX - textPainter.width / 2, labelY - textPainter.height * 2),
+        Offset(-textPainter.width / 2, -textPainter.height / 2),
       );
+
+      canvas.restore(); // khôi phục lại trạng thái canvas ban đầu
     }
   }
 

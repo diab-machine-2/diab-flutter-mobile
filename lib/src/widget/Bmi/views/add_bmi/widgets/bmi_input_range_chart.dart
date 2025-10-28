@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -90,16 +91,25 @@ class _BmiMarkerState extends State<_BmiMarker> {
             state is BmiInputDataChangedState &&
             state.event == BmiInputDataChangeEvent.weightChanged,
         builder: (context, state) {
-          return Text.rich(
-            TextSpan(
-                text: "BMI ",
-                style: R.style.normalTextStyle.neutral4,
-                children: [
-                  TextSpan(
-                    text: "${_bmiInputBloc.bmi}",
-                    style: R.style.boldNormalStyle.mainColor,
-                  )
-                ]),
+          return Column(
+            children: [
+              Text.rich(
+                TextSpan(
+                    text: "BMI ",
+                    style: R.style.normalTextStyle.neutral4,
+                    children: [
+                      TextSpan(
+                        text: "${_bmiInputBloc.bmi}",
+                        style: R.style.boldNormalStyle.mainColor,
+                      )
+                    ]),
+              ),
+              Icon(
+                Icons.arrow_drop_down,
+                size: 20,
+                color: AppColors.neutral3,
+              ),
+            ],
           );
         });
   }

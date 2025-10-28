@@ -4,7 +4,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_date_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_range_chart.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_text_field.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/weight_input_text_field.dart';
 
 class AddBmiWeightInputSession extends StatelessWidget {
   const AddBmiWeightInputSession({
@@ -61,8 +61,8 @@ class _WeightInputTextFieldState extends State<_WeightInputTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return BmiInputTextField(
-      hintText: "0.00",
+    return WeightInputTextField(
+      hintText: "0.0",
       suffixText: "kg",
       controller: _controller,
       focusNode: _focusNode,
