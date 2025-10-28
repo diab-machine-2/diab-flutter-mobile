@@ -27,7 +27,6 @@ import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
@@ -37,7 +36,8 @@ import 'package:permission_handler/permission_handler.dart';
 class AddFoodController extends StatefulWidget {
   final String type;
   final String? id;
-  AddFoodController({required this.type, this.id});
+  final String? timeframeId;
+  AddFoodController({required this.type, this.id,this.timeframeId});
 
   @override
   _AddFoodControllerState createState() => _AddFoodControllerState();
@@ -122,11 +122,21 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     setState(() {});
   }
 
-  _loadTimeFrame() async {
+  void _loadTimeFrame() async {
     BotToast.showLoading();
-    final timeFrames = await FoodClient()
-        .fetchFoodTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000);
-    selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+    int? time = selectedDate.millisecondsSinceEpoch ~/ 1000;
+    if (widget.timeframeId != null) {
+      time = null;
+    }
+    final timeFrames = await FoodClient().fetchFoodTimeFrame(time: time);
+    if (widget.timeframeId != null) {
+      if (timeFrames.length > 0 && timeFrames.any((e) => e.id == widget.timeframeId)) {
+        selectedTimeFrame = timeFrames.firstWhere((e) => e.id == widget.timeframeId);
+      }
+    }
+    if (selectedTimeFrame == null) {
+      selectedTimeFrame = timeFrames.length == 0 ? null : timeFrames.first;
+    }
     BotToast.closeAllLoading();
     setState(() {});
   }
@@ -957,7 +967,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     }
   }
 
-  _submitData() async {
+  void _submitData() async {
     FocusScope.of(context).unfocus();
     final note = _controllerNote.text;
 

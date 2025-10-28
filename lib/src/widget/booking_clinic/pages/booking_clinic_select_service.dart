@@ -603,7 +603,7 @@ class ServiceRow extends StatelessWidget {
                     Expanded(
                       flex: 7,
                       child: Text(
-                        service.description?.replaceAll('<br />', ' ') ?? '',
+                        service.description.replaceAll('<br />', ' '),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -715,7 +715,7 @@ class ServiceRow extends StatelessWidget {
                       child: Column(
                         children: [
                           HtmlWidget(
-                            service.description ?? '',
+                            service.description,
                             textStyle: TextStyle(
                               fontSize: 13,
                               color: R.color.color0xff636A6B,

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "success": true
+  },
+  "data": {
+    "safeWeightFrom": 0,
+    "safeWeightTo": 0,
+    "weightSafes": [
+      {
+        "safeWeightFrom": 0,
+        "safeWeightTo": 0,
+        "safeDateFrom": 0,
+        "week": 0,
+        "length": 0
+      }
+    ],
+    "current": 0,
+    "lowest": 0,
+    "highest": 0,
+    "goal": 0,
+    "message": "string",
+    "iconUrl": "string",
+    "trendItems": [
+      {
+        "date": 0,
+        "value": 0,
+        "colorCode": "string"
+      }
+    ]
+  }
+}

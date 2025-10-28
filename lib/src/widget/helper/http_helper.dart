@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/user/user_model.dart';
@@ -233,7 +234,7 @@ class FetchClient {
     Console.logJson('Request', params);
 
     for (final file in files ?? []) {
-      final value = await http.MultipartFile.fromPath('images', file);
+      final value = await http.MultipartFile.fromPath('images', file, contentType: MediaType('image', 'jpeg'));
       request.files.add(value);
     }
 

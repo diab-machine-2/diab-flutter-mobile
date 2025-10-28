@@ -33,12 +33,14 @@ class NavigatorName {
   static const String detail_blood_pressure = '/detail_blood_pressure';
   static const String detail_bmi = '/detail_bmi';
   static const String bmi = '/bmi';
-  static const String add_bmi = '/add_bmi';
+  
   static const String add_emo = '/add_emo';
   static const String add_symbo = '/add_symbo';
   static const String add_work = '/add_work';
   static const String add_insight = '/add_insight';
   static const String add_food = '/add_food';
+  static const String confirm_food = '/confirm_food';
+  static const String food_image_capture = '/food_image_capture';
   static const String detail_food = '/detail_food';
   static const String detail_emotion = '/detail_emotion';
   static const String emotion_table = '/emotion_table';
@@ -134,8 +136,15 @@ class NavigatorName {
   static const String blood_pressure_intro_2nd_page =
       '/blood_pressure_intro_2nd_page';
   static const String add_bloodpressure_result = '/add_bloodpressure_result';
-  static const String detail_bloodpressure_listing =
-      '/detail_bloodpressure_listing';
+  static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
+
+  // Bmi
+  static const String add_bmi = '/add_bmi';
+  static const String bmiInputPage = '/add_bmi/bmi_input';
+  static const String bmiReviseRecordPage = '/add_bmi/revise_record';
+  static const String bmiOverviewPage = '/add_bmi/bmi_input/bmi_overview';
+  static const String bmiHistoricalPage = '/add_bmi/bmi_historical';
+  static const String bmiInstructionPage = '/bmi_instruction';
   // New Blood Sugar
   static const String confirm_blood_sugar = '/confirm_blood_sugar';
   static const String blood_sugar_image_capture = '/blood_sugar_image_capture';
