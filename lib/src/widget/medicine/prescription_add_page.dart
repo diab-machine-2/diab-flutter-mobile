@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/medicine/prescription_model.dart';
 import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
+import '../../modal/base/images.dart';
+import '../../modal/medicine/image_note_model.dart';
 import '../../modal/medicine/medicine_item_model.dart';
+import '../../utils/const.dart';
 import '../../utils/navigator_name.dart';
 import '../../widgets/CalendarPicker/custom_date_picker2.dart';
 import '../BloodSugar/widget/section_add_note.dart';
@@ -64,8 +70,40 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
     _controllerPrescriptionName.text = prescription.prescriptionName ?? '';
     _controllerNote.text = prescription.note ?? '';
 
+    final images = (prescription.imagesPrescription ?? [])
+        .map((note) => ImagesModel(
+              id: note.id,
+              url: _buildFullUrl(note.id),
+            ))
+        .toList();
+    if (images.isEmpty) {
+      _prescription.isExistImage = false;
+    } else {
+      _prescription.isExistImage = true;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _sectionAddNoteKey.currentState!.updateFilesAndNote(images, prescription.note ?? '');
+    });
+
     if (prescription.patientMedications != null) {
       _medicines.addAll(prescription.patientMedications!);
+      for (var medicine in _medicines) {
+        if ((medicine.imagesPatientMedications ?? []).isEmpty) {
+          medicine.isExistImage = false;
+        } else {
+          medicine.isExistImage = true;
+        }
+      }
+    }
+  }
+
+  String _buildFullUrl(String id) {
+    if (Const.ENVIRONMENT_DEFAULT == 'product') {
+      return Uri.https(Const.DOMAIN, 'App/Image/$id').toString();
+    } else if (Const.ENVIRONMENT_DEFAULT == 'staging') {
+      return Uri.https(Const.DOMAIN_STAGING, 'App/Image/$id').toString();
+    } else {
+      return Uri.https(Const.DOMAIN_DEV, 'App/Image/$id').toString();
     }
   }
 
@@ -75,23 +113,12 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
       NavigatorName.medicine_search,
       arguments: {
         'mode': MedicineMode.addMore,
+        'index': _medicines.length,
       },
     );
     if (result != null && result is MedicineItemModel) {
       setState(() {
         _medicines.add(result);
-      });
-    }
-  }
-
-  Future<void> _editMedicine(int index) async {
-    final MedicineItemModel? result = await Navigator.pushNamed(context, NavigatorName.medicine_add, arguments: {
-      'medicineItem': _medicines[index],
-      'mode': MedicineMode.edit,
-    });
-    if (result != null) {
-      setState(() {
-        _medicines[index] = result; // cập nhật thuốc đã sửa
       });
     }
   }
@@ -307,12 +334,14 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             return MedicineCard(
                 medicine: _medicines[index],
                 onEdit: () async {
+                  //Chỉnh sửa thuốc
                   final result = await Navigator.pushNamed(
                     context,
                     NavigatorName.medicine_add,
                     arguments: {
                       'mode': MedicineMode.edit,
                       'medicine': _medicines[index],
+                      'index': index,
                     },
                   );
                   if (result is MedicineItemModel) {
@@ -362,11 +391,42 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             status: 0,
           );
 
+          List<ImageNoteModel> oldPaths = <ImageNoteModel>[];
+          Map<String, String> newPaths = {};
+
+          final data = _sectionAddNoteKey.currentState!.getNote();
+          int index = 0;
+
+          for (var file in (data.files)) {
+            if (file is PickedFile) {
+              final fieldName = 'ImagesPrescription';
+              newPaths[fieldName] = file.path;
+            } else if (file is ImagesModel) {
+              final id = (file.url ?? '').split('/').last.trim();
+              oldPaths.add(
+                ImageNoteModel(order: index, id: id),
+              );
+            }
+            index++;
+          }
+
+          _prescription.patientMedications?.forEach((medicine) {
+            if (medicine.uploadFiles != null) newPaths.addAll(medicine.uploadFiles!);
+          });
+
+
+          _prescription = _prescription.copyWith(
+            imagesPrescription: oldPaths,
+          );
+
           if (_prescriptionMode == PrescriptionMode.reuse) {
             Navigator.pop(context, true);
-            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(_prescription));
+            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(_prescription, newPaths));
           } else {
-            Navigator.pushNamed(context, NavigatorName.prescription_remind, arguments: {'prescription': _prescription});
+            Navigator.pushNamed(context, NavigatorName.prescription_remind, arguments: {
+              'prescription': _prescription,
+              'paths': newPaths,
+            });
           }
         },
         child: Container(

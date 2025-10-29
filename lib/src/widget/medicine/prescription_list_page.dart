@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/src/modal/medicine/prescription_schedule_model.dart';
 import 'package:medical/src/widget/medicine/widgets/calendar_slider.dart';
 import 'package:medical/src/widget/medicine/widgets/empty_medicine_schedule.dart';
+import 'package:medical/src/widget/medicine/widgets/note_and_images_panel.dart';
 
 import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
@@ -16,6 +17,7 @@ import '../../service/medicine_service.dart';
 import '../../utils/navigator_name.dart';
 import '../helper/helper.dart';
 import 'prescription_add_page.dart';
+import 'widgets/image_list.dart';
 import 'widgets/input_options_bottom_sheet.dart';
 import 'widgets/medicine_list.dart';
 import 'widgets/medicine_session_card.dart';
@@ -48,11 +50,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     final currentDateTime = DateTime.now();
     _selectedDate = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
     _tabController = TabController(length: 2, vsync: this);
-    _bloc = MedicineBloc()
-      ..add(FetchPrescriptionsEvent());
-      // ..add(FetchMedicineScheduleEvent(
-      //   (DateTime.now().millisecondsSinceEpoch / 1000).round(),
-      // ));
+    _bloc = MedicineBloc()..add(FetchPrescriptionsEvent());
+    // ..add(FetchMedicineScheduleEvent(
+    //   (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+    // ));
   }
 
   @override
@@ -306,10 +307,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     if (state is MedicineLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (state is FetchPrescriptionsSuccess) {
-      final prescriptionsIsUsing =
-      state.prescriptionsResult.where((prescription) => prescription.status == 0).toList();
-      final prescriptionsIsStop =
-      state.prescriptionsResult.where((prescription) => prescription.status == 1).toList();
+      final prescriptionsIsUsing = state.prescriptionsResult.where((prescription) => prescription.status == 0).toList();
+      final prescriptionsIsStop = state.prescriptionsResult.where((prescription) => prescription.status == 1).toList();
       return TabBarView(
         controller: _tabController,
         children: [
@@ -393,30 +392,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     const SizedBox(height: 4),
                     Divider(color: Color(0xFFDADEDF)),
                     const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF4F7F7),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            prescription.note ?? '',
-                          ),
-                          const SizedBox(height: 8),
-                          // ClipRRect(
-                          //   borderRadius: BorderRadius.circular(8),
-                          //   child: Image.network(
-                          //     "https://via.placeholder.com/150",
-                          //     height: 80,
-                          //     fit: BoxFit.cover,
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ),
+                    NoteAndImagesPanel(note: prescription.note, images: prescription.imagesPrescription),
                     const SizedBox(height: 8),
                     isUsing
                         ? Row(
@@ -445,7 +421,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                     );
                                   },
                                   child: Text(
-                                    "Ngừng thuốc",
+                                    R.string.stop_medicine.tr(),
                                     style:
                                         TextStyle(color: Color(0xFF830000), fontWeight: FontWeight.bold, fontSize: 15),
                                   ),
@@ -467,8 +443,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                       'mode': PrescriptionMode.edit,
                                       'prescription': prescription,
                                     });
-                                    // MedicineScheduleService().refreshTodaySchedules();
-                                    MedicineScheduleService().showTestNotification();
+                                    MedicineScheduleService().refreshTodaySchedules();
+                                    // MedicineScheduleService().showTestNotification();
                                   },
                                   child: Text(
                                     R.string.chinh_sua.tr(),

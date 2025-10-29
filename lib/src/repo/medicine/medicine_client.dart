@@ -65,16 +65,16 @@ class MedicineClient extends FetchClient {
     }
   }
 
-  Future<bool> createNewPrescription({required PrescriptionModel prescription}) async {
+  Future<bool> createNewPrescription({required PrescriptionModel prescription, required Map<String, String>? paths}) async {
     final Map<String, String> params = {
       'Data': jsonEncode(prescription.toJson()),
     };
 
     try {
-      final response = await super.postHttp(
+      final response = await super.postHttp4(
         path: '/App/prescriptions',
         params: params,
-        files: prescription.photos,
+        fileMap: paths,
       );
 
       if (response.statusCode == 200) {
@@ -87,16 +87,19 @@ class MedicineClient extends FetchClient {
     }
   }
 
-  Future<bool> updatePrescription({required PrescriptionModel prescription}) async {
+  Future<bool> updatePrescription({
+    required PrescriptionModel prescription,
+    required Map<String, String>? paths}) async {
     final Map<String, String> params = {
-      'Data': jsonEncode(prescription.toJson()),
+      'Data': jsonEncode(prescription.toJson(includedMedicationId: false)),
+      'ImagesPrescriptionIds': jsonEncode(prescription.imagesPrescription)
     };
 
     try {
-      final response = await super.putHttp(
-          path: '/App/prescriptions',
-          params: params,
-        files: [],
+      final response = await super.patchHttp(
+        path: '/App/prescriptions/${prescription.id!}',
+        params: params,
+        fileMap: paths,
       );
 
       if (response.statusCode == 200) {
@@ -153,8 +156,8 @@ class MedicineClient extends FetchClient {
   Future<PrescriptionModel> fetchPrescription({required String id}) async {
     try {
       final response = await super.fetchData(
-        url: '/App/prescriptions/CurrentState',
-        params: {'id': id}
+          url: '/App/prescriptions/CurrentState',
+          params: {'id': id}
       );
 
       if (response.statusCode == 200) {
@@ -208,11 +211,11 @@ class MedicineClient extends FetchClient {
       final today = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
 
       final response = await super.putData(
-        url: '/App/Target/Medication/CurrentRemind',
-        params: {
-          'currentDate': (today.millisecondsSinceEpoch / 1000).round(),
-          'status': status,
-        }
+          url: '/App/Target/Medication/CurrentRemind',
+          params: {
+            'currentDate': (today.millisecondsSinceEpoch / 1000).round(),
+            'status': status,
+          }
       );
 
       if (response.statusCode == 200) {

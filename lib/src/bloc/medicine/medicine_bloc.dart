@@ -99,7 +99,7 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
     emit(MedicineLoading());
     final client = MedicineClient();
     try {
-      final result = await client.createNewPrescription(prescription: event.prescription);
+      final result = await client.createNewPrescription(prescription: event.prescription, paths: event.paths);
       emit(CreatePrescriptionSuccess(result));
     } catch (e) {
       emit(MedicineError(message: e.toString()));
@@ -111,12 +111,13 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
     emit(MedicineLoading());
     final client = MedicineClient();
     try {
-      final result = await client.updatePrescription(prescription: event.prescription);
-      emit(CreatePrescriptionSuccess(result));
+      final result = await client.updatePrescription(prescription: event.prescription, paths: event.paths);
+      emit(UpdatePrescriptionSuccess(result));
     } catch (e) {
       emit(MedicineError(message: e.toString()));
     }
   }
+
 
   Future<void> _onFetchPrescriptions(FetchPrescriptionsEvent event, Emitter<MedicineState> emit) async {
     emit(MedicineLoading());

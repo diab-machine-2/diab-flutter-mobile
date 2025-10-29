@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,8 +17,44 @@ class CapturePrescriptionPage extends StatefulWidget {
 }
 
 class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
+  CameraController? _cameraController;
+  List<CameraDescription>? _cameras;
+  bool _isCameraInitialized = false;
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _initCamera();
+  }
+
+  Future<void> _initCamera() async {
+    _cameras = await availableCameras();
+    _cameraController = CameraController(
+      _cameras!.first,
+      ResolutionPreset.medium,
+      enableAudio: false,
+    );
+    await _cameraController!.initialize();
+    setState(() {
+      _isCameraInitialized = true;
+    });
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _captureFromCamera() async {
+    if (!_cameraController!.value.isInitialized) return;
+    final image = await _cameraController!.takePicture();
+    setState(() {
+      _selectedImage = File(image.path);
+    });
+  }
 
   Future<void> _pickFromGallery(BuildContext context) async {
     final result = await Navigator.of(context).pushNamed(NavigatorName.medicine_photo_picker);
@@ -26,15 +63,6 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
         _selectedImage = result as File?;
       });
       _callApi(context);
-    }
-  }
-
-  Future<void> _captureFromCamera() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
     }
   }
 
@@ -294,7 +322,11 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
           child: Container(
             width: double.infinity,
             color: Colors.black,
-            child: _selectedImage != null ? Image.file(_selectedImage!) : SizedBox(),
+            child: _selectedImage != null
+                ? Image.file(_selectedImage!)
+                : _isCameraInitialized
+                ? CameraPreview(_cameraController!)
+                : Center(child: CircularProgressIndicator()),
           ),
         ),
         Container(

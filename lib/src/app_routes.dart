@@ -292,14 +292,16 @@ class AppRoutes {
       case NavigatorName.medicine_search:
         final data = settings.arguments as Map<String, dynamic>?;
         final mode = data?['mode'] as MedicineMode?;
-        page = MedicineSearchPage(medicineMode: mode);
+        final index = data?['mode'];
+        page = MedicineSearchPage(medicineMode: mode, index: index);
         break;
       case NavigatorName.medicine_add:
         final data = settings.arguments as Map<String, dynamic>?;
         final mode = data?['mode'] as MedicineMode?;
         final medicineItem = data?['medicineItem'];
         final medicine = data?['medicine'];
-        page = MedicineAddPage(medicineMode: mode, medicineTablet: medicineItem, medicine: medicine);
+        final index = data?['index'];
+        page = MedicineAddPage(medicineMode: mode, medicineTablet: medicineItem, medicine: medicine, index: index);
         break;
       case NavigatorName.prescription_add:
         final data = settings.arguments as Map<String, dynamic>?;
@@ -317,7 +319,8 @@ class AppRoutes {
       case NavigatorName.prescription_remind:
         final data = settings.arguments as Map<String, dynamic>?;
         final prescription = data?['prescription'];
-        page = PrescriptionRemindPage(prescription: prescription);
+        final paths = data?['paths'];
+        page = PrescriptionRemindPage(prescription: prescription, paths: paths);
         break;
       case NavigatorName.prescription:
         page = PrescriptionListPage();

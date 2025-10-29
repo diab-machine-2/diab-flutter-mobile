@@ -1510,4 +1510,7 @@ class Strings {
   String get unused_all => 'unused_all';
   String get analyzing_prescription => 'analyzing_prescription';
   String get reshoot => 'reshoot';
+  String get stop_medicine => 'stop_medicine';
+  String get not_find_medicine => 'not_find_medicine';
+  String get add => 'add';
 }

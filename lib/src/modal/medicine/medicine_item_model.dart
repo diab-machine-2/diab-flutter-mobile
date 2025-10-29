@@ -1,4 +1,5 @@
 import 'dose_model.dart';
+import 'image_note_model.dart';
 import 'medicine_add_model.dart';
 
 class MedicineItemModel {
@@ -21,6 +22,9 @@ class MedicineItemModel {
   final double? breakDay;
 
   final String? note;
+  final List<ImageNoteModel>? imagesPatientMedications; //Dùng cho việc hiển thị sau khi lấy đơn thuốc và giữ lại hình khi update
+  bool? isExistImage;
+  Map<String, String>? uploadFiles; //Cho việc upload files
 
   MedicineItemModel({
     this.id,
@@ -36,6 +40,8 @@ class MedicineItemModel {
     this.customDay,
     this.breakDay,
     this.note,
+    this.imagesPatientMedications,
+    this.uploadFiles,
   });
 
   factory MedicineItemModel.fromJson(Map<String, dynamic> json) {
@@ -53,6 +59,7 @@ class MedicineItemModel {
       customDay: json['customDay'],
       breakDay: json['breakDay'],
       note: json['note'],
+      imagesPatientMedications: ImageNoteModel.fromJsonList(json['imagesPatientMedications']),
     );
   }
 
@@ -62,21 +69,26 @@ class MedicineItemModel {
         .toList();
   }
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'medicationName': medicationName,
-    'frequency': frequency,
-    'morning': morning,
-    'afternoon': afternoon,
-    'midDay': midDay,
-    'night': night,
-    'unit': unit,
-    'amount': amount,
-    'moment': moment,
-    'customDay': customDay,
-    'breakDay': breakDay,
-    'note': note,
-  };
+  Map<String, dynamic> toJson({bool includeId = true}) {
+    final json = {
+      'medicationName': medicationName,
+      'moment': moment,
+      'frequency': frequency,
+      'morning': morning,
+      'afternoon': afternoon,
+      'midDay': midDay,
+      'night': night,
+      'unit': unit,
+      'amount': amount,
+      'customDay': customDay,
+      'breakDay': breakDay,
+      'note': note,
+    };
+    if (includeId && id != null) {
+      json['id'] = id;
+    }
+    return json;
+  }
 
   MedicineItemModel copyWith({
     String? id,

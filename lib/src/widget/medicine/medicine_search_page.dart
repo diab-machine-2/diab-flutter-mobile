@@ -13,8 +13,9 @@ import '../../utils/navigator_name.dart';
 import '../helper/tracking_manager.dart';
 
 class MedicineSearchPage extends StatefulWidget {
-  const MedicineSearchPage({super.key, this.medicineMode});
+  const MedicineSearchPage({super.key, this.medicineMode, required this.index});
   final MedicineMode? medicineMode;
+  final int? index;
 
   @override
   State<MedicineSearchPage> createState() => _MedicineSearchPageState();
@@ -175,13 +176,23 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Không tìm thấy thuốc của bạn', style: TextStyle(fontSize: 15, color: R.color.color0xff5E6566),),
+              Text(R.string.not_find_medicine.tr(), style: TextStyle(fontSize: 15, color: R.color.color0xff5E6566),),
               InkWell(
-                onTap: () {
-                  context.read<MedicineBloc>().add(SearchMedicineEvent(_searchController.text));
+                onTap: () async {
+                  final item = MedicineTabletModel(
+                    name: _searchController.text
+                  );
+                  final result = await Navigator.pushNamed(context, NavigatorName.medicine_add, arguments: {
+                    'medicineItem': item,
+                    'mode': _medicineMode,
+                    'index': widget.index,
+                  });
+                  if (result != null && result is MedicineItemModel && _medicineMode != MedicineMode.create) {
+                    Navigator.pop(context, result);
+                  }
                 },
                 child: Text(
-                  'Thêm ${_searchController.text}',
+                  '${R.string.add.tr()} ${_searchController.text}',
                   style: TextStyle(fontSize: 15, color: R.color.color0xffB4802D, decoration: TextDecoration.underline,),
                 ),
               ),
@@ -237,6 +248,7 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
                 final result = await Navigator.pushNamed(context, NavigatorName.medicine_add, arguments: {
                   'medicineItem': item,
                   'mode': _medicineMode,
+                  'index': widget.index,
                 });
                 if (result != null && result is MedicineItemModel && _medicineMode != MedicineMode.create) {
                   Navigator.pop(context, result);

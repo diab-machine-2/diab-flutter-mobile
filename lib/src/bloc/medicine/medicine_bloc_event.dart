@@ -20,12 +20,14 @@ class UploadPrescriptionPhotoEvent extends MedicineEvent {
 
 class CreateNewPrescriptionEvent extends MedicineEvent {
   final PrescriptionModel prescription;
-  CreateNewPrescriptionEvent(this.prescription);
+  final Map<String, String>? paths;
+  CreateNewPrescriptionEvent(this.prescription, this.paths);
 }
 
 class UpdatePrescriptionEvent extends MedicineEvent {
   final PrescriptionModel prescription;
-  UpdatePrescriptionEvent(this.prescription);
+  final Map<String, String>? paths;
+  UpdatePrescriptionEvent(this.prescription, this.paths);
 }
 
 class StopPrescriptionEvent extends MedicineEvent {

@@ -1,3 +1,4 @@
+import 'image_note_model.dart';
 import 'medicine_item_model.dart';
 import 'reminder_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -12,8 +13,11 @@ class PrescriptionModel {
   final int? remainDays;
   final bool? isNotify;
   String? description;
-  List<String>? photos;
+  List<String>? photos; //Dùng cho việc lưu ảnh
   final int? status; //0: Đang dùng, 1: Ngưng dùng
+
+  final List<ImageNoteModel>? imagesPrescription; //Dùng cho việc hiển thị sau khi lấy đơn thuốc và giữ lại hình khi update
+  bool? isExistImage;
 
   PrescriptionModel({
     this.id,
@@ -26,7 +30,9 @@ class PrescriptionModel {
     this.isNotify,
     this.description,
     this.photos,
-    this.status
+    this.status,
+    this.imagesPrescription,
+    this.isExistImage,
   });
 
   factory PrescriptionModel.fromJson(Map<String, dynamic> json) {
@@ -46,17 +52,19 @@ class PrescriptionModel {
       description: json['description'] as String?,
       photos: (json['photos'] as List?)?.map((e) => e.toString()).toList(),
       status: json['status'] as int?,
+      imagesPrescription: ImageNoteModel.fromJsonList(json['imagesPrescription']),
+      isExistImage: json['isExistImage'],
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson({bool includedMedicationId = true}) => {
     if (id != null) 'id': id,
     'prescriptionName': prescriptionName,
     'startDate': startDate != null
         ? (startDate!.millisecondsSinceEpoch ~/ 1000)
         : null,
     'note': note,
-    'patientMedications': patientMedications?.map((e) => e.toJson()).toList(),
+    'patientMedications': patientMedications?.map((e) => e.toJson(includeId: includedMedicationId)).toList(),
     'reminderTimes': reminderTimes?.map((e) => e.toJson()).toList(),
     'remainDays': remainDays,
     'isNotify': isNotify,
@@ -77,6 +85,8 @@ class PrescriptionModel {
     String? description,
     List<String>? photos,
     int? status,
+    List<ImageNoteModel>? imagesPrescription,
+    bool? isExistImage,
   }) {
     return PrescriptionModel(
       id: id ?? this.id,
@@ -90,6 +100,8 @@ class PrescriptionModel {
       description: description ?? this.description,
       photos: photos ?? this.photos,
       status: status ?? this.status,
+      imagesPrescription: imagesPrescription ?? this.imagesPrescription,
+      isExistImage: isExistImage ?? this.isExistImage,
     );
   }
 

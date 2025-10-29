@@ -13,19 +13,17 @@ import '../../utils/navigator_name.dart';
 import '../../modal/medicine/medicine_add_model.dart';
 
 class PrescriptionRemindPage extends StatefulWidget {
-  PrescriptionRemindPage({super.key, required this.prescription});
+  PrescriptionRemindPage({super.key, required this.prescription, required this.paths});
 
   final PrescriptionModel prescription;
+  final Map<String, String>? paths;
 
   @override
   State<PrescriptionRemindPage> createState() => _PrescriptionRemindPageState();
 }
 
 class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
-  List<DayTimeSchedule> _schedules = [
-    // DayTimeSchedule(dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)),
-    // DayTimeSchedule(dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 30)),
-  ];
+  List<DayTimeSchedule> _schedules = [];
   bool isNotification = true;
   int remindDays = 5;
 
@@ -54,56 +52,105 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => MedicineBloc(),
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: R.color.backgroundColorNew,
-        appBar: AppBar(
-          leading: IconButton(
-              splashColor: R.color.transparent,
-              highlightColor: R.color.transparent,
-              icon: Icon(Icons.arrow_back, color: R.color.white),
-              onPressed: () {
-                Navigator.of(context).pop();
-              }),
-          title: Transform(
-            transform: Matrix4.translationValues(-20, 0.0, 0.0),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Text(
-                R.string.set_time.tr(),
-                style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
+      child: BlocConsumer<MedicineBloc, MedicineState>(
+        listener: (context, state) {
+          if (state is UpdatePrescriptionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Cập nhật thành công!')),
+            );
+            Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+              NavigatorName.tabbar,
+                  (route) => false,
+            );
+            Navigator.pushNamed(context, NavigatorName.prescription);
+          }
+
+          if (state is CreatePrescriptionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Tạo đơn thuốc thành công!')),
+            );
+            Navigator.pushReplacementNamed(context, NavigatorName.prescription);
+          }
+
+          if (state is MedicineError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Cập nhật thất bại, vui lòng thử lại')),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: R.color.backgroundColorNew,
+            appBar: AppBar(
+              leading: IconButton(
+                splashColor: R.color.transparent,
+                highlightColor: R.color.transparent,
+                icon: Icon(Icons.arrow_back, color: R.color.white),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
-            ),
-          ),
-          actions: [
-            Center(
-              child: InkWell(
-                onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
+              title: Transform(
+                transform: Matrix4.translationValues(-20, 0.0, 0.0),
+                child: Align(
+                  alignment: Alignment.topLeft,
                   child: Text(
-                    R.string.tutorial.tr(),
-                    style: TextStyle(color: R.color.white, fontSize: 15, fontWeight: FontWeight.w400),
+                    R.string.set_time.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                Center(
+                  child: InkWell(
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(NavigatorName.medicine_tutorial),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        R.string.tutorial.tr(),
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              backgroundColor: R.color.transparent,
+              elevation: 0.0,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.greenGradientMid,
+                      R.color.greenGradientBottom
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-          backgroundColor: R.color.transparent,
-          //No more green
-          elevation: 0.0,
-          //Shadow gone
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [R.color.greenGradientMid, R.color.greenGradientBottom],
-              ),
+            body: Stack(
+              children: [
+                _buildBody(),
+                if (state is MedicineLoading)
+                  Container(
+                    color: Colors.black45,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+              ],
             ),
-          ),
-        ),
-        body: _buildBody(),
+          );
+        },
       ),
     );
   }
@@ -305,8 +352,12 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
               reminderTimes: reminderTimes,
             );
 
-            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(prescription));
-            Navigator.pushNamed(context, NavigatorName.prescription);
+            if ((prescription.id ?? '').isEmpty) {
+              context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(prescription, widget.paths));
+            } else {
+              context.read<MedicineBloc>().add(UpdatePrescriptionEvent(prescription, widget.paths));
+            }
+            // Navigator.pushNamed(context, NavigatorName.prescription);
           },
           child: Container(
             height: 48,

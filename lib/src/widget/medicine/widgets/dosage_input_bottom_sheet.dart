@@ -35,7 +35,8 @@ extension MomentTypeExt on MomentType {
 }
 
 class DosageInputBottomSheet extends StatefulWidget {
-  const DosageInputBottomSheet({Key? key}) : super(key: key);
+  const DosageInputBottomSheet({Key? key, this.dosage}) : super(key: key);
+  final DosageModel? dosage;
 
   @override
   _DosageInputBottomSheetState createState() => _DosageInputBottomSheetState();
@@ -72,6 +73,45 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
 
   // Confirm Button
   bool _submitBtnEnabled = false;
+
+  @override
+  void initState() {
+    if (widget.dosage != null) {
+      _quantityInMorning.text = (widget.dosage?.quantityInMorning ?? 0).toString();
+      _quantityInNoon.text = (widget.dosage?.quantityInNoon ?? 0).toString();
+      _quantityInAfternoon.text = (widget.dosage?.quantityInAfternoon ?? 0).toString();
+      _quantityInEvening.text = (widget.dosage?.quantityInNight ?? 0).toString();
+
+      if (widget.dosage?.frequency == 0) {
+        _selectedFrequency = FrequencyType.everyday;
+      } else if (widget.dosage?.frequency == 1) {
+        _selectedFrequency = FrequencyType.weekDays;
+      } else {
+        _selectedFrequency = FrequencyType.everyOtherDay;
+      }
+
+      if (widget.dosage?.moment == 0) {
+        _selectedMoment = MomentType.before_meal;
+      } else if (widget.dosage?.moment == 1) {
+        _selectedMoment = MomentType.after_meal;
+      } else {
+        _selectedMoment = MomentType.during_meal;
+      }
+
+      if (widget.dosage?.selectedDaysInWeek != null) {
+        _selectedDayIndexes.addAll(widget.dosage!.selectedDaysInWeek);
+      }
+
+      if (widget.dosage?.quantityForDaysInWeek != null) {
+        _quantityOnDayInWeek = widget.dosage!.quantityForDaysInWeek;
+      }
+
+      if (widget.dosage?.everyOtherDayNumber != null) {
+        _everyOtherDayNumber = widget.dosage!.everyOtherDayNumber;
+      }
+    }
+    super.initState();
+  }
 
   void _updateCounter(VoidCallback updateFunction) {
     setState(() {

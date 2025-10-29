@@ -1,19 +1,19 @@
 
 class MedicineTabletModel {
-  final String id;
-  final String code;
+  final String? id;
+  final String? code;
   final String name;
-  final String description;
-  final int status;
-  final int isDeleted;
+  final String? description;
+  final int? status;
+  final int? isDeleted;
 
   MedicineTabletModel({
-    required this.id,
-    required this.code,
+    this.id,
+    this.code,
     required this.name,
-    required this.description,
-    required this.status,
-    required this.isDeleted,
+    this.description,
+    this.status,
+    this.isDeleted,
   });
 
   factory MedicineTabletModel.fromJson(Map<String, dynamic> json) {
