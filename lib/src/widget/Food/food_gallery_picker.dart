@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -25,42 +26,62 @@ class FoodGalleryPicker extends StatefulWidget {
 
 class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   List<AssetEntity> _recentPhotos = [];
-  List<String> _selectedImages = [];
+  List<String> _selectedImages = []; // Store photo IDs instead of file paths
   bool _isLoading = true;
   bool _hasPermission = false;
   final int _maxSelection = 5;
   bool _didAutoSelectMostRecent = false;
 
+  // Pagination variables
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 0;
+  final int _pageSize = 15; // Load 15 images per page to prevent memory crashes
+  bool _isLoadingMore = false;
+  bool _hasMorePhotos = true;
+  AssetPathEntity? _recentAlbum;
+  // Cache thumbnail futures to avoid refetching and flicker on rebuilds
+  final Map<String, Future<Uint8List?>> _thumbnailFutures =
+      <String, Future<Uint8List?>>{};
+
   @override
   void initState() {
     super.initState();
     _requestPermissionAndLoadPhotos();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    // Clear thumbnail cache to free memory
+    PhotoManager.clearFileCache();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMorePhotos();
+    }
   }
 
   Future<void> _requestPermissionAndLoadPhotos() async {
     try {
-      // Check/ask permission (Android 13+ may return limited)
-      final PermissionState permission =
-          await PhotoManager.requestPermissionExtend();
-      final bool granted = permission == PermissionState.authorized ||
-          permission == PermissionState.limited ||
-          permission.isAuth;
+      setState(() {
+        _isLoading = true; // show loading while resolving permission
+      });
+      print('Starting permission and photo loading process...');
 
-      if (granted) {
-        setState(() {
-          _hasPermission = true;
-        });
-        await _loadRecentPhotos();
-      } else {
-        setState(() {
-          _hasPermission = false;
-          _isLoading = false;
-        });
-        // Don't show permission dialog here since permissions should be granted upfront
-        // Just show empty state with message
-      }
+      // First try to request permission
+      final PermissionState currentState =
+          await PhotoManager.requestPermissionExtend();
+      print('Permission state after request: $currentState');
+
+      // On Android 13+, sometimes permission state is incorrectly reported as denied
+      // even when permission is actually granted. Let's try to access photos directly.
+      await _tryLoadPhotosDirectly();
     } catch (e) {
-      print('Error requesting permission: $e');
+      print('Error in permission process: $e');
       setState(() {
         _hasPermission = false;
         _isLoading = false;
@@ -68,47 +89,96 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     }
   }
 
-  Future<void> _loadRecentPhotos() async {
+  Future<void> _tryLoadPhotosDirectly() async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
+      print('Attempting to load photos directly...');
 
-      // Get recent photos (last 50)
+      // Try to get albums directly - this will work if permission is actually granted
+      // even if the permission state is incorrectly reported as denied
       final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
         type: RequestType.image,
         onlyAll: true,
       );
 
-      if (albums.isNotEmpty) {
-        final AssetPathEntity recentAlbum = albums.first;
-        final List<AssetEntity> photos = await recentAlbum.getAssetListPaged(
-          page: 0,
-          size: 50,
-        );
+      print('Direct album access result: ${albums.length} albums found');
 
+      if (albums.isNotEmpty) {
+        print('Successfully accessed photos - permission is actually granted');
         setState(() {
-          _recentPhotos = photos;
+          _hasPermission = true;
           _isLoading = false;
         });
-
-        // Auto-select the most recent captured image once
-        if (!_didAutoSelectMostRecent &&
-            _selectedImages.isEmpty &&
-            photos.isNotEmpty) {
-          final File? f = await photos.first.file;
-          if (f != null) {
-            setState(() {
-              _selectedImages.add(f.path);
-              _didAutoSelectMostRecent = true;
-            });
-          }
-        }
+        _recentAlbum = albums.first;
+        await _loadPhotosPage(0, isInitialLoad: true);
       } else {
+        print('No albums found - permission might actually be denied');
+        await _handlePermissionDenied();
+      }
+    } catch (e) {
+      print('Error accessing photos directly: $e');
+      await _handlePermissionDenied();
+    }
+  }
+
+  Future<void> _handlePermissionDenied() async {
+    print('Handling permission denied state...');
+
+    // Try one more permission request
+    try {
+      final PermissionState permission =
+          await PhotoManager.requestPermissionExtend();
+      print('Final permission request result: $permission');
+
+      if (permission == PermissionState.authorized ||
+          permission == PermissionState.limited ||
+          permission.isAuth) {
+        print('Permission granted on final attempt');
+        await _tryLoadPhotosDirectly();
+        return;
+      }
+    } catch (e) {
+      print('Error in final permission request: $e');
+    }
+
+    // If we get here, permission is truly denied
+    setState(() {
+      _hasPermission = false;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _loadRecentPhotos() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _currentPage = 0;
+        _hasMorePhotos = true;
+      });
+
+      print('Attempting to load photos...');
+
+      // Get recent photos album
+      final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
+        type: RequestType.image,
+        onlyAll: true,
+      );
+
+      print('Found ${albums.length} albums');
+
+      if (albums.isNotEmpty) {
+        _recentAlbum = albums.first;
+        print('Using album: ${_recentAlbum!.name}');
+        await _loadPhotosPage(0, isInitialLoad: true);
+      } else {
+        print('No albums found - this might indicate permission issues');
         setState(() {
           _recentPhotos = [];
           _isLoading = false;
         });
+
+        // If no albums found, it might be a permission issue
+        // Try to request permission again
+        await _handlePermissionDenied();
       }
     } catch (e) {
       print('Error loading photos: $e');
@@ -116,6 +186,68 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         _recentPhotos = [];
         _isLoading = false;
       });
+
+      // If there's an error loading photos, it might be permission related
+      await _handlePermissionDenied();
+    }
+  }
+
+  Future<void> _loadPhotosPage(int page, {bool isInitialLoad = false}) async {
+    if (_recentAlbum == null) return;
+
+    try {
+      if (isInitialLoad) {
+        setState(() {
+          _isLoading = true;
+        });
+      } else {
+        setState(() {
+          _isLoadingMore = true;
+        });
+      }
+
+      final List<AssetEntity> photos = await _recentAlbum!.getAssetListPaged(
+        page: page,
+        size: _pageSize,
+      );
+
+      setState(() {
+        if (isInitialLoad) {
+          _recentPhotos = photos;
+          _isLoading = false;
+        } else {
+          _recentPhotos.addAll(photos);
+          _isLoadingMore = false;
+        }
+        _currentPage = page;
+        _hasMorePhotos = photos.length == _pageSize;
+      });
+
+      // Auto-select the most recent captured image once (only on initial load)
+      if (isInitialLoad &&
+          !_didAutoSelectMostRecent &&
+          _selectedImages.isEmpty &&
+          photos.isNotEmpty) {
+        setState(() {
+          _selectedImages.add(photos.first.id);
+          _didAutoSelectMostRecent = true;
+        });
+      }
+    } catch (e) {
+      print('Error loading photos page: $e');
+      setState(() {
+        if (isInitialLoad) {
+          _isLoading = false;
+        } else {
+          _isLoadingMore = false;
+        }
+      });
+    }
+  }
+
+  Future<void> _loadMorePhotos() async {
+    if (!_isLoadingMore && _hasMorePhotos && _recentAlbum != null) {
+      await _loadPhotosPage(_currentPage + 1);
     }
   }
 
@@ -145,24 +277,16 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           await _loadRecentPhotos();
 
           if (saved != null) {
-            final File? savedFile = await saved.file;
-            if (savedFile != null) {
-              setState(() {
-                if (!_selectedImages.contains(savedFile.path) &&
-                    _selectedImages.length < _maxSelection) {
-                  _selectedImages.add(savedFile.path);
-                }
-                _didAutoSelectMostRecent = true;
-              });
-            }
+            setState(() {
+              if (!_selectedImages.contains(saved.id) &&
+                  _selectedImages.length < _maxSelection) {
+                _selectedImages.add(saved.id);
+              }
+              _didAutoSelectMostRecent = true;
+            });
           }
         } catch (e) {
-          // Fallback: still try to add the temp path so user sees it
-          setState(() {
-            if (_selectedImages.length < _maxSelection) {
-              _selectedImages.add(image.path);
-            }
-          });
+          // Fallback: reload photos and let user select manually
           await _loadRecentPhotos();
         }
       }
@@ -172,12 +296,12 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     }
   }
 
-  void _toggleImageSelection(String imagePath) {
+  void _toggleImageSelection(String imageId) {
     setState(() {
-      if (_selectedImages.contains(imagePath)) {
-        _selectedImages.remove(imagePath);
+      if (_selectedImages.contains(imageId)) {
+        _selectedImages.remove(imageId);
       } else if (_selectedImages.length < _maxSelection) {
-        _selectedImages.add(imagePath);
+        _selectedImages.add(imageId);
       } else {
         _showErrorDialog(
             R.string.max_image_select_dynamic.tr(args: ["${_maxSelection}"]));
@@ -185,10 +309,20 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     });
   }
 
-  void _confirmSelection() {
+  void _confirmSelection() async {
     if (_selectedImages.isNotEmpty) {
-      widget.onImagesSelected?.call(_selectedImages);
-      Navigator.pop(context, _selectedImages);
+      // Convert photo IDs to file paths for the callback
+      List<String> filePaths = [];
+      for (String photoId in _selectedImages) {
+        final photo = _recentPhotos.firstWhere((p) => p.id == photoId);
+        final File? file = await photo.file;
+        if (file != null) {
+          filePaths.add(file.path);
+        }
+      }
+
+      widget.onImagesSelected?.call(filePaths);
+      Navigator.pop(context, filePaths);
     } else {
       _showErrorDialog(R.string.please_select_at_least_one_image.tr());
     }
@@ -229,9 +363,11 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         children: [
           _buildAppBar(),
           Expanded(
-            child: _hasPermission
-                ? _buildGalleryContent()
-                : _buildPermissionDenied(),
+            child: _isLoading
+                ? const SizedBox() // no spinner, check permission silently
+                : (_hasPermission
+                    ? _buildGalleryContent()
+                    : _buildPermissionDenied()),
           ),
           if (_selectedImages.isNotEmpty) _buildBottomBar(),
         ],
@@ -315,17 +451,27 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
   Widget _buildPhotosGrid() {
     return GridView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(8),
+      cacheExtent: 600, // pre-cache a bit to smooth scroll
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 2,
-        mainAxisSpacing: 2,
+        crossAxisCount:
+            3, // Reduced from 4 to 3 for larger items and better performance
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
       ),
-      itemCount: _recentPhotos.length + 1, // +1 for capture button
+      itemCount: _recentPhotos.length +
+          1 +
+          (_isLoadingMore
+              ? 1
+              : 0), // +1 for capture button, +1 for loading indicator
       itemBuilder: (context, index) {
         if (index == 0) {
           // Capture button as first item
           return _buildCaptureButton();
+        } else if (index == _recentPhotos.length + 1 && _isLoadingMore) {
+          // Loading indicator at the bottom
+          return _buildLoadingIndicator();
         } else {
           // Photo items
           final photoIndex = index - 1;
@@ -371,16 +517,35 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     );
   }
 
+  Widget _buildLoadingIndicator() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPhotoItem(AssetEntity photo) {
-    return FutureBuilder<File?>(
-      future: photo.file,
+    final Future<Uint8List?> thumbFuture = _thumbnailFutures[photo.id] ??=
+        photo.thumbnailDataWithSize(const ThumbnailSize.square(256));
+    return FutureBuilder<Uint8List?>(
+      future: thumbFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data != null) {
-          final file = snapshot.data!;
-          final isSelected = _selectedImages.contains(file.path);
+          final thumbnailBytes = snapshot.data!;
+          final isSelected = _selectedImages.contains(photo.id);
 
           return GestureDetector(
-            onTap: () => _toggleImageSelection(file.path),
+            onTap: () => _toggleImageSelection(photo.id),
             child: Stack(
               children: [
                 Container(
@@ -392,14 +557,19 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
                           : Colors.transparent,
                       width: 2,
                     ),
+                    color: Colors.grey[
+                        100], // Background color for aspect ratio differences
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(6),
-                    child: Image.file(
-                      file,
+                    child: Image.memory(
+                      thumbnailBytes,
+                      key: ValueKey(photo.id),
                       width: double.infinity,
                       height: double.infinity,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.cover, // center-crop, fill width
+                      alignment: Alignment.center, // crop center like gallery
+                      gaplessPlayback: true,
                     ),
                   ),
                 ),
@@ -445,46 +615,72 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
   Widget _buildPermissionDenied() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.photo_library_outlined,
-            size: 80,
-            color: Colors.grey[400],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Không có quyền truy cập thư viện ảnh',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.photo_library_outlined,
+              size: 80,
+              color: Colors.grey[400],
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Vui lòng cấp quyền truy cập thư viện ảnh\nđể sử dụng tính năng này',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+            const SizedBox(height: 16),
+            Text(
+              'Không có quyền truy cập thư viện ảnh',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
             ),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back),
-            label: const Text('Quay lại'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.greenGradientBottom,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            const SizedBox(height: 8),
+            Text(
+              'Vui lòng cấp quyền truy cập thư viện ảnh\nđể sử dụng tính năng này.\n\nTrên Android 13+, bạn có thể chọn:\n• Cho phép truy cập tất cả ảnh\n• Cho phép truy cập một số ảnh',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      await _requestPermissionAndLoadPhotos();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Thử lại'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: R.color.greenGradientBottom,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Quay lại'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[600],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
