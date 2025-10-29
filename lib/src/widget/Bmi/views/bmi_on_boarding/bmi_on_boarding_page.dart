@@ -435,7 +435,7 @@ class _StatisticalDataViewButton extends StatelessWidget {
                   (current is BmiDataChangedState &&
                       current.event == BmiDataChangeEvent.hasDataChanged),
               builder: (context, state) {
-                if (_bmiBloc.hasNewData)
+                if (_bmiBloc.hasNewData == true)
                   return Container(
                     height: 12,
                     width: 12,

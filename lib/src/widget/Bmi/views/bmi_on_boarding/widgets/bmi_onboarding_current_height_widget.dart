@@ -51,6 +51,7 @@ class BmiOnboardingCurrentHeightWidget extends StatelessWidget {
                 children: [
                   Text(
                     R.string.chieuCao.tr(),
+                    maxLines: 1,
                     style: R.style.largeTextStyle,
                   ),
                   const SizedBox(

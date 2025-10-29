@@ -20,7 +20,7 @@ class BmiStatisticalChart extends StatefulWidget {
 }
 
 class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
-  static final double _heightOfChart = 160;
+  static final double _heightOfChart = 120;
   static final double _widthOfSideBar = 32;
   static final double _marginOfWeight = 15;
 
@@ -49,7 +49,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
               List.from(_bmiBloc.historicalWeightList);
 
           data = data.reversed.toList();
-          double intervalWidth = 48;
+          double intervalWidth = 40;
           bool enableScroll =
               data.length * intervalWidth > MediaQuery.of(context).size.width;
 
@@ -166,10 +166,13 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                             ),
                             belowBarData: BarAreaData(
                                 show: true,
-                                // colors: data
-                                //     .map((e) => e.bmiColor.withOpacity(0.1))
-                                //     .toList(),
-                                colors: [Colors.green.withOpacity(0.1)]),
+                                colors: [
+                                  Colors.green.withOpacity(0.2),
+                                  Colors.transparent,
+                                ],
+                                gradientFrom: Offset(0.5, 0),
+                                gradientTo: Offset(0.5, 1),
+                                gradientColorStops: [0.5, 1]),
                           ),
                         ],
                         lineTouchData: LineTouchData(

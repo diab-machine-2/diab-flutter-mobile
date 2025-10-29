@@ -148,11 +148,14 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiDataChangeEvent(BmiDataChangeEvent.weightGoalChanged, value));
   }
 
-  bool _hasNewData = false;
-  bool get hasNewData => _hasNewData;
-  set hasNewData(bool value) {
-    _hasNewData = value;
-    add(BmiDataChangeEvent(BmiDataChangeEvent.hasDataChanged, value));
+  bool? get hasNewData => preferences.getBool(Const.hasNewWeightRecordInFirst);
+  set hasNewData(bool? value) {
+    if (value == null) return;
+    if ((hasNewData == null && value == true) ||
+        (hasNewData == true && value == false)) {
+      preferences.setBool(Const.hasNewWeightRecordInFirst, value);
+      add(BmiDataChangeEvent(BmiDataChangeEvent.hasDataChanged, value));
+    }
   }
 
   late bool _hasHealthAppPermission;
@@ -439,10 +442,13 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     response.when(
         success: (data) {
           _historicalWeightList = data.data ?? [];
-          if (_selectedPointChart == null) {
+
+          if (_selectedPointChart == null ||
+              !_historicalWeightList.contains(_selectedPointChart)) {
             _selectedPointChart = _historicalWeightList.firstOrNull;
             _selectedIndexPointChart = 0;
           }
+
           emit(BmiGetWeightIndexListState(Resource.success(data)));
         },
         failure: (error) =>
@@ -490,7 +496,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   void refresh() {
     add(BmiGetWeightStatisticalEvent());
     add(BmiGetWaistStatisticalEvent());
-    add(const BmiCheckStatisticalDataExistedEvent());
+    // add(const BmiCheckStatisticalDataExistedEvent());
 
     Future.delayed(Duration(milliseconds: 1000)).then((value) {
       add(BmiGetAIAnalysicEvent());

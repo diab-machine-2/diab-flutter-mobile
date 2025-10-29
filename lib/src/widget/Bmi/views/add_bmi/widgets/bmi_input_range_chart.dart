@@ -1,116 +1,214 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
-import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/utils.dart';
-import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
-import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
-import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 
 class BmiInputRangeChart extends StatelessWidget {
+  final List<double> thresholds;
+  final List<Color> colors;
+  final double currentValue;
+  final Widget? markerWidget; // nếu null dùng icon mặc định
+  final double barHeight;
+  final double gap; // khoảng trắng giữa các ô
+  final double borderRadius;
+  final TextStyle? thresholdTextStyle;
+
   const BmiInputRangeChart({
     super.key,
+    required this.thresholds,
+    required this.colors,
+    required this.currentValue,
+    this.markerWidget,
+    this.barHeight = 20,
+    this.gap = 4,
+    this.borderRadius = 6,
+    this.thresholdTextStyle,
   });
+
+  static const markerSize = 72.0;
+  static const arrowSize = 24.0;
 
   @override
   Widget build(BuildContext context) {
-    BmiBloc _bmiBloc = context.read();
+    assert(thresholds.isNotEmpty, 'thresholds cannot be empty');
 
-    const double chartHeight = 8.0;
-    const widthOfThresholdValue = 48.0;
+    // sort an toàn (không mutate original)
+    final sortedThresholds = List<double>.from(thresholds)..sort();
 
-    return Column(
-      children: [
-        _BmiMarker(),
-        const SizedBox(
-          height: 12,
-        ),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(50),
-          child: SizedBox(
-            height: chartHeight,
-            width: double.maxFinite,
-            child: Row(
-                children: _bmiBloc.weightThreshold
-                    .map((threshold) => Expanded(
-                        child: Container(
-                            color: Utils.parseStringToColor(
-                                threshold.backgroundColorCode))))
-                    .toList()),
+    final textStyle = thresholdTextStyle ?? R.style.smallBodyStyle.neutral4;
+
+    return LayoutBuilder(builder: (context, constraints) {
+      final totalWidth =
+          (constraints.maxWidth.isFinite && constraints.maxWidth > 0)
+              ? constraints.maxWidth
+              : 300.0;
+
+      final sections = sortedThresholds.length + 1;
+      final segmentWidth =
+          (totalWidth - gap * (sections - 1)) / sections; // width mỗi ô
+
+      // chuẩn màu (bù gray nếu thiếu)
+      final segColors = List<Color>.generate(sections,
+          (i) => (i < colors.length ? colors[i] : Colors.grey.shade300));
+
+      // tính vị trí marker theo logic: nếu = mốc -> đúng mốc; nếu giữa -> giữa ô
+      double computeMarkerX() {
+        const eps = 1e-9;
+        // trường hợp nhỏ hơn mốc đầu -> ô 0
+        if (currentValue < sortedThresholds.first - eps) {
+          return 0 * (segmentWidth + gap) + segmentWidth / 2;
+        }
+
+        // check bằng mốc
+        for (int i = 0; i < sortedThresholds.length; i++) {
+          if ((currentValue - sortedThresholds[i]).abs() < eps) {
+            // boundary giữa section i và i+1: startX of section (i+1)
+            return (i + 1) * (segmentWidth + gap);
+          }
+        }
+
+        // nằm giữa các mốc
+        for (int i = 0; i < sortedThresholds.length; i++) {
+          if (currentValue < sortedThresholds[i]) {
+            // thuộc section i
+            final startX = i * (segmentWidth + gap);
+            return startX + segmentWidth / 2;
+          }
+        }
+
+        // nếu lớn hơn mốc cuối -> ô cuối
+        return (sections - 1) * (segmentWidth + gap) + segmentWidth / 2;
+      }
+
+      final markerCenterX = computeMarkerX();
+      // clamp to viewable region so marker không ra ngoài
+      final markerLeft =
+          (markerCenterX - markerSize / 2).clamp(0.0, totalWidth - markerSize);
+
+      // vị trí các label (mỗi label đặt ngay tại boundary giữa ô i và i+1)
+      final labelTop = 4.0; // khoảng cách từ top stack đến label
+      final labels = <Positioned>[];
+      for (int i = 0; i < sortedThresholds.length; i++) {
+        final boundaryX = (i + 1) * (segmentWidth + gap);
+        final labelBoxWidth = segmentWidth; // width box để center label
+        final left = (boundaryX - labelBoxWidth / 2)
+            .clamp(0.0, totalWidth - labelBoxWidth);
+        labels.add(Positioned(
+          left: left,
+          top: labelTop,
+          width: labelBoxWidth,
+          child: Center(
+            child: Text(
+              // format đẹp hơn nếu cần
+              _formatThreshold(sortedThresholds[i]),
+              style: textStyle,
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 12,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ));
+      }
+
+      // build segment widgets (bo góc chỉ cho đầu & cuối)
+      final segments = <Widget>[];
+      for (int i = 0; i < sections; i++) {
+        final radius = BorderRadius.all(Radius.circular(borderRadius));
+
+        segments.add(Container(
+          width: segmentWidth,
+          height: barHeight,
+          decoration: BoxDecoration(
+            color: segColors[i],
+            borderRadius: radius,
+          ),
+        ));
+
+        // gap giữa các ô (ngoại trừ ô cuối)
+        if (i < sections - 1) {
+          segments.add(SizedBox(width: gap));
+        }
+      }
+
+      // tổng chiều cao: top marker + khoảng label + labelHeight + spacing + barHeight
+      final labelHeight = (textStyle.fontSize ?? 12) + 4;
+      final topSpacing = 4.0;
+      final markerTop = 0.0;
+      final labelsTop = arrowSize * 2 + topSpacing; // labels nằm dưới marker
+      final barsTop = labelsTop + labelHeight + 6;
+
+      return SizedBox(
+        height: markerSize + topSpacing + labelHeight + 6 + barHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
           children: [
-            const SizedBox(width: widthOfThresholdValue / 2),
-            ...Const.bmiThreshold
-                .map((e) => SizedBox(
-                    width: widthOfThresholdValue,
-                    child: Text(
-                      "$e",
-                      textAlign: TextAlign.center,
-                      style: R.style.normalTextStyle.neutral4,
-                    )))
-                .toList(),
-            const SizedBox(width: widthOfThresholdValue / 2),
+            // 1) marker (topmost)
+            Positioned(
+              left: markerLeft,
+              top: markerTop,
+              width: markerSize,
+              height: markerSize,
+              child: Column(
+                children: [
+                  Text.rich(
+                    TextSpan(
+                        text: "BMI ",
+                        style: R.style.normalTextStyle.neutral4,
+                        children: [
+                          TextSpan(
+                            text: "$currentValue",
+                            style: R.style.boldNormalStyle.mainColor,
+                          )
+                        ]),
+                  ),
+                  Icon(
+                    Icons.arrow_drop_down,
+                    size: arrowSize,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            ),
+
+            // 2) labels (mốc) - aligned under marker
+            // add each threshold label
+            ...labels.map((w) => Positioned(
+                  left: w.left,
+                  top: labelsTop,
+                  child: SizedBox(
+                    width: w.width,
+                    child: (w.child as Center).child,
+                  ),
+                )),
+
+            // 3) colored bar (below labels)
+            Positioned(
+              left: 0,
+              top: barsTop,
+              right: 0,
+              // child: Row(
+              //   children: segments,
+              // ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: SizedBox(
+                  height: barHeight,
+                  width: double.maxFinite,
+                  child: Row(
+                      children: colors
+                          .map((color) =>
+                              Expanded(child: Container(color: color)))
+                          .toList()),
+                ),
+              ),
+            ),
           ],
-        )
-      ],
-    );
-  }
-}
-
-class _BmiMarker extends StatefulWidget {
-  const _BmiMarker({
-    super.key,
-  });
-
-  @override
-  State<_BmiMarker> createState() => _BmiMarkerState();
-}
-
-class _BmiMarkerState extends State<_BmiMarker> {
-  late BmiInputBloc _bmiInputBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _bmiInputBloc = context.read();
+        ),
+      );
+    });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<BmiInputBloc, BmiInputState>(
-        buildWhen: (_, state) =>
-            state is BmiInputDataChangedState &&
-            state.event == BmiInputDataChangeEvent.weightChanged,
-        builder: (context, state) {
-          return Column(
-            children: [
-              Text.rich(
-                TextSpan(
-                    text: "BMI ",
-                    style: R.style.normalTextStyle.neutral4,
-                    children: [
-                      TextSpan(
-                        text: "${_bmiInputBloc.bmi}",
-                        style: R.style.boldNormalStyle.mainColor,
-                      )
-                    ]),
-              ),
-              Icon(
-                Icons.arrow_drop_down,
-                size: 20,
-                color: AppColors.neutral3,
-              ),
-            ],
-          );
-        });
+  String _formatThreshold(double v) {
+    // format: nếu là integer -> no decimal, else keep 1 or 2 decimals
+    if (v % 1 == 0) return v.toInt().toString();
+    if ((v * 10) % 1 == 0) return v.toStringAsFixed(1);
+    return v.toString();
   }
 }

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_date_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_range_chart.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/weight_input_text_field.dart';
@@ -13,6 +17,9 @@ class AddBmiWeightInputSession extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BmiBloc _bmiBloc = context.read();
+    BmiInputBloc _bmiInputBloc = context.read();
+
     return Container(
       decoration: R.decorationStyle.mediumRadiusCardStyles,
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -23,7 +30,19 @@ class AddBmiWeightInputSession extends StatelessWidget {
           const SizedBox(
             height: 12,
           ),
-          const BmiInputRangeChart(),
+          BlocBuilder<BmiInputBloc, BmiInputState>(
+            buildWhen: (_, state) =>
+            state is BmiInputDataChangedState &&
+            state.event == BmiInputDataChangeEvent.weightChanged,
+            builder: (context, state) {
+              return BmiInputRangeChart(
+                thresholds: Const.bmiThreshold,
+                colors: _bmiBloc.bmiStatistical?.thresholdColors ?? [],
+                currentValue: _bmiInputBloc.bmi,
+                barHeight: 8,
+              );
+            }
+          ),
           const SizedBox(
             height: 12,
           ),
