@@ -9,10 +9,11 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
-import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
+import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_functions.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_trend_chart.dart';
 
 // Re-export HbA1cDataPoint for compatibility
@@ -47,6 +48,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   bool _isLoadingAI = false; // Track if AI is being loaded to prevent loops
   int _focusIndex = -1; // Focused time-group index (x axis group)
   int _focusSubIndex = 0; // Focused item within the time group
+  DateTime?
+      _selectedPointDate; // Store selected point date to maintain selection across time range changes
+  bool _isDetailViewed = false; // Track if user has viewed HbA1c detail page
 
   // Grouped data by calendar day (UTC)
   // Sorted by day ascending; x index = position in this list
@@ -63,6 +67,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   void initState() {
     super.initState();
     _firebaseSetup();
+    _loadDetailViewedState();
     // Load trend data first, then AI will be loaded after data is available
     _loadTrendData();
   }
@@ -86,6 +91,10 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     currentLevel = args?['currentLevel'] ?? widget.currentLevel;
     currentColor = args?['currentColor'] ?? widget.currentColor;
     _argsInitialized = true;
+  }
+
+  Future<void> _loadDetailViewedState() async {
+    _isDetailViewed = await AppStorages.isHbA1CDetailViewed();
   }
 
   Future<void> _firebaseSetup() async {
@@ -201,13 +210,24 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   void _loadTrendData() {
     // When "Tất cả" (index 0) is selected, use takeAll = true
     bool useTakeAll = _selectedUIIndex == 0;
-    _hbA1CBloc.add(FetchHbA1CTrend(
-      type: _periodFilterType,
+    // Use Input API instead of Trend API to get full data including ID
+    _hbA1CBloc.add(FetchInputHbA1C(
+      currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      periodFilterType: _periodFilterType,
+      page: 1,
       takeAll: useTakeAll,
     ));
   }
 
   void reloadData(int periodFilter) {
+    // Store current selected point date before resetting
+    if (_focusIndex >= 0 && _focusIndex < _groupedPoints.length) {
+      final group = _groupedPoints[_focusIndex];
+      if (_focusSubIndex < group.length) {
+        _selectedPointDate = group[_focusSubIndex].date;
+      }
+    }
+
     setState(() {
       _selectedUIIndex = periodFilter; // Track UI selection
       // Map UI index to API trendType:
@@ -216,7 +236,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       // 2 (12 tháng) -> 2
       // 3 (24 tháng) -> 3
       _periodFilterType = periodFilter == 0 ? 3 : periodFilter;
-      _focusIndex = -1;
+      _focusIndex = -1; // Temporarily reset, will be restored after data loads
+      _focusSubIndex = 0;
       _isLoadingAI = false; // Reset flag to allow new AI load
       _aiSuggestion = null; // Reset suggestion to trigger reload
     });
@@ -229,34 +250,37 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     return true;
   }
 
-  List<HbA1cDataPoint> _convertApiDataToDataPoints(List<HbA1CModel> apiData) {
+  // Convert InputHbA1CModel data to data points (with ID for editing)
+  List<HbA1cDataPoint> _convertInputDataToDataPoints(
+      List<InputHbA1CModel> apiData) {
     _dataPoints.clear();
     _timestamps.clear();
     _groupedPoints.clear();
 
-    // Group by calendar day (UTC) similar to BloodPressure behavior
+    // Group by calendar day (local time) similar to BloodPressure behavior
     final Map<int, List<HbA1cDataPoint>> byTs = {};
     for (int i = 0; i < apiData.length; i++) {
       final item = apiData[i];
       if (item.hbA1C != null && item.date != null) {
-        // Normalize to UTC to avoid timezone shifts (match BP behavior)
-        final date =
-            DateTime.fromMillisecondsSinceEpoch(item.date! * 1000, isUtc: true);
+        // Parse timestamp as local time (consistent with other modules)
+        final date = DateTime.fromMillisecondsSinceEpoch(item.date! * 1000);
         final value = item.hbA1C!;
         final level = _getHbA1cLevelFromValue(value);
         final color = _getHbA1cColorFromValue(value);
 
         final timeOfDay = DateFormat('HH:mm').format(date);
+
         final dp = HbA1cDataPoint(
           date: date,
           value: value,
           level: level,
           color: color,
           timeOfDay: timeOfDay,
+          id: item.id, // Keep as String to match InputHbA1CModel
         );
-        final dayKey = DateTime.utc(date.year, date.month, date.day)
-                .millisecondsSinceEpoch ~/
-            1000;
+        final dayKey =
+            DateTime(date.year, date.month, date.day).millisecondsSinceEpoch ~/
+                1000;
         byTs.putIfAbsent(dayKey, () => []).add(dp);
         _dataPoints.add(dp);
       }
@@ -270,6 +294,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       group.sort((a, b) => a.date.compareTo(b.date));
       _groupedPoints.add(group);
     }
+
+    _applyTimeRangeFilter();
 
     // IMPORTANT: Sort _dataPoints by date DESCENDING (newest first) for correct analysis
     _dataPoints.sort((a, b) => b.date.compareTo(a.date));
@@ -291,6 +317,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           : _focusIndex.clamp(0, _groupedPoints.length - 1);
       _focusSubIndex =
           _focusSubIndex.clamp(0, _groupedPoints[_focusIndex].length - 1);
+      if (_selectedPointDate == null) {
+        _updateSelectedPointDateFromFocus();
+      }
       // Don't load AI here - it's loaded in reloadData() to prevent infinite loops
     } else {
       _focusIndex = -1;
@@ -298,6 +327,86 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     }
 
     return _dataPoints;
+  }
+
+  void _setFocusToLatest() {
+    if (_groupedPoints.isEmpty) {
+      _focusIndex = -1;
+      _focusSubIndex = 0;
+      _selectedPointDate = null;
+      return;
+    }
+
+    _focusIndex = _groupedPoints.length - 1;
+    _focusSubIndex = 0;
+    _updateSelectedPointDateFromFocus();
+  }
+
+  int? _getMonthsForSelectedRange() {
+    switch (_selectedUIIndex) {
+      case 1:
+        return 6;
+      case 2:
+        return 12;
+      case 3:
+        return 24;
+      default:
+        return null;
+    }
+  }
+
+  DateTime _calculateCutoffUtc(int months) {
+    final DateTime nowUtc = DateTime.now().toUtc();
+    final int totalMonths = nowUtc.year * 12 + (nowUtc.month - 1) - months;
+    final int cutoffYear = totalMonths ~/ 12;
+    final int cutoffMonth = totalMonths % 12 + 1;
+    final int maxDayOfTargetMonth =
+        DateTime.utc(cutoffYear, cutoffMonth + 1, 0).day;
+    final int cutoffDay = min(nowUtc.day, maxDayOfTargetMonth);
+    return DateTime.utc(cutoffYear, cutoffMonth, cutoffDay);
+  }
+
+  void _applyTimeRangeFilter() {
+    final months = _getMonthsForSelectedRange();
+    if (months == null || _groupedPoints.isEmpty) {
+      return;
+    }
+
+    final DateTime cutoff = _calculateCutoffUtc(months);
+
+    final List<List<HbA1cDataPoint>> filteredGroups = [];
+    final List<int> filteredTimestamps = [];
+    for (int i = 0; i < _groupedPoints.length; i++) {
+      final group = _groupedPoints[i];
+      if (group.isEmpty) continue;
+      final DateTime dayDate = group.last.date;
+      if (!dayDate.isBefore(cutoff)) {
+        filteredGroups.add(group);
+        filteredTimestamps.add(_timestamps[i]);
+      }
+    }
+
+    final List<HbA1cDataPoint> filteredDataPoints =
+        _dataPoints.where((dp) => !dp.date.isBefore(cutoff)).toList();
+
+    _groupedPoints
+      ..clear()
+      ..addAll(filteredGroups);
+    _timestamps
+      ..clear()
+      ..addAll(filteredTimestamps);
+    _dataPoints
+      ..clear()
+      ..addAll(filteredDataPoints);
+  }
+
+  void _updateSelectedPointDateFromFocus() {
+    if (_focusIndex >= 0 && _focusIndex < _groupedPoints.length) {
+      final group = _groupedPoints[_focusIndex];
+      if (_focusSubIndex >= 0 && _focusSubIndex < group.length) {
+        _selectedPointDate = group[_focusSubIndex].date;
+      }
+    }
   }
 
   String _getHbA1cLevelFromValue(double value) {
@@ -363,9 +472,16 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
               Message.showToastMessage(context, state.message);
             }
 
-            if (state is HbA1CTrendLoaded) {
-              final trendData = state.trendModel.trendItems?.items ?? [];
-              _convertApiDataToDataPoints(trendData);
+            if (state is HbA1CDetailLoaded) {
+              final inputData = state.inputHbA1CModel;
+              _convertInputDataToDataPoints(inputData);
+
+              // Try to restore selected point after data conversion
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                setState(() {
+                  _restoreSelectedPoint();
+                });
+              });
 
               // Load AI suggestion after data is available (only if not already loading)
               if (!_isLoadingAI && _aiSuggestion == null) {
@@ -422,7 +538,13 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                             child: Stack(
                               children: [
                                 InkWell(
-                                  onTap: () {
+                                  onTap: () async {
+                                    // Đánh dấu đã xem chi tiết
+                                    await AppStorages.setHbA1CDetailViewed();
+                                    setState(() {
+                                      _isDetailViewed = true;
+                                    });
+
                                     Navigator.pushNamed(context,
                                         NavigatorName.hba1c_detail_page,
                                         arguments: {
@@ -458,8 +580,8 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                                     ),
                                   ),
                                 ),
-                                // Notification badge - chỉ hiển thị khi có data từ API
-                                if (_dataPoints.isNotEmpty)
+                                // Notification badge - chỉ hiển thị khi có data từ API và chưa xem chi tiết
+                                if (_dataPoints.isNotEmpty && !_isDetailViewed)
                                   Positioned(
                                     left: 45,
                                     bottom: 32,
@@ -541,41 +663,18 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8),
-          child: BlocBuilder<HbA1CBloc, HbA1CState>(
-            buildWhen: (prev, curr) =>
-                curr is HbA1CLoading ||
-                curr is HbA1CTrendLoaded ||
-                curr is HbA1CError,
-            builder: (context, state) {
-              int readingsCount = 0;
-              if (state is HbA1CTrendLoaded) {
-                readingsCount = state.trendModel.trendItems?.items.length ?? 0;
-              }
-              final bool showDetail =
-                  readingsCount > 1 || _dataPoints.length > 1;
-              return TextButton(
-                onPressed: () {
-                  if (showDetail) {
-                    Navigator.pushNamed(
-                        context, NavigatorName.hba1c_detail_page,
-                        arguments: {
-                          'initPeriodFilterType': _selectedUIIndex,
-                        });
-                  } else {
-                    Navigator.pushNamed(
-                        context, NavigatorName.hba1c_intro_2nd_page);
-                  }
-                },
-                child: Text(
-                  showDetail ? R.string.detail.tr() : R.string.huong_dan.tr(),
-                  style: TextStyle(
-                      fontSize: 15,
-                      color: R.color.white,
-                      fontFamily: R.font.sfpro,
-                      fontWeight: FontWeight.w700),
-                ),
-              );
+          child: TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, NavigatorName.hba1c_intro_2nd_page);
             },
+            child: Text(
+              R.string.huong_dan.tr(),
+              style: TextStyle(
+                  fontSize: 15,
+                  color: R.color.white,
+                  fontFamily: R.font.sfpro,
+                  fontWeight: FontWeight.w700),
+            ),
           ),
         ),
       ],
@@ -773,6 +872,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                       setState(() {
                         _focusIndex = max(0, _focusIndex - 1);
                         _focusSubIndex = 0;
+                        _updateSelectedPointDateFromFocus();
                       });
                     }
                   : null,
@@ -801,6 +901,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                   if (len > 1) {
                     setState(() {
                       _focusSubIndex = (_focusSubIndex + 1) % len;
+                      _updateSelectedPointDateFromFocus();
                     });
                   }
                 }
@@ -846,6 +947,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                         final lastIndex = _groupedPoints.length - 1;
                         _focusIndex = min(lastIndex, _focusIndex + 1);
                         _focusSubIndex = 0;
+                        _updateSelectedPointDateFromFocus();
                       });
                     }
                   : null,
@@ -884,6 +986,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       onPointSelected: (flatIndex) {
         _convertFlatIndexToGroupIndex(flatIndex);
       },
+      onPointDoubleTapped: (flatIndex) {
+        _handlePointDoubleTap(flatIndex);
+      },
     );
   }
 
@@ -897,12 +1002,73 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           setState(() {
             _focusIndex = dayIndex;
             _focusSubIndex = subIndex;
+            // Update selected point date when user manually selects a point
+            _selectedPointDate = group[subIndex].date;
           });
           return;
         }
         currentFlatIndex++;
       }
     }
+  }
+
+  // Handle double tap on a point to navigate to edit screen
+  void _handlePointDoubleTap(int flatIndex) {
+    // Convert flat index to actual data point to get the ID
+    int currentFlatIndex = 0;
+    for (int dayIndex = 0; dayIndex < _groupedPoints.length; dayIndex++) {
+      final group = _groupedPoints[dayIndex];
+      for (int subIndex = 0; subIndex < group.length; subIndex++) {
+        if (currentFlatIndex == flatIndex) {
+          final dataPoint = group[subIndex];
+
+          // Navigate to edit screen with the point's data
+          if (dataPoint.id != null) {
+            Navigator.pushNamed(
+              context,
+              NavigatorName.add_hba1c,
+              arguments: {
+                'type': 'update',
+                'id': dataPoint.id,
+              },
+            );
+          }
+          return;
+        }
+        currentFlatIndex++;
+      }
+    }
+  }
+
+  // Restore previously selected point when data is reloaded
+  void _restoreSelectedPoint() {
+    if (_selectedPointDate == null || _groupedPoints.isEmpty) {
+      return;
+    }
+
+    // Find the point with matching date in the new data
+    for (int dayIndex = 0; dayIndex < _groupedPoints.length; dayIndex++) {
+      final group = _groupedPoints[dayIndex];
+      for (int subIndex = 0; subIndex < group.length; subIndex++) {
+        final point = group[subIndex];
+        // Compare dates (ignoring milliseconds for robustness)
+        if (point.date.year == _selectedPointDate!.year &&
+            point.date.month == _selectedPointDate!.month &&
+            point.date.day == _selectedPointDate!.day &&
+            point.date.hour == _selectedPointDate!.hour &&
+            point.date.minute == _selectedPointDate!.minute) {
+          // Found the matching point, restore selection
+          _focusIndex = dayIndex;
+          _focusSubIndex = subIndex;
+          _selectedPointDate = point.date;
+          return;
+        }
+      }
+    }
+
+    // If point not found in new data, reset selection
+    _selectedPointDate = null;
+    _setFocusToLatest();
   }
 
   Widget _buildLegendItem(String label, Color color) {
@@ -1095,8 +1261,91 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
               ),
             ],
           ),
+          const SizedBox(height: 24),
+          _buildEmptyChartPlaceholder(),
         ],
       ),
     );
   }
+
+  Widget _buildEmptyChartPlaceholder() {
+    return SizedBox(
+      height: 97,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 40,
+              height: 97,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Spacer(),
+                  Text(
+                    '6.5%',
+                    style: TextStyle(
+                      color: R.color.black,
+                      fontSize: 12,
+                      fontFamily: R.font.sfpro,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Container(
+                height: 97,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: CustomPaint(
+                  painter: _DashedHorizontalLinePainter(
+                    lineColor: const Color(0xFF636A6B),
+                    dashWidth: 8,
+                    dashGap: 4,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedHorizontalLinePainter extends CustomPainter {
+  final Color lineColor;
+  final double dashWidth;
+  final double dashGap;
+
+  _DashedHorizontalLinePainter({
+    required this.lineColor,
+    this.dashWidth = 3,
+    this.dashGap = 2,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+
+    final double y = size.height / 2;
+    double startX = 0;
+    while (startX < size.width) {
+      final double endX = min(startX + dashWidth, size.width);
+      canvas.drawLine(Offset(startX, y), Offset(endX, y), linePaint);
+      startX += dashWidth + dashGap;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
