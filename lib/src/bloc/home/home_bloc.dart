@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,6 +11,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
@@ -19,15 +22,14 @@ import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/repo/learning/learning_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/schema/home_schema.dart';
-import 'package:medical/src/widget/home/welcome_package_screen/bloc/welcome_package_screen_cubit.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'home_bloc_event.dart';
 part 'home_bloc_state.dart';
@@ -41,6 +43,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   HomeLoaded? _cached;
   bool _firstLoad = false;
+  bool _hasWeightRecord = false;
 
   int get _currentWeek {
     if (AppSettings.userInfo?.ownPackage?.ownRoadmap?.currentWeek != null) {
@@ -90,6 +93,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             measurementLoading: false,
             reminderLoading: false,
           );
+          _hasWeightRecord = model.weightCard?.weight != null;
           yield _cached!;
         } else {
           // if no cache
@@ -482,6 +486,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   List<HomeMeasurementIndex> getAllMeasurements() {
+    String weightNavigatorName =
+        _hasWeightRecord ? NavigatorName.bmiInputPage : NavigatorName.add_bmi;
+
     return [
       HomeMeasurementIndex(
         title: R.string.duong_huyet.tr(),
@@ -522,7 +529,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeMeasurementIndex(
         title: R.string.can_nang.tr(),
         icon: R.drawable.ic_home_measurement_weight,
-        navigatorName: NavigatorName.add_bmi,
+        navigatorName: weightNavigatorName,
         args: {'type': 'input'},
       ),
     ];
@@ -539,8 +546,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   List<HomeMeasurementInlineData>? _castInlineMeasurements(HomeModel? model) {
     // Hb1Ac
-    final haveHba1c =
-        model?.hbA1CIndex.index != null && model!.hbA1CIndex.index! > 0;
+    // Check both index value and createDateTime to determine if there's real data
+    // Backend may return default value (e.g., 9.0) even when there's no actual data
+    // createDateTime will be null or 0 when there's no data
+
+    // Debug log to check actual values
+    print('🔍 HbA1C Data Check:');
+    print('  index: ${model?.hbA1CIndex.index}');
+    print('  createDateTime: ${model?.hbA1CIndex.createDateTime}');
+    print('  color: ${model?.hbA1CIndex.color}');
+
+    // Check if there's real data:
+    // 1. Index must exist and > 0
+    // 2. CreateDateTime must exist and > 0 (not null or 0)
+    // 3. Exclude default value of 9.0 when createDateTime is null/0
+    final hasValidDateTime = model?.hbA1CIndex.createDateTime != null &&
+        model!.hbA1CIndex.createDateTime! > 0;
+
+    final haveHba1c = model?.hbA1CIndex.index != null &&
+        model!.hbA1CIndex.index! > 0 &&
+        hasValidDateTime;
+
+    print('  hasValidDateTime: $hasValidDateTime');
+    print('  haveHba1c: $haveHba1c');
+
     final hba1c = HomeMeasurementInlineData(
       title: "HbA1C",
       titleColor: haveHba1c ? _haveValueTitleColor : _noValueTitleColor,
@@ -549,14 +578,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? _convertHexStringToInt(model!.hbA1CIndex.color!)
           : _noValueColor,
       unit: model?.hbA1CIndex.unit ?? "%",
-      navigatorName:
-          haveHba1c ? NavigatorName.detail_hba1c : NavigatorName.add_hba1c,
-      args: haveHba1c ? null : {'type': 'input'},
+      navigatorName: haveHba1c
+          ? NavigatorName.detail_hba1c
+          : NavigatorName.hba1c_intro_1st_page,
+      args: null,
     );
 
     // Weight
     final haveWeight =
         model?.weightCard?.weight != null && model!.weightCard!.weight! > 0;
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.setBool(Const.hasWeightRecord, haveWeight);
+    });
     final weight = HomeMeasurementInlineData(
       title: "Cân nặng",
       icon: R.drawable.ic_home_weight,
@@ -566,8 +599,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ? 0xFF008479
           : _noValueColor,
       unit: model?.weightCard?.unit ?? "kg",
-      navigatorName:
-          haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      navigatorName: NavigatorName.add_bmi,
       args: haveWeight ? null : {'type': 'input'},
     );
 
@@ -581,8 +613,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       color: model?.bmiCard?.color != null
           ? _convertHexStringToInt(model!.bmiCard!.color)
           : _noValueColor,
-      navigatorName:
-          haveWeight ? NavigatorName.detail_bmi : NavigatorName.add_bmi,
+      navigatorName: NavigatorName.add_bmi,
       args: haveBmi ? null : {'type': 'input'},
     );
 

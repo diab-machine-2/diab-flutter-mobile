@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -11,9 +12,9 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/extention.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_cubit.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/navigator_name.dart';
 
@@ -41,23 +42,14 @@ class _CalendarControllerState extends State<CalendarController> {
   }
 
   String getCalendarType(int type) {
-    switch (type) {
-      case 0:
-        return "Phân loại đầu ra";
-      case 1:
-        return "Buổi phỏng vấn đầu vào";
-      case 2:
-        return "Huấn luyện 1:1";
-      case 3:
-        return "Huấn luyện 1:n";
-      case 4:
-        return "Tư vấn bác sĩ";
-      case 5:
-        return "Khác";
-      case 6:
-        return "Livestream";
-      default:
-        return "Khác";
+    if (type == ScheduleType.screening_interview.typeIndex) {
+      return R.string.screening_interview.tr();
+    } else if (type == ScheduleType.evaluate_interview.typeIndex) {
+      return R.string.evaluate_interview.tr();
+    } else if (type == ScheduleType.booking_solo.typeIndex) {
+      return R.string.booking_solo.tr();
+    } else {
+      return R.string.other.tr();
     }
   }
 
@@ -265,12 +257,15 @@ class _CalendarControllerState extends State<CalendarController> {
                   Expanded(
                     child: InkWell(
                       onTap: (() => {
-                            Navigator.of(context, rootNavigator: true)
-                                .pushNamedAndRemoveUntil(
-                              NavigatorName.tabbar,
-                              (route) =>
-                                  false, // This removes all routes from stack
-                            )
+                            Observable.instance.notifyObservers([],
+                                notifyName: Const
+                                    .UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM),
+                            // Navigator.of(context, rootNavigator: true)
+                            //     .pushNamedAndRemoveUntil(
+                            //   NavigatorName.tabbar,
+                            //   (route) =>
+                            //       false, // This removes all routes from stack
+                            // )
                           }),
                       child: Container(
                         margin:

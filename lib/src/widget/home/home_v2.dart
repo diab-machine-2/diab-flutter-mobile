@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -28,8 +29,14 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/widget/BloodSugar/blood_sugar_functions.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
+import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
@@ -38,19 +45,21 @@ import 'package:medical/src/widget/home/widget/home_utilities.dart';
 import 'package:medical/src/widget/medicine/widgets/medicine_session_bottom_sheet.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
+import 'package:medical/src/widget/phone_update/phone_update_bottom_sheet.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/voucher_popup.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../modal/medicine/daily_medicine_model.dart';
 import '../../repo/home/home_client.dart';
 import '../../repo/medicine/medicine_client.dart';
 import '../../service/rating_service.dart';
 import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
-import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
-
 import 'widget/add_measurement.dart';
 import 'widget/home_activity.dart';
 import 'widget/home_measurement_summary.dart';
@@ -66,7 +75,7 @@ class HomeController extends StatefulWidget {
 }
 
 class _HomeControllerState extends State<HomeController>
-    with Observer, AutomaticKeepAliveClientMixin<HomeController> {
+    with Observer, AutomaticKeepAliveClientMixin<HomeController>, RouteAware {
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
   final HomeBloc _homeBloc = HomeBloc();
   final String _screenName = "home";
@@ -81,6 +90,7 @@ class _HomeControllerState extends State<HomeController>
   bool _haveInputGlucoseAlready = false;
   bool _haveInputExerciseAlready = false;
   bool _haveInputBloodpressureAlready = false;
+  bool _haveInputFoodAlready = false;
 
   bool _isActivityExpanded = false;
   bool _isReminderExpanded = false;
@@ -133,11 +143,75 @@ class _HomeControllerState extends State<HomeController>
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPopNext() {
+    // A route above this one was popped, and home is visible again
+    // Check phone validation when returning to home screen (defer to ensure we're really at home)
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await Future.delayed(Duration(milliseconds: 80));
+      if (!mounted) return;
+      _checkPhoneValidationWhenHomeVisible();
+    });
+    super.didPopNext();
+  }
+
+  Future<void> _checkPhoneValidationWhenHomeVisible() async {
+    try {
+      // Ensure this route is current
+      final route = ModalRoute.of(context);
+      if (route == null || route.isCurrent != true) return;
+
+      // Ensure we are at tabbar route and Home tab
+      log('isCurrentRoute: ${_isCurrentRoute(NavigatorName.tabbar)}');
+      log('isHomeTabActive: ${isHomeTabActive()}');
+      if (!_isCurrentRoute(NavigatorName.tabbar)) return;
+      if (!isHomeTabActive()) return;
+
+      // Check if we're actually on the home screen (not on a detail page)
+      // by checking if there are any routes pushed on top of the tabbar
+      final navigator = Navigator.of(context);
+      final canPop = navigator.canPop();
+
+      // Only show phone validation if we're truly on the home screen
+      // (no routes pushed on top of tabbar)
+      if (canPop) {
+        log('Phone validation skipped - user is on detail page');
+        return;
+      }
+
+      // Check if phone validation should be shown and reset flag if shown
+      final shouldShow =
+          await PhoneValidationManager.shouldShowAndResetPhoneValidation();
+      if (shouldShow) {
+        PhoneUpdateBottomSheet.show(context);
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  bool _isCurrentRoute(String routeName) {
+    final currentRoute = ModalRoute.of(context);
+    log('[ROUTE] ${currentRoute?.settings.name ?? ""}');
+    return currentRoute?.settings.name == routeName;
+  }
+
   Future<void> initTarget() async {
     var model = await UserClient().fetchGoalInfo();
     if (model == null) return;
     AppSettings.targetDuration = model.dailyTargetDuration ?? 0.0;
     AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
+    AppSettings.weightGoal = model.goalWeight ?? 0;
   }
 
   Future<void> checkExerciseData() async {
@@ -211,20 +285,21 @@ class _HomeControllerState extends State<HomeController>
     // _checkShowRating();
 
     Future.delayed(Duration.zero, () async {
-      String? username = AppSettings.userInfo!.userName;
-      String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
-      bool isFirstDownload = await AppSettings.getIsFirstDownload();
-      bool isZaloAccountAndNotSynchronized = firstLinked != null &&
-          firstLinked.toLowerCase() == "zalo" &&
-          username != null &&
-          !username.startsWith("+84");
-      if (isZaloAccountAndNotSynchronized && isFirstDownload) {
-        _showModalSyncAccount();
-      }
-      if (AppSettings.isSyncSuccess) {
-        _showDialogSuccess();
-        AppSettings.isSyncSuccess = false;
-      }
+      // String? username = AppSettings.userInfo!.userName;
+      // String? firstLinked = AppSettings.userInfo!.firstLinkedAccount;
+      // bool isFirstDownload = await AppSettings.getIsFirstDownload();
+      // bool isZaloAccountAndNotSynchronized = firstLinked != null &&
+      //     firstLinked.toLowerCase() == "zalo" &&
+      //     username != null &&
+      //     !username.startsWith("+84");
+      // if (isZaloAccountAndNotSynchronized && isFirstDownload) {
+      //   _showModalSyncAccount();
+      // }
+      // if (AppSettings.isSyncSuccess) {
+      //   _showDialogSuccess();
+      //   AppSettings.isSyncSuccess = false;
+      // }
+      await _checkPhoneValidationWhenHomeVisible();
     });
 
     if (lessonId == null && meetingId == null && activityId == null) {
@@ -421,7 +496,8 @@ class _HomeControllerState extends State<HomeController>
     }
     if (notifyName == 'hba1c_change_data') {
       _refresh();
-      _checkScreen(NavigatorName.detail_hba1c);
+      // Only refresh data, don't auto-navigate as it disrupts user experience
+      // User can manually navigate to HbA1C when they want to see it
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
       _refresh();
@@ -499,6 +575,8 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance.notifyObservers([],
         notifyName: Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM);
 
+    // Phone validation is handled by PhoneValidationManager in _checkPhoneValidationOnRouteChange()
+
     return true;
   }
 
@@ -566,12 +644,7 @@ class _HomeControllerState extends State<HomeController>
                 _showWelcomeDialog(model?.packageAccount, zaloGroup);
               });
             }
-            //
-            _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
-                    true &&
-                state.model.measurements?.first.value1?.isNotEmpty == true &&
-                state.model.measurements?.first.value1 != "--";
-            //
+
             if (state.model.measurements?.isNotEmpty == true) {
               List<HomeMeasurementData> huyetAps = state.model.measurements!
                   .where((e) => e.title.toLowerCase() == "huyết áp")
@@ -579,8 +652,15 @@ class _HomeControllerState extends State<HomeController>
               _haveInputBloodpressureAlready = huyetAps.isNotEmpty &&
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
+
+              List<HomeMeasurementData> dinduongs =
+                  state.model.measurements!.where((e) => e.title.toLowerCase() == "dinh dưỡng").toList();
+              _haveInputFoodAlready = dinduongs.isNotEmpty &&
+                  dinduongs.first.value1?.isNotEmpty == true &&
+                  dinduongs.first.value1 != "--";
+
             }
-            //
+
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
                     true &&
                 state.model.measurements?.first.value1?.isNotEmpty == true &&
@@ -737,6 +817,8 @@ class _HomeControllerState extends State<HomeController>
                             onAddMeasurement: () =>
                                 _showAddMeasurement(context),
                             onHealthProfile: () {},
+                            onHbA1cTap:
+                                MeasurementSummary.createHbA1cCallback(context),
                             onMeasurement: (routeName, args, title) async {
                               // track event
                               final String eventName = "home_select_kpi";
@@ -756,16 +838,49 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // check first time open blood pressure intro
-                              if (routeName == "/add_blood_pressure" &&
+                              if (routeName == NavigatorName.add_blood_pressure &&
                                   !_haveInputBloodpressureAlready) {
-                                Navigator.of(context).pushNamed(NavigatorName
-                                    .blood_pressure_intro_1st_page);
+                                Navigator.of(context)
+                                    .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                                return;
+                              }
+                              // check first time open dinh duong
+                              if (routeName == NavigatorName.add_food && !_haveInputFoodAlready) {
+                                FoodActionPopup.show(context);
                                 return;
                               }
                               // case input exercise
                               if (await _showExercriseAddBottomSheet(
                                       routeName) ==
                                   false) {
+                                return;
+                              }
+
+                              // case HbA1C navigation with data checking
+                              if (routeName == NavigatorName.detail_hba1c ||
+                                  (title != null &&
+                                      title.toLowerCase().contains('hba1c'))) {
+                                await HbA1cNavigationHelper.navigateToHbA1C(
+                                    context);
+                                return;
+                              }
+
+                              if (routeName == NavigatorName.add_bmi) {
+                                BmiBloc _bmiBloc = context.read();
+                                var additionalArg = {
+                                  AddBmiPage.bmiBlocKey: _bmiBloc,
+                                };
+                                var newArgs = (args?..addAll(additionalArg)) ??
+                                    additionalArg;
+                                Navigator.pushNamed(
+                                  context,
+                                  routeName!,
+                                  arguments: newArgs,
+                                ).then((value) {
+                                  if (_bmiBloc.hasModifiedData)
+                                    _homeBloc.add(FetchHome());
+                                  _bmiBloc.hasModifiedData = false;
+                                });
                                 return;
                               }
                               // others
@@ -1158,6 +1273,27 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
+        // case dinh duong
+        if (item.navigatorName == NavigatorName.add_food) {
+          FoodActionPopup.show(context);
+          return;
+        }
+        // case HbA1C - check if user has data
+        if (item.navigatorName == NavigatorName.add_hba1c ||
+            (item.title.toLowerCase().contains('hba1c'))) {
+          // Check if user has HbA1C data
+          bool hasHbA1cData = await _checkHasHbA1cData();
+
+          if (hasHbA1cData) {
+            // User has data, navigate to input page directly
+            Navigator.pushNamed(context, NavigatorName.add_hba1c,
+                arguments: {'type': 'input'});
+          } else {
+            // User has no data, navigate to onboarding
+            Navigator.pushNamed(context, NavigatorName.hba1c_intro_1st_page);
+          }
+          return;
+        }
         // others
         // CHEAT CODE : Vận Động -> Vận Động Bước 1
         if (item.title == "Vận động") {
@@ -1168,6 +1304,23 @@ class _HomeControllerState extends State<HomeController>
             Navigator.pushNamed(context, NavigatorName.exercrise_onboarding);
           }
           return;
+        } else if ([
+          NavigatorName.add_bmi,
+          NavigatorName.bmiInputPage,
+        ].contains(item.navigatorName)) {
+          Map<String, dynamic>? args = item.args;
+          args?.addAll({
+            BmiOnBoardingPage.bmiBlocKey: context.read<BmiBloc>(),
+          });
+          Navigator.pushNamed(
+            context,
+            item.navigatorName,
+            arguments: args,
+          ).then((value) {
+            BmiBloc _bmiBloc = context.read();
+            if (_bmiBloc.hasModifiedData) _homeBloc.add(FetchHome());
+            _bmiBloc.hasModifiedData = false;
+          });
         } else {
           Navigator.pushNamed(context, item.navigatorName,
               arguments: item.args);
@@ -1229,7 +1382,9 @@ class _HomeControllerState extends State<HomeController>
       } else if (lastOpenedGlucoseInputType == 'manual') {
         Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
             arguments: {'type': 'input', 'goalId': smartGoalId});
-        // or can return "true" to next page
+      } else if (lastOpenedGlucoseInputType == 'camera') {
+        Navigator.pushNamed(context, NavigatorName.blood_sugar_image_capture,
+            arguments: {'goalId': smartGoalId});
       }
       return false;
     }
@@ -1459,5 +1614,28 @@ class _HomeControllerState extends State<HomeController>
     Observable.instance
         .notifyObservers([], notifyName: Const.NAVIGATE_TO_MY_PLAN_TAB);
     Observable.instance.notifyObservers([], notifyName: "activity_tab_reload");
+  }
+
+  /// Check if user has HbA1C data
+  Future<bool> _checkHasHbA1cData() async {
+    try {
+      final homeModel = await AppSettings.getHome();
+
+      if (homeModel != null) {
+        final hasValidDateTime = homeModel.hbA1CIndex.createDateTime != null &&
+            homeModel.hbA1CIndex.createDateTime! > 0;
+
+        final hasHbA1cData = homeModel.hbA1CIndex.index != null &&
+            homeModel.hbA1CIndex.index! > 0 &&
+            hasValidDateTime;
+
+        return hasHbA1cData;
+      }
+
+      return false;
+    } catch (e) {
+      // In case of error, assume no data
+      return false;
+    }
   }
 }

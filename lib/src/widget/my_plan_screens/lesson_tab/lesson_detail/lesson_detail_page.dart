@@ -8,7 +8,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -29,7 +28,6 @@ import 'models/audio_data.dart';
 import 'widgets/bottom_sheet_share_lesson.dart';
 import 'widgets/bottom_sheet_widget.dart';
 import 'widgets/share_lesson_button.dart';
-import 'widgets/youtube_video_widget.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final Function(String, int) onComplete;
@@ -63,14 +61,34 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   @override
   Future<void> dispose() async {
+    debugPrint('[VIDEO] LessonDetailPage.dispose start for lessonId=${_cubit.lessonDetail?.id} title=${_cubit.lessonDetail?.name}');
+    
+    // Immediately dispose video and audio to prevent background audio
+    debugPrint('[VIDEO] Immediately disposing lesson media managers');
+    _cubit.videoManager?.disposeAllVideo();
+    _cubit.audioManager?.disposeAllAudio();
+    
     await LessonDetailTracking.lessonDetailScrolling(
       percentComplete: percentComplete,
       objectId: _cubit.lessonDetail!.id!,
       objectTitle: _cubit.lessonDetail!.name!,
     );
-    _cubit.videoManager?.disposeAllVideo();
-    _cubit.audioManager?.disposeAllAudio();
+    
+    debugPrint('[VIDEO] LessonDetailPage.dispose done');
     super.dispose();
+  }
+
+  bool isYouTubeLink(String? videoAddressLink) {
+    if (videoAddressLink == null || videoAddressLink.isEmpty) {
+      return false;
+    }
+
+    final RegExp youtubeRegex = RegExp(
+      r'^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/',
+      caseSensitive: false,
+    );
+
+    return youtubeRegex.hasMatch(videoAddressLink);
   }
 
   @override
@@ -121,28 +139,56 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           }
         },
         builder: (context, state) {
-          return _cubit.showQuizLesson
-              ? CourseQuizPage(
-                  key: Key(_cubit.currentSectionDetail?.id ?? ''),
-                  currentPercent: (((_cubit.currentSection + 1) /
-                              _cubit.sectionList.length) *
-                          100)
-                      .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
-                  lessonId: _cubit.lessonId,
-                  lessonSectionItem: widget.lessonType != 3
-                      ? _cubit.currentSectionDetail
-                      : null,
-                  onDone: (isPassed) async {
-                    _cubit.onChangeSection(context, _cubit.currentSection + 1);
-                  },
-                  onComplete: () {
-                    widget.onComplete(
-                        _cubit.lessonDetail!.id!, _cubit.percentComplete);
-                  },
-                  lessonDetail: _cubit.lessonDetail!,
-                  smartGoal: widget.smartGoal,
-                )
-              : Scaffold(
+          return WillPopScope(
+            onWillPop: () async {
+              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - pausing and disposing video and audio');
+              // Immediately pause video and audio before disposal
+              if (_cubit.videoManager != null) {
+                try {
+                  _cubit.videoManager?.controller.then((controller) {
+                    if (controller != null) {
+                      controller.pause();
+                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on system back press');
+                    }
+                  });
+                } catch (e) {
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on system back press: $e');
+                }
+                _cubit.videoManager?.disposeAllVideo();
+              }
+              if (_cubit.audioManager != null) {
+                try {
+                  _cubit.audioManager?.controller?.pause();
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on system back press');
+                } catch (e) {
+                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on system back press: $e');
+                }
+                _cubit.audioManager?.disposeAllAudio();
+              }
+              return true;
+            },
+            child: _cubit.showQuizLesson
+                ? CourseQuizPage(
+                    key: Key(_cubit.currentSectionDetail?.id ?? ''),
+                    currentPercent: (((_cubit.currentSection + 1) /
+                                _cubit.sectionList.length) *
+                            100)
+                        .toInt(), // Khi hoàn thành quiz sẽ gửi luôn phần trăm đã tính sẵn
+                    lessonId: _cubit.lessonId,
+                    lessonSectionItem: widget.lessonType != 3
+                        ? _cubit.currentSectionDetail
+                        : null,
+                    onDone: (isPassed) async {
+                      _cubit.onChangeSection(context, _cubit.currentSection + 1);
+                    },
+                    onComplete: () {
+                      widget.onComplete(
+                          _cubit.lessonDetail!.id!, _cubit.percentComplete);
+                    },
+                    lessonDetail: _cubit.lessonDetail!,
+                    smartGoal: widget.smartGoal,
+                  )
+                : Scaffold(
                   body: Stack(
                     children: [
                       BackgroundPage(
@@ -165,6 +211,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         children: [
                                           GestureDetector(
                                             onTap: () async {
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - disposing video and audio');
+                                              // Immediately dispose video to prevent background audio
+                                              _cubit.videoManager?.disposeAllVideo();
+                                              _cubit.audioManager?.disposeAllAudio();
+                                              
                                               await TrackingManager.analytics
                                                   .logEvent(
                                                 name: 'component_clicked',
@@ -179,6 +230,31 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                       _cubit.lessonDetail?.name,
                                                 },
                                               );
+                                              
+                                              // Immediately pause video and audio before navigation
+                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - pausing and disposing video and audio');
+                                              if (_cubit.videoManager != null) {
+                                                try {
+                                                  _cubit.videoManager?.controller.then((controller) {
+                                                    if (controller != null) {
+                                                      controller.pause();
+                                                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on back press');
+                                                    }
+                                                  });
+                                                } catch (e) {
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on back press: $e');
+                                                }
+                                                _cubit.videoManager?.disposeAllVideo();
+                                              }
+                                              if (_cubit.audioManager != null) {
+                                                try {
+                                                  _cubit.audioManager?.controller?.pause();
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on back press');
+                                                } catch (e) {
+                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on back press: $e');
+                                                }
+                                                _cubit.audioManager?.disposeAllAudio();
+                                              }
                                               NavigationUtil.pop(context);
                                             },
                                             child: Icon(
@@ -280,15 +356,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         if (_cubit.currentSectionDetail
-                                                    ?.videoAddressLink !=
-                                                null &&
-                                            _cubit.currentSectionDetail
-                                                    ?.linkType ==
-                                                0)
+                                                ?.videoAddressLink !=
+                                            null)
                                           _buildTitleWidget(
-                                            child:
-                                                //BetterPlayer(controller: _cubit.videoManager!.controller!),
-                                                VideoWidget(
+                                            child: VideoWidget(
+                                              isYouTubeLink: isYouTubeLink(
+                                                  _cubit.currentSectionDetail
+                                                      ?.videoAddressLink),
+                                              url: _cubit.currentSectionDetail!
+                                                  .videoAddressLink!,
                                               callbackEventListener:
                                                   (event, videoDuration) {
                                                 LessonDetailTracking
@@ -301,13 +377,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                   eventType: event,
                                                 );
                                               },
-                                              url: _cubit.currentSectionDetail
-                                                      ?.videoAddressLink ??
-                                                  '',
                                               onPlay: () async =>
                                                   _onTrackingVideoPlay(),
-                                              onComplete: () =>
-                                                  _onTrackingVideoComplete(),
+                                              onComplete: () {
+                                                LessonDetailTracking
+                                                    .completed50PercentVideo(
+                                                  objectId:
+                                                      _cubit.lessonDetail?.id,
+                                                  objectTitle:
+                                                      _cubit.lessonDetail?.name,
+                                                );
+                                                _cubit.complete();
+                                                _onTrackingVideoComplete();
+                                              },
                                               callbackByPercentVideo: () {
                                                 LessonDetailTracking
                                                     .completed50PercentVideo(
@@ -333,34 +415,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             ),
                                             title: _cubit.currentSectionDetail
                                                 ?.videoDescription,
-                                          ),
-                                        if (_cubit.currentSectionDetail
-                                                    ?.videoAddressLink !=
-                                                null &&
-                                            _cubit.currentSectionDetail
-                                                    ?.linkType ==
-                                                1)
-                                          YoutubeVideoWidget(
-                                            videoUrl: _cubit
-                                                .currentSectionDetail!
-                                                .videoAddressLink!,
-                                            onPlay: ({meta}) =>
-                                                _onTrackingVideoPlay(),
-                                            onEnded: ({meta}) {
-                                              LessonDetailTracking
-                                                  .completed50PercentVideo(
-                                                objectId:
-                                                    _cubit.lessonDetail?.id,
-                                                objectTitle:
-                                                    _cubit.lessonDetail?.name,
-                                              );
-                                              _cubit.complete();
-                                              _onTrackingVideoComplete();
-                                            },
-                                            videoTitle: _cubit
-                                                .currentSectionDetail?.name,
-                                            videoThumbnail:
-                                                _cubit.lessonDetail?.image?.url,
                                           ),
                                         SizedBox(height: 8),
                                         Padding(
@@ -493,7 +547,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         ),
                     ],
                   ),
-                );
+                ),
+          );
         },
       ),
     );
@@ -596,7 +651,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         return BottomSheetWidget(
           sectionList: _cubit.sectionList,
           currentSection: _cubit.currentSection,
-          onChangeSection: (int newSectionIndex) {
+          onChangeSection: (int newSectionIndex) async {
+            _cubit.videoManager?.disposeAllVideo();
+            await Future.delayed(const Duration(milliseconds: 200));
             _cubit.onChangeSection(context, newSectionIndex, isFromList: true);
           },
           lessonDetail: _cubit.lessonDetail!,

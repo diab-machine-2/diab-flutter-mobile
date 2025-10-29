@@ -1,9 +1,10 @@
 import 'dart:developer';
 import 'dart:ui';
 import 'package:csv/csv_settings_autodetection.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/src/utils/app_log.dart';
-import 'asset_loader.dart';
+// import 'asset_loader.dart';
 import 'package:csv/csv.dart';
 
 //
@@ -11,6 +12,8 @@ import 'package:csv/csv.dart';
 //
 class CsvAssetLoader extends AssetLoader {
   CSVParser? csvParser;
+
+  CsvAssetLoader(); // phải có const constructor y như AssetLoader
 
   @override
   Future<Map<String, dynamic>> load(String path, Locale locale) async {

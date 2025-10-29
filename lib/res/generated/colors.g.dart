@@ -42,7 +42,7 @@ class Colors {
   Color get grayBorder => Color(0xffE2E4E7);
   Color get grayComponentBorder => Color(0xffDDDDDD);
   Color get blueText => Color(0xff004D84);
-  Color get mainColor => Color(0xff01645A);
+  Color get mainColor => Color(0xff008479);
   Color get notActiveGreen => Color(0xff7EC8C3);
   Color get yellow => Color(0xffFDB913);
   Color get green => Color(0xff21A567);
@@ -64,6 +64,9 @@ class Colors {
   Color get grey_2 => Color(0xff787A7D);
   Color get main_6 => Color(0xFFE4F5F5);
   Color get attentionText => Color(0xffAF0000);
+  Color get hba1c_detail_text => Color(0xffAF0000);
+  Color get hba1c_desc_delete_text => Color(0xff787A7D);
+  Color get hba1c_text_color => Color(0xff666666);
   Color get blue_6 => Color(0xffD5EFFF);
   Color get labelColor => Color(0xff3C3C43);
   Color get orange_1 => Color(0xffF58220);
@@ -197,4 +200,6 @@ class Colors {
   Color get conversation_bubble_bot_broder => Color(0xffDFE4E4);
   Color get infographic_color => Color(0xff23C559);
   Color get color0xffB4802D => Color(0xffB4802D);
+  Color get color0xff830000 => Color(0xff830000);
+  Color get color0xffDADEDF => Color(0xffDADEDF);
 }

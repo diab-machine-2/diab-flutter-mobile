@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
 
 class HorizontalSelector extends StatefulWidget {
   final Function(int) onSelected;
@@ -14,7 +15,8 @@ class HorizontalSelector extends StatefulWidget {
     required this.values,
     required this.labels,
     this.height = 42,
-  })  : assert(values.length == labels.length, 'values and labels must have the same length'),
+  })  : assert(values.length == labels.length,
+            'values and labels must have the same length'),
         super(key: key);
   @override
   _HorizontalSelectorState createState() => _HorizontalSelectorState();
@@ -22,6 +24,17 @@ class HorizontalSelector extends StatefulWidget {
 
 class _HorizontalSelectorState extends State<HorizontalSelector> {
   late int _selectedValue = widget.initialValue;
+
+  @override
+  void didUpdateWidget(HorizontalSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update selected value when initialValue changes from parent
+    if (widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        _selectedValue = widget.initialValue;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +68,7 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           height: widget.height,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
           decoration: BoxDecoration(
             color: isSelected ? const Color(0xFF00867D) : Colors.transparent,
             borderRadius: BorderRadius.circular(30),
@@ -64,9 +77,10 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
           child: Text(
             entry.value,
             style: TextStyle(
+              fontFamily: R.font.sfpro,
               color: isSelected ? Colors.white : Colors.grey[700],
               fontSize: 15,
-              fontWeight: FontWeight.bold,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
             ),
           ),
         ),

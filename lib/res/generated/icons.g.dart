@@ -34,7 +34,6 @@ class Icons {
   String get ic_calendar => "lib/res/icons/ic_calendar.svg";
   String get ic_medicine => "lib/res/icons/ic_medicine.svg";
   String get ic_delete => "lib/res/icons/ic_delete.svg";
-  String get ic_edit => "lib/res/icons/ic_edit.svg";
   String get ic_prescription => "lib/res/icons/ic_prescription.svg";
   String get ic_schedule_use_medicine => "lib/res/icons/ic_schedule_use_medicine.svg";
   String get ic_add_prescription => "lib/res/icons/ic_add_prescription.svg";
@@ -43,4 +42,5 @@ class Icons {
   String get ic_medicine_unused => "lib/res/icons/ic_medicine_unused.svg";
   String get ic_medicine_used => "lib/res/icons/ic_medicine_used.svg";
   String get ic_error => "lib/res/icons/ic_error.svg";
+  String get ic_edit => "lib/res/icons/ic_edit.svg";
 }

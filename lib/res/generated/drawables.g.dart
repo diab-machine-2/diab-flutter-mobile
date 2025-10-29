@@ -207,7 +207,7 @@ class Drawables {
   String get ic_laughing => "lib/res/drawables/ic_laughing.png";
   String get ic_learning => "lib/res/drawables/ic_learning.png";
   String get ic_lesson_can_not_learn =>
-    "lib/res/drawables/ic_lesson_can_not_learn.png";
+      "lib/res/drawables/ic_lesson_can_not_learn.png";
   String get ic_lesson_lock => "lib/res/drawables/ic_lesson_lock.png";
   String get ic_lesson_not_learn => "lib/res/drawables/ic_lesson_not_learn.png";
   String get ic_lesson_section_audio =>
@@ -234,7 +234,7 @@ class Drawables {
   String get ic_note_text => "lib/res/drawables/ic_note_text.png";
   String get ic_ok => "lib/res/drawables/ic_ok.png";
   String get ic_package_experience =>
-    "lib/res/drawables/ic_package_experience.png";
+      "lib/res/drawables/ic_package_experience.png";
   String get ic_package_premium => "lib/res/drawables/ic_package_premium.png";
   String get ic_package_pro => "lib/res/drawables/ic_package_pro.png";
   String get ic_package_roadmap => "lib/res/drawables/ic_package_roadmap.png";
@@ -485,6 +485,21 @@ class Drawables {
       "lib/res/drawables/bloodpressure/ic_bloodpressure_pulse.png";
   String get ic_bloodpressure_warning =>
       "lib/res/drawables/bloodpressure/ic_bloodpressure_warning.png";
+
+  String get ic_food_plus => "lib/res/drawables/food/ic_food_plus.png";
+  String get im_food_breakfast => "lib/res/drawables/food/im_food_breakfast.png";
+  String get im_food_lunch => "lib/res/drawables/food/im_food_lunch.png";
+  String get im_food_dinner => "lib/res/drawables/food/im_food_dinner.png";
+  String get im_food_snack => "lib/res/drawables/food/im_food_snack.png";
+  String get im_food_method_capture => "lib/res/drawables/food/im_food_method_capture.png";
+  String get im_food_capture => "lib/res/drawables/food/im_food_capture.png";
+  String get im_food_capture_rotate => "lib/res/drawables/food/im_food_capture_rotate.png";
+  String get ic_image_placeholder => "lib/res/drawables/food/ic_image_placeholder.png";
+  String get ic_sunny => "lib/res/drawables/food/ic_sunny.png";
+  String get ic_food_bowl => "lib/res/drawables/food/ic_food_bowl.png";
+  String get ic_food_edit => "lib/res/drawables/food/ic_food_edit.png";
+  String get ic_food_edit_raw => "lib/res/drawables/food/ic_food_edit_raw.png";
+  String get ic_food_delete => "lib/res/drawables/food/ic_food_delete.png";
 
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
@@ -787,8 +802,27 @@ class Drawables {
       "lib/res/drawables/subscription/subscription_program_full_2.png";
   String get subscription_program_full_3 =>
       "lib/res/drawables/subscription/subscription_program_full_3.png";
-    String get img_upgrade_package_v2 => "lib/res/drawables/img_upgrade_package_v2.png";
-    String get ic_lesson_can_not_learn_v2 => "lib/res/drawables/ic_lesson_can_not_learn_v2.png";
+  String get weight_intro_img => "lib/res/drawables/weight_intro_img.png";
+  String get img_upgrade_package_v2 => "lib/res/drawables/img_upgrade_package_v2.png";
+  String get ic_lesson_can_not_learn_v2 => "lib/res/drawables/ic_lesson_can_not_learn_v2.png";
+  String get ic_view_detail => "lib/res/drawables/ic_view_detail.png";
+  String get im_glucose_from_photo => "lib/res/drawables/glucose/im_glucose_from_photo.png";
+  String get ic_camera_white => "lib/res/drawables/ic_camera_white.png";
+  String get ic_camera_green => "lib/res/drawables/ic_camera_green.png";
+  String get im_hba1c_detail => "lib/res/drawables/hba1c/im_hba1c_detail.png";
+  String get im_hba1c_intro => "lib/res/drawables/hba1c/im_hba1c_intro.png";
+  String get im_hba1c_measurement_reminder =>
+      "lib/res/drawables/hba1c/im_hba1c_measurement_reminder.png";
+  String get im_hba1c_supports_1 =>
+      "lib/res/drawables/hba1c/im_hba1c_supports_1.png";
+  String get im_hba1c_supports_2 =>
+      "lib/res/drawables/hba1c/im_hba1c_supports_2.png";
+  String get im_hba1c_supports_3 =>
+      "lib/res/drawables/hba1c/im_hba1c_supports_3.png";
+  String get im_hba1c_supports_4 =>
+      "lib/res/drawables/hba1c/im_hba1c_supports_4.png";
+  String get ic_phone_security => "lib/res/drawables/ic_phone_security.png";
+  String get ic_phone_illustration => "lib/res/drawables/ic_phone_illustration.png";
   String get medicine_banner => "lib/res/drawables/medicine_banner.png";
   String get ic_mobile => "lib/res/drawables/ic_mobile.png";
   String get ic_medicine_calendar => "lib/res/drawables/ic_medicine_calendar.png";

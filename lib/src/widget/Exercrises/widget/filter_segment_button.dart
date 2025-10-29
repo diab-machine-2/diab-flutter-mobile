@@ -138,7 +138,7 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
         title,
         style: TextStyle(
           color: isSelected ? R.color.white : R.color.color0xff636A6B,
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
         ),
       ),

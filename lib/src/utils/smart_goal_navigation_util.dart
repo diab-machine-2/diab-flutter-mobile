@@ -23,8 +23,8 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custom_height_picker.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi_view/widgets/custome_weight_picker.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custom_height_picker.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -220,7 +220,7 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handleExercise(
       BuildContext context, SmartGoalList? smartGoal) async {
-    await Navigator.pushNamed(context, NavigatorName.add_exercrises,
+    await Navigator.pushNamed(context, NavigatorName.exercrise_add_v2,
         arguments: {'type': 'input', 'goalId': smartGoal?.id});
   }
 
