@@ -510,7 +510,6 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
   }
 
   Widget _buildButton() {
-    // Kiểm tra input có hợp lệ không
     final validationResult = _validateHbA1cInput(_controller.text);
     final bool _isInputValid =
         validationResult['isValid'] && _controller.text.isNotEmpty;

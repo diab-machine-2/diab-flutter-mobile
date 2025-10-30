@@ -1375,4 +1375,5 @@ bua_an_gom,"Bữa ăn gồm","Meal include",
 analyzing_your_meal,Đang phân tích bữa ăn của bạn...,Analyzing your meal...,
 choose_meal_image,Chọn ảnh món ăn,Select meal image,
 please_select_at_least_one_image,Vui lòng chọn ít nhất 1 ảnh,Please select at least 1 image,
-max_image_select_dynamic,Chỉ được chọn tối đa {} ảnh,Only up to {} photos can be selected
+max_image_select_dynamic,Chỉ được chọn tối đa {} ảnh,Only up to {} photos can be selected,
+unknown_meal_image,"Không thể xác định món ăn. Vui lòng thử lại.","Cannot identify meal from image. Please try again."

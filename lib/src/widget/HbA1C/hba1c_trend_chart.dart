@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:medical/res/R.dart';
@@ -9,6 +8,7 @@ class HbA1cDataPoint {
   final String level;
   final Color color;
   final String timeOfDay;
+  final String? id; // ID from API for editing (String to match InputHbA1CModel)
 
   HbA1cDataPoint({
     required this.date,
@@ -16,6 +16,7 @@ class HbA1cDataPoint {
     required this.level,
     required this.color,
     required this.timeOfDay,
+    this.id,
   });
 }
 
@@ -25,6 +26,7 @@ class HbA1cTrendChart extends StatefulWidget {
   final int focusIndex;
   final int focusSubIndex;
   final Function(int) onPointSelected;
+  final Function(int)? onPointDoubleTapped; // Optional callback for double tap
 
   const HbA1cTrendChart({
     Key? key,
@@ -33,6 +35,7 @@ class HbA1cTrendChart extends StatefulWidget {
     required this.focusIndex,
     required this.focusSubIndex,
     required this.onPointSelected,
+    this.onPointDoubleTapped,
   }) : super(key: key);
 
   @override
@@ -40,35 +43,37 @@ class HbA1cTrendChart extends StatefulWidget {
 }
 
 class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
+  int? _lastTappedIndex;
+  DateTime? _lastTapTime;
+
+  // Custom Y transform để đặt đường kẻ 6.5% ở giữa chart
+  // Tương tự như BloodPressure chart với đường kẻ 90 và 140
+  double _customYTransform(double y) {
+    // Chia chart thành 3 vùng với 6.5 ở giữa:
+    // 0-5.5: map to 0-40
+    // 5.5-7.5: map to 40-60 (6.5 sẽ nằm ở 50, chính giữa)
+    // 7.5-15: map to 60-100
+    if (y <= 5.5) {
+      // Map 0–5.5 to 0–40
+      return (y / 5.5) * 40;
+    } else if (y <= 7.5) {
+      // Map 5.5–7.5 to 40–60 (6.5 will be at 50, center)
+      return 40 + ((y - 5.5) / 2.0) * 20;
+    } else {
+      // Map 7.5–15+ to 60–100
+      return 60 + ((y - 7.5) / 7.5) * 40;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.dataPoints.isEmpty) return SizedBox(height: 120);
 
-    // Calculate dynamic Y-axis range based on actual data
-    final allValues =
-        widget.groupedPoints.expand((g) => g.map((e) => e.value)).toList();
-    double minValue = allValues.reduce(min);
-    double maxValue = allValues.reduce(max);
-
-    double padding = 0.2;
-    double minY = (minValue - padding).clamp(0.0, double.infinity);
-    double maxY = maxValue + padding;
-
-    // Ensure minimum range for better visualization
-    if (maxY - minY < 2.0) {
-      double center = (maxY + minY) / 2;
-      minY = center - 1.0;
-      maxY = center + 1.0;
-    }
-
-    // Ensure Y-axis always includes 6.5 as reference point
-    if (minY > 6.5) minY = 6.5 - padding;
-    if (maxY < 6.5) maxY = 6.5 + padding;
-
     List<LineChartBarData> lineBarsData = _generateMultipleHbA1cLines();
 
-    // Calculate the Y position for 6.5% label based on chart Y-axis
-    double labelYPosition = _calculateYPosition(6.5, minY, maxY, 140);
+    // Fixed minY and maxY for consistent chart display
+    double minY = 0;
+    double maxY = 100;
 
     return SizedBox(
       height: 140,
@@ -81,22 +86,22 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
             Container(
               width: 30,
               height: 140,
-              child: Stack(
+              padding: EdgeInsets.only(top: 8, bottom: 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // Single value label - 6.5%, positioned at reference line
-                  Positioned(
-                    top: labelYPosition -
-                        8, // Position at reference line, subtract half of text height
-                    right: 0,
-                    child: Text(
-                      '6.5%',
-                      style: TextStyle(
-                        color: Color(0xFF5E6566),
-                        fontSize: 10,
-                        fontFamily: R.font.sfpro,
-                      ),
+                  Spacer(flex: 1),
+                  Text(
+                    '6.5%',
+                    style: TextStyle(
+                      color: R.color.black,
+                      fontSize: 12,
+                      fontFamily: R.font.sfpro,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
+                  Spacer(flex: 1),
                 ],
               ),
             ),
@@ -105,6 +110,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
             Expanded(
               child: Container(
                 height: 140,
+                padding: EdgeInsets.only(top: 8, bottom: 8),
                 child: LineChart(
                   LineChartData(
                     lineTouchData: LineTouchData(
@@ -113,8 +119,37 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                       getTouchLineEnd: (barData, index) => double.infinity,
                       touchCallback: (FlTouchEvent event,
                           LineTouchResponse? touchResponse) {
-                        if (event is! FlLongPressEnd &&
+                        // Only handle tap up events for better double tap detection
+                        if (event is FlTapUpEvent) {
+                          final spot =
+                              touchResponse?.lineBarSpots?.isNotEmpty == true
+                                  ? touchResponse!.lineBarSpots!.first
+                                  : null;
+                          if (spot != null) {
+                            final touchedFlatIndex = spot.x.toInt();
+
+                            // Check for double tap
+                            final now = DateTime.now();
+                            if (_lastTappedIndex == touchedFlatIndex &&
+                                _lastTapTime != null &&
+                                now.difference(_lastTapTime!).inMilliseconds <
+                                    500) {
+                              // Double tap detected
+                              if (widget.onPointDoubleTapped != null) {
+                                widget.onPointDoubleTapped!(touchedFlatIndex);
+                              }
+                              _lastTappedIndex = null;
+                              _lastTapTime = null;
+                            } else {
+                              // Single tap
+                              widget.onPointSelected(touchedFlatIndex);
+                              _lastTappedIndex = touchedFlatIndex;
+                              _lastTapTime = now;
+                            }
+                          }
+                        } else if (event is! FlLongPressEnd &&
                             event is! FlPanEndEvent) {
+                          // For other events (pan, hover), just update selection without double tap logic
                           final spot =
                               touchResponse?.lineBarSpots?.isNotEmpty == true
                                   ? touchResponse!.lineBarSpots!.first
@@ -130,9 +165,8 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                         return spotIndexes.map((index) {
                           return TouchedSpotIndicatorData(
                             FlLine(
-                              color: Colors.black26,
-                              strokeWidth: 0.3,
-                              dashArray: [2, 2],
+                              color: R.color.black,
+                              strokeWidth: 0.5,
                             ),
                             FlDotData(show: false),
                           );
@@ -182,12 +216,12 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                     lineBarsData: lineBarsData,
                     extraLinesData: ExtraLinesData(
                       horizontalLines: [
-                        // Single dashed line at 6.5% reference point
+                        // Dashed line at 6.5% reference point (at center)
                         HorizontalLine(
-                          y: 6.5,
-                          color: Color(0xFF5E6566),
-                          dashArray: [2, 2],
-                          strokeWidth: 0.3,
+                          y: _customYTransform(6.5),
+                          color: Color(0xFF636A6B),
+                          dashArray: [8, 4],
+                          strokeWidth: 1,
                         ),
                       ],
                     ),
@@ -215,9 +249,11 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     }
 
     // Generate spots for the single line connecting all points
+    // Apply custom Y transform to position values correctly
     List<FlSpot> spots = [];
     for (int i = 0; i < flattenedPoints.length; i++) {
-      spots.add(FlSpot(i.toDouble(), flattenedPoints[i].value));
+      double transformedValue = _customYTransform(flattenedPoints[i].value);
+      spots.add(FlSpot(i.toDouble(), transformedValue));
     }
 
     return [
@@ -252,10 +288,19 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         ),
         belowBarData: BarAreaData(
           show: true,
+          // Gradient colors from top to bottom
+          // Reversed: green at top -> white/transparent at bottom
           colors: [
-            Color(0xFFC7F6D7),
-            Color(0xFFFDFDFD),
+            Color(0xFFC7F6D7).withOpacity(1), // Darker green at top
+            Color(0xFFC7F6D7).withOpacity(0.7), // Light green in middle
+            Color(0xFFFDFDFD)
+                .withOpacity(0.4), // Almost transparent white at bottom
           ],
+          gradientColorStops: [0.0, 0.5, 1.0], // Distribute colors evenly
+          gradientFrom: Offset(0, 0), // Start from line
+          gradientTo: Offset(0, 1), // End at bottom
+          // Ensure gradient always fills to a minimum depth for visibility
+          applyCutOffY: false, // Don't apply cutoff, fill to chart bottom
         ),
       ),
     ];
@@ -291,20 +336,6 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       }
     }
     return flattenedPoints;
-  }
-
-  double _calculateYPosition(
-      double value, double minY, double maxY, double chartHeight) {
-    if (maxY == minY) return 0;
-
-    // Normalize the value to 0-1 range
-    double normalizedValue = (value - minY) / (maxY - minY);
-
-    // Chart Y-axis is inverted (high values at top)
-    double invertedPosition =
-        (1 - normalizedValue) * (chartHeight - 16); // Subtract text height
-
-    return invertedPosition;
   }
 
   // Get color based on HbA1C value ranges with new color scheme
