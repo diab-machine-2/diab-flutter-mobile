@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -107,13 +109,8 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
         CustomDialog.showLoadingDialog(context);
       } else if (state.result.isSuccess) {
         CustomDialog.hideLoadingDialog(context);
-        CustomDialog.showSuccessDialog(
-          context,
-          onPrimaryButtonTap: () {
-            _bmiBloc.hasModifiedData = true;
-            _redirectToNextStep(state.result.data!);
-          },
-        );
+        _bmiBloc.hasModifiedData = true;
+        _redirectToNextStep(state.result.data!);
       } else {
         CustomDialog.hideLoadingDialog(context);
         CustomDialog.showErrorDialog(
@@ -232,7 +229,9 @@ class _ConnectToHealthConnectButton extends StatelessWidget {
         child: Row(
           children: [
             Image.asset(
-              R.drawable.logo_healthConnect,
+              Platform.isIOS
+                  ? R.drawable.logo_healthkit
+                  : R.drawable.logo_healthConnect,
               width: AppMediaQuery.deviceWidth * 0.15,
             ),
             const SizedBox(

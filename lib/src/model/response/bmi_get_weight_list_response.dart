@@ -94,6 +94,16 @@ class BmiGetWeightRecord {
       _$BmiGetWeightRecordFromJson(json);
 
   Map<String, dynamic> toJson() => _$BmiGetWeightRecordToJson(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) return false; // Type check
+
+    // Property-based comparison
+    return other is BmiGetWeightRecord &&
+        other.date == date &&
+        other.bmi == bmi;
+  }
 }
 
 @JsonSerializable()
@@ -108,7 +118,8 @@ class WeightRecordImage {
     this.url,
   });
 
-  factory WeightRecordImage.fromJson(Map<String, dynamic> json) => _$WeightRecordImageFromJson(json);
+  factory WeightRecordImage.fromJson(Map<String, dynamic> json) =>
+      _$WeightRecordImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$WeightRecordImageToJson(this);
 }

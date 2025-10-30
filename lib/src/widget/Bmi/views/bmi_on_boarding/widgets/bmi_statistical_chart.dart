@@ -4,26 +4,41 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 
-class BmiStatisticalChart extends StatelessWidget {
+class BmiStatisticalChart extends StatefulWidget {
   const BmiStatisticalChart({
     super.key,
   });
 
-  static final double _heightOfChart = 160;
+  @override
+  State<BmiStatisticalChart> createState() => _BmiStatisticalChartState();
+}
+
+class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
+  static final double _heightOfChart = 120;
   static final double _widthOfSideBar = 32;
   static final double _marginOfWeight = 15;
 
+  late BmiBloc _bmiBloc;
+  ScrollController _scrollController = ScrollController(
+    keepScrollOffset: true,
+  );
+
+  DateTime? _lastTapTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _bmiBloc = context.read();
+  }
+
   @override
   Widget build(BuildContext context) {
-    BmiBloc _bmiBloc = context.read();
-    ScrollController _scrollController = ScrollController(
-      keepScrollOffset: true,
-    );
-
     return BlocBuilder<BmiBloc, BmiState>(
         buildWhen: (_, state) =>
             state is BmiGetWeightIndexListState ||
@@ -34,7 +49,7 @@ class BmiStatisticalChart extends StatelessWidget {
               List.from(_bmiBloc.historicalWeightList);
 
           data = data.reversed.toList();
-          double intervalWidth = 48;
+          double intervalWidth = 40;
           bool enableScroll =
               data.length * intervalWidth > MediaQuery.of(context).size.width;
 
@@ -49,15 +64,15 @@ class BmiStatisticalChart extends StatelessWidget {
                       ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
                   _marginOfWeight;
 
-          if (_bmiBloc.isLastSelectedPoint && data.length > 1) {
-            Future.delayed(Durations.extralong4, () {
-              _scrollController.animateTo(
-                _scrollController.position.maxScrollExtent,
-                duration: Durations.medium2,
-                curve: Curves.easeInOut,
-              );
-            });
-          }
+          // if (_bmiBloc.isLastSelectedPoint && data.length > 1) {
+          Future.delayed(Durations.extralong4, () {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: Durations.medium2,
+              curve: Curves.easeInOut,
+            );
+          });
+          // }
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -130,7 +145,7 @@ class BmiStatisticalChart extends StatelessWidget {
                               data.length,
                               (i) => FlSpot(i.toDouble(), data[i].weight ?? 0),
                             ),
-                            isCurved: true,
+                            isCurved: false,
                             colors: data.map((e) => e.bmiColor).toList(),
                             barWidth: 2,
                             dotData: FlDotData(
@@ -150,29 +165,66 @@ class BmiStatisticalChart extends StatelessWidget {
                               },
                             ),
                             belowBarData: BarAreaData(
-                              show: true,
-                              colors: data
-                                  .map((e) => e.bmiColor.withOpacity(0.1))
-                                  .toList(),
-                            ),
+                                show: true,
+                                colors: [
+                                  Colors.green.withOpacity(0.2),
+                                  Colors.transparent,
+                                ],
+                                gradientFrom: Offset(0.5, 0),
+                                gradientTo: Offset(0.5, 1),
+                                gradientColorStops: [0.5, 1]),
                           ),
                         ],
                         lineTouchData: LineTouchData(
-                          touchCallback: (event, response) {
-                            // Kiểm tra xem có tap vào 1 điểm không
-                            if (!event.isInterestedForInteractions ||
-                                response == null ||
-                                response.lineBarSpots == null) {
-                              return;
-                            }
-
-                            // response.lineBarSpots chứa danh sách điểm được chạm
-                            final spot = response.lineBarSpots!.first;
-                            debugPrint('Tap vào điểm x=${spot.x}, y=${spot.y}');
-                            var index = data.length - 1 - spot.spotIndex;
-                            _bmiBloc.selectPointChart(index);
-                          },
-                        ),
+                            touchCallback: (event, response) {
+                              // Kiểm tra xem có tap vào 1 điểm không
+                              if (!event.isInterestedForInteractions ||
+                                  response == null ||
+                                  response.lineBarSpots == null) {
+                                return;
+                              } else if (event is FlTapDownEvent) {
+                                _touchCallback(event, response, data);
+                              }
+                            },
+                            handleBuiltInTouches: true,
+                            touchTooltipData: LineTouchTooltipData(
+                              tooltipBgColor: Colors.transparent,
+                              getTooltipItems: (touchedSpots) {
+                                return touchedSpots.map((spot) {
+                                  return LineTooltipItem(
+                                    '${spot.y.toStringAsFixed(1)} kg',
+                                    TextStyle(
+                                        color: data[spot.spotIndex].bmiColor,
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                }).toList();
+                              },
+                            ),
+                            getTouchedSpotIndicator: (LineChartBarData barData,
+                                List<int> spotIndexes) {
+                              return spotIndexes.map((index) {
+                                return TouchedSpotIndicatorData(
+                                  FlLine(
+                                    color: data[index]
+                                        .bmiColor, // màu line khi chạm
+                                    strokeWidth: 1,
+                                    dashArray: [4, 2],
+                                  ),
+                                  FlDotData(
+                                    show: true,
+                                    getDotPainter:
+                                        (spot, percent, barData, index) =>
+                                            FlDotCirclePainter(
+                                      radius: 6,
+                                      color: data[index]
+                                          .bmiColor, // màu chấm được chọn
+                                      strokeWidth: 1,
+                                      strokeColor: Colors.white,
+                                    ),
+                                  ),
+                                );
+                              }).toList();
+                            }),
                         extraLinesData: _bmiBloc.weightGoal != null
                             ? ExtraLinesData(horizontalLines: [
                                 HorizontalLine(
@@ -193,27 +245,49 @@ class BmiStatisticalChart extends StatelessWidget {
         });
   }
 
-  // List<FlSpot> getSpots(BuildContext context) {
-  //   BmiBloc _bmiBloc = context.read();
-  //   List<FlSpot> spots = [];
-  //   List<WeightStatisticRecord> weightData =
-  //       _bmiBloc.weightStatistical?.trendItems ?? [];
-  //   List<WaistStatisticRecord> waistData =
-  //       _bmiBloc.bmiWaistStatistical?.trendItems ?? [];
-  //   int totalRecords = weightData.length;
+  void _touchCallback(
+    FlTapDownEvent event,
+    LineTouchResponse lineTouch,
+    List<BmiGetWeightRecord> records,
+  ) async {
+    final now = DateTime.now();
 
-  //   if (totalRecords == 0) return [];
+    // detect double press
+    if (_lastTapTime != null &&
+        now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
+      // Double press detected
+      if (lineTouch.lineBarSpots != null &&
+          lineTouch.lineBarSpots!.isNotEmpty) {
+        final touchedSpot = lineTouch.lineBarSpots!.first;
+        final selectedTrend = records[touchedSpot.spotIndex];
 
-  //   for (int i = 0; i <= totalRecords; i++) {
-  //     spots.add(FlSpot(
-  //       // waistData.elementAtOrNull(i)?.value?.toDouble() ?? 0,
-  //       weightData.elementAtOrNull(i)?.date?.toDouble() ?? 0,
-  //       weightData.elementAtOrNull(i)?.value?.toDouble() ?? 0,
-  //     ));
-  //   }
+        // Thực hiện hành động khi double press
+        if (selectedTrend == _bmiBloc.selectedPointChart) {
+          final updateResult = await Navigator.pushNamed(
+            context,
+            NavigatorName.bmiReviseRecordPage,
+            arguments: {
+              ReviseWeightPage.bmiBlocKey: _bmiBloc,
+              ReviseWeightPage.dataKey: selectedTrend,
+            },
+          );
 
-  //   return spots;
-  // }
+          if (updateResult == true) {
+            _bmiBloc
+              ..fetchHistoricalWeight()
+              ..refresh();
+          }
+        }
+      }
+    } else {
+      // Single press detected
+      final spot = lineTouch.lineBarSpots!.first;
+      debugPrint('Tap vào điểm x=${spot.x}, y=${spot.y}');
+      var index = records.length - 1 - spot.spotIndex;
+      _bmiBloc.selectPointChart(index);
+    }
+    _lastTapTime = now;
+  }
 }
 
 class WeightWaistData {

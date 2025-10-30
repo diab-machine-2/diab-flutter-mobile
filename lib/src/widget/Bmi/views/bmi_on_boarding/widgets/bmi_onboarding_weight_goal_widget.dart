@@ -46,6 +46,8 @@ class BmiOnboardingWeightGoalWidget extends StatelessWidget {
                 children: [
                   Text(
                     R.string.muc_tieu_can_nang.tr(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: R.style.largeTextStyle,
                   ),
                   const SizedBox(

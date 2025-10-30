@@ -5,7 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_text_field.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/waist_input_text_field.dart';
 
 class AddBmiWaistCircumferenceInputSession extends StatelessWidget {
   const AddBmiWaistCircumferenceInputSession({
@@ -66,8 +66,8 @@ class _WaistCircumferenceInputTextFieldState
           }
         }
       },
-      child: BmiInputTextField(
-        hintText: "0.0",
+      child: WaistInputTextField(
+        hintText: "0",
         suffixText: "cm",
         controller: _controller,
         onChanged: (value) {

@@ -62,6 +62,12 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _bmiBloc.clearPoint();
+    super.dispose();
+  }
+
   void _navigateToInputSelection() async {
     // bool? hasHealthConnection = await AppStorages.getHealthAppPermission();
     // // Grant access to HealthKit already
@@ -429,7 +435,7 @@ class _StatisticalDataViewButton extends StatelessWidget {
                   (current is BmiDataChangedState &&
                       current.event == BmiDataChangeEvent.hasDataChanged),
               builder: (context, state) {
-                if (_bmiBloc.hasNewData)
+                if (_bmiBloc.hasNewData == true)
                   return Container(
                     height: 12,
                     width: 12,
