@@ -152,8 +152,8 @@ class AppColors {
   static const infographic_color = Color(0xff23C559);
   static const color0xffB4802D = Color(0xffB4802D);
   static const color0xff5E6566 = Color(0xff5E6566);
-static const color0xffDCFFFC = Color(0xffDCFFFC);
-static const color0xff830000 = Color(0xff830000);
+  static const color0xffDCFFFC = Color(0xffDCFFFC);
+  static const color0xff830000 = Color(0xff830000);
   static const color0xffDADEDF = Color(0xffDADEDF);
   static const cardShadowColor = Color(0x14042B28);
 

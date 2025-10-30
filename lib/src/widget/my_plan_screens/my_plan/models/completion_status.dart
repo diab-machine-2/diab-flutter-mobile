@@ -58,12 +58,12 @@ extension WeekStatus on CompletionStatus {
       return _dayIconLayout(
         child: Image.asset(
           R.drawable.ic_learning,
-          width: 16,
-          height: 16,
+          width: 12,
+          height: 12,
           color: R.color.white,
         ),
         color: R.color.accentColor,
-        isSelected: isSelected, // Use the actual isSelected parameter
+        isSelected: isSelected,
       );
     } else {
       switch (this) {
@@ -72,40 +72,39 @@ extension WeekStatus on CompletionStatus {
             child: Icon(
               Icons.check_rounded,
               color: R.color.white,
-              size: 16,
+              size: 12,
             ),
             color: R.color.accentColor,
-            isSelected: isSelected, // Use the actual isSelected parameter
+            isSelected: isSelected,
           );
         case CompletionStatus.not_completed:
           return _dayIconLayout(
-            child: Icon(
-              Icons.clear_rounded,
-              color: R.color.white,
-              size: 16,
+            child: Container(
+              width: 12,
+              height: 12,
             ),
-            color: R.color.accentColor,
-            isSelected: isSelected, // Use the actual isSelected parameter
+            color: R.color.white,
+            isSelected: isSelected,
           );
         case CompletionStatus.studying:
           return _dayIconLayout(
             child: Image.asset(
               R.drawable.ic_learning,
-              width: 16,
-              height: 16,
+              width: 12,
+              height: 12,
               color: R.color.white,
             ),
             color: R.color.accentColor,
-            isSelected: isSelected, // Use the actual isSelected parameter
+            isSelected: isSelected,
           );
         case CompletionStatus.not_start_yet:
           return _dayIconLayout(
             child: Container(
-              width: 16,
-              height: 16,
+              width: 12,
+              height: 12,
             ),
             color: R.color.white,
-            isSelected: isSelected, // Use the actual isSelected parameter
+            isSelected: isSelected,
           );
       }
     }
@@ -159,7 +158,7 @@ extension WeekStatus on CompletionStatus {
     required Color color,
     required bool isSelected,
   }) {
-    const double iconSize = 26;
+    const double iconSize = 20;
     return SizedBox(
       width: iconSize,
       height: iconSize,
@@ -171,7 +170,7 @@ extension WeekStatus on CompletionStatus {
             height: iconSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isSelected ? R.color.green : color,
+              color: color,
               border: color == R.color.white
                   ? Border.all(color: R.color.color0xffE5E5E5, width: 2)
                   : null,

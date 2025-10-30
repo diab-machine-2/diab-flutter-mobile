@@ -194,6 +194,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
+                  color: R.color.white,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -414,7 +415,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: false,
+            visible: true,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: _buildWeekListWidget(),
@@ -547,14 +548,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
             color: R.color.transparent,
             child: DayInWeekWidget(
               data: _cubit.dayInWeekList,
               mark: _cubit.mark,
               currentDayIndex: _cubit.currentDayIndex,
-              showDateTime: _cubit.myPlanCubit.isHasRoadmapUser,
-              dashHeight: 2,
+              showDateTime: false,
               activeDashColor: R.color.accentColor,
               inactiveDashColor: R.color.color0xffE5E5E5,
               onSelectDay: (selectedDayIndex) {

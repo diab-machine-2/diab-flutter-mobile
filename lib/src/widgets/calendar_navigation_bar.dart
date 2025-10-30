@@ -37,69 +37,62 @@ class CalendarNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: R.color.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: R.color.grayBorder),
-      ),
-      child: Row(
-        children: [
-          // Previous day button
-          _buildNavigationButton(
-            icon: Icons.chevron_left_rounded,
-            onTap: canNavigatePrevious ? onPreviousDay : null,
-            isEnabled: canNavigatePrevious,
-          ),
-          const SizedBox(width: 12),
+    return Row(
+      children: [
+        // Today button (standalone)
+        _buildTodayButton(context),
+        const SizedBox(width: 12),
 
-          // Today button
-          _buildTodayButton(context),
-          const SizedBox(width: 12),
+        // Navigation cluster container
+        Expanded(
+          child: Container(
+            height: 42,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF2F6F9),
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: Row(
+              children: [
+                // Left arrow (icon only)
+                _buildArrowIcon(
+                  icon: Icons.chevron_left_rounded,
+                  onTap: canNavigatePrevious ? onPreviousDay : null,
+                  isEnabled: canNavigatePrevious,
+                ),
+                const SizedBox(width: 4),
 
-          // Date picker button
-          Expanded(
-            child: _buildDatePickerButton(context),
-          ),
-          const SizedBox(width: 12),
+                // Date picker button (calendar icon prefix)
+                Expanded(child: _buildDatePickerButton(context)),
 
-          // Next day button
-          _buildNavigationButton(
-            icon: Icons.chevron_right_rounded,
-            onTap: canNavigateNext ? onNextDay : null,
-            isEnabled: canNavigateNext,
+                const SizedBox(width: 4),
+                // Right arrow (icon only)
+                _buildArrowIcon(
+                  icon: Icons.chevron_right_rounded,
+                  onTap: canNavigateNext ? onNextDay : null,
+                  isEnabled: canNavigateNext,
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Widget _buildNavigationButton({
+  Widget _buildArrowIcon({
     required IconData icon,
     required VoidCallback? onTap,
     required bool isEnabled,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: isEnabled
-              ? R.color.gray.withOpacity(0.1)
-              : R.color.gray.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isEnabled
-                ? R.color.grayBorder
-                : R.color.grayBorder.withOpacity(0.5),
-          ),
-        ),
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.all(6),
         child: Icon(
           icon,
-          size: 20,
+          size: 22,
           color: isEnabled
               ? R.color.greenGradientBottom
               : R.color.captionColorGray,
@@ -113,14 +106,12 @@ class CalendarNavigationBar extends StatelessWidget {
 
     return InkWell(
       onTap: isTodayDisabled ? null : onTodayPressed,
-      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        height: 42,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
         decoration: BoxDecoration(
-          color: isTodayDisabled
-              ? R.color.gray.withOpacity(0.1)
-              : R.color.gray.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(100),
           border: Border.all(
             color: isTodayDisabled ? R.color.grayBorder : R.color.grayBorder,
           ),
@@ -131,8 +122,8 @@ class CalendarNavigationBar extends StatelessWidget {
             color: isTodayDisabled
                 ? R.color.captionColorGray
                 : (isToday ? R.color.greenGradientBottom : R.color.textDark),
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ),
@@ -144,30 +135,24 @@ class CalendarNavigationBar extends StatelessWidget {
       onTap: () => _showDatePicker(context),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: R.color.gray.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: R.color.grayBorder),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: const BoxDecoration(),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              convertToUTC(
-                DateUtil.getDayInMillis(currentDate),
-                'dd/MM/yyyy',
-              ),
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
             Icon(
               Icons.calendar_today_outlined,
-              size: 16,
+              size: 18,
               color: R.color.greenGradientBottom,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),

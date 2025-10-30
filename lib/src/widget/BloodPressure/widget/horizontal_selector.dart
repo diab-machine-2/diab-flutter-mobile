@@ -39,17 +39,15 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: Colors.grey.shade300),
       ),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: _buildItems(),
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: _buildItems(),
       ),
     );
   }
@@ -58,29 +56,35 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
     return widget.labels.asMap().entries.map((entry) {
       final int day = entry.key;
       final bool isSelected = day == _selectedValue;
-      return GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedValue = day;
-          });
-          widget.onSelected(day);
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          height: widget.height,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF00867D) : Colors.transparent,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            entry.value,
-            style: TextStyle(
-              fontFamily: R.font.sfpro,
-              color: isSelected ? Colors.white : Colors.grey[700],
-              fontSize: 15,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedValue = day;
+              });
+              widget.onSelected(day);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: widget.height,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              decoration: BoxDecoration(
+                color:
+                    isSelected ? const Color(0xFF00867D) : Colors.transparent,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                entry.value,
+                style: TextStyle(
+                  fontFamily: R.font.sfpro,
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                  fontSize: 15,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                ),
+              ),
             ),
           ),
         ),

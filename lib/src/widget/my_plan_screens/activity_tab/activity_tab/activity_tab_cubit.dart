@@ -460,11 +460,15 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   void onTodayPressed() {
     // Find today's date in the current week
     final today = DateTime.now();
-    final todayTimestamp = DateUtil.getDayInMillis(today);
+    // Keep day-level comparison only; ignore time component
 
     // Check if today is in the current week
     for (int i = 0; i < dayStatesList.length; i++) {
-      if (dayStatesList[i]?.day == todayTimestamp) {
+      final ts = dayStatesList[i]?.day;
+      if (ts == null) continue;
+      final date =
+          DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true).toLocal();
+      if (DateUtil.isSameDate(date, today)) {
         onSelectDay(i);
         return;
       }
@@ -489,11 +493,15 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   }
 
   void onDatePicked(DateTime pickedDate) {
-    final pickedTimestamp = DateUtil.getDayInMillis(pickedDate);
+    // Compare at day precision only; timestamp differences are ignored
 
     // Check if the picked date is in the current week
     for (int i = 0; i < dayStatesList.length; i++) {
-      if (dayStatesList[i]?.day == pickedTimestamp) {
+      final ts = dayStatesList[i]?.day;
+      if (ts == null) continue;
+      final date =
+          DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true).toLocal();
+      if (DateUtil.isSameDate(date, pickedDate)) {
         onSelectDay(i);
         return;
       }
