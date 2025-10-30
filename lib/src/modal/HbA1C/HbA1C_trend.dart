@@ -40,6 +40,7 @@ class TrendItemModel {
 }
 
 class HbA1CModel {
+  final int? id;
   final double? hbA1C;
   final int? date;
   final String? type;
@@ -48,6 +49,7 @@ class HbA1CModel {
   final String? backgroundColor;
 
   HbA1CModel({
+    this.id,
     required this.hbA1C,
     required this.date,
     required this.type,
@@ -58,6 +60,7 @@ class HbA1CModel {
   @override
   factory HbA1CModel.fromJson(Map<String, dynamic> json) {
     return HbA1CModel(
+      id: json['id'],
       hbA1C: json['hbA1C'],
       date: json['date'],
       type: json['type'],

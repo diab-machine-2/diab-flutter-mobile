@@ -1427,4 +1427,5 @@ class Strings {
   String get max_image_select_dynamic => 'max_image_select_dynamic';
   String get view_report => 'view_report';
   String get incomplete_activities => 'incomplete_activities';
+  String get unknown_meal_image => 'unknown_meal_image';
 }
