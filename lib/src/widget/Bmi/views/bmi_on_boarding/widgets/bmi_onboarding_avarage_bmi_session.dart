@@ -92,7 +92,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                         style: R.style.normalTextStyle.neutral3,
                         children: [
                           TextSpan(
-                            text: "${_bmiBloc.lowestBmi}",
+                            text: "${_bmiBloc.lowestBmi ?? "--"}",
                             style: R.style.boldNormalStyle,
                           )
                         ])),
@@ -101,7 +101,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                         style: R.style.normalTextStyle.neutral3,
                         children: [
                           TextSpan(
-                            text: "${_bmiBloc.highestBmi}",
+                            text: "${_bmiBloc.highestBmi ?? "--"}",
                             style: R.style.boldNormalStyle,
                           )
                         ]))

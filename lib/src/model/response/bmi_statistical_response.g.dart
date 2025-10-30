@@ -35,6 +35,8 @@ BmiStatistical _$BmiStatisticalFromJson(Map<String, dynamic> json) =>
       legends: (json['legends'] as List<dynamic>?)
           ?.map((e) => End.fromJson(e as Map<String, dynamic>))
           .toList(),
+      valueMin: (json['valueMin'] as num?)?.toDouble(),
+      valueMax: (json['valueMax'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$BmiStatisticalToJson(BmiStatistical instance) =>
@@ -44,6 +46,8 @@ Map<String, dynamic> _$BmiStatisticalToJson(BmiStatistical instance) =>
       'height': instance.height,
       'currentLedend': instance.currentLedend,
       'legends': instance.legends,
+      'valueMin': instance.valueMin,
+      'valueMax': instance.valueMax,
     };
 
 End _$EndFromJson(Map<String, dynamic> json) => End(

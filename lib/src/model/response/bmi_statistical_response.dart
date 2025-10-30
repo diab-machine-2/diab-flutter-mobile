@@ -35,6 +35,10 @@ class BmiStatistical {
   final End? currentLedend;
   @JsonKey(name: "legends")
   final List<End>? legends;
+  @JsonKey(name: "valueMin")
+  final double? valueMin;
+  @JsonKey(name: "valueMax")
+  final double? valueMax;
 
   BmiStatistical({
     this.value,
@@ -42,6 +46,8 @@ class BmiStatistical {
     this.height,
     this.currentLedend,
     this.legends,
+    this.valueMin,
+    this.valueMax,
   });
 
   factory BmiStatistical.fromJson(Map<String, dynamic> json) =>
