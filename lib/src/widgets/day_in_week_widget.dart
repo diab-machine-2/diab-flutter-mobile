@@ -5,7 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
-class DayInWeekWidget extends StatelessWidget {
+class DayInWeekWidget extends StatefulWidget {
   const DayInWeekWidget({
     Key? key,
     required this.data,
@@ -27,21 +27,64 @@ class DayInWeekWidget extends StatelessWidget {
   final Color? inactiveDashColor;
   final Function(int selectedDay) onSelectDay;
 
+  @override
+  State<DayInWeekWidget> createState() => _DayInWeekWidgetState();
+}
+
+class _DayInWeekWidgetState extends State<DayInWeekWidget> {
+  final GlobalKey _currentItemKey = GlobalKey();
+
   // -----------------------------------------------------------------
   //  Fixed width for every title (weekday) block
   // -----------------------------------------------------------------
   static const double _titleWidth = 42.0; // <-- 42 px
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _scrollCurrentIntoView());
+  }
+
+  @override
+  void didUpdateWidget(covariant DayInWeekWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentDayIndex != widget.currentDayIndex ||
+        oldWidget.data.length != widget.data.length) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _scrollCurrentIntoView());
+    }
+  }
+
+  void _scrollCurrentIntoView() {
+    final ctx = _currentItemKey.currentContext;
+    if (ctx == null) return;
+    Scrollable.ensureVisible(
+      ctx,
+      alignment: 0.5,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  }
+
   // -----------------------------------------------------------------
   //  Dash length = (available width – N * titleWidth) / (N-1)
   // -----------------------------------------------------------------
   double _dashLength(double maxWidth) {
-    if (data.length < 2) return 0;
-    return (maxWidth - data.length * _titleWidth) / (data.length - 1);
+    if (widget.data.length < 2) return 0;
+    return (maxWidth - widget.data.length * _titleWidth) /
+        (widget.data.length - 1);
   }
 
   @override
   Widget build(BuildContext context) {
+    final data = widget.data;
+    final mark = widget.mark;
+    final currentDayIndex = widget.currentDayIndex;
+    final showDateTime = widget.showDateTime;
+    final activeDashColor = widget.activeDashColor;
+    final inactiveDashColor = widget.inactiveDashColor;
+
     return data.isEmpty
         ? const SizedBox()
         : LayoutBuilder(
@@ -59,9 +102,10 @@ class DayInWeekWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTitleRow(dashLen),
+                  _buildTitleRow(dashLen, data, currentDayIndex, showDateTime),
                   const GapH(8),
-                  _buildIconRow(dashLen),
+                  _buildIconRow(dashLen, data, currentDayIndex, mark,
+                      activeDashColor, inactiveDashColor),
                 ],
               );
 
@@ -75,7 +119,8 @@ class DayInWeekWidget extends StatelessWidget {
           );
   }
 
-  Widget _buildTitleRow(double dashLen) {
+  Widget _buildTitleRow(double dashLen, List<DayInWeekData> data,
+      int currentDayIndex, bool showDateTime) {
     return Row(
       children: List.generate(data.length * 2 - 1, (i) {
         if (i.isOdd) {
@@ -87,19 +132,30 @@ class DayInWeekWidget extends StatelessWidget {
         final day = data[idx];
         final selected = idx == currentDayIndex;
 
+        final child = _titleBlock(
+          title: day.title,
+          dateTime: day.dateTime,
+          isSelected: selected,
+          showDateTime: showDateTime,
+        );
+
         return InkWell(
-          onTap: () => onSelectDay(idx),
-          child: _titleBlock(
-            title: day.title,
-            dateTime: day.dateTime,
-            isSelected: selected,
-          ),
+          onTap: () => widget.onSelectDay(idx),
+          child: selected
+              ? KeyedSubtree(key: _currentItemKey, child: child)
+              : child,
         );
       }),
     );
   }
 
-  Widget _buildIconRow(double dashLen) {
+  Widget _buildIconRow(
+      double dashLen,
+      List<DayInWeekData> data,
+      int currentDayIndex,
+      int mark,
+      Color? activeDashColor,
+      Color? inactiveDashColor) {
     final int n = data.length;
     final double totalWidth = n > 0 ? n * _titleWidth + (n - 1) * dashLen : 0;
 
@@ -141,7 +197,7 @@ class DayInWeekWidget extends StatelessWidget {
                 width: _titleWidth,
                 child: Center(
                   child: InkWell(
-                    onTap: () => onSelectDay(idx),
+                    onTap: () => widget.onSelectDay(idx),
                     child: day.dayStatus.dayStatusIcon(selected, isToday),
                   ),
                 ),
@@ -157,6 +213,7 @@ class DayInWeekWidget extends StatelessWidget {
     required String title,
     int? dateTime,
     required bool isSelected,
+    required bool showDateTime,
   }) {
     final String dayTitle = dateTime == null
         ? ''
