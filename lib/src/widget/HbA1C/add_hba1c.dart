@@ -1309,7 +1309,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                     // Right boundary: totalWidth - 40 (full arrow width from right edge)
                     return leftPosition.clamp(-14.0, totalWidth - 40.0);
                   })(),
-                  top: -10,
+                  top: 13,
                   child: Icon(
                     Icons.arrow_drop_down_rounded,
                     size: 40,
