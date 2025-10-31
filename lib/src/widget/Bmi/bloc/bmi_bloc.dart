@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -106,19 +105,21 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   double? get avgBmi => _bmiStatistical?.value;
   double? get highestBmi {
-    if (height != null && height! > 0) {
-      double result = highestWeight / pow(height! / 100, 2);
-      return double.parse(result.toStringAsFixed(1));
-    }
-    return null;
+    return bmiStatistical?.valueMax;
+    // if (height != null && height! > 0) {
+    //   double result = highestWeight / pow(height! / 100, 2);
+    //   return double.parse(result.toStringAsFixed(1));
+    // }
+    // return null;
   }
 
   double? get lowestBmi {
-    if (height != null && height! > 0) {
-      double result = lowestWeight / pow(height! / 100, 2);
-      return double.parse(result.toStringAsFixed(1));
-    }
-    return null;
+    return bmiStatistical?.valueMin;
+    // if (height != null && height! > 0) {
+    //   double result = lowestWeight / pow(height! / 100, 2);
+    //   return double.parse(result.toStringAsFixed(1));
+    // }
+    // return null;
   }
 
   BmiWeightStatistical? get weightStatistical => _weightStatistical;
