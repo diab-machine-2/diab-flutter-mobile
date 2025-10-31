@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
@@ -293,6 +294,7 @@ class FoodClient extends FetchClient {
       }
       final response = await super
           .postHttp(path: '/App/Diet/InputAI', params: params, files: files);
+      log('params: $params');
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
