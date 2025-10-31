@@ -80,10 +80,14 @@ extension WeekStatus on CompletionStatus {
         case CompletionStatus.not_completed:
           return _dayIconLayout(
             child: Container(
-              width: 12,
-              height: 12,
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: R.color.white,
+                shape: BoxShape.circle,
+              ),
             ),
-            color: R.color.white,
+            color: R.color.accentColor,
             isSelected: isSelected,
           );
         case CompletionStatus.studying:

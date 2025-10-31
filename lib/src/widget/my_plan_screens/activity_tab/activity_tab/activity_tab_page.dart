@@ -251,6 +251,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
 
                               if (_cubit
                                   .smartGoalNotCompleteInWeekly.isNotEmpty)
+                                GapH(8),
+                              if (_cubit
+                                  .smartGoalNotCompleteInWeekly.isNotEmpty)
                                 Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
