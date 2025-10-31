@@ -893,16 +893,30 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
               ),
             ),
             const SizedBox(width: 16),
-            // HbA1c value and level display (tap to cycle within same timestamp if multiple)
+            // HbA1c value and level display (tap to cycle within same timestamp if multiple, or navigate to update if single)
             GestureDetector(
               onTap: () {
                 if (_focusIndex >= 0 && _focusIndex < _groupedPoints.length) {
                   final len = _groupedPoints[_focusIndex].length;
                   if (len > 1) {
+                    // Multiple points in same timestamp - cycle through them
                     setState(() {
                       _focusSubIndex = (_focusSubIndex + 1) % len;
                       _updateSelectedPointDateFromFocus();
                     });
+                  } else {
+                    // Single point - navigate to update page
+                    if (currentDataPoint.id != null &&
+                        currentDataPoint.id!.isNotEmpty) {
+                      Navigator.pushNamed(
+                        context,
+                        NavigatorName.add_hba1c,
+                        arguments: {
+                          'type': 'update',
+                          'id': currentDataPoint.id,
+                        },
+                      );
+                    }
                   }
                 }
               },
