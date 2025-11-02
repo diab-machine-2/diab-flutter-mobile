@@ -13,7 +13,10 @@ import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/weight_input_text_f
 class AddBmiWeightInputSession extends StatelessWidget {
   const AddBmiWeightInputSession({
     super.key,
+    this.autoFocus = false,
   });
+
+  final bool autoFocus;
 
   @override
   Widget build(BuildContext context) {
@@ -26,23 +29,22 @@ class AddBmiWeightInputSession extends StatelessWidget {
       child: Column(
         children: [
           const AddBmiDatePicker(),
-          const _WeightInputTextField(),
+          _WeightInputTextField(autoFocus: autoFocus,),
           const SizedBox(
             height: 12,
           ),
           BlocBuilder<BmiInputBloc, BmiInputState>(
-            buildWhen: (_, state) =>
-            state is BmiInputDataChangedState &&
-            state.event == BmiInputDataChangeEvent.weightChanged,
-            builder: (context, state) {
-              return BmiInputRangeChart(
-                thresholds: Const.bmiThreshold,
-                colors: _bmiBloc.bmiStatistical?.thresholdColors ?? [],
-                currentValue: _bmiInputBloc.bmi,
-                barHeight: 8,
-              );
-            }
-          ),
+              buildWhen: (_, state) =>
+                  state is BmiInputDataChangedState &&
+                  state.event == BmiInputDataChangeEvent.weightChanged,
+              builder: (context, state) {
+                return BmiInputRangeChart(
+                  thresholds: Const.bmiThreshold,
+                  colors: _bmiBloc.bmiStatistical?.thresholdColors ?? [],
+                  currentValue: _bmiInputBloc.bmi,
+                  barHeight: 8,
+                );
+              }),
           const SizedBox(
             height: 12,
           ),
@@ -55,7 +57,10 @@ class AddBmiWeightInputSession extends StatelessWidget {
 class _WeightInputTextField extends StatefulWidget {
   const _WeightInputTextField({
     super.key,
+    this.autoFocus = false,
   });
+
+  final bool autoFocus;
 
   @override
   State<_WeightInputTextField> createState() => _WeightInputTextFieldState();
@@ -75,7 +80,7 @@ class _WeightInputTextFieldState extends State<_WeightInputTextField> {
         _controller.text = _bmiInputBloc.weight.toString();
       }
     });
-    _focusNode.requestFocus();
+    if (widget.autoFocus) _focusNode.requestFocus();
   }
 
   @override

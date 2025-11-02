@@ -28,26 +28,38 @@ class WaistInputTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle:
-            R.style.inputHealthIndexStyle.copyWith(color: AppColors.neutral4),
-        suffixText: suffixText,
-        suffixStyle: R.style.largeTextStyle.neutral3,
-        focusedBorder: _border,
-        enabledBorder: _border,
-        counterText: ""
-      ),
-      style: R.style.inputHealthIndexStyle,
-      textAlign: TextAlign.center,
-      controller: controller,
-      maxLength: 3,
-      focusNode: focusNode,
-      onChanged: onChanged,
-      keyboardType: const TextInputType.numberWithOptions(decimal: false),
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        TextField(
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle:
+                R.style.inputHealthIndexStyle.copyWith(color: AppColors.neutral4),
+            // suffixText: suffixText,
+            suffixStyle: R.style.largeTextStyle.neutral3,
+            focusedBorder: _border,
+            enabledBorder: _border,
+            counterText: ""
+          ),
+          style: R.style.inputHealthIndexStyle,
+          textAlign: TextAlign.center,
+          controller: controller,
+          maxLength: 3,
+          focusNode: focusNode,
+          onChanged: onChanged,
+          keyboardType: const TextInputType.numberWithOptions(decimal: false),
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 96),
+          child: Text(
+            suffixText ?? "",
+            style: R.style.normalTextStyle.apply(color: AppColors.neutral4),
+          ),
+        )
       ],
     );
   }

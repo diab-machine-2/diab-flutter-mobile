@@ -23,6 +23,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
   static final double _heightOfChart = 120;
   static final double _widthOfSideBar = 32;
   static final double _marginOfWeight = 15;
+  static final double _itemWidth = 40;
 
   late BmiBloc _bmiBloc;
   ScrollController _scrollController = ScrollController(
@@ -49,12 +50,12 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
               List.from(_bmiBloc.historicalWeightList);
 
           data = data.reversed.toList();
-          double intervalWidth = 40;
+
           bool enableScroll =
-              data.length * intervalWidth > MediaQuery.of(context).size.width;
+              data.length * _itemWidth > MediaQuery.of(context).size.width;
 
           double widthChart = enableScroll
-              ? data.length * intervalWidth
+              ? data.length * _itemWidth
               : MediaQuery.of(context).size.width - _widthOfSideBar - 24;
           double _minWeightOnChart = _bmiBloc.getLowestOfChart(_marginOfWeight);
           double _maxWeightOnChart =
@@ -64,15 +65,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                       ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
                   _marginOfWeight;
 
-          // if (_bmiBloc.isLastSelectedPoint && data.length > 1) {
-          Future.delayed(Durations.extralong4, () {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: Durations.medium2,
-              curve: Curves.easeInOut,
-            );
-          });
-          // }
+          if (enableScroll) _focusToSelectedPoint(totalPoint: data.length);
 
           return Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -90,7 +83,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                               : _bendmarkPadding * 0.9,
                         ),
                         child: Text(
-                          "${_bmiBloc.weightGoal} kg",
+                          "${_bmiBloc.weightGoal!.floor() == _bmiBloc.weightGoal ? _bmiBloc.weightGoal!.floor() : _bmiBloc.weightGoal} kg",
                           style: R.style.smallTextStyle
                               .copyWith(color: AppColors.neutral3),
                         ),
@@ -146,7 +139,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                               (i) => FlSpot(i.toDouble(), data[i].weight ?? 0),
                             ),
                             isCurved: false,
-                            colors: data.map((e) => e.bmiColor).toList(),
+                            colors: [Colors.green],
                             barWidth: 2,
                             dotData: FlDotData(
                               show: true,
@@ -191,8 +184,10 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                               tooltipBgColor: Colors.transparent,
                               getTooltipItems: (touchedSpots) {
                                 return touchedSpots.map((spot) {
+                                  bool isInteger =
+                                      spot.y.floor().toDouble() == spot.y;
                                   return LineTooltipItem(
-                                    '${spot.y.toStringAsFixed(1)} kg',
+                                    '${isInteger ? spot.y.floor() : spot.y.toStringAsFixed(1)}',
                                     TextStyle(
                                         color: data[spot.spotIndex].bmiColor,
                                         fontWeight: FontWeight.bold),
@@ -200,6 +195,10 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                                 }).toList();
                               },
                             ),
+                            getTouchLineStart: (barData, index) =>
+                                -double.infinity,
+                            getTouchLineEnd: (barData, index) =>
+                                double.infinity,
                             getTouchedSpotIndicator: (LineChartBarData barData,
                                 List<int> spotIndexes) {
                               return spotIndexes.map((index) {
@@ -207,19 +206,20 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                                   FlLine(
                                     color: data[index]
                                         .bmiColor, // màu line khi chạm
-                                    strokeWidth: 1,
-                                    dashArray: [4, 2],
+                                    strokeWidth: 0.5,
+                                    // dashArray: [4, 2],
                                   ),
                                   FlDotData(
                                     show: true,
                                     getDotPainter:
                                         (spot, percent, barData, index) =>
                                             FlDotCirclePainter(
-                                      radius: 6,
+                                      radius: 6.5,
                                       color: data[index]
                                           .bmiColor, // màu chấm được chọn
-                                      strokeWidth: 1,
-                                      strokeColor: Colors.white,
+                                      strokeWidth: 18,
+                                      strokeColor:
+                                          data[index].bmiColor.withOpacity(0.3),
                                     ),
                                   ),
                                 );
@@ -243,6 +243,30 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
             ],
           );
         });
+  }
+
+  void _focusToSelectedPoint({required int totalPoint}) {
+    Future.delayed(Durations.short1, () {
+      final double viewportCenter =
+          MediaQuery.of(context).size.width / 2 - _widthOfSideBar;
+      int mirrorIndex =
+          (totalPoint - 1) - (_bmiBloc.selectedIndexPointChart ?? 0);
+
+      double targetOffset =
+          (mirrorIndex * _itemWidth - viewportCenter + (_itemWidth / 2));
+
+      // Giới hạn offset trong [0, maxScrollExtent]
+      targetOffset = targetOffset.clamp(
+        _scrollController.position.minScrollExtent,
+        _scrollController.position.maxScrollExtent,
+      );
+
+      _scrollController.animateTo(
+        targetOffset,
+        duration: Durations.medium2,
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   void _touchCallback(

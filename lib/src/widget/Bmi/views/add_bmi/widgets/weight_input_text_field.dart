@@ -29,26 +29,39 @@ class WeightInputTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle:
-            R.style.inputHealthIndexStyle.copyWith(color: AppColors.neutral4),
-        suffixText: suffixText,
-        suffixStyle: R.style.largeTextStyle.neutral3,
-        focusedBorder: _border,
-        enabledBorder: _border,
-      ),
-      style: R.style.inputHealthIndexStyle,
-      textAlign: TextAlign.center,
-      controller: controller,
-      focusNode: focusNode,
-      onChanged: onChanged,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [
-        CommaToDotFormatter(),
-        DecimalTextInputFormatter(decimalRange: 1),
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*([.,]\d{0,1})?$')),
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        TextField(
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: R.style.inputHealthIndexStyle
+                .copyWith(color: AppColors.neutral4),
+            // suffixText: suffixText,
+            suffixStyle: R.style.largeTextStyle.neutral3,
+            focusedBorder: _border,
+            enabledBorder: _border,
+          ),
+          style: R.style.inputHealthIndexStyle,
+          textAlign: TextAlign.center,
+          controller: controller,
+          focusNode: focusNode,
+          onChanged: onChanged,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          maxLength: 5,
+          inputFormatters: [
+            CommaToDotFormatter(),
+            DecimalTextInputFormatter(decimalRange: 1),
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*([.,]\d{0,1})?$')),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 96),
+          child: Text(
+            suffixText ?? "",
+            style: R.style.normalTextStyle.apply(color: AppColors.neutral4),
+          ),
+        )
       ],
     );
   }

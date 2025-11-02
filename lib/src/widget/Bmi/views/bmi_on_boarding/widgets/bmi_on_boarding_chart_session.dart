@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
@@ -145,7 +144,7 @@ class _InfoHeader extends StatelessWidget {
                         style: R.style.boldLargeStyle.neutral4,
                       ),
                       Text(
-                        "${bmiBloc.selectedPointChart?.weight ?? "--"}",
+                        _getWeight(bmiBloc.selectedPointChart?.weight),
                         style: R.style.boldNormalStyle.neutral3,
                       ),
                       Text(
@@ -181,6 +180,15 @@ class _InfoHeader extends StatelessWidget {
           );
         });
   }
+
+  String _getWeight(double? value) {
+    if (value == null) return "--";
+    bool isInteger = value.floor().toDouble() == value;
+    if (isInteger) {
+      return "${value.floor()}";
+    }
+    return value.toStringAsFixed(1);
+  }
 }
 
 class _DateTimeLabel extends StatelessWidget {
@@ -188,7 +196,7 @@ class _DateTimeLabel extends StatelessWidget {
     super.key,
   });
 
-  static const _timeFormat = Const.HOUR_MIN;
+  static const _timeFormat = "HH:mm";
   static const _dateFormat = "dd/MM";
 
   @override

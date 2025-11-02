@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/utils/app_media_query.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_app_bar.dar
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_note_session.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_waist_circumference_input_session.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_weight_input_session.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_exit_confirm_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_input_waist_confirm_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
@@ -59,44 +61,56 @@ class _AddBmiPageState extends State<AddBmiPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.glucose_bg_color,
-      resizeToAvoidBottomInset: true,
-      appBar: const AddBmiAppBar(),
-      body: BlocListener<BmiInputBloc, BmiInputState>(
-        listener: _handleListener,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AddBmiWeightInputSession(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    const AddBmiWaistCircumferenceInputSession(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    const AddBmiNoteSession(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    _Seperator(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    _ConnectToHealthConnectButton()
-                  ],
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          BmiExitConfirmDialog.show(context).then((value) {
+            if (value == true) NavigationUtil.pop(context);
+          });
+        }
+      },
+      child: Scaffold(
+        backgroundColor: R.color.glucose_bg_color,
+        resizeToAvoidBottomInset: true,
+        appBar: const AddBmiAppBar(),
+        body: BlocListener<BmiInputBloc, BmiInputState>(
+          listener: _handleListener,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AddBmiWeightInputSession(
+                        autoFocus: true,
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      const AddBmiWaistCircumferenceInputSession(),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      const AddBmiNoteSession(),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      _Seperator(),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      _ConnectToHealthConnectButton()
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const _SaveButton()
-          ],
+              const _SaveButton()
+            ],
+          ),
         ),
       ),
     );

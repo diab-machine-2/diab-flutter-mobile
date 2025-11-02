@@ -178,10 +178,12 @@ class _ActionButtons extends StatelessWidget {
           children: [
             Expanded(
               child: OutlinedRoundedButton(
-                title: R.string.delete.tr(),
+                title: R.string.xoa_du_lieu.tr(),
+                highlighButton: true,
                 onPressed: () {
                   CustomDialog.showDeleteConfirmDialog(
                     context,
+                    title: R.string.ban_muon_xoa_du_lieu.tr(),
                     message: R.string.confirm_to_remove_data.tr(),
                     onPrimaryButtonTap: () {
                       _bmiInputBloc.deleteWeightRecord();
