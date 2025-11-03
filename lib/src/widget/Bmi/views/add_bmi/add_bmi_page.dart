@@ -23,7 +23,9 @@ import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/custom_dialog.dart';
 
 class AddBmiPage extends StatefulWidget {
-  const AddBmiPage({super.key});
+  const AddBmiPage({super.key, this.goalId});
+
+  final String? goalId;
 
   @override
   State<AddBmiPage> createState() => _AddBmiPageState();
@@ -41,6 +43,9 @@ class _AddBmiPageState extends State<AddBmiPage> {
     super.initState();
     _bmiInputBloc = context.read();
     _bmiBloc = context.read();
+    if (widget.goalId != null) {
+      _bmiInputBloc.goalId = widget.goalId;
+    }
   }
 
   @override
