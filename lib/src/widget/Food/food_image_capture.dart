@@ -15,7 +15,8 @@ import 'package:saver_gallery/saver_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodImageCapture extends StatefulWidget {
-  const FoodImageCapture({Key? key, required this.timeframe, required this.timeframeId})
+  const FoodImageCapture(
+      {Key? key, required this.timeframe, required this.timeframeId})
       : super(key: key);
 
   final String timeframe;
@@ -33,6 +34,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   int _selectedCameraIndex = 0;
   bool _isInitialized = false;
   File? _lastCapturedImage;
+  bool _disposed = false;
 
   // Animation properties
   bool _showFlashEffect = false;
@@ -48,24 +50,55 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   @override
   void dispose() {
+    _disposed = true;
     WidgetsBinding.instance.removeObserver(this);
-    _controller?.dispose();
-    _controller = null;
+    _safeDisposeCamera();
     super.dispose();
+  }
+
+  /// Safely disposes the camera controller with proper error handling
+  Future<void> _safeDisposeCamera() async {
+    if (_controller == null) return;
+
+    try {
+      // Set initialized to false first to prevent new operations
+      // Only call setState if widget is still mounted and not disposed
+      if (mounted && !_disposed) {
+        try {
+          setState(() {
+            _isInitialized = false;
+          });
+        } catch (e) {
+          print('Error calling setState during disposal: $e');
+          // Continue with disposal even if setState fails
+        }
+      }
+
+      // Wait a bit to ensure any ongoing operations complete
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Dispose the controller
+      await _controller?.dispose();
+    } catch (e) {
+      print('Error disposing camera controller: $e');
+      // Continue with disposal even if there's an error
+    } finally {
+      _controller = null;
+    }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final CameraController? cameraController = _controller;
-
-    if (state == AppLifecycleState.inactive) {
-      setState(() {
-        _isInitialized = false;
-      });
-      cameraController?.dispose();
-      _controller = null;
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused) {
+      _safeDisposeCamera();
     } else if (state == AppLifecycleState.resumed) {
-      _initializeCamera();
+      // Wait a bit before reinitializing to ensure proper state
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted && !_disposed) {
+          _initializeCamera();
+        }
+      });
     }
   }
 
@@ -77,9 +110,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     try {
       _requestingPermission = true;
 
-      // Request camera permission
-      if (!(await Permission.camera.isGranted)) {
-        await Permission.camera.request();
+      // Request camera permission first
+      final cameraStatus = await Permission.camera.request();
+      if (!cameraStatus.isGranted) {
+        _requestingPermission = false;
+        _showErrorDialog('Camera permission is required to take photos');
+        return;
       }
 
       // Request photo library permission using photo_manager
@@ -99,6 +135,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
       _requestingPermission = false;
 
+      // Wait a bit before initializing camera to ensure permissions are fully processed
+      await Future.delayed(const Duration(milliseconds: 500));
+
       // Initialize camera after permissions are granted
       await _initializeCamera();
       _loadLastCapturedImage();
@@ -110,8 +149,22 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Future<void> _initializeCamera() async {
     try {
+      // Check camera permission first
       final granted = await Permission.camera.isGranted;
-      _cameras = !granted ? [] : await availableCameras();
+      if (!granted) {
+        print('Camera permission not granted');
+        return;
+      }
+
+      // Dispose existing controller first
+      if (_controller != null) {
+        await _safeDisposeCamera();
+        // Wait a bit for disposal to complete
+        await Future.delayed(const Duration(milliseconds: 200));
+      }
+
+      // Get available cameras
+      _cameras = await availableCameras();
       if (_cameras.isEmpty) {
         _showErrorDialog('Không tìm thấy camera nào');
         return;
@@ -128,41 +181,71 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
       await _setupCamera(_selectedCameraIndex);
     } catch (e) {
-      _showErrorDialog('Không thể khởi tạo camera: $e');
+      print('Error initializing camera: $e');
+      if (mounted) {
+        _showErrorDialog('Không thể khởi tạo camera: $e');
+      }
     }
   }
 
   Future<void> _setupCamera(int cameraIndex) async {
-    if (_controller != null) {
-      await _controller!.dispose();
-      _controller = null;
-      setState(() {
-        _isInitialized = false;
-      });
-    }
-
-    _controller = CameraController(
-      _cameras[cameraIndex],
-      ResolutionPreset.high,
-      enableAudio: false,
-    );
-
     try {
+      // Ensure we have a valid camera index
+      if (cameraIndex >= _cameras.length) {
+        print('Invalid camera index: $cameraIndex');
+        return;
+      }
+
+      // Dispose existing controller first
+      if (_controller != null) {
+        await _safeDisposeCamera();
+        // Wait for disposal to complete
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
+
+      // Create new controller
+      _controller = CameraController(
+        _cameras[cameraIndex],
+        ResolutionPreset.high,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg, // Use JPEG format
+      );
+
+      // Initialize the controller
       await _controller!.initialize();
-      if (mounted) {
-        setState(() {
-          _isInitialized = true;
-        });
+
+      if (mounted && !_disposed) {
+        try {
+          setState(() {
+            _isInitialized = true;
+          });
+          print('Camera initialized successfully');
+        } catch (e) {
+          print('Error calling setState during camera initialization: $e');
+        }
       }
     } catch (e) {
-      // if (mounted) {
-      //   _showErrorDialog('Lỗi khi khởi tạo camera: $e');
-      // }
+      print('Error setting up camera: $e');
+      if (mounted && !_disposed) {
+        try {
+          setState(() {
+            _isInitialized = false;
+          });
+        } catch (e) {
+          print('Error calling setState during camera error: $e');
+        }
+        // Try to reinitialize after a delay
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted && !_disposed) {
+            _initializeCamera();
+          }
+        });
+      }
     }
   }
 
   Future<void> _switchCamera() async {
-    if (_cameras.length < 2) return;
+    if (_cameras.length < 2 || !_isInitialized) return;
 
     final newIndex = (_selectedCameraIndex + 1) % _cameras.length;
     _selectedCameraIndex = newIndex;
@@ -175,7 +258,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   Future<void> _captureImage() async {
     if (_controller?.value == null ||
         !_controller!.value.isInitialized ||
-        _controller!.value.isStreamingImages) return;
+        _controller!.value.isStreamingImages ||
+        !_isInitialized) return;
 
     try {
       final XFile file = await _controller!.takePicture();
@@ -204,17 +288,29 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Future<void> _startCaptureAnimation(File imageFile) async {
     // Show flash effect
-    setState(() {
-      _showFlashEffect = true;
-    });
+    if (mounted && !_disposed) {
+      try {
+        setState(() {
+          _showFlashEffect = true;
+        });
+      } catch (e) {
+        print('Error calling setState during flash effect: $e');
+      }
+    }
 
     // Brief flash duration
     await Future.delayed(const Duration(milliseconds: 100));
 
-    setState(() {
-      _showFlashEffect = false;
-      _lastCapturedImage = imageFile;
-    });
+    if (mounted && !_disposed) {
+      try {
+        setState(() {
+          _showFlashEffect = false;
+          _lastCapturedImage = imageFile;
+        });
+      } catch (e) {
+        print('Error calling setState during flash end: $e');
+      }
+    }
   }
 
   Future<void> _saveToPhotoAlbum(File imageFile) async {
@@ -303,7 +399,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
   }
 
   void _manualInputSelect() {
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    // Navigator.of(context).popUntil((route) => route.isFirst);
     Navigator.pushNamed(context, NavigatorName.add_food,
         arguments: {'type': 'input'});
   }
@@ -733,10 +829,14 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         // Check if the file still exists
         if (await imageFile.exists()) {
           // Update the preview
-          if (mounted) {
-            setState(() {
-              _lastCapturedImage = imageFile;
-            });
+          if (mounted && !_disposed) {
+            try {
+              setState(() {
+                _lastCapturedImage = imageFile;
+              });
+            } catch (e) {
+              print('Error calling setState during image load: $e');
+            }
           }
         } else {
           // Remove the invalid path from preferences
@@ -754,8 +854,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       PermissionStatus status;
 
       if (Platform.isAndroid) {
-        // For Android, check storage permission
-        status = await Permission.storage.status;
+        // For Android 13+ (API 33), check photos permission first
+        status = await Permission.photos.status;
+        if (!status.isGranted) {
+          // Fallback to storage permission for older Android versions
+          status = await Permission.storage.status;
+        }
       } else if (Platform.isIOS) {
         // For iOS, check photos permission
         status = await Permission.photos.status;
@@ -823,12 +927,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Future<void> _openGalleryPicker() async {
     try {
-      // Stop camera
-      setState(() {
-        _isInitialized = false;
-      });
-      await _controller?.dispose();
-      _controller = null;
+      // Safely dispose camera with proper error handling
+      await _safeDisposeCamera();
 
       // Open gallery picker
       final List<String>? selectedImages = await Navigator.push<List<String>>(
@@ -845,30 +945,117 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         // Process selected images
         await _processSelectedImages(selectedImages);
       } else {
-        // Restart camera if no images selected
-        _initializeCamera();
+        // Restart camera if no images selected - wait a bit for proper state
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted && !_disposed) {
+            _initializeCamera();
+          }
+        });
       }
     } catch (e) {
       print('Error opening gallery picker: $e');
-      // Restart camera on error
-      _initializeCamera();
+      // Restart camera on error - wait a bit for proper state
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted && !_disposed) {
+          _initializeCamera();
+        }
+      });
     }
+  }
+
+  /// Checks if any of the food items are unidentified meals
+  /// Returns true if any item has zero calories and contains "UNIDENTIFIED" in code or "Không xác định" in text
+  bool _checkForUnidentifiedMeals(List<dynamic> foods) {
+    for (var food in foods) {
+      // Check if calories is zero
+      double? calorie = food.calorie;
+      if (calorie == null || calorie == 0) {
+        // Check if code contains "UNIDENTIFIED" or text contains "Không xác định"
+        String? code = food.code?.toString() ?? '';
+        String? text = food.text?.toString() ?? '';
+
+        const List<String> unidentifiedKeywords = [
+          'unidentified',
+          'unknown',
+          'không xác định'
+        ];
+        if (unidentifiedKeywords.any((keyword) =>
+            code.toLowerCase().contains(keyword) ||
+            text.toLowerCase().contains(keyword))) {
+          print(
+              'Found unidentified meal: code=$code, text=$text, calorie=$calorie');
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   Future<void> _processSelectedImages(List<String> imagePaths) async {
     try {
       // Show analyzing overlay
-      setState(() {
-        _isAnalyzing = true;
-      });
+      if (mounted && !_disposed) {
+        try {
+          setState(() {
+            _isAnalyzing = true;
+          });
+        } catch (e) {
+          print('Error calling setState during analyzing start: $e');
+        }
+      }
 
       final result = await FoodClient().postFoodImages(imagePaths);
       print("API call completed with result: ${result.length} items");
 
       // Hide analyzing overlay
-      setState(() {
-        _isAnalyzing = false;
-      });
+      if (mounted && !_disposed) {
+        try {
+          setState(() {
+            _isAnalyzing = false;
+          });
+        } catch (e) {
+          print('Error calling setState during analyzing end: $e');
+        }
+      }
+
+      // Check for unidentified meals
+      if (result.isNotEmpty) {
+        bool hasUnidentifiedMeal = _checkForUnidentifiedMeals(result);
+
+        if (hasUnidentifiedMeal) {
+          BotToast.closeAllLoading(); // Close all toasts including custom text
+          BotToast.showCustomText(
+            toastBuilder: (_) => Container(
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              decoration: BoxDecoration(
+                color: R.color.color0xff111515.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                R.string.unknown_meal_image.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: R.color.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+            align: Alignment.center,
+            duration: Duration(seconds: 2),
+            clickClose: true,
+            crossPage: true,
+            onlyOne: true,
+          );
+          // Restart camera - wait a bit for proper state
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              _initializeCamera();
+            }
+          });
+          return;
+        }
+      }
 
       // Navigate to the food detail page with the new food ID
       if (result.isNotEmpty) {
@@ -883,17 +1070,31 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       } else {
         BotToast.closeAllLoading(); // Close all toasts including custom text
         BotToast.showText(text: 'Không tìm thấy thực phẩm nào để đồng bộ');
-        // Restart camera
-        _initializeCamera();
+        // Restart camera - wait a bit for proper state
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted && !_disposed) {
+            _initializeCamera();
+          }
+        });
       }
     } catch (e) {
       print("Error occurred: $e");
-      setState(() {
-        _isAnalyzing = false;
+      if (mounted && !_disposed) {
+        try {
+          setState(() {
+            _isAnalyzing = false;
+          });
+        } catch (e) {
+          print('Error calling setState during error handling: $e');
+        }
+      }
+      BotToast.showText(text: 'Lỗi khi phân tích bữa ăn');
+      // Restart camera - wait a bit for proper state
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted && !_disposed) {
+          _initializeCamera();
+        }
       });
-      BotToast.showText(text: 'Lỗi khi đồng bộ thực phẩm: $e');
-      // Restart camera
-      _initializeCamera();
     }
   }
 }

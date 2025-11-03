@@ -1460,3 +1460,4 @@ used_all,"Đã dùng tất cả","Used all",
 unused_all,"Chưa dùng tất cả","Unused all",
 analyzing_prescription,"Đang phân tích đơn thuốc của bạn","Analyzing your prescription",
 reshoot,"Chụp lại","Reshoot",
+unknown_meal_image,"Không thể xác định món ăn. Vui lòng thử lại.","Cannot identify meal from image. Please try again."

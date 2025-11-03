@@ -351,44 +351,6 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
                   ),
                 ],
               ),
-              // Description if available
-              if (item.description != null) ...[
-                SizedBox(height: 16),
-                Container(
-                  height: 1,
-                  color: R.color.color0xffEEEFF3,
-                ),
-                SizedBox(height: 16),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${R.string.ghi_chu.tr()}: ',
-                      style: TextStyle(
-                        fontFamily: R.font.sfpro,
-                        color: R.color.textDark,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        item.description!,
-                        style: TextStyle(
-                          fontFamily: R.font.sfpro,
-                          color: R.color.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.2,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ],
           ),
         ),
@@ -400,41 +362,7 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
     String emptyMessage = _getEmptyStateText();
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            child: Image.asset(
-              'lib/res/drawables/hba1c/im_hba1c_empty.png',
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Chưa có chỉ số HbA1c',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: R.color.textDark,
-              fontFamily: R.font.sfpro,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            emptyMessage,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: R.color.primaryGreyColor,
-              fontFamily: R.font.sfpro,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
+      child: SizedBox.expand(),
     );
   }
 
