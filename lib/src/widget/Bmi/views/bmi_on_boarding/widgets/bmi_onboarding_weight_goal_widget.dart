@@ -23,6 +23,8 @@ class BmiOnboardingWeightGoalWidget extends StatelessWidget {
             (current is BmiDataChangedState &&
                 current.event == BmiDataChangeEvent.weightGoalChanged),
         builder: (context, state) {
+          if (_bmiBloc.selectedPointChart == null) return const SizedBox();
+          
           return InkWell(
             onTap: () {
               // BmiGoalWeightInputDialog.show(

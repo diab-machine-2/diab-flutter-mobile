@@ -25,6 +25,8 @@ class BmiOnboardingCurrentHeightWidget extends StatelessWidget {
             (current is BmiDataChangedState &&
                 current.event == BmiDataChangeEvent.heightChanged),
         builder: (context, state) {
+          if (_bmiBloc.selectedPointChart == null) return const SizedBox();
+          
           return InkWell(
             onTap: () {
               BmiHeightInputDialog.show(

@@ -21,6 +21,8 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
     return BlocBuilder<BmiBloc, BmiState>(
         buildWhen: (_, state) => state is BmiGetBmiStatisticalState,
         builder: (context, state) {
+          if (_bmiBloc.selectedPointChart == null) return const SizedBox();
+
           Color? thresholdColor = _bmiBloc.bmiStatistical?.color;
 
           return Container(

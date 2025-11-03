@@ -97,12 +97,13 @@ class _InfoHeader extends StatelessWidget {
         builder: (context, state) {
           return Column(
             children: [
-              Text(
-                bmiBloc.selectedPointChart?.bmiText ?? "--",
-                style: R.style.boldXXLargeStyle.copyWith(
-                  color: bmiBloc.selectedPointChart?.bmiBgColor,
+              if (bmiBloc.selectedPointChart?.bmiText != null)
+                Text(
+                  bmiBloc.selectedPointChart?.bmiText ?? "--",
+                  style: R.style.boldXXLargeStyle.copyWith(
+                    color: bmiBloc.selectedPointChart?.bmiBgColor,
+                  ),
                 ),
-              ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,31 +129,40 @@ class _InfoHeader extends StatelessWidget {
                           size: 18,
                         )),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "BMI ",
-                        style: R.style.normalTextStyle.neutral4,
-                      ),
-                      Text(
-                        "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
-                        style: R.style.boldNormalStyle.neutral3,
-                      ),
-                      Text(
-                        " \u2022 ",
-                        style: R.style.boldLargeStyle.neutral4,
-                      ),
-                      Text(
-                        _getWeight(bmiBloc.selectedPointChart?.weight),
-                        style: R.style.boldNormalStyle.neutral3,
-                      ),
-                      Text(
-                        " kg",
-                        style: R.style.normalTextStyle.neutral4,
-                      ),
-                    ],
-                  ),
+                  if (bmiBloc.selectedPointChart?.bmiText == null) ...[
+                    Text(
+                      R.string.no_data_within
+                          .tr(args: ["${bmiBloc.periodType.days}"]),
+                      textAlign: TextAlign.center,
+                      style: R.style.normalTextStyle.copyWith(color: AppColors.neutral4),
+                    )
+                  ] else ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "BMI ",
+                          style: R.style.normalTextStyle.neutral4,
+                        ),
+                        Text(
+                          "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
+                          style: R.style.boldNormalStyle.neutral3,
+                        ),
+                        Text(
+                          " \u2022 ",
+                          style: R.style.boldLargeStyle.neutral4,
+                        ),
+                        Text(
+                          _getWeight(bmiBloc.selectedPointChart?.weight),
+                          style: R.style.boldNormalStyle.neutral3,
+                        ),
+                        Text(
+                          " kg",
+                          style: R.style.normalTextStyle.neutral4,
+                        ),
+                      ],
+                    ),
+                  ],
                   IconButton(
                     onPressed: () {
                       bmiBloc.goToNextPoint();

@@ -354,7 +354,7 @@ class BmiInputRangeChart extends StatelessWidget {
             
             // bar
             Positioned(
-              top: markerSize + 20,
+              top: markerSize,
               left: 0,
               right: 0,
               child: bar,
