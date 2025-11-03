@@ -1,0 +1,283 @@
+{
+  "meta": {
+    "success": true
+  },
+  "data": [
+    {
+      "id": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+      "code": "D027",
+      "name": "Tăng huyết áp cấp cứu",
+      "description": "",
+      "status": 1,
+      "type": 2,
+      "order": 67,
+      "orderHighest": null,
+      "isEnabledRating": false,
+      "minCompletePercent": null,
+      "coverId": "e6757d60-0b92-4f04-4864-08da0094222a",
+      "lessonModuleId": "c2814a60-25a0-4593-a7a8-08d9ebb48e8a",
+      "lessonLevelId": "2a763765-d2c7-4267-854b-9594119abfb1",
+      "countLessonSection": 0,
+      "countLessonAccount": 0,
+      "countLessonQuiz": 0,
+      "countLessonQuizAccount": 0,
+      "learningStatus": 0,
+      "lessonModule": {
+        "id": "c2814a60-25a0-4593-a7a8-08d9ebb48e8a",
+        "code": "D",
+        "name": "Bệnh lý",
+        "updateDate": "02/09/2022 10:11:36",
+        "updaterName": "diaB  Admin",
+        "updaterUsername": "Root",
+        "updaterCode": "Root",
+        "updaterImage": {
+          "id": "ef6e86eb-cb4c-4a21-852d-08d9ebac949a",
+          "url": "https://api.debug.diab.vn/App/Image/ef6e86eb-cb4c-4a21-852d-08d9ebac949a?expires=1758989569&signature=c8d3484fa13151a97b6ac5a7e02c75c313ccd05e456095c75d4c46429cd76400"
+        }
+      },
+      "lessonLevel": {
+        "id": "2a763765-d2c7-4267-854b-9594119abfb1",
+        "code": "Level2",
+        "name": "2",
+        "order": 2,
+        "updateDate": "02/09/2022 10:11:13",
+        "updaterName": "diaB  Admin",
+        "updaterUsername": "Root",
+        "updaterCode": "Root",
+        "updaterImage": {
+          "id": "ef6e86eb-cb4c-4a21-852d-08d9ebac949a",
+          "url": "https://api.debug.diab.vn/App/Image/ef6e86eb-cb4c-4a21-852d-08d9ebac949a?expires=1758989569&signature=c8d3484fa13151a97b6ac5a7e02c75c313ccd05e456095c75d4c46429cd76400"
+        }
+      },
+      "quizLessons": null,
+      "lessonTagMappings": [
+        {
+          "id": "2b3c3e18-66a5-4f68-7c61-08da00cd5bd1",
+          "lessonId": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+          "lessonTagId": "a479606c-6640-4380-7198-08da00cd5bd1",
+          "tag": {
+            "id": "a479606c-6640-4380-7198-08da00cd5bd1",
+            "name": "Huyết áp",
+            "type": 1
+          }
+        },
+        {
+          "id": "2ff5af07-22ac-4142-7c60-08da00cd5bd1",
+          "lessonId": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+          "lessonTagId": "5d94c1ca-5df9-45a4-7197-08da00cd5bd1",
+          "tag": {
+            "id": "5d94c1ca-5df9-45a4-7197-08da00cd5bd1",
+            "name": "Tăng huyết áp",
+            "type": 1
+          }
+        },
+        {
+          "id": "3cf7d7d6-6b7b-482c-7c5d-08da00cd5bd1",
+          "lessonId": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+          "lessonTagId": "b5f1dba9-9833-426b-7194-08da00cd5bd1",
+          "tag": null
+        },
+        {
+          "id": "62937778-37a6-4169-7c62-08da00cd5bd1",
+          "lessonId": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+          "lessonTagId": "024810bd-00fd-4f02-7199-08da00cd5bd1",
+          "tag": {
+            "id": "024810bd-00fd-4f02-7199-08da00cd5bd1",
+            "name": "Sơ cứu",
+            "type": 1
+          }
+        },
+        {
+          "id": "831e501e-f818-4444-7c5f-08da00cd5bd1",
+          "lessonId": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+          "lessonTagId": "c7b4be76-bf58-4987-7196-08da00cd5bd1",
+          "tag": null
+        },
+        {
+          "id": "ca6dd568-3cf3-4274-7c5c-08da00cd5bd1",
+          "lessonId": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+          "lessonTagId": "f582b3f1-9747-4784-ac19-08d9f6748563",
+          "tag": {
+            "id": "f582b3f1-9747-4784-ac19-08d9f6748563",
+            "name": "Cấp cứu",
+            "type": 1
+          }
+        },
+        {
+          "id": "d2f1de78-0c16-4e1a-7c5e-08da00cd5bd1",
+          "lessonId": "0484c10d-be73-417e-5b06-08da00cd5bd0",
+          "lessonTagId": "9784ef3e-7ca6-4914-7195-08da00cd5bd1",
+          "tag": null
+        }
+      ],
+      "lessonSections": null,
+      "lessonQuizAccounts": null,
+      "lessonReviews": null,
+      "lessonStates": null,
+      "lessonModules": null,
+      "lessonTypes": null,
+      "lessonLevels": null,
+      "lessonTags": null,
+      "image": {
+        "id": "e6757d60-0b92-4f04-4864-08da0094222a",
+        "url": "https://api.debug.diab.vn/App/Image/e6757d60-0b92-4f04-4864-08da0094222a?expires=1758989569&signature=873d82fabb40e604969ef129cfbb4ce3ec1fd2034d27639d6d2b9edf2b04a028"
+      },
+      "imageVendor": null,
+      "numberOfQuiz": 0,
+      "percentComplete": 0,
+      "linkShare": "https://app.diab.com.vn/eyX9yL4sBVb"
+    },
+    {
+      "id": "1272e945-e42e-4b60-68b4-08da8a59603c",
+      "code": "D030",
+      "name": "Chọn máy đo huyết áp và cách dùng",
+      "description": null,
+      "status": 1,
+      "type": 2,
+      "order": 78,
+      "orderHighest": null,
+      "isEnabledRating": false,
+      "minCompletePercent": null,
+      "coverId": "40bba5cf-73c2-49f7-7156-08da9c28fa08",
+      "lessonModuleId": "c2814a60-25a0-4593-a7a8-08d9ebb48e8a",
+      "lessonLevelId": "bf7d052c-3a67-40b4-ae68-08d987d0aa92",
+      "countLessonSection": 0,
+      "countLessonAccount": 0,
+      "countLessonQuiz": 0,
+      "countLessonQuizAccount": 0,
+      "learningStatus": 0,
+      "lessonModule": {
+        "id": "c2814a60-25a0-4593-a7a8-08d9ebb48e8a",
+        "code": "D",
+        "name": "Bệnh lý",
+        "updateDate": "02/09/2022 10:11:36",
+        "updaterName": "diaB  Admin",
+        "updaterUsername": "Root",
+        "updaterCode": "Root",
+        "updaterImage": {
+          "id": "ef6e86eb-cb4c-4a21-852d-08d9ebac949a",
+          "url": "https://api.debug.diab.vn/App/Image/ef6e86eb-cb4c-4a21-852d-08d9ebac949a?expires=1758989569&signature=c8d3484fa13151a97b6ac5a7e02c75c313ccd05e456095c75d4c46429cd76400"
+        }
+      },
+      "lessonLevel": {
+        "id": "bf7d052c-3a67-40b4-ae68-08d987d0aa92",
+        "code": "Level1",
+        "name": "1",
+        "order": 1,
+        "updateDate": "12/31/2021 05:02:52",
+        "updaterName": "diaB  Admin",
+        "updaterUsername": "Root",
+        "updaterCode": "Root",
+        "updaterImage": {
+          "id": "ef6e86eb-cb4c-4a21-852d-08d9ebac949a",
+          "url": "https://api.debug.diab.vn/App/Image/ef6e86eb-cb4c-4a21-852d-08d9ebac949a?expires=1758989569&signature=c8d3484fa13151a97b6ac5a7e02c75c313ccd05e456095c75d4c46429cd76400"
+        }
+      },
+      "quizLessons": null,
+      "lessonTagMappings": [
+        {
+          "id": "91641a4b-a514-46b2-eef1-08da8a5111b3",
+          "lessonId": "1272e945-e42e-4b60-68b4-08da8a59603c",
+          "lessonTagId": "912bb070-3c65-402f-450b-08d9ec4b5232",
+          "tag": {
+            "id": "912bb070-3c65-402f-450b-08d9ec4b5232",
+            "name": "Bệnh lý",
+            "type": 1
+          }
+        }
+      ],
+      "lessonSections": null,
+      "lessonQuizAccounts": null,
+      "lessonReviews": null,
+      "lessonStates": null,
+      "lessonModules": null,
+      "lessonTypes": null,
+      "lessonLevels": null,
+      "lessonTags": null,
+      "image": {
+        "id": "40bba5cf-73c2-49f7-7156-08da9c28fa08",
+        "url": "https://api.debug.diab.vn/App/Image/40bba5cf-73c2-49f7-7156-08da9c28fa08?expires=1758989569&signature=bc96ccce7d81bb93532d803d28a091e1271ab6ae409c63c9a6f239e908989362"
+      },
+      "imageVendor": null,
+      "numberOfQuiz": 0,
+      "percentComplete": 0,
+      "linkShare": "https://app.diab.com.vn/hd3BEZ3sBVb"
+    },
+    {
+      "id": "0b711b58-d484-4871-c872-08d9f022ae7d",
+      "code": "E005",
+      "name": "Tăng cường vận động mỗi ngày",
+      "description": "Cách tăng cường sự vận động thông qua hoạt động hàng ngày",
+      "status": 1,
+      "type": 1,
+      "order": 14,
+      "orderHighest": null,
+      "isEnabledRating": false,
+      "minCompletePercent": null,
+      "coverId": "61928641-d0d8-42f6-7513-08db994909f8",
+      "lessonModuleId": "d641c2bb-678c-4345-a7ab-08d9ebb48e8a",
+      "lessonLevelId": "bf7d052c-3a67-40b4-ae68-08d987d0aa92",
+      "countLessonSection": 0,
+      "countLessonAccount": 0,
+      "countLessonQuiz": 0,
+      "countLessonQuizAccount": 0,
+      "learningStatus": 0,
+      "lessonModule": {
+        "id": "d641c2bb-678c-4345-a7ab-08d9ebb48e8a",
+        "code": "E",
+        "name": "Vận động",
+        "updateDate": "02/09/2022 10:12:32",
+        "updaterName": "diaB  Admin",
+        "updaterUsername": "Root",
+        "updaterCode": "Root",
+        "updaterImage": {
+          "id": "ef6e86eb-cb4c-4a21-852d-08d9ebac949a",
+          "url": "https://api.debug.diab.vn/App/Image/ef6e86eb-cb4c-4a21-852d-08d9ebac949a?expires=1758989569&signature=c8d3484fa13151a97b6ac5a7e02c75c313ccd05e456095c75d4c46429cd76400"
+        }
+      },
+      "lessonLevel": {
+        "id": "bf7d052c-3a67-40b4-ae68-08d987d0aa92",
+        "code": "Level1",
+        "name": "1",
+        "order": 1,
+        "updateDate": "12/31/2021 05:02:52",
+        "updaterName": "diaB  Admin",
+        "updaterUsername": "Root",
+        "updaterCode": "Root",
+        "updaterImage": {
+          "id": "ef6e86eb-cb4c-4a21-852d-08d9ebac949a",
+          "url": "https://api.debug.diab.vn/App/Image/ef6e86eb-cb4c-4a21-852d-08d9ebac949a?expires=1758989569&signature=c8d3484fa13151a97b6ac5a7e02c75c313ccd05e456095c75d4c46429cd76400"
+        }
+      },
+      "quizLessons": null,
+      "lessonTagMappings": [
+        {
+          "id": "529ac7ce-e908-4deb-a091-08d9f022ae7e",
+          "lessonId": "0b711b58-d484-4871-c872-08d9f022ae7d",
+          "lessonTagId": "e6a5cddd-7dec-440f-f0c1-08d9ef854093",
+          "tag": {
+            "id": "e6a5cddd-7dec-440f-f0c1-08d9ef854093",
+            "name": "Vận động",
+            "type": 1
+          }
+        }
+      ],
+      "lessonSections": null,
+      "lessonQuizAccounts": null,
+      "lessonReviews": null,
+      "lessonStates": null,
+      "lessonModules": null,
+      "lessonTypes": null,
+      "lessonLevels": null,
+      "lessonTags": null,
+      "image": {
+        "id": "61928641-d0d8-42f6-7513-08db994909f8",
+        "url": "https://api.debug.diab.vn/App/Image/61928641-d0d8-42f6-7513-08db994909f8?expires=1758989569&signature=0f3e436d0f2d4162f90af048fca36f126a0cc7604bc81c4bbd58a3c1c7d69dc8"
+      },
+      "imageVendor": null,
+      "numberOfQuiz": 0,
+      "percentComplete": 0,
+      "linkShare": "https://app.diab.com.vn/7f3CfK5sBVb"
+    }
+  ]
+}

@@ -18,6 +18,7 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
@@ -372,7 +373,8 @@ class BranchioLinkConfig {
       feature: 'lesson_share',
       channel: 'app_share',
       campaign: 'lesson_share',
-      stage: "${Const.ENVIRONMENT_DEFAULT} ${lesson.code ?? 'missing_lesson_code'}",
+      stage:
+          "${Const.ENVIRONMENT_DEFAULT} ${lesson.code ?? 'missing_lesson_code'}",
       tags: ['${user.accountId}'],
     );
 
@@ -461,6 +463,13 @@ class BranchioLinkConfig {
 
     if (measurementRoutes.containsKey(screenValue)) {
       final routeInfo = measurementRoutes[screenValue]!;
+
+      if (routeInfo['route'] == NavigatorName.add_food) {
+        FoodActionPopup.show(navigatorKey.currentContext!);
+        return;
+      }
+
+      // For all other measurements, navigate directly
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
           routeInfo['route'] as String,
           (route) => route.settings.name == NavigatorName.tabbar,

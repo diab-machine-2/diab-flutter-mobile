@@ -61,12 +61,12 @@ class MessageModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id ?? '',
-      'conversationId': conversationId ?? '',
-      'content': content ?? '',
-      'sender': sender ?? '',
-      'senderType': senderType ?? '',
-      'createdAt': createdAt ?? '',
+      'id': id,
+      'conversationId': conversationId,
+      'content': content,
+      'sender': sender,
+      'senderType': senderType,
+      'createdAt': createdAt,
       'updatedAt': updatedAt ?? '',
       'deletedAt': deletedAt ?? '',
       // 'conversation': conversation,

@@ -10,8 +10,6 @@ import 'package:medical/src/bloc/exercrises/exercrises_bloc.dart';
 import 'package:medical/src/modal/exercrises/exercrise_trend_time.dart';
 import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
-import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
 import 'package:medical/src/widget/Exercrises/widget/exercrises_ai_suggestion.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';

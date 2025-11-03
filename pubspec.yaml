@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: "none"
 
-version: 2.3.3+5
+version: 2.5.0+6
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -150,7 +150,8 @@ dependencies:
   purchases_flutter: 8.10.6
   purchases_ui_flutter: 8.10.6
   youtube_explode_dart: 2.5.2
-  saver_gallery: ^1.0.8
+  saver_gallery: 1.0.8
+  photo_manager: 3.7.1
 
   # Social login
   # zalo_flutter: ^0.0.6
@@ -219,6 +220,7 @@ flutter:
     - assets/
     - assets/ca/
     - assets/images/
+    - assets/dummy/
     - lib/res/
     - lib/res/fonts/
     - lib/res/drawables/
@@ -226,8 +228,10 @@ flutter:
     - lib/res/drawables/chat/
     - lib/res/drawables/glucose/
     - lib/res/drawables/bloodpressure/
+    - lib/res/drawables/food/
     - lib/res/drawables/tab/
     - lib/res/drawables/zoom/
+    - lib/res/drawables/hba1c/
     - lib/res/translations/
     - lib/res/generated/
     - lib/res/icons/

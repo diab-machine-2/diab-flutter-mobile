@@ -1,5 +1,5 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "product"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT = "dev"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -251,4 +251,14 @@ class Const {
   static const REVENUE_CAT_GOOGLE_API_KEY = 'goog_tZprrmvJhhXUhfZQptsKamngqIQ';
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
   static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
+
+  static const bmiThreshold = <double>[
+    18.5,
+    23,
+    25,
+    30
+  ];
+
+  static const hasInputedWaist = "has_inputed_waist";
+  static const hasWeightRecord = "has_weight_record";
 }

@@ -22,6 +22,7 @@ class FoodModel {
   final String? mealId;
   final int? timeCode;
   String? foodMenuCode;
+  String? imageUrl;
 
   FoodModel({
     required this.id,
@@ -43,6 +44,7 @@ class FoodModel {
     this.mealId,
     this.timeCode,
     this.foodMenuCode,
+    this.imageUrl,
   });
 
   @override
@@ -55,20 +57,24 @@ class FoodModel {
       unit: json['unit'],
       calorie: json['calorie'] == null
           ? (json['caloValue'] == null
-              ? json['caloriesPerUnit']
-              : json['caloValue'])
-          : json['calorie'],
-      glucose: json['glucose'],
-      lipid: json['lipid'],
-      protein: json['protein'],
-      fibre: json['fibre'],
+              ? (json['caloriesPerUnit'] == null
+                  ? null
+                  : json['caloriesPerUnit'].toDouble())
+              : json['caloValue'].toDouble())
+          : json['calorie'].toDouble(),
+      glucose: json['glucose']?.toDouble(),
+      lipid: json['lipid']?.toDouble(),
+      protein: json['protein']?.toDouble(),
+      fibre: json['fibre']?.toDouble(),
       image: json['image'] == null ? null : ImagesModel.fromJson(json['image']),
       liked: json['liked'],
       text: json['text'],
       description: json['description'],
       foodCategoryId: json['foodCategoryId'],
-      quantity: json['inputPortion'] ?? 1,
+      quantity:
+          json['inputPortion'] == null ? 1 : json['inputPortion'].toDouble(),
       mealId: json['mealId'],
+      imageUrl: json['imageUrl'],
     );
   }
 
@@ -101,6 +107,7 @@ class FoodModel {
     String? mealId,
     int? timeCode,
     String? foodMenuCode,
+    String? imageUrl,
   }) {
     return FoodModel(
       id: id ?? this.id,
@@ -122,6 +129,7 @@ class FoodModel {
       mealId: mealId ?? this.mealId,
       timeCode: timeCode ?? this.timeCode,
       foodMenuCode: foodMenuCode ?? this.foodMenuCode,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 

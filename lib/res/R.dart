@@ -1,4 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY
+import 'package:medical/res/app_decoration_styles.dart';
 import 'package:medical/res/styles.dart';
 
 import 'generated/colors.g.dart';
@@ -18,4 +19,5 @@ class R {
   static final dimen = Dimens();
   static final style = AppStyle();
   static final icons = Icons();
+  static final decorationStyle = AppDecorationStyles();
 }

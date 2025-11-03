@@ -25,4 +25,5 @@ class Icons {
   String get ic_clock => "lib/res/icons/ic_clock.svg";
   String get ic_flag_fr => "lib/res/icons/ic_flag_fr.svg";
   String get ic_policy => "lib/res/icons/ic_policy.svg";
+  String get ic_edit => "lib/res/icons/ic_edit.svg";
 }

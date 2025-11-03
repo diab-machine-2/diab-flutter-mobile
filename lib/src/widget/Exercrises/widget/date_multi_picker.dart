@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 import '../../../../res/R.dart';
-import '../../Bmi/views/add_bmi_view/widgets/custom_datetime_picker.dart';
+import '../../bmi/views/add_bmi_view_old/widgets/custom_datetime_picker.dart';
 
 typedef TimeCallback = Function(DateTime?);
 

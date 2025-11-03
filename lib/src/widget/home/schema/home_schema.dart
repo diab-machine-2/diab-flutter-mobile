@@ -5,7 +5,7 @@ class HomeMeasurementIndex {
   final String title;
   final String icon;
   final String navigatorName;
-  final dynamic args;
+  final Map<String, dynamic>? args;
 
   HomeMeasurementIndex({
     required this.title,
@@ -23,7 +23,7 @@ class HomeMeasurementInlineData {
   final int titleColor;
   final int color;
   final String? navigatorName;
-  final dynamic args;
+  final Map<String, dynamic>? args;
 
   HomeMeasurementInlineData({
     this.title,
@@ -71,7 +71,7 @@ class HomeMeasurementData {
   final int? value2Color;
   final String unit;
   final String? navigatorName;
-  final dynamic args;
+  final Map<String, dynamic>? args;
 
   HomeMeasurementData({
     required this.title,
