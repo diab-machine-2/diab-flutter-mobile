@@ -47,6 +47,9 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   DateTime? _lastTapTime;
   ScrollController? _scrollController;
   bool _initialScrollApplied = false;
+  double _lastViewWidth = 0;
+  double _lastEffectivePointWidth = 0;
+  int _lastTotalPoints = 0;
 
   // Custom Y transform để đặt đường kẻ 6.5% ở giữa chart
   // Tương tự như BloodPressure chart với đường kẻ 90 và 140
@@ -142,6 +145,42 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     });
   }
 
+  void _scrollToSelectedPoint({
+    required int totalPoints,
+    required double viewWidth,
+    required double effectivePointWidth,
+  }) {
+    if (_scrollController == null || !_scrollController!.hasClients) return;
+    if (totalPoints <= 0) return;
+    if (!viewWidth.isFinite || viewWidth <= 0) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController!.hasClients) return;
+
+      final double maxScrollExtent =
+          _scrollController!.position.maxScrollExtent;
+      final int? selectedFlatIndex = _getSelectedFlatIndex();
+      final int targetIndex = selectedFlatIndex ?? (totalPoints - 1);
+      if (targetIndex < 0) {
+        return;
+      }
+
+      // Calculate position to center the selected point
+      final double targetCenter =
+          targetIndex * effectivePointWidth + (effectivePointWidth / 2);
+      final double rawOffset = targetCenter - (viewWidth / 2);
+      final double desiredOffset =
+          rawOffset.clamp(0.0, maxScrollExtent).toDouble();
+
+      // Animate to the desired position
+      _scrollController!.animateTo(
+        desiredOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -153,10 +192,18 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     super.didUpdateWidget(oldWidget);
     final int newCount = _calculateTotalPoints(widget.groupedPoints);
     final int oldCount = _calculateTotalPoints(oldWidget.groupedPoints);
-    if (newCount != oldCount ||
-        widget.focusIndex != oldWidget.focusIndex ||
-        widget.focusSubIndex != oldWidget.focusSubIndex) {
+    if (newCount != oldCount) {
       _initialScrollApplied = false;
+    } else if (widget.focusIndex != oldWidget.focusIndex ||
+        widget.focusSubIndex != oldWidget.focusSubIndex) {
+      // User switched to a different point, scroll to center it
+      if (_lastTotalPoints > 0 && _lastViewWidth > 0) {
+        _scrollToSelectedPoint(
+          totalPoints: _lastTotalPoints,
+          viewWidth: _lastViewWidth,
+          effectivePointWidth: _lastEffectivePointWidth,
+        );
+      }
     }
   }
 
@@ -174,7 +221,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     final List<LineChartBarData> lineBarsData =
         _generateMultipleHbA1cLines(flattenedPoints);
 
-    const int visiblePointCount = 12;
+    const int visiblePointCount = 6;
     const double chartHeight = 140;
 
     // Fixed minY and maxY for consistent chart display
@@ -228,6 +275,11 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                       : viewWidth;
                   final double effectivePointWidth =
                       totalPoints == 0 ? 0 : chartWidth / totalPoints;
+
+                  // Save values for use in didUpdateWidget
+                  _lastViewWidth = viewWidth;
+                  _lastEffectivePointWidth = effectivePointWidth;
+                  _lastTotalPoints = totalPoints;
 
                   if (enableScroll) {
                     _ensureSelectedPointVisible(
