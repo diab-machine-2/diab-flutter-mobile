@@ -1,14 +1,25 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../../../../res/R.dart';
 import '../../../modal/medicine/prescription_schedule_model.dart';
+import '../../../utils/const.dart';
 
 class MedicineSessionCard extends StatefulWidget {
-  const MedicineSessionCard({super.key, required this.session, required this.isExpanded, required this.onTap});
+  const MedicineSessionCard({
+    super.key,
+    required this.session,
+    required this.isExpanded,
+    this.firstMedicineKey,
+    required this.onTap,
+  });
+
   final PrescriptionsBySessionModel session;
   final bool isExpanded;
+  final GlobalKey? firstMedicineKey;
+
   final Function(int, int, bool) onTap;
 
   @override
@@ -20,8 +31,52 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
 
   @override
   void initState() {
-    isExpanded = widget.isExpanded;
     super.initState();
+
+    isExpanded = widget.isExpanded;
+
+    // Sau khi build xong UI, nếu có key thì hiển thị tutorial
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.firstMedicineKey != null) {
+        _showTutorial();
+      }
+    });
+  }
+
+  Future<void> _showTutorial() async {
+    final targets = [
+      TargetFocus(
+        identify: "firstMedicine",
+        keyTarget: widget.firstMedicineKey!,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: const Text(
+                "Nhấn chọn nếu bạn đã dùng thuốc này",
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+
+    TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black.withOpacity(0.7),
+      onFinish: _onTutorialComplete,
+      onSkip: () {
+        _onTutorialComplete();
+        return true;
+      },
+    ).show(context: context);
+  }
+
+  Future<void> _onTutorialComplete() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool(Const.shouldTutorial, true);
   }
 
   @override
@@ -33,9 +88,9 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
   }
 
   Widget _buildScheduleCard(
-      PrescriptionsBySessionModel session,
-      Function(int, int, bool) onTap,
-      ) {
+    PrescriptionsBySessionModel session,
+    Function(int, int, bool) onTap,
+  ) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       shape: RoundedRectangleBorder(
@@ -154,30 +209,47 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
       Function(int, int, bool) onTap,
       ) {
     List<Widget> widgets = [];
+
     for (var i = 0; i < medicationList.length; i++) {
       final medication = medicationList[i];
-      widgets.add(Padding(
-        padding: i == 0 ? EdgeInsets.fromLTRB(0, 12, 0, 16) : EdgeInsets.symmetric(horizontal: 0, vertical: 16),
-        child: _buildMedicineItem(medication.medicineName, medication.dosage, medication.isTaken, () {
-          onTap(prescriptionIndex, i, !medication.isTaken);
-          setState(() {
-            medication.isTaken = !medication.isTaken;
-          });
-        }),
-      ));
+
+      widgets.add(
+        Padding(
+          key: i == 0 && widget.firstMedicineKey != null
+              ? widget.firstMedicineKey // 👈 gắn key cho item đầu tiên
+              : null,
+          padding: i == 0
+              ? const EdgeInsets.fromLTRB(0, 12, 0, 16)
+              : const EdgeInsets.symmetric(vertical: 16),
+          child: _buildMedicineItem(
+            medication.medicineName,
+            medication.dosage,
+            medication.isTaken,
+                () {
+              onTap(prescriptionIndex, i, !medication.isTaken);
+              setState(() {
+                medication.isTaken = !medication.isTaken;
+              });
+            },
+          ),
+        ),
+      );
+
       if (i != medicationList.length - 1) {
-        widgets.add(Divider(color: Color(0xFFDADEDF)));
+        widgets.add(const Divider(color: Color(0xFFDADEDF)));
       }
     }
+
     return widgets;
   }
 
+
   Widget _buildMedicineItem(
-      String title,
-      String subtitle,
-      bool isTaken,
-      VoidCallback onTap,
-      ) {
+    String title,
+    String subtitle,
+    bool isTaken,
+    VoidCallback onTap,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

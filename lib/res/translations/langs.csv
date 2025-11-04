@@ -1463,3 +1463,4 @@ reshoot,"Chụp lại","Reshoot",
 stop_medicine,"Ngưng thuốc","Stop medicine",
 not_find_medicine,"Không tìm thấy thuốc","Can't find this medicine",
 add,"Thêm","Add",
+unknown_meal_image,"Không thể xác định món ăn. Vui lòng thử lại.","Cannot identify meal from image. Please try again."

@@ -440,54 +440,24 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
   }
 
   Widget _bottomSection() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _doShare,
-            child: Text(R.string.share.tr(),
-                style: TextStyle(
-                  fontFamily: R.font.sfpro,
-                  color: R.color.greenGradientBottom,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.4,
-                )),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              elevation: 0,
-              shadowColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: Color(0xFF008479)),
-              ),
-              minimumSize: Size(double.infinity, 48),
-            ),
-          ),
+    return ElevatedButton(
+      onPressed: _doComplete,
+      child: Text(
+        R.string.completed.tr(),
+        style: TextStyle(
+            fontFamily: R.font.sfpro,
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.4),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: R.color.greenGradientBottom,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: _doComplete,
-            child: Text(
-              R.string.completed.tr(),
-              style: TextStyle(
-                  fontFamily: R.font.sfpro,
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.4),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.greenGradientBottom,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              minimumSize: Size(double.infinity, 48),
-            ),
-          ),
-        ),
-      ],
+        minimumSize: Size(double.infinity, 48),
+      ),
     );
   }
 }

@@ -8,12 +8,14 @@ import 'package:medical/src/modal/medicine/prescription_schedule_model.dart';
 import 'package:medical/src/widget/medicine/widgets/calendar_slider.dart';
 import 'package:medical/src/widget/medicine/widgets/empty_medicine_schedule.dart';
 import 'package:medical/src/widget/medicine/widgets/note_and_images_panel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
 import '../../modal/medicine/daily_medicine_model.dart';
 import '../../modal/medicine/prescription_model.dart';
 import '../../service/medicine_service.dart';
+import '../../utils/const.dart';
 import '../../utils/navigator_name.dart';
 import '../helper/helper.dart';
 import 'prescription_add_page.dart';
@@ -34,9 +36,11 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
   late MedicineBloc _bloc;
   List<PrescriptionsBySessionModel> _sessionList = <PrescriptionsBySessionModel>[];
 
-  List<bool> _sessionExpandedList = [];
   late TabController _tabController;
   int bottomIndex = 1;
+
+  final GlobalKey _firstMedicineKey = GlobalKey();
+  bool _shouldShowTutorial = false;
 
   /*------CALENDAR SLIDER------*/
   // Store the currently selected date.
@@ -54,6 +58,13 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     // ..add(FetchMedicineScheduleEvent(
     //   (DateTime.now().millisecondsSinceEpoch / 1000).round(),
     // ));
+    _loadTutorialFlag();
+  }
+
+  Future<void> _loadTutorialFlag() async {
+    final prefs = await SharedPreferences.getInstance();
+    final shown = prefs.getBool(Const.shouldTutorial) ?? false;
+    setState(() => _shouldShowTutorial = !shown);
   }
 
   @override
@@ -265,7 +276,6 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
       return const Center(child: CircularProgressIndicator());
     } else if (state is FetchMedicineScheduleSuccess) {
       _sessionList = PrescriptionsBySessionModel.fromDailyList(state.medicineScheduleResult.daily);
-      _sessionExpandedList = _sessionList.map((e) => false).toList();
     }
 
     return ListView.builder(
@@ -297,6 +307,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           onTap: (prescriptionIndex, medicationIndex, isTaken) {
             _bloc.add(UseMedicineEvent(session.prescriptions[prescriptionIndex].medications[medicationIndex].id));
           },
+          firstMedicineKey: _shouldShowTutorial ? _firstMedicineKey : null,
         );
       },
     );

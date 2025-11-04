@@ -1513,4 +1513,5 @@ class Strings {
   String get stop_medicine => 'stop_medicine';
   String get not_find_medicine => 'not_find_medicine';
   String get add => 'add';
+  String get unknown_meal_image => 'unknown_meal_image';
 }
