@@ -278,7 +278,11 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       HapticFeedback.mediumImpact();
 
       // Auto-open gallery after capture
-      await _openGalleryPicker();
+      final String? recentAssetId = await _getMostRecentImageAssetId();
+      await _openGalleryPicker(
+        initialFilePath: imageFile.path,
+        initialAssetId: recentAssetId,
+      );
     } catch (e) {
       if (mounted) {
         _showErrorDialog('Lỗi khi chụp ảnh: $e');
@@ -925,7 +929,26 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Future<void> _openGalleryPicker() async {
+  Future<String?> _getMostRecentImageAssetId() async {
+    try {
+      final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
+        type: RequestType.image,
+        onlyAll: true,
+      );
+      if (albums.isEmpty) return null;
+      final AssetPathEntity recent = albums.first;
+      final List<AssetEntity> assets =
+          await recent.getAssetListPaged(page: 0, size: 1);
+      if (assets.isEmpty) return null;
+      return assets.first.id;
+    } catch (e) {
+      print('Error fetching most recent image asset id: $e');
+      return null;
+    }
+  }
+
+  Future<void> _openGalleryPicker(
+      {String? initialFilePath, String? initialAssetId}) async {
     try {
       // Safely dispose camera with proper error handling
       await _safeDisposeCamera();
@@ -937,6 +960,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           builder: (context) => FoodGalleryPicker(
             timeframe: widget.timeframe,
             timeframeId: widget.timeframeId,
+            initialSelectedFilePath: initialFilePath,
+            initialSelectedAssetId: initialAssetId,
           ),
         ),
       );
