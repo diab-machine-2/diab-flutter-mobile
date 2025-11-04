@@ -321,12 +321,29 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                   (LineChartBarData barData,
                                       List<int> spotIndexes) {
                                 return spotIndexes.map((index) {
+                                  // Get the color of the touched point
+                                  Color dotColor = R.color.black;
+                                  if (index >= 0 &&
+                                      index < flattenedPoints.length) {
+                                    dotColor = flattenedPoints[index].color;
+                                  }
+
                                   return TouchedSpotIndicatorData(
                                     FlLine(
-                                      color: R.color.black,
+                                      color: dotColor,
                                       strokeWidth: 0.5,
                                     ),
-                                    FlDotData(show: false),
+                                    FlDotData(
+                                      show: true,
+                                      getDotPainter:
+                                          (spot, percent, barData, index) =>
+                                              FlDotCirclePainter(
+                                        radius: 6.5,
+                                        color: dotColor,
+                                        strokeWidth: 18,
+                                        strokeColor: dotColor.withOpacity(0.3),
+                                      ),
+                                    ),
                                   );
                                 }).toList();
                               },
@@ -432,16 +449,14 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
             final dp = flattenedPoints[index];
             final bool isSelected =
                 selectedFlatIndex != null && selectedFlatIndex == index;
-            final bool isFirst = index == 0;
-            final bool isLast = index == flattenedPoints.length - 1;
 
             // Determine dot color based on HbA1C value range
             Color dotColor = _getHbA1cRangeColor(dp.value);
 
             return FlDotCirclePainter(
-              radius: isFirst || isLast ? 5 : 4,
+              radius: 3,
               color: dotColor,
-              strokeWidth: isSelected ? 12 : 0,
+              strokeWidth: isSelected ? 6 : 0,
               strokeColor: isSelected ? dotColor.withOpacity(0.3) : null,
             );
           },
