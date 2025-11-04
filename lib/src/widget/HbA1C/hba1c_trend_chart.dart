@@ -147,22 +147,33 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     required int totalPoints,
     required double viewWidth,
     required double effectivePointWidth,
+    int retry = 0,
   }) {
     if (_scrollController == null || _initialScrollApplied || totalPoints <= 0)
       return;
     if (!viewWidth.isFinite || viewWidth <= 0) return;
 
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) {
+      _initialScrollApplied = true;
+      return;
+    }
+
     _initialScrollApplied = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (!_scrollController!.hasClients) {
+
+      // Check if scroll controller is ready with proper dimensions
+      if (!_scrollController!.hasClients ||
+          !_scrollController!.position.hasContentDimensions) {
         _initialScrollApplied = false;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
+        // Retry after a short delay
+        Future.delayed(const Duration(milliseconds: 50), () {
           _ensureSelectedPointVisible(
             totalPoints: totalPoints,
             viewWidth: viewWidth,
             effectivePointWidth: effectivePointWidth,
+            retry: retry + 1,
           );
         });
         return;
@@ -170,33 +181,40 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
 
       final int? selectedFlatIndex = _getSelectedFlatIndex();
 
-      // If selected point not found in current range, just reset to start
+      // If selected point not found in current range, scroll to end (latest point)
       if (selectedFlatIndex == null) {
-        _scrollController!.jumpTo(0.0);
         _cachedSelectedPoint = null;
-        return;
-      }
+        final double maxScrollExtent =
+            _scrollController!.position.maxScrollExtent;
 
-      // Selected point found - check if it's already visible
-      const int visiblePointCount = 6;
-
-      // If point is in the first visible area, no need to scroll
-      if (selectedFlatIndex < visiblePointCount) {
-        // Point is already visible at the start, just reset to beginning
+        // First jump to start, then animate to end
         _scrollController!.jumpTo(0.0);
+
+        Future.delayed(const Duration(milliseconds: 50), () {
+          if (!mounted || !_scrollController!.hasClients) return;
+
+          _scrollController!.animateTo(
+            maxScrollExtent,
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOutCubic,
+          );
+        });
         return;
       }
 
-      // Point is beyond visible area - need to scroll to it
-      final double maxScrollExtent =
-          _scrollController!.position.maxScrollExtent;
+      // Selected point found - always center it (regardless of whether it's already visible)
+      // Calculate the target position to center the selected point
       final double targetCenter =
           selectedFlatIndex * effectivePointWidth + (effectivePointWidth / 2);
       final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
+      final double maxScrollExtent =
+          _scrollController!.position.maxScrollExtent;
       final double desiredOffset =
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
-      // Animate to the selected point
+      // Animate to the selected point (centered)
       // First jump to start (position 0), then animate to the selected point
       _scrollController!.jumpTo(0.0);
 
@@ -217,16 +235,32 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     required int totalPoints,
     required double viewWidth,
     required double effectivePointWidth,
+    int retry = 0,
   }) {
     if (_scrollController == null || !_scrollController!.hasClients) return;
     if (totalPoints <= 0) return;
     if (!viewWidth.isFinite || viewWidth <= 0) return;
 
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_scrollController!.hasClients) return;
 
-      final double maxScrollExtent =
-          _scrollController!.position.maxScrollExtent;
+      // Check if scroll controller is ready with proper dimensions
+      if (!_scrollController!.position.hasContentDimensions) {
+        // Retry after a short delay
+        Future.delayed(const Duration(milliseconds: 50), () {
+          _scrollToSelectedPoint(
+            totalPoints: totalPoints,
+            viewWidth: viewWidth,
+            effectivePointWidth: effectivePointWidth,
+            retry: retry + 1,
+          );
+        });
+        return;
+      }
+
       final int? selectedFlatIndex = _getSelectedFlatIndex();
       final int targetIndex = selectedFlatIndex ?? (totalPoints - 1);
       if (targetIndex < 0) {
@@ -237,6 +271,10 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       final double targetCenter =
           targetIndex * effectivePointWidth + (effectivePointWidth / 2);
       final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
+      final double maxScrollExtent =
+          _scrollController!.position.maxScrollExtent;
       final double desiredOffset =
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
@@ -278,7 +316,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         }
       }
 
-      // Reset scroll position so it will animate to the cached point in new range
+      // Reset scroll position so it will animate to the cached point (centered) in new range
       _initialScrollApplied = false;
     } else if (focusChanged) {
       // Same range, but user selected a different point
