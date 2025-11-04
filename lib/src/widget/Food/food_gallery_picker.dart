@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -350,16 +351,36 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
   void _confirmSelection() async {
     if (_selectedImages.isNotEmpty) {
-      // Convert photo IDs to file paths for the callback
+      // Convert selected asset IDs to real file paths, robust on iOS
       List<String> filePaths = [];
       for (String photoId in _selectedImages) {
-        final photo = _recentPhotos.firstWhere((p) => p.id == photoId);
-        final File? file = await photo.file;
-        if (file != null) {
-          filePaths.add(file.path);
+        try {
+          AssetEntity? entity = await AssetEntity.fromId(photoId);
+          if (entity == null) {
+            // Fallback to local list if available
+            try {
+              entity = _recentPhotos.firstWhere((p) => p.id == photoId);
+            } catch (_) {}
+          }
+          if (entity != null) {
+            // Prefer original file on iOS; fallback to file
+            File? file = await entity.originFile;
+            file ??= await entity.file;
+            if (file != null && await file.exists()) {
+              filePaths.add(file.path);
+            }
+          }
+        } catch (e) {
+          // Skip this asset if it cannot be resolved
         }
       }
 
+      developer.log(
+          '[CAPTURE] Gallery confirm filePaths count: ' +
+              filePaths.length.toString() +
+              ', paths: ' +
+              filePaths.join(', '),
+          name: '[CAPTURE]');
       widget.onImagesSelected?.call(filePaths);
       Navigator.pop(context, filePaths);
     } else {

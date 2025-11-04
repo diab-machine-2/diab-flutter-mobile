@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -61,6 +62,14 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
     super.initState();
     _selectedFoods.addAll(widget.generatedFoods);
     _files.addAll(widget.files.map((e) => File(e)).toList());
+    try {
+      developer.log(
+          '[CAPTURE] Confirm page received files count: ' +
+              widget.files.length.toString() +
+              ', paths: ' +
+              widget.files.join(', '),
+          name: '[CAPTURE]');
+    } catch (_) {}
   }
 
   @override
