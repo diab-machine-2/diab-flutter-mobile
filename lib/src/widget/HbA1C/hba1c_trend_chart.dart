@@ -140,7 +140,19 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
       if ((_scrollController!.position.pixels - desiredOffset).abs() > 0.5) {
-        _scrollController!.jumpTo(desiredOffset);
+        // First jump to start (position 0), then animate to the selected point
+        _scrollController!.jumpTo(0.0);
+
+        // Small delay to ensure the jump is complete before animation
+        Future.delayed(const Duration(milliseconds: 50), () {
+          if (!mounted || !_scrollController!.hasClients) return;
+
+          _scrollController!.animateTo(
+            desiredOffset,
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOutCubic,
+          );
+        });
       }
     });
   }
@@ -348,23 +360,6 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                             .onPointSelected(touchedFlatIndex);
                                         _lastTappedIndex = touchedFlatIndex;
                                         _lastTapTime = now;
-                                      }
-                                    }
-                                  } else {
-                                    // Tap on chart area but not on a dot
-                                    // Auto scroll to the most recent point if scroll is enabled
-                                    if (enableScroll && totalPoints > 0) {
-                                      if (_scrollController != null &&
-                                          _scrollController!.hasClients) {
-                                        final double maxScrollExtent =
-                                            _scrollController!
-                                                .position.maxScrollExtent;
-                                        _scrollController!.animateTo(
-                                          maxScrollExtent,
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          curve: Curves.easeOutCubic,
-                                        );
                                       }
                                     }
                                   }
