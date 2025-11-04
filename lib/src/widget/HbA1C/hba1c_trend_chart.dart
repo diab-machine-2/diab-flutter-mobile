@@ -350,6 +350,23 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                         _lastTapTime = now;
                                       }
                                     }
+                                  } else {
+                                    // Tap on chart area but not on a dot
+                                    // Auto scroll to the most recent point if scroll is enabled
+                                    if (enableScroll && totalPoints > 0) {
+                                      if (_scrollController != null &&
+                                          _scrollController!.hasClients) {
+                                        final double maxScrollExtent =
+                                            _scrollController!
+                                                .position.maxScrollExtent;
+                                        _scrollController!.animateTo(
+                                          maxScrollExtent,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.easeOutCubic,
+                                        );
+                                      }
+                                    }
                                   }
                                 } else if (event is! FlLongPressEnd &&
                                     event is! FlPanEndEvent) {
