@@ -79,25 +79,48 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   }
 
   int? _getSelectedFlatIndex() {
-    if (widget.focusIndex < 0 ||
-        widget.focusIndex >= widget.groupedPoints.length) return null;
-    if (widget.focusSubIndex < 0 ||
-        widget.focusSubIndex >=
-            widget.groupedPoints[widget.focusIndex].length) {
-      return null;
-    }
-
-    int currentFlatIndex = 0;
-    for (int dayIndex = 0; dayIndex < widget.groupedPoints.length; dayIndex++) {
-      final group = widget.groupedPoints[dayIndex];
-      for (int subIndex = 0; subIndex < group.length; subIndex++) {
-        if (dayIndex == widget.focusIndex && subIndex == widget.focusSubIndex) {
-          return currentFlatIndex;
-        }
-        currentFlatIndex++;
+    // First, get the currently selected point from groupedPoints
+    HbA1cDataPoint? selectedPoint;
+    if (widget.focusIndex >= 0 &&
+        widget.focusIndex < widget.groupedPoints.length) {
+      final group = widget.groupedPoints[widget.focusIndex];
+      if (widget.focusSubIndex >= 0 && widget.focusSubIndex < group.length) {
+        selectedPoint = group[widget.focusSubIndex];
       }
     }
-    return null;
+
+    if (selectedPoint == null) return null;
+
+    // Now find this point in the flattened list by comparing ID (or date+timeOfDay+value)
+    final flattenedPoints = _getFlattenedDataPoints();
+    for (int i = 0; i < flattenedPoints.length; i++) {
+      final point = flattenedPoints[i];
+
+      // Priority 1: Match by ID if both have ID
+      if (selectedPoint.id != null &&
+          selectedPoint.id!.isNotEmpty &&
+          point.id != null &&
+          point.id!.isNotEmpty) {
+        if (selectedPoint.id == point.id) {
+          return i;
+        }
+        continue; // If both have ID but don't match, skip to next
+      }
+
+      // Priority 2: Match by date, timeOfDay, and value
+      // This ensures we find the exact same measurement
+      final isSameDate = point.date.year == selectedPoint.date.year &&
+          point.date.month == selectedPoint.date.month &&
+          point.date.day == selectedPoint.date.day;
+      final isSameTimeOfDay = point.timeOfDay == selectedPoint.timeOfDay;
+      final isSameValue = (point.value - selectedPoint.value).abs() < 0.01;
+
+      if (isSameDate && isSameTimeOfDay && isSameValue) {
+        return i;
+      }
+    }
+
+    return null; // Point not found in current range
   }
 
   void _ensureSelectedPointVisible({
@@ -128,8 +151,14 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       final double maxScrollExtent =
           _scrollController!.position.maxScrollExtent;
       final int? selectedFlatIndex = _getSelectedFlatIndex();
-      final int targetIndex = selectedFlatIndex ?? (totalPoints - 1);
-      if (targetIndex < 0) {
+
+      // Determine target index:
+      // 1. If selected point is found in current range, use it
+      // 2. Otherwise, scroll to the most recent point (last point)
+      final int? targetIndex =
+          selectedFlatIndex ?? (totalPoints > 0 ? totalPoints - 1 : null);
+
+      if (targetIndex == null || targetIndex < 0) {
         return;
       }
 
@@ -140,19 +169,26 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
       if ((_scrollController!.position.pixels - desiredOffset).abs() > 0.5) {
-        // First jump to start (position 0), then animate to the selected point
-        _scrollController!.jumpTo(0.0);
+        if (selectedFlatIndex != null) {
+          // Selected point found in current range - animate to it
+          // First jump to start (position 0), then animate to the selected point
+          _scrollController!.jumpTo(0.0);
 
-        // Small delay to ensure the jump is complete before animation
-        Future.delayed(const Duration(milliseconds: 50), () {
-          if (!mounted || !_scrollController!.hasClients) return;
+          // Small delay to ensure the jump is complete before animation
+          Future.delayed(const Duration(milliseconds: 50), () {
+            if (!mounted || !_scrollController!.hasClients) return;
 
-          _scrollController!.animateTo(
-            desiredOffset,
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.easeInOutCubic,
-          );
-        });
+            _scrollController!.animateTo(
+              desiredOffset,
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.easeInOutCubic,
+            );
+          });
+        } else {
+          // Selected point not found in current range
+          // Jump to the most recent point without animation
+          _scrollController!.jumpTo(desiredOffset);
+        }
       }
     });
   }
