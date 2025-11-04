@@ -50,6 +50,8 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   double _lastViewWidth = 0;
   double _lastEffectivePointWidth = 0;
   int _lastTotalPoints = 0;
+  HbA1cDataPoint?
+      _cachedSelectedPoint; // Cache selected point before range changes
 
   // Custom Y transform để đặt đường kẻ 6.5% ở giữa chart
   // Tương tự như BloodPressure chart với đường kẻ 90 và 140
@@ -78,14 +80,30 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     return total;
   }
 
-  int? _getSelectedFlatIndex() {
-    // First, get the currently selected point from groupedPoints
-    HbA1cDataPoint? selectedPoint;
+  void _updateCachedSelectedPoint() {
+    // Update cached selected point from current groupedPoints
     if (widget.focusIndex >= 0 &&
         widget.focusIndex < widget.groupedPoints.length) {
       final group = widget.groupedPoints[widget.focusIndex];
       if (widget.focusSubIndex >= 0 && widget.focusSubIndex < group.length) {
-        selectedPoint = group[widget.focusSubIndex];
+        _cachedSelectedPoint = group[widget.focusSubIndex];
+      }
+    }
+  }
+
+  int? _getSelectedFlatIndex() {
+    // Use cached selected point if available (for range changes)
+    // Otherwise get from current groupedPoints (for same range)
+    HbA1cDataPoint? selectedPoint = _cachedSelectedPoint;
+
+    if (selectedPoint == null) {
+      // No cached point, get from current groupedPoints
+      if (widget.focusIndex >= 0 &&
+          widget.focusIndex < widget.groupedPoints.length) {
+        final group = widget.groupedPoints[widget.focusIndex];
+        if (widget.focusSubIndex >= 0 && widget.focusSubIndex < group.length) {
+          selectedPoint = group[widget.focusSubIndex];
+        }
       }
     }
 
@@ -107,15 +125,17 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         continue; // If both have ID but don't match, skip to next
       }
 
-      // Priority 2: Match by date, timeOfDay, and value
+      // Priority 2: Match by date+time, timeOfDay, and value
       // This ensures we find the exact same measurement
-      final isSameDate = point.date.year == selectedPoint.date.year &&
+      final isSameDateTime = point.date.year == selectedPoint.date.year &&
           point.date.month == selectedPoint.date.month &&
-          point.date.day == selectedPoint.date.day;
+          point.date.day == selectedPoint.date.day &&
+          point.date.hour == selectedPoint.date.hour &&
+          point.date.minute == selectedPoint.date.minute;
       final isSameTimeOfDay = point.timeOfDay == selectedPoint.timeOfDay;
       final isSameValue = (point.value - selectedPoint.value).abs() < 0.01;
 
-      if (isSameDate && isSameTimeOfDay && isSameValue) {
+      if (isSameDateTime && isSameTimeOfDay && isSameValue) {
         return i;
       }
     }
@@ -148,48 +168,48 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         return;
       }
 
-      final double maxScrollExtent =
-          _scrollController!.position.maxScrollExtent;
       final int? selectedFlatIndex = _getSelectedFlatIndex();
 
-      // Determine target index:
-      // 1. If selected point is found in current range, use it
-      // 2. Otherwise, scroll to the most recent point (last point)
-      final int? targetIndex =
-          selectedFlatIndex ?? (totalPoints > 0 ? totalPoints - 1 : null);
-
-      if (targetIndex == null || targetIndex < 0) {
+      // If selected point not found in current range, just reset to start
+      if (selectedFlatIndex == null) {
+        _scrollController!.jumpTo(0.0);
+        _cachedSelectedPoint = null;
         return;
       }
 
+      // Selected point found - check if it's already visible
+      const int visiblePointCount = 6;
+
+      // If point is in the first visible area, no need to scroll
+      if (selectedFlatIndex < visiblePointCount) {
+        // Point is already visible at the start, just reset to beginning
+        _scrollController!.jumpTo(0.0);
+        return;
+      }
+
+      // Point is beyond visible area - need to scroll to it
+      final double maxScrollExtent =
+          _scrollController!.position.maxScrollExtent;
       final double targetCenter =
-          targetIndex * effectivePointWidth + (effectivePointWidth / 2);
+          selectedFlatIndex * effectivePointWidth + (effectivePointWidth / 2);
       final double rawOffset = targetCenter - (viewWidth / 2);
       final double desiredOffset =
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
-      if ((_scrollController!.position.pixels - desiredOffset).abs() > 0.5) {
-        if (selectedFlatIndex != null) {
-          // Selected point found in current range - animate to it
-          // First jump to start (position 0), then animate to the selected point
-          _scrollController!.jumpTo(0.0);
+      // Animate to the selected point
+      // First jump to start (position 0), then animate to the selected point
+      _scrollController!.jumpTo(0.0);
 
-          // Small delay to ensure the jump is complete before animation
-          Future.delayed(const Duration(milliseconds: 50), () {
-            if (!mounted || !_scrollController!.hasClients) return;
+      // Small delay to ensure the jump is complete before animation
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (!mounted || !_scrollController!.hasClients) return;
 
-            _scrollController!.animateTo(
-              desiredOffset,
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeInOutCubic,
-            );
-          });
-        } else {
-          // Selected point not found in current range
-          // Jump to the most recent point without animation
-          _scrollController!.jumpTo(desiredOffset);
-        }
-      }
+        _scrollController!.animateTo(
+          desiredOffset,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOutCubic,
+        );
+      });
     });
   }
 
@@ -233,6 +253,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _updateCachedSelectedPoint(); // Cache initial selected point
   }
 
   @override
@@ -240,11 +261,32 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     super.didUpdateWidget(oldWidget);
     final int newCount = _calculateTotalPoints(widget.groupedPoints);
     final int oldCount = _calculateTotalPoints(oldWidget.groupedPoints);
-    if (newCount != oldCount) {
+
+    final bool rangeChanged = newCount != oldCount;
+    final bool focusChanged = widget.focusIndex != oldWidget.focusIndex ||
+        widget.focusSubIndex != oldWidget.focusSubIndex;
+
+    if (rangeChanged) {
+      // Range changed - cache the selected point from OLD widget
+      // This ensures we have the CORRECT point to search for in the new range
+      if (oldWidget.focusIndex >= 0 &&
+          oldWidget.focusIndex < oldWidget.groupedPoints.length) {
+        final group = oldWidget.groupedPoints[oldWidget.focusIndex];
+        if (oldWidget.focusSubIndex >= 0 &&
+            oldWidget.focusSubIndex < group.length) {
+          _cachedSelectedPoint = group[oldWidget.focusSubIndex];
+        }
+      }
+
+      // Reset scroll position so it will animate to the cached point in new range
       _initialScrollApplied = false;
-    } else if (widget.focusIndex != oldWidget.focusIndex ||
-        widget.focusSubIndex != oldWidget.focusSubIndex) {
-      // User switched to a different point, scroll to center it
+    } else if (focusChanged) {
+      // Same range, but user selected a different point
+      // Clear old cache and update with the new selection
+      _cachedSelectedPoint = null;
+      _updateCachedSelectedPoint();
+
+      // Scroll to center the new selection
       if (_lastTotalPoints > 0 && _lastViewWidth > 0) {
         _scrollToSelectedPoint(
           totalPoints: _lastTotalPoints,
