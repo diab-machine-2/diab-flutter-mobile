@@ -19,7 +19,9 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
     BmiBloc _bmiBloc = context.read();
 
     return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (_, state) => state is BmiGetBmiStatisticalState,
+        buildWhen: (_, state) =>
+            state is BmiGetBmiStatisticalState ||
+            state is BmiGetWeightIndexListState,
         builder: (context, state) {
           if (_bmiBloc.selectedPointChart == null) return const SizedBox();
 

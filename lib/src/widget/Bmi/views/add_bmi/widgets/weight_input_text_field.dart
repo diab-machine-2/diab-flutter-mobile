@@ -41,6 +41,7 @@ class WeightInputTextField extends StatelessWidget {
             suffixStyle: R.style.largeTextStyle.neutral3,
             focusedBorder: _border,
             enabledBorder: _border,
+            counterText: ""
           ),
           style: R.style.inputHealthIndexStyle,
           textAlign: TextAlign.center,
@@ -51,7 +52,8 @@ class WeightInputTextField extends StatelessWidget {
           maxLength: 5,
           inputFormatters: [
             CommaToDotFormatter(),
-            DecimalTextInputFormatter(decimalRange: 1),
+            // DecimalTextInputFormatter(decimalRange: 1),
+            DecimalLimitFormatter(),
             FilteringTextInputFormatter.allow(RegExp(r'^\d*([.,]\d{0,1})?$')),
           ],
         ),

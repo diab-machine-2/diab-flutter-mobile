@@ -61,7 +61,7 @@ class _WaistCircumferenceInputTextFieldState
       listenWhen: (previous, state) => state is BmiInputDataChangedState,
       listener: (context, state) {
         if (state is BmiInputDataChangedState) {
-          if (state.event == BmiInputDataChangeEvent.waistChanged) {
+          if (state.event == BmiInputDataChangeEvent.waistChanged && state.data > 0) {
             _controller.text = state.data.toString();
           }
         }

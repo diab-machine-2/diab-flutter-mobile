@@ -20,10 +20,12 @@ class BmiAiWeightIndexAnalysis extends StatelessWidget {
     BmiBloc _bmiBloc = context.read();
 
     return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (previous, current) => current is BmiGetAIAnalysicState,
+        buildWhen: (previous, current) =>
+            current is BmiGetAIAnalysicState ||
+            current is BmiGetWeightIndexListState,
         builder: (context, state) {
           if (_bmiBloc.selectedPointChart == null) return const SizedBox();
-          
+
           return Column(
             children: [
               Row(

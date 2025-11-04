@@ -14,11 +14,11 @@ class CommaToDotFormatter extends TextInputFormatter {
   }
 }
 
-class DecimalTextInputFormatter extends TextInputFormatter {
-  final int decimalRange;
+class DecimalLimitFormatter extends TextInputFormatter {
+  final double maxValue;
+  final int decimalDigits;
 
-  DecimalTextInputFormatter({required this.decimalRange})
-      : assert(decimalRange >= 0);
+  DecimalLimitFormatter({this.maxValue = 999, this.decimalDigits = 1});
 
   @override
   TextEditingValue formatEditUpdate(
@@ -26,23 +26,29 @@ class DecimalTextInputFormatter extends TextInputFormatter {
     final text = newValue.text;
 
     // Cho phép rỗng
-    if (text.isEmpty) {
-      return newValue;
+    if (text.isEmpty) return newValue;
+
+    // Cho phép nhập dạng "123.", "0.", ".5"
+    if (!RegExp(r'^\d*\.?\d*$').hasMatch(text)) {
+      return oldValue;
     }
 
-    // Cho phép số nguyên
-    if (RegExp(r'^\d+$').hasMatch(text)) {
-      return newValue;
+    // Giới hạn số chữ số thập phân
+    if (text.contains('.')) {
+      final parts = text.split('.');
+      if (parts.length > 2) return oldValue; // nhiều hơn 1 dấu chấm
+      if (parts[1].length > decimalDigits) return oldValue; // quá số lẻ cho phép
     }
 
-    // Cho phép số thập phân với giới hạn chữ số sau dấu chấm
-    final regex = RegExp(r'^\d+([.,]\d{0,' + decimalRange.toString() + r'})?$');
-    if (regex.hasMatch(text)) {
-      return newValue;
-    }
+    // Khi người dùng mới chỉ nhập ".", hoặc "0.", đừng parse
+    if (text == '.' || text == '0.') return newValue;
 
-    // Nếu không khớp, giữ nguyên giá trị cũ
-    return oldValue;
+    final value = double.tryParse(text);
+    if (value == null) return newValue;
+
+    // Cho phép nhập tối đa tới 999 (chưa vượt ngưỡng)
+    if (value > maxValue) return oldValue;
+
+    return newValue;
   }
 }
-

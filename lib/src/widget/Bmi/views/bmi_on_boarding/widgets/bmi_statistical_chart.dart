@@ -63,7 +63,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
           double _bendmarkPadding =
               (_heightOfChart / (_maxWeightOnChart - _minWeightOnChart)) *
                       ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
-                  _marginOfWeight;
+                  _marginOfWeight + 6;
 
           if (enableScroll) _focusToSelectedPoint(totalPoint: data.length);
 
@@ -80,7 +80,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                         padding: EdgeInsets.only(
                           bottom: _bendmarkPadding >= _heightOfChart
                               ? _heightOfChart / 2
-                              : _bendmarkPadding * 0.9,
+                              : _bendmarkPadding,
                         ),
                         child: Text(
                           "${_bmiBloc.weightGoal!.floor() == _bmiBloc.weightGoal ? _bmiBloc.weightGoal!.floor() : _bmiBloc.weightGoal} kg",

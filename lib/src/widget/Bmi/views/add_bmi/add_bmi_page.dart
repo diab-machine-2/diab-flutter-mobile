@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/src/utils/app_media_query.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
@@ -38,6 +38,8 @@ class _AddBmiPageState extends State<AddBmiPage> {
   late BmiInputBloc _bmiInputBloc;
   late BmiBloc _bmiBloc;
 
+  bool _canPop = false;
+
   @override
   void initState() {
     super.initState();
@@ -66,14 +68,13 @@ class _AddBmiPageState extends State<AddBmiPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        if (!didPop) {
-          BmiExitConfirmDialog.show(context).then((value) {
-            if (value == true) NavigationUtil.pop(context);
-          });
+    return WillPopScope(
+      onWillPop: () async {
+        if (_bmiInputBloc.weight > 0 || _bmiInputBloc.waist > 0) {
+          var result = await BmiExitConfirmDialog.show(context);
+          return Future.value(result);
         }
+        return Future.value(true);
       },
       child: Scaffold(
         backgroundColor: R.color.glucose_bg_color,
@@ -138,13 +139,13 @@ class _AddBmiPageState extends State<AddBmiPage> {
       );
     } else if (state is BmiInputSubmitedState) {
       if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else if (state.result.isSuccess) {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         _bmiBloc.hasModifiedData = true;
         _redirectToNextStep(state.result.data!);
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         CustomDialog.showErrorDialog(
           context,
           message: state.result.error.toString(),

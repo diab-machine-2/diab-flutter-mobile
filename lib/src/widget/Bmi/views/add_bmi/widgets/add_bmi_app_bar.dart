@@ -5,6 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_exit_confirm_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_page.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -15,6 +16,7 @@ class AddBmiAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final BmiBloc bmiBloc = context.read();
+    final BmiInputBloc bmiInputBloc = context.read();
 
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
@@ -31,9 +33,13 @@ class AddBmiAppBar extends StatelessWidget implements PreferredSizeWidget {
           highlightColor: R.color.white,
           icon: Icon(Icons.arrow_back, color: R.color.white),
           onPressed: () {
-            BmiExitConfirmDialog.show(context).then((value) {
-              if (value == true) NavigationUtil.pop(context);
-            });
+            if (bmiInputBloc.weight > 0 || bmiInputBloc.waist > 0) {
+              BmiExitConfirmDialog.show(context).then((value) {
+                if (value == true) NavigationUtil.pop(context);
+              });
+            } else {
+              NavigationUtil.pop(context);
+            }
           }),
       actions: [
         Center(

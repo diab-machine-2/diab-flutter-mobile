@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -106,13 +107,13 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
       );
     } else if (state is BmiInputSubmitedState) {
       if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else if (state.result.isSuccess) {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         _bmiBloc.hasModifiedData = true;
         _redirectToNextStep(state.result.data!);
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         CustomDialog.showErrorDialog(
           context,
           message: state.result.error.toString(),
@@ -120,18 +121,13 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
       }
     } else if (state is BmiInputRecordDeletedState) {
       if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else if (state.result.isSuccess) {
-        CustomDialog.hideLoadingDialog(context);
-        CustomDialog.showSuccessDialog(
-          context,
-          onPrimaryButtonTap: () {
-            _bmiBloc.hasModifiedData = true;
-            Navigator.pop(context, true);
-          },
-        );
+        BotToast.closeAllLoading();
+        _bmiBloc.hasModifiedData = true;
+        Navigator.pop(context, true);
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         CustomDialog.showErrorDialog(
           context,
           message: state.result.error.toString(),

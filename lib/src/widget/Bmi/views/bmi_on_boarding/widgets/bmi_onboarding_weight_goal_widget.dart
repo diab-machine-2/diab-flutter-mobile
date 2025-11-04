@@ -21,10 +21,11 @@ class BmiOnboardingWeightGoalWidget extends StatelessWidget {
         buildWhen: (previous, current) =>
             current is BmiUpdatedWeightGoalState ||
             (current is BmiDataChangedState &&
-                current.event == BmiDataChangeEvent.weightGoalChanged),
+                current.event == BmiDataChangeEvent.weightGoalChanged) ||
+            current is BmiGetWeightIndexListState,
         builder: (context, state) {
           if (_bmiBloc.selectedPointChart == null) return const SizedBox();
-          
+
           return InkWell(
             onTap: () {
               // BmiGoalWeightInputDialog.show(
@@ -34,8 +35,8 @@ class BmiOnboardingWeightGoalWidget extends StatelessWidget {
               // );
               Navigator.pushNamed(context, NavigatorName.goal_setting)
                   .then((value) {
-                    _bmiBloc.updateGoalWeight();
-                  });
+                _bmiBloc.updateGoalWeight();
+              });
             },
             child: Container(
               decoration: R.decorationStyle.mediumRadiusCardStyles,
