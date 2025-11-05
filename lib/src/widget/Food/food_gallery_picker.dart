@@ -363,14 +363,65 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             } catch (_) {}
           }
           if (entity != null) {
-            // Prefer original file on iOS; fallback to file
-            File? file = await entity.originFile;
-            file ??= await entity.file;
-            if (file != null && await file.exists()) {
-              filePaths.add(file.path);
+            // On iOS, copy file to persistent location to avoid temporary paths
+            // On Android, use the file path directly if it's already accessible
+            if (Platform.isIOS) {
+              // Get original bytes to ensure we have the full quality image
+              Uint8List? imageBytes;
+              try {
+                imageBytes = await entity.originBytes;
+              } catch (e) {
+                developer.log('[CAPTURE] iOS: Failed to get originBytes: $e',
+                    name: '[CAPTURE]');
+              }
+
+              // Fallback: try to get file and read bytes
+              if (imageBytes == null) {
+                try {
+                  File? tempFile = await entity.originFile;
+                  tempFile ??= await entity.file;
+                  if (tempFile != null && await tempFile.exists()) {
+                    imageBytes = await tempFile.readAsBytes();
+                  }
+                } catch (e) {
+                  developer.log('[CAPTURE] iOS: Failed to read file bytes: $e',
+                      name: '[CAPTURE]');
+                }
+              }
+
+              if (imageBytes != null) {
+                // Save to temporary directory with a unique name
+                final tempDir = Directory.systemTemp;
+                final timestamp = DateTime.now().millisecondsSinceEpoch;
+                final fileName =
+                    'DiaB_Food_${timestamp}_${photoId.substring(0, photoId.length > 8 ? 8 : photoId.length)}.jpg';
+                final savedFile = File('${tempDir.path}/$fileName');
+                await savedFile.writeAsBytes(imageBytes);
+
+                developer.log(
+                    '[CAPTURE] iOS: Copied asset to persistent path: ${savedFile.path}',
+                    name: '[CAPTURE]');
+
+                if (await savedFile.exists()) {
+                  filePaths.add(savedFile.path);
+                }
+              } else {
+                developer.log(
+                    '[CAPTURE] iOS: Failed to get bytes for asset: $photoId',
+                    name: '[CAPTURE]');
+              }
+            } else {
+              // Android: Use file path directly
+              File? file = await entity.originFile;
+              file ??= await entity.file;
+              if (file != null && await file.exists()) {
+                filePaths.add(file.path);
+              }
             }
           }
         } catch (e) {
+          developer.log('[CAPTURE] Error processing asset $photoId: $e',
+              name: '[CAPTURE]');
           // Skip this asset if it cannot be resolved
         }
       }

@@ -530,6 +530,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           _selectedFoods,
           paths);
       if (result == true) {
+        // Clean up temporary files created on iOS after successful API submission
+        await _cleanupTempFiles(paths);
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         Navigator.pop(context);
         NavigationUtil.navigatePage(context, FoodDetailTabbarController());
@@ -543,6 +545,34 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       } else {
         Message.showToastMessage(context, e.toString());
       }
+    }
+  }
+
+  /// Clean up temporary files created on iOS (files in system temp directory)
+  /// This prevents disk space issues from accumulating temp files
+  Future<void> _cleanupTempFiles(List<String> paths) async {
+    try {
+      final tempDir = Directory.systemTemp;
+      final tempDirPath = tempDir.path;
+
+      for (String path in paths) {
+        try {
+          final file = File(path);
+          // Only delete if it's in the temp directory (iOS copied files)
+          if (path.startsWith(tempDirPath) && await file.exists()) {
+            await file.delete();
+            developer.log('[CAPTURE] Cleaned up temp file: $path',
+                name: '[CAPTURE]');
+          }
+        } catch (e) {
+          // Ignore errors during cleanup - file might already be deleted
+          developer.log('[CAPTURE] Error cleaning up temp file $path: $e',
+              name: '[CAPTURE]');
+        }
+      }
+    } catch (e) {
+      developer.log('[CAPTURE] Error in cleanup process: $e',
+          name: '[CAPTURE]');
     }
   }
 
