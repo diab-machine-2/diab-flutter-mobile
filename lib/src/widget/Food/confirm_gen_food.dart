@@ -512,23 +512,98 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
 
     try {
       List<String> paths = [];
+
+      // Step 1: Get note data with error handling
+      developer.log('[CAPTURE] Starting _submitData', name: '[CAPTURE]');
+
+      if (_sectionAddNoteKey.currentState == null) {
+        throw Exception('SectionAddNoteState is null. Cannot get note data.');
+      }
+
       final data = _sectionAddNoteKey.currentState!.getNote();
-      for (var file in (data.files)) {
-        if (file is String) {
-          // If the file is a path, add it directly
-          paths.add(file);
-        } else {
-          // If the file is a File object, convert it to a path
-          paths.add(file.path);
+      developer.log(
+          '[CAPTURE] Got note data, files count: ${data.files.length}',
+          name: '[CAPTURE]');
+
+      // Step 2: Prepare file paths with detailed error handling
+      if (data.files.isEmpty) {
+        developer.log('[CAPTURE] WARNING: data.files is empty',
+            name: '[CAPTURE]');
+        // Use widget.files as fallback
+        for (var filePath in widget.files) {
+          if (filePath.isNotEmpty) {
+            paths.add(filePath);
+          }
+        }
+        developer.log(
+            '[CAPTURE] Using widget.files fallback, paths count: ${paths.length}',
+            name: '[CAPTURE]');
+      } else {
+        for (var file in data.files) {
+          try {
+            if (file is String) {
+              // If the file is a path, add it directly
+              if (file.isNotEmpty) {
+                paths.add(file);
+              }
+            } else if (file is File) {
+              // If the file is a File object, convert it to a path
+              if (await file.exists()) {
+                paths.add(file.path);
+              } else {
+                developer.log(
+                    '[CAPTURE] WARNING: File does not exist: ${file.path}',
+                    name: '[CAPTURE]');
+              }
+            } else {
+              developer.log(
+                  '[CAPTURE] WARNING: Unknown file type: ${file.runtimeType}',
+                  name: '[CAPTURE]');
+            }
+          } catch (e) {
+            developer.log('[CAPTURE] Error processing file: $e',
+                name: '[CAPTURE]');
+            // Continue with other files
+          }
         }
       }
+
+      developer.log(
+          '[CAPTURE] Prepared paths count: ${paths.length}, paths: ${paths.join(", ")}',
+          name: '[CAPTURE]');
+
+      if (paths.isEmpty) {
+        throw Exception(
+            'No valid file paths found. Please select at least one image.');
+      }
+
+      // Step 3: Validate file existence
+      for (String path in paths) {
+        final file = File(path);
+        if (!await file.exists()) {
+          developer.log('[CAPTURE] ERROR: File does not exist: $path',
+              name: '[CAPTURE]');
+          throw Exception(
+              'Image file not found: $path. Please select images again.');
+        }
+      }
+
       final note = data.note;
+      developer.log(
+          '[CAPTURE] Calling API with note length: ${note.length}, foods: ${_selectedFoods.length}, paths: ${paths.length}',
+          name: '[CAPTURE]');
+
+      // Step 4: Call API
       final result = await FoodClient().postIndexFoodAI(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           widget.timeframeId,
           note,
           _selectedFoods,
           paths);
+
+      developer.log('[CAPTURE] API call completed, result: $result',
+          name: '[CAPTURE]');
+
       if (result == true) {
         // Clean up temporary files created on iOS after successful API submission
         await _cleanupTempFiles(paths);
@@ -538,13 +613,25 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       }
       print("[KPI] close all loading.");
       BotToast.closeAllLoading();
-    } catch (e, _) {
+    } catch (e, stackTrace) {
       BotToast.closeAllLoading();
+      developer.log(
+          '[CAPTURE] ERROR in _submitData: $e\nStack trace: $stackTrace',
+          name: '[CAPTURE]',
+          error: e,
+          stackTrace: stackTrace);
+
+      String errorMessage;
       if (e is Error) {
-        Message.showToastMessage(context, e.message);
+        errorMessage = e.message ?? e.toString();
+      } else if (e is Exception) {
+        errorMessage = e.toString();
       } else {
-        Message.showToastMessage(context, e.toString());
+        errorMessage = e.toString();
       }
+
+      // Show user-friendly error message
+      Message.showToastMessage(context, errorMessage);
     }
   }
 
