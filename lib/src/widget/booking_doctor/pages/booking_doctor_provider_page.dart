@@ -631,8 +631,6 @@ class _BookingDoctorProvidersPageState
                                       doctorId: _cubit.selectedDoctor!.id);
 
                                   _cubit.updateCreateDsmesBookingRequestServiceList(
-                                      paymentType: 'local_banking',
-                                      // TODO: get first cheapest service of doctor
                                       // payment type will update later
                                       selectedServices: [
                                         ServiceItem(

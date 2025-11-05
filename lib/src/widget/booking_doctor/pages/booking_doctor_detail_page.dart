@@ -16,6 +16,7 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.da
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 
 class BookingDoctorDetailPage extends StatefulWidget {
   final int clinicId;
@@ -717,6 +718,20 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
 
                   _cubit.updateBookingDoctorInfoCreateRequest(
                       doctorId: _cubit.selectedDoctor!.id);
+
+                  // Get the lowest price service and update service list
+                  final lowestPriceService =
+                      _getLowestPriceService(_cubit.selectedDoctor!);
+                  if (lowestPriceService != null) {
+                    _cubit.updateCreateDsmesBookingRequestServiceList(
+                        // payment type will update later
+                        selectedServices: [
+                          ServiceItem(
+                            id: lowestPriceService.id,
+                            quantity: 1,
+                          )
+                        ]);
+                  }
 
                   await DsmesNavigationMixin.getNavigationKey()
                       .currentState
