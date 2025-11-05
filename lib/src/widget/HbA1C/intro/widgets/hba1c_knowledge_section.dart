@@ -1,22 +1,12 @@
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-
-// Simple mock lesson class for this component
-class MockLesson {
-  final String id;
-  final String name;
-  final String module;
-  final String imagePath;
-
-  const MockLesson({
-    required this.id,
-    required this.name,
-    required this.module,
-    required this.imagePath,
-  });
-}
+import 'package:medical/src/bloc/HbA1C/intro_lesson/hba1c_intro_lesson_bloc.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 class HbA1cKnowledgeSection extends StatefulWidget {
   const HbA1cKnowledgeSection({Key? key}) : super(key: key);
@@ -26,10 +16,8 @@ class HbA1cKnowledgeSection extends StatefulWidget {
 }
 
 class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
-  List<MockLesson> lessons = [];
-  bool isLoading = true;
   int _currentIndex = 0;
-  final double _lessonItemWidth = 288.0;
+  final double _lessonItemWidth = 338.0;
   final double _itemSpacing = 12.0;
   final ScrollController _scrollController = ScrollController();
   Timer? _autoScrollTimer;
@@ -40,43 +28,6 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _loadMockData();
-  }
-
-  void _loadMockData() {
-    // Simulate loading delay
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted) {
-        setState(() {
-          lessons = _getMockLessons();
-          isLoading = false;
-          _startAutoScroll();
-        });
-      }
-    });
-  }
-
-  List<MockLesson> _getMockLessons() {
-    return const [
-      MockLesson(
-        id: '1',
-        name: 'HbA1c là gì? Ý nghĩa của chỉ số HbA1c',
-        module: 'Kiến thức cơ bản',
-        imagePath: 'im_hba1c_supports_1',
-      ),
-      MockLesson(
-        id: '2',
-        name: 'Cách theo dõi và quản lý HbA1c hiệu quả',
-        module: 'Quản lý bệnh',
-        imagePath: 'im_hba1c_supports_2',
-      ),
-      MockLesson(
-        id: '3',
-        name: 'Mục tiêu HbA1c theo khuyến cáo của chuyên gia',
-        module: 'Mục tiêu điều trị',
-        imagePath: 'im_hba1c_supports_3',
-      ),
-    ];
   }
 
   @override
@@ -90,24 +41,20 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
   // * Scroll listener
   void _onScroll() {
     final double currentScroll = _scrollController.position.pixels;
-    final double eachItemWidth = _lessonItemWidth + _itemSpacing;
+    final double eachItemWidth = _lessonItemWidth;
 
     int currentIndex = (currentScroll / eachItemWidth).round();
-    if (currentIndex != _currentIndex &&
-        currentIndex >= 0 &&
-        currentIndex < lessons.length) {
-      setState(() {
-        _currentIndex = currentIndex;
-      });
-    }
+    setState(() {
+      _currentIndex = currentIndex;
+    });
   }
 
-  void _startAutoScroll() {
-    if (_autoScrollInitialized || lessons.length <= 1) return;
+  void _startAutoScroll(int lessonCount) {
+    if (_autoScrollInitialized || lessonCount <= 1) return;
     _autoScrollInitialized = true;
     _autoScrollTimer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (_isUserInteracting || !_scrollController.hasClients) return;
-      final int nextIndex = (_currentIndex + 1) % lessons.length;
+      final int nextIndex = (_currentIndex + 1) % lessonCount;
       final double targetOffset = nextIndex * (_lessonItemWidth + _itemSpacing);
       _scrollController.animateTo(
         targetOffset,
@@ -123,73 +70,73 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
     _autoScrollInitialized = false;
   }
 
-  void _restartAutoScrollWithDelay() {
+  void _restartAutoScrollWithDelay(int lessonCount) {
     _stopAutoScroll();
     Future.delayed(const Duration(seconds: 3), () {
-      if (mounted && !_isUserInteracting && lessons.length > 1) {
-        _startAutoScroll();
+      if (mounted && !_isUserInteracting && lessonCount > 1) {
+        _startAutoScroll(lessonCount);
       }
     });
   }
 
+  final _bloc = HbA1cIntroLessonBloc();
+
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return _buildLoadingState();
-    }
+    return BlocProvider.value(
+      value: _bloc,
+      child: BlocBuilder<HbA1cIntroLessonBloc, HbA1cIntroLessonState>(
+        builder: (context, state) {
+          if (state is HbA1cIntroLessonLoaded) {
+            final lessons = state.lessons;
+            
+            // Start auto scroll after lessons are loaded
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!_autoScrollInitialized && lessons.length > 1) {
+                _startAutoScroll(lessons.length);
+              }
+            });
 
-    if (lessons.isEmpty) {
-      return _buildEmptyState();
-    }
-
-    return _buildLessonsList();
-  }
-
-  Widget _buildLoadingState() {
-    return Container(
-      // width: 351,
-      height: 426,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Center(
-        child: CircularProgressIndicator(),
+            return _buildLessonsList(lessons);
+          }
+          // Hide when loading or error
+          return SizedBox();
+        },
       ),
     );
   }
 
-  Widget _buildLessonsList() {
+  Widget _buildLessonsList(List<LessonModel> lessons) {
     return Container(
-      // width: 351,
-      height: 426,
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            "Kiến thức từ Chuyên gia DiaB",
-            style: TextStyle(
-              fontFamily: R.font.sfpro,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: R.color.dark,
-              letterSpacing: 0.2,
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              R.string.knowledge_from_diab_experts.tr(),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: R.color.dark,
+              ),
             ),
           ),
           const SizedBox(height: 16),
           // List of lessons
-          Expanded(
+          SizedBox(
+            height: 318,
             child: NotificationListener<UserScrollNotification>(
               onNotification: (notification) {
                 if (notification.direction == ScrollDirection.idle) {
                   _isUserInteracting = false;
-                  _restartAutoScrollWithDelay();
+                  _restartAutoScrollWithDelay(lessons.length);
                 } else {
                   _isUserInteracting = true;
                   _stopAutoScroll();
@@ -198,9 +145,11 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
               },
               child: ListView.separated(
                 controller: _scrollController,
+                padding: const EdgeInsets.only(left: 12),
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
-                  return _buildLessonItem(lessons[index]);
+                  return SizedBox(
+                      child: _buildLessonItem(lessons[index]), height: 318);
                 },
                 separatorBuilder: (context, index) {
                   return const SizedBox(width: 12);
@@ -209,91 +158,38 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
               ),
             ),
           ),
+
           const SizedBox(height: 16),
-          // Pagination indicators
-          if (lessons.length > 1)
-            SizedBox(
-              height: 8,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int i = 0; i < lessons.length; i++)
-                      Container(
-                        width: _currentIndex == i ? 16 : 8,
-                        height: 8,
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
-                        decoration: BoxDecoration(
-                          color: _currentIndex == i
-                              ? R.color.mainColor
-                              : Colors.grey,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+          SizedBox(
+            height: 8,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (int i = 0; i < lessons.length; i++)
+                    Container(
+                      width: _currentIndex == i ? 16 : 8,
+                      height: 8,
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      decoration: BoxDecoration(
+                        color: _currentIndex == i
+                            ? R.color.mainColor
+                            : Colors.grey,
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
+          ),
+
+          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Container(
-      width: 351,
-      height: 426,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Kiến thức từ Chuyên gia DiaB",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: R.color.dark,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: R.color.greenbg.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.article_outlined,
-                      size: 32,
-                      color: R.color.primaryGreyColor,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Chưa có bài viết nào",
-                      style: TextStyle(
-                        color: R.color.primaryGreyColor,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLessonItem(MockLesson lesson) {
+  Widget _buildLessonItem(LessonModel lesson) {
     return SizedBox(
       height: 320.0,
       width: _lessonItemWidth,
@@ -312,12 +208,12 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12.0),
                   topRight: Radius.circular(12.0),
                 ),
-                child: Image.asset(
-                  R.drawable.im_hba1c_supports_1, // Use a default image for now
+                child: NetWorkImageWidget(
+                  imageUrl: lesson.image?.url,
                   fit: BoxFit.cover,
                   height: 174.0,
                   width: double.infinity,
@@ -335,15 +231,13 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
                         lesson.name,
                         maxLines: 2,
                         style: TextStyle(
-                          fontFamily: R.font.sfpro,
                           color: R.color.textDark,
                           fontSize: 15.0,
                           height: 24.0 / 15.0,
-                          letterSpacing: 0.4,
                         ),
                       ),
                       const SizedBox(height: 4.0),
-                      // Module info
+                      // Category
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -377,21 +271,18 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
                 height: 40,
                 child: Center(
                   child: InkWell(
-                    onTap: () => _onLessonTap(lesson),
+                    onTap: () {},
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Image.asset(R.drawable.ic_lesson_share,
                             width: 20.0, height: 20.0),
                         const SizedBox(width: 8.0),
                         Text(
-                          "Xem chi tiết",
+                          R.string.share.tr(),
                           style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 15.0,
-                              fontFamily: R.font.sfpro,
-                              letterSpacing: 0.4),
+                              color: R.color.textDark, fontSize: 15.0),
                         ),
                       ],
                     ),
@@ -405,13 +296,8 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
     );
   }
 
-  void _onLessonTap(MockLesson lesson) {
-    // For mock data, just show a snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Bài học "${lesson.name}" sẽ được mở trong tương lai'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  void _onLessonTap(LessonModel lesson) {
+    // TODO: Navigate to lesson detail page
+    // For now, just a placeholder
   }
 }
