@@ -117,6 +117,56 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     return flatIndex;
   }
 
+  // Helper method to find a point in a list using same matching logic as _getSelectedFlatIndex
+  int? _findPointInList(
+      HbA1cDataPoint searchPoint, List<HbA1cDataPoint> points) {
+    // 1. Match by identity
+    for (int i = 0; i < points.length; i++) {
+      if (identical(points[i], searchPoint)) {
+        return i;
+      }
+    }
+
+    // 2. Match by ID if both have ID
+    if (searchPoint.id != null && searchPoint.id!.isNotEmpty) {
+      for (int i = 0; i < points.length; i++) {
+        final point = points[i];
+        if (point.id != null &&
+            point.id!.isNotEmpty &&
+            point.id == searchPoint.id) {
+          return i;
+        }
+      }
+    }
+
+    // 3. Match by date (day only) + value
+    for (int i = 0; i < points.length; i++) {
+      final point = points[i];
+      final isSameDay = point.date.year == searchPoint.date.year &&
+          point.date.month == searchPoint.date.month &&
+          point.date.day == searchPoint.date.day;
+      final isSameValue = (point.value - searchPoint.value).abs() < 0.01;
+
+      if (isSameDay && isSameValue) {
+        return i;
+      }
+    }
+
+    // 4. Fallback: Match only by date (day)
+    for (int i = 0; i < points.length; i++) {
+      final point = points[i];
+      final isSameDay = point.date.year == searchPoint.date.year &&
+          point.date.month == searchPoint.date.month &&
+          point.date.day == searchPoint.date.day;
+
+      if (isSameDay) {
+        return i;
+      }
+    }
+
+    return null;
+  }
+
   int? _getSelectedFlatIndex({List<HbA1cDataPoint>? flattenedPoints}) {
     final points = flattenedPoints ?? _getFlattenedDataPoints();
 
@@ -448,10 +498,39 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
 
         // Reset scroll flag so it will scroll to the cached point in new range
         _initialScrollApplied = false;
+
+        // IMPORTANT: Dispose old controller and create new one
+        // This prevents the old scroll position from being visible even for one frame
+        _scrollController?.dispose();
+
+        // Try to calculate target position if we have dimension info from previous build
+        double initialOffset = 0.0;
+        if (_lastViewWidth > 0 &&
+            _lastEffectivePointWidth > 0 &&
+            newCount > 0) {
+          // Try to find the point in new data
+          final newFlattened = _getFlattenedDataPoints();
+          final targetIndex = _findPointInList(pointToCache, newFlattened);
+
+          if (targetIndex != null && targetIndex >= 0) {
+            // Calculate offset to center the point (using old dimensions as estimate)
+            final double targetCenter = targetIndex * _lastEffectivePointWidth +
+                (_lastEffectivePointWidth / 2);
+            final double rawOffset = targetCenter - (_lastViewWidth / 2);
+            initialOffset = rawOffset.clamp(0.0, double.infinity);
+          }
+        }
+
+        _scrollController =
+            ScrollController(initialScrollOffset: initialOffset);
       } else {
         // No valid selected point, just reset without setting range changing flag
         _isRangeChanging = false;
         _initialScrollApplied = false;
+
+        // Also recreate scroll controller to start fresh
+        _scrollController?.dispose();
+        _scrollController = ScrollController();
       }
     } else if (focusChanged) {
       // Same range, but user selected a different point
