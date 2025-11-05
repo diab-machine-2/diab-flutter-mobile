@@ -47,6 +47,11 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   DateTime? _lastTapTime;
   ScrollController? _scrollController;
   bool _initialScrollApplied = false;
+  double _lastViewWidth = 0;
+  double _lastEffectivePointWidth = 0;
+  int _lastTotalPoints = 0;
+  HbA1cDataPoint?
+      _cachedSelectedPoint; // Cache selected point before range changes
 
   // Custom Y transform để đặt đường kẻ 6.5% ở giữa chart
   // Tương tự như BloodPressure chart với đường kẻ 90 và 140
@@ -75,70 +80,210 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     return total;
   }
 
-  int? _getSelectedFlatIndex() {
-    if (widget.focusIndex < 0 ||
-        widget.focusIndex >= widget.groupedPoints.length) return null;
-    if (widget.focusSubIndex < 0 ||
-        widget.focusSubIndex >=
-            widget.groupedPoints[widget.focusIndex].length) {
-      return null;
-    }
-
-    int currentFlatIndex = 0;
-    for (int dayIndex = 0; dayIndex < widget.groupedPoints.length; dayIndex++) {
-      final group = widget.groupedPoints[dayIndex];
-      for (int subIndex = 0; subIndex < group.length; subIndex++) {
-        if (dayIndex == widget.focusIndex && subIndex == widget.focusSubIndex) {
-          return currentFlatIndex;
-        }
-        currentFlatIndex++;
+  void _updateCachedSelectedPoint() {
+    // Update cached selected point from current groupedPoints
+    if (widget.focusIndex >= 0 &&
+        widget.focusIndex < widget.groupedPoints.length) {
+      final group = widget.groupedPoints[widget.focusIndex];
+      if (widget.focusSubIndex >= 0 && widget.focusSubIndex < group.length) {
+        _cachedSelectedPoint = group[widget.focusSubIndex];
       }
     }
-    return null;
+  }
+
+  int? _getSelectedFlatIndex() {
+    // Use cached selected point if available (for range changes)
+    // Otherwise get from current groupedPoints (for same range)
+    HbA1cDataPoint? selectedPoint = _cachedSelectedPoint;
+
+    if (selectedPoint == null) {
+      // No cached point, get from current groupedPoints
+      if (widget.focusIndex >= 0 &&
+          widget.focusIndex < widget.groupedPoints.length) {
+        final group = widget.groupedPoints[widget.focusIndex];
+        if (widget.focusSubIndex >= 0 && widget.focusSubIndex < group.length) {
+          selectedPoint = group[widget.focusSubIndex];
+        }
+      }
+    }
+
+    if (selectedPoint == null) return null;
+
+    // Now find this point in the flattened list by comparing ID (or date+timeOfDay+value)
+    final flattenedPoints = _getFlattenedDataPoints();
+    for (int i = 0; i < flattenedPoints.length; i++) {
+      final point = flattenedPoints[i];
+
+      // Priority 1: Match by ID if both have ID
+      if (selectedPoint.id != null &&
+          selectedPoint.id!.isNotEmpty &&
+          point.id != null &&
+          point.id!.isNotEmpty) {
+        if (selectedPoint.id == point.id) {
+          return i;
+        }
+        continue; // If both have ID but don't match, skip to next
+      }
+
+      // Priority 2: Match by date+time, timeOfDay, and value
+      // This ensures we find the exact same measurement
+      final isSameDateTime = point.date.year == selectedPoint.date.year &&
+          point.date.month == selectedPoint.date.month &&
+          point.date.day == selectedPoint.date.day &&
+          point.date.hour == selectedPoint.date.hour &&
+          point.date.minute == selectedPoint.date.minute;
+      final isSameTimeOfDay = point.timeOfDay == selectedPoint.timeOfDay;
+      final isSameValue = (point.value - selectedPoint.value).abs() < 0.01;
+
+      if (isSameDateTime && isSameTimeOfDay && isSameValue) {
+        return i;
+      }
+    }
+
+    return null; // Point not found in current range
   }
 
   void _ensureSelectedPointVisible({
     required int totalPoints,
     required double viewWidth,
     required double effectivePointWidth,
+    int retry = 0,
   }) {
     if (_scrollController == null || _initialScrollApplied || totalPoints <= 0)
       return;
     if (!viewWidth.isFinite || viewWidth <= 0) return;
 
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) {
+      _initialScrollApplied = true;
+      return;
+    }
+
     _initialScrollApplied = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      if (!_scrollController!.hasClients) {
+
+      // Check if scroll controller is ready with proper dimensions
+      if (!_scrollController!.hasClients ||
+          !_scrollController!.position.hasContentDimensions) {
         _initialScrollApplied = false;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
+        // Retry after a short delay
+        Future.delayed(const Duration(milliseconds: 50), () {
           _ensureSelectedPointVisible(
             totalPoints: totalPoints,
             viewWidth: viewWidth,
             effectivePointWidth: effectivePointWidth,
+            retry: retry + 1,
           );
         });
         return;
       }
 
+      final int? selectedFlatIndex = _getSelectedFlatIndex();
+
+      // If selected point not found in current range, scroll to end (latest point)
+      if (selectedFlatIndex == null) {
+        _cachedSelectedPoint = null;
+        final double maxScrollExtent =
+            _scrollController!.position.maxScrollExtent;
+
+        // First jump to start, then animate to end
+        _scrollController!.jumpTo(0.0);
+
+        Future.delayed(const Duration(milliseconds: 50), () {
+          if (!mounted || !_scrollController!.hasClients) return;
+
+          _scrollController!.animateTo(
+            maxScrollExtent,
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOutCubic,
+          );
+        });
+        return;
+      }
+
+      // Selected point found - always center it (regardless of whether it's already visible)
+      // Calculate the target position to center the selected point
+      final double targetCenter =
+          selectedFlatIndex * effectivePointWidth + (effectivePointWidth / 2);
+      final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
       final double maxScrollExtent =
           _scrollController!.position.maxScrollExtent;
+      final double desiredOffset =
+          rawOffset.clamp(0.0, maxScrollExtent).toDouble();
+
+      // Animate to the selected point (centered)
+      // First jump to start (position 0), then animate to the selected point
+      _scrollController!.jumpTo(0.0);
+
+      // Small delay to ensure the jump is complete before animation
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (!mounted || !_scrollController!.hasClients) return;
+
+        _scrollController!.animateTo(
+          desiredOffset,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOutCubic,
+        );
+      });
+    });
+  }
+
+  void _scrollToSelectedPoint({
+    required int totalPoints,
+    required double viewWidth,
+    required double effectivePointWidth,
+    int retry = 0,
+  }) {
+    if (_scrollController == null || !_scrollController!.hasClients) return;
+    if (totalPoints <= 0) return;
+    if (!viewWidth.isFinite || viewWidth <= 0) return;
+
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController!.hasClients) return;
+
+      // Check if scroll controller is ready with proper dimensions
+      if (!_scrollController!.position.hasContentDimensions) {
+        // Retry after a short delay
+        Future.delayed(const Duration(milliseconds: 50), () {
+          _scrollToSelectedPoint(
+            totalPoints: totalPoints,
+            viewWidth: viewWidth,
+            effectivePointWidth: effectivePointWidth,
+            retry: retry + 1,
+          );
+        });
+        return;
+      }
+
       final int? selectedFlatIndex = _getSelectedFlatIndex();
       final int targetIndex = selectedFlatIndex ?? (totalPoints - 1);
       if (targetIndex < 0) {
         return;
       }
 
+      // Calculate position to center the selected point
       final double targetCenter =
           targetIndex * effectivePointWidth + (effectivePointWidth / 2);
       final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
+      final double maxScrollExtent =
+          _scrollController!.position.maxScrollExtent;
       final double desiredOffset =
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
-      if ((_scrollController!.position.pixels - desiredOffset).abs() > 0.5) {
-        _scrollController!.jumpTo(desiredOffset);
-      }
+      // Animate to the desired position
+      _scrollController!.animateTo(
+        desiredOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
     });
   }
 
@@ -146,6 +291,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _updateCachedSelectedPoint(); // Cache initial selected point
   }
 
   @override
@@ -153,10 +299,39 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     super.didUpdateWidget(oldWidget);
     final int newCount = _calculateTotalPoints(widget.groupedPoints);
     final int oldCount = _calculateTotalPoints(oldWidget.groupedPoints);
-    if (newCount != oldCount ||
-        widget.focusIndex != oldWidget.focusIndex ||
-        widget.focusSubIndex != oldWidget.focusSubIndex) {
+
+    final bool rangeChanged = newCount != oldCount;
+    final bool focusChanged = widget.focusIndex != oldWidget.focusIndex ||
+        widget.focusSubIndex != oldWidget.focusSubIndex;
+
+    if (rangeChanged) {
+      // Range changed - cache the selected point from OLD widget
+      // This ensures we have the CORRECT point to search for in the new range
+      if (oldWidget.focusIndex >= 0 &&
+          oldWidget.focusIndex < oldWidget.groupedPoints.length) {
+        final group = oldWidget.groupedPoints[oldWidget.focusIndex];
+        if (oldWidget.focusSubIndex >= 0 &&
+            oldWidget.focusSubIndex < group.length) {
+          _cachedSelectedPoint = group[oldWidget.focusSubIndex];
+        }
+      }
+
+      // Reset scroll position so it will animate to the cached point (centered) in new range
       _initialScrollApplied = false;
+    } else if (focusChanged) {
+      // Same range, but user selected a different point
+      // Clear old cache and update with the new selection
+      _cachedSelectedPoint = null;
+      _updateCachedSelectedPoint();
+
+      // Scroll to center the new selection
+      if (_lastTotalPoints > 0 && _lastViewWidth > 0) {
+        _scrollToSelectedPoint(
+          totalPoints: _lastTotalPoints,
+          viewWidth: _lastViewWidth,
+          effectivePointWidth: _lastEffectivePointWidth,
+        );
+      }
     }
   }
 
@@ -174,7 +349,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     final List<LineChartBarData> lineBarsData =
         _generateMultipleHbA1cLines(flattenedPoints);
 
-    const int visiblePointCount = 12;
+    const int visiblePointCount = 6;
     const double chartHeight = 140;
 
     // Fixed minY and maxY for consistent chart display
@@ -228,6 +403,11 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                       : viewWidth;
                   final double effectivePointWidth =
                       totalPoints == 0 ? 0 : chartWidth / totalPoints;
+
+                  // Save values for use in didUpdateWidget
+                  _lastViewWidth = viewWidth;
+                  _lastEffectivePointWidth = effectivePointWidth;
+                  _lastTotalPoints = totalPoints;
 
                   if (enableScroll) {
                     _ensureSelectedPointVisible(
@@ -321,12 +501,29 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                   (LineChartBarData barData,
                                       List<int> spotIndexes) {
                                 return spotIndexes.map((index) {
+                                  // Get the color of the touched point
+                                  Color dotColor = R.color.black;
+                                  if (index >= 0 &&
+                                      index < flattenedPoints.length) {
+                                    dotColor = flattenedPoints[index].color;
+                                  }
+
                                   return TouchedSpotIndicatorData(
                                     FlLine(
-                                      color: R.color.black,
+                                      color: dotColor,
                                       strokeWidth: 0.5,
                                     ),
-                                    FlDotData(show: false),
+                                    FlDotData(
+                                      show: true,
+                                      getDotPainter:
+                                          (spot, percent, barData, index) =>
+                                              FlDotCirclePainter(
+                                        radius: 6.5,
+                                        color: dotColor,
+                                        strokeWidth: 18,
+                                        strokeColor: dotColor.withOpacity(0.3),
+                                      ),
+                                    ),
                                   );
                                 }).toList();
                               },
@@ -432,16 +629,14 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
             final dp = flattenedPoints[index];
             final bool isSelected =
                 selectedFlatIndex != null && selectedFlatIndex == index;
-            final bool isFirst = index == 0;
-            final bool isLast = index == flattenedPoints.length - 1;
 
             // Determine dot color based on HbA1C value range
             Color dotColor = _getHbA1cRangeColor(dp.value);
 
             return FlDotCirclePainter(
-              radius: isFirst || isLast ? 5 : 4,
+              radius: 3,
               color: dotColor,
-              strokeWidth: isSelected ? 12 : 0,
+              strokeWidth: isSelected ? 6 : 0,
               strokeColor: isSelected ? dotColor.withOpacity(0.3) : null,
             );
           },

@@ -558,9 +558,6 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                                         EdgeInsets.symmetric(horizontal: 16),
                                     decoration: BoxDecoration(
                                       color: Color(0xffDCFFFC),
-                                      // border: Border.all(
-                                      //     color: R.color.greenGradientBottom,
-                                      //     width: 1),
                                       borderRadius: BorderRadius.circular(24),
                                     ),
                                     child: Row(
@@ -580,7 +577,6 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                                     ),
                                   ),
                                 ),
-                                // Notification badge - chỉ hiển thị khi có data từ API và chưa xem chi tiết
                                 if (_dataPoints.isNotEmpty && !_isDetailViewed)
                                   Positioned(
                                     left: 45,
