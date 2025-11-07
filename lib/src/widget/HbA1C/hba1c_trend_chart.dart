@@ -570,7 +570,8 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     final List<LineChartBarData> lineBarsData =
         _generateMultipleHbA1cLines(flattenedPoints);
 
-    const int visiblePointCount = 6;
+    const int maxVisiblePoints = 12; // Maximum points to show without scrolling
+    const int scrollVisiblePointCount = 6; // Points visible when scrolling
     const double chartHeight = 140;
 
     // Fixed minY and maxY for consistent chart display
@@ -618,9 +619,12 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                     return const SizedBox.shrink();
                   }
 
-                  final bool enableScroll = totalPoints > visiblePointCount;
+                  // If totalPoints <= 12: show all points without scroll
+                  // If totalPoints > 12: show 6 points visible and enable scroll
+                  final bool enableScroll = totalPoints > maxVisiblePoints;
+
                   final double chartWidth = enableScroll
-                      ? (viewWidth / visiblePointCount) * totalPoints
+                      ? (viewWidth / scrollVisiblePointCount) * totalPoints
                       : viewWidth;
                   final double effectivePointWidth =
                       totalPoints == 0 ? 0 : chartWidth / totalPoints;
