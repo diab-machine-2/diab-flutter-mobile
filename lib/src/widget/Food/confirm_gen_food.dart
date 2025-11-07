@@ -542,6 +542,11 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
 
     if (note.isEmpty && _selectedFoods.isEmpty && files.isEmpty) {
       Navigator.pop(context);
+      Navigator.pushNamed(context, NavigatorName.food_image_capture,
+          arguments: {
+            'timeframe': widget.timeframe,
+            'timeframeId': widget.timeframeId,
+          });
       return;
     }
 

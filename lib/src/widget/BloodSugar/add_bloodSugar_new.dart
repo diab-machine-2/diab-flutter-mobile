@@ -1,13 +1,18 @@
 import 'dart:io';
 import 'dart:math';
+
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_range_data.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -30,10 +35,7 @@ import 'package:medical/src/widgets/custom_checkbox_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:medical/src/widgets/toggle_buttons.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
+
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import '../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'bloodSugar_result.dto.dart';
