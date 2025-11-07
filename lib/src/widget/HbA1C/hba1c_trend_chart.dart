@@ -377,7 +377,6 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         return;
       }
 
-      // Selected point found - always center it (regardless of whether it's already visible)
       // Calculate the target position to center the selected point
       final double targetCenter =
           selectedFlatIndex * effectivePointWidth + (effectivePointWidth / 2);
@@ -389,9 +388,21 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       final double desiredOffset =
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
-      // Jump directly to the target position without intermediate animation
-      // This prevents unwanted scrolling through the entire chart
-      _scrollController!.jumpTo(desiredOffset);
+      // Check if the point is at the beginning (first few points visible)
+      // If the desired offset is 0 or very close to 0, just jump to start
+      // This prevents unnecessary scrolling for points at the beginning
+      if (desiredOffset <= 0.0 || selectedFlatIndex < 3) {
+        // Point is at the beginning, just jump to start without animation
+        _scrollController!.jumpTo(0.0);
+      } else {
+        // Point is not at the beginning, animate smoothly to center it
+        // Use animateTo for smooth scrolling instead of jumpTo
+        _scrollController!.animateTo(
+          desiredOffset,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+        );
+      }
 
       // Reset range changing flag immediately
       if (mounted) {
@@ -499,30 +510,11 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         // Reset scroll flag so it will scroll to the cached point in new range
         _initialScrollApplied = false;
 
-        // IMPORTANT: Dispose old controller and create new one
+        // IMPORTANT: Dispose old controller and create new one starting at 0
         // This prevents the old scroll position from being visible even for one frame
+        // We let _ensureSelectedPointVisible handle the scrolling smoothly
         _scrollController?.dispose();
-
-        // Try to calculate target position if we have dimension info from previous build
-        double initialOffset = 0.0;
-        if (_lastViewWidth > 0 &&
-            _lastEffectivePointWidth > 0 &&
-            newCount > 0) {
-          // Try to find the point in new data
-          final newFlattened = _getFlattenedDataPoints();
-          final targetIndex = _findPointInList(pointToCache, newFlattened);
-
-          if (targetIndex != null && targetIndex >= 0) {
-            // Calculate offset to center the point (using old dimensions as estimate)
-            final double targetCenter = targetIndex * _lastEffectivePointWidth +
-                (_lastEffectivePointWidth / 2);
-            final double rawOffset = targetCenter - (_lastViewWidth / 2);
-            initialOffset = rawOffset.clamp(0.0, double.infinity);
-          }
-        }
-
-        _scrollController =
-            ScrollController(initialScrollOffset: initialOffset);
+        _scrollController = ScrollController();
       } else {
         // No valid selected point, just reset without setting range changing flag
         _isRangeChanging = false;
