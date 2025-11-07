@@ -510,9 +510,6 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
         // Reset scroll flag so it will scroll to the cached point in new range
         _initialScrollApplied = false;
 
-        // IMPORTANT: Dispose old controller and create new one starting at 0
-        // This prevents the old scroll position from being visible even for one frame
-        // We let _ensureSelectedPointVisible handle the scrolling smoothly
         _scrollController?.dispose();
         _scrollController = ScrollController();
       } else {
