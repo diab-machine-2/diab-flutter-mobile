@@ -211,11 +211,15 @@ class AppRoutes {
             BlocProvider<BmiInputBloc>(
               create: (_) => BmiInputBloc(WeightRepository.instance),
             ),
-            BlocProvider<BmiBloc>.value(
-              value: data?[AddBmiPage.bmiBlocKey],
-            )
+            (data?[AddBmiPage.bmiBlocKey] != null)
+                ? BlocProvider<BmiBloc>.value(
+                    value: data?[AddBmiPage.bmiBlocKey],
+                  )
+                : BlocProvider<BmiBloc>(
+                    create: (_) => BmiBloc(WeightRepository.instance),
+                  ),
           ],
-          child: const AddBmiPage(),
+          child: AddBmiPage(goalId: data?['goalId']),
         );
       case NavigatorName.bmiReviseRecordPage:
         final data = settings.arguments as Map<String, dynamic>?;

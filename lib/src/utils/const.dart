@@ -256,4 +256,5 @@ class Const {
 
   static const hasInputedWaist = "has_inputed_waist";
   static const hasWeightRecord = "has_weight_record";
+  static const hasNewWeightRecordInFirst = "has_new_weight_record_in_first";
 }

@@ -1436,4 +1436,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get please_select_at_least_one_image => 'please_select_at_least_one_image';
   String get max_image_select_dynamic => 'max_image_select_dynamic';
   String get unknown_meal_image => 'unknown_meal_image';
+  String get no_data_within => 'no_data_within';
 }
