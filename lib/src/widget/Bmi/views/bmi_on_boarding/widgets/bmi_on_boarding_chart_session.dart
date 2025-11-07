@@ -4,11 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
-import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/enum.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_ai_weight_index_analysis.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_statistical_chart.dart';
@@ -62,7 +63,7 @@ class _BmiOnBoardingChartSessionState extends State<BmiOnBoardingChartSession> {
           const SizedBox(
             height: 8,
           ),
-          const _InfoHeader(),
+          _InfoHeader(),
           const BmiStatisticalChart(),
           const SizedBox(
             height: 8,
@@ -81,14 +82,17 @@ class _BmiOnBoardingChartSessionState extends State<BmiOnBoardingChartSession> {
   }
 }
 
+// ignore: must_be_immutable
 class _InfoHeader extends StatelessWidget {
-  const _InfoHeader({
+  _InfoHeader({
     super.key,
   });
 
+  late BmiBloc bmiBloc;
+
   @override
   Widget build(BuildContext context) {
-    BmiBloc bmiBloc = context.read();
+    bmiBloc = context.read();
 
     return BlocBuilder<BmiBloc, BmiState>(
         buildWhen: (_, state) =>
@@ -98,13 +102,17 @@ class _InfoHeader extends StatelessWidget {
         builder: (context, state) {
           return Column(
             children: [
-              Text(
-                bmiBloc.selectedPointChart?.bmiText ?? "--",
-                style: R.style.boldXXLargeStyle.copyWith(
-                  color: bmiBloc.selectedPointChart?.bmiBgColor,
+              if (bmiBloc.selectedPointChart?.bmiText != null)
+                GestureDetector(
+                  onTap: () => _redirectToDetail(context),
+                  child: Text(
+                    bmiBloc.selectedPointChart?.bmiText ?? "--",
+                    style: R.style.boldXXLargeStyle.copyWith(
+                      color: bmiBloc.selectedPointChart?.bmiBgColor,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
+              // const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -125,35 +133,49 @@ class _InfoHeader extends StatelessWidget {
                         padding: const EdgeInsets.all(4),
                         child: Icon(
                           Icons.arrow_back_ios_rounded,
-                          color: AppColors.neutral3,
+                          color: bmiBloc.selectedPointChart == null
+                              ? AppColors.neutral5
+                              : AppColors.neutral3,
                           size: 18,
                         )),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "BMI ",
-                        style: R.style.normalTextStyle.neutral4,
+                  if (bmiBloc.selectedPointChart?.bmiText == null) ...[
+                    Text(
+                      R.string.no_data_within
+                          .tr(args: ["${bmiBloc.periodType.days}"]),
+                      textAlign: TextAlign.center,
+                      style: R.style.normalTextStyle,
+                    )
+                  ] else ...[
+                    GestureDetector(
+                      onTap: () => _redirectToDetail(context),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "BMI ",
+                            style: R.style.normalTextStyle.neutral4,
+                          ),
+                          Text(
+                            "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
+                            style: R.style.boldNormalStyle.neutral3,
+                          ),
+                          Text(
+                            " \u2022 ",
+                            style: R.style.boldLargeStyle.neutral4,
+                          ),
+                          Text(
+                            _getWeight(bmiBloc.selectedPointChart?.weight),
+                            style: R.style.boldNormalStyle.neutral3,
+                          ),
+                          Text(
+                            " kg",
+                            style: R.style.normalTextStyle.neutral4,
+                          ),
+                        ],
                       ),
-                      Text(
-                        "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
-                        style: R.style.boldNormalStyle.neutral3,
-                      ),
-                      Text(
-                        " \u2022 ",
-                        style: R.style.boldLargeStyle.neutral4,
-                      ),
-                      Text(
-                        "${bmiBloc.selectedPointChart?.weight ?? "--"}",
-                        style: R.style.boldNormalStyle.neutral3,
-                      ),
-                      Text(
-                        " kg",
-                        style: R.style.normalTextStyle.neutral4,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                   IconButton(
                     onPressed: () {
                       bmiBloc.goToNextPoint();
@@ -171,7 +193,9 @@ class _InfoHeader extends StatelessWidget {
                         padding: const EdgeInsets.all(4),
                         child: Icon(
                           Icons.arrow_forward_ios_rounded,
-                          color: AppColors.neutral3,
+                          color: bmiBloc.selectedPointChart == null
+                              ? AppColors.neutral5
+                              : AppColors.neutral3,
                           size: 18,
                         )),
                   ),
@@ -181,6 +205,32 @@ class _InfoHeader extends StatelessWidget {
           );
         });
   }
+
+  String _getWeight(double? value) {
+    if (value == null) return "--";
+    bool isInteger = value.floor().toDouble() == value;
+    if (isInteger) {
+      return "${value.floor()}";
+    }
+    return value.toStringAsFixed(1);
+  }
+
+  void _redirectToDetail(BuildContext context) async {
+    final updateResult = await Navigator.pushNamed(
+      context,
+      NavigatorName.bmiReviseRecordPage,
+      arguments: {
+        ReviseWeightPage.bmiBlocKey: bmiBloc,
+        ReviseWeightPage.dataKey: bmiBloc.selectedPointChart,
+      },
+    );
+
+    if (updateResult == true) {
+      bmiBloc
+        ..fetchHistoricalWeight()
+        ..refresh();
+    }
+  }
 }
 
 class _DateTimeLabel extends StatelessWidget {
@@ -188,7 +238,7 @@ class _DateTimeLabel extends StatelessWidget {
     super.key,
   });
 
-  static const _timeFormat = Const.HOUR_MIN;
+  static const _timeFormat = "HH:mm";
   static const _dateFormat = "dd/MM";
 
   @override

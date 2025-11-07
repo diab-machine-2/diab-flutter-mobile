@@ -14,11 +14,17 @@ class FoodGalleryPicker extends StatefulWidget {
     required this.timeframe,
     required this.timeframeId,
     this.onImagesSelected,
+    this.initialSelectedFilePath,
+    this.initialSelectedAssetId,
   }) : super(key: key);
 
   final String timeframe;
   final String timeframeId;
   final Function(List<String>)? onImagesSelected;
+  // When provided, the gallery will pre-select the asset that matches this file path once
+  final String? initialSelectedFilePath;
+  // Prefer selecting by asset ID when available (more reliable than file path)
+  final String? initialSelectedAssetId;
 
   @override
   State<FoodGalleryPicker> createState() => _FoodGalleryPickerState();
@@ -30,7 +36,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   bool _isLoading = true;
   bool _hasPermission = false;
   final int _maxSelection = 5;
-  bool _didAutoSelectMostRecent = false;
+  bool _didApplyInitialSelectedPath = false;
 
   // Pagination variables
   final ScrollController _scrollController = ScrollController();
@@ -223,15 +229,49 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         _hasMorePhotos = photos.length == _pageSize;
       });
 
-      // Auto-select the most recent captured image once (only on initial load)
+      // Prefer pre-select by asset ID if provided
       if (isInitialLoad &&
-          !_didAutoSelectMostRecent &&
-          _selectedImages.isEmpty &&
-          photos.isNotEmpty) {
-        setState(() {
-          _selectedImages.add(photos.first.id);
-          _didAutoSelectMostRecent = true;
-        });
+          !_didApplyInitialSelectedPath &&
+          widget.initialSelectedAssetId != null &&
+          widget.initialSelectedAssetId!.isNotEmpty) {
+        final matching =
+            photos.where((e) => e.id == widget.initialSelectedAssetId);
+        if (matching.isNotEmpty) {
+          final match = matching.first;
+          if (!_selectedImages.contains(match.id) &&
+              _selectedImages.length < _maxSelection) {
+            setState(() {
+              _selectedImages.add(match.id);
+              _didApplyInitialSelectedPath = true;
+            });
+          }
+        }
+      }
+
+      // Only pre-select if a specific file path was provided by the caller
+      if (isInitialLoad &&
+          !_didApplyInitialSelectedPath &&
+          widget.initialSelectedFilePath != null &&
+          widget.initialSelectedFilePath!.isNotEmpty) {
+        try {
+          // Attempt to find the photo matching the given file path within the currently loaded page
+          for (final asset in photos) {
+            final File? assetFile = await asset.file;
+            if (assetFile != null &&
+                assetFile.path == widget.initialSelectedFilePath) {
+              if (!_selectedImages.contains(asset.id) &&
+                  _selectedImages.length < _maxSelection) {
+                setState(() {
+                  _selectedImages.add(asset.id);
+                  _didApplyInitialSelectedPath = true;
+                });
+              }
+              break;
+            }
+          }
+        } catch (e) {
+          // Ignore errors; user can select manually
+        }
       }
     } catch (e) {
       print('Error loading photos page: $e');
@@ -282,7 +322,6 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
                   _selectedImages.length < _maxSelection) {
                 _selectedImages.add(saved.id);
               }
-              _didAutoSelectMostRecent = true;
             });
           }
         } catch (e) {
