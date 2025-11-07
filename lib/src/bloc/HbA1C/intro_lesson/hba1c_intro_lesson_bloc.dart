@@ -11,13 +11,19 @@ class HbA1cIntroLessonBloc extends Cubit<HbA1cIntroLessonState> {
     fetchHbA1cIntroLesson();
   }
 
-  void fetchHbA1cIntroLesson() async {
+  void fetchHbA1cIntroLesson({bool forceRefresh = false}) async {
     try {
+      if (forceRefresh) {
+        print('🔄 Force refreshing HbA1C lessons...');
+        emit(HbA1cIntroLessonInitial()); // Reset to initial state
+      }
+
       // Use new HbA1C Lessons endpoint
       final lessons = await HbA1CClient().fetchHbA1CLessons();
+      print('📚 Emitting ${lessons.length} lessons to UI');
       emit(HbA1cIntroLessonLoaded(lessons: lessons));
     } catch (e) {
-      print('Error fetching HbA1C lessons: $e');
+      print('❌ Error fetching HbA1C lessons: $e');
       emit(HbA1cIntroLessonError());
     }
   }

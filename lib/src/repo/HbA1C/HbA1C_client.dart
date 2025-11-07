@@ -301,13 +301,31 @@ class HbA1CClient extends FetchClient {
 
         print('🔍 Raw data count: ${rawData.length}');
 
+        // Print each raw item for debugging
+        for (int i = 0; i < rawData.length; i++) {
+          print(
+              '🔍 Raw item [$i]: ${rawData[i]['name']} (ID: ${rawData[i]['id']})');
+        }
+
         // Transform HbA1C API format to match LessonModel
         List<LessonModel> lessons = [];
-        for (var item in rawData) {
+        Set<String> seenIds = {}; // Track IDs to prevent duplicates
+
+        for (int i = 0; i < rawData.length; i++) {
+          var item = rawData[i];
           try {
+            final String itemId = item['id'] ?? '';
+
+            // Skip if duplicate ID
+            if (seenIds.contains(itemId)) {
+              print('⚠️ Skipping duplicate lesson ID: $itemId');
+              continue;
+            }
+            seenIds.add(itemId);
+
             // Map HbA1C API fields to LessonModel expected fields
             Map<String, dynamic> transformedItem = {
-              'id': item['id'] ?? '',
+              'id': itemId,
               'name': item['name'] ?? '',
               'status': item['status'] ?? 1,
               'type': item['type'] ?? 1,
@@ -326,14 +344,15 @@ class HbA1CClient extends FetchClient {
 
             final lesson = LessonModel.fromJson(transformedItem);
             lessons.add(lesson);
-            print('✅ Parsed lesson: ${lesson.name}');
+            print('✅ Parsed lesson [$i]: ${lesson.name} (ID: ${lesson.id})');
           } catch (e) {
-            print('❌ Error parsing lesson item: $e');
+            print('❌ Error parsing lesson item [$i]: $e');
             print('❌ Item data: $item');
           }
         }
 
         print('🔍 Total lessons parsed: ${lessons.length}');
+        print('🔍 Unique lesson IDs: ${seenIds.length}');
         return lessons;
       } else {
         final error = Error.fromJson(response);

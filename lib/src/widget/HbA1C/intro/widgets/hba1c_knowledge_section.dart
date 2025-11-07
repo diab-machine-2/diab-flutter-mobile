@@ -16,6 +16,11 @@ class HbA1cKnowledgeSection extends StatefulWidget {
 
   @override
   State<HbA1cKnowledgeSection> createState() => _HbA1cKnowledgeSectionState();
+  
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'HbA1cKnowledgeSection(${DateTime.now().millisecondsSinceEpoch})';
+  }
 }
 
 class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
@@ -30,7 +35,11 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
   @override
   void initState() {
     super.initState();
+    // Initialize bloc in initState to ensure fresh instance
+    _bloc = HbA1cIntroLessonBloc();
     _scrollController.addListener(_onScroll);
+    // Force refresh to ensure fresh data
+    _bloc.fetchHbA1cIntroLesson(forceRefresh: true);
   }
 
   @override
@@ -38,6 +47,7 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _stopAutoScroll();
+    _bloc.close(); // Close bloc to prevent memory leak
     super.dispose();
   }
 
@@ -82,7 +92,7 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
     });
   }
 
-  final _bloc = HbA1cIntroLessonBloc();
+  late final HbA1cIntroLessonBloc _bloc;
 
   @override
   Widget build(BuildContext context) {
