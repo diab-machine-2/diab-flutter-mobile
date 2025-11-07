@@ -76,7 +76,10 @@ class FirebaseRemoteSetting {
       "SPECIALTIES_ORDER": localSetting["SPECIALTIES_ORDER"] ??
           "cao-huyet-ap,tieu-duong,suy-than-man,suc-khoe-tim-mach,benh-khac",
       "VNPAY_INTEGRATED_INFO": localSetting["VNPAY_INTEGRATED_INFO"] ?? '',
-      "SUBSCRIPTION_PACKAGE_INFO": localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? ''
+      "VNPAY_INTEGRATED_INFO_DEV":
+          localSetting["VNPAY_INTEGRATED_INFO_DEV"] ?? '',
+      "SUBSCRIPTION_PACKAGE_INFO":
+          localSetting["SUBSCRIPTION_PACKAGE_INFO"] ?? ''
     });
     // Config timeout for remoteConfig
     await remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -121,7 +124,10 @@ class FirebaseRemoteSetting {
               .toList();
     }
     _specialtyOrder = remoteConfig.getString('SPECIALTIES_ORDER');
-    _vnpayIntegratedInfo = remoteConfig.getString('VNPAY_INTEGRATED_INFO');
-    _subscriptionPackageInfo = remoteConfig.getString('SUBSCRIPTION_PACKAGE_INFO');
+    _vnpayIntegratedInfo = AppSettings.environment == "product"
+        ? remoteConfig.getString('VNPAY_INTEGRATED_INFO')
+        : remoteConfig.getString('VNPAY_INTEGRATED_INFO_DEV');
+    _subscriptionPackageInfo =
+        remoteConfig.getString('SUBSCRIPTION_PACKAGE_INFO');
   }
 }

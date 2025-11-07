@@ -679,6 +679,14 @@ class Utils {
 
     return languageMap[code] ?? code;
   }
+
+    static bool get isSandboxVnPay {
+    if (AppSettings.environment == "product") {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
 
 extension Precision on double {
