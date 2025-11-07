@@ -240,6 +240,10 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       _focusSubIndex = 0;
       _isLoadingAI = false; // Reset flag to allow new AI load
       _aiSuggestion = null; // Reset suggestion to trigger reload
+      // Clear data immediately to prevent flash of AI section
+      _dataPoints.clear();
+      _groupedPoints.clear();
+      _timestamps.clear();
     });
     _loadTrendData();
     // AI will be loaded automatically after data is available (in BlocBuilder)
@@ -715,6 +719,11 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   }
 
   Widget _buildCombinedMainSection(HbA1CState state) {
+    // Don't show AI section when loading or when no data
+    final bool shouldShowAI = !(state is HbA1CLoading) &&
+        _dataPoints.isNotEmpty &&
+        _groupedPoints.isNotEmpty;
+
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -733,7 +742,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           children: [
             const SizedBox(height: 0),
             _buildChartContent(state),
-            if (_dataPoints.isNotEmpty) ...[
+            if (shouldShowAI) ...[
               const SizedBox(height: 8),
               Divider(height: 1, color: R.color.color0xffE5E5E5),
               const SizedBox(height: 12),
