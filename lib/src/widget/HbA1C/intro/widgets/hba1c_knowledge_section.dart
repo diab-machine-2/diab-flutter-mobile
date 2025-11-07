@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/bloc/HbA1C/intro_lesson/hba1c_intro_lesson_bloc.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 class HbA1cKnowledgeSection extends StatefulWidget {
@@ -87,9 +90,18 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
       value: _bloc,
       child: BlocBuilder<HbA1cIntroLessonBloc, HbA1cIntroLessonState>(
         builder: (context, state) {
+          print('🔍 HbA1cKnowledgeSection state: $state');
+
           if (state is HbA1cIntroLessonLoaded) {
             final lessons = state.lessons;
-            
+            print('🔍 Loaded ${lessons.length} lessons');
+
+            // If no lessons, don't show the section
+            if (lessons.isEmpty) {
+              print('⚠️ No lessons to display');
+              return SizedBox();
+            }
+
             // Start auto scroll after lessons are loaded
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!_autoScrollInitialized && lessons.length > 1) {
@@ -98,9 +110,26 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
             });
 
             return _buildLessonsList(lessons);
+          } else if (state is HbA1cIntroLessonError) {
+            print('❌ Error loading lessons');
+            // Hide when error
+            return SizedBox();
           }
-          // Hide when loading or error
-          return SizedBox();
+
+          // Loading state - show loading indicator
+          print('⏳ Loading lessons...');
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            child: Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(R.color.mainColor),
+              ),
+            ),
+          );
         },
       ),
     );
@@ -123,6 +152,7 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
               R.string.knowledge_from_diab_experts.tr(),
               style: TextStyle(
                 fontSize: 18,
+                fontFamily: R.font.sfpro,
                 fontWeight: FontWeight.w700,
                 color: R.color.dark,
               ),
@@ -296,8 +326,22 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
     );
   }
 
-  void _onLessonTap(LessonModel lesson) {
-    // TODO: Navigate to lesson detail page
-    // For now, just a placeholder
+  void _onLessonTap(LessonModel lesson) async {
+    // Track activity
+    ActivityListTracking.clickLessonItem(
+      objectId: lesson.id,
+      objectIndex: null,
+      objectTitle: lesson.name,
+    );
+
+    // Navigate to lesson detail page
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: lesson.type,
+        lessonId: lesson.id,
+        onComplete: (_, __) {},
+      ),
+    );
   }
 }
