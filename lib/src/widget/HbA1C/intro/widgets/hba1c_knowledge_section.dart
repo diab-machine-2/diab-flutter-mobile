@@ -100,15 +100,12 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
       value: _bloc,
       child: BlocBuilder<HbA1cIntroLessonBloc, HbA1cIntroLessonState>(
         builder: (context, state) {
-          print('🔍 HbA1cKnowledgeSection state: $state');
 
           if (state is HbA1cIntroLessonLoaded) {
             final lessons = state.lessons;
-            print('🔍 Loaded ${lessons.length} lessons');
 
             // If no lessons, don't show the section
             if (lessons.isEmpty) {
-              print('⚠️ No lessons to display');
               return SizedBox();
             }
 
@@ -121,13 +118,11 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
 
             return _buildLessonsList(lessons);
           } else if (state is HbA1cIntroLessonError) {
-            print('❌ Error loading lessons');
             // Hide when error
             return SizedBox();
           }
 
           // Loading state - show loading indicator
-          print('⏳ Loading lessons...');
           return Container(
             decoration: BoxDecoration(
               color: Colors.white,

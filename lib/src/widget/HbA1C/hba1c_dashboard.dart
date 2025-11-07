@@ -733,14 +733,16 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           children: [
             const SizedBox(height: 0),
             _buildChartContent(state),
-            const SizedBox(height: 8),
-            Divider(height: 1, color: R.color.color0xffE5E5E5),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: _buildAIHelpInner(_aiSuggestion),
-            ),
-            const SizedBox(height: 16),
+            if (_dataPoints.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Divider(height: 1, color: R.color.color0xffE5E5E5),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: _buildAIHelpInner(_aiSuggestion),
+              ),
+              const SizedBox(height: 16),
+            ],
           ],
         ),
       ),
