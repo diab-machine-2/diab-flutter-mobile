@@ -178,7 +178,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                                             foods[index].code ==
                                                     'OtherUneditable'
                                                 ? '${R.string.da_an.tr()} ${formatNumber(((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0)).toDouble())} kcal'
-                                                : '${R.string.da_an.tr()} ${roundAsFixed(((foods[index].portion ?? 0) * (foods[index].quantity ?? 0)).toDouble())} ${foods[index].unit ?? ''}, ${formatNumber(((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0)).toDouble())} kcal',
+                                                : '${R.string.da_an.tr()} ${roundAsFixed(((foods[index].portion ?? 0) * (foods[index].quantity ?? 0)).toDouble())} ${foods[index].unit ?? ''}, ${formatNumber(((foods[index].portion ?? 0) * (foods[index].calorie ?? 0)).toDouble())} kcal',
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontWeight: FontWeight.w400))

@@ -37,7 +37,7 @@ class AddFoodController extends StatefulWidget {
   final String type;
   final String? id;
   final String? timeframeId;
-  AddFoodController({required this.type, this.id,this.timeframeId});
+  AddFoodController({required this.type, this.id, this.timeframeId});
 
   @override
   _AddFoodControllerState createState() => _AddFoodControllerState();
@@ -130,8 +130,10 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     }
     final timeFrames = await FoodClient().fetchFoodTimeFrame(time: time);
     if (widget.timeframeId != null) {
-      if (timeFrames.length > 0 && timeFrames.any((e) => e.id == widget.timeframeId)) {
-        selectedTimeFrame = timeFrames.firstWhere((e) => e.id == widget.timeframeId);
+      if (timeFrames.length > 0 &&
+          timeFrames.any((e) => e.id == widget.timeframeId)) {
+        selectedTimeFrame =
+            timeFrames.firstWhere((e) => e.id == widget.timeframeId);
       }
     }
     if (selectedTimeFrame == null) {
@@ -521,7 +523,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                         selectedFoods[index].code ==
                                                                                 'OtherUneditable'
                                                                             ? '${R.string.da_an.tr()} ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
-                                                                            : '${R.string.da_an.tr()} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
+                                                                            : '${R.string.da_an.tr()} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].portion ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
                                                                         style: TextStyle(
                                                                             color:
                                                                                 R.color.textDark,
