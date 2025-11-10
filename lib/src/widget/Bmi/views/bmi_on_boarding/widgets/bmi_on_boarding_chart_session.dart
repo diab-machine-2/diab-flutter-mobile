@@ -133,7 +133,7 @@ class _InfoHeader extends StatelessWidget {
                         padding: const EdgeInsets.all(4),
                         child: Icon(
                           Icons.arrow_back_ios_rounded,
-                          color: bmiBloc.selectedPointChart == null
+                          color: !bmiBloc.canPreviousPoint
                               ? AppColors.neutral5
                               : AppColors.neutral3,
                           size: 18,
@@ -193,7 +193,7 @@ class _InfoHeader extends StatelessWidget {
                         padding: const EdgeInsets.all(4),
                         child: Icon(
                           Icons.arrow_forward_ios_rounded,
-                          color: bmiBloc.selectedPointChart == null
+                          color: !bmiBloc.canNextPoint
                               ? AppColors.neutral5
                               : AppColors.neutral3,
                           size: 18,
