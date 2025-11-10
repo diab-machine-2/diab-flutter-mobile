@@ -271,12 +271,17 @@ class FoodClient extends FetchClient {
         'note': note,
         'IsGptResult': 'true',
       };
+      final totalCalories = foods.fold(
+          0.0,
+          (sum, food) =>
+              sum +
+              (food.calorie ?? 0).toDouble() * (food.portion ?? 0).toDouble());
       for (int i = 0; i < foods.length; i++) {
         params['foods[$i].id'] = foods[i].id ?? '';
         params['foods[$i].name'] = foods[i].name ?? '';
         params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
         params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
-        params['foods[$i].calorie'] = foods[i].calorie?.toString() ?? '';
+        params['foods[$i].calorie'] = totalCalories.round().toString();
         params['foods[$i].glucose'] = foods[i].glucose?.toString() ?? '';
         params['foods[$i].lipid'] = foods[i].lipid?.toString() ?? '';
         params['foods[$i].protein'] = foods[i].protein?.toString() ?? '';

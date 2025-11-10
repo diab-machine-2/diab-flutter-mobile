@@ -1039,6 +1039,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       final result = await FoodClient().postFoodImages(imagePaths);
       print("API call completed with result: ${result.length} items");
 
+      // Update portion of each item to 1 when uploading with AI
+      final updatedResult =
+          result.map((food) => food.copyWith(quantity: 1.0)).toList();
+
       // Hide analyzing overlay
       if (mounted && !_disposed) {
         try {
@@ -1051,8 +1055,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       }
 
       // Check for unidentified meals
-      if (result.isNotEmpty) {
-        bool hasUnidentifiedMeal = _checkForUnidentifiedMeals(result);
+      if (updatedResult.isNotEmpty) {
+        bool hasUnidentifiedMeal = _checkForUnidentifiedMeals(updatedResult);
 
         if (hasUnidentifiedMeal) {
           BotToast.closeAllLoading(); // Close all toasts including custom text
@@ -1090,7 +1094,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       }
 
       // Navigate to the food detail page with the new food ID
-      if (result.isNotEmpty) {
+      if (updatedResult.isNotEmpty) {
         BotToast.closeAllLoading(); // Close all toasts including custom text
         developer.log(
             '[CAPTURE] FoodImageCapture navigating to confirm_food with files count: ' +
@@ -1102,7 +1106,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
             arguments: {
               'timeframe': widget.timeframe,
               'timeframeId': widget.timeframeId,
-              'foods': result,
+              'foods': updatedResult,
               'files': imagePaths,
             });
       } else {
