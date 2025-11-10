@@ -218,8 +218,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                                 CrossAxisAlignment.end,
                                             children: [
                                               Text(
-                                                formatNumber(
-                                                    _cubit.totalKcalNumber),
+                                                _cubit.totalKcalNumber
+                                                    .round()
+                                                    .toString(),
                                                 style: TextStyle(
                                                   color: R.color.black,
                                                   fontSize: 24,
@@ -429,13 +430,16 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                                 int index) {
                                               final String quantity =
                                                   '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0)}';
-                                              final String kcal = formatNumber(
-                                                  (_cubit.selectedFoods[index]
+                                              final String kcal = ((_cubit
+                                                              .selectedFoods[
+                                                                  index]
                                                               .quantity ??
                                                           0) *
                                                       _cubit
                                                           .selectedFoods[index]
-                                                          .calorie!);
+                                                          .calorie!)
+                                                  .round()
+                                                  .toString();
                                               final String detail =
                                                   '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
                                               return GestureDetector(

@@ -9,7 +9,6 @@ import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_of_category.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -188,7 +187,7 @@ class _CategoryFoodState extends State<CategoryFood>
                                                             EdgeInsets.only(
                                                                 top: 4),
                                                         child: Text(
-                                                            '${R.string.da_chon.tr()} $number ${R.string.khau_phan.tr()}, ${formatNumber(totalCalo)} ${R.string.kcal.tr()}',
+                                                            '${R.string.da_chon.tr()} $number ${R.string.khau_phan.tr()}, ${totalCalo.round()} ${R.string.kcal.tr()}',
                                                             style: TextStyle(
                                                                 color: R.color
                                                                     .black,

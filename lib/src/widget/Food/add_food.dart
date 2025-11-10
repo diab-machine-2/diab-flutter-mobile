@@ -257,7 +257,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: [
-                                            Text(formatNumber(totalKcal),
+                                            Text(totalKcal.round().toString(),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 24,
@@ -522,8 +522,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                     Text(
                                                                         selectedFoods[index].code ==
                                                                                 'OtherUneditable'
-                                                                            ? '${R.string.da_an.tr()} ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
-                                                                            : '${R.string.da_an.tr()} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].portion ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
+                                                                            ? '${R.string.da_an.tr()} ${((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0)).round()} kcal'
+                                                                            : '${R.string.da_an.tr()} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${((selectedFoods[index].portion ?? 0) * (selectedFoods[index].calorie ?? 0)).round()} kcal',
                                                                         style: TextStyle(
                                                                             color:
                                                                                 R.color.textDark,
@@ -874,7 +874,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     } else {
       totalKcal = 0;
       selectedFoods.forEach((element) {
-        totalKcal += (element.calorie ?? 0) * (element.quantity ?? 0);
+        totalKcal += (element.calorie ?? 0) * (element.portion ?? 0);
       });
     }
   }

@@ -163,8 +163,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       selectedFoods = model!.foods;
     } else {
       addTotalCalo = true;
-      totalKcalText = ((model!.foods[index].portion ?? 0) *
-              (model!.foods[index].calorie ?? 0))
+      totalKcalText = ((model!.foods[index].portion ?? 1) *
+              (model!.foods[index].calorie ?? 1))
           .round()
           .toString();
     }
@@ -272,7 +272,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     }
     totalKcal = 0;
     for (final food in selectedFoods) {
-      totalKcal += food.calorie! * (food.portion ?? 0);
+      totalKcal += food.calorie! * (food.quantity ?? 0);
     }
     refresh();
   }
