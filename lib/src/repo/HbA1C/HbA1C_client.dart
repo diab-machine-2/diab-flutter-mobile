@@ -6,6 +6,7 @@ import 'package:medical/src/modal/HbA1C/HbA1C_lastestSumary.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/model/response/config/hba1c_color_config.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -53,7 +54,9 @@ class HbA1CClient extends FetchClient {
       Map<String, String> params = {
         'currentDateTime': currentDateTime.toString(),
         'page': '$page',
-        'size': takeAll ? '1000' : '1000', // Ensure enough data for client-side filtering
+        'size': takeAll
+            ? '1000'
+            : '1000', // Ensure enough data for client-side filtering
       };
 
       // When takeAll is true, use periodFilterType = 3 (24 months) with large size
@@ -272,6 +275,92 @@ class HbA1CClient extends FetchClient {
     } catch (e) {
       print('Error fetching HbA1C trend analysis: $e');
       return null;
+    }
+  }
+
+  // Fetch HbA1C lessons from /App/HbA1C/Lessons
+  Future<List<LessonModel>> fetchHbA1CLessons() async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/HbA1C/Lessons',
+        params: {},
+      );
+
+      print('🔍 HbA1C Lessons API Response: ${response.statusCode}');
+      print('🔍 Response data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        List<dynamic> rawData = [];
+
+        // Check if response has 'data' field
+        if (response.data['data'] != null) {
+          rawData = response.data['data'];
+        } else {
+          rawData = response.data;
+        }
+
+        print('🔍 Raw data count: ${rawData.length}');
+
+        // Print each raw item for debugging
+        for (int i = 0; i < rawData.length; i++) {
+          print(
+              '🔍 Raw item [$i]: ${rawData[i]['name']} (ID: ${rawData[i]['id']})');
+        }
+
+        // Transform HbA1C API format to match LessonModel
+        List<LessonModel> lessons = [];
+        Set<String> seenIds = {}; // Track IDs to prevent duplicates
+
+        for (int i = 0; i < rawData.length; i++) {
+          var item = rawData[i];
+          try {
+            final String itemId = item['id'] ?? '';
+
+            // Skip if duplicate ID
+            if (seenIds.contains(itemId)) {
+              print('⚠️ Skipping duplicate lesson ID: $itemId');
+              continue;
+            }
+            seenIds.add(itemId);
+
+            // Map HbA1C API fields to LessonModel expected fields
+            Map<String, dynamic> transformedItem = {
+              'id': itemId,
+              'name': item['name'] ?? '',
+              'status': item['status'] ?? 1,
+              'type': item['type'] ?? 1,
+              'level': item['lessonLevel'] ?? '', // lessonLevel -> level
+              'module': item['lessonModule'] ?? '', // lessonModule -> module
+              'learningStatus': item['learningStatus'] ?? 0,
+              'percentComplete': item['percentComplete'] ?? 0,
+              'order': item['order'] ?? 0,
+              'levelOrder':
+                  item['orderHighest'] ?? 0, // Use orderHighest as levelOrder
+              'isNew': false, // Default to false if not provided
+              'activeDateTime': 0, // Default to 0 if not provided
+              'description': item['description'],
+              'image': item['image'],
+            };
+
+            final lesson = LessonModel.fromJson(transformedItem);
+            lessons.add(lesson);
+            print('✅ Parsed lesson [$i]: ${lesson.name} (ID: ${lesson.id})');
+          } catch (e) {
+            print('❌ Error parsing lesson item [$i]: $e');
+            print('❌ Item data: $item');
+          }
+        }
+
+        print('🔍 Total lessons parsed: ${lessons.length}');
+        print('🔍 Unique lesson IDs: ${seenIds.length}');
+        return lessons;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      print('❌ Error fetching HbA1C lessons: $e');
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
 }

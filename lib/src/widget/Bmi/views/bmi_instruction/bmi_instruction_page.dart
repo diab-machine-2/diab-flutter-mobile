@@ -113,6 +113,8 @@ class _ThresholdTable extends StatelessWidget {
                             horizontal: 12, vertical: 12),
                         child: Text(
                           R.string.bmi_threshold.tr(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: R.style.boldNormalStyle,
                         )),
                   ),

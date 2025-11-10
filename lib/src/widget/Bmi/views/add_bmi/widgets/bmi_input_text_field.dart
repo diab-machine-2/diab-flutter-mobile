@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/text_styles_extension.dart';
-import 'package:flutter/services.dart';
 
 class BmiInputTextField extends StatelessWidget {
   const BmiInputTextField({

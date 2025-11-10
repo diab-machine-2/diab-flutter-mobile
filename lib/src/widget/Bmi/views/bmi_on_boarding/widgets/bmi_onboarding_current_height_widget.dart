@@ -23,8 +23,11 @@ class BmiOnboardingCurrentHeightWidget extends StatelessWidget {
         buildWhen: (previous, current) =>
             current is BmiGetBmiStatisticalState ||
             (current is BmiDataChangedState &&
-                current.event == BmiDataChangeEvent.heightChanged),
+                current.event == BmiDataChangeEvent.heightChanged) ||
+            current is BmiGetWeightIndexListState,
         builder: (context, state) {
+          if (_bmiBloc.selectedPointChart == null) return const SizedBox();
+
           return InkWell(
             onTap: () {
               BmiHeightInputDialog.show(
@@ -51,6 +54,7 @@ class BmiOnboardingCurrentHeightWidget extends StatelessWidget {
                 children: [
                   Text(
                     R.string.chieuCao.tr(),
+                    maxLines: 1,
                     style: R.style.largeTextStyle,
                   ),
                   const SizedBox(
