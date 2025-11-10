@@ -174,6 +174,15 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   bool get hasModifiedData => _hasModifiedData;
   set hasModifiedData(bool value) => _hasModifiedData = value;
 
+  bool get canNextPoint =>
+      _selectedPointChart != null &&
+      _selectedIndexPointChart != null &&
+      _selectedIndexPointChart! > 0;
+  bool get canPreviousPoint =>
+      _selectedPointChart != null &&
+      _selectedIndexPointChart != null &&
+      _selectedIndexPointChart! < _historicalWeightList.length - 1;
+
   void _onGetInstruction(
     BmiInstructionFetchingEvent event,
     Emitter<BmiState> emit,
