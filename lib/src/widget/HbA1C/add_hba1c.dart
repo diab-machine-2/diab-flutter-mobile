@@ -33,51 +33,49 @@ import '../../utils/navigator_name.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import 'hba1c_result.dto.dart';
 
-/// TextInputFormatter để giới hạn nhập số thập phân với tối đa 1 chữ số sau dấu chấm
 class DecimalTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final String text = newValue.text;
+    String text = newValue.text;
 
-    // Nếu text rỗng, cho phép
     if (text.isEmpty) {
       return newValue;
     }
 
-    // Chỉ cho phép số và dấu chấm
-    final RegExp allowedChars = RegExp(r'^[0-9.]+$');
+    final RegExp allowedChars = RegExp(r'^[0-9.,]+$');
     if (!allowedChars.hasMatch(text)) {
       return oldValue;
     }
 
-    // Đếm số dấu chấm
     final int dotCount = '.'.allMatches(text).length;
+    final int commaCount = ','.allMatches(text).length;
 
-    // Chỉ cho phép 1 dấu chấm
-    if (dotCount > 1) {
+    if (dotCount > 1 || commaCount > 1 || (dotCount > 0 && commaCount > 0)) {
       return oldValue;
     }
 
-    // Nếu có dấu chấm, kiểm tra số chữ số sau dấu chấm
+    text = text.replaceAll(',', '.');
+
     if (text.contains('.')) {
       final int dotIndex = text.indexOf('.');
       final String decimalPart = text.substring(dotIndex + 1);
 
-      // Chỉ cho phép tối đa 1 chữ số sau dấu chấm
       if (decimalPart.length > 1) {
         return oldValue;
       }
     }
 
-    // Giới hạn tổng độ dài tối đa 4 ký tự
     if (text.length > 4) {
       return oldValue;
     }
 
-    return newValue;
+    return TextEditingValue(
+      text: text,
+      selection: newValue.selection,
+    );
   }
 }
 
