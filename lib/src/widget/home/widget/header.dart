@@ -21,10 +21,12 @@ import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 
 import '../../../modal/user/user_model.dart';
+import '../../../modal/home/home_model.dart';
 
 class HomeHeader extends StatefulWidget {
-  const HomeHeader({this.sharedCode});
+  const HomeHeader({this.sharedCode, this.homeModel});
   final String? sharedCode;
+  final HomeModel? homeModel;
   @override
   _HomeHeaderState createState() => _HomeHeaderState();
 }
@@ -207,11 +209,24 @@ class _HomeHeaderState extends State<HomeHeader> with Observer {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                        (user?.tranServicePackageName != null && user?.tranServicePackageName?.isNotEmpty == true)
-                                            ? user?.tranServicePackageName ?? ''
-                                            : (user?.packageName != null && user?.packageName?.isNotEmpty == true)
+                                        (widget.homeModel
+                                                        ?.tranServicePackageName !=
+                                                    null &&
+                                                widget
+                                                        .homeModel
+                                                        ?.tranServicePackageName
+                                                        ?.isNotEmpty ==
+                                                    true)
+                                            ? widget.homeModel
+                                                    ?.tranServicePackageName ??
+                                                ''
+                                            : (user?.packageName != null &&
+                                                    user?.packageName
+                                                            ?.isNotEmpty ==
+                                                        true)
                                                 ? user?.packageName ?? ''
-                                                : R.string.thanh_vien_co_ban.tr(),
+                                                : R.string.thanh_vien_co_ban
+                                                    .tr(),
                                         style: TextStyle(
                                             color: R.color.white,
                                             fontSize: 14,

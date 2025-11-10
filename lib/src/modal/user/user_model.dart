@@ -88,7 +88,6 @@ class UserModel {
   final String? shareRefCode;
   final StatisticData? statistict;
   final bool? sharedProfile;
-  final String? tranServicePackageName;
 
   bool get isUserFree {
     return ownPackage == null;
@@ -195,7 +194,6 @@ class UserModel {
     required this.statistict,
     required this.sharedProfile,
     required this.checked,
-    this.tranServicePackageName,
   });
 
   UserModel copyWith({
@@ -275,7 +273,6 @@ class UserModel {
     StatisticData? statistict,
     bool? sharedProfile,
     bool? Checked,
-    String? tranServicePackageName,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -358,8 +355,6 @@ class UserModel {
         statistict: statistict ?? this.statistict,
         sharedProfile: sharedProfile ?? this.sharedProfile,
         checked: Checked ?? this.checked,
-        tranServicePackageName:
-            tranServicePackageName ?? this.tranServicePackageName,
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -478,7 +473,6 @@ class UserModel {
           ? null
           : StatisticData.fromJson(json['statistict']),
       checked: json['checked'],
-      tranServicePackageName: json['tranServicePackageName'],
     );
   }
 
@@ -639,7 +633,6 @@ class UserModel {
           this.levelOfDiabetesRuleList!.map((v) => v.toJson()).toList();
     }
     data['checked'] = this.checked;
-    data['tranServicePackageName'] = this.tranServicePackageName;
     return data;
   }
 }

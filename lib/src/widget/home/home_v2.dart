@@ -601,7 +601,6 @@ class _HomeControllerState extends State<HomeController>
               _haveInputFoodAlready = dinduongs.isNotEmpty &&
                   dinduongs.first.value1?.isNotEmpty == true &&
                   dinduongs.first.value1 != "--";
-
             }
 
             _haveInputGlucoseAlready = state.model.measurements?.isNotEmpty ==
@@ -747,7 +746,7 @@ class _HomeControllerState extends State<HomeController>
                         end: Alignment.topCenter,
                       ),
                     ),
-                    child: HomeHeader(sharedCode: widget.sharedCode),
+                    child: HomeHeader(sharedCode: widget.sharedCode, homeModel: model),
                   ),
                   Expanded(
                     child: SingleChildScrollView(
