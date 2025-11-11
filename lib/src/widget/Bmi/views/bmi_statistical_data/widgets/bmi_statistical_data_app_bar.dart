@@ -3,20 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
-import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_page.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 
-class BmiStatisticalDataAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const BmiStatisticalDataAppBar({
-    super.key
-  });
+class BmiStatisticalDataAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
+  const BmiStatisticalDataAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
     final BmiBloc bmiBloc = context.read();
-    
+
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
       title: Text(
@@ -34,33 +31,9 @@ class BmiStatisticalDataAppBar extends StatelessWidget implements PreferredSizeW
           onPressed: () {
             NavigationUtil.pop(context);
           }),
-      actions: [
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  NavigatorName.bmiInstructionPage,
-                  arguments: {
-                    BmiInstructionPage.bmiBlocKey: bmiBloc,
-                  },
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text(
-                  R.string.huong_dan.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
-  
+
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

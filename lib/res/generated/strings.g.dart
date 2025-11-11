@@ -1428,4 +1428,5 @@ class Strings {
   String get view_report => 'view_report';
   String get incomplete_activities => 'incomplete_activities';
   String get unknown_meal_image => 'unknown_meal_image';
+  String get no_data_within => 'no_data_within';
 }

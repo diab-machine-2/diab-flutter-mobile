@@ -23,6 +23,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -217,8 +218,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                                 CrossAxisAlignment.end,
                                             children: [
                                               Text(
-                                                formatNumber(
-                                                    _cubit.totalKcalNumber),
+                                                _cubit.totalKcalNumber
+                                                    .round()
+                                                    .toString(),
                                                 style: TextStyle(
                                                   color: R.color.black,
                                                   fontSize: 24,
@@ -427,14 +429,17 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                             itemBuilder: (BuildContext context,
                                                 int index) {
                                               final String quantity =
-                                                  '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0)}';
-                                              final String kcal = formatNumber(
-                                                  (_cubit.selectedFoods[index]
-                                                              .portion ??
+                                                  '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0)}';
+                                              final String kcal = ((_cubit
+                                                              .selectedFoods[
+                                                                  index]
+                                                              .quantity ??
                                                           0) *
                                                       _cubit
                                                           .selectedFoods[index]
-                                                          .calorie!);
+                                                          .calorie!)
+                                                  .round()
+                                                  .toString();
                                               final String detail =
                                                   '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
                                               return GestureDetector(
@@ -803,51 +808,56 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    _showDialogDelete(context);
-                                  },
-                                  child: Container(
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _showDialogDelete(context);
+                                    },
+                                    child: Container(
+                                        height: 48,
+                                        // width: 164,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(200),
+                                            border: Border.all(
+                                                color: R.color.red, width: 2)),
+                                        child: Center(
+                                          child: Text(R.string.xoa_du_lieu.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.red,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600)),
+                                        )),
+                                  ),
+                                ),
+                                GapW(8),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      FocusScope.of(context).unfocus();
+                                      _cubit.editData(widget.id);
+                                    },
+                                    child: Container(
                                       height: 48,
-                                      width: 164,
+                                      // width: 154,
                                       decoration: BoxDecoration(
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          border: Border.all(
-                                              color: R.color.red, width: 2)),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.centerRight,
+                                              colors: [
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
+                                              ])),
                                       child: Center(
-                                        child: Text(R.string.xoa_du_lieu.tr(),
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
-                                                color: R.color.red,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
-                                      )),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    FocusScope.of(context).unfocus();
-                                    _cubit.editData(widget.id);
-                                  },
-                                  child: Container(
-                                    height: 48,
-                                    width: 164,
-                                    decoration: BoxDecoration(
-                                        color: R.color.mainColor,
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                        gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              R.color.greenGradientTop,
-                                              R.color.greenGradientBottom
-                                            ])),
-                                    child: Center(
-                                      child: Text(R.string.save.tr(),
-                                          style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                      ),
                                     ),
                                   ),
                                 ),

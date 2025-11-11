@@ -19,8 +19,12 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
     BmiBloc _bmiBloc = context.read();
 
     return BlocBuilder<BmiBloc, BmiState>(
-        buildWhen: (_, state) => state is BmiGetBmiStatisticalState,
+        buildWhen: (_, state) =>
+            state is BmiGetBmiStatisticalState ||
+            state is BmiGetWeightIndexListState,
         builder: (context, state) {
+          if (_bmiBloc.selectedPointChart == null) return const SizedBox();
+
           Color? thresholdColor = _bmiBloc.bmiStatistical?.color;
 
           return Container(
@@ -92,7 +96,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                         style: R.style.normalTextStyle.neutral3,
                         children: [
                           TextSpan(
-                            text: "${_bmiBloc.lowestBmi}",
+                            text: "${_bmiBloc.lowestBmi ?? "--"}",
                             style: R.style.boldNormalStyle,
                           )
                         ])),
@@ -101,7 +105,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                         style: R.style.normalTextStyle.neutral3,
                         children: [
                           TextSpan(
-                            text: "${_bmiBloc.highestBmi}",
+                            text: "${_bmiBloc.highestBmi ?? "--"}",
                             style: R.style.boldNormalStyle,
                           )
                         ]))

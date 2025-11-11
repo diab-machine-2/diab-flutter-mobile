@@ -246,6 +246,7 @@ class FoodClient extends FetchClient {
         params['foods[$i].id'] = foods[i].id ?? '';
         params['foods[$i].portion'] =
             foods[i].portion != null ? foods[i].portion.toString() : '1';
+        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '';
       }
       final response = await super
           .postHttp(path: '/App/Diet/Input', params: params, files: files);
@@ -270,12 +271,17 @@ class FoodClient extends FetchClient {
         'note': note,
         'IsGptResult': 'true',
       };
+      final totalCalories = foods.fold(
+          0.0,
+          (sum, food) =>
+              sum +
+              (food.calorie ?? 0).toDouble() * (food.portion ?? 0).toDouble());
       for (int i = 0; i < foods.length; i++) {
         params['foods[$i].id'] = foods[i].id ?? '';
         params['foods[$i].name'] = foods[i].name ?? '';
-        params['foods[$i].portion'] = foods[i].portion?.toString() ?? '';
+        params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
         params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
-        params['foods[$i].calorie'] = foods[i].calorie?.toString() ?? '';
+        params['foods[$i].calorie'] = totalCalories.round().toString();
         params['foods[$i].glucose'] = foods[i].glucose?.toString() ?? '';
         params['foods[$i].lipid'] = foods[i].lipid?.toString() ?? '';
         params['foods[$i].protein'] = foods[i].protein?.toString() ?? '';
@@ -284,7 +290,7 @@ class FoodClient extends FetchClient {
         params['foods[$i].text'] = foods[i].text ?? '';
         params['foods[$i].description'] = foods[i].description ?? '';
         params['foods[$i].foodCategoryId'] = foods[i].foodCategoryId ?? '';
-        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '';
+        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '1';
         params['foods[$i].mealId'] = foods[i].mealId ?? '';
         params['foods[$i].timeCode'] = foods[i].timeCode?.toString() ?? '';
         params['foods[$i].foodMenuCode'] = foods[i].foodMenuCode ?? '';
