@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +15,7 @@ import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_app_bar.dar
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_note_session.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_waist_circumference_input_session.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/add_bmi_weight_input_session.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_exit_confirm_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_input_waist_confirm_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
@@ -19,7 +23,9 @@ import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 import 'package:medical/src/widgets/custom_dialog.dart';
 
 class AddBmiPage extends StatefulWidget {
-  const AddBmiPage({super.key});
+  const AddBmiPage({super.key, this.goalId});
+
+  final String? goalId;
 
   @override
   State<AddBmiPage> createState() => _AddBmiPageState();
@@ -32,11 +38,16 @@ class _AddBmiPageState extends State<AddBmiPage> {
   late BmiInputBloc _bmiInputBloc;
   late BmiBloc _bmiBloc;
 
+  bool _canPop = false;
+
   @override
   void initState() {
     super.initState();
     _bmiInputBloc = context.read();
     _bmiBloc = context.read();
+    if (widget.goalId != null) {
+      _bmiInputBloc.goalId = widget.goalId;
+    }
   }
 
   @override
@@ -57,44 +68,55 @@ class _AddBmiPageState extends State<AddBmiPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.glucose_bg_color,
-      resizeToAvoidBottomInset: true,
-      appBar: const AddBmiAppBar(),
-      body: BlocListener<BmiInputBloc, BmiInputState>(
-        listener: _handleListener,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AddBmiWeightInputSession(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    const AddBmiWaistCircumferenceInputSession(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    const AddBmiNoteSession(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    _Seperator(),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    _ConnectToHealthConnectButton()
-                  ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (_bmiInputBloc.weight > 0 || _bmiInputBloc.waist > 0) {
+          var result = await BmiExitConfirmDialog.show(context);
+          return Future.value(result);
+        }
+        return Future.value(true);
+      },
+      child: Scaffold(
+        backgroundColor: R.color.glucose_bg_color,
+        resizeToAvoidBottomInset: true,
+        appBar: const AddBmiAppBar(),
+        body: BlocListener<BmiInputBloc, BmiInputState>(
+          listener: _handleListener,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AddBmiWeightInputSession(
+                        autoFocus: true,
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      const AddBmiWaistCircumferenceInputSession(),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      const AddBmiNoteSession(),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      _Seperator(),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      _ConnectToHealthConnectButton()
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const _SaveButton()
-          ],
+              const _SaveButton()
+            ],
+          ),
         ),
       ),
     );
@@ -117,18 +139,13 @@ class _AddBmiPageState extends State<AddBmiPage> {
       );
     } else if (state is BmiInputSubmitedState) {
       if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else if (state.result.isSuccess) {
-        CustomDialog.hideLoadingDialog(context);
-        CustomDialog.showSuccessDialog(
-          context,
-          onPrimaryButtonTap: () {
-            _bmiBloc.hasModifiedData = true;
-            _redirectToNextStep(state.result.data!);
-          },
-        );
+        BotToast.closeAllLoading();
+        _bmiBloc.hasModifiedData = true;
+        _redirectToNextStep(state.result.data!);
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         CustomDialog.showErrorDialog(
           context,
           message: state.result.error.toString(),
@@ -203,7 +220,9 @@ class _ConnectToHealthConnectButton extends StatelessWidget {
         child: Row(
           children: [
             Image.asset(
-              R.drawable.logo_healthConnect,
+              Platform.isIOS
+                  ? R.drawable.logo_healthkit
+                  : R.drawable.logo_healthConnect,
               width: AppMediaQuery.deviceWidth * 0.15,
             ),
             const SizedBox(

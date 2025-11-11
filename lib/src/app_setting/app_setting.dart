@@ -494,6 +494,7 @@ class AppSettings {
             .pushReplacementNamed(NavigatorName.step_list);
       }
       userInfo = null;
+      appPreference.setData(Const.hasInputedWaist, false);
       await FetchClient().checkNetwork();
       await RevenueCatService.logout();
       await LoginClient().logout();

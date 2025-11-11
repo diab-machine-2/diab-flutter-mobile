@@ -33,6 +33,52 @@ import '../../utils/navigator_name.dart';
 import '../../widgets/CalendarPicker/custom_date_picker.dart';
 import 'hba1c_result.dto.dart';
 
+class DecimalTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String text = newValue.text;
+
+    if (text.isEmpty) {
+      return newValue;
+    }
+
+    final RegExp allowedChars = RegExp(r'^[0-9.,]+$');
+    if (!allowedChars.hasMatch(text)) {
+      return oldValue;
+    }
+
+    final int dotCount = '.'.allMatches(text).length;
+    final int commaCount = ','.allMatches(text).length;
+
+    if (dotCount > 1 || commaCount > 1 || (dotCount > 0 && commaCount > 0)) {
+      return oldValue;
+    }
+
+    text = text.replaceAll(',', '.');
+
+    if (text.contains('.')) {
+      final int dotIndex = text.indexOf('.');
+      final String decimalPart = text.substring(dotIndex + 1);
+
+      if (decimalPart.length > 1) {
+        return oldValue;
+      }
+    }
+
+    if (text.length > 4) {
+      return oldValue;
+    }
+
+    return TextEditingValue(
+      text: text,
+      selection: newValue.selection,
+    );
+  }
+}
+
 class AddHBA1CController extends StatefulWidget {
   final String? type;
   final String? id;
@@ -381,7 +427,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                   setState(() {});
                 },
                 textAlign: TextAlign.center,
-                inputFormatters: [],
+                inputFormatters: [DecimalTextInputFormatter()],
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 style: TextStyle(
                     color: R.color.black,

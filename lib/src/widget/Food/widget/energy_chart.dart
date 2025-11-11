@@ -266,7 +266,7 @@ class EnergyChartState extends State<EnergyChart>
                                   Image.asset(R.drawable.ic_bat,
                                       width: 24, height: 24),
                                   const SizedBox(width: 4),
-                                  Text(formatNumber(model.total),
+                                  Text(model.total!.round().toString(),
                                       style: TextStyle(
                                           fontFamily: 'Viga',
                                           color: R.color.black,

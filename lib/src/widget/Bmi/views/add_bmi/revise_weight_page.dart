@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -104,18 +107,13 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
       );
     } else if (state is BmiInputSubmitedState) {
       if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else if (state.result.isSuccess) {
-        CustomDialog.hideLoadingDialog(context);
-        CustomDialog.showSuccessDialog(
-          context,
-          onPrimaryButtonTap: () {
-            _bmiBloc.hasModifiedData = true;
-            _redirectToNextStep(state.result.data!);
-          },
-        );
+        BotToast.closeAllLoading();
+        _bmiBloc.hasModifiedData = true;
+        _redirectToNextStep(state.result.data!);
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         CustomDialog.showErrorDialog(
           context,
           message: state.result.error.toString(),
@@ -123,18 +121,13 @@ class _ReviseWeightPageState extends State<ReviseWeightPage> {
       }
     } else if (state is BmiInputRecordDeletedState) {
       if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else if (state.result.isSuccess) {
-        CustomDialog.hideLoadingDialog(context);
-        CustomDialog.showSuccessDialog(
-          context,
-          onPrimaryButtonTap: () {
-            _bmiBloc.hasModifiedData = true;
-            Navigator.pop(context, true);
-          },
-        );
+        BotToast.closeAllLoading();
+        _bmiBloc.hasModifiedData = true;
+        Navigator.pop(context, true);
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
         CustomDialog.showErrorDialog(
           context,
           message: state.result.error.toString(),
@@ -181,10 +174,12 @@ class _ActionButtons extends StatelessWidget {
           children: [
             Expanded(
               child: OutlinedRoundedButton(
-                title: R.string.delete.tr(),
+                title: R.string.xoa_du_lieu.tr(),
+                highlighButton: true,
                 onPressed: () {
                   CustomDialog.showDeleteConfirmDialog(
                     context,
+                    title: R.string.ban_muon_xoa_du_lieu.tr(),
                     message: R.string.confirm_to_remove_data.tr(),
                     onPrimaryButtonTap: () {
                       _bmiInputBloc.deleteWeightRecord();
@@ -232,7 +227,9 @@ class _ConnectToHealthConnectButton extends StatelessWidget {
         child: Row(
           children: [
             Image.asset(
-              R.drawable.logo_healthConnect,
+              Platform.isIOS
+                  ? R.drawable.logo_healthkit
+                  : R.drawable.logo_healthConnect,
               width: AppMediaQuery.deviceWidth * 0.15,
             ),
             const SizedBox(

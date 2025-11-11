@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:camera/camera.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -278,7 +279,11 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       HapticFeedback.mediumImpact();
 
       // Auto-open gallery after capture
-      await _openGalleryPicker();
+      final String? recentAssetId = await _getMostRecentImageAssetId();
+      await _openGalleryPicker(
+        initialFilePath: imageFile.path,
+        initialAssetId: recentAssetId,
+      );
     } catch (e) {
       if (mounted) {
         _showErrorDialog('Lỗi khi chụp ảnh: $e');
@@ -925,7 +930,26 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     }
   }
 
-  Future<void> _openGalleryPicker() async {
+  Future<String?> _getMostRecentImageAssetId() async {
+    try {
+      final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
+        type: RequestType.image,
+        onlyAll: true,
+      );
+      if (albums.isEmpty) return null;
+      final AssetPathEntity recent = albums.first;
+      final List<AssetEntity> assets =
+          await recent.getAssetListPaged(page: 0, size: 1);
+      if (assets.isEmpty) return null;
+      return assets.first.id;
+    } catch (e) {
+      print('Error fetching most recent image asset id: $e');
+      return null;
+    }
+  }
+
+  Future<void> _openGalleryPicker(
+      {String? initialFilePath, String? initialAssetId}) async {
     try {
       // Safely dispose camera with proper error handling
       await _safeDisposeCamera();
@@ -937,11 +961,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           builder: (context) => FoodGalleryPicker(
             timeframe: widget.timeframe,
             timeframeId: widget.timeframeId,
+            initialSelectedFilePath: initialFilePath,
+            initialSelectedAssetId: initialAssetId,
           ),
         ),
       );
 
       if (selectedImages != null && selectedImages.isNotEmpty) {
+        developer.log(
+            '[CAPTURE] FoodImageCapture received filePaths count: ' +
+                selectedImages.length.toString() +
+                ', paths: ' +
+                selectedImages.join(', '),
+            name: '[CAPTURE]');
         // Process selected images
         await _processSelectedImages(selectedImages);
       } else {
@@ -1007,6 +1039,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       final result = await FoodClient().postFoodImages(imagePaths);
       print("API call completed with result: ${result.length} items");
 
+      // Update portion of each item to 1 when uploading with AI
+      final updatedResult =
+          result.map((food) => food.copyWith(quantity: 1.0)).toList();
+
       // Hide analyzing overlay
       if (mounted && !_disposed) {
         try {
@@ -1019,8 +1055,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       }
 
       // Check for unidentified meals
-      if (result.isNotEmpty) {
-        bool hasUnidentifiedMeal = _checkForUnidentifiedMeals(result);
+      if (updatedResult.isNotEmpty) {
+        bool hasUnidentifiedMeal = _checkForUnidentifiedMeals(updatedResult);
 
         if (hasUnidentifiedMeal) {
           BotToast.closeAllLoading(); // Close all toasts including custom text
@@ -1058,13 +1094,19 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       }
 
       // Navigate to the food detail page with the new food ID
-      if (result.isNotEmpty) {
+      if (updatedResult.isNotEmpty) {
         BotToast.closeAllLoading(); // Close all toasts including custom text
+        developer.log(
+            '[CAPTURE] FoodImageCapture navigating to confirm_food with files count: ' +
+                imagePaths.length.toString() +
+                ', paths: ' +
+                imagePaths.join(', '),
+            name: '[CAPTURE]');
         Navigator.pushReplacementNamed(context, NavigatorName.confirm_food,
             arguments: {
               'timeframe': widget.timeframe,
               'timeframeId': widget.timeframeId,
-              'foods': result,
+              'foods': updatedResult,
               'files': imagePaths,
             });
       } else {

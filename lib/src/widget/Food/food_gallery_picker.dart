@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 import 'dart:typed_data';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,11 +15,17 @@ class FoodGalleryPicker extends StatefulWidget {
     required this.timeframe,
     required this.timeframeId,
     this.onImagesSelected,
+    this.initialSelectedFilePath,
+    this.initialSelectedAssetId,
   }) : super(key: key);
 
   final String timeframe;
   final String timeframeId;
   final Function(List<String>)? onImagesSelected;
+  // When provided, the gallery will pre-select the asset that matches this file path once
+  final String? initialSelectedFilePath;
+  // Prefer selecting by asset ID when available (more reliable than file path)
+  final String? initialSelectedAssetId;
 
   @override
   State<FoodGalleryPicker> createState() => _FoodGalleryPickerState();
@@ -30,7 +37,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   bool _isLoading = true;
   bool _hasPermission = false;
   final int _maxSelection = 5;
-  bool _didAutoSelectMostRecent = false;
+  bool _didApplyInitialSelectedPath = false;
 
   // Pagination variables
   final ScrollController _scrollController = ScrollController();
@@ -43,6 +50,10 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   final Map<String, Future<Uint8List?>> _thumbnailFutures =
       <String, Future<Uint8List?>>{};
 
+  // Flag to prevent infinite retries when gallery is empty
+  bool _hasCheckedEmptyGallery = false;
+  bool _isDisposed = false;
+
   @override
   void initState() {
     super.initState();
@@ -52,6 +63,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
   @override
   void dispose() {
+    _isDisposed = true;
     _scrollController.dispose();
     // Clear thumbnail cache to free memory
     PhotoManager.clearFileCache();
@@ -66,7 +78,10 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   }
 
   Future<void> _requestPermissionAndLoadPhotos() async {
+    if (_isDisposed || !mounted) return;
+
     try {
+      if (!mounted) return;
       setState(() {
         _isLoading = true; // show loading while resolving permission
       });
@@ -77,11 +92,14 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           await PhotoManager.requestPermissionExtend();
       print('Permission state after request: $currentState');
 
+      if (_isDisposed || !mounted) return;
+
       // On Android 13+, sometimes permission state is incorrectly reported as denied
       // even when permission is actually granted. Let's try to access photos directly.
       await _tryLoadPhotosDirectly();
     } catch (e) {
       print('Error in permission process: $e');
+      if (!mounted) return;
       setState(() {
         _hasPermission = false;
         _isLoading = false;
@@ -90,6 +108,8 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   }
 
   Future<void> _tryLoadPhotosDirectly() async {
+    if (_isDisposed || !mounted) return;
+
     try {
       print('Attempting to load photos directly...');
 
@@ -104,23 +124,54 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
       if (albums.isNotEmpty) {
         print('Successfully accessed photos - permission is actually granted');
+        if (!mounted) return;
         setState(() {
           _hasPermission = true;
           _isLoading = false;
         });
         _recentAlbum = albums.first;
+
+        // Check if album has any photos before trying to load
+        final int assetCount = await _recentAlbum!.assetCountAsync;
+        print('Album has $assetCount photos');
+
+        if (assetCount == 0) {
+          // Gallery is empty - stop retrying
+          print('Gallery is empty - no photos to load');
+          if (!mounted) return;
+          setState(() {
+            _recentPhotos = [];
+            _isLoading = false;
+            _hasPermission = true; // Permission is granted, just no photos
+            _hasCheckedEmptyGallery = true;
+          });
+          return;
+        }
+
         await _loadPhotosPage(0, isInitialLoad: true);
       } else {
         print('No albums found - permission might actually be denied');
-        await _handlePermissionDenied();
+        if (!_hasCheckedEmptyGallery) {
+          await _handlePermissionDenied();
+        }
       }
     } catch (e) {
       print('Error accessing photos directly: $e');
-      await _handlePermissionDenied();
+      if (!mounted) return;
+      // Only retry if we haven't already checked for empty gallery
+      if (!_hasCheckedEmptyGallery) {
+        await _handlePermissionDenied();
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   Future<void> _handlePermissionDenied() async {
+    if (_isDisposed || !mounted || _hasCheckedEmptyGallery) return;
+
     print('Handling permission denied state...');
 
     // Try one more permission request
@@ -128,6 +179,8 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       final PermissionState permission =
           await PhotoManager.requestPermissionExtend();
       print('Final permission request result: $permission');
+
+      if (_isDisposed || !mounted) return;
 
       if (permission == PermissionState.authorized ||
           permission == PermissionState.limited ||
@@ -140,6 +193,8 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       print('Error in final permission request: $e');
     }
 
+    if (_isDisposed || !mounted) return;
+
     // If we get here, permission is truly denied
     setState(() {
       _hasPermission = false;
@@ -148,7 +203,10 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   }
 
   Future<void> _loadRecentPhotos() async {
+    if (_isDisposed || !mounted) return;
+
     try {
+      if (!mounted) return;
       setState(() {
         _isLoading = true;
         _currentPage = 0;
@@ -168,34 +226,55 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       if (albums.isNotEmpty) {
         _recentAlbum = albums.first;
         print('Using album: ${_recentAlbum!.name}');
+
+        // Check if album has photos
+        final int assetCount = await _recentAlbum!.assetCountAsync;
+        if (assetCount == 0) {
+          if (!mounted) return;
+          setState(() {
+            _recentPhotos = [];
+            _isLoading = false;
+            _hasCheckedEmptyGallery = true;
+          });
+          return;
+        }
+
         await _loadPhotosPage(0, isInitialLoad: true);
       } else {
         print('No albums found - this might indicate permission issues');
+        if (!mounted) return;
         setState(() {
           _recentPhotos = [];
           _isLoading = false;
         });
 
         // If no albums found, it might be a permission issue
-        // Try to request permission again
-        await _handlePermissionDenied();
+        // Try to request permission again only if we haven't checked for empty gallery
+        if (!_hasCheckedEmptyGallery) {
+          await _handlePermissionDenied();
+        }
       }
     } catch (e) {
       print('Error loading photos: $e');
+      if (!mounted) return;
       setState(() {
         _recentPhotos = [];
         _isLoading = false;
       });
 
       // If there's an error loading photos, it might be permission related
-      await _handlePermissionDenied();
+      // Only retry if we haven't already checked for empty gallery
+      if (!_hasCheckedEmptyGallery) {
+        await _handlePermissionDenied();
+      }
     }
   }
 
   Future<void> _loadPhotosPage(int page, {bool isInitialLoad = false}) async {
-    if (_recentAlbum == null) return;
+    if (_recentAlbum == null || _isDisposed || !mounted) return;
 
     try {
+      if (!mounted) return;
       if (isInitialLoad) {
         setState(() {
           _isLoading = true;
@@ -211,6 +290,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         size: _pageSize,
       );
 
+      if (!mounted) return;
       setState(() {
         if (isInitialLoad) {
           _recentPhotos = photos;
@@ -223,18 +303,56 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         _hasMorePhotos = photos.length == _pageSize;
       });
 
-      // Auto-select the most recent captured image once (only on initial load)
+      // Prefer pre-select by asset ID if provided
       if (isInitialLoad &&
-          !_didAutoSelectMostRecent &&
-          _selectedImages.isEmpty &&
-          photos.isNotEmpty) {
-        setState(() {
-          _selectedImages.add(photos.first.id);
-          _didAutoSelectMostRecent = true;
-        });
+          !_didApplyInitialSelectedPath &&
+          widget.initialSelectedAssetId != null &&
+          widget.initialSelectedAssetId!.isNotEmpty) {
+        final matching =
+            photos.where((e) => e.id == widget.initialSelectedAssetId);
+        if (matching.isNotEmpty) {
+          final match = matching.first;
+          if (!_selectedImages.contains(match.id) &&
+              _selectedImages.length < _maxSelection) {
+            if (!mounted) return;
+            setState(() {
+              _selectedImages.add(match.id);
+              _didApplyInitialSelectedPath = true;
+            });
+          }
+        }
+      }
+
+      // Only pre-select if a specific file path was provided by the caller
+      if (isInitialLoad &&
+          !_didApplyInitialSelectedPath &&
+          widget.initialSelectedFilePath != null &&
+          widget.initialSelectedFilePath!.isNotEmpty) {
+        try {
+          // Attempt to find the photo matching the given file path within the currently loaded page
+          for (final asset in photos) {
+            if (_isDisposed || !mounted) return;
+            final File? assetFile = await asset.file;
+            if (assetFile != null &&
+                assetFile.path == widget.initialSelectedFilePath) {
+              if (!_selectedImages.contains(asset.id) &&
+                  _selectedImages.length < _maxSelection) {
+                if (!mounted) return;
+                setState(() {
+                  _selectedImages.add(asset.id);
+                  _didApplyInitialSelectedPath = true;
+                });
+              }
+              break;
+            }
+          }
+        } catch (e) {
+          // Ignore errors; user can select manually
+        }
       }
     } catch (e) {
       print('Error loading photos page: $e');
+      if (!mounted) return;
       setState(() {
         if (isInitialLoad) {
           _isLoading = false;
@@ -276,13 +394,12 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           // Reload recent photos to include the new capture
           await _loadRecentPhotos();
 
-          if (saved != null) {
+          if (saved != null && mounted) {
             setState(() {
               if (!_selectedImages.contains(saved.id) &&
                   _selectedImages.length < _maxSelection) {
                 _selectedImages.add(saved.id);
               }
-              _didAutoSelectMostRecent = true;
             });
           }
         } catch (e) {
@@ -297,6 +414,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   }
 
   void _toggleImageSelection(String imageId) {
+    if (!mounted) return;
     setState(() {
       if (_selectedImages.contains(imageId)) {
         _selectedImages.remove(imageId);
@@ -311,16 +429,87 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
   void _confirmSelection() async {
     if (_selectedImages.isNotEmpty) {
-      // Convert photo IDs to file paths for the callback
+      // Convert selected asset IDs to real file paths, robust on iOS
       List<String> filePaths = [];
       for (String photoId in _selectedImages) {
-        final photo = _recentPhotos.firstWhere((p) => p.id == photoId);
-        final File? file = await photo.file;
-        if (file != null) {
-          filePaths.add(file.path);
+        try {
+          AssetEntity? entity = await AssetEntity.fromId(photoId);
+          if (entity == null) {
+            // Fallback to local list if available
+            try {
+              entity = _recentPhotos.firstWhere((p) => p.id == photoId);
+            } catch (_) {}
+          }
+          if (entity != null) {
+            // On iOS, copy file to persistent location to avoid temporary paths
+            // On Android, use the file path directly if it's already accessible
+            if (Platform.isIOS) {
+              // Get original bytes to ensure we have the full quality image
+              Uint8List? imageBytes;
+              try {
+                imageBytes = await entity.originBytes;
+              } catch (e) {
+                developer.log('[CAPTURE] iOS: Failed to get originBytes: $e',
+                    name: '[CAPTURE]');
+              }
+
+              // Fallback: try to get file and read bytes
+              if (imageBytes == null) {
+                try {
+                  File? tempFile = await entity.originFile;
+                  tempFile ??= await entity.file;
+                  if (tempFile != null && await tempFile.exists()) {
+                    imageBytes = await tempFile.readAsBytes();
+                  }
+                } catch (e) {
+                  developer.log('[CAPTURE] iOS: Failed to read file bytes: $e',
+                      name: '[CAPTURE]');
+                }
+              }
+
+              if (imageBytes != null) {
+                // Save to temporary directory with a unique name
+                final tempDir = Directory.systemTemp;
+                final timestamp = DateTime.now().millisecondsSinceEpoch;
+                final fileName =
+                    'DiaB_Food_${timestamp}_${photoId.substring(0, photoId.length > 8 ? 8 : photoId.length)}.jpg';
+                final savedFile = File('${tempDir.path}/$fileName');
+                await savedFile.writeAsBytes(imageBytes);
+
+                developer.log(
+                    '[CAPTURE] iOS: Copied asset to persistent path: ${savedFile.path}',
+                    name: '[CAPTURE]');
+
+                if (await savedFile.exists()) {
+                  filePaths.add(savedFile.path);
+                }
+              } else {
+                developer.log(
+                    '[CAPTURE] iOS: Failed to get bytes for asset: $photoId',
+                    name: '[CAPTURE]');
+              }
+            } else {
+              // Android: Use file path directly
+              File? file = await entity.originFile;
+              file ??= await entity.file;
+              if (file != null && await file.exists()) {
+                filePaths.add(file.path);
+              }
+            }
+          }
+        } catch (e) {
+          developer.log('[CAPTURE] Error processing asset $photoId: $e',
+              name: '[CAPTURE]');
+          // Skip this asset if it cannot be resolved
         }
       }
 
+      developer.log(
+          '[CAPTURE] Gallery confirm filePaths count: ' +
+              filePaths.length.toString() +
+              ', paths: ' +
+              filePaths.join(', '),
+          name: '[CAPTURE]');
       widget.onImagesSelected?.call(filePaths);
       Navigator.pop(context, filePaths);
     } else {
