@@ -399,7 +399,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   map: {
                                     "food": widget.model!.copyWith(
                                       portion: quantity,
-                                      quantity: quantity,
+                                      quantity: widget.model?.portion ?? 1,
                                       mealId: widget.selectedModel?.mealId ??
                                           widget.model!.mealId,
                                     ),

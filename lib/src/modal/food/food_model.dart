@@ -54,7 +54,13 @@ class FoodModel {
       name: json['name'],
       code: json['code'],
       portion: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
-      unit: json['unit'],
+      unit: json['unit'] != null && json['unit'].toString().isNotEmpty
+          ? (() {
+              final unitStr = json['unit'].toString();
+              return unitStr[0].toUpperCase() +
+                  (unitStr.length > 1 ? unitStr.substring(1) : '');
+            })()
+          : json['unit'],
       calorie: json['calorie'] == null
           ? (json['caloValue'] == null
               ? (json['caloriesPerUnit'] == null
