@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NoticeChangePage extends StatelessWidget {
@@ -34,7 +35,7 @@ class NoticeChangePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: gradientColor == true
                 ? BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -53,12 +54,25 @@ class NoticeChangePage extends StatelessWidget {
                   ),
             child: Column(
               children: [
-                const SizedBox(height: 4),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4, bottom: 24),
-                  child: Image.asset(R.drawable.img_upgrade_package,
-                      width: 155, height: 150),
+                // Padding(
+                //   padding: const EdgeInsets.only(top: 4, bottom: 24),
+                //   child: Image.asset(R.drawable.img_upgrade_package,
+                //       width: 155, height: 150),
+                // ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    InkWell(
+                      onTap: () => NavigationUtil.pop(context),
+                      child: Icon(
+                        Icons.close,
+                        color: R.color.textDark,
+                        size: 24,
+                      ),
+                    ),
+                  ],
                 ),
+                GapH(16),
                 Text(
                   title ?? R.string.confirm_change.tr(),
                   style: TextStyle(
@@ -68,17 +82,21 @@ class NoticeChangePage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: isShowTextHtml == true ? 6 : 20),
-                if(isShowTextHtml == true)
+                if (isShowTextHtml == true)
                   Html(
                     data: htmlText ?? '',
-                    style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
+                    style: {
+                      "body": Style(
+                          padding: EdgeInsets.zero, margin: EdgeInsets.zero),
+                    },
                     onLinkTap: (url, context, attributes, element) async {
                       await canLaunch(url!)
-                          ? await launch(url, forceSafariVC: false, forceWebView: false)
+                          ? await launch(url,
+                              forceSafariVC: false, forceWebView: false)
                           : throw 'Could not launch $url';
                     },
                   )
-                else 
+                else
                   Text(
                     description,
                     style: TextStyle(
@@ -86,7 +104,7 @@ class NoticeChangePage extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                       color: R.color.textDark,
                     ),
-                    maxLines: 3,
+                    // maxLines: 3,
                     textAlign: TextAlign.center,
                   ),
                 SizedBox(height: isShowTextHtml == true ? 8 : 20),
@@ -97,12 +115,12 @@ class NoticeChangePage extends StatelessWidget {
                         flex: 1,
                         child: ButtonWidget(
                           title: negativeButtonTitle ?? R.string.cancel.tr(),
-                          backgroundColor: R.color.grayBorder,
-                          textColor: R.color.textDark,
+                          backgroundColor: R.color.color0xffDCFFFC,
+                          textColor: R.color.greenGradientBottom,
                           height: 43,
                           onPressed: () => NavigationUtil.pop(context),
                         )),
-                    const SizedBox(width: 15),
+                    const SizedBox(width: 16),
                     Expanded(
                       flex: 1,
                       child: ButtonWidget(

@@ -194,7 +194,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  color: R.color.white,
+                  color: R.color.backgroundColorNew,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [

@@ -676,7 +676,7 @@ lesson_not_unlock_yet,Chưa mở khoá,Locked,
 lesson_can_not_learn,Không được học,Unvailble,
 exercise_done,Chúc mừng bạn hoàn thành bài tập của ngày hôm nay!,Congratulations on completing today's exercise!,
 joining,Đang tham gia,Joining,
-ask_for_change_roadmap,"Bạn đang học {}, bạn có chắc muốn đổi lộ trình khác không?","You are working on {}, are you sure you want to change the route?",
+ask_for_change_roadmap,"Bạn đang tham gia ""{}"", tiến trình hiện tại sẽ không được lưu lại. Bạn có chắc muốn thay đổi lộ trình vận động mới?","You are joining on ""{}"", current progress will not be saved. Are you sure you want to change to new roadmap?",
 road_map_changed,Bạn đã chọn {}. Lộ trình bao gồm {} bài học.,You have selected {}. the route includes {} lessons.,
 lesson_empty_no_filter,Tuần này bạn không có bài học nào!,No lessons this week!,
 lesson_empty_no_filter_description,Hãy dành thời gian nghỉ ngơi và thư giãn nhé!,Take your time to rest and relax!,
@@ -1379,4 +1379,6 @@ please_select_at_least_one_image,Vui lòng chọn ít nhất 1 ảnh,Please sele
 max_image_select_dynamic,Chỉ được chọn tối đa {} ảnh,Only up to {} photos can be selected,
 incomplete_activities,Hoạt động chưa hoàn thành,Incomplete activities,
 unknown_meal_image,"Không thể xác định món ăn. Vui lòng thử lại.","Cannot identify meal from image. Please try again.",
-no_data_within,Không có dữ liệu\ntrong {} ngày gần nhất,No data\nwithin {} latest days
+no_data_within,Không có dữ liệu\ntrong {} ngày gần nhất,No data\nwithin {} latest days,
+change,Thay đổi,Change,
+change_roadmap,Thay đổi lộ trình,Change roadmap
