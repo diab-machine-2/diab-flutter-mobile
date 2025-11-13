@@ -9,6 +9,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 
 import '../../../../app_setting/app_setting.dart';
+import '../../../../repo/home/home_client.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import 'exercise_tab.dart';
@@ -56,7 +57,9 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     return exerciseMovementResponse?.getExerciseFromDayInWeek(week: week!, dayIndex: dayIndex)?.completionStatus;
   }
 
-  List<DayInWeekData> get dayInWeekList => exerciseMovementResponse?.dayInWeekList ?? [];
+  List<DayInWeekData> get dayInWeekList => exerciseMovementResponse?.dayInWeekList ?? []; 
+
+  String roadMapName = '';
 
   void onSelectWeek(int newIndex) {
     currentWeekIndex = newIndex;
@@ -77,8 +80,19 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     emit(const ExerciseTabLoading());
     roadmapId = newRoadmapId;
     await myPlanCubit.getCurrentUserInfo();
-    await onRefresh(isRefresh: true); 
-  //  await getExerciseMovement();
+    // Fetch updated home data to get the new roadMapName
+    try {
+      final homeClient = HomeClient();
+      final homeModel = await homeClient.fetchHomes();
+      roadMapName = homeModel.roadMapName ?? '';
+      // Save the updated home data to cache
+      await AppSettings.saveHome(homeModel.toJson());
+    } catch (e) {
+      // If fetch fails, fallback to reading from cache
+      roadMapName = await getRoadMapName();
+    }
+    await onRefresh(isRefresh: true);
+    //  await getExerciseMovement();
   }
 
   Future<void> onRefresh({bool isRefresh = false, bool keepSelectedDayIndex = false}) async {
@@ -86,9 +100,15 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     getExerciseMovement(isRefresh: isRefresh, keepSelectedDayIndex: keepSelectedDayIndex);
   }
 
+  Future<String> getRoadMapName() async {
+    final homeModel = await AppSettings.getHome();
+    return homeModel?.roadMapName ?? '';
+  }
+
   Future<void> initData() async {
     await myPlanCubit.checkUserInfo();
     roadmapId = myPlanCubit.roadmapId;
+    roadMapName = await getRoadMapName();
     if (myPlanCubit.roadmapId.isNotEmpty != true) {
       emit(const ExerciseTabRoadmapEmpty());
       emit(const ExerciseTabInitial());

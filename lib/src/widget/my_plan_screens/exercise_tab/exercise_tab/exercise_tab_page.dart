@@ -119,20 +119,31 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            R.string.title_route.tr(),
-                            style: TextStyle(
-                              color: R.color.hba1c_text_color,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
+                          Expanded(
+                            flex: 9,
+                            child: Text(
+                              _cubit.roadMapName.isNotEmpty
+                                  ? _cubit.roadMapName
+                                  : R.string.title_route.tr(),
+                              style: TextStyle(
+                                color: R.color.hba1c_text_color,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              softWrap: true,
+                              maxLines: null,
                             ),
                           ),
-                          Text(
-                            R.string.change.tr(),
-                            style: TextStyle(
-                              color: R.color.accentColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              R.string.change.tr(),
+                              style: TextStyle(
+                                color: R.color.accentColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              textAlign: TextAlign.end,
                             ),
                           ),
                         ],
