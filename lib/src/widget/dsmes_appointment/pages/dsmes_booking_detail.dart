@@ -90,9 +90,12 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
         if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
           Observable.instance
               .notifyObservers([], notifyName: "refresh_dsmes_appointment");
-        } else {
+        } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
           Observable.instance
               .notifyObservers([], notifyName: "refresh_booking_clinic");
+        } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
+          Observable.instance
+              .notifyObservers([], notifyName: "refresh_booking_doctor");
         }
         return false;
       },
@@ -205,9 +208,12 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
                     Observable.instance.notifyObservers([],
                         notifyName: "refresh_dsmes_appointment");
-                  } else {
+                  } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
                     Observable.instance.notifyObservers([],
                         notifyName: "refresh_booking_clinic");
+                  } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
+                    Observable.instance.notifyObservers([],
+                        notifyName: "refresh_booking_doctor");
                   }
                   return;
                 },
@@ -868,9 +874,12 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
                     Observable.instance.notifyObservers([],
                         notifyName: "refresh_dsmes_appointment");
-                  } else {
+                  } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
                     Observable.instance.notifyObservers([],
                         notifyName: "refresh_booking_clinic");
+                  } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
+                    Observable.instance.notifyObservers([],
+                        notifyName: "refresh_booking_doctor");
                   }
                 },
               );
