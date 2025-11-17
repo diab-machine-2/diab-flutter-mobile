@@ -151,12 +151,14 @@ class NotificationManager {
     }
 
     if (model.actionType != NotificationActionType.register_referral_success) {
-      NotificationClient().readNotification(
-          model.data?.communicationId,
-          model.id ?? model.data?.notificationId,
-          AppSettings.userInfo?.id,
-          model.data?.notificationType,
-          true);
+      if (model.actionType != NotificationActionType.none) {
+        NotificationClient().readNotification(
+            model.data?.communicationId,
+            model.id ?? model.data?.notificationId,
+            AppSettings.userInfo?.id,
+            model.data?.notificationType,
+            true);
+      }
     }
 
     if (model.calendarId == null) {

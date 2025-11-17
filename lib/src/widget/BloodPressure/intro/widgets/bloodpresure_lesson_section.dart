@@ -16,6 +16,32 @@ class BloodPressureLessonSection extends StatelessWidget {
 
   final _bloc = BloodPressureIntroLessonBloc();
 
+  // Calculate the maximum height needed for lesson items
+  // Image: 170px + Padding: 32px + Text (2 lines): ~48px + Spacing: 4px + Category: 16px + Divider: 1px + Actions: 40px = ~311px
+  // Adding some buffer for safety
+  double _calculateMaxItemHeight(List<LessonModel> lessons) {
+    // Base height calculation
+    const imageHeight = 170.0;
+    const paddingVertical = 16.0; // 8px top + 8px bottom
+    const textHeight = 48.0; // 2 lines * 24px line height
+    const spacing = 4.0;
+    const categoryHeight = 16.0;
+    const dividerHeight = 1.0;
+    const actionsHeight = 40.0;
+    const borderWidth = 2.0; // 1px border on each side
+    const buffer = 10.0; // Safety buffer for text rendering variations
+
+    return imageHeight +
+        paddingVertical +
+        textHeight +
+        spacing +
+        categoryHeight +
+        dividerHeight +
+        actionsHeight +
+        borderWidth +
+        buffer;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -43,7 +69,7 @@ class BloodPressureLessonSection extends StatelessWidget {
               const SizedBox(height: 20),
               // List of items
               SizedBox(
-                height: _height,
+                height: _calculateMaxItemHeight(lessons),
                 child: ListView.separated(
                   padding: const EdgeInsets.only(left: 12),
                   scrollDirection: Axis.horizontal,
@@ -71,7 +97,6 @@ class BloodPressureLessonSection extends StatelessWidget {
 
   Widget _buildLessonItem(LessonModel lesson) {
     return SizedBox(
-      height: 252.0,
       width: _lessonItemWidth,
       child: InkWell(
         onTap: () => onLessonTap(lesson),
@@ -84,8 +109,8 @@ class BloodPressureLessonSection extends StatelessWidget {
           ),
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.only(
@@ -95,57 +120,55 @@ class BloodPressureLessonSection extends StatelessWidget {
                 child: NetWorkImageWidget(
                   imageUrl: lesson.image?.url,
                   fit: BoxFit.cover,
-                  height: 174.0,
+                  height: 170.0,
                   width: double.infinity,
                 ),
               ),
 
-              const SizedBox(height: 12.0),
-
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        lesson.name,
-                        maxLines: 2,
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 15.0,
-                          height: 24.0 / 15.0,
-                        ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      lesson.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 15.0,
+                        height: 24.0 / 15.0,
                       ),
-                      const SizedBox(height: 4.0),
-                      // Category
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          // const SizedBox(width: 16.0),
-                          Image.asset(
-                            R.drawable.ic_lesson_category,
-                            width: 16.0,
-                            height: 16.0,
-                          ),
-                          const SizedBox(width: 6.0),
-                          Text(
+                    ),
+                    const SizedBox(height: 4.0),
+                    // Category
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          R.drawable.ic_lesson_category,
+                          width: 16.0,
+                          height: 16.0,
+                        ),
+                        const SizedBox(width: 6.0),
+                        Flexible(
+                          child: Text(
                             lesson.module,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: R.color.color0xff666666,
                               fontSize: 12.0,
                             ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
 
-              const SizedBox(height: 12.0),
               Divider(
                 height: 1,
                 color: R.color.color0xffE5E5E5,
