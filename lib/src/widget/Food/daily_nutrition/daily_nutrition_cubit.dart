@@ -250,6 +250,14 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
     apiResult.when(success: (CommonResponse response) async {
+      // Update the food in selectedFoods before calculating calories
+      final int index = selectedFoods.indexWhere(
+        (food) =>
+            food.id == newFoodModel.id && food.mealId == newFoodModel.mealId,
+      );
+      if (index != -1) {
+        selectedFoods[index] = newFoodModel;
+      }
       calculatorCalo();
       emit(const DailyNutritionSuccess());
     }, failure: (NetworkExceptions error) {
@@ -272,7 +280,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     }
     totalKcal = 0;
     for (final food in selectedFoods) {
-      totalKcal += food.calorie! * (food.quantity ?? 0);
+      totalKcal += food.calorie! * (food.quantity ?? 0) * (food.portion ?? 0);
     }
     refresh();
   }

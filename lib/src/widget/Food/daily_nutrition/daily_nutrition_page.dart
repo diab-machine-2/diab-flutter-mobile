@@ -30,6 +30,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../widgets/btn_add_photo.dart';
 import '../search_food_controller.dart';
 import '../widget/food_info.dart';
+import '../food_detail_tabbar.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionPage extends StatefulWidget {
@@ -133,7 +134,14 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   Message.showToastMessage(context, state.error);
                 }
                 if (state is DailyNutritionSubmitSuccess) {
-                  NavigationUtil.pop(context);
+                  // Use pushReplacement directly since navigatePage uses pushReplacement
+                  // No need to pop first as replacement will handle it
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      NavigationUtil.navigatePage(context,
+                          FoodDetailTabbarController(initialTabIndex: 1));
+                    }
+                  });
                 }
                 if (state is DailyNutritionFillData) {
                   _controllerNote.text = _cubit.notes;
@@ -430,16 +438,15 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                                 int index) {
                                               final String quantity =
                                                   '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0)}';
-                                              final String kcal = ((_cubit
+                                              final String kcal =
+                                                  ((double.tryParse(quantity) ??
+                                                              0) *
+                                                          _cubit
                                                               .selectedFoods[
                                                                   index]
-                                                              .quantity ??
-                                                          0) *
-                                                      _cubit
-                                                          .selectedFoods[index]
-                                                          .calorie!)
-                                                  .round()
-                                                  .toString();
+                                                              .calorie!)
+                                                      .round()
+                                                      .toString();
                                               final String detail =
                                                   '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
                                               return GestureDetector(

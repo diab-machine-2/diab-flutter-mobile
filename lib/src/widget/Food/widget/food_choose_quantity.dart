@@ -1,4 +1,3 @@
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,10 +42,14 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     super.initState();
     isLike = widget.model!.liked;
     if (widget.selectedModel != null) {
-      selectedQuantity = (widget.selectedModel!.portion ?? 0).floor();
-      selectedPercent =
-          (((widget.selectedModel!.portion ?? 0) - selectedQuantity) * 10)
-              .round();
+      selectedQuantity = ((widget.selectedModel!.quantity ?? 0) *
+              (widget.selectedModel!.portion ?? 0))
+          .floor();
+      selectedPercent = ((((widget.selectedModel!.quantity ?? 0) *
+                      (widget.selectedModel!.portion ?? 0)) -
+                  selectedQuantity) *
+              10)
+          .round();
       //selectedPercent = selectedPercent == 0 ? 0 : (selectedPercent + 1);
       _controllerKcal.text = ((widget.selectedModel!.calorie ?? 0) *
               (widget.selectedModel!.quantity ?? 0))
@@ -232,7 +235,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                             children: [
                               const SizedBox(height: 16),
                               Visibility(
-                                visible: widget.selectedModel != null && widget.kcalLeft != null,
+                                visible: widget.selectedModel != null &&
+                                    widget.kcalLeft != null,
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -382,8 +386,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               }
                               if (_controllerKcal.text.isEmpty &&
                                   widget.model!.code == 'OtherUneditable') {
-                                Message.showToastMessage(
-                                    context, R.string.ban_chua_nhap_du_lieu.tr());
+                                Message.showToastMessage(context,
+                                    R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
                               if (widget.model!.code == 'OtherUneditable') {

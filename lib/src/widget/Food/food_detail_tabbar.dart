@@ -23,6 +23,11 @@ import 'daily_nutrition/daily_nutrition.dart';
 import 'widget/food_action_popup.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
+  final int? initialTabIndex;
+
+  const FoodDetailTabbarController({Key? key, this.initialTabIndex})
+      : super(key: key);
+
   @override
   _FoodDetailTabbarControllerState createState() =>
       _FoodDetailTabbarControllerState();
@@ -53,7 +58,12 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
+    final initialIndex = widget.initialTabIndex ?? 0;
+    _tabController = TabController(
+      vsync: this,
+      length: 2,
+      initialIndex: initialIndex,
+    );
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
@@ -82,17 +92,24 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
 
   static bool _isDisposing = false;
   @override
-  void dispose() async {
+  void dispose() {
     if (_isDisposing) {
-      return; // Already disposing, do nothing
+      // Already disposing, just call super.dispose() and return
+      super.dispose();
+      return;
     }
     _isDisposing = true;
     try {
+      _tabController?.dispose();
       Observable.instance.removeObserver(this);
-      // Add your await statement, it won't be executed concurrently
-      await AppSettings.syncDataFromHealthApp();
+      // Run async operation without blocking dispose
+      AppSettings.syncDataFromHealthApp().then((_) {
+        _isDisposing = false;
+      }).catchError((_) {
+        _isDisposing = false;
+      });
     } finally {
-      _isDisposing = false;
+      // Always call super.dispose() even if there's an error
       super.dispose();
     }
   }
