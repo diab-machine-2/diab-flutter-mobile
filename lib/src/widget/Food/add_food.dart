@@ -956,6 +956,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
+        NavigationUtil.navigatePage(
+            context, FoodDetailTabbarController(initialTabIndex: 1));
       }
 
       BotToast.closeAllLoading();
@@ -1030,7 +1032,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         PhoneValidationManager.setShouldShowPhoneValidation();
         Navigator.pop(context);
         if (widget.type == 'input') {
-          NavigationUtil.navigatePage(context, FoodDetailTabbarController());
+          NavigationUtil.navigatePage(
+              context, FoodDetailTabbarController(initialTabIndex: 1));
         }
       }
       print("[KPI] close all loading.");
