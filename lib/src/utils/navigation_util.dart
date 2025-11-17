@@ -56,7 +56,7 @@ class NavigationUtil {
   }
 
   static Future navigatePage(BuildContext context, Widget widget) {
-    return Navigator.of(context).push(MaterialPageRoute(
+    return Navigator.of(context).pushReplacement(MaterialPageRoute(
         settings: RouteSettings(name: widget.runtimeType.toString()),
         builder: (context) => widget));
   }

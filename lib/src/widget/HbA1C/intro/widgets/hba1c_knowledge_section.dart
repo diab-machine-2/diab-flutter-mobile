@@ -9,6 +9,7 @@ import 'package:medical/src/bloc/HbA1C/intro_lesson/hba1c_intro_lesson_bloc.dart
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 class HbA1cKnowledgeSection extends StatefulWidget {
@@ -16,7 +17,7 @@ class HbA1cKnowledgeSection extends StatefulWidget {
 
   @override
   State<HbA1cKnowledgeSection> createState() => _HbA1cKnowledgeSectionState();
-  
+
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'HbA1cKnowledgeSection(${DateTime.now().millisecondsSinceEpoch})';
@@ -49,6 +50,22 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
     _stopAutoScroll();
     _bloc.close(); // Close bloc to prevent memory leak
     super.dispose();
+  }
+
+  String? _getImageUrl(LessonModel lesson) {
+    // First check if url exists and is not empty
+    if (lesson.image?.url != null && lesson.image!.url!.isNotEmpty) {
+      return lesson.image!.url;
+    }
+
+    // If url is empty, try to construct URL using image id
+    if (lesson.image?.id != null && lesson.image!.id!.isNotEmpty) {
+      final baseURL = FetchClient.baseURL;
+      return Uri.https(baseURL, '/App/Image/${lesson.image!.id}').toString();
+    }
+
+    // If still empty, return null
+    return null;
   }
 
   // * Scroll listener
@@ -100,7 +117,6 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
       value: _bloc,
       child: BlocBuilder<HbA1cIntroLessonBloc, HbA1cIntroLessonState>(
         builder: (context, state) {
-
           if (state is HbA1cIntroLessonLoaded) {
             final lessons = state.lessons;
 
@@ -248,7 +264,7 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
                   topRight: Radius.circular(12.0),
                 ),
                 child: NetWorkImageWidget(
-                  imageUrl: lesson.image?.url,
+                  imageUrl: _getImageUrl(lesson),
                   fit: BoxFit.cover,
                   height: 174.0,
                   width: double.infinity,
