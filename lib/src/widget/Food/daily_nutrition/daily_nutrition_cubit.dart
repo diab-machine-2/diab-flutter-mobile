@@ -280,7 +280,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     }
     totalKcal = 0;
     for (final food in selectedFoods) {
-      totalKcal += food.calorie! * (food.quantity ?? 0) * (food.portion ?? 0);
+      totalKcal += food.calorie! * (food.portion ?? 0);
     }
     refresh();
   }

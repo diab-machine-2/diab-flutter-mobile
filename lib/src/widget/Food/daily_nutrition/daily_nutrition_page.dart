@@ -437,16 +437,17 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                             itemBuilder: (BuildContext context,
                                                 int index) {
                                               final String quantity =
-                                                  '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0)}';
-                                              final String kcal =
-                                                  ((double.tryParse(quantity) ??
-                                                              0) *
-                                                          _cubit
+                                                  '${roundAsFixed((_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0))}';
+                                              final String kcal = ((_cubit
                                                               .selectedFoods[
                                                                   index]
-                                                              .calorie!)
-                                                      .round()
-                                                      .toString();
+                                                              .portion ??
+                                                          0) *
+                                                      _cubit
+                                                          .selectedFoods[index]
+                                                          .calorie!)
+                                                  .round()
+                                                  .toString();
                                               final String detail =
                                                   '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
                                               return GestureDetector(
@@ -1195,13 +1196,17 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
           _cubit.removeIDs.isEmpty &&
           date.millisecondsSinceEpoch ==
               _cubit.selectedDate.millisecondsSinceEpoch) {
-        Navigator.pop(context);
+        // Navigate directly using pushReplacement
+        NavigationUtil.navigatePage(
+            context, FoodDetailTabbarController(initialTabIndex: 1));
         return;
       }
     } else if (note.isEmpty &&
         _cubit.selectedFoods.isEmpty &&
         _cubit.files.isEmpty) {
-      Navigator.pop(context);
+      // Navigate directly using pushReplacement
+      NavigationUtil.navigatePage(
+          context, FoodDetailTabbarController(initialTabIndex: 1));
       return;
     }
     showDialog(
@@ -1262,8 +1267,16 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
+                              Navigator.pop(context); // Close dialog
+                              // Navigate directly using pushReplacement
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (mounted) {
+                                  NavigationUtil.navigatePage(
+                                      context,
+                                      FoodDetailTabbarController(
+                                          initialTabIndex: 1));
+                                }
+                              });
                             },
                             child: Container(
                               height: 43,
