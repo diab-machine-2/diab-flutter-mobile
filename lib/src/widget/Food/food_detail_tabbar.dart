@@ -7,6 +7,7 @@ import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -19,7 +20,6 @@ import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
-import 'daily_nutrition/daily_nutrition.dart';
 import 'widget/food_action_popup.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
@@ -162,7 +162,18 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
               IconButton(
                   icon: Icon(Icons.close, color: R.color.black),
                   onPressed: () {
-                    Navigator.pop(context);
+                    // pushReplacement removes the previous route, so canPop may be false
+                    // If we can't pop, navigate to tabbar instead
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    } else {
+                      // Navigate to tabbar when there's nothing to pop back to
+                      Navigator.of(context, rootNavigator: true)
+                          .pushNamedAndRemoveUntil(
+                        NavigatorName.tabbar,
+                        (route) => false,
+                      );
+                    }
                   }),
               const SizedBox(width: 12),
             ]),

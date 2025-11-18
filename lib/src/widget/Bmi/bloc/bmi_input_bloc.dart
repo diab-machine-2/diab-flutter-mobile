@@ -225,7 +225,17 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   //
 
   void addImages(List<String> paths) {
-    _noteImages.addAll(paths);
+    const int maxImages = 5;
+    final int currentTotalImages = _noteImages.length + _noteImagesFromRecord.length;
+    final int remainingSlots = maxImages - currentTotalImages;
+    
+    if (remainingSlots <= 0) {
+      return; // Already at max capacity
+    }
+    
+    // Only add images up to the remaining slots
+    final List<String> imagesToAdd = paths.take(remainingSlots).toList();
+    _noteImages.addAll(imagesToAdd);
     add(BmiInputDataChangeEvent(
       BmiInputDataChangeEvent.noteImagesChanged,
       _noteImages,
