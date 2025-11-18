@@ -1,13 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
+import 'package:medical/res/dimens.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 
 class HbA1cHelpSection extends StatefulWidget {
   const HbA1cHelpSection({Key? key}) : super(key: key);
@@ -63,6 +65,22 @@ class _HbA1cHelpSectionState extends State<HbA1cHelpSection> {
     );
   }
 
+  String? _getImageUrl(LessonModel lesson) {
+    // First check if url exists and is not empty
+    if (lesson.image?.url != null && lesson.image!.url!.isNotEmpty) {
+      return lesson.image!.url;
+    }
+
+    // If url is empty, try to construct URL using image id
+    if (lesson.image?.id != null && lesson.image!.id!.isNotEmpty) {
+      final baseURL = FetchClient.baseURL;
+      return Uri.https(baseURL, '/App/Image/${lesson.image!.id}').toString();
+    }
+
+    // If still empty, return null
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -105,36 +123,18 @@ class _HbA1cHelpSectionState extends State<HbA1cHelpSection> {
   }
 
   Widget _buildLessonsGrid() {
-    return Column(
-      children: [
-        if (_lessons.isNotEmpty) ...[
-          Row(
-            children: [
-              Expanded(child: _buildLessonItem(_lessons[0])),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _lessons.length > 1
-                    ? _buildLessonItem(_lessons[1])
-                    : const SizedBox(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-        ],
-        if (_lessons.length > 2) ...[
-          Row(
-            children: [
-              Expanded(child: _buildLessonItem(_lessons[2])),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _lessons.length > 3
-                    ? _buildLessonItem(_lessons[3])
-                    : const SizedBox(),
-              ),
-            ],
-          ),
-        ],
-      ],
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1 / 1,
+      ),
+      itemBuilder: (context, index) => _buildLessonItem(_lessons[index]),
+      itemCount: _lessons.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
     );
   }
 
@@ -142,42 +142,43 @@ class _HbA1cHelpSectionState extends State<HbA1cHelpSection> {
     return InkWell(
       onTap: () => _navigateToLessonDetail(lesson),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        height: 152.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          border: Border.all(color: R.color.grayComponentBorder),
-        ),
+        decoration: R.decorationStyle.mediumRadiusCardStyles,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            NetWorkImageWidget(
-              imageUrl: lesson.image?.url,
-              fit: BoxFit.cover,
-              width: 72,
-              height: 72,
-            ),
-            const SizedBox(height: 8),
             Expanded(
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(
-                  lesson.name,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 20 / 13,
-                    fontWeight: FontWeight.w400,
-                    letterSpacing: 0.4,
-                    fontFamily: R.font.sfpro,
-                    color: R.color.hba1c_text_color,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(AppDimens.mediumRadius),
+                  topRight: Radius.circular(AppDimens.mediumRadius),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: _getImageUrl(lesson) ?? "",
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColors.neutral5,
+                    child: Icon(
+                      Icons.image_not_supported_rounded,
+                      size: 56,
+                      color: AppColors.neutral4,
+                    ),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  fit: BoxFit.cover,
+                  width: double.maxFinite,
                 ),
               ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                lesson.name,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.textDark),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(
+              height: 4,
             ),
           ],
         ),
