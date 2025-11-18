@@ -42,14 +42,10 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     super.initState();
     isLike = widget.model!.liked;
     if (widget.selectedModel != null) {
-      selectedQuantity = ((widget.selectedModel!.quantity ?? 0) *
-              (widget.selectedModel!.portion ?? 0))
-          .floor();
-      selectedPercent = ((((widget.selectedModel!.quantity ?? 0) *
-                      (widget.selectedModel!.portion ?? 0)) -
-                  selectedQuantity) *
-              10)
-          .round();
+      selectedQuantity = ((widget.selectedModel!.portion ?? 0)).floor();
+      selectedPercent =
+          ((((widget.selectedModel!.portion ?? 0)) - selectedQuantity) * 10)
+              .round();
       //selectedPercent = selectedPercent == 0 ? 0 : (selectedPercent + 1);
       _controllerKcal.text = ((widget.selectedModel!.calorie ?? 0) *
               (widget.selectedModel!.quantity ?? 0))
@@ -173,7 +169,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             fontWeight: FontWeight.w400)),
                                     const SizedBox(height: 12),
                                     Text(
-                                        '${R.string.khau_phan.tr()} ${(widget.model!.portion ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
+                                        '${R.string.khau_phan.tr()} ${(widget.model!.quantity ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
                                         style: TextStyle(
                                             color: R.color.black,
                                             fontSize: 14,
@@ -403,7 +399,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   map: {
                                     "food": widget.model!.copyWith(
                                       portion: quantity,
-                                      quantity: widget.model?.portion ?? 1,
+                                      quantity: widget.model?.quantity ?? 1,
                                       mealId: widget.selectedModel?.mealId ??
                                           widget.model!.mealId,
                                     ),

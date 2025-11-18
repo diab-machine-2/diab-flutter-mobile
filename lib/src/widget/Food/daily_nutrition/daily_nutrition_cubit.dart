@@ -280,7 +280,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     }
     totalKcal = 0;
     for (final food in selectedFoods) {
-      totalKcal += food.calorie! * (food.quantity ?? 0) * (food.portion ?? 0);
+      totalKcal += food.calorie! * (food.portion ?? 0);
     }
     refresh();
   }
@@ -366,7 +366,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     try {
       final List<String> paths = [];
       for (final file in files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }

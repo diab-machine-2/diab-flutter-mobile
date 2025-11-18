@@ -105,6 +105,23 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
   }
 
   void _pickImages() async {
+    const int maxImages = 5;
+    final int currentImageCount = _bmiInputBloc.noteImages.length +
+        _bmiInputBloc.noteImagesFromRecord.length;
+
+    if (currentImageCount >= maxImages) {
+      // Show a message that max images reached
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(R.string.max_image_select.tr()),
+          ),
+        );
+      }
+      return;
+    }
+
+    final int remainingSlots = maxImages - currentImageCount;
     final ImagePicker _picker = ImagePicker();
     final List<XFile> images = await _picker.pickMultiImage(
       // maxWidth: 1024,
@@ -112,6 +129,23 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
       imageQuality: 70,
     );
 
-    _bmiInputBloc.addImages(images.map((e) => e.path).toList());
+    if (images.isEmpty) return;
+
+    // Limit the images to the remaining slots
+    final List<String> imagePaths =
+        images.take(remainingSlots).map((e) => e.path).toList();
+
+    _bmiInputBloc.addImages(imagePaths);
+
+    // Show a message if user selected more than allowed
+    if (images.length > remainingSlots && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            R.string.max_image_select.tr(),
+          ),
+        ),
+      );
+    }
   }
 }

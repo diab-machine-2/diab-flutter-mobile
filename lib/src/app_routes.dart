@@ -5,7 +5,6 @@ import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
-import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
@@ -14,7 +13,6 @@ import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_pag
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
-import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
@@ -188,15 +186,25 @@ class AppRoutes {
       // ~ END: Dinh Duong (mới) ~
       case NavigatorName.add_bmi:
         final data = settings.arguments as Map<String, dynamic>?;
-        page = BlocProvider<BmiBloc>.value(
-          value: data?[BmiOnBoardingPage.bmiBlocKey],
-          child: BmiOnBoardingPage(
-            type: data?['type'],
-            id: data?['id'],
-            goalId: data?['goalId'],
-            isCurrentBmi: data?['isCurrentBmi'],
-          ),
-        );
+        page = (data?[BmiOnBoardingPage.bmiBlocKey] != null)
+            ? BlocProvider<BmiBloc>.value(
+                value: data?[BmiOnBoardingPage.bmiBlocKey],
+                child: BmiOnBoardingPage(
+                  type: data?['type'],
+                  id: data?['id'],
+                  goalId: data?['goalId'],
+                  isCurrentBmi: data?['isCurrentBmi'],
+                ),
+              )
+            : BlocProvider<BmiBloc>(
+                create: (_) => BmiBloc(WeightRepository.instance),
+                child: BmiOnBoardingPage(
+                  type: data?['type'],
+                  id: data?['id'],
+                  goalId: data?['goalId'],
+                  isCurrentBmi: data?['isCurrentBmi'],
+                ),
+              );
       case NavigatorName.bmiInputPage:
         final data = settings.arguments as Map<String, dynamic>?;
         page = MultiBlocProvider(

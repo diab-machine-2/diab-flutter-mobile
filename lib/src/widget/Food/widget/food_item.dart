@@ -81,7 +81,7 @@ class FoodItem extends StatelessWidget {
                           child: Text(
                               selectedModel!.code == 'OtherUneditable'
                                   ? '${R.string.da_an.tr()} ${formatNumber((selectedModel?.quantity ?? 0) * (selectedModel?.calorie ?? 0))} kcal'
-                                  : '${R.string.da_an.tr()} ${roundAsFixed((selectedModel?.portion ?? 0) * (selectedModel?.quantity ?? 0))} ${selectedModel?.unit ?? ''}, ${((selectedModel?.quantity ?? 0) * (selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0)).round()} kcal',
+                                  : '${R.string.da_an.tr()} ${roundAsFixed((selectedModel?.portion ?? 0) * (selectedModel?.quantity ?? 0))} ${selectedModel?.unit ?? ''}, ${((selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0)).round()} kcal',
                               style: TextStyle(
                                   color: R.color.black,
                                   fontWeight: FontWeight.w400)),
