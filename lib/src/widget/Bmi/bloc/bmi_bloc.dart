@@ -149,13 +149,32 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiDataChangeEvent(BmiDataChangeEvent.weightGoalChanged, value));
   }
 
-  bool? get hasNewData => preferences.getBool(Const.hasNewWeightRecordInFirst);
+  bool? get hasNewData {
+    try {
+      return preferences.getBool(Const.hasNewWeightRecordInFirst);
+    } on Error catch (e) {
+      // Handle LateInitializationError - preferences not initialized yet
+      if (e.toString().contains('has not been initialized')) {
+        return null;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
   set hasNewData(bool? value) {
     if (value == null) return;
-    if ((hasNewData == null && value == true) ||
-        (hasNewData == true && value == false)) {
-      preferences.setBool(Const.hasNewWeightRecordInFirst, value);
-      add(BmiDataChangeEvent(BmiDataChangeEvent.hasDataChanged, value));
+    try {
+      if ((hasNewData == null && value == true) ||
+          (hasNewData == true && value == false)) {
+        preferences.setBool(Const.hasNewWeightRecordInFirst, value);
+        add(BmiDataChangeEvent(BmiDataChangeEvent.hasDataChanged, value));
+      }
+    } on Error {
+      // Handle LateInitializationError - preferences not initialized yet
+      // Silently ignore if preferences not ready
+    } catch (_) {
+      // Ignore other errors
     }
   }
 
@@ -163,8 +182,21 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   bool get hasHealthAppPermission => _hasHealthAppPermission;
 
   bool _hasStatisticalData = false;
-  bool get hasStatisticalData =>
-      preferences.getBool(Const.hasWeightRecord) ?? false;
+  bool get hasStatisticalData {
+    try {
+      return preferences.getBool(Const.hasWeightRecord) ?? false;
+    } on Error catch (e) {
+      // Handle LateInitializationError or other errors
+      // preferences not initialized yet, return cached value or false
+      if (e.toString().contains('has not been initialized')) {
+        return _hasStatisticalData;
+      }
+      return false;
+    } catch (e) {
+      // Other exceptions, return false as fallback
+      return false;
+    }
+  }
 
   BmiGetWeightRecord? get selectedPointChart => _selectedPointChart;
   int? get selectedIndexPointChart => _selectedIndexPointChart;
