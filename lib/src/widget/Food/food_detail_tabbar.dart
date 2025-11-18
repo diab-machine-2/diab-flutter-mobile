@@ -7,6 +7,7 @@ import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -19,10 +20,14 @@ import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
-import 'daily_nutrition/daily_nutrition.dart';
 import 'widget/food_action_popup.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
+  final int? initialTabIndex;
+
+  const FoodDetailTabbarController({Key? key, this.initialTabIndex})
+      : super(key: key);
+
   @override
   _FoodDetailTabbarControllerState createState() =>
       _FoodDetailTabbarControllerState();
@@ -53,7 +58,12 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: 2);
+    final initialIndex = widget.initialTabIndex ?? 0;
+    _tabController = TabController(
+      vsync: this,
+      length: 2,
+      initialIndex: initialIndex,
+    );
     Observable.instance.addObserver(this);
     checkShowDes();
     loadDescription();
@@ -82,17 +92,24 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
 
   static bool _isDisposing = false;
   @override
-  void dispose() async {
+  void dispose() {
     if (_isDisposing) {
-      return; // Already disposing, do nothing
+      // Already disposing, just call super.dispose() and return
+      super.dispose();
+      return;
     }
     _isDisposing = true;
     try {
+      _tabController?.dispose();
       Observable.instance.removeObserver(this);
-      // Add your await statement, it won't be executed concurrently
-      await AppSettings.syncDataFromHealthApp();
+      // Run async operation without blocking dispose
+      AppSettings.syncDataFromHealthApp().then((_) {
+        _isDisposing = false;
+      }).catchError((_) {
+        _isDisposing = false;
+      });
     } finally {
-      _isDisposing = false;
+      // Always call super.dispose() even if there's an error
       super.dispose();
     }
   }
@@ -145,7 +162,18 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
               IconButton(
                   icon: Icon(Icons.close, color: R.color.black),
                   onPressed: () {
-                    Navigator.pop(context);
+                    // pushReplacement removes the previous route, so canPop may be false
+                    // If we can't pop, navigate to tabbar instead
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    } else {
+                      // Navigate to tabbar when there's nothing to pop back to
+                      Navigator.of(context, rootNavigator: true)
+                          .pushNamedAndRemoveUntil(
+                        NavigatorName.tabbar,
+                        (route) => false,
+                      );
+                    }
                   }),
               const SizedBox(width: 12),
             ]),

@@ -30,6 +30,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../widgets/btn_add_photo.dart';
 import '../search_food_controller.dart';
 import '../widget/food_info.dart';
+import '../food_detail_tabbar.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionPage extends StatefulWidget {
@@ -133,7 +134,14 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   Message.showToastMessage(context, state.error);
                 }
                 if (state is DailyNutritionSubmitSuccess) {
-                  NavigationUtil.pop(context);
+                  // Use pushReplacement directly since navigatePage uses pushReplacement
+                  // No need to pop first as replacement will handle it
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      NavigationUtil.navigatePage(context,
+                          FoodDetailTabbarController(initialTabIndex: 1));
+                    }
+                  });
                 }
                 if (state is DailyNutritionFillData) {
                   _controllerNote.text = _cubit.notes;
@@ -429,11 +437,11 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                             itemBuilder: (BuildContext context,
                                                 int index) {
                                               final String quantity =
-                                                  '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0)}';
+                                                  '${roundAsFixed((_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0))}';
                                               final String kcal = ((_cubit
                                                               .selectedFoods[
                                                                   index]
-                                                              .quantity ??
+                                                              .portion ??
                                                           0) *
                                                       _cubit
                                                           .selectedFoods[index]
@@ -1188,13 +1196,17 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
           _cubit.removeIDs.isEmpty &&
           date.millisecondsSinceEpoch ==
               _cubit.selectedDate.millisecondsSinceEpoch) {
-        Navigator.pop(context);
+        // Navigate directly using pushReplacement
+        NavigationUtil.navigatePage(
+            context, FoodDetailTabbarController(initialTabIndex: 1));
         return;
       }
     } else if (note.isEmpty &&
         _cubit.selectedFoods.isEmpty &&
         _cubit.files.isEmpty) {
-      Navigator.pop(context);
+      // Navigate directly using pushReplacement
+      NavigationUtil.navigatePage(
+          context, FoodDetailTabbarController(initialTabIndex: 1));
       return;
     }
     showDialog(
@@ -1255,8 +1267,16 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
+                              Navigator.pop(context); // Close dialog
+                              // Navigate directly using pushReplacement
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (mounted) {
+                                  NavigationUtil.navigatePage(
+                                      context,
+                                      FoodDetailTabbarController(
+                                          initialTabIndex: 1));
+                                }
+                              });
                             },
                             child: Container(
                               height: 43,

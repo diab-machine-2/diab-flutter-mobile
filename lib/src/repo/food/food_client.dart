@@ -271,12 +271,11 @@ class FoodClient extends FetchClient {
         'note': note,
         'IsGptResult': 'true',
       };
-      final totalCalories = foods.fold(
-          0.0,
-          (sum, food) =>
-              sum +
-              (food.calorie ?? 0).toDouble() * (food.portion ?? 0).toDouble());
+
       for (int i = 0; i < foods.length; i++) {
+        final totalCalories = foods[i].calorie != null
+            ? foods[i].calorie!.toDouble() * (foods[i].portion ?? 0).toDouble()
+            : 0.0;
         params['foods[$i].id'] = foods[i].id ?? '';
         params['foods[$i].name'] = foods[i].name ?? '';
         params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
@@ -333,7 +332,8 @@ class FoodClient extends FetchClient {
       };
       for (int i = 0; i < foods.length; i++) {
         params['foods[$i].id'] = foods[i].id ?? '';
-        params['foods[$i].portion'] = foods[i].portion.toString();
+        params['foods[$i].portion'] =
+            foods[i].portion != null ? foods[i].quantity.toString() : '1';
       }
       final response = await super
           .putHttp(path: '/App/Diet/Input', params: params, files: files);

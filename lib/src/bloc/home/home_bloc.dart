@@ -93,13 +93,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             measurementLoading: false,
             reminderLoading: false,
           );
-          _hasWeightRecord = model.weightCard?.weight != null;
           yield _cached!;
         } else {
           // if no cache
           _firstLoad = true;
           yield HomeLoading(model: null);
         }
+        _hasWeightRecord = model?.weightCard?.weight != null &&
+            model?.weightCard?.weight != 0.0;
       } catch (e, s) {
         // init load failed
         TrackingManager.recordError(e, s);
@@ -113,6 +114,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       try {
         // Load measurements
         final home = await client.fetchHomes();
+        _hasWeightRecord =
+            home.weightCard?.weight != null && home.weightCard?.weight != 0.0;
         home.inlineMeasurements = _castInlineMeasurements(home);
         home.measurements = _castMeasurements(home);
         // at this point, home will lost "activities" data

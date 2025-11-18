@@ -1,4 +1,3 @@
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,9 +42,9 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
     super.initState();
     isLike = widget.model!.liked;
     if (widget.selectedModel != null) {
-      selectedQuantity = (widget.selectedModel!.portion ?? 0).floor();
+      selectedQuantity = ((widget.selectedModel!.portion ?? 0)).floor();
       selectedPercent =
-          (((widget.selectedModel!.portion ?? 0) - selectedQuantity) * 10)
+          ((((widget.selectedModel!.portion ?? 0)) - selectedQuantity) * 10)
               .round();
       //selectedPercent = selectedPercent == 0 ? 0 : (selectedPercent + 1);
       _controllerKcal.text = ((widget.selectedModel!.calorie ?? 0) *
@@ -170,7 +169,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                             fontWeight: FontWeight.w400)),
                                     const SizedBox(height: 12),
                                     Text(
-                                        '${R.string.khau_phan.tr()} ${(widget.model!.portion ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
+                                        '${R.string.khau_phan.tr()} ${(widget.model!.quantity ?? 0).round()} ${widget.model!.unit} ${R.string.bao_gom.tr()}:',
                                         style: TextStyle(
                                             color: R.color.black,
                                             fontSize: 14,
@@ -232,7 +231,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                             children: [
                               const SizedBox(height: 16),
                               Visibility(
-                                visible: widget.selectedModel != null && widget.kcalLeft != null,
+                                visible: widget.selectedModel != null &&
+                                    widget.kcalLeft != null,
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -382,8 +382,8 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                               }
                               if (_controllerKcal.text.isEmpty &&
                                   widget.model!.code == 'OtherUneditable') {
-                                Message.showToastMessage(
-                                    context, R.string.ban_chua_nhap_du_lieu.tr());
+                                Message.showToastMessage(context,
+                                    R.string.ban_chua_nhap_du_lieu.tr());
                                 return;
                               }
                               if (widget.model!.code == 'OtherUneditable') {
@@ -399,7 +399,7 @@ class _FoodChooseQuantityState extends State<FoodChooseQuantity> {
                                   map: {
                                     "food": widget.model!.copyWith(
                                       portion: quantity,
-                                      quantity: widget.model?.portion ?? 1,
+                                      quantity: widget.model?.quantity ?? 1,
                                       mealId: widget.selectedModel?.mealId ??
                                           widget.model!.mealId,
                                     ),
