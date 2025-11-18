@@ -374,9 +374,10 @@ class _BookingDoctorProvidersPageState
       return null;
     }
 
-    // Filter out services with null prices first
+    // Filter out services with zero prices and only telemedicine type
     final servicesWithPrice = services
-        .where((service) => service.fromPrice != null && service.fromPrice != 0
+        .where((service) =>
+                service.type == "telemedicine" && service.fromPrice != 0
             // &&
             // service.name.toLowerCase().contains(data.name
             //     .toLowerCase()), // Wait BE support filter services belong to each doctor
@@ -384,8 +385,12 @@ class _BookingDoctorProvidersPageState
         .toList();
 
     if (servicesWithPrice.isEmpty) {
-      // If no services have prices, return the first service or null
-      return services.first;
+      // If no telemedicine services have prices, return the first telemedicine service or null
+      final telemedicineServices =
+          services.where((service) => service.type == "telemedicine").toList();
+      return telemedicineServices.isNotEmpty
+          ? telemedicineServices.first
+          : null;
     }
 
     final result = servicesWithPrice.reduce(
@@ -630,9 +635,10 @@ class _BookingDoctorProvidersPageState
                                   _cubit.updateBookingDoctorInfoCreateRequest(
                                       doctorId: _cubit.selectedDoctor!.id);
 
-                                  _cubit.updateCreateDsmesBookingRequestServiceList(
-                                      // payment type will update later
-                                      selectedServices: [
+                                  _cubit
+                                      .updateCreateDsmesBookingRequestServiceList(
+                                          // payment type will update later
+                                          selectedServices: [
                                         ServiceItem(
                                           id: int.tryParse(
                                                   consultService?.id ?? '') ??

@@ -144,21 +144,23 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
       return null;
     }
 
-    // Get all services from all categories
+    // Get all services from telemedicine categories only
     List<ServiceData> allServices = [];
     for (var category in data.serviceList.categories) {
-      allServices.addAll(category.data);
+      // Only include services from telemedicine categories
+      if (category.type == "telemedicine") {
+        allServices.addAll(category.data);
+      }
     }
 
     if (allServices.isEmpty) {
-      print('DEBUG: No services found in any category');
+      print('DEBUG: No services found in telemedicine categories');
       return null;
     }
 
-    // Filter out services with null or zero prices
-    final servicesWithPrice = allServices
-        .where((service) => service.fromPrice != null && service.fromPrice > 0)
-        .toList();
+    // Filter out services with zero prices
+    final servicesWithPrice =
+        allServices.where((service) => service.fromPrice > 0).toList();
 
     print('DEBUG: Services with valid prices: ${servicesWithPrice.length}');
 
