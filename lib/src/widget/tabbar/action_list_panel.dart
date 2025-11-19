@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
 import 'package:medical/src/widget/Exercrises/exercrise_onboarding.dart';
+import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 
 class ActionListPanel extends StatelessWidget {
   ActionListPanel({required this.selectedIndex});
   final int selectedIndex;
+
+  Future<bool> _hasHbA1cData() async {
+    try {
+      final client = HbA1CClient();
+      final trend = await client.fetchTrend(1); // Use period filter 1 for "All"
+      return trend.trendItems?.items.isNotEmpty ?? false;
+    } catch (e) {
+      // If error occurs, default to intro page
+      return false;
+    }
+  }
 
   final data = [
     {
@@ -94,51 +109,97 @@ class ActionListPanel extends StatelessWidget {
   Widget buildItem(BuildContext context, int index, String name, String icon) {
     return GestureDetector(
       onTap: () async {
-        bool hasExerciseData = false;
-        bool hasGlucoseData = false;
+        // Early return if same index
+        if (selectedIndex == index) {
+          Navigator.pop(context);
+          return;
+        }
 
-        if (index == 1) {
-          hasGlucoseData = await HomeClient().fetchHomes().then((data) {
-            return data.glucoseIndex.index != null && data.glucoseIndex.index! > 0;
-          });
-        } else if (index == 3) {
+        bool hasExerciseData = false;
+        if (index == 3) {
           hasExerciseData = await HomeClient().fetchHomes().then((data) {
             return data.exercise?.isDataNotEmpty ?? false;
           });
         }
 
-        Navigator.pop(context);
-        if (selectedIndex == index) {
-          return;
-        }
+        // For HbA1C, check data before popping
+        bool hasHbA1cData = false;
         if (index == 0) {
-          Navigator.pushReplacementNamed(context, NavigatorName.detail_hba1c);
-        } else if (index == 1) {
-          if (hasGlucoseData) {
+          hasHbA1cData = await _hasHbA1cData();
+        }
+
+        // For BMI, try to read BmiBloc before popping (while we have access to parent context)
+        // This matches the pattern in home_v2.dart
+        BmiBloc? bmiBloc;
+        if (index == 5) {
+          try {
+            bmiBloc = BlocProvider.of<BmiBloc>(context, listen: false);
+          } catch (e) {
+            // BmiBloc not available in this context, route handler will create a new one
+          }
+        }
+
+        // Check if context is still valid before navigation
+        if (!context.mounted) return;
+
+        Navigator.pop(context);
+
+        // Use Future.microtask to ensure navigation happens after pop completes
+        Future.microtask(() {
+          if (!context.mounted) return;
+
+          if (index == 0) {
+            if (hasHbA1cData) {
+              Navigator.pushReplacementNamed(
+                  context, NavigatorName.hba1c_dashboard);
+            } else {
+              Navigator.pushReplacementNamed(
+                  context, NavigatorName.hba1c_intro_1st_page);
+            }
+          } else if (index == 1) {
             Navigator.pushReplacementNamed(
                 context, NavigatorName.detail_blood_sugar);
-          } else {
+          } else if (index == 2) {
             Navigator.pushReplacementNamed(
-                context, NavigatorName.glucose_intro_1st_page);
+                context, NavigatorName.detail_blood_pressure);
+          } else if (index == 3) {
+            if (hasExerciseData) {
+              showActivityInputMethodSelection(
+                  hasExerciseData: hasExerciseData);
+            } else {
+              Navigator.pushReplacementNamed(
+                  context, NavigatorName.exercrise_onboarding);
+            }
+          } else if (index == 4) {
+            Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
+          } else if (index == 5) {
+            // Pass BmiBloc if available, otherwise route handler will create a new one
+            if (bmiBloc != null) {
+              final bloc =
+                  bmiBloc; // Store in local variable for use in callback
+              Map<String, dynamic> args = {
+                BmiOnBoardingPage.bmiBlocKey: bloc,
+              };
+              Navigator.pushReplacementNamed(context, NavigatorName.add_bmi,
+                      arguments: args)
+                  .then((value) {
+                // Handle callback similar to home_v2.dart
+                if (context.mounted) {
+                  if (bloc.hasModifiedData) {
+                    // Optionally refresh home data if needed
+                  }
+                  bloc.hasModifiedData = false;
+                }
+              });
+            } else {
+              // Navigate without bloc - route handler will create a new one
+              Navigator.pushReplacementNamed(context, NavigatorName.add_bmi);
+            }
           }
-        } else if (index == 2) {
-          Navigator.pushReplacementNamed(
-              context, NavigatorName.detail_blood_pressure);
-        } else if (index == 3) {
-          if (hasExerciseData) {
-            showActivityInputMethodSelection(hasExerciseData: hasExerciseData);
-          } else {
-            Navigator.pushReplacementNamed(
-                context, NavigatorName.exercrise_onboarding);
-          }
-        } else if (index == 4) {
-          Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
-        } else if (index == 5) {
-          Navigator.pushReplacementNamed(context, NavigatorName.detail_bmi);
-        }
-        // else if (index == 6) {
-        //   Navigator.pushReplacementNamed(context, NavigatorName.detail_emotion);
-        // }
+          // else if (index == 6) {
+          //   Navigator.pushReplacementNamed(context, NavigatorName.detail_emotion);
+          // }
+        });
       },
       child: Container(
           height: 74,

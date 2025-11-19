@@ -17,6 +17,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
+import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -210,7 +211,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
     }
     if (notifyName == 'hba1c_change_data') {
       _refresh();
-      checkScreen(NavigatorName.detail_hba1c);
+      // Use smart navigation instead of direct navigation
+      // checkScreen(NavigatorName.detail_hba1c);
     }
     if (notifyName == 'goal_calo_changed' || notifyName == 'refresh_home') {
       _refresh();
@@ -586,8 +588,8 @@ class _HomeControllerState extends State<HomeController> with Observer {
                                     const EdgeInsets.only(left: 16, right: 16),
                                 child: GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(
-                                          context, NavigatorName.detail_hba1c);
+                                      HbA1cNavigationHelper.navigateToHbA1C(
+                                          context);
                                     },
                                     child: model != null &&
                                             model!.hbA1CIndex.index != 0
@@ -683,7 +685,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
               context, CreateGoalPage(AppSettings.smartGoalDayList));
           //    Navigator.pushNamed(context, NavigatorName.my_progress);
         } else if (index == 7) {
-          Navigator.pushNamed(context, NavigatorName.detail_hba1c);
+          HbA1cNavigationHelper.navigateToHbA1C(context);
         }
 
         return;
@@ -1507,8 +1509,9 @@ class _HomeControllerState extends State<HomeController> with Observer {
   Widget _buildHbA1C(BuildContext context, int index, String? name,
       String? image, String? icon, HbA1CIndexModel model) {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, NavigatorName.detail_hba1c);
+      onTap: () async {
+        // Import HbA1cNavigationHelper để sử dụng logic kiểm tra dữ liệu
+        await HbA1cNavigationHelper.navigateToHbA1C(context);
       },
       child: Stack(children: [
         Positioned.fill(

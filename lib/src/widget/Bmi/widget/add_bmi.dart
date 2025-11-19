@@ -22,6 +22,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
+import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -1123,6 +1124,9 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
         //   },
         // );
         //  if(widget.goalId != null && widget.goalId?.isNotEmpty == true){
+        // Set flag to show phone validation after successful blood pressure input
+        await PhoneValidationManager.setShouldShowPhoneValidation();
+
         await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
             1, ScheduleType.weight.typeIndex);
         //  }

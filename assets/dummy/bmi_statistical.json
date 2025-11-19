@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "success": true
+  },
+  "data": {
+    "value": 0,
+    "weight": 0,
+    "height": 0,
+    "currentLedend": {
+      "text": "string",
+      "colorCode": "string",
+      "backgroundColorCode": "string",
+      "textcolorCode": "string"
+    },
+    "legends": [
+      {
+        "text": "string",
+        "colorCode": "string",
+        "backgroundColorCode": "string",
+        "textcolorCode": "string"
+      }
+    ]
+  }
+}

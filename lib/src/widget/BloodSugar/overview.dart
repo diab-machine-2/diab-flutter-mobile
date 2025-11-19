@@ -10,6 +10,7 @@ import 'package:medical/src/widget/BloodSugar/widget/bloodSugar_table.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
+
 import 'widget/bloodSugar_contain_detail.dart';
 import 'widget/blood_glucose_item.dart';
 

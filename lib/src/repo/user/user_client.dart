@@ -1,10 +1,13 @@
 import 'dart:convert';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/user/category_item_user_model.dart';
 import 'package:medical/src/modal/user/goal_info.dart';
 import 'package:medical/src/modal/user/manual.dart';
@@ -24,8 +27,6 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
-import 'package:medical/src/modal/error/error_model.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -477,7 +478,8 @@ class UserClient extends FetchClient {
         'weight': userInfo.weight == null ? 0 : userInfo.weight,
         'email': userInfo.email ?? '',
         'secondPhoneNumber': userInfo.secondPhoneNumber ?? '',
-        'phoneNumber': userInfo.phoneNumber ?? null
+        'phoneNumber': userInfo.phoneNumber ?? null,
+        'goal_weight': userInfo.goalWeight,
       };
       AccountRule? accountRule;
       if (isUpdateDiabetes) {

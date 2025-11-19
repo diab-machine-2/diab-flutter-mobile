@@ -342,6 +342,8 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
         energyGoal: double.parse(weeklyTargetBurnedCalorie.text.isEmpty
             ? '0'
             : weeklyTargetBurnedCalorie.text),
+        goalWeight:
+            double.parse(goalWeight.text.isEmpty ? '0' : goalWeight.text),
       );
       AppSettings.targetDuration = double.parse(dailyTargetDuration.text);
       Observable.instance.notifyObservers([], notifyName: "goal_calo_changed");

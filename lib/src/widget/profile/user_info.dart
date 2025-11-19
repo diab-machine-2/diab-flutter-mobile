@@ -47,7 +47,7 @@ class ProfileInfoController extends StatefulWidget {
 
   ProfileInfoController({required this.id});
 
-  static void updateUserInfo(BuildContext context, UserModel user,
+  static Future<void> updateUserInfo(BuildContext context, UserModel user,
       {bool isUpdateDiabetes = false}) async {
     try {
       BotToast.showLoading();

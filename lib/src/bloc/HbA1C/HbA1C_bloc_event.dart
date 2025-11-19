@@ -11,16 +11,20 @@ class FetchHbA1C extends HbA1CEvent {
 
 class FetchHbA1CTrend extends HbA1CEvent {
   final int type;
-  FetchHbA1CTrend({required this.type});
+  final bool takeAll;
+  FetchHbA1CTrend({required this.type, this.takeAll = false});
 }
 
 class FetchInputHbA1C extends HbA1CEvent {
   final int currentDateTime;
   final int periodFilterType;
   final int page;
+  final bool takeAll;
 
-  FetchInputHbA1C(
-      {required this.currentDateTime,
-      required this.periodFilterType,
-      required this.page});
+  FetchInputHbA1C({
+    required this.currentDateTime,
+    required this.periodFilterType,
+    required this.page,
+    this.takeAll = false,
+  });
 }

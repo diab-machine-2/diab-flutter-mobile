@@ -1,0 +1,284 @@
+{
+  "meta": {
+    "success": true
+  },
+  "data": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "code": "string",
+      "name": "string",
+      "description": "string",
+      "status": 0,
+      "type": 1,
+      "order": 0,
+      "orderHighest": 0,
+      "isEnabledRating": true,
+      "minCompletePercent": 0,
+      "coverId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "lessonModuleId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "lessonLevelId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "countLessonSection": 0,
+      "countLessonAccount": 0,
+      "countLessonQuiz": 0,
+      "countLessonQuizAccount": 0,
+      "learningStatus": 0,
+      "lessonModule": {
+        "id": "string",
+        "code": "string",
+        "name": "string",
+        "updateDate": "string",
+        "updaterName": "string",
+        "updaterUsername": "string",
+        "updaterCode": "string",
+        "updaterImage": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "url": "string"
+        }
+      },
+      "lessonLevel": {
+        "id": "string",
+        "code": "string",
+        "name": "string",
+        "order": 0,
+        "updateDate": "string",
+        "updaterName": "string",
+        "updaterUsername": "string",
+        "updaterCode": "string",
+        "updaterImage": {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "url": "string"
+        }
+      },
+      "quizLessons": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "code": "string",
+          "quizId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "lessonId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "quiz": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "code": "string",
+            "name": "string",
+            "status": 0,
+            "type": 0,
+            "lessonLevel": "string",
+            "lesson": "string",
+            "explain": "string",
+            "updateDatetime": 0,
+            "quizAnswers": [
+              {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "name": "string",
+                "isCorrect": true,
+                "order": 0,
+                "quizId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              }
+            ],
+            "userAnswers": [
+              "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            ]
+          }
+        }
+      ],
+      "lessonTagMappings": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "lessonId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "lessonTagId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "tag": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "name": "string",
+            "type": 1
+          }
+        }
+      ],
+      "lessonSections": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "code": "string",
+          "lessonId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "name": "string",
+          "type": 1,
+          "status": 0,
+          "firstContent": "string",
+          "secondContent": "string",
+          "imageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "imageTitle": "string",
+          "videoAddressLink": "string",
+          "linkType": 0,
+          "videoDescription": "string",
+          "audioAddressLink": "string",
+          "audioDescription": "string",
+          "order": 0,
+          "linkShare": "string",
+          "isComplete": true,
+          "quizLessonSections": [
+            {
+              "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "quizId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "lessonSectionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "quiz": {
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "code": "string",
+                "name": "string",
+                "status": 0,
+                "type": 0,
+                "lessonLevel": "string",
+                "lesson": "string",
+                "explain": "string",
+                "updateDatetime": 0,
+                "quizAnswers": [
+                  {
+                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                    "name": "string",
+                    "isCorrect": true,
+                    "order": 0,
+                    "quizId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                  }
+                ],
+                "userAnswers": [
+                  "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                ]
+              }
+            }
+          ],
+          "lessonSectionLinks": [
+            {
+              "id": "string",
+              "type": 1,
+              "url": "string"
+            }
+          ],
+          "lessonAccounts": [
+            {
+              "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "code": "string",
+              "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "lessonId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "lessonType": 1,
+              "lessonSectionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+              "isComplete": true,
+              "packageAccountTransactionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+            }
+          ],
+          "lessonSectionStates": [
+            {
+              "disabled": true,
+              "group": {
+                "disabled": true,
+                "name": "string"
+              },
+              "selected": true,
+              "text": "string",
+              "value": "string"
+            }
+          ],
+          "lessonSectionTypes": [
+            {
+              "disabled": true,
+              "group": {
+                "disabled": true,
+                "name": "string"
+              },
+              "selected": true,
+              "text": "string",
+              "value": "string"
+            }
+          ],
+          "image": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "url": "string"
+          }
+        }
+      ],
+      "lessonQuizAccounts": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "lessonId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "packageAccountTransactionId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        }
+      ],
+      "lessonReviews": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "lessonId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "accountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "rating": 1,
+          "note": "string"
+        }
+      ],
+      "lessonStates": [
+        {
+          "disabled": true,
+          "group": {
+            "disabled": true,
+            "name": "string"
+          },
+          "selected": true,
+          "text": "string",
+          "value": "string"
+        }
+      ],
+      "lessonModules": [
+        {
+          "disabled": true,
+          "group": {
+            "disabled": true,
+            "name": "string"
+          },
+          "selected": true,
+          "text": "string",
+          "value": "string"
+        }
+      ],
+      "lessonTypes": [
+        {
+          "disabled": true,
+          "group": {
+            "disabled": true,
+            "name": "string"
+          },
+          "selected": true,
+          "text": "string",
+          "value": "string"
+        }
+      ],
+      "lessonLevels": [
+        {
+          "disabled": true,
+          "group": {
+            "disabled": true,
+            "name": "string"
+          },
+          "selected": true,
+          "text": "string",
+          "value": "string"
+        }
+      ],
+      "lessonTags": [
+        {
+          "disabled": true,
+          "group": {
+            "disabled": true,
+            "name": "string"
+          },
+          "selected": true,
+          "text": "string",
+          "value": "string"
+        }
+      ],
+      "image": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "url": "string"
+      },
+      "imageVendor": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "url": "string"
+      },
+      "numberOfQuiz": 0,
+      "percentComplete": 0,
+      "linkShare": "string"
+    }
+  ]
+}

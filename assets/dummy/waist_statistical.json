@@ -1,0 +1,20 @@
+{
+  "meta": {
+    "success": true
+  },
+  "data": {
+    "current": 0,
+    "lowest": 0,
+    "highest": 0,
+    "goal": 0,
+    "message": "string",
+    "iconUrl": "string",
+    "trendItems": [
+      {
+        "date": 0,
+        "value": 0,
+        "colorCode": "string"
+      }
+    ]
+  }
+}
