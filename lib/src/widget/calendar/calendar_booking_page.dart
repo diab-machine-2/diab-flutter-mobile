@@ -299,7 +299,11 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                     CalendarBookingCubit.updateCount = 0;
                     Observable.instance
                         .notifyObservers([], notifyName: 'refresh_home');
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamedAndRemoveUntil(
+                      NavigatorName.tabbar,
+                      (route) => false, // This removes all routes from stack
+                    );
                   }),
             ),
             Expanded(

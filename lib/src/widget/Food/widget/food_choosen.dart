@@ -17,7 +17,7 @@ class FoodChoosen extends StatefulWidget {
   _FoodChoosenState createState() => _FoodChoosenState();
 }
 
-class _FoodChoosenState extends State<FoodChoosen> with Observer{
+class _FoodChoosenState extends State<FoodChoosen> with Observer {
   List<FoodModel> foods = [];
   double totalKcal = 0;
   bool showAll = false;
@@ -25,7 +25,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
   @override
   void initState() {
     super.initState();
-    foods = [...widget.foods!];
+    foods = [...(widget.foods ?? [])];
     calculatorCalo();
     Observable.instance.addObserver(this);
   }
@@ -52,7 +52,10 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
   calculatorCalo() {
     totalKcal = 0;
     foods.forEach((element) {
-      totalKcal += element.calorie! * (element.portion ?? 0);
+      final double calorie = (element.calorie ?? 0).toDouble();
+      final double quantity = (element.quantity ?? 0).toDouble();
+      final double portion = (element.portion ?? 0).toDouble();
+      totalKcal += calorie * portion;
     });
   }
 
@@ -157,7 +160,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                     width: 50,
                                     height: 50,
                                     child: NetWorkImageWidget(
-                                      imageUrl: foods[index].image!.url,
+                                      imageUrl: foods[index].image?.url ?? '',
                                       width: 50,
                                       height: 50,
                                     ),
@@ -168,15 +171,15 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(foods[index].name!,
+                                        Text(foods[index].name ?? '',
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontWeight: FontWeight.w500)),
                                         Text(
                                             foods[index].code ==
                                                     'OtherUneditable'
-                                                ? '${R.string.da_an.tr()} ${formatNumber((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0))} kcal'
-                                                : '${R.string.da_an.tr()} ${roundAsFixed((foods[index].portion ?? 0) * (foods[index].quantity ?? 0))} ${foods[index].unit}, ${formatNumber((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0))} kcal',
+                                                ? '${R.string.da_an.tr()} ${((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0)).round()} kcal'
+                                                : '${R.string.da_an.tr()} ${roundAsFixed((foods[index].portion ?? 0) * (foods[index].quantity ?? 0))} ${foods[index].unit ?? ''}, ${((foods[index].portion ?? 0) * (foods[index].calorie ?? 0)).round()} kcal',
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontWeight: FontWeight.w400))
@@ -186,9 +189,9 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                                   SizedBox(width: 8),
                                   GestureDetector(
                                     onTap: () {
-                                      Observable.instance.notifyObservers([], notifyName : "remove_food_from_cart", map: {
-                                    "food": foods[index]
-                                  });
+                                      Observable.instance.notifyObservers([],
+                                          notifyName: "remove_food_from_cart",
+                                          map: {"food": foods[index]});
                                       setState(() {
                                         foods.removeAt(index);
                                         showAll = foods.length != 0;
@@ -207,7 +210,9 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                       ),
                 GestureDetector(
                   onTap: () {
-                    widget.callback!(foods);
+                    if (widget.callback != null) {
+                      widget.callback!(foods);
+                    }
                   },
                   child: Container(
                       height: 48,
@@ -218,7 +223,10 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer{
                           gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.centerRight,
-                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                              colors: [
+                                R.color.greenGradientTop,
+                                R.color.greenGradientBottom
+                              ])),
                       child: Center(
                           child: Text(R.string.save.tr(),
                               style: TextStyle(

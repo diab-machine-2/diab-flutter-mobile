@@ -37,10 +37,8 @@ class NetWorkImageWidget extends StatelessWidget {
               width: width,
               height: height,
               imageUrl: imageUrl!,
-              color: isSelected
-                  ? Colors.white
-                  : null,
-              fit: fit,
+              color: isSelected ? Colors.white : null,
+              fit: BoxFit.cover,
               placeholder: showLoading
                   ? (_, __) {
                       return Container(color: R.color.transparent);
@@ -57,6 +55,7 @@ class NetWorkImageWidget extends StatelessWidget {
     return Container(
       alignment: Alignment.center,
       height: height,
+      width: width,
       decoration: BoxDecoration(
         color: R.color.main_6,
         borderRadius: BorderRadius.circular(6),

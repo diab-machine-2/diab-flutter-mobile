@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +9,6 @@ import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/Food/widget/food_of_category.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -131,8 +129,8 @@ class _CategoryFoodState extends State<CategoryFood>
                                   double totalCalo = 0;
                                   double number = 0;
                                   foodOfCategory.forEach((element) {
-                                    totalCalo +=
-                                        (element.portion ?? 0) * (element.calorie ?? 0);
+                                    totalCalo += (element.portion ?? 0) *
+                                        (element.calorie ?? 0);
                                     number += (element.portion ?? 0);
                                   });
                                   return GestureDetector(
@@ -161,9 +159,9 @@ class _CategoryFoodState extends State<CategoryFood>
                                             height: 50,
                                             child: NetWorkImageWidget(
                                               imageUrl: category
-                                                      .subCategories[index]
-                                                      .image
-                                                      .url,
+                                                  .subCategories[index]
+                                                  .image
+                                                  .url,
                                               width: 50,
                                               height: 50,
                                             ),
@@ -189,7 +187,7 @@ class _CategoryFoodState extends State<CategoryFood>
                                                             EdgeInsets.only(
                                                                 top: 4),
                                                         child: Text(
-                                                            '${R.string.da_chon.tr()} $number ${R.string.mon.tr()}, ${formatNumber(totalCalo)} ${R.string.kcal.tr()}',
+                                                            '${R.string.da_chon.tr()} $number ${R.string.khau_phan.tr()}, ${totalCalo.round()} ${R.string.kcal.tr()}',
                                                             style: TextStyle(
                                                                 color: R.color
                                                                     .black,
@@ -214,7 +212,7 @@ class _CategoryFoodState extends State<CategoryFood>
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodOfCategory(
-          category: category,
+        category: category,
         foods: selectedFoods,
         callback: (value) {},
         suggestKcal: widget.suggestKcal,

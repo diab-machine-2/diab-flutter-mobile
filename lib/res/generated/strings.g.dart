@@ -2,7 +2,7 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:easy_localization/easy_localization.dart';
+
 
 class Strings {
   String get ok => 'ok';
@@ -387,6 +387,7 @@ class Strings {
   String get che_do_dinh_duong_benh_tieu_duong =>
       'che_do_dinh_duong_benh_tieu_duong';
   String get luong_calo_ban_da_nap => 'luong_calo_ban_da_nap';
+  String get bua_an_gom => 'bua_an_gom';
   String get them_mon_an => 'them_mon_an';
   String get ban_chua_chon_mon_an => 'ban_chua_chon_mon_an';
   String get food_advice => 'food_advice';
@@ -1381,6 +1382,26 @@ class Strings {
   String get use_all_advanced_features => 'use_all_advanced_features';
   String get advanced_features => 'advanced_features';
   String get retry => 'retry';
+  String get day => 'day';
+  String get bmiInRangeQuestion => 'bmi_in_range_question';
+  String get inputHeightWarning => 'input_height_warning';
+  String get connectToHealthConnect => 'connect_to_health_connect';
+  String get inputWeight => 'input_weight';
+  String get notInputWaistWarning => 'not_input_waist_warning';
+  String get notInputWaistWarningDes => 'not_input_waist_warning_des';
+  String get inputRightNow => 'input_right_now';
+  String get averageBmi => 'average_bmi';
+  String get chieuCao => 'chieu_cao';
+  String get input_manual_des => 'input_manual_des';
+  String get range_bmi_title => 'range_bmi_title';
+  String get bmi_type => 'bmi_type';
+  String get bmi_threshold => 'bmi_threshold';
+  String get under_weight => 'under_weight';
+  String get normal_weight => 'normal_weight';
+  String get over_weight => 'over_weight';
+  String get class_1_obesity => 'class_1_obesity';
+  String get class_2_obesity => 'class_2_obesity';
+  String get weight_introducing_text => 'weight_introducing_text';
   String get no_data_blood_sugar_trend_chart => 'no_data_blood_sugar_trend_chart';
   String get connect_from_device => 'connect_from_device';
   String get glucose_connect_device_title => 'glucose_connect_device_title';
@@ -1400,4 +1421,10 @@ class Strings {
   String get ban_muon_dong_bo_so_dien_thoai => 'ban_muon_dong_bo_so_dien_thoai';
   String get login_with_phone => 'login_with_phone';
   String get login_with_zalo => 'login_with_zalo';
+  String get analyzing_your_meal => 'analyzing_your_meal';
+  String get choose_meal_image => 'choose_meal_image';
+  String get please_select_at_least_one_image => 'please_select_at_least_one_image';
+  String get max_image_select_dynamic => 'max_image_select_dynamic';
+  String get unknown_meal_image => 'unknown_meal_image';
+  String get no_data_within => 'no_data_within';
 }

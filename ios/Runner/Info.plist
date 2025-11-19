@@ -131,10 +131,16 @@
 	<string>Vui lòng cho phép DiaB truy cập microphone của bạn.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Cho phép diaB truy cập thư viện để lưu thông tin các chỉ số</string>
+   <key>NSAppleMusicUsageDescription</key>
+   <string>Cho phép diaB truy cập thư viện</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Cho phép diaB truy cập định vi</string>
+	<string>Cho phép diaB truy cập vị trí</string>
+   <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+   <string>Cho phép diaB truy cập vị trí</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Cho phép diaB truy cập định vi</string>
+	<string>Cho phép diaB truy cập vị trí</string>
 	<key>Privacy - Audio Video Interactions</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

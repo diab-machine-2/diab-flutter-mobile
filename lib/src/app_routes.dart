@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_instruction_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
@@ -11,6 +21,7 @@ import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 
+import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
 import 'widget/BloodPressure/add_bloodpressure_result.dart';
 import 'widget/BloodPressure/bloodPressure_detail_listing.dart';
@@ -19,7 +30,9 @@ import 'widget/BloodPressure/intro/bloodpressure_intro_2nd_page.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
 import 'widget/BloodSugar/bloodSugar_detail.dart';
 import 'widget/BloodSugar/bloodSugar_result.dto.dart';
+import 'widget/Food/confirm_gen_food.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'widget/Food/food_image_capture.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/glucose_intro/glucose_intro_1st_page.dart';
 import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
@@ -43,9 +56,14 @@ class AppRoutes {
               isRedirectFromNotification = data!['isRedirectFromNotification'];
             }
           }
-          page = TabbarController(
-            sharedCode: sharedCode,
-            isRedirectFromNotification: isRedirectFromNotification,
+
+          // Wrap with Weight (BMI) Bloc
+          page = BlocProvider(
+            create: (_) => BmiBloc(WeightRepository.instance),
+            child: TabbarController(
+              sharedCode: sharedCode,
+              isRedirectFromNotification: isRedirectFromNotification,
+            ),
           );
           break;
         }
@@ -115,6 +133,10 @@ class AppRoutes {
           glucoseDistributionType: data?['glucoseDistributionType'],
         );
         break;
+      case NavigatorName.blood_sugar_image_capture:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BloodSugarImageCapture();
+        break;
       case NavigatorName.paywall_screen:
         {
           page = PaywallScreen();
@@ -143,10 +165,103 @@ class AppRoutes {
         );
         break;
       // ~ END: Huyet Ap (mới) ~
-      case NavigatorName.blood_sugar_image_capture:
+      // 00 -- 00
+      // ~ Dinh Duong (mới) ~
+      case NavigatorName.confirm_food:
         final data = settings.arguments as Map<String, dynamic>?;
-        page = BloodSugarImageCapture();
+        page = ConfirmGeneratedFood(
+          generatedFoods: (data?['foods'] ?? []) as List<FoodModel>,
+          timeframe: data?['timeframe'] ?? '-',
+          timeframeId: data?['timeframeId'] ?? '-',
+          files: data?['files'] != null ? List<String>.from(data!['files']) : [],
+        );
         break;
+      case NavigatorName.food_image_capture:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = FoodImageCapture(
+          timeframe: data?['timeframe'] ?? '-',
+          timeframeId: data?['timeframeId'] ?? '-',
+        );
+        break;
+      // ~ END: Dinh Duong (mới) ~
+      case NavigatorName.add_bmi:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = (data?[BmiOnBoardingPage.bmiBlocKey] != null)
+            ? BlocProvider<BmiBloc>.value(
+                value: data?[BmiOnBoardingPage.bmiBlocKey],
+                child: BmiOnBoardingPage(
+                  type: data?['type'],
+                  id: data?['id'],
+                  goalId: data?['goalId'],
+                  isCurrentBmi: data?['isCurrentBmi'],
+                ),
+              )
+            : BlocProvider<BmiBloc>(
+                create: (_) => BmiBloc(WeightRepository.instance),
+                child: BmiOnBoardingPage(
+                  type: data?['type'],
+                  id: data?['id'],
+                  goalId: data?['goalId'],
+                  isCurrentBmi: data?['isCurrentBmi'],
+                ),
+              );
+      case NavigatorName.bmiInputPage:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = MultiBlocProvider(
+          providers: [
+            BlocProvider<BmiInputBloc>(
+              create: (_) => BmiInputBloc(WeightRepository.instance),
+            ),
+            (data?[AddBmiPage.bmiBlocKey] != null)
+                ? BlocProvider<BmiBloc>.value(
+                    value: data?[AddBmiPage.bmiBlocKey],
+                  )
+                : BlocProvider<BmiBloc>(
+                    create: (_) => BmiBloc(WeightRepository.instance),
+                  ),
+          ],
+          child: AddBmiPage(goalId: data?['goalId']),
+        );
+      case NavigatorName.bmiReviseRecordPage:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = MultiBlocProvider(
+          providers: [
+            BlocProvider<BmiInputBloc>(
+              create: (_) => BmiInputBloc(WeightRepository.instance),
+            ),
+            BlocProvider<BmiBloc>.value(
+              value: data?[ReviseWeightPage.bmiBlocKey],
+            )
+          ],
+          child: const ReviseWeightPage(),
+        );
+      case NavigatorName.bmiOverviewPage:
+        final data = settings.arguments as Map<String, dynamic>?;
+
+        page = MultiBlocProvider(
+          providers: [
+            BlocProvider<BmiInputBloc>.value(
+              value: data?[BmiOverviewPage.bmiInputBlocKey],
+            ),
+            BlocProvider<BmiBloc>.value(
+              value: data?[AddBmiPage.bmiBlocKey],
+            )
+          ],
+          child: const BmiOverviewPage(),
+        );
+      case NavigatorName.bmiHistoricalPage:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BlocProvider<BmiBloc>.value(
+          value: data?[BmiStatisticalDataPage.bmiBlocKey],
+          child: const BmiStatisticalDataPage(),
+        );
+      case NavigatorName.bmiInstructionPage:
+        final data = settings.arguments as Map<String, dynamic>?;
+        page = BlocProvider<BmiBloc>.value(
+          value: data?[BmiInstructionPage.bmiBlocKey],
+          child: const BmiInstructionPage(),
+        );
+      // end region weight
       // Phone Update Flow
       case NavigatorName.update_phone_number:
         page = UpdatePhoneNumberPage();

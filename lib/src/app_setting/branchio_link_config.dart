@@ -18,6 +18,10 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/model/repository/weight_repository.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
@@ -372,7 +376,8 @@ class BranchioLinkConfig {
       feature: 'lesson_share',
       channel: 'app_share',
       campaign: 'lesson_share',
-      stage: "${Const.ENVIRONMENT_DEFAULT} ${lesson.code ?? 'missing_lesson_code'}",
+      stage:
+          "${Const.ENVIRONMENT_DEFAULT} ${lesson.code ?? 'missing_lesson_code'}",
       tags: ['${user.accountId}'],
     );
 
@@ -454,17 +459,32 @@ class BranchioLinkConfig {
         'args': {'type': 'input', 'id': null}
       },
       'can-nang': {
-        'route': NavigatorName.add_bmi,
+        'route': NavigatorName.bmiInputPage,
         'args': {'type': 'input'}
       }
     };
 
     if (measurementRoutes.containsKey(screenValue)) {
       final routeInfo = measurementRoutes[screenValue]!;
+
+      if (routeInfo['route'] == NavigatorName.add_food) {
+        FoodActionPopup.show(navigatorKey.currentContext!);
+        return;
+      }
+
+      // Prepare arguments
+      Map<String, dynamic> args =
+          Map<String, dynamic>.from(routeInfo['args'] ?? {});
+      if (routeInfo['route'] == NavigatorName.bmiInputPage) {
+        // Provide a BmiBloc instance for the bmi input flow
+        args[AddBmiPage.bmiBlocKey] = BmiBloc(WeightRepository.instance);
+      }
+
+      // For all other measurements, navigate directly
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
           routeInfo['route'] as String,
           (route) => route.settings.name == NavigatorName.tabbar,
-          arguments: routeInfo['args']);
+          arguments: args);
     } else {
       print('Unknown measurement screen value: $screenValue');
     }
