@@ -14,6 +14,7 @@ import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/utils/date_utils.dart';
+import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -467,27 +468,41 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       final ts = dayStatesList[i]?.day;
       if (ts == null) continue;
       final date =
-          DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true).toLocal();
+          DateTime.fromMillisecondsSinceEpoch(ts * 1000, isUtc: true).toLocal();
       if (DateUtil.isSameDate(date, today)) {
         onSelectDay(i);
         return;
       }
     }
 
-    // If today is not in current week, try to find it in other available weeks
+    // If today is not in current week, navigate to currentWeekStudying (the actual current week)
+    // and select today
     print(
         'Today (${today.day}/${today.month}) not found in current week ${currentWeekIndex}');
     print(
         'Available days in current week: ${dayStatesList.map((d) => d?.day).toList()}');
+    print('Navigating to currentWeekStudying: $currentWeekStudying');
 
-    // Try to find today in other weeks by checking week boundaries
-    final targetWeekIndex = _findWeekContainingDate(today);
-    if (targetWeekIndex != null && targetWeekIndex != currentWeekIndex) {
-      print('Found today in week $targetWeekIndex, navigating...');
+    // Find the index in weekStatesList where week == currentWeekStudying
+    // (week is 1-indexed, but array index is 0-indexed)
+    int? targetWeekIndex;
+    for (int i = 0; i < weekStatesList.length; i++) {
+      if (weekStatesList[i]?.completionStatus == CompletionStatus.studying) {
+        targetWeekIndex = i;
+        break;
+      }
+    }
+
+    // Navigate to the current studying week and select today
+    if (targetWeekIndex != null) {
+      print(
+          'Found currentWeekStudying ($currentWeekStudying) at index $targetWeekIndex');
       _targetDateToSelect = today;
       onSelectWeek(targetWeekIndex);
     } else {
-      print('Could not find today in any week, using fallback logic');
+      // Fallback: try to calculate which week contains today
+      print(
+          'currentWeekStudying ($currentWeekStudying) not found in weekStatesList, using fallback logic');
       _findAndNavigateToWeekContainingDate(today);
     }
   }
@@ -507,7 +522,22 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       }
     }
 
-    // If picked date is not in current week, find which week it belongs to
+    // If picked date is not in current week, check if it's in a past or future week
+    final today = DateTime.now();
+    final pickedWeekIndex = _calculateWeekIndexForDate(pickedDate);
+    final todayWeekIndex = _calculateWeekIndexForDate(today);
+
+    // If the picked date is in a different week than today, navigate to today's week and select today
+    if (pickedWeekIndex != null &&
+        todayWeekIndex != null &&
+        pickedWeekIndex != todayWeekIndex) {
+      // Navigate to current week and select today
+      _targetDateToSelect = today;
+      onSelectWeek(todayWeekIndex);
+      return;
+    }
+
+    // Otherwise, use the existing behavior to navigate to the week containing the picked date
     _findAndNavigateToWeekContainingDate(pickedDate);
   }
 

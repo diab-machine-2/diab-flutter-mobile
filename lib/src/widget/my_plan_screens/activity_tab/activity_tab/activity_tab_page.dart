@@ -418,7 +418,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: true,
+            visible: false,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: _buildWeekListWidget(),
