@@ -66,6 +66,22 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
 
   bool get _isAddable => _files.length < widget.maxMedia;
 
+  bool _isFileObject(dynamic file) {
+    if (file == null) return false;
+    // Check if it's XFile or PickedFile by checking for path property
+    // Using runtimeType for more reliable type checking with dynamic
+    final runtimeType = file.runtimeType.toString();
+    if (runtimeType == 'XFile' || runtimeType == 'PickedFile') {
+      return true;
+    }
+    // Fallback: check if it has a path property (for file objects)
+    try {
+      return file.path != null && file.path is String;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -240,7 +256,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                           width: 56,
                           height: 56,
                           clipBehavior: Clip.hardEdge,
-                          child: _files[index] is PickedFile
+                          child: _isFileObject(_files[index])
                               ? Image.file(
                                   File(_files[index].path),
                                   fit: BoxFit.cover,
@@ -256,7 +272,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (_files[index] is PickedFile) {
+                              if (_isFileObject(_files[index])) {
                                 _files.removeAt(index);
                                 _fileNetworkName.removeAt(index);
                               } else {
@@ -289,7 +305,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            _files[index] is PickedFile
+            _isFileObject(_files[index])
                 ? Image.file(
                     File(_files[index].path),
                     fit: BoxFit.contain,

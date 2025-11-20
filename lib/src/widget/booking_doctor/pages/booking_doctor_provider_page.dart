@@ -16,6 +16,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BookingDoctorProvidersPage extends StatefulWidget {
@@ -455,8 +456,10 @@ class _BookingDoctorProvidersPageState
                       width: 72,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: Image.network(
-                            "${Utils.getHostDocosanUrl()}${data.avatar}"),
+                        child: NetWorkImageWidget(
+                            imageUrl:
+                                '${Utils.getHostDocosanUrl()}${data.avatar}',
+                            fit: BoxFit.cover),
                       )),
                   GapW(12),
                   Expanded(

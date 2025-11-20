@@ -17,6 +17,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 class BookingDoctorDetailPage extends StatefulWidget {
   final int clinicId;
@@ -204,8 +205,9 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                     width: 72,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(5),
-                      child: Image.network(
-                          "${Utils.getHostDocosanUrl()}${data.avatar}"),
+                      child: NetWorkImageWidget(
+                        imageUrl: '${Utils.getHostDocosanUrl()}${data.avatar}',
+                      ),
                     )),
                 GapW(12),
                 Expanded(
