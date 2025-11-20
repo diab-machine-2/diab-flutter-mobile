@@ -155,7 +155,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   BotToast.closeAllLoading();
                 }
                 return CommonPage(
-                  title: R.string.cap_nhat_chi_so_dinh_duong.tr(),
+                  title: widget.type == 'update'
+                      ? R.string.cap_nhat_chi_so_dinh_duong.tr()
+                      : R.string.nhap_chi_so_dinh_duong.tr(),
                   background: R.drawable.bg_splash,
                   onTapBack: _showDialogSave,
                   appBarAction: GestureDetector(
@@ -1205,8 +1207,11 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
         _cubit.selectedFoods.isEmpty &&
         _cubit.files.isEmpty) {
       // Navigate directly using pushReplacement
-      NavigationUtil.navigatePage(
-          context, FoodDetailTabbarController(initialTabIndex: 1));
+      // NavigationUtil.navigatePage(
+      //     context, FoodDetailTabbarController(initialTabIndex: 1));
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
       return;
     }
     showDialog(

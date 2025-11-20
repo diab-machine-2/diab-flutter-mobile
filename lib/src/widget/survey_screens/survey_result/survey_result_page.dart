@@ -127,7 +127,7 @@ class _SurveyResultPageState extends State<SurveyResultPage> {
                       ScheduleType.survey.typeIndex,
                     );
                   }
-                  NavigationUtil.popToFirst(context);
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                   Observable.instance
                       .notifyObservers([], notifyName: "food_change_data");
                 },
