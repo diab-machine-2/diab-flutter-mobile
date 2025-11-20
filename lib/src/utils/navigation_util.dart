@@ -61,6 +61,12 @@ class NavigationUtil {
         builder: (context) => widget));
   }
 
+  static Future navigateReplacePage(BuildContext context, Widget widget) {
+    return Navigator.of(context).pushReplacement(MaterialPageRoute(
+        settings: RouteSettings(name: widget.runtimeType.toString()),
+        builder: (context) => widget));
+  }
+
   static Future rootNavigatePage(BuildContext context, Widget widget) {
     return Navigator.of(context, rootNavigator: true)
         .push(MaterialPageRoute(builder: (context) => widget));

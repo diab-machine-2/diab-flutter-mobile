@@ -138,8 +138,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   // No need to pop first as replacement will handle it
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (mounted) {
-                      NavigationUtil.navigatePage(context,
-                          FoodDetailTabbarController(initialTabIndex: 1));
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      }
                     }
                   });
                 }
@@ -1198,9 +1199,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
           _cubit.removeIDs.isEmpty &&
           date.millisecondsSinceEpoch ==
               _cubit.selectedDate.millisecondsSinceEpoch) {
-        // Navigate directly using pushReplacement
-        NavigationUtil.navigatePage(
-            context, FoodDetailTabbarController(initialTabIndex: 1));
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
         return;
       }
     } else if (note.isEmpty &&
@@ -1276,10 +1277,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                               // Navigate directly using pushReplacement
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 if (mounted) {
-                                  NavigationUtil.navigatePage(
-                                      context,
-                                      FoodDetailTabbarController(
-                                          initialTabIndex: 1));
+                                  if (Navigator.canPop(context)) {
+                                    Navigator.pop(context);
+                                  }
                                 }
                               });
                             },
