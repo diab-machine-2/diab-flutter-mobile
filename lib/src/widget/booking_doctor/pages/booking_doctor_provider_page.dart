@@ -118,6 +118,9 @@ class _BookingDoctorProvidersPageState
         kind: Const.BOOKING_TYPE_DOCTOR,
       );
 
+      _cubit.updateSearchBookingClinicListRequestServiceTypes(
+          serviceTypes: [DsmesAppointmentMode.telemedicine.toString()]);
+
       final request = _cubit.searchBookingClinicListRequest;
       if (request == null) {
         setState(() {
@@ -258,7 +261,27 @@ class _BookingDoctorProvidersPageState
                                 shrinkWrap: true,
                                 itemCount:
                                     _cubit.listBookingClinicProvider.length,
-                                separatorBuilder: (context, index) => GapH(12),
+                                separatorBuilder: (context, index) {
+                                  final currentData =
+                                      _cubit.listBookingClinicProvider[index];
+                                  final nextData = index + 1 <
+                                          _cubit
+                                              .listBookingClinicProvider.length
+                                      ? _cubit
+                                          .listBookingClinicProvider[index + 1]
+                                      : null;
+                                  final currentService = _getLowestPriceService(
+                                      currentData.service, currentData);
+                                  final nextService = nextData != null
+                                      ? _getLowestPriceService(
+                                          nextData.service, nextData)
+                                      : null;
+                                  if (currentService == null ||
+                                      nextService == null) {
+                                    return SizedBox(height: 0);
+                                  }
+                                  return GapH(12);
+                                },
                                 itemBuilder: (context, index) {
                                   BookingClinicProvider data =
                                       _cubit.listBookingClinicProvider[index];
@@ -401,6 +424,7 @@ class _BookingDoctorProvidersPageState
 
   _buildDoctorItem(BookingClinicProvider data) {
     final consultService = _getLowestPriceService(data.service, data);
+    if (consultService == null) return SizedBox(height: 0);
 
     return GestureDetector(
       onTap: () async {
@@ -435,50 +459,50 @@ class _BookingDoctorProvidersPageState
                             "${Utils.getHostDocosanUrl()}${data.avatar}"),
                       )),
                   GapW(12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        _getDoctorNameWithPrefix(data),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getDoctorNameWithPrefix(data),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      GapH(10),
-                      Row(
-                        children: [
-                          RatingHeartWidget(
-                            rating: data.star ?? 5.0,
-                            heartSize: 16,
-                            spacing: 2,
-                            filledColor: R.color.color0xffB4802D,
-                            emptyColor: Color(0xFFE0E0E0),
-                          ),
-                          GapW(6),
-                          Text(
-                            '${(data.star ?? 5.0).toStringAsFixed(1)}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
-                              color: R.color.color0xff5E6566,
+                        GapH(10),
+                        Row(
+                          children: [
+                            RatingHeartWidget(
+                              rating: data.star ?? 5.0,
+                              heartSize: 16,
+                              spacing: 2,
+                              filledColor: R.color.color0xffB4802D,
+                              emptyColor: Color(0xFFE0E0E0),
                             ),
-                          ),
-                          GapW(4),
-                          Text(
-                            '(${data.totalReview ?? 0})',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
-                              color: R.color.color0xff5E6566,
+                            GapW(6),
+                            Text(
+                              '${(data.star ?? 5.0).toStringAsFixed(1)}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: R.color.color0xff5E6566,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            GapW(4),
+                            Text(
+                              '(${data.totalReview ?? 0})',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: R.color.color0xff5E6566,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

@@ -1385,4 +1385,6 @@ exchange_return_policy,"Chính sách đổi trả","Exchange and Return Policy",
 doctor_name,"Bác sĩ","Doctor",
 doctor_good_at,Bác sĩ giỏi về,Doctor good at,
 language,Ngôn ngữ,Language,
-no_data_within,Không có dữ liệu\ntrong {} ngày gần nhất,No data\nwithin {} latest days
+no_data_within,Không có dữ liệu\ntrong {} ngày gần nhất,No data\nwithin {} latest days,
+introduce,Giới thiệu,Introduce,
+dao_tao,Đào tạo,Education

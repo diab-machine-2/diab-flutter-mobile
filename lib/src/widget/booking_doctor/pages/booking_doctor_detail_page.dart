@@ -392,7 +392,7 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                       GapW(8),
                       Flexible(
                         child: Text(
-                          R.string.training.tr(),
+                          R.string.dao_tao.tr(),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
