@@ -7,7 +7,6 @@ import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 
 class HbA1cDetailPage extends StatefulWidget {
   final int? initPeriodFilterType;
@@ -36,53 +35,64 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   }
 
   HbA1CBloc _hbA1CBloc = HbA1CBloc();
-  int _selectedUIIndex = 0; // Default to "Tất cả"
-  int _periodFilterType =
-      3; // API period filter type (3 = 24 months, used with takeAll for "Tất cả")
+  int _periodFilterType = 3; // API period filter type (3 = 24 months)
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isLoadingMore = false;
+  ScrollController _scrollController = ScrollController();
+  List<InputHbA1CModel> _allItems = [];
 
   @override
   void initState() {
     super.initState();
-    // Initialize with passed filter type or default
-    if (widget.initPeriodFilterType != null) {
-      _selectedUIIndex = widget.initPeriodFilterType!;
-      // Map UI index to API periodFilterType:
-      // 0 (Tất cả) -> 3 (with takeAll=true), 1 (6 tháng) -> 1, 2 (12 tháng) -> 2, 3 (24 tháng) -> 3
-      _periodFilterType = _selectedUIIndex == 0 ? 3 : _selectedUIIndex;
-    }
+    // Always use periodFilterType = 3 (24 months)
+    _periodFilterType = 3;
+    _scrollController.addListener(_onScroll);
     _loadData();
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _hbA1CBloc.close();
     super.dispose();
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent * 0.9 &&
+        !_isLoadingMore &&
+        _hasMore) {
+      _loadMore();
+    }
+  }
+
   void _loadData() {
-    // When "Tất cả" (index 0) is selected, use takeAll = true
-    bool useTakeAll = _selectedUIIndex == 0;
+    _currentPage = 1;
+    _hasMore = true;
+    _allItems = [];
     _hbA1CBloc.add(FetchInputHbA1C(
       currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       periodFilterType: _periodFilterType,
-      page: 1,
-      takeAll: useTakeAll,
+      page: _currentPage,
+      takeAll: false,
     ));
   }
 
-  void _onFilterChanged(int index) {
-    if (_selectedUIIndex == index) return; // Prevent unnecessary reload
+  void _loadMore() {
+    if (_isLoadingMore || !_hasMore) return;
 
     setState(() {
-      _selectedUIIndex = index;
-      // Map UI index to API periodFilterType:
-      // 0 (Tất cả) -> use takeAll=true with periodFilterType=3 (24 months) + size=1000
-      // 1 (6 tháng) -> 1
-      // 2 (12 tháng) -> 2
-      // 3 (24 tháng) -> 3
-      _periodFilterType = index == 0 ? 3 : index;
+      _isLoadingMore = true;
     });
-    _loadData();
+
+    _currentPage++;
+    _hbA1CBloc.add(FetchInputHbA1C(
+      currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      periodFilterType: _periodFilterType,
+      page: _currentPage,
+      takeAll: false,
+    ));
   }
 
   @override
@@ -96,6 +106,20 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
           listener: (context, state) {
             if (state is HbA1CError) {
               Message.showToastMessage(context, state.message);
+            } else if (state is HbA1CDetailLoaded) {
+              // Update list in listener to avoid concurrent modification during build
+              if (_currentPage == 1) {
+                // First page - replace all items with a new list copy
+                _allItems = List<InputHbA1CModel>.from(state.inputHbA1CModel);
+              } else {
+                // Subsequent pages - create a new list with existing items + new items
+                final newItems =
+                    List<InputHbA1CModel>.from(state.inputHbA1CModel);
+                _allItems = List<InputHbA1CModel>.from(_allItems)
+                  ..addAll(newItems);
+              }
+              _hasMore = state.hasMore ?? false;
+              _isLoadingMore = false;
             }
           },
           builder: (context, state) {
@@ -104,7 +128,8 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
             List<InputHbA1CModel>? model;
 
             if (state is HbA1CDetailLoaded) {
-              model = state.inputHbA1CModel;
+              // Use the already updated _allItems from listener
+              model = _allItems;
               isLoading = false;
             }
 
@@ -114,9 +139,6 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 12),
-                  _buildFilter(),
-                  const SizedBox(height: 16),
                   Expanded(
                     child: _buildContent(isLoading, model),
                   ),
@@ -150,26 +172,6 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
     );
   }
 
-  Widget _buildFilter() {
-    final List<String> labels = [
-      R.string.all.tr(),
-      '6 tháng',
-      '12 tháng',
-      '24 tháng',
-    ];
-    final List<int> values = [0, 1, 2, 3];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: HorizontalSelector(
-        onSelected: _onFilterChanged,
-        initialValue: _selectedUIIndex,
-        values: values,
-        labels: labels,
-      ),
-    );
-  }
-
   Widget _buildContent(bool isLoading, List<InputHbA1CModel>? model) {
     if (isLoading) {
       return Center(child: CircularProgressIndicator());
@@ -184,10 +186,20 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
         _loadData();
       },
       child: ListView.builder(
+        controller: _scrollController,
         physics: AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.only(bottom: 100, top: 10, left: 16, right: 16),
-        itemCount: model.length,
+        itemCount: model.length + (_isLoadingMore ? 1 : 0),
         itemBuilder: (context, index) {
+          if (index == model.length) {
+            // Loading indicator at the end
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
           return _buildDetailItem(model[index], index);
         },
       ),
@@ -359,25 +371,8 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   }
 
   Widget _buildEmptyState() {
-    String emptyMessage = _getEmptyStateText();
-
     return Center(
       child: SizedBox.expand(),
     );
-  }
-
-  String _getEmptyStateText() {
-    switch (_selectedUIIndex) {
-      case 0: // Tất cả
-        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
-      case 1: // 6 tháng
-        return 'Không có dữ liệu\ntrong 6 tháng gần nhất';
-      case 2: // 12 tháng
-        return 'Không có dữ liệu\ntrong 12 tháng gần nhất';
-      case 3: // 24 tháng
-        return 'Không có dữ liệu\ntrong 24 tháng gần nhất';
-      default:
-        return 'Chưa có dữ liệu HbA1c\nHãy nhập chỉ số để theo dõi';
-    }
   }
 }
