@@ -138,8 +138,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   // No need to pop first as replacement will handle it
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (mounted) {
-                      NavigationUtil.navigatePage(context,
-                          FoodDetailTabbarController(initialTabIndex: 1));
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      }
                     }
                   });
                 }
@@ -155,7 +156,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   BotToast.closeAllLoading();
                 }
                 return CommonPage(
-                  title: R.string.cap_nhat_chi_so_dinh_duong.tr(),
+                  title: widget.type == 'update'
+                      ? R.string.cap_nhat_chi_so_dinh_duong.tr()
+                      : R.string.nhap_chi_so_dinh_duong.tr(),
                   background: R.drawable.bg_splash,
                   onTapBack: _showDialogSave,
                   appBarAction: GestureDetector(
@@ -1196,17 +1199,20 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
           _cubit.removeIDs.isEmpty &&
           date.millisecondsSinceEpoch ==
               _cubit.selectedDate.millisecondsSinceEpoch) {
-        // Navigate directly using pushReplacement
-        NavigationUtil.navigatePage(
-            context, FoodDetailTabbarController(initialTabIndex: 1));
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
         return;
       }
     } else if (note.isEmpty &&
         _cubit.selectedFoods.isEmpty &&
         _cubit.files.isEmpty) {
       // Navigate directly using pushReplacement
-      NavigationUtil.navigatePage(
-          context, FoodDetailTabbarController(initialTabIndex: 1));
+      // NavigationUtil.navigatePage(
+      //     context, FoodDetailTabbarController(initialTabIndex: 1));
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
       return;
     }
     showDialog(
@@ -1271,10 +1277,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                               // Navigate directly using pushReplacement
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 if (mounted) {
-                                  NavigationUtil.navigatePage(
-                                      context,
-                                      FoodDetailTabbarController(
-                                          initialTabIndex: 1));
+                                  if (Navigator.canPop(context)) {
+                                    Navigator.pop(context);
+                                  }
                                 }
                               });
                             },

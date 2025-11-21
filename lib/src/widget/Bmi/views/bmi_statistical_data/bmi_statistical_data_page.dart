@@ -7,8 +7,8 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
+import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
-import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_date_filter_bar.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_record_card.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_statistical_data_app_bar.dart';
 
@@ -29,10 +29,10 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
     super.initState();
     _bmiBloc = context.read();
     _bmiBloc
-      // ..changePeriodTime(
-      //   BmiDateFilterType.aWeek,
-      //   isStatisticalView: false,
-      // )
+      ..changePeriodTime(
+        BmiDateFilterType.threeMonths,
+        isStatisticalView: false,
+      )
       ..hasNewData = false;
   }
 
@@ -48,24 +48,7 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
           builder: (context, state) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // const SizedBox(height: 12,),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 16,
-                    horizontal: 12,
-                  ),
-                  child: BmiDateFilterBar(
-                    onChanged: (filterType) {
-                      _bmiBloc.changePeriodTime(
-                        filterType,
-                        isStatisticalView: false,
-                      );
-                    },
-                  ),
-                ),
-                Expanded(child: const _HistoricalWeightListView())
-              ],
+              children: [Expanded(child: const _HistoricalWeightListView())],
             );
           }),
     );
@@ -96,17 +79,27 @@ class _HistoricalWeightListView extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               DateTime now = DateTime.now();
+              DateTime today = DateTime(now.year, now.month, now.day);
+              DateTime yesterday = today.subtract(const Duration(days: 1));
               DateTime dateTime = groupedData.keys.elementAt(index);
+              DateTime itemDate =
+                  DateTime(dateTime.year, dateTime.month, dateTime.day);
               String date = _dateFormat.format(dateTime);
-              bool isToday = now.year == dateTime.year &&
-                  now.month == dateTime.month &&
-                  now.day == dateTime.day;
+
+              String displayText;
+              if (itemDate == today) {
+                displayText = R.string.today.tr();
+              } else if (itemDate == yesterday) {
+                displayText = R.string.yesterday.tr();
+              } else {
+                displayText = date;
+              }
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isToday ? R.string.today.tr() : date,
+                    displayText,
                     style: R.style.boldXLargeStyle,
                   ),
                   const SizedBox(

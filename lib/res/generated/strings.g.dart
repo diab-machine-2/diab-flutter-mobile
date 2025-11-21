@@ -1427,4 +1427,5 @@ class Strings {
   String get max_image_select_dynamic => 'max_image_select_dynamic';
   String get unknown_meal_image => 'unknown_meal_image';
   String get no_data_within => 'no_data_within';
+  String get yesterday => 'yesterday';
 }
