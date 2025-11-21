@@ -299,7 +299,7 @@ class FoodClient extends FetchClient {
       }
       final response = await super
           .postHttp(path: '/App/Diet/InputAI', params: params, files: files);
-      log('params: $params');
+      log('input AI nutrition params: $params');
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {

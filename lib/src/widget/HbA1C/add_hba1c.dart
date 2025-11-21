@@ -652,7 +652,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
                                     ])
                               : null),
                       child: Center(
-                        child: Text('Lưu',
+                        child: Text(R.string.save.tr(),
                             style: TextStyle(
                                 color: _isInputValid
                                     ? R.color.white
