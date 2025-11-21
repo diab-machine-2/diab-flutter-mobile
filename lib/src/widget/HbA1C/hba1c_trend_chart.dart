@@ -757,8 +757,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                 showOnTopOfTheChartBoxArea: true,
                                 fitInsideVertically: true,
                                 fitInsideHorizontally: true,
-                                tooltipBgColor:
-                                    Colors.grey.shade800.withOpacity(0.9),
+                                tooltipBgColor: Colors.transparent,
                                 tooltipRoundedRadius: 8,
                                 getTooltipItems:
                                     (List<LineBarSpot> lineBarsSpot) {
@@ -771,7 +770,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                       return LineTooltipItem(
                                         '${dataPoint.value.toStringAsFixed(1)}%',
                                         TextStyle(
-                                          color: Colors.white,
+                                          color: dataPoint.color,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
                                           fontFamily: R.font.sfpro,

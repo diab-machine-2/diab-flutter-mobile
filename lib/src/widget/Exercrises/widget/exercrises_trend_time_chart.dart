@@ -69,8 +69,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
   bool _shouldAutoScroll = true; // ✅ Mặc định scroll 1 lần khi có data mới
 
-  final Debouncer _toastDebouncer = Debouncer(milliseconds: 1000);
-
   void _scrollToSelectd({bool animated = true, int retry = 0}) {
     if (!_shouldAutoScroll || !mounted) return;
 
@@ -119,11 +117,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
     if (trends.isEmpty) {
       _focusIndex = -1;
-      _toastDebouncer.run(() {
-        if (mounted) {
-          Message.showToastMessage(context, R.string.no_data.tr());
-        }
-      });
       return;
     }
 
