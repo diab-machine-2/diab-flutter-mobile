@@ -147,7 +147,7 @@ class LessonModel {
       status: json['status'],
       type: json['type'],
       level: json['level'],
-      module: json['module'],
+      module: json['module'] is Map ? json['module']["name"] : json['module'],
       learningStatus: json['learningStatus'],
       percentComplete: json['percentComplete'],
       order: json['order'],
