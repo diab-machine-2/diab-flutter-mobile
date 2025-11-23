@@ -84,9 +84,9 @@ class MedicineItemModel {
       'breakDay': breakDay,
       'note': note,
     };
-    if (includeId && id != null) {
-      json['id'] = id;
-    }
+    // if (includeId && id != null) {
+    //   json['id'] = id;
+    // }
     return json;
   }
 

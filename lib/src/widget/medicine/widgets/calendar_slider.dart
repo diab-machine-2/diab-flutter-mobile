@@ -1,3 +1,4 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -166,23 +167,38 @@ class _CalendarSliderState extends State<CalendarSlider> {
                 },
               ),
               Expanded(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 24),
-                  height: 36,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Color(0xFFDADEDF)),
-                  ),
-                  child: Text(
-                    headerText,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 15,
-                      height: 1.46,
-                      letterSpacing: 0.4,
-                      color: Color(0xFF172823),
+                child: InkWell(
+                  onTap: () async {
+                    final picked = await showCustomDatePicker(context);
+                    if (picked != null) {
+                      await _ensureDateExists(picked);
+
+                      setState(() {
+                        _selectedDate = picked;
+                      });
+
+                      widget.onDateSelected(picked);
+                      _scrollToDate(picked, true);
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 24),
+                    height: 36,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Color(0xFFDADEDF)),
+                    ),
+                    child: Text(
+                      headerText,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                        height: 1.46,
+                        letterSpacing: 0.4,
+                        color: Color(0xFF172823),
+                      ),
                     ),
                   ),
                 ),
@@ -276,4 +292,103 @@ class _CalendarSliderState extends State<CalendarSlider> {
       ],
     );
   }
+
+  Future<DateTime?> showCustomDatePicker(BuildContext context) async {
+    final values = await showCalendarDatePicker2Dialog(
+      context: context,
+      config: CalendarDatePicker2WithActionButtonsConfig(
+        calendarType: CalendarDatePicker2Type.single,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100),
+        currentDate: DateTime.now(),
+        selectedDayHighlightColor: const Color(0xFF009688),
+        weekdayLabelTextStyle: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+        ),
+        dayTextStyle: const TextStyle(color: Colors.black87),
+        selectedDayTextStyle: const TextStyle(color: Colors.white),
+        todayTextStyle: const TextStyle(color: Colors.black87),
+        disabledDayTextStyle: const TextStyle(color: Colors.grey),
+        // calendarViewHeaderTextStyle: const TextStyle(
+        //   fontSize: 18,
+        //   fontWeight: FontWeight.bold,
+        //   color: Colors.black87,
+        // ),
+        cancelButtonTextStyle: const TextStyle(color: Colors.black54),
+        okButtonTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        okButton: Container(
+          width: 100,
+          height: 48,
+          decoration: BoxDecoration(
+            color: const Color(0xFF009688),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Center(
+            child: Text('Đồng ý', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        cancelButton: Container(
+          width: 100,
+          height: 48,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            'Hủy',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.black54),
+          ),
+        ),
+      ),
+      // THÊM ĐÂY: Ràng buộc kích thước dialog để fix RenderBox
+      dialogSize: const Size(340, 480),  // Kích thước cố định, tránh infinite height
+      borderRadius: BorderRadius.circular(16),
+      value: [DateTime.now()],
+      dialogBackgroundColor: Colors.white,
+    );
+
+    return values?.isNotEmpty == true ? values!.first : null;
+  }
+
+  Future<void> _ensureDateExists(DateTime target) async {
+    while (true) {
+      final exists = _dates.any((d) =>
+      d.year == target.year &&
+          d.month == target.month &&
+          d.day == target.day);
+
+      if (exists) break;
+
+      // Expand forward
+      if (target.isAfter(_dates.last)) {
+        final last = _dates.last;
+        final newDates = List.generate(30, (i) => last.add(Duration(days: i + 1)));
+        setState(() => _dates.addAll(newDates));
+        continue;
+      }
+
+      // Expand backward
+      if (target.isBefore(_dates.first)) {
+        final first = _dates.first;
+        final newDates =
+        List.generate(30, (i) => first.subtract(Duration(days: i + 1)))
+            .reversed
+            .toList();
+        setState(() => _dates.insertAll(0, newDates));
+
+        // Keep scroll position stable
+        await Future.delayed(Duration(milliseconds: 1));
+        _scrollController.jumpTo(
+            _scrollController.offset + (30 * (_itemWidth + 8)));
+        continue;
+      }
+    }
+  }
+
 }

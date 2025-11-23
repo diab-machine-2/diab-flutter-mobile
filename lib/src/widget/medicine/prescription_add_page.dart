@@ -126,7 +126,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: R.color.backgroundColorNew,
       appBar: AppBar(
         leading: IconButton(

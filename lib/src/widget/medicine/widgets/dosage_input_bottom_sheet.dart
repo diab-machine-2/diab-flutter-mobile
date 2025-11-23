@@ -735,77 +735,75 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: Color(0xFF008479), width: 1),
       ),
-      child: Expanded(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                height: 1.46,
-                color: Color(0xFF111515),
-              ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              height: 1.46,
+              color: Color(0xFF111515),
             ),
-            const Spacer(),
-            GestureDetector(
-              onTap: onDecrement,
-              child: Container(
-                width: 34,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Color(0xFFF4F7F7),
-                  borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
-                ),
-                alignment: Alignment.center,
-                child: SvgPicture.asset(
-                  R.icons.ic_minus,
-                  width: 10,
-                  height: 2,
-                ),
+          ),
+          const Spacer(),
+          GestureDetector(
+            onTap: onDecrement,
+            child: Container(
+              width: 34,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Color(0xFFF4F7F7),
+                borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
               ),
-            ),
-            // Counter value text
-            Container(
-              width: 60,
-              height: 36,
               alignment: Alignment.center,
-              child: TextField(
-                controller: TextEditingController(text: value.toStringAsFixed(0)),
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: hint,
-                  contentPadding: EdgeInsets.zero,
-                  isDense: true,
-                ),
-                onChanged: (value) {
-                  onValueChange(value);
-                },
-              )
-            ),
-            // Increment button
-            GestureDetector(
-              onTap: onIncrement,
-              child: Container(
-                width: 34,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Color(0xFFF4F7F7),
-                  borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
-                ),
-                alignment: Alignment.center,
-                child: SvgPicture.asset(
-                  R.icons.ic_plus,
-                  width: 12,
-                  height: 12,
-                ),
+              child: SvgPicture.asset(
+                R.icons.ic_minus,
+                width: 10,
+                height: 2,
               ),
+            ),
+          ),
+          // Counter value text
+          Container(
+            width: 60,
+            height: 36,
+            alignment: Alignment.center,
+            child: TextField(
+              controller: TextEditingController(text: value.toStringAsFixed(0)),
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: hint,
+                contentPadding: EdgeInsets.zero,
+                isDense: true,
+              ),
+              onChanged: (value) {
+                onValueChange(value);
+              },
             )
-          ],
-        ),
+          ),
+          // Increment button
+          GestureDetector(
+            onTap: onIncrement,
+            child: Container(
+              width: 34,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Color(0xFFF4F7F7),
+                borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+              ),
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                R.icons.ic_plus,
+                width: 12,
+                height: 12,
+              ),
+            ),
+          )
+        ],
       )
     );
   }

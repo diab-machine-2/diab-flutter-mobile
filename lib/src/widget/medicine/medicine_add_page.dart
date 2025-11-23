@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../res/R.dart';
 import '../../modal/base/images.dart';
@@ -100,6 +100,9 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       _noteController.text = _selectedMedication.note ?? '';
       _unit = MedicineUnit.fromString(_selectedMedication.unit);
       _amount = _selectedMedication.amount ?? 5;
+
+      final raw = (_selectedMedication.customDay ?? '').trim();
+      final isValid = RegExp(r'^[0-9,]+$').hasMatch(raw);
       _dosage = DosageModel(
         momentName: _selectedMedication.moment == 1
           ? R.string.truoc_an.tr()
@@ -118,7 +121,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         quantityInAfternoon: _selectedMedication.afternoon ?? 0.0,
         quantityInNight: _selectedMedication.night ?? 0.0,
         quantityForDaysInWeek: (_selectedMedication.amount ?? 0).toDouble(),
-        selectedDaysInWeek: (_selectedMedication.customDay ?? '').isEmpty
+        selectedDaysInWeek: !isValid
           ? []
           : (_selectedMedication.customDay ?? '').split(',').map(int.parse).toList(),
         everyOtherDayNumber: (_selectedMedication.breakDay ?? 0).toInt(),
@@ -521,7 +524,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             alignment: Alignment.center,
             child: TextField(
               controller: _quantityController,
-              keyboardType: TextInputType.number,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+              ],
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
                 border: InputBorder.none,
