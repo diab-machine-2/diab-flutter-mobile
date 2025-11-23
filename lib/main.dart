@@ -115,12 +115,12 @@ Future<void> main() async {
 
   await RevenueCatService.initialize();
 
-  tz.initializeTimeZones();
-  final timeZoneName = await FlutterTimezone.getLocalTimezone();
-  final location = tz.getLocation(timeZoneName);
-  tz.setLocalLocation(location);
+  // tz.initializeTimeZones();
+  // final timeZoneName = await FlutterTimezone.getLocalTimezone();
+  // final location = tz.getLocation(timeZoneName);
+  // tz.setLocalLocation(location);
 
-  await MedicineScheduleService().init();
+  // await MedicineScheduleService().init();
 
   // var zoom = ZoomVideoSdk();
   // InitConfig initConfig = InitConfig(
