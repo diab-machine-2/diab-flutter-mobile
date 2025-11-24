@@ -101,8 +101,10 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
       title: Text(
         R.string.huyet_ap.tr(),
         style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontFamily: R.font.sfpro,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
           color: R.color.white,
         ),
       ),
@@ -126,7 +128,13 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
                   R.string.huong_dan.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    color: R.color.white,
+                    fontSize: 15,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
+                  ),
                 ),
               ),
             ),
@@ -176,8 +184,10 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 Text(
                   R.string.did_you_know.tr(),
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontFamily: R.font.sfpro,
                     fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -188,24 +198,37 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                     height: 24 / 15,
                     fontWeight: FontWeight.w400,
                     color: R.color.primaryGreyColor,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
                   ),
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _navigateToInputSelection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: R.color.mainColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    minimumSize: Size.fromHeight(40),
-                  ),
-                  child: Text(
-                    R.string.enter_blood_pressure.tr(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                InkWell(
+                  onTap: _navigateToInputSelection,
+                  child: Container(
+                    width: double.infinity,
+                    height: 44,
+                    decoration: BoxDecoration(
+                        color: R.color.greenGradientBottom,
+                        borderRadius: BorderRadius.circular(200),
+                        gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
+                    child: Center(
+                      child: Text(
+                        R.string.enter_blood_pressure.tr(),
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: R.font.sfpro,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -233,6 +256,8 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 fontWeight: FontWeight.w700,
                 height: 24 / 18,
                 color: R.color.dark,
+                fontFamily: R.font.sfpro,
+                letterSpacing: 0.2,
               ),
             ),
           ),
@@ -309,6 +334,8 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 height: 20 / 14,
                 fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
+                fontFamily: R.font.sfpro,
+                letterSpacing: 0.4,
               ),
             ),
           ],
