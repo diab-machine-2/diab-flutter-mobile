@@ -6,8 +6,8 @@ import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_record_card.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_statistical_data_app_bar.dart';
@@ -32,10 +32,13 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
     _bmiBloc
       ..savePeriodTypeForStatisticalView()
       ..changePeriodTime(
-        BmiDateFilterType.threeMonths,
+        _bmiBloc.periodType,
         isStatisticalView: false,
       )
       ..hasNewData = false;
+
+    // Explicitly fetch weight records with size 10 for the statistical data page
+    _bmiBloc.add(const BmiGetWeightRecordsEvent(page: 1, size: 10));
 
     _scrollController.addListener(_onScroll);
   }

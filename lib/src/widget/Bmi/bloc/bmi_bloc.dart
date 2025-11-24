@@ -671,8 +671,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
       result.update(
         date,
-        (value) => [item],
-        ifAbsent: () => [item],
+        (value) => [...value, item], // Add to existing list
+        ifAbsent: () => [item], // Create new list
       );
     }
 
