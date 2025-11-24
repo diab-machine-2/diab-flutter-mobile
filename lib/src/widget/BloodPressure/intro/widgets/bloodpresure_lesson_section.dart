@@ -260,6 +260,7 @@ class _BloodPressureLessonSectionState
                         maxLines: 2,
                         style: TextStyle(
                           color: R.color.textDark,
+                          fontFamily: R.font.sfpro,
                           fontSize: 15.0,
                           height: 24.0 / 15.0,
                         ),
@@ -280,6 +281,7 @@ class _BloodPressureLessonSectionState
                             lesson.module,
                             style: TextStyle(
                               color: R.color.color0xff666666,
+                              fontFamily: R.font.sfpro,
                               fontSize: 12.0,
                             ),
                           ),
@@ -310,7 +312,9 @@ class _BloodPressureLessonSectionState
                         Text(
                           R.string.share.tr(),
                           style: TextStyle(
-                              color: R.color.textDark, fontSize: 15.0),
+                              color: R.color.textDark,
+                              fontSize: 15.0,
+                              fontFamily: R.font.sfpro),
                         ),
                       ],
                     ),

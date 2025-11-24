@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
+import 'package:medical/res/dimens.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
@@ -10,12 +12,12 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class BloodPressureIntro2ndPage extends StatefulWidget {
   @override
-  State<BloodPressureIntro2ndPage> createState() => _BloodPressureIntro2ndPageState();
+  State<BloodPressureIntro2ndPage> createState() =>
+      _BloodPressureIntro2ndPageState();
 }
 
 class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
@@ -126,6 +128,21 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 0),
+          child: Text(
+            R.string.bloodpressure_intro_help_title.tr(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              height: 24 / 18,
+              color: R.color.dark,
+              fontFamily: R.font.sfpro,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
         if (_pinedLessons.isNotEmpty) ...[
           Row(
             children: [
@@ -241,7 +258,8 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
                       color: j == 0
                           ? _colorMap[rangeTable[i][0]]
                           : _colorMap[rangeTable[i][0]]?.withOpacity(0.1),
-                      alignment: j == 0 ? Alignment.centerLeft : Alignment.center,
+                      alignment:
+                          j == 0 ? Alignment.centerLeft : Alignment.center,
                       padding: j == 0 ? const EdgeInsets.only(left: 12) : null,
                       child: Text(
                         rangeTable[i][j],
@@ -282,10 +300,11 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
                         'Nguồn tham khảo:\nAbout High Blood Pressure | High Blood Pressure.  (2025, January 28). CDC. Tham khảo ngày 12, tháng 3, 2025, từ ',
                   ),
                   TextSpan(
-                    text: 'https://www.cdc.gov/high-blood-pressure/about/index.html',
+                    text:
+                        'https://www.cdc.gov/high-blood-pressure/about/index.html',
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => launchUrl(
-                          Uri.parse('https://www.cdc.gov/high-blood-pressure/about/index.html')),
+                      ..onTap = () => launchUrl(Uri.parse(
+                          'https://www.cdc.gov/high-blood-pressure/about/index.html')),
                   ),
                 ],
               ),
@@ -302,36 +321,48 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
     String? imageUrl = lesson.imageUrl;
     return InkWell(
       onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        height: 152.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          border: Border.all(color: R.color.grayComponentBorder),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NetWorkImageWidget(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              width: 72,
-              height: 72,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                height: 20 / 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: Container(
+          decoration: R.decorationStyle.mediumRadiusCardStyles,
+          child: Column(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(AppDimens.mediumRadius),
+                    topRight: Radius.circular(AppDimens.mediumRadius),
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl ?? "",
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.neutral5,
+                      child: Icon(
+                        Icons.image_not_supported_rounded,
+                        size: 56,
+                        color: AppColors.neutral4,
+                      ),
+                    ),
+                    fit: BoxFit.cover,
+                    width: double.maxFinite,
+                  ),
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  title,
+                  style: R.style.normalTextStyle.copyWith(
+                    fontFamily: R.font.sfpro,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -339,7 +339,9 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   title,
-                  style: R.style.normalTextStyle,
+                  style: R.style.normalTextStyle.copyWith(
+                    fontFamily: R.font.sfpro,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
