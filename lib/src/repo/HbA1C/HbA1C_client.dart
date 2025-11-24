@@ -54,7 +54,7 @@ class HbA1CClient extends FetchClient {
       Map<String, String> params = {
         'currentDateTime': currentDateTime.toString(),
         'page': '$page',
-        'size': '10',
+        'size': takeAll ? '500' : '10',
       };
 
       // When takeAll is true, use periodFilterType = 3 (24 months) with large size

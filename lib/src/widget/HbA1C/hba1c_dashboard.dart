@@ -215,7 +215,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       currentDateTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       periodFilterType: _periodFilterType,
       page: 1,
-      takeAll: useTakeAll,
+      takeAll: true,
     ));
   }
 
