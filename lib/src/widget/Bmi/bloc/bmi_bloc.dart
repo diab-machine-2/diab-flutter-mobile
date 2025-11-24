@@ -62,6 +62,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   // BmiGetWeightListResponse? _historicalWeightResponse;
   List<BmiGetWeightRecord> _historicalWeightList = [];
+  int _currentPage = 1;
+  bool _hasMorePages = true;
+  bool _isLoadingMore = false;
 
   late DateTime _currentTime;
 
@@ -162,6 +165,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
       return null;
     }
   }
+
   set hasNewData(bool? value) {
     if (value == null) return;
     try {
@@ -465,7 +469,19 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     BmiGetWeightRecordsEvent event,
     Emitter<BmiState> emit,
   ) async {
-    emit(BmiGetWeightIndexListState(Resource.loading()));
+    final page = event.page ?? 1;
+    final isLoadMore = page > 1;
+
+    if (isLoadMore) {
+      if (_isLoadingMore || !_hasMorePages) {
+        return;
+      }
+      _isLoadingMore = true;
+    } else {
+      emit(BmiGetWeightIndexListState(Resource.loading()));
+      _currentPage = 1;
+      _hasMorePages = true;
+    }
 
     // final String raw =
     //     await rootBundle.loadString('assets/dummy/weight_list.json');
@@ -480,21 +496,33 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     final response = await _weightRepository.getWeightIndexList(
       currentTime: _currentTime.millisecondsSinceEpoch,
       periodFilterType: _periodType.requestValue,
+      page: page,
     );
-    response.when(
-        success: (data) {
-          _historicalWeightList = data.data ?? [];
+    response.when(success: (data) {
+      if (isLoadMore) {
+        // Append new data when loading more
+        _historicalWeightList.addAll(data.data ?? []);
+      } else {
+        // Replace data when refreshing or initial load
+        _historicalWeightList = data.data ?? [];
+      }
 
-          if (_selectedPointChart == null ||
-              !_historicalWeightList.contains(_selectedPointChart)) {
-            _selectedPointChart = _historicalWeightList.firstOrNull;
-            _selectedIndexPointChart = 0;
-          }
+      // Update pagination state
+      _currentPage = page;
+      _hasMorePages = data.meta?.canNext ?? false;
+      _isLoadingMore = false;
 
-          emit(BmiGetWeightIndexListState(Resource.success(data)));
-        },
-        failure: (error) =>
-            emit(BmiGetWeightIndexListState(Resource.error(error))));
+      if (_selectedPointChart == null ||
+          !_historicalWeightList.contains(_selectedPointChart)) {
+        _selectedPointChart = _historicalWeightList.firstOrNull;
+        _selectedIndexPointChart = 0;
+      }
+
+      emit(BmiGetWeightIndexListState(Resource.success(data)));
+    }, failure: (error) {
+      _isLoadingMore = false;
+      emit(BmiGetWeightIndexListState(Resource.error(error)));
+    });
   }
 
   void _onUpdateWeightGoal(
@@ -527,7 +555,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(const BmiGetWeightStatisticalEvent());
     add(const BmiGetWaistStatisticalEvent());
 
-    add(const BmiGetWeightRecordsEvent());
+    add(const BmiGetWeightRecordsEvent(page: 1));
 
     Future.delayed(Duration(milliseconds: 1000)).then((value) {
       add(const BmiGetAIAnalysicEvent());
@@ -558,17 +586,26 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
       add(BmiGetBmiStatisticalEvent());
       // add(BmiGetWeightStatisticalEvent());
       // add(BmiGetWaistStatisticalEvent());
-      add(BmiGetWeightRecordsEvent());
+      add(const BmiGetWeightRecordsEvent(page: 1));
       add(BmiGetAIAnalysicEvent());
     } else {
       //load detail
-      add(BmiGetWeightRecordsEvent());
+      add(const BmiGetWeightRecordsEvent(page: 1));
     }
   }
 
   void fetchHistoricalWeight() {
-    add(BmiGetWeightRecordsEvent());
+    add(const BmiGetWeightRecordsEvent(page: 1));
   }
+
+  void loadMoreHistoricalWeight() {
+    if (!_isLoadingMore && _hasMorePages) {
+      add(BmiGetWeightRecordsEvent(page: _currentPage + 1));
+    }
+  }
+
+  bool get hasMoreHistoricalWeight => _hasMorePages;
+  bool get isLoadingMoreHistoricalWeight => _isLoadingMore;
 
   void getAIAnalysicWeightRecord(String recordId) {
     add(BmiGetAIIndexAnalysicEvent(recordId));
