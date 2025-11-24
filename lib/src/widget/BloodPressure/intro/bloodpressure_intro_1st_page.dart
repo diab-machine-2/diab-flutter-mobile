@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
+import 'package:medical/res/dimens.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
@@ -12,7 +14,6 @@ import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 
 import 'widgets/bloodpresure_lesson_section.dart';
 
@@ -307,38 +308,46 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
     String? imageUrl = lesson.imageUrl;
     return InkWell(
       onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        height: 152.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          border: Border.all(color: R.color.grayComponentBorder),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NetWorkImageWidget(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              width: 72,
-              height: 72,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                height: 20 / 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
-                fontFamily: R.font.sfpro,
-                letterSpacing: 0.4,
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: Container(
+          decoration: R.decorationStyle.mediumRadiusCardStyles,
+          child: Column(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(AppDimens.mediumRadius),
+                    topRight: Radius.circular(AppDimens.mediumRadius),
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl ?? "",
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.neutral5,
+                      child: Icon(
+                        Icons.image_not_supported_rounded,
+                        size: 56,
+                        color: AppColors.neutral4,
+                      ),
+                    ),
+                    fit: BoxFit.cover,
+                    width: double.maxFinite,
+                  ),
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  title,
+                  style: R.style.normalTextStyle,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+            ],
+          ),
         ),
       ),
     );
