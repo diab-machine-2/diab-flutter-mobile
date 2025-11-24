@@ -30,6 +30,7 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
     super.initState();
     _bmiBloc = context.read();
     _bmiBloc
+      ..savePeriodTypeForStatisticalView()
       ..changePeriodTime(
         BmiDateFilterType.threeMonths,
         isStatisticalView: false,
@@ -63,25 +64,31 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.glucose_bg_color,
-      resizeToAvoidBottomInset: true,
-      appBar: const BmiStatisticalDataAppBar(),
-      body: BlocBuilder<BmiBloc, BmiState>(
-          buildWhen: (previous, current) =>
-              current is BmiGetWeightIndexListState,
-          builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _HistoricalWeightListView(
-                    scrollController: _scrollController,
-                  ),
-                )
-              ],
-            );
-          }),
+    return WillPopScope(
+      onWillPop: () async {
+        _bmiBloc.restorePeriodTypeAndRefetch();
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: R.color.glucose_bg_color,
+        resizeToAvoidBottomInset: true,
+        appBar: const BmiStatisticalDataAppBar(),
+        body: BlocBuilder<BmiBloc, BmiState>(
+            buildWhen: (previous, current) =>
+                current is BmiGetWeightIndexListState,
+            builder: (context, state) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: _HistoricalWeightListView(
+                      scrollController: _scrollController,
+                    ),
+                  )
+                ],
+              );
+            }),
+      ),
     );
   }
 }

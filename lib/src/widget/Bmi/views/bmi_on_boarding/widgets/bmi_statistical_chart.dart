@@ -60,10 +60,18 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
           double _minWeightOnChart = _bmiBloc.getLowestOfChart(_marginOfWeight);
           double _maxWeightOnChart =
               _bmiBloc.getHighestOfChart(_marginOfWeight);
-          double _bendmarkPadding =
-              (_heightOfChart / (_maxWeightOnChart - _minWeightOnChart)) *
-                      ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
-                  _marginOfWeight + 6;
+
+          // Calculate bendmark padding with safety checks
+          double _bendmarkPadding = 0.0;
+          final weightRange = _maxWeightOnChart - _minWeightOnChart;
+          if (weightRange > 0) {
+            _bendmarkPadding = (_heightOfChart / weightRange) *
+                    ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
+                _marginOfWeight +
+                6;
+            // Clamp padding to valid range (0 to _heightOfChart)
+            _bendmarkPadding = _bendmarkPadding.clamp(0.0, _heightOfChart);
+          }
 
           if (enableScroll) _focusToSelectedPoint(totalPoint: data.length);
 

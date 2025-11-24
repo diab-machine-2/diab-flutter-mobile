@@ -408,8 +408,6 @@ class _StatisticalDataViewButton extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        _bmiBloc.fetchHistoricalWeight();
-
         Navigator.pushNamed(
           context,
           NavigatorName.bmiHistoricalPage,

@@ -65,6 +65,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   int _currentPage = 1;
   bool _hasMorePages = true;
   bool _isLoadingMore = false;
+  int _currentPageSize = 500; // Track current page size for pagination
 
   late DateTime _currentTime;
 
@@ -73,6 +74,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   BmiDateFilterType _periodType = BmiDateFilterType.aMonth;
   BmiDateFilterType get periodType => _periodType;
+  BmiDateFilterType? _previousPeriodType;
 
   BmiWeightStatistical? _weightStatistical;
   BmiStatistical? _bmiStatistical;
@@ -493,10 +495,16 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     // _historicalWeightList = result;
     // return;
 
+    final pageSize = event.size ?? _currentPageSize;
+    if (!isLoadMore) {
+      _currentPageSize = pageSize; // Store page size for load more operations
+    }
+
     final response = await _weightRepository.getWeightIndexList(
       currentTime: _currentTime.millisecondsSinceEpoch,
       periodFilterType: _periodType.requestValue,
       page: page,
+      size: pageSize,
     );
     response.when(success: (data) {
       if (isLoadMore) {
@@ -555,7 +563,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(const BmiGetWeightStatisticalEvent());
     add(const BmiGetWaistStatisticalEvent());
 
-    add(const BmiGetWeightRecordsEvent(page: 1));
+    add(const BmiGetWeightRecordsEvent(page: 1, size: 500));
 
     Future.delayed(Duration(milliseconds: 1000)).then((value) {
       add(const BmiGetAIAnalysicEvent());
@@ -586,21 +594,33 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
       add(BmiGetBmiStatisticalEvent());
       // add(BmiGetWeightStatisticalEvent());
       // add(BmiGetWaistStatisticalEvent());
-      add(const BmiGetWeightRecordsEvent(page: 1));
+      add(const BmiGetWeightRecordsEvent(page: 1, size: 500));
       add(BmiGetAIAnalysicEvent());
     } else {
       //load detail
-      add(const BmiGetWeightRecordsEvent(page: 1));
+      add(const BmiGetWeightRecordsEvent(page: 1, size: 10));
+    }
+  }
+
+  void savePeriodTypeForStatisticalView() {
+    _previousPeriodType = _periodType;
+  }
+
+  void restorePeriodTypeAndRefetch() {
+    if (_previousPeriodType != null && _previousPeriodType != _periodType) {
+      changePeriodTime(_previousPeriodType!, isStatisticalView: true);
+      _previousPeriodType = null;
     }
   }
 
   void fetchHistoricalWeight() {
-    add(const BmiGetWeightRecordsEvent(page: 1));
+    add(const BmiGetWeightRecordsEvent(page: 1, size: 10));
   }
 
   void loadMoreHistoricalWeight() {
     if (!_isLoadingMore && _hasMorePages) {
-      add(BmiGetWeightRecordsEvent(page: _currentPage + 1));
+      add(BmiGetWeightRecordsEvent(
+          page: _currentPage + 1, size: _currentPageSize));
     }
   }
 
