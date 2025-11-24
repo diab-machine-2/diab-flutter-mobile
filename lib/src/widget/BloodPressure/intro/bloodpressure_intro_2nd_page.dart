@@ -146,6 +146,11 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
   }
 
   Widget _buildPinnedLessonsSection() {
+    // Giữ layout ổn định để tránh flash
+    final hasData = _pinedLessons.isNotEmpty;
+    final showFirstRow = hasData;
+    final showSecondRow = hasData && _pinedLessons.length > 2;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -165,7 +170,8 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
           ),
         ),
         const SizedBox(height: 12),
-        if (_pinedLessons.isNotEmpty) ...[
+        // Luôn giữ layout structure để tránh flash
+        if (showFirstRow) ...[
           Row(
             children: [
               Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
@@ -177,8 +183,18 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
             ],
           ),
           const SizedBox(height: 12),
+        ] else if (_isLoadingLessons) ...[
+          // Hiển thị placeholder khi đang load để giữ layout
+          Row(
+            children: [
+              Expanded(child: _buildPlaceholderItem()),
+              const SizedBox(width: 12),
+              Expanded(child: _buildPlaceholderItem()),
+            ],
+          ),
+          const SizedBox(height: 12),
         ],
-        if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+        if (showSecondRow) ...[
           Row(
             children: [
               Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
@@ -189,8 +205,59 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
                       : const SizedBox()),
             ],
           ),
+        ] else if (_isLoadingLessons && showFirstRow) ...[
+          // Hiển thị placeholder cho row thứ 2 khi đang load
+          Row(
+            children: [
+              Expanded(child: _buildPlaceholderItem()),
+              const SizedBox(width: 12),
+              Expanded(child: _buildPlaceholderItem()),
+            ],
+          ),
         ],
       ],
+    );
+  }
+
+  Widget _buildPlaceholderItem() {
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Container(
+        decoration: R.decorationStyle.mediumRadiusCardStyles,
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                color: AppColors.neutral5,
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.neutral4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                height: 16,
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.neutral5,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+          ],
+        ),
+      ),
     );
   }
 

@@ -28,6 +28,8 @@ class BloodPressureIntro1stPage extends StatefulWidget {
 
 class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   final List<BloodPressureLesson> _pinedLessons = [];
+  bool _isLoadingLessons = false;
+  bool _hasLoadedLessons = false;
 
   @override
   void initState() {
@@ -36,16 +38,36 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   }
 
   void _loadLessons() async {
+    // Chỉ load nếu chưa load hoặc list đang empty
+    if (_isLoadingLessons || (_hasLoadedLessons && _pinedLessons.isNotEmpty)) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingLessons = true;
+    });
+
     try {
-      _pinedLessons.clear();
       final lessons = await BloodPressureClient().fetchBloodPressureLessons();
-      if (lessons != null) {
+      if (lessons != null && mounted) {
         setState(() {
+          _pinedLessons.clear();
           _pinedLessons.addAll(lessons);
+          _hasLoadedLessons = true;
+          _isLoadingLessons = false;
+        });
+      } else if (mounted) {
+        setState(() {
+          _isLoadingLessons = false;
         });
       }
     } catch (e, s) {
       TrackingManager.recordError(e, s);
+      if (mounted) {
+        setState(() {
+          _isLoadingLessons = false;
+        });
+      }
     }
   }
 
@@ -242,6 +264,11 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   }
 
   Widget _buildPinnedLessonsSection() {
+    // Giữ layout ổn định để tránh flash
+    final hasData = _pinedLessons.isNotEmpty;
+    final showFirstRow = hasData;
+    final showSecondRow = hasData && _pinedLessons.length > 2;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -263,7 +290,8 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
             ),
           ),
           const SizedBox(height: 12),
-          if (_pinedLessons.isNotEmpty) ...[
+          // Luôn giữ layout structure để tránh flash
+          if (showFirstRow) ...[
             Row(
               children: [
                 Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
@@ -275,8 +303,18 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
               ],
             ),
             const SizedBox(height: 12),
+          ] else if (_isLoadingLessons) ...[
+            // Hiển thị placeholder khi đang load để giữ layout
+            Row(
+              children: [
+                Expanded(child: _buildPlaceholderItem()),
+                const SizedBox(width: 12),
+                Expanded(child: _buildPlaceholderItem()),
+              ],
+            ),
+            const SizedBox(height: 12),
           ],
-          if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+          if (showSecondRow) ...[
             Row(
               children: [
                 Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
@@ -287,8 +325,59 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                         : const SizedBox()),
               ],
             ),
+          ] else if (_isLoadingLessons && showFirstRow) ...[
+            // Hiển thị placeholder cho row thứ 2 khi đang load
+            Row(
+              children: [
+                Expanded(child: _buildPlaceholderItem()),
+                const SizedBox(width: 12),
+                Expanded(child: _buildPlaceholderItem()),
+              ],
+            ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderItem() {
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Container(
+        decoration: R.decorationStyle.mediumRadiusCardStyles,
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                color: AppColors.neutral5,
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.neutral4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                height: 16,
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.neutral5,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+          ],
+        ),
       ),
     );
   }
