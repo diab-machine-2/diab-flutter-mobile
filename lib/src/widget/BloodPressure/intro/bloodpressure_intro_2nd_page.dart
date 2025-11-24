@@ -20,6 +20,8 @@ class BloodPressureIntro2ndPage extends StatefulWidget {
 
 class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
   final List<BloodPressureLesson> _pinedLessons = [];
+  bool _isLoadingLessons = false;
+  bool _hasLoadedLessons = false;
 
   @override
   void initState() {
@@ -28,16 +30,36 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
   }
 
   void _loadLessons() async {
+    // Chỉ load nếu chưa load hoặc list đang empty
+    if (_isLoadingLessons || (_hasLoadedLessons && _pinedLessons.isNotEmpty)) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingLessons = true;
+    });
+
     try {
-      _pinedLessons.clear();
       final lessons = await BloodPressureClient().fetchBloodPressureLessons();
-      if (lessons != null) {
+      if (lessons != null && mounted) {
         setState(() {
+          _pinedLessons.clear();
           _pinedLessons.addAll(lessons);
+          _hasLoadedLessons = true;
+          _isLoadingLessons = false;
+        });
+      } else if (mounted) {
+        setState(() {
+          _isLoadingLessons = false;
         });
       }
     } catch (e, s) {
       TrackingManager.recordError(e, s);
+      if (mounted) {
+        setState(() {
+          _isLoadingLessons = false;
+        });
+      }
     }
   }
 
