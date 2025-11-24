@@ -55,11 +55,13 @@ class _AddBloodPressureControllerState
   final TextEditingController _controllerDiastolic = TextEditingController();
   final TextEditingController _controllerHeart = TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
+  bool _diastolicIsEmpty = false;
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
       GlobalKey<SectionAddNoteState>();
   FocusNode _systolicFocus = FocusNode();
   FocusNode _diastolicFocus = FocusNode();
   FocusNode _heartFocus = FocusNode();
+  final FocusNode _diastolicKeyListenerFocus = FocusNode();
   final List<dynamic> _files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
@@ -154,12 +156,33 @@ class _AddBloodPressureControllerState
     _loadDescription();
     _firebaseSetup();
     _initData();
+    _setupDiastolicFocusListener();
+  }
+
+  void _setupDiastolicFocusListener() {
+    // Sync key listener focus with diastolic focus
+    _diastolicFocus.addListener(_onDiastolicFocusChange);
+  }
+
+  void _onDiastolicFocusChange() {
+    if (_diastolicFocus.hasFocus) {
+      _diastolicKeyListenerFocus.requestFocus();
+      _diastolicIsEmpty = _controllerDiastolic.text.isEmpty;
+    } else {
+      _diastolicKeyListenerFocus.unfocus();
+    }
   }
 
   @override
   void dispose() {
+    // Remove listener before disposing
+    _diastolicFocus.removeListener(_onDiastolicFocusChange);
     _controller.dispose();
     _focusNode.dispose();
+    _systolicFocus.dispose();
+    _diastolicFocus.dispose();
+    _heartFocus.dispose();
+    _diastolicKeyListenerFocus.dispose();
     _controllerSystolic.dispose();
     _controllerDiastolic.dispose();
     _controllerHeart.dispose();
@@ -573,6 +596,7 @@ class _AddBloodPressureControllerState
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
+                    fontFamily: R.font.sfpro,
                     color: R.color.textDark,
                   ),
                 ),
@@ -608,7 +632,10 @@ class _AddBloodPressureControllerState
           Opacity(
             opacity: 0,
             child: Text(R.string.mm_hg.tr(),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: R.font.sfpro)),
           ),
           Column(
             children: [
@@ -633,7 +660,8 @@ class _AddBloodPressureControllerState
                   style: TextStyle(
                       color: R.color.black,
                       fontSize: 48,
-                      fontWeight: FontWeight.w500),
+                      fontWeight: FontWeight.w500,
+                      fontFamily: R.font.sfpro),
                   decoration: InputDecoration(
                       hintText: '0',
                       counterText: '',
@@ -642,7 +670,8 @@ class _AddBloodPressureControllerState
                       hintStyle: TextStyle(
                           color: R.color.captionColorGray,
                           fontSize: 48,
-                          fontWeight: FontWeight.w500)),
+                          fontWeight: FontWeight.w500,
+                          fontFamily: R.font.sfpro)),
                 ),
               ),
             ],
@@ -653,46 +682,83 @@ class _AddBloodPressureControllerState
                 style: TextStyle(
                   fontSize: 42,
                   color: Color(0xFF636A6B),
+                  fontFamily: R.font.sfpro,
                 )),
           ),
           Column(
             children: [
               Container(
                 width: 90,
-                child: TextField(
-                  focusNode: _diastolicFocus,
-                  onChanged: (value) {
-                    _checkValidateInput();
-                    if (value.length == 3) {
-                      _heartFocus.requestFocus();
+                child: Focus(
+                  focusNode: _diastolicKeyListenerFocus,
+                  skipTraversal: true,
+                  canRequestFocus: false,
+                  onKeyEvent: (node, event) {
+                    // Detect backspace key when diastolic text is empty and field is focused
+                    if (_diastolicFocus.hasFocus &&
+                        event is KeyDownEvent &&
+                        event.logicalKey == LogicalKeyboardKey.backspace &&
+                        _diastolicIsEmpty &&
+                        _controllerDiastolic.text.isEmpty) {
+                      // Move focus to systolic field
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _systolicFocus.requestFocus();
+                        // Move cursor to end of systolic text
+                        _controllerSystolic.selection =
+                            TextSelection.fromPosition(
+                          TextPosition(offset: _controllerSystolic.text.length),
+                        );
+                      });
+                      return KeyEventResult.handled;
                     }
-                    setState(() {});
+                    return KeyEventResult.ignored;
                   },
-                  controller: _controllerDiastolic,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(3),
-                  ],
-                  textAlign: TextAlign.left,
-                  keyboardType: TextInputType.number,
-                  style: TextStyle(
-                      color: R.color.black,
-                      fontSize: 48,
-                      fontWeight: FontWeight.w500),
-                  decoration: InputDecoration(
-                    hintText: '0',
-                    contentPadding: EdgeInsets.only(bottom: 8),
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(
-                        color: R.color.captionColorGray,
+                  child: TextField(
+                    focusNode: _diastolicFocus,
+                    onChanged: (value) {
+                      _checkValidateInput();
+                      if (value.length == 3) {
+                        _heartFocus.requestFocus();
+                      }
+                      // Mark when text becomes empty
+                      if (value.isEmpty) {
+                        _diastolicIsEmpty = true;
+                      } else {
+                        _diastolicIsEmpty = false;
+                      }
+                      setState(() {});
+                    },
+                    controller: _controllerDiastolic,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(3),
+                    ],
+                    textAlign: TextAlign.left,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(
+                        color: R.color.black,
                         fontSize: 48,
-                        fontWeight: FontWeight.w500),
+                        fontWeight: FontWeight.w500,
+                        fontFamily: R.font.sfpro),
+                    decoration: InputDecoration(
+                      hintText: '0',
+                      contentPadding: EdgeInsets.only(bottom: 8),
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(
+                          color: R.color.captionColorGray,
+                          fontSize: 48,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: R.font.sfpro),
+                    ),
                   ),
                 ),
               ),
             ],
           ),
           Text(R.string.mm_hg.tr(),
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: R.font.sfpro)),
         ],
       ),
     );
@@ -800,7 +866,8 @@ class _AddBloodPressureControllerState
             style: TextStyle(
                 color: Color(0xFFFF3C3C),
                 fontSize: 13,
-                fontWeight: FontWeight.w400),
+                fontWeight: FontWeight.w400,
+                fontFamily: R.font.sfpro),
           )
         else if (_valueOfSystolic != 0 &&
             _valueOfDiastolic != 0 &&
@@ -811,13 +878,15 @@ class _AddBloodPressureControllerState
               style: TextStyle(
                   color: R.color.textDark,
                   fontWeight: FontWeight.w400,
-                  fontSize: 16),
+                  fontSize: 16,
+                  fontFamily: R.font.sfpro),
               children: <TextSpan>[
                 TextSpan(
                   text: '“${_rangeLabel[indexRange]}”',
                   style: TextStyle(
                     color: _colorList[indexRange],
                     fontWeight: FontWeight.w700,
+                    fontFamily: R.font.sfpro,
                   ),
                 ),
               ],
@@ -888,12 +957,14 @@ class _AddBloodPressureControllerState
                                             style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
+                                              fontFamily: R.font.sfpro,
                                             ),
                                           )
                                         : Text(
                                             '$e',
                                             style: TextStyle(
                                               fontSize: 12,
+                                              fontFamily: R.font.sfpro,
                                               // Default style for other values of e
                                             ),
                                           ),
@@ -932,12 +1003,14 @@ class _AddBloodPressureControllerState
                                             style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
+                                              fontFamily: R.font.sfpro,
                                             ),
                                           )
                                         : Text(
                                             '$e',
                                             style: TextStyle(
                                               fontSize: 12,
+                                              fontFamily: R.font.sfpro,
                                               // Default style for other values of e
                                             ),
                                           ),
@@ -971,6 +1044,7 @@ class _AddBloodPressureControllerState
                                         ? Colors.transparent
                                         : Color(0xFFD7D7D7),
                                     fontSize: 5,
+                                    fontFamily: R.font.sfpro,
                                   ),
                                 ),
                               ),
@@ -1001,6 +1075,7 @@ class _AddBloodPressureControllerState
                                         ? Colors.transparent
                                         : Color(0xFFD7D7D7),
                                     fontSize: 5,
+                                    fontFamily: R.font.sfpro,
                                   ),
                                 ),
                               ),
@@ -1028,6 +1103,7 @@ class _AddBloodPressureControllerState
         selectionTextStyle: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.bold,
+          fontFamily: R.font.sfpro,
         ),
         onChange: (index) async {
           _lastTimeFrameIndex = index;
@@ -1066,7 +1142,10 @@ class _AddBloodPressureControllerState
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   R.string.heart_rate.tr(),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: R.font.sfpro),
                 ),
               ),
               CupertinoSwitch(
@@ -1106,7 +1185,8 @@ class _AddBloodPressureControllerState
                         style: TextStyle(
                             color: R.color.black,
                             fontSize: 48,
-                            fontWeight: FontWeight.bold),
+                            fontWeight: FontWeight.bold,
+                            fontFamily: R.font.sfpro),
                         decoration: InputDecoration(
                           hintText: '0',
                           counterText: '',
@@ -1115,7 +1195,8 @@ class _AddBloodPressureControllerState
                           hintStyle: TextStyle(
                               color: R.color.captionColorGray,
                               fontSize: 48,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w500,
+                              fontFamily: R.font.sfpro),
                         ),
                       ),
                     ),
@@ -1124,7 +1205,9 @@ class _AddBloodPressureControllerState
                     width: 80,
                     child: Text(R.string.time_per_minute.tr(),
                         style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w400)),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: R.font.sfpro)),
                   ),
                 ],
               ),
@@ -1145,6 +1228,7 @@ class _AddBloodPressureControllerState
                       color: Color(0xFFFF3C3C),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
+                      fontFamily: R.font.sfpro,
                     ),
                   ),
                 ),
@@ -1210,6 +1294,7 @@ class _AddBloodPressureControllerState
                     style: TextStyle(
                       fontSize: 14,
                       color: R.color.greenGradientBottom,
+                      fontFamily: R.font.sfpro,
                     ),
                   ),
                   Expanded(
@@ -1240,6 +1325,7 @@ class _AddBloodPressureControllerState
                         style: TextStyle(
                           fontSize: 15,
                           color: R.color.dark,
+                          fontFamily: R.font.sfpro,
                         ),
                       ),
                     ),
@@ -1315,7 +1401,8 @@ class _AddBloodPressureControllerState
                                   style: TextStyle(
                                       color: R.color.red,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: R.font.sfpro)),
                             )),
                       ),
                       GestureDetector(
@@ -1342,7 +1429,8 @@ class _AddBloodPressureControllerState
                                 style: TextStyle(
                                     color: R.color.white,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w600)),
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: R.font.sfpro)),
                           ),
                         ),
                       ),
@@ -1722,13 +1810,15 @@ class _AddBloodPressureControllerState
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600)),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: R.font.sfpro)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_remove_data.tr(),
                             textAlign: TextAlign.center,
-                            style: R.style.normalTextStyle),
+                            style: R.style.normalTextStyle
+                                .copyWith(fontFamily: R.font.sfpro)),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),
@@ -1751,7 +1841,8 @@ class _AddBloodPressureControllerState
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: R.font.sfpro)),
                                       )),
                                 ),
                               ),
@@ -1773,7 +1864,8 @@ class _AddBloodPressureControllerState
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: R.font.sfpro)),
                                     ),
                                   ),
                                 ),
@@ -1850,13 +1942,15 @@ class _AddBloodPressureControllerState
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600)),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: R.font.sfpro)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_back.tr(),
                             textAlign: TextAlign.center,
-                            style: R.style.normalTextStyle),
+                            style: R.style.normalTextStyle
+                                .copyWith(fontFamily: R.font.sfpro)),
                       ),
                       SizedBox(height: 16),
                       Row(
@@ -1878,7 +1972,8 @@ class _AddBloodPressureControllerState
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: R.font.sfpro)),
                                       ))),
                             ),
                             SizedBox(width: 14),
@@ -1906,7 +2001,8 @@ class _AddBloodPressureControllerState
                                           style: TextStyle(
                                               color: R.color.white,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: R.font.sfpro)),
                                     ),
                                   )),
                             ),
@@ -1991,7 +2087,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 style: TextStyle(
                                     color: R.color.black,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w700)),
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: R.font.sfpro)),
                             IconButton(
                                 icon: Icon(Icons.close,
                                     color: R.color.color0xffBEC0C8),
@@ -2022,7 +2119,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             style: TextStyle(
                                 color: R.color.black,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w700)),
+                                fontWeight: FontWeight.w700,
+                                fontFamily: R.font.sfpro)),
                       ],
                     ),
                     SizedBox(height: 20),
@@ -2055,7 +2153,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                   style: TextStyle(
                                       color: R.color.greenGradientBottom,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w700)),
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: R.font.sfpro)),
                             ),
                           ),
                         ),
@@ -2085,7 +2184,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w700)))),
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: R.font.sfpro)))),
                         ),
                       ),
                       SizedBox(width: 16),
@@ -2201,7 +2301,8 @@ class CustomTimePickerState extends State<CustomTimePicker> {
                                       ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
-                                  fontWeight: FontWeight.bold)),
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: R.font.sfpro)),
                         ))
                     .toList())),
         SizedBox(width: 24),
@@ -2233,10 +2334,34 @@ class CustomTimePickerState extends State<CustomTimePicker> {
                                       ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
-                                  fontWeight: FontWeight.bold)),
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: R.font.sfpro)),
                         ))
                     .toList()))
       ],
     );
+  }
+}
+
+// Custom TextInputFormatter to detect backspace when text is empty
+class _BackspaceWhenEmptyFormatter extends TextInputFormatter {
+  final VoidCallback onBackspaceWhenEmpty;
+
+  _BackspaceWhenEmptyFormatter({required this.onBackspaceWhenEmpty});
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // If old value was empty and new value is still empty (backspace pressed),
+    // trigger the callback
+    if (oldValue.text.isEmpty && newValue.text.isEmpty) {
+      // Use a small delay to ensure the callback is called after the text update
+      Future.delayed(Duration(milliseconds: 10), () {
+        onBackspaceWhenEmpty();
+      });
+    }
+    return newValue;
   }
 }
