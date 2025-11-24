@@ -290,7 +290,6 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
             ),
           ),
           const SizedBox(height: 12),
-          // Luôn giữ layout structure để tránh flash
           if (showFirstRow) ...[
             Row(
               children: [
