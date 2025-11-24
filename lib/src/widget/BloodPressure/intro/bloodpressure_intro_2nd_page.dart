@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
@@ -12,7 +11,6 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class BloodPressureIntro2ndPage extends StatefulWidget {
   @override
@@ -173,46 +171,70 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
   }
 
   Widget _buildRangeTableSection() {
-    // ref: _colorList
-    final Map<String, Color> _colorMap = {
-      'Tăng huyết áp độ 3': Color(0xFFAF0000),
-      'Tăng huyết áp độ 2': Color(0xFFDC0000),
-      'Tăng huyết áp độ 1': Color(0xFFF86F6F),
-      'Bình thường cao': Color(0xFF21A567), // Color(0xFF16AA47) of 85%
-      'Bình thường': Color(0xFF16AA47),
-      'Thấp': Color(0xFFF9BA1A),
+    // Màu sắc chính xác theo design Figma
+    final Map<String, Map<String, Color>> _colorMap = {
+      'Tăng huyết áp độ 3': {
+        'label': Color(0xCCAF0000), // rgba(175,0,0,0.8)
+        'value': Color(0xFFFFCDD2), // #ffcdd2
+      },
+      'Tăng huyết áp độ 2': {
+        'label': Color(0xB3DC0000), // rgba(220,0,0,0.7)
+        'value': Color(0xFFFFE9E9), // #ffe9e9
+      },
+      'Tăng huyết áp độ 1': {
+        'label': Color(0xFFF86F6F), // #f86f6f
+        'value': Color(0x99FFE9E9), // rgba(255,233,233,0.6)
+      },
+      'Bình thường cao': {
+        'label': Color(0xD916AA47), // rgba(22,170,71,0.85)
+        'value': Color(0xFFEAFFEC), // #eaffec
+      },
+      'Bình thường': {
+        'label': Color(0xFF16AA47), // #16aa47
+        'value': Color(0xFFC7F6D7), // #c7f6d7
+      },
+      'Thấp': {
+        'label': Color(0xFFF9BA1A), // #f9ba1a
+        'value': Color(0xFFFAF0D2), // #faf0d2
+      },
     };
-    // Mức độ Tâm thu Tâm trương
-    // Tăng huyết áp độ 3  > 180   > 110
-    // Tăng huyết áp độ 2  160 – 180 100 – 110
-    // Tăng huyết áp độ 1 140 – 160 90 – 100
-    // Bình thường cao 130-140 85-90
-    // Bình thường 90-130 60-85
-    // Thấp <90 <60
+
     List<List<String>> rangeTable = [
       ['Mức độ', 'Tâm thu', 'Tâm trương'],
-      ['Tăng huyết áp độ 3', '>180', '>110'],
-      ['Tăng huyết áp độ 2', '160-180', '100-110'],
-      ['Tăng huyết áp độ 1', '140-160', '90-100'],
+      ['Tăng huyết áp độ 3', '> 180', '> 110'],
+      ['Tăng huyết áp độ 2', '160 – 180', '100 – 110'],
+      ['Tăng huyết áp độ 1', '140 – 160', '90 – 100'],
       ['Bình thường cao', '130-140', '85-90'],
       ['Bình thường', '90-130', '60-85'],
       ['Thấp', '<90', '<60'],
     ];
+
     Color _headerBgColor = Color(0xFFF7F8F8);
     final _headerTextStyle = TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.bold,
-      color: R.color.color0xff636A6B,
+      fontFamily: R.font.sfpro,
+      color: Color(0xFF636A6B),
+      height: 1.5,
     );
+
+    final _valueTextStyle = TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w400,
+      fontFamily: R.font.sfpro,
+      color: R.color.textDark,
+      height: 1.5,
+      letterSpacing: 0.4,
+    );
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(16)),
-        border: Border.all(color: R.color.gray_btn),
       ),
       child: Column(
         children: [
-          // header
+          // Header title
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
             child: Text(
@@ -220,93 +242,162 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                fontFamily: R.font.sfpro,
                 color: R.color.textDark,
+                height: 24 / 18,
               ),
             ),
           ),
-          // Table range
-          ColoredBox(
-            color: _headerBgColor,
-            child: Row(
-              children: [
-                for (var i = 0; i < rangeTable[0].length; i++)
-                  Expanded(
-                    child: SizedBox(
-                      child: Center(
-                          child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          rangeTable[0][i],
-                          style: _headerTextStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                      )),
-                      height: 64,
+          // Table header
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Container(
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: _headerBgColor,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 0.4,
                     ),
-                    flex: i == 0 ? 2 : 1,
                   ),
-              ],
-            ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Center(
+                    child: Text(
+                      rangeTable[0][0],
+                      style: _headerTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: _headerBgColor,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 0.4,
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Center(
+                    child: Text(
+                      rangeTable[0][1],
+                      style: _headerTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: _headerBgColor,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 0.4,
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Center(
+                    child: Text(
+                      rangeTable[0][2],
+                      style: _headerTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+          // Table rows
           for (var i = 1; i < rangeTable.length; i++)
             Row(
               children: [
-                for (var j = 0; j < rangeTable[i].length; j++)
-                  Expanded(
-                    flex: j == 0 ? 2 : 1,
-                    child: Container(
-                      color: j == 0
-                          ? _colorMap[rangeTable[i][0]]
-                          : _colorMap[rangeTable[i][0]]?.withOpacity(0.1),
-                      alignment:
-                          j == 0 ? Alignment.centerLeft : Alignment.center,
-                      padding: j == 0 ? const EdgeInsets.only(left: 12) : null,
-                      child: Text(
-                        rangeTable[i][j],
-                        textAlign: TextAlign.center,
-                        style: j == 0
-                            ? _headerTextStyle.copyWith(
-                                color: Colors.white,
-                              )
-                            : TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: R.color.textDark,
-                              ),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: _colorMap[rangeTable[i][0]]!['label'],
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 0.4,
                       ),
-                      height: 52,
-                      width: double.infinity,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      rangeTable[i][0],
+                      style: _headerTextStyle.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: _colorMap[rangeTable[i][0]]!['value'],
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 0.4,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    alignment: Alignment.center,
+                    child: Text(
+                      rangeTable[i][1],
+                      style: _valueTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: _colorMap[rangeTable[i][0]]!['value'],
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 0.4,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    alignment: Alignment.center,
+                    child: Text(
+                      rangeTable[i][2],
+                      style: _valueTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
               ],
             ),
-
           const SizedBox(height: 12),
           // Reference info
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: RichText(
-              textAlign: TextAlign.left,
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 12,
-                  height: 16 / 12,
-                  fontWeight: FontWeight.w400,
-                  color: R.color.captionColorGray,
-                ),
-                children: [
-                  TextSpan(
-                    text:
-                        'Nguồn tham khảo:\nAbout High Blood Pressure | High Blood Pressure.  (2025, January 28). CDC. Tham khảo ngày 12, tháng 3, 2025, từ ',
-                  ),
-                  TextSpan(
-                    text:
-                        'https://www.cdc.gov/high-blood-pressure/about/index.html',
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => launchUrl(Uri.parse(
-                          'https://www.cdc.gov/high-blood-pressure/about/index.html')),
-                  ),
-                ],
+            child: Text(
+              'Nguồn tham khảo:\nAbout High Blood Pressure | High Blood Pressure.  (2025, January 28). CDC. Tham khảo ngày 12, tháng 3, 2025, từ https://www.cdc.gov/high-blood-pressure/about/index.html',
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.5,
+                fontWeight: FontWeight.w400,
+                fontFamily: R.font.sfpro,
+                color: Color(0xFFBFC6C6),
+                letterSpacing: 0.2,
               ),
             ),
           ),
