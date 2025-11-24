@@ -262,25 +262,25 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           if (_pinedLessons.isNotEmpty) ...[
             Row(
               children: [
                 Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                     child: _pinedLessons.length > 1
                         ? _buildPinnedLessonItem(_pinedLessons[1])
                         : const SizedBox()),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
           ],
           if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
             Row(
               children: [
                 Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                     child: _pinedLessons.length > 3
                         ? _buildPinnedLessonItem(_pinedLessons[3])
