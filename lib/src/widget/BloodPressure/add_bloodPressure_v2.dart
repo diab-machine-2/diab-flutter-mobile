@@ -1395,8 +1395,10 @@ class _AddBloodPressureControllerState
                       child: Text(R.string.confirm.tr(),
                           style: TextStyle(
                               color: R.color.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16)))),
+                              fontFamily: R.font.sfpro,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.4,
+                              fontSize: 15)))),
             ),
           )
         : SafeArea(
