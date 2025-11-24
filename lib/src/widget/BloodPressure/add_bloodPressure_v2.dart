@@ -198,14 +198,29 @@ class _AddBloodPressureControllerState
   void _initData() async {
     BotToast.showLoading();
 
-    // Init input heart rate at the first time
-    bool? willInputHeartRate =
-        await AppSettings.getInputHeartRateWithBloodPressure();
-    if (willInputHeartRate == null) {
-      willInputHeartRate = true;
-      AppSettings.setInputHeartRateWithBloodPressure(willInputHeartRate);
+    // Init input heart rate based on type:
+    // - Default ON if first time input (type != 'update') AND no preference exists (user chưa có chỉ số hoặc lần đầu nhập)
+    // - Use saved preference if exists (lần nhập trước đó không nhập nhịp tim → OFF)
+    // - Default based on previous input if updating (will be set in _loadDataDetail)
+    if (widget.type != 'update') {
+      // Check if there's a saved preference
+      bool? willInputHeartRate =
+          await AppSettings.getInputHeartRateWithBloodPressure();
+      if (willInputHeartRate == null) {
+        // No preference exists - first time ever, default to ON (user chưa có chỉ số hoặc lần đầu nhập)
+        _isInputHeartRate = true;
+      } else {
+        // Use saved preference (could be OFF if last time switch was ON but no pulse rate entered)
+        _isInputHeartRate = willInputHeartRate;
+      }
     } else {
-      _isInputHeartRate = willInputHeartRate;
+      // For update, will be set in _loadDataDetail based on previous pulseRate
+      // For now, get from settings as fallback
+      bool? willInputHeartRate =
+          await AppSettings.getInputHeartRateWithBloodPressure();
+      if (willInputHeartRate != null) {
+        _isInputHeartRate = willInputHeartRate;
+      }
     }
     try {
       Map<String, List<int>> ranges = await BloodPressureClient().fetchRange();
@@ -248,9 +263,15 @@ class _AddBloodPressureControllerState
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
       if (model!.pulseRate != null && model!.pulseRate! > 0) {
         _controllerHeart.text = model!.pulseRate!.toInt().toString();
+        // If previous input had pulse rate, default switch to ON
+        _isInputHeartRate = true;
       } else {
         _controllerHeart.text = '';
+        // If previous input didn't have pulse rate, default switch to OFF
+        _isInputHeartRate = false;
       }
+      // Save the preference for next time
+      AppSettings.setInputHeartRateWithBloodPressure(_isInputHeartRate);
       _controllerNote.text = model?.note ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       _files.addAll(model!.images);
@@ -1747,6 +1768,25 @@ class _AddBloodPressureControllerState
           }
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
+        // Update preference based on actual pulse rate input
+        // If switch was ON but user didn't enter pulse rate (empty or 0),
+        // set preference to OFF for next time
+        final actualPulseRate = pulseRate.trim();
+        final hasActualPulseRate = actualPulseRate.isNotEmpty &&
+            actualPulseRate != '0' &&
+            (double.tryParse(actualPulseRate) ?? 0) > 0;
+
+        if (_isInputHeartRate && !hasActualPulseRate) {
+          // Switch was ON but no pulse rate was entered, set OFF for next time
+          AppSettings.setInputHeartRateWithBloodPressure(false);
+        } else if (_isInputHeartRate && hasActualPulseRate) {
+          // Switch was ON and pulse rate was entered, keep ON for next time
+          AppSettings.setInputHeartRateWithBloodPressure(true);
+        } else {
+          // Switch was OFF, keep OFF for next time
+          AppSettings.setInputHeartRateWithBloodPressure(false);
+        }
+
         _navigateAfterSuccess(
             result.id, result.images, reasons, result.pulseRateStatus);
       }
