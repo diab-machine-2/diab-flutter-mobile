@@ -248,7 +248,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Text(
               R.string.bloodpressure_intro_help_title.tr(),
               style: TextStyle(
