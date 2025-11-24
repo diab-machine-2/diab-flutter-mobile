@@ -209,13 +209,20 @@ class BloodPressureChartState extends State<BloodPressureChart>
               trends = _getTrends(model);
             }
 
-            if (_focusIndex == -1 || _focusIndex >= trends.length) {
-              _focusIndex = (trends.length - 1);
-              final rangeType = BloodPressureRangeType.fromTitle(
-                  trends[_focusIndex].type ?? '');
-              Future.delayed(Duration(milliseconds: 200)).then((value) {
-                widget.bloodPressureChartCallback(rangeType);
-              });
+            if (trends.isNotEmpty) {
+              if (_focusIndex == -1 || _focusIndex >= trends.length) {
+                _focusIndex = (trends.length - 1);
+                if (_focusIndex >= 0 && _focusIndex < trends.length) {
+                  final rangeType = BloodPressureRangeType.fromTitle(
+                      trends[_focusIndex].type ?? '');
+                  Future.delayed(Duration(milliseconds: 200)).then((value) {
+                    widget.bloodPressureChartCallback(rangeType);
+                  });
+                }
+              }
+            } else {
+              // Reset focus index when trends is empty
+              _focusIndex = -1;
             }
           }
 

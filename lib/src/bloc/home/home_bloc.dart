@@ -651,10 +651,49 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // Blood Pressure
-    final haveBloodPressure = model?.bloodPressureIndex.systolic != null &&
-        model!.bloodPressureIndex.systolic! > 0 &&
-        model.bloodPressureIndex.diastolic != null &&
-        model.bloodPressureIndex.diastolic! > 0;
+    // Check if there's real data: similar to HbA1C, check createDateTime
+    // Backend may return default values (e.g., 120/90) even when there's no actual data
+    // createDateTime will be null or 0 when there's no data
+    final hasValidDateTime = model?.bloodPressureIndex.createDateTime != null &&
+        model!.bloodPressureIndex.createDateTime! > 0;
+
+    // Debug log to check actual values
+    print('🔍 Blood Pressure Data Check:');
+    print('  systolic: ${model?.bloodPressureIndex.systolic}');
+    print('  diastolic: ${model?.bloodPressureIndex.diastolic}');
+    print('  createDateTime: ${model?.bloodPressureIndex.createDateTime}');
+    print('  hasValidDateTime: $hasValidDateTime');
+
+    // Check if values are default values (120/90) - these are common default values
+    // Backend may return these default values even when there's no actual data
+    // We need to exclude these default values to prevent showing fake data
+    final systolic = model?.bloodPressureIndex.systolic;
+    final diastolic = model?.bloodPressureIndex.diastolic;
+
+    // Check if values match the common default pattern (120/90)
+    // Use tolerance for double comparison
+    final isDefaultValue = (systolic != null && diastolic != null) &&
+        ((systolic == 120.0 || systolic == 120) &&
+            (diastolic == 90.0 || diastolic == 90));
+
+    print('  isDefaultValue: $isDefaultValue');
+
+    // Only consider it valid data if:
+    // 1. Both systolic and diastolic exist and > 0
+    // 2. createDateTime is valid (not null and > 0)
+    // 3. Values are NOT the default values (120/90) - exclude default values even if createDateTime is valid
+    //    This is because backend may return default values with valid createDateTime when there's no real data
+    final haveBloodPressure = systolic != null &&
+        systolic > 0 &&
+        diastolic != null &&
+        diastolic > 0 &&
+        hasValidDateTime && // Only show data if createDateTime is valid
+        !isDefaultValue; // Exclude default values (120/90) even if createDateTime is valid
+    // Note: We exclude default values because backend may return them with valid createDateTime
+    // when there's no actual user data. If user really has 120/90, they would have entered it,
+    // and it would have a different createDateTime or be stored differently.
+
+    print('  haveBloodPressure: $haveBloodPressure');
     final bloodPressure = HomeMeasurementData(
       title: "Huyết Áp",
       titleColor: haveBloodPressure ? _haveValueTitleColor : _noValueTitleColor,
@@ -664,15 +703,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value1: haveBloodPressure
           ? roundNumber(model.bloodPressureIndex.systolic!)
           : "--",
-      value1Color: model?.bloodPressureIndex.colorSystolic != null
-          ? _convertHexStringToInt(model!.bloodPressureIndex.colorSystolic!)
-          : _noValueColor,
+      value1Color:
+          haveBloodPressure && model.bloodPressureIndex.colorSystolic != null
+              ? _convertHexStringToInt(model.bloodPressureIndex.colorSystolic!)
+              : _noValueColor,
       value2: haveBloodPressure
           ? roundNumber(model.bloodPressureIndex.diastolic!)
-          : "--",
-      value2Color: model?.bloodPressureIndex.colorDiastolic != null
-          ? _convertHexStringToInt(model!.bloodPressureIndex.colorDiastolic!)
-          : _noValueColor,
+          : null, // Set to null when no data instead of "--"
+      value2Color:
+          haveBloodPressure && model.bloodPressureIndex.colorDiastolic != null
+              ? _convertHexStringToInt(model.bloodPressureIndex.colorDiastolic!)
+              : null,
       unit: model?.bloodPressureIndex.unit ?? "mmHg",
       navigatorName: haveBloodPressure
           ? NavigatorName.detail_blood_pressure
