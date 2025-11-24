@@ -84,8 +84,10 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
       title: Text(
         R.string.huong_dan.tr(),
         style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+          fontFamily: R.font.sfpro,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
           color: R.color.white,
         ),
       ),

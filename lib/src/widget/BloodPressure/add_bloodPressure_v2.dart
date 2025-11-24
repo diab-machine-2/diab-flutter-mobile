@@ -510,8 +510,10 @@ class _AddBloodPressureControllerState
             ? R.string.update_blood_pressure.tr()
             : R.string.enter_blood_pressure.tr(),
         style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+          fontFamily: R.font.sfpro,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
           color: R.color.white,
         ),
       ),
@@ -534,7 +536,13 @@ class _AddBloodPressureControllerState
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
                   R.string.huong_dan.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    color: R.color.white,
+                    fontSize: 15,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
+                  ),
                 ),
               ),
             ),
