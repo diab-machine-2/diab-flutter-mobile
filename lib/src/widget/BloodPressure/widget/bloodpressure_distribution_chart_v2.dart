@@ -26,10 +26,12 @@ class BloodPressureDistributionChart extends StatefulWidget {
   final Function() onViewMore;
   final Function(BloodPressureRangeType) onViewDetail;
   @override
-  BloodPressureDistributionChartState createState() => BloodPressureDistributionChartState();
+  BloodPressureDistributionChartState createState() =>
+      BloodPressureDistributionChartState();
 }
 
-class BloodPressureDistributionChartState extends State<BloodPressureDistributionChart>
+class BloodPressureDistributionChartState
+    extends State<BloodPressureDistributionChart>
     with AutomaticKeepAliveClientMixin<BloodPressureDistributionChart> {
   @override
   bool get wantKeepAlive => true;
@@ -50,8 +52,10 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
   }
 
   Future<bool> _refresh() async {
-    BlocProvider.of<BloodPressureBloc>(currentContext).add(FetchDistributionBloodPressure(
-      currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+    BlocProvider.of<BloodPressureBloc>(currentContext)
+        .add(FetchDistributionBloodPressure(
+      currentDateTime:
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
     ));
     return true;
@@ -74,8 +78,10 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
           BloodPressureDistributionModel? model;
 
           if (state is BloodPressureInitial) {
-            BlocProvider.of<BloodPressureBloc>(context).add(FetchDistributionBloodPressure(
-              currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+            BlocProvider.of<BloodPressureBloc>(context)
+                .add(FetchDistributionBloodPressure(
+              currentDateTime:
+                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType: periodFilterType.toString(),
             ));
           }
@@ -88,7 +94,8 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
           }
 
           if (model == null) {
-            return Container(height: 240, child: Center(child: CircularProgressIndicator()));
+            return Container(
+                height: 240, child: Center(child: CircularProgressIndicator()));
           }
           return Container(
             decoration: BoxDecoration(
@@ -113,6 +120,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                             color: R.color.dark,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: R.font.sfpro,
                           ),
                         ),
                       ),
@@ -130,6 +138,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
                                 color: Color(0xFF95682E),
+                                fontFamily: R.font.sfpro,
                               ),
                             ),
                           ),
@@ -151,7 +160,8 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                           //   'cta_button_name': 'cta_add_glycemic_0',
                           // });
                           if (!AppSettings.isRegionAllowInputDevice) {
-                            Navigator.pushNamed(context, NavigatorName.add_blood_sugar_new,
+                            Navigator.pushNamed(
+                                context, NavigatorName.add_blood_sugar_new,
                                 arguments: {'type': 'input'});
                           } else {
                             BloodSugarFunctions.showModalAddData(context);
@@ -194,6 +204,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                   color: R.color.textDark,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
+                                  fontFamily: R.font.sfpro,
                                 ),
                               ),
                               const SizedBox(height: 3),
@@ -205,6 +216,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: R.color.textDark,
+                                  fontFamily: R.font.sfpro,
                                 ),
                               ),
                             ],
@@ -231,6 +243,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                   color: R.color.textDark,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
+                                  fontFamily: R.font.sfpro,
                                 ),
                               ),
                               const SizedBox(height: 3),
@@ -242,6 +255,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: R.color.textDark,
+                                  fontFamily: R.font.sfpro,
                                 ),
                               ),
                             ],
@@ -294,7 +308,6 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                   sections: List.generate(
                     6,
                     (i) {
-                      const bool showTitle = false;
                       late final double value;
                       late final Color color;
                       if (i == 0) {
@@ -331,6 +344,7 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                           fontSize: 13,
                           fontWeight: FontWeight.w400,
                           color: Colors.white,
+                          fontFamily: R.font.sfpro,
                         ),
                         radius: 45,
                       );
@@ -350,12 +364,14 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 InkWell(
-                  onTap: () => widget.onViewDetail(BloodPressureRangeType.very_high),
+                  onTap: () =>
+                      widget.onViewDetail(BloodPressureRangeType.very_high),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.increaseLevelThreeColor),
-                      number: '', // (model.increaseLevelThree! / total * 100).round().toString(),
+                      number:
+                          '', // (model.increaseLevelThree! / total * 100).round().toString(),
                       text: R.string.grade_3_hypertension.tr(),
                       fontsize: fontsize,
                     ),
@@ -363,12 +379,14 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                 ),
                 SizedBox(height: 8),
                 InkWell(
-                  onTap: () => widget.onViewDetail(BloodPressureRangeType.high2),
+                  onTap: () =>
+                      widget.onViewDetail(BloodPressureRangeType.high2),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.increaseLevelTwoColor),
-                      number: '', // (model.increaseLevelTwo! / total * 100).round().toString(),
+                      number:
+                          '', // (model.increaseLevelTwo! / total * 100).round().toString(),
                       text: R.string.grade_2_hypertension.tr(),
                       fontsize: fontsize,
                     ),
@@ -376,12 +394,14 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                 ),
                 SizedBox(height: 8),
                 InkWell(
-                  onTap: () => widget.onViewDetail(BloodPressureRangeType.high1),
+                  onTap: () =>
+                      widget.onViewDetail(BloodPressureRangeType.high1),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.increaseLevelOneColor),
-                      number: '', // (model.increaseLevelOne! / total * 100).round().toString(),
+                      number:
+                          '', // (model.increaseLevelOne! / total * 100).round().toString(),
                       text: R.string.grade_1_hypertension.tr(),
                       fontsize: fontsize,
                     ),
@@ -389,12 +409,14 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                 ),
                 SizedBox(height: 8),
                 InkWell(
-                  onTap: () => widget.onViewDetail(BloodPressureRangeType.normal_high),
+                  onTap: () =>
+                      widget.onViewDetail(BloodPressureRangeType.normal_high),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.preIncreaseColor),
-                      number: '', // (model.preIncrease! / total * 100).round().toString(),
+                      number:
+                          '', // (model.preIncrease! / total * 100).round().toString(),
                       text: R.string.normal_high.tr(),
                       fontsize: fontsize,
                     ),
@@ -404,10 +426,12 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: InkWell(
-                    onTap: () => widget.onViewDetail(BloodPressureRangeType.normal),
+                    onTap: () =>
+                        widget.onViewDetail(BloodPressureRangeType.normal),
                     child: CircleIndicator(
                       color: toColor(model.normalColor),
-                      number: '', // (model.normal! / total * 100).round().toString(),
+                      number:
+                          '', // (model.normal! / total * 100).round().toString(),
                       text: R.string.normal.tr(),
                       fontsize: fontsize,
                     ),
@@ -420,7 +444,8 @@ class BloodPressureDistributionChartState extends State<BloodPressureDistributio
                     padding: const EdgeInsets.symmetric(vertical: 3),
                     child: CircleIndicator(
                       color: toColor(model.lowColor),
-                      number: '', // (model.low! / total * 100).round().toString(),
+                      number:
+                          '', // (model.low! / total * 100).round().toString(),
                       text: R.string.low.tr(),
                       fontsize: fontsize,
                     ),

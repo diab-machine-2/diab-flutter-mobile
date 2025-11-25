@@ -260,41 +260,36 @@ class _BloodPressureDetailTabbarControllerState
                   children: [
                     // Detail button
                     Container(
-                      constraints: BoxConstraints(minWidth: 60),
+                      width: 60,
+                      height: 44,
                       child: Stack(
                         children: [
                           InkWell(
                             onTap: _viewListing,
                             child: Container(
+                              width: 60,
                               height: 44,
-                              padding: EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
                                 color: Color(0xffDCFFFC),
                                 borderRadius: BorderRadius.circular(32),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: Image.asset(
-                                      R.drawable.ic_view_detail,
-                                      fit: BoxFit.contain,
-                                    ),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Image.asset(
+                                    R.drawable.ic_view_detail,
+                                    fit: BoxFit.contain,
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
                           // Show dot indicator if detail hasn't been viewed
-                          // Note: We check if chart has data by checking if the key exists
-                          // In a real scenario, you might want to expose a method from chart state to check data
                           if (!_isDetailViewed)
                             Positioned(
-                              left: 48,
-                              bottom: 32,
+                              left: 44,
+                              top: 0,
                               child: Container(
                                 width: 12,
                                 height: 12,
@@ -331,7 +326,7 @@ class _BloodPressureDetailTabbarControllerState
                           ),
                           child: Center(
                             child: Text(
-                              R.string.enter_blood_pressure.tr(),
+                              "Nhập huyết áp",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,

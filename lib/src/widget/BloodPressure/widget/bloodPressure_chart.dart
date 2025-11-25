@@ -364,24 +364,6 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                InkWell(
-                  onTap: _viewHistory,
-                  child: SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: R.color.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: R.color.color0xffE5E5E5),
-                      ),
-                      child: Center(
-                          child: Icon(Icons.history,
-                              color: R.color.textDark, size: 20)),
-                    ),
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 4),
