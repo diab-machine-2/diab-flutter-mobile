@@ -7,7 +7,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
+import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -44,6 +46,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
   int _periodFilterType = 1;
   late BuildContext currentContext;
   int? previousDate = 0;
+  DateTime? _lastTapTime;
+  int? _lastTappedIndex;
 
   final double _mediumLow = 90;
   final double _mediumHigh = 140;
@@ -108,6 +112,179 @@ class BloodPressureChartState extends State<BloodPressureChart>
         arguments: {
           'initPeriodFilterType': _periodFilterType,
         });
+  }
+
+  void _handleTapEvent(FlTapUpEvent event, LineTouchResponse? lineTouch,
+      List<SubTrendItemModel> trends) {
+    if (lineTouch?.lineBarSpots == null || lineTouch!.lineBarSpots!.isEmpty) {
+      return;
+    }
+
+    final touchedSpot = lineTouch.lineBarSpots!.first;
+    final tappedIndex = touchedSpot.spotIndex;
+
+    if (tappedIndex < 0 || tappedIndex >= trends.length) {
+      return;
+    }
+
+    final now = DateTime.now();
+
+    // Detect double tap - check if tapping the same dot within 500ms (same as HbA1C)
+    if (_lastTappedIndex == tappedIndex &&
+        _lastTapTime != null &&
+        now.difference(_lastTapTime!).inMilliseconds < 500) {
+      // Double tap detected on the same dot - navigate to detail screen
+      print('Blood pressure chart Double tap on index: $tappedIndex');
+      _openDetailScreen(trends, tappedIndex);
+      // Reset tracking after double tap
+      _lastTappedIndex = null;
+      _lastTapTime = null;
+    } else {
+      // Single tap - update focus
+      previousDate = 0;
+      if (tappedIndex != _focusIndex) {
+        if (!mounted) return;
+        setState(() {
+          _focusIndex = tappedIndex;
+        });
+        final rangeType =
+            BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+        widget.bloodPressureChartCallback(rangeType);
+        _scrollToFocusIndex();
+      }
+      // Update tracking for next potential double tap
+      _lastTappedIndex = tappedIndex;
+      _lastTapTime = now;
+    }
+  }
+
+  void _openDetailScreen(List<SubTrendItemModel> trends, int index) async {
+    if (index < 0 || index >= trends.length) return;
+
+    final selectedTrend = trends[index];
+
+    // If id is available, navigate directly
+    if (selectedTrend.id != null && selectedTrend.id!.isNotEmpty) {
+      Navigator.pushNamed(
+        currentContext,
+        NavigatorName.add_blood_pressure,
+        arguments: {'type': 'update', 'id': selectedTrend.id},
+      );
+      return;
+    }
+
+    // If no id, fetch from listing API to get the id
+    if (selectedTrend.date != null && selectedTrend.timeFrameName != null) {
+      try {
+        final client = BloodPressureClient();
+        final dataModel = await client.fetchBloodPressureInput(
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+          _periodFilterType.toString(),
+          null, // bloodPressureType
+          1, // page
+          size: '100', // Get more items to find the matching one
+        );
+
+        // Find matching item by date, timeFrameName, and values (systolic/diastolic)
+        BloodPressureModel? matchingItem;
+        try {
+          matchingItem = dataModel.inputs.firstWhere(
+            (item) {
+              // Compare dates (same timestamp or same day)
+              final trendDate = DateTime.fromMillisecondsSinceEpoch(
+                selectedTrend.date! * 1000,
+                isUtc: true,
+              );
+              final itemDate = DateTime.fromMillisecondsSinceEpoch(
+                item.date! * 1000,
+                isUtc: true,
+              );
+
+              // First try exact timestamp match (within 1 minute tolerance)
+              final timeDiff = (trendDate.millisecondsSinceEpoch -
+                      itemDate.millisecondsSinceEpoch)
+                  .abs();
+              final exactTimeMatch = timeDiff < 60000; // 1 minute tolerance
+
+              // Fallback to same day if exact time doesn't match
+              final sameDay = trendDate.year == itemDate.year &&
+                  trendDate.month == itemDate.month &&
+                  trendDate.day == itemDate.day;
+
+              // Compare timeFrameName
+              final sameTimeFrame =
+                  item.timeFrame == selectedTrend.timeFrameName;
+
+              // Compare systolic and diastolic values (exact match)
+              final sameSystolic = item.systolic != null &&
+                  selectedTrend.systolic != null &&
+                  (item.systolic!.round() == selectedTrend.systolic!.round());
+
+              final sameDiastolic = item.diastolic != null &&
+                  selectedTrend.diastolic != null &&
+                  (item.diastolic!.round() == selectedTrend.diastolic!.round());
+
+              // Match if: (exact time OR same day) AND same timeFrame AND same values
+              return (exactTimeMatch || sameDay) &&
+                  sameTimeFrame &&
+                  sameSystolic &&
+                  sameDiastolic;
+            },
+          );
+        } catch (e) {
+          // Item not found, try without value matching
+          try {
+            matchingItem = dataModel.inputs.firstWhere(
+              (item) {
+                final trendDate = DateTime.fromMillisecondsSinceEpoch(
+                  selectedTrend.date! * 1000,
+                  isUtc: true,
+                );
+                final itemDate = DateTime.fromMillisecondsSinceEpoch(
+                  item.date! * 1000,
+                  isUtc: true,
+                );
+
+                final sameDay = trendDate.year == itemDate.year &&
+                    trendDate.month == itemDate.month &&
+                    trendDate.day == itemDate.day;
+
+                final sameTimeFrame =
+                    item.timeFrame == selectedTrend.timeFrameName;
+
+                return sameDay && sameTimeFrame;
+              },
+            );
+          } catch (e2) {
+            // Item not found, will fallback to listing screen
+            matchingItem = null;
+          }
+        }
+
+        if (matchingItem != null &&
+            matchingItem.id != null &&
+            matchingItem.id!.isNotEmpty) {
+          Navigator.pushNamed(
+            currentContext,
+            NavigatorName.add_blood_pressure,
+            arguments: {'type': 'update', 'id': matchingItem.id},
+          );
+          return;
+        }
+      } catch (e) {
+        // If error, fallback to listing screen
+        print('Error fetching blood pressure id: $e');
+      }
+    }
+
+    // Fallback: navigate to listing screen
+    Navigator.pushNamed(
+      currentContext,
+      NavigatorName.detail_bloodpressure_listing,
+      arguments: {
+        'initPeriodFilterType': _periodFilterType,
+      },
+    );
   }
 
   List<SubTrendItemModel> _getTrends(BloodPressureTrendModel model) {
@@ -407,20 +584,25 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   ),
                 ),
                 const SizedBox(width: 16),
-                ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: 200),
-                  child: Text(
-                    selectedType,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: R.font.sfpro,
-                      color: selectedColor.isNotEmpty
-                          ? Color(int.parse(
-                              '0xff${selectedColor.split('#').join()}'))
-                          : R.color.color0xff111515,
-                      height: 1.5,
+                GestureDetector(
+                  onTap: _focusIndex != -1 && _focusIndex < trends.length
+                      ? () => _openDetailScreen(trends, _focusIndex)
+                      : null,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: 200),
+                    child: Text(
+                      selectedType,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: R.font.sfpro,
+                        color: selectedColor.isNotEmpty
+                            ? Color(int.parse(
+                                '0xff${selectedColor.split('#').join()}'))
+                            : R.color.color0xff111515,
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -464,38 +646,43 @@ class BloodPressureChartState extends State<BloodPressureChart>
               ],
             ),
             const SizedBox(height: 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  selectedTimeFrame,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: R.font.sfpro,
-                    color: Color(0xFF636A6B),
+            GestureDetector(
+              onTap: _focusIndex != -1 && _focusIndex < trends.length
+                  ? () => _openDetailScreen(trends, _focusIndex)
+                  : null,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    selectedTimeFrame,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: R.font.sfpro,
+                      color: Color(0xFF636A6B),
+                    ),
                   ),
-                ),
-                Container(
-                  width: 4,
-                  height: 4,
-                  margin: EdgeInsets.only(left: 4, right: 4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFBFC6C6),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    margin: EdgeInsets.only(left: 4, right: 4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFBFC6C6),
+                    ),
                   ),
-                ),
-                Text(
-                  '$selectedSystolic/$selectedDiastolic mmHg',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: R.font.sfpro,
-                    color: Color(0xFF111515),
-                    letterSpacing: 0.4,
+                  Text(
+                    '$selectedSystolic/$selectedDiastolic mmHg',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: R.font.sfpro,
+                      color: Color(0xFF111515),
+                      letterSpacing: 0.4,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -666,20 +853,28 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           ),
                           touchCallback: (FlTouchEvent event,
                               LineTouchResponse? lineTouch) {
-                            previousDate = 0;
-                            if (event is! FlLongPressEnd &&
+                            if (event is FlTapUpEvent) {
+                              _handleTapEvent(event, lineTouch, trends);
+                            } else if (event is! FlLongPressEnd &&
                                 event is! FlPanEndEvent) {
+                              // Pan/hover event - update focus but don't reset double-tap tracking
+                              previousDate = 0;
                               final value = lineTouch?.lineBarSpots?[0].x;
                               if (value != null) {
-                                setState(() {
-                                  _focusIndex = value.toInt();
-                                });
-                                final rangeType =
-                                    BloodPressureRangeType.fromTitle(
-                                        trends[_focusIndex].type ?? '');
-                                widget.bloodPressureChartCallback(rangeType);
+                                final panIndex = value.toInt();
+                                if (panIndex >= 0 && panIndex < trends.length) {
+                                  setState(() {
+                                    _focusIndex = panIndex;
+                                  });
+                                  final rangeType =
+                                      BloodPressureRangeType.fromTitle(
+                                          trends[_focusIndex].type ?? '');
+                                  widget.bloodPressureChartCallback(rangeType);
+                                }
                               }
                             } else {
+                              // Long press end or pan end - reset focus but keep double-tap tracking
+                              previousDate = 0;
                               _focusIndex = -1;
                             }
                           }),
