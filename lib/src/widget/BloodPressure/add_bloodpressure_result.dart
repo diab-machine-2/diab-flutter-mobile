@@ -39,6 +39,19 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   late TextEditingController _controllerNote;
   bool _isKeyboardVisible = false;
 
+  // Linear gradient for buttons: linear-gradient(139deg, #0FB4A5 -7.19%, #008479 68.38%, #008479 99.99%)
+  // 139 degrees in CSS = approximately -0.7547, 0.6561 in Flutter Alignment coordinates
+  static const LinearGradient _buttonGradient = LinearGradient(
+    begin: Alignment(-0.7547, 0.6561), // 139 degrees from CSS
+    end: Alignment(0.7547, -0.6561), // Opposite direction
+    colors: [
+      Color(0xFF0FB4A5), // #0FB4A5
+      Color(0xFF008479), // #008479
+      Color(0xFF008479), // #008479
+    ],
+    stops: [0.0, 0.6838, 1.0], // -7.19% -> 0.0, 68.38% -> 0.6838, 99.99% -> 1.0
+  );
+
   @override
   void initState() {
     _loadData();
@@ -514,23 +527,26 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
         ),
         const SizedBox(width: 11),
         Expanded(
-          child: ElevatedButton(
-            onPressed: _doComplete,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.greenGradientBottom,
-              shape: RoundedRectangleBorder(
+          child: InkWell(
+            onTap: _doComplete,
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              height: 42,
+              decoration: BoxDecoration(
+                gradient: _buttonGradient,
                 borderRadius: BorderRadius.circular(20),
               ),
-              minimumSize: Size(double.infinity, 42),
-            ),
-            child: Text(
-              R.string.completed.tr(),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                fontFamily: R.font.sfpro,
-                letterSpacing: 0.4,
+              child: Center(
+                child: Text(
+                  R.string.completed.tr(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
+                  ),
+                ),
               ),
             ),
           ),

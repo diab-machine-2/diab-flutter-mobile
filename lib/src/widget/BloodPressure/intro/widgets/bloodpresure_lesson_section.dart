@@ -144,7 +144,7 @@ class _BloodPressureLessonSectionState
         children: [
           const SizedBox(height: 20),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Text(
               R.string.knowledge_from_diab_experts.tr(),
               style: TextStyle(

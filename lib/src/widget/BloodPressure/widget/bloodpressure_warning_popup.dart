@@ -54,6 +54,19 @@ class _BloodPressureWarningPopupWidgetState
     Navigator.of(context).pop(_selectedReasons);
   }
 
+  // Linear gradient for buttons: linear-gradient(139deg, #0FB4A5 -7.19%, #008479 68.38%, #008479 99.99%)
+  // 139 degrees in CSS = approximately -0.7547, 0.6561 in Flutter Alignment coordinates
+  static const LinearGradient _buttonGradient = LinearGradient(
+    begin: Alignment(-0.7547, 0.6561), // 139 degrees from CSS
+    end: Alignment(0.7547, -0.6561), // Opposite direction
+    colors: [
+      Color(0xFF0FB4A5), // #0FB4A5
+      Color(0xFF008479), // #008479
+      Color(0xFF008479), // #008479
+    ],
+    stops: [0.0, 0.6838, 1.0], // -7.19% -> 0.0, 68.38% -> 0.6838, 99.99% -> 1.0
+  );
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -105,7 +118,8 @@ class _BloodPressureWarningPopupWidgetState
                 style: TextStyle(
                   fontSize: 34,
                   fontWeight: FontWeight.bold,
-                  height: 1.2,
+                  height: 1.22,
+                  color: R.color.color0xff111515,
                   fontFamily: R.font.sfpro,
                 ),
               ),
@@ -186,20 +200,28 @@ class _BloodPressureWarningPopupWidgetState
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder(),
-                          backgroundColor: R.color.greenGradientBottom,
-                          minimumSize: Size(double.infinity, 48),
-                        ),
-                        onPressed: _isConfirmEnable ? _inputtedReason : null,
-                        child: Text(
-                          R.string.confirm.tr(),
-                          style: TextStyle(
-                            color: R.color.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            fontFamily: R.font.sfpro,
+                      child: InkWell(
+                        onTap: _isConfirmEnable ? _inputtedReason : null,
+                        borderRadius: BorderRadius.circular(24),
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            gradient: _isConfirmEnable ? _buttonGradient : null,
+                            color: _isConfirmEnable ? null : R.color.grey200,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.confirm.tr(),
+                              style: TextStyle(
+                                color: _isConfirmEnable
+                                    ? R.color.white
+                                    : R.color.grey,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                fontFamily: R.font.sfpro,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -214,23 +236,41 @@ class _BloodPressureWarningPopupWidgetState
                       'Nếu có các triệu chứng thở nhanh, đau bụng, nôn ói,.. gặp bác sĩ sớm để được tư vấn và điều chỉnh toa thuốc',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                        color: R.color.color0xff111515,
+                        height: 1.46,
                         fontFamily: R.font.sfpro,
                       ),
                     ),
-                    const SizedBox(height: 52),
+                    const SizedBox(height: 40),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: ElevatedButton(
-                        onPressed: _confirm,
-                        style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder(),
-                          minimumSize:
-                              Size(double.infinity, 48), // Full width button
-                        ),
-                        child: Text(
-                          R.string.i_understand.tr(),
-                          style: TextStyle(fontFamily: R.font.sfpro),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: InkWell(
+                        onTap: _confirm,
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 10,
+                          ),
+                          height: 42,
+                          decoration: BoxDecoration(
+                            gradient: _buttonGradient,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.i_understand.tr(),
+                              style: TextStyle(
+                                fontFamily: R.font.sfpro,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: R.color.white,
+                                height: 1.46,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
