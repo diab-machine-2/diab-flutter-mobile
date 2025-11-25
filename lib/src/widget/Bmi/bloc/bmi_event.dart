@@ -50,8 +50,9 @@ class BmiCheckStatisticalDataExistedEvent extends BmiEvent {
 
 class BmiGetWeightRecordsEvent extends BmiEvent {
   final int? page;
+  final int? size;
   
-  const BmiGetWeightRecordsEvent({this.page});
+  const BmiGetWeightRecordsEvent({this.page, this.size});
 }
 // others
 

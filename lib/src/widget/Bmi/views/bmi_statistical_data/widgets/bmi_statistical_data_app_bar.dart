@@ -29,6 +29,7 @@ class BmiStatisticalDataAppBar extends StatelessWidget
           highlightColor: R.color.white,
           icon: Icon(Icons.arrow_back, color: R.color.white),
           onPressed: () {
+            bmiBloc.restorePeriodTypeAndRefetch();
             NavigationUtil.pop(context);
           }),
     );
