@@ -337,7 +337,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
+                          fontFamily: R.font.sfpro,
                           color: Color(0xFF636A6B),
+                          letterSpacing: 0.4,
                         ),
                       ),
                       Container(
@@ -354,7 +356,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
+                          fontFamily: R.font.sfpro,
                           color: Color(0xFF636A6B),
+                          letterSpacing: 0.4,
                         ),
                       ),
                     ],
@@ -429,11 +433,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                      fontFamily: R.font.sfpro,
                       color: selectedColor.isNotEmpty
                           ? Color(int.parse(
                               '0xff${selectedColor.split('#').join()}'))
-                          : null,
-                      height: 36 / 24,
+                          : R.color.color0xff111515,
+                      height: 1.5,
                     ),
                   ),
                 ),
@@ -485,6 +490,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
+                    fontFamily: R.font.sfpro,
                     color: Color(0xFF636A6B),
                   ),
                 ),
@@ -502,7 +508,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
+                    fontFamily: R.font.sfpro,
                     color: Color(0xFF111515),
+                    letterSpacing: 0.4,
                   ),
                 ),
               ],
@@ -558,11 +566,25 @@ class BloodPressureChartState extends State<BloodPressureChart>
               child: Column(
                 children: [
                   Spacer(flex: 1),
-                  Text(_mediumHigh.round().toString(),
-                      style: TextStyle(color: R.color.black, fontSize: 14)),
+                  Text(
+                    _mediumHigh.round().toString(),
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: R.font.sfpro,
+                    ),
+                  ),
                   Spacer(flex: 1),
-                  Text(_mediumLow.round().toString(),
-                      style: TextStyle(color: R.color.black, fontSize: 14)),
+                  Text(
+                    _mediumLow.round().toString(),
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: R.font.sfpro,
+                    ),
+                  ),
                   Spacer(flex: 2),
                   // Icon(Icons.heat_pump_rounded, size: 20),
                   Image.asset(R.drawable.ic_bloodpressure_pulse,
@@ -589,9 +611,32 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           getTouchedSpotIndicator: (LineChartBarData barData,
                               List<int> spotIndexes) {
                             return spotIndexes.map((index) {
+                              // Get the color of the touched point
+                              Color dotColor = R.color.black;
+                              if (index >= 0 && index < trends.length) {
+                                final trend = trends[index];
+                                if (trend.color != null &&
+                                    trend.color!.isNotEmpty) {
+                                  dotColor = toColor(trend.color);
+                                }
+                              }
+
                               return TouchedSpotIndicatorData(
-                                FlLine(color: R.color.black, strokeWidth: 0.5),
-                                FlDotData(show: false),
+                                FlLine(
+                                  color: dotColor,
+                                  strokeWidth: 0.5,
+                                ),
+                                FlDotData(
+                                  show: true,
+                                  getDotPainter:
+                                      (spot, percent, barData, index) =>
+                                          FlDotCirclePainter(
+                                    radius: 3,
+                                    color: dotColor,
+                                    strokeWidth: 6,
+                                    strokeColor: dotColor.withOpacity(0.3),
+                                  ),
+                                ),
                               );
                             }).toList();
                           },
@@ -599,8 +644,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             showOnTopOfTheChartBoxArea: true,
                             fitInsideVertically: true,
                             fitInsideHorizontally: true,
-                            tooltipBgColor:
-                                toColor(model.colors!.first).withOpacity(0.2),
+                            tooltipBgColor: Colors.transparent,
                             tooltipRoundedRadius: 8,
                             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
                               return lineBarsSpot.map((lineBarSpot) {
@@ -614,8 +658,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                     return LineTooltipItem(
                                       '0/0',
                                       TextStyle(
-                                          color: toColor(model.colors!.first),
-                                          fontWeight: FontWeight.bold),
+                                        color: toColor(model.colors!.first),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        fontFamily: R.font.sfpro,
+                                      ),
                                     );
                                   }
                                   final trend = trends[lineBarSpot.spotIndex];
@@ -624,10 +671,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                         '/' +
                                         trend.diastolic!.round().toString(),
                                     TextStyle(
-                                        color: toColor(trend.color),
-                                        fontWeight: FontWeight.bold),
+                                      color: toColor(trend.color),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      fontFamily: R.font.sfpro,
+                                    ),
                                   );
                                 }
+                                return null;
                               }).toList();
                             },
                           ),
@@ -662,10 +713,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           getTextStyles: (context, value) {
                             return TextStyle(
                                 color: _focusIndex == value.toInt()
-                                    ? R.color.black
-                                    : R.color.color0xffC0C2C5,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal);
+                                    ? R.color.color0xff111515
+                                    : R.color.color0xff636A6B,
+                                fontSize: 10,
+                                fontWeight: _focusIndex == value.toInt()
+                                    ? FontWeight.w700
+                                    : FontWeight.normal,
+                                fontFamily: 'Nunito',
+                                height: 1.5);
                           },
                           getTitles: (double value) {
                             // padding left
@@ -684,18 +739,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         ),
                         leftTitles: SideTitles(
                           showTitles: false,
-                          reservedSize: 36,
-                          interval: 10,
-                          getTitles: (double value) {
-                            // map [_customYTransform]
-                            if (value == _customYTransform(90)) {
-                              return '90';
-                            }
-                            if (value == _customYTransform(140)) {
-                              return '140';
-                            }
-                            return '';
-                          },
+                          reservedSize: 50,
                         ),
                       ),
                       borderData: FlBorderData(show: false),
@@ -743,7 +787,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
               ),
             ),
             SizedBox(width: 8),
-            Text('Tâm thu', style: TextStyle(fontSize: 14)),
+            Text(
+              'Tâm thu',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                fontFamily: 'Nunito',
+                color: R.color.color0xff111515,
+                height: 1.29,
+              ),
+            ),
             SizedBox(width: 48),
             Container(
               width: 23,
@@ -754,7 +807,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
               ),
             ),
             SizedBox(width: 8),
-            Text('Tâm trương', style: TextStyle(fontSize: 14)),
+            Text(
+              'Tâm trương',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                fontFamily: 'Nunito',
+                color: R.color.color0xff111515,
+                height: 1.29,
+              ),
+            ),
           ],
         ),
       ],
@@ -782,12 +844,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
             checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
               final color = toColor(trends[index].color);
+              final bool isSelected = _focusIndex == index;
               return FlDotCirclePainter(
-                radius: 4,
+                radius: 3,
                 color: color,
-                strokeWidth: index == _focusIndex ? 12 : 0,
-                strokeColor:
-                    index == _focusIndex ? color.withOpacity(0.5) : null,
+                strokeWidth: isSelected ? 6 : 0,
+                strokeColor: isSelected ? color.withOpacity(0.3) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),
@@ -807,12 +869,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
             checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
               final color = toColor(trends[index].color);
+              final bool isSelected = _focusIndex == index;
               return FlDotCirclePainter(
-                radius: 4,
+                radius: 3,
                 color: color,
-                strokeWidth: index == _focusIndex ? 12 : 0,
-                strokeColor:
-                    index == _focusIndex ? color.withOpacity(0.5) : null,
+                strokeWidth: isSelected ? 6 : 0,
+                strokeColor: isSelected ? color.withOpacity(0.3) : null,
               );
             }),
         belowBarData: BarAreaData(show: false),
