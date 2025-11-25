@@ -369,7 +369,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             const SizedBox(height: 4),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(width: 12),
                 InkWell(
