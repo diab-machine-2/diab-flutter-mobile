@@ -715,11 +715,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 color: _focusIndex == value.toInt()
                                     ? R.color.color0xff111515
                                     : R.color.color0xff636A6B,
-                                fontSize: 10,
+                                fontSize: 12,
                                 fontWeight: _focusIndex == value.toInt()
                                     ? FontWeight.w700
                                     : FontWeight.normal,
-                                fontFamily: 'Nunito',
+                                fontFamily: R.font.sfpro,
                                 height: 1.5);
                           },
                           getTitles: (double value) {
@@ -780,7 +780,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           children: [
             Container(
               width: 23,
-              height: 1,
+              height: 2,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(1),
                 color: Color(0xFF008479),
@@ -800,7 +800,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             SizedBox(width: 48),
             Container(
               width: 23,
-              height: 1,
+              height: 2,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(1),
                 color: Color(0xFF95682E),
