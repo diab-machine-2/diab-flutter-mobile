@@ -49,6 +49,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
   DateTime? _lastTapTime;
   int? _lastTappedIndex;
 
+  // Tracking variables for scroll logic (similar to HbA1C)
+  double _lastViewWidth = 0;
+  double _lastEffectivePointWidth = 0;
+  int _lastTotalPoints = 0;
+  bool _initialScrollApplied = false;
+
   final double _mediumLow = 90;
   final double _mediumHigh = 140;
 
@@ -150,7 +156,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
         final rangeType =
             BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
         widget.bloodPressureChartCallback(rangeType);
-        _scrollToFocusIndex();
+        // Scroll to center the selected point
+        if (_lastTotalPoints > 0 && _lastViewWidth > 0) {
+          _scrollToSelectedPoint(
+            totalPoints: _lastTotalPoints,
+            viewWidth: _lastViewWidth,
+            effectivePointWidth: _lastEffectivePointWidth,
+          );
+        }
       }
       // Update tracking for next potential double tap
       _lastTappedIndex = tappedIndex;
@@ -303,58 +316,125 @@ class BloodPressureChartState extends State<BloodPressureChart>
     return trends;
   }
 
-  void _scrollToFocusIndex() {
-    // REF: [_buildChart]
-    double paddingOutSideBoth = 12 * 2;
-    double leftTitleWidth = 50;
-    double leftTitleMargin = 2;
-    double chartWidth = MediaQuery.of(context).size.width -
-        paddingOutSideBoth -
-        leftTitleWidth -
-        leftTitleMargin;
-    final width = chartWidth / 18;
-    final itemWidth = width + 12; // same as used in chart
+  void _ensureSelectedPointVisible({
+    required List<SubTrendItemModel> trends,
+    required int totalPoints,
+    required double viewWidth,
+    required double effectivePointWidth,
+    int retry = 0,
+  }) {
+    if (!_scrollController.hasClients ||
+        _initialScrollApplied ||
+        totalPoints <= 0) return;
+    if (!viewWidth.isFinite || viewWidth <= 0) return;
 
-    // Get the trends list from the current state
-    final BloodPressureState state =
-        BlocProvider.of<BloodPressureBloc>(currentContext).state;
-    List<SubTrendItemModel> trends = [];
-    if (state is BloodPressureTrendLoaded) {
-      trends = _getTrends(state.model);
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) {
+      _initialScrollApplied = true;
+      return;
     }
 
-    // Handle different scrolling behavior based on whether the list is reversed
-    if (trends.length > 1) {
-      // Chart is reversed when trends.length > 1
-      // When reversed, we need to calculate from the right edge
-      final totalWidth = ((trends.length < 5 ? 5 : trends.length) * itemWidth);
-      final rightEdgeOffset = totalWidth - (_focusIndex + 1) * itemWidth;
-      final targetOffset = rightEdgeOffset + (itemWidth / 2) - (chartWidth / 2);
+    _initialScrollApplied = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+      // Check if scroll controller is ready with proper dimensions
+      if (!_scrollController.hasClients ||
+          !_scrollController.position.hasContentDimensions) {
+        _initialScrollApplied = false;
+        // Retry after a short delay
+        Future.delayed(const Duration(milliseconds: 50), () {
+          _ensureSelectedPointVisible(
+            trends: trends,
+            totalPoints: totalPoints,
+            viewWidth: viewWidth,
+            effectivePointWidth: effectivePointWidth,
+            retry: retry + 1,
           );
-        }
-      });
-    } else {
-      // Normal left-to-right scrolling
-      final targetOffset =
-          (_focusIndex * itemWidth) - (chartWidth / 2) + (itemWidth / 2);
+        });
+        return;
+      }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
+      final int selectedIndex = _focusIndex >= 0 && _focusIndex < trends.length
+          ? _focusIndex
+          : (trends.length > 0 ? trends.length - 1 : 0);
+
+      // Calculate the target position to center the selected point
+      final double targetCenter =
+          selectedIndex * effectivePointWidth + (effectivePointWidth / 2);
+      final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
+      final double maxScrollExtent = _scrollController.position.maxScrollExtent;
+      final double desiredOffset =
+          rawOffset.clamp(0.0, maxScrollExtent).toDouble();
+
+      // Check if the point is at the beginning (first few points visible)
+      if (desiredOffset <= 0.0 || selectedIndex < 3) {
+        // Point is at the beginning, just jump to start without animation
+        _scrollController.jumpTo(0.0);
+      } else {
+        // Point is not at the beginning, animate smoothly to center it
+        _scrollController.animateTo(
+          desiredOffset,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    });
+  }
+
+  void _scrollToSelectedPoint({
+    required int totalPoints,
+    required double viewWidth,
+    required double effectivePointWidth,
+    int retry = 0,
+  }) {
+    if (!_scrollController.hasClients) return;
+    if (totalPoints <= 0) return;
+    if (!viewWidth.isFinite || viewWidth <= 0) return;
+
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+
+      // Check if scroll controller is ready with proper dimensions
+      if (!_scrollController.position.hasContentDimensions) {
+        // Retry after a short delay
+        Future.delayed(const Duration(milliseconds: 50), () {
+          _scrollToSelectedPoint(
+            totalPoints: totalPoints,
+            viewWidth: viewWidth,
+            effectivePointWidth: effectivePointWidth,
+            retry: retry + 1,
           );
-        }
-      });
-    }
+        });
+        return;
+      }
+
+      final int selectedIndex = _focusIndex >= 0 && _focusIndex < totalPoints
+          ? _focusIndex
+          : (totalPoints > 0 ? totalPoints - 1 : 0);
+
+      // Calculate position to center the selected point
+      final double targetCenter =
+          selectedIndex * effectivePointWidth + (effectivePointWidth / 2);
+      final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
+      final double maxScrollExtent = _scrollController.position.maxScrollExtent;
+      final double desiredOffset =
+          rawOffset.clamp(0.0, maxScrollExtent).toDouble();
+
+      // Animate to the desired position
+      _scrollController.animateTo(
+        desiredOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    });
   }
 
   @override
@@ -558,8 +638,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           final rangeType = BloodPressureRangeType.fromTitle(
                               trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
-                          if (_focusIndex > 0) {
-                            _scrollToFocusIndex();
+                          if (_focusIndex > 0 &&
+                              _lastTotalPoints > 0 &&
+                              _lastViewWidth > 0) {
+                            _scrollToSelectedPoint(
+                              totalPoints: _lastTotalPoints,
+                              viewWidth: _lastViewWidth,
+                              effectivePointWidth: _lastEffectivePointWidth,
+                            );
                           }
                         }
                       : null,
@@ -617,8 +703,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           final rangeType = BloodPressureRangeType.fromTitle(
                               trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
-                          if (_focusIndex < trends.length - 1) {
-                            _scrollToFocusIndex();
+                          if (_focusIndex < trends.length - 1 &&
+                              _lastTotalPoints > 0 &&
+                              _lastViewWidth > 0) {
+                            _scrollToSelectedPoint(
+                              totalPoints: _lastTotalPoints,
+                              viewWidth: _lastViewWidth,
+                              effectivePointWidth: _lastEffectivePointWidth,
+                            );
                           }
                         }
                       : null,
@@ -692,36 +784,18 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   Widget _buildChart(
       BloodPressureTrendModel model, List<SubTrendItemModel> trends) {
-    double paddingOutSideBoth = 12 * 2;
+    const int maxVisiblePoints =
+        11; // Maximum points to show without scrolling (changed from 12)
+    const double scrollVisiblePointCount =
+        5.5; // Points visible when scrolling (half of 11)
+    const double chartHeight = 120;
     double leftTitleWidth = 50;
     double leftTitleMargin = 2;
-    double chartWidth = MediaQuery.of(context).size.width -
-        paddingOutSideBoth -
-        leftTitleWidth -
-        leftTitleMargin;
-    // Calculate width to show 11 points on the page
-    final width = chartWidth / 18;
 
-    // less no.trends need to scale width to fill screen
-    final minWidth = chartWidth;
-    double calculatedWidth = (trends.length * (width + 12)).toDouble();
-    if (calculatedWidth < minWidth) {
-      calculatedWidth = minWidth;
-    }
-
-    // double minY = trends
-    //     .map<double>((e) => (e.diastolic! < e.systolic! ? e.diastolic! : e.systolic!))
-    //     .reduce(min);
-    // minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
-    // double maxY = trends
-    //     .map<double>((e) => (e.diastolic! > e.systolic! ? e.diastolic! : e.systolic!))
-    //     .reduce(max);
-    // maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
-    // final jumpValue = (maxY - minY) / 4;
-    // List<int> leftTitleValues =
-    //     List.generate(5, (index) => (jumpValue * index + minY).round()).reversed.toList();
+    // Fixed minY and maxY for consistent chart display
     double minY = 0;
     double maxY = 100;
+    final int totalPoints = trends.length;
 
     return Column(
       children: [
@@ -730,7 +804,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           children: [
             Container(
               width: leftTitleWidth,
-              height: 120,
+              height: chartHeight,
               padding: EdgeInsets.only(top: 8, bottom: 8),
               child: Column(
                 children: [
@@ -755,7 +829,6 @@ class BloodPressureChartState extends State<BloodPressureChart>
                     ),
                   ),
                   Spacer(flex: 2),
-                  // Icon(Icons.heat_pump_rounded, size: 20),
                   Image.asset(R.drawable.ic_bloodpressure_pulse,
                       width: 20, height: 20),
                 ],
@@ -763,188 +836,247 @@ class BloodPressureChartState extends State<BloodPressureChart>
             ),
             SizedBox(width: leftTitleMargin),
             Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                reverse: trends.length > 1,
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  width: calculatedWidth,
-                  height: 120,
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: LineChart(
-                    LineChartData(
-                      lineTouchData: LineTouchData(
-                          getTouchLineStart: (barData, index) =>
-                              -double.infinity,
-                          getTouchLineEnd: (barData, index) => double.infinity,
-                          getTouchedSpotIndicator: (LineChartBarData barData,
-                              List<int> spotIndexes) {
-                            return spotIndexes.map((index) {
-                              // Get the color of the touched point
-                              Color dotColor = R.color.black;
-                              if (index >= 0 && index < trends.length) {
-                                final trend = trends[index];
-                                if (trend.color != null &&
-                                    trend.color!.isNotEmpty) {
-                                  dotColor = toColor(trend.color);
-                                }
-                              }
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final double viewWidth = constraints.maxWidth;
+                  if (!viewWidth.isFinite || viewWidth <= 0) {
+                    return const SizedBox.shrink();
+                  }
 
-                              return TouchedSpotIndicatorData(
-                                FlLine(
-                                  color: dotColor,
-                                  strokeWidth: 0.5,
-                                ),
-                                FlDotData(
-                                  show: true,
-                                  getDotPainter:
-                                      (spot, percent, barData, index) =>
-                                          FlDotCirclePainter(
-                                    radius: 3,
-                                    color: dotColor,
-                                    strokeWidth: 6,
-                                    strokeColor: dotColor.withOpacity(0.3),
-                                  ),
-                                ),
-                              );
-                            }).toList();
-                          },
-                          touchTooltipData: LineTouchTooltipData(
-                            showOnTopOfTheChartBoxArea: true,
-                            fitInsideVertically: true,
-                            fitInsideHorizontally: true,
-                            tooltipBgColor: Colors.transparent,
-                            tooltipRoundedRadius: 8,
-                            getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                              return lineBarsSpot.map((lineBarSpot) {
-                                if (lineBarSpot.barIndex == 0) {
-                                  if (lineBarSpot.spotIndex < 0 ||
-                                      lineBarSpot.spotIndex >= trends.length ||
-                                      trends[lineBarSpot.spotIndex].systolic ==
-                                          null ||
-                                      trends[lineBarSpot.spotIndex].diastolic ==
-                                          null) {
-                                    return LineTooltipItem(
-                                      '0/0',
-                                      TextStyle(
-                                        color: toColor(model.colors!.first),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        fontFamily: R.font.sfpro,
+                  // If totalPoints <= 11: show all points without scroll
+                  // If totalPoints > 11: show 5.5 points visible and enable scroll
+                  final bool enableScroll = totalPoints > maxVisiblePoints;
+
+                  final double chartWidth = enableScroll
+                      ? (viewWidth / scrollVisiblePointCount) * totalPoints
+                      : viewWidth;
+                  final double effectivePointWidth =
+                      totalPoints == 0 ? 0 : chartWidth / totalPoints;
+
+                  // Save values for use in scroll functions
+                  _lastViewWidth = viewWidth;
+                  _lastEffectivePointWidth = effectivePointWidth;
+                  _lastTotalPoints = totalPoints;
+
+                  if (enableScroll) {
+                    _ensureSelectedPointVisible(
+                      trends: trends,
+                      totalPoints: totalPoints,
+                      viewWidth: viewWidth,
+                      effectivePointWidth: effectivePointWidth,
+                    );
+                  } else {
+                    if (_scrollController.hasClients &&
+                        _scrollController.position.pixels != 0.0) {
+                      _scrollController.jumpTo(0.0);
+                    }
+                    _initialScrollApplied = true;
+                  }
+
+                  return SingleChildScrollView(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    physics: enableScroll
+                        ? const BouncingScrollPhysics()
+                        : const NeverScrollableScrollPhysics(),
+                    child: SizedBox(
+                      width: enableScroll ? chartWidth : viewWidth,
+                      child: Container(
+                        height: chartHeight,
+                        padding: EdgeInsets.only(top: 8, bottom: 8),
+                        child: LineChart(
+                          LineChartData(
+                            lineTouchData: LineTouchData(
+                                getTouchLineStart: (barData, index) =>
+                                    -double.infinity,
+                                getTouchLineEnd: (barData, index) =>
+                                    double.infinity,
+                                getTouchedSpotIndicator:
+                                    (LineChartBarData barData,
+                                        List<int> spotIndexes) {
+                                  return spotIndexes.map((index) {
+                                    // Get the color of the touched point
+                                    Color dotColor = R.color.black;
+                                    if (index >= 0 && index < trends.length) {
+                                      final trend = trends[index];
+                                      if (trend.color != null &&
+                                          trend.color!.isNotEmpty) {
+                                        dotColor = toColor(trend.color);
+                                      }
+                                    }
+
+                                    return TouchedSpotIndicatorData(
+                                      FlLine(
+                                        color: dotColor,
+                                        strokeWidth: 0.5,
+                                      ),
+                                      FlDotData(
+                                        show: true,
+                                        getDotPainter:
+                                            (spot, percent, barData, index) =>
+                                                FlDotCirclePainter(
+                                          radius: 3,
+                                          color: dotColor,
+                                          strokeWidth: 6,
+                                          strokeColor:
+                                              dotColor.withOpacity(0.3),
+                                        ),
                                       ),
                                     );
+                                  }).toList();
+                                },
+                                touchTooltipData: LineTouchTooltipData(
+                                  showOnTopOfTheChartBoxArea: true,
+                                  fitInsideVertically: true,
+                                  fitInsideHorizontally: true,
+                                  tooltipBgColor: Colors.transparent,
+                                  tooltipRoundedRadius: 8,
+                                  getTooltipItems:
+                                      (List<LineBarSpot> lineBarsSpot) {
+                                    return lineBarsSpot.map((lineBarSpot) {
+                                      if (lineBarSpot.barIndex == 0) {
+                                        if (lineBarSpot.spotIndex < 0 ||
+                                            lineBarSpot.spotIndex >=
+                                                trends.length ||
+                                            trends[lineBarSpot.spotIndex]
+                                                    .systolic ==
+                                                null ||
+                                            trends[lineBarSpot.spotIndex]
+                                                    .diastolic ==
+                                                null) {
+                                          return LineTooltipItem(
+                                            '0/0',
+                                            TextStyle(
+                                              color:
+                                                  toColor(model.colors!.first),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                              fontFamily: R.font.sfpro,
+                                            ),
+                                          );
+                                        }
+                                        final trend =
+                                            trends[lineBarSpot.spotIndex];
+                                        return LineTooltipItem(
+                                          trend.systolic!.round().toString() +
+                                              '/' +
+                                              trend.diastolic!
+                                                  .round()
+                                                  .toString(),
+                                          TextStyle(
+                                            color: toColor(trend.color),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            fontFamily: R.font.sfpro,
+                                          ),
+                                        );
+                                      }
+                                      return null;
+                                    }).toList();
+                                  },
+                                ),
+                                touchCallback: (FlTouchEvent event,
+                                    LineTouchResponse? lineTouch) {
+                                  if (event is FlTapUpEvent) {
+                                    _handleTapEvent(event, lineTouch, trends);
+                                  } else if (event is! FlLongPressEnd &&
+                                      event is! FlPanEndEvent) {
+                                    // Pan/hover event - update focus but don't reset double-tap tracking
+                                    previousDate = 0;
+                                    final value = lineTouch?.lineBarSpots?[0].x;
+                                    if (value != null) {
+                                      final panIndex = value.toInt();
+                                      if (panIndex >= 0 &&
+                                          panIndex < trends.length) {
+                                        setState(() {
+                                          _focusIndex = panIndex;
+                                        });
+                                        final rangeType =
+                                            BloodPressureRangeType.fromTitle(
+                                                trends[_focusIndex].type ?? '');
+                                        widget.bloodPressureChartCallback(
+                                            rangeType);
+                                      }
+                                    }
+                                  } else {
+                                    // Long press end or pan end - reset focus but keep double-tap tracking
+                                    previousDate = 0;
+                                    _focusIndex = -1;
                                   }
-                                  final trend = trends[lineBarSpot.spotIndex];
-                                  return LineTooltipItem(
-                                    trend.systolic!.round().toString() +
-                                        '/' +
-                                        trend.diastolic!.round().toString(),
-                                    TextStyle(
-                                      color: toColor(trend.color),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
+                                }),
+                            gridData: FlGridData(show: false),
+                            titlesData: FlTitlesData(
+                              rightTitles: SideTitles(showTitles: false),
+                              topTitles: SideTitles(showTitles: false),
+                              bottomTitles: SideTitles(
+                                showTitles: true,
+                                margin: 16,
+                                reservedSize: 16,
+                                interval: 1,
+                                getTextStyles: (context, value) {
+                                  return TextStyle(
+                                      color: _focusIndex == value.toInt()
+                                          ? R.color.color0xff111515
+                                          : R.color.color0xff636A6B,
+                                      fontSize: 12,
+                                      fontWeight: _focusIndex == value.toInt()
+                                          ? FontWeight.w700
+                                          : FontWeight.normal,
                                       fontFamily: R.font.sfpro,
-                                    ),
-                                  );
-                                }
-                                return null;
-                              }).toList();
-                            },
+                                      height: 1.5);
+                                },
+                                getTitles: (double value) {
+                                  // padding left
+                                  if (value <= -0.5 ||
+                                      value >= (trends.length - 0.5)) return '';
+                                  int index = value.toInt();
+                                  if (index < 0 ||
+                                      index >= trends.length ||
+                                      trends[index].pulseRate == null ||
+                                      trends[index].pulseRate == 0) {
+                                    return '--';
+                                  }
+                                  // return heart rate value
+                                  return trends[index]
+                                      .pulseRate!
+                                      .round()
+                                      .toString();
+                                },
+                              ),
+                              leftTitles: SideTitles(
+                                showTitles: false,
+                                reservedSize: 50,
+                              ),
+                            ),
+                            borderData: FlBorderData(show: false),
+                            minX: -0.5,
+                            maxX: trends.length.toDouble() - 0.5,
+                            maxY: maxY,
+                            minY: minY,
+                            lineBarsData: _linesBarData(trends),
+                            extraLinesData: ExtraLinesData(
+                              horizontalLines: [
+                                HorizontalLine(
+                                  y: _customYTransform(_mediumLow),
+                                  color: R.color.color0xff636A6B,
+                                  dashArray: [8, 4],
+                                  strokeWidth: 1,
+                                ),
+                                HorizontalLine(
+                                  y: _customYTransform(_mediumHigh),
+                                  color: R.color.color0xff636A6B,
+                                  dashArray: [8, 4],
+                                  strokeWidth: 1,
+                                ),
+                              ],
+                            ),
                           ),
-                          touchCallback: (FlTouchEvent event,
-                              LineTouchResponse? lineTouch) {
-                            if (event is FlTapUpEvent) {
-                              _handleTapEvent(event, lineTouch, trends);
-                            } else if (event is! FlLongPressEnd &&
-                                event is! FlPanEndEvent) {
-                              // Pan/hover event - update focus but don't reset double-tap tracking
-                              previousDate = 0;
-                              final value = lineTouch?.lineBarSpots?[0].x;
-                              if (value != null) {
-                                final panIndex = value.toInt();
-                                if (panIndex >= 0 && panIndex < trends.length) {
-                                  setState(() {
-                                    _focusIndex = panIndex;
-                                  });
-                                  final rangeType =
-                                      BloodPressureRangeType.fromTitle(
-                                          trends[_focusIndex].type ?? '');
-                                  widget.bloodPressureChartCallback(rangeType);
-                                }
-                              }
-                            } else {
-                              // Long press end or pan end - reset focus but keep double-tap tracking
-                              previousDate = 0;
-                              _focusIndex = -1;
-                            }
-                          }),
-                      gridData: FlGridData(show: false),
-                      titlesData: FlTitlesData(
-                        rightTitles: SideTitles(showTitles: false),
-                        topTitles: SideTitles(showTitles: false),
-                        bottomTitles: SideTitles(
-                          showTitles: true,
-                          margin: 16,
-                          reservedSize: 16,
-                          interval: 1,
-                          getTextStyles: (context, value) {
-                            return TextStyle(
-                                color: _focusIndex == value.toInt()
-                                    ? R.color.color0xff111515
-                                    : R.color.color0xff636A6B,
-                                fontSize: 12,
-                                fontWeight: _focusIndex == value.toInt()
-                                    ? FontWeight.w700
-                                    : FontWeight.normal,
-                                fontFamily: R.font.sfpro,
-                                height: 1.5);
-                          },
-                          getTitles: (double value) {
-                            // padding left
-                            if (value <= -0.5 || value >= (trends.length - 0.5))
-                              return '';
-                            int index = value.toInt();
-                            if (index < 0 ||
-                                index >= trends.length ||
-                                trends[index].pulseRate == null ||
-                                trends[index].pulseRate == 0) {
-                              return '--';
-                            }
-                            // return heart rate value
-                            return trends[index].pulseRate!.round().toString();
-                          },
+                          swapAnimationDuration: Duration(milliseconds: 250),
                         ),
-                        leftTitles: SideTitles(
-                          showTitles: false,
-                          reservedSize: 50,
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      minX: -0.5,
-                      maxX: trends.length.toDouble() - 0.5,
-                      maxY: maxY,
-                      minY: minY,
-                      lineBarsData: _linesBarData(trends),
-                      extraLinesData: ExtraLinesData(
-                        horizontalLines: [
-                          HorizontalLine(
-                            y: _customYTransform(_mediumLow),
-                            color: R.color.color0xff636A6B,
-                            dashArray: [8, 4],
-                            strokeWidth: 1,
-                          ),
-                          HorizontalLine(
-                            y: _customYTransform(_mediumHigh),
-                            color: R.color.color0xff636A6B,
-                            dashArray: [8, 4],
-                            strokeWidth: 1,
-                          ),
-                        ],
                       ),
                     ),
-                    swapAnimationDuration: Duration(milliseconds: 250),
-                  ),
-                ),
+                  );
+                },
               ),
             )
           ],
