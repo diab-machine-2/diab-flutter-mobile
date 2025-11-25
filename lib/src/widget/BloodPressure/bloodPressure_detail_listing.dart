@@ -33,14 +33,18 @@ class BloodPressureDetailListingController extends StatefulWidget {
       BloodPressureDetailListingControllerState();
 }
 
-class BloodPressureDetailListingControllerState extends State<BloodPressureDetailListingController>
-    with AutomaticKeepAliveClientMixin<BloodPressureDetailListingController>, Observer {
+class BloodPressureDetailListingControllerState
+    extends State<BloodPressureDetailListingController>
+    with
+        AutomaticKeepAliveClientMixin<BloodPressureDetailListingController>,
+        Observer {
   @override
   bool get wantKeepAlive => true;
 
   late BuildContext currentContext;
   final ItemScrollController _itemScrollController = ItemScrollController();
-  final ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  final ItemPositionsListener _itemPositionsListener =
+      ItemPositionsListener.create();
 
   int page = 1;
   bool? hasMore = false;
@@ -55,7 +59,8 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
     _periodFilterType = widget.initPeriodFilterType;
     bloodPressureID = widget.initBloodPressureID;
     if (widget.initBloodPressureRangeType != null) {
-      _bloodPressureRangeType = BloodPressureRangeType.fromInt(widget.initBloodPressureRangeType!);
+      _bloodPressureRangeType =
+          BloodPressureRangeType.fromInt(widget.initBloodPressureRangeType!);
     }
     super.initState();
     initializeDateFormatting();
@@ -69,7 +74,8 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
 
     _itemPositionsListener.itemPositions.addListener(() {
       final lastIndex = _itemPositionsListener.itemPositions.value.last.index;
-      final BloodPressureState state = BlocProvider.of<BloodPressureBloc>(currentContext).state;
+      final BloodPressureState state =
+          BlocProvider.of<BloodPressureBloc>(currentContext).state;
       if (state is BloodPressureDataLoaded) {
         final model = state.bloodPressureModel;
         if (model.length - 2 == lastIndex) {
@@ -80,7 +86,8 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
   }
 
   @override
-  void update(Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'BloodPressure_change_data') {
       _refresh();
     }
@@ -117,22 +124,26 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
       return true;
     } else {
       isLoading = true;
-      BlocProvider.of<BloodPressureBloc>(currentContext).add(FetchInputBloodPressure(
-          page: page,
-          currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-          periodFilterType: _periodFilterType.toString(),
-          bloodPressureType: _bloodPressureRangeType?.value.toString()));
+      BlocProvider.of<BloodPressureBloc>(currentContext).add(
+          FetchInputBloodPressure(
+              page: page,
+              currentDateTime:
+                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+              periodFilterType: _periodFilterType.toString(),
+              bloodPressureType: _bloodPressureRangeType?.value.toString()));
     }
     return true;
   }
 
   Future<bool> _refresh() async {
     page = 1;
-    BlocProvider.of<BloodPressureBloc>(currentContext).add(FetchInputBloodPressure(
-        page: 1,
-        currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-        periodFilterType: _periodFilterType.toString(),
-        bloodPressureType: _bloodPressureRangeType?.value.toString()));
+    BlocProvider.of<BloodPressureBloc>(currentContext).add(
+        FetchInputBloodPressure(
+            page: 1,
+            currentDateTime:
+                (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+            periodFilterType: _periodFilterType.toString(),
+            bloodPressureType: _bloodPressureRangeType?.value.toString()));
     return true;
   }
 
@@ -164,11 +175,15 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
             currentContext = context;
             List<BloodPressureModel>? model;
             if (state is BloodPressureInitial) {
-              BlocProvider.of<BloodPressureBloc>(context).add(FetchInputBloodPressure(
-                  currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-                  periodFilterType: _periodFilterType.toString(),
-                  page: 1,
-                  bloodPressureType: _bloodPressureRangeType?.value.toString()));
+              BlocProvider.of<BloodPressureBloc>(context).add(
+                  FetchInputBloodPressure(
+                      currentDateTime:
+                          (DateTime.now().millisecondsSinceEpoch ~/ 1000)
+                              .toString(),
+                      periodFilterType: _periodFilterType.toString(),
+                      page: 1,
+                      bloodPressureType:
+                          _bloodPressureRangeType?.value.toString()));
             }
             if (state is BloodPressureError) {
               Message.showToastMessage(context, state.message);
@@ -213,8 +228,8 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
                     ? Center(child: CircularProgressIndicator())
                     : Column(
                         children: [
-                          const SizedBox(height: 12),
-                          _buildFilter(),
+                          // const SizedBox(height: 12),
+                          // _buildFilter(),
                           const SizedBox(height: 12),
                           Expanded(child: _buildListing(model)),
                         ],
@@ -241,7 +256,8 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
 
         final showDate = previousElement == null
             ? true
-            : (convertCustomDate(element.date!) != convertCustomDate(previousElement.date!));
+            : (convertCustomDate(element.date!) !=
+                convertCustomDate(previousElement.date!));
 
         return GestureDetector(
             onTap: () {
@@ -260,7 +276,8 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
                           child: Text(
                             convertCustomDate(element.date!),
                             textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600),
                           ),
                         )
                       : SizedBox(),
@@ -269,7 +286,9 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
                           border: Border.all(
                               color: bloodPressureID == null
                                   ? R.color.white
-                                  : (bloodPressureID == element.id ? R.color.red : R.color.white),
+                                  : (bloodPressureID == element.id
+                                      ? R.color.red
+                                      : R.color.white),
                               width: 2),
                           borderRadius: BorderRadius.circular(16),
                           color: R.color.white),
@@ -333,10 +352,13 @@ class BloodPressureDetailListingControllerState extends State<BloodPressureDetai
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(height: 16),
-                                    Container(height: 1, color: R.color.color0xffEEEFF3),
+                                    Container(
+                                        height: 1,
+                                        color: R.color.color0xffEEEFF3),
                                     SizedBox(height: 16),
                                     Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '${R.string.ly_do.tr()}: ',

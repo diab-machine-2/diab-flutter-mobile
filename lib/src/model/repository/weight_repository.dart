@@ -155,7 +155,7 @@ class WeightRepository {
         currentTime: currentTime ~/ 1000,
         periodFilterType: periodFilterType,
         page: page,
-        size: size,
+        size: size ?? 10,
       );
       return ApiResult.success(data: response);
     } catch (e) {

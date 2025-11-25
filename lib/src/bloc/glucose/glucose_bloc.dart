@@ -169,7 +169,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
     final GlucoseState currenState = state;
     var model = await client.fetchInput(currentDateTime, periodFilterType, page,
         timeFrameType, glucoseDistributionType,
-        size: size ?? '20');
+        size: size ?? '10');
 
     if (currenState is GlucoseAlllLoaded) {
       if (page != 1) {

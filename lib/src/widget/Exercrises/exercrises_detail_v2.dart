@@ -205,15 +205,15 @@ class ExercrisesDetailV2State extends State<ExercrisesDetailV2>
     return Column(
       children: [
         // Thêm FilterSegmentButton ở đây
-        FilterSegmentButton(
-          initialFilterType: periodFilterType,
-          onFilterChanged: (newFilterType) {
-            setState(() {
-              periodFilterType = newFilterType;
-              reloadData(periodFilterType);
-            });
-          },
-        ),
+        // FilterSegmentButton(
+        //   initialFilterType: periodFilterType,
+        //   onFilterChanged: (newFilterType) {
+        //     setState(() {
+        //       periodFilterType = newFilterType;
+        //       reloadData(periodFilterType);
+        //     });
+        //   },
+        // ),
         Expanded(
           child: BlocProvider<ExercrisesBloc>(
             create: (context) => ExercrisesBloc(),
