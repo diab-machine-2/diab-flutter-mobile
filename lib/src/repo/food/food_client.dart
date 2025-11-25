@@ -276,7 +276,8 @@ class FoodClient extends FetchClient {
         final totalCalories = foods[i].calorie != null
             ? foods[i].calorie!.toDouble() * (foods[i].portion ?? 0).toDouble()
             : 0.0;
-        params['foods[$i].id'] = foods[i].id ?? '';
+        final isGptResult = (foods[i].id == null || foods[i].id!.isEmpty) ? 'true' : 'false';
+        params['foods[$i].id'] = foods[i].id ?? '00000000-0000-0000-0000-000000000000';
         params['foods[$i].name'] = foods[i].name ?? '';
         params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
         params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
@@ -296,6 +297,7 @@ class FoodClient extends FetchClient {
         // Handle image object - you might need to send image ID or URL
         params['foods[$i].imageId'] = foods[i].image?.id ?? '';
         params['foods[$i].imageUrl'] = foods[i].imageUrl ?? '';
+        params['foods[$i].IsGptResult'] = isGptResult;
       }
       final response = await super
           .postHttp(path: '/App/Diet/InputAI', params: params, files: files);

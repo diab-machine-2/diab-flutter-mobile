@@ -609,7 +609,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         await _cleanupTempFiles(paths);
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         Navigator.pop(context);
-        NavigationUtil.navigatePage(context, FoodDetailTabbarController());
+        // NavigationUtil.navigatePage(context, FoodDetailTabbarController(initialTabIndex: 1));
       }
       print("[KPI] close all loading.");
       BotToast.closeAllLoading();
