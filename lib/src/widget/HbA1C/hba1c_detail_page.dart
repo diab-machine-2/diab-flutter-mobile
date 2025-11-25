@@ -45,7 +45,9 @@ class _HbA1cDetailPageState extends State<HbA1cDetailPage> {
   @override
   void initState() {
     super.initState();
-    _periodFilterType = widget.initPeriodFilterType ?? 3;
+    _periodFilterType = widget.initPeriodFilterType == 0
+        ? 3
+        : (widget.initPeriodFilterType ?? 3);
     _scrollController.addListener(_onScroll);
     _loadData();
   }
