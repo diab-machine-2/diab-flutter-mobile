@@ -193,6 +193,7 @@ class _BloodPressureDetailTabbarControllerState
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
+            fontFamily: R.font.sfpro,
             color: R.color.white,
           ),
         ),
@@ -206,7 +207,10 @@ class _BloodPressureDetailTabbarControllerState
               },
               child: Text(
                 R.string.huong_dan.tr(),
-                style: TextStyle(fontSize: 15, color: R.color.white),
+                style: TextStyle(
+                    fontSize: 15,
+                    color: R.color.white,
+                    fontFamily: R.font.sfpro  ),
               ),
             ),
           ),
