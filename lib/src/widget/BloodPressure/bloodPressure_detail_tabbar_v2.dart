@@ -374,7 +374,9 @@ class _BloodPressureDetailTabbarControllerState
     return HorizontalSelector(
       onSelected: (value) {
         _periodFilterType = value + 1;
-        _reload();
+        // When period filter changes, pass isNew = false to keep focus index if valid
+        // The chart will handle scrolling to the focused point
+        _reload(false);
       },
       initialValue: selectedIndex,
       values: values,

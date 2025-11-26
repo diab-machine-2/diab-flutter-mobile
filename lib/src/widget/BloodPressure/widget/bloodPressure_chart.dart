@@ -55,6 +55,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
   int _lastTotalPoints = 0;
   bool _initialScrollApplied = false;
   int? _lastTrendsLength; // Track trends length to detect changes
+  int? _lastPeriodFilterType; // Track period filter to detect changes
+  bool _shouldScrollToFocus = false; // Flag to force scroll to focused point
 
   final double _mediumLow = 90;
   final double _mediumHigh = 140;
@@ -62,11 +64,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
   @override
   void initState() {
     _periodFilterType = widget.initPeriodFilterType;
+    _lastPeriodFilterType = widget.initPeriodFilterType;
     super.initState();
-    // Reset flags to ensure first load will focus on latest point
+    // Reset flags to ensure first load will focus on latest point and scroll to it
     _initialScrollApplied = false;
     _lastTrendsLength = null;
     _focusIndex = -1;
+    _shouldScrollToFocus =
+        true; // Set flag to ensure scroll happens on first load
     _registerEmptyNavigation();
   }
 
@@ -101,12 +106,28 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   void reloadData(int periodFilter, [bool isNew = false]) {
     _registerEmptyNavigation();
+
+    // Check if period filter changed
+    final bool periodFilterChanged =
+        _lastPeriodFilterType != null && _lastPeriodFilterType != periodFilter;
+
     if (isNew) {
+      // When isNew = true, reset everything to focus on latest point
       _focusIndex = -1;
-      // Reset scroll flag so it will scroll to latest point when new data loads
-      _initialScrollApplied = false;
       _lastTrendsLength = null;
+      _initialScrollApplied = false;
+      _shouldScrollToFocus = true;
+    } else if (periodFilterChanged) {
+      // When period filter changes, keep focus index if valid but reset scroll flag
+      // This ensures the focused point will be scrolled into view
+      _initialScrollApplied = false;
+      _shouldScrollToFocus = true;
+      // Don't reset _lastTrendsLength here - we want to keep it to detect if focus index is still valid
+      // The scroll will be triggered by resetting _initialScrollApplied and setting _shouldScrollToFocus
+      // Also, we'll detect period filter change in build method to trigger scroll
     }
+
+    _lastPeriodFilterType = periodFilter;
     _periodFilterType = periodFilter;
     _refresh();
   }
@@ -336,34 +357,44 @@ class BloodPressureChartState extends State<BloodPressureChart>
     required double effectivePointWidth,
     int retry = 0,
   }) {
-    if (!_scrollController.hasClients ||
-        _initialScrollApplied ||
-        totalPoints <= 0) return;
+    // Basic validation
+    if (totalPoints <= 0) return;
     if (!viewWidth.isFinite || viewWidth <= 0) return;
+
+    // If scroll already applied and we don't need to force scroll, skip
+    if (_initialScrollApplied && !_shouldScrollToFocus) {
+      return;
+    }
 
     // Maximum retry count to avoid infinite loops
     if (retry > 20) {
       _initialScrollApplied = true;
+      _shouldScrollToFocus = false; // Reset flag even on max retry
       return;
     }
 
-    _initialScrollApplied = true;
+    // Don't set _initialScrollApplied here - set it after successful scroll
+    // This allows retry if scroll controller is not ready
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
       // Check if scroll controller is ready with proper dimensions
+      // If not ready, retry after a delay
       if (!_scrollController.hasClients ||
           !_scrollController.position.hasContentDimensions) {
-        _initialScrollApplied = false;
+        _initialScrollApplied = false; // Reset to allow retry
         // Retry after a short delay
         Future.delayed(const Duration(milliseconds: 50), () {
-          _ensureSelectedPointVisible(
-            trends: trends,
-            totalPoints: totalPoints,
-            viewWidth: viewWidth,
-            effectivePointWidth: effectivePointWidth,
-            retry: retry + 1,
-          );
+          if (mounted) {
+            _ensureSelectedPointVisible(
+              trends: trends,
+              totalPoints: totalPoints,
+              viewWidth: viewWidth,
+              effectivePointWidth: effectivePointWidth,
+              retry: retry + 1,
+            );
+          }
         });
         return;
       }
@@ -387,13 +418,24 @@ class BloodPressureChartState extends State<BloodPressureChart>
       if (desiredOffset <= 0.0 || selectedIndex < 3) {
         // Point is at the beginning, just jump to start without animation
         _scrollController.jumpTo(0.0);
+        // Set flag after successful scroll
+        _initialScrollApplied = true;
+        _shouldScrollToFocus = false;
       } else {
         // Point is not at the beginning, animate smoothly to center it
-        _scrollController.animateTo(
+        _scrollController
+            .animateTo(
           desiredOffset,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOutCubic,
-        );
+        )
+            .then((_) {
+          // Set flag after animation completes
+          if (mounted) {
+            _initialScrollApplied = true;
+            _shouldScrollToFocus = false;
+          }
+        });
       }
     });
   }
@@ -486,31 +528,58 @@ class BloodPressureChartState extends State<BloodPressureChart>
               final bool trendsChanged = _lastTrendsLength != null &&
                   _lastTrendsLength != trends.length;
 
-              if (isFirstLoad || trendsChanged) {
-                // Reset scroll flag when trends change or first load so it will scroll to latest point
-                _initialScrollApplied = false;
-                _lastTrendsLength = trends.length;
-              }
-
-              // Always focus on latest point when entering dashboard or when focus index is invalid
-              // This ensures that when entering dashboard, the latest data point is always focused
+              // Determine focus index:
+              // - If focus index is invalid or first load, focus on latest point
+              // - When period filter changes and focus index is still valid, keep it
+              bool focusIndexChanged = false;
               if (_focusIndex == -1 ||
                   _focusIndex >= trends.length ||
                   isFirstLoad) {
                 // Set focus to latest point (last index) - this is the newest data point
                 final int latestIndex = trends.length - 1;
                 if (latestIndex >= 0 && latestIndex < trends.length) {
+                  final int oldFocusIndex = _focusIndex;
                   _focusIndex = latestIndex;
+                  focusIndexChanged = oldFocusIndex != _focusIndex;
                   final rangeType = BloodPressureRangeType.fromTitle(
                       trends[_focusIndex].type ?? '');
                   // Call callback immediately to update UI with latest point data
                   widget.bloodPressureChartCallback(rangeType);
+                }
+              } else {
+                // Focus index is valid - ensure callback is called to update UI
+                // This happens when period filter changes and focus index is still valid
+                if (_focusIndex >= 0 && _focusIndex < trends.length) {
+                  final rangeType = BloodPressureRangeType.fromTitle(
+                      trends[_focusIndex].type ?? '');
+                  widget.bloodPressureChartCallback(rangeType);
+                  // When _shouldScrollToFocus is true (set in reloadData when period filter changes),
+                  // we need to scroll to the focused point
+                  if (_shouldScrollToFocus) {
+                    focusIndexChanged = true;
+                  }
+                }
+              }
+
+              // Always reset scroll flag when we need to scroll
+              // This includes: first load, trends changed, explicit flag set, or focus index changed
+              if (isFirstLoad ||
+                  trendsChanged ||
+                  _shouldScrollToFocus ||
+                  focusIndexChanged) {
+                _initialScrollApplied = false;
+                // Keep _shouldScrollToFocus true until scroll is actually applied
+                // Don't reset it here - it will be reset in _ensureSelectedPointVisible after scroll completes
+                if (isFirstLoad || trendsChanged) {
+                  _lastTrendsLength = trends.length;
                 }
               }
             } else {
               // Reset focus index when trends is empty
               _focusIndex = -1;
               _lastTrendsLength = 0;
+              _initialScrollApplied =
+                  false; // Reset scroll flag for empty trends
             }
           }
 
@@ -900,7 +969,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   _lastTotalPoints = totalPoints;
 
                   if (enableScroll) {
-                    // Ensure focus index is set to latest point before scrolling
+                    // Ensure focus index is set correctly before scrolling
                     // This is important for first load when entering dashboard
                     if ((_focusIndex == -1 || _focusIndex >= trends.length) &&
                         trends.isNotEmpty) {
@@ -911,15 +980,33 @@ class BloodPressureChartState extends State<BloodPressureChart>
                             trends[_focusIndex].type ?? '');
                         widget.bloodPressureChartCallback(rangeType);
                       }
+                      // Reset scroll flags to ensure scroll happens
+                      _initialScrollApplied = false;
+                      _shouldScrollToFocus = true;
                     }
-                    // Always try to ensure selected point is visible
-                    // This will scroll to latest point on first load
-                    _ensureSelectedPointVisible(
-                      trends: trends,
-                      totalPoints: totalPoints,
-                      viewWidth: viewWidth,
-                      effectivePointWidth: effectivePointWidth,
-                    );
+
+                    // Always try to ensure selected point is visible and centered
+                    // This will scroll to focused point on first load and when period filter changes
+                    // Call if we haven't applied scroll yet OR if we need to force scroll
+                    // Also check if focus index is valid before scrolling
+                    if ((!_initialScrollApplied || _shouldScrollToFocus) &&
+                        _focusIndex >= 0 &&
+                        _focusIndex < trends.length) {
+                      // Use post frame callback to ensure chart is fully built before scrolling
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted &&
+                            (_shouldScrollToFocus || !_initialScrollApplied) &&
+                            _focusIndex >= 0 &&
+                            _focusIndex < trends.length) {
+                          _ensureSelectedPointVisible(
+                            trends: trends,
+                            totalPoints: totalPoints,
+                            viewWidth: viewWidth,
+                            effectivePointWidth: effectivePointWidth,
+                          );
+                        }
+                      });
+                    }
                   } else {
                     // When scroll is not needed, ensure we're at the start
                     if (_scrollController.hasClients &&
@@ -927,6 +1014,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       _scrollController.jumpTo(0.0);
                     }
                     _initialScrollApplied = true;
+                    _shouldScrollToFocus =
+                        false; // Reset flag when scroll not needed
                   }
 
                   return SingleChildScrollView(
