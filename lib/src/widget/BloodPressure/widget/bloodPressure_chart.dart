@@ -49,6 +49,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
   DateTime? _lastTapTime;
   int? _lastTappedIndex;
 
+  // Cached focused node info for mapping across different timelines
+  int? _cachedFocusDate; // Timestamp in seconds
+  String? _cachedFocusTimeFrame;
+  double? _cachedFocusSystolic;
+  double? _cachedFocusDiastolic;
+
   // Tracking variables for scroll logic (similar to HbA1C)
   double _lastViewWidth = 0;
   double _lastEffectivePointWidth = 0;
@@ -117,6 +123,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
       _lastTrendsLength = null;
       _initialScrollApplied = false;
       _shouldScrollToFocus = true;
+      // Clear cached focus info
+      _cacheFocusedNode(null);
     } else if (periodFilterChanged) {
       // When period filter changes, keep focus index if valid but reset scroll flag
       // This ensures the focused point will be scrolled into view
@@ -181,6 +189,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
       setState(() {
         _focusIndex = tappedIndex;
+        // Cache the focused node info for mapping across timelines
+        _cacheFocusedNode(trends[_focusIndex]);
       });
 
       // Update callback with the selected point's range type
@@ -348,6 +358,91 @@ class BloodPressureChartState extends State<BloodPressureChart>
     });
 
     return trends;
+  }
+
+  /// Cache the currently focused node information
+  void _cacheFocusedNode(SubTrendItemModel? node) {
+    if (node == null) {
+      _cachedFocusDate = null;
+      _cachedFocusTimeFrame = null;
+      _cachedFocusSystolic = null;
+      _cachedFocusDiastolic = null;
+      return;
+    }
+    _cachedFocusDate = node.date;
+    _cachedFocusTimeFrame = node.timeFrameName;
+    _cachedFocusSystolic = node.systolic;
+    _cachedFocusDiastolic = node.diastolic;
+  }
+
+  /// Find the index of a node matching the cached focus info in the new trends list
+  /// Returns -1 if not found
+  int _findMatchingNodeIndex(List<SubTrendItemModel> trends) {
+    if (_cachedFocusDate == null || _cachedFocusTimeFrame == null) {
+      return -1;
+    }
+
+    // First, try exact match: same date, timeFrame, and values
+    for (int i = 0; i < trends.length; i++) {
+      final trend = trends[i];
+      if (trend.date == _cachedFocusDate &&
+          trend.timeFrameName == _cachedFocusTimeFrame) {
+        // Check if values match (with tolerance for floating point)
+        final systolicMatch = _cachedFocusSystolic != null &&
+            trend.systolic != null &&
+            (_cachedFocusSystolic!.round() == trend.systolic!.round());
+        final diastolicMatch = _cachedFocusDiastolic != null &&
+            trend.diastolic != null &&
+            (_cachedFocusDiastolic!.round() == trend.diastolic!.round());
+
+        if (systolicMatch && diastolicMatch) {
+          return i;
+        }
+      }
+    }
+
+    // If exact match not found, try matching by date and timeFrame only
+    for (int i = 0; i < trends.length; i++) {
+      final trend = trends[i];
+      if (trend.date == _cachedFocusDate &&
+          trend.timeFrameName == _cachedFocusTimeFrame) {
+        return i;
+      }
+    }
+
+    // If still not found, try to find the closest node by date
+    int? closestIndex;
+    int? minTimeDiff;
+    final cachedDateTime = DateTime.fromMillisecondsSinceEpoch(
+      _cachedFocusDate! * 1000,
+      isUtc: true,
+    );
+
+    for (int i = 0; i < trends.length; i++) {
+      final trend = trends[i];
+      if (trend.date == null) continue;
+
+      final trendDateTime = DateTime.fromMillisecondsSinceEpoch(
+        trend.date! * 1000,
+        isUtc: true,
+      );
+
+      final timeDiff = (cachedDateTime.millisecondsSinceEpoch -
+              trendDateTime.millisecondsSinceEpoch)
+          .abs();
+
+      if (minTimeDiff == null || timeDiff < minTimeDiff) {
+        minTimeDiff = timeDiff;
+        closestIndex = i;
+      }
+    }
+
+    // If we found a close match (within 1 hour), use it
+    if (closestIndex != null && minTimeDiff != null && minTimeDiff < 3600000) {
+      return closestIndex;
+    }
+
+    return -1;
   }
 
   void _ensureSelectedPointVisible({
@@ -530,9 +625,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
               // Determine focus index:
               // - If focus index is invalid or first load, focus on latest point
-              // - When period filter changes and focus index is still valid, keep it
+              // - When period filter changes, try to find matching node in new timeline
+              // - If no match found, focus on latest point
               bool focusIndexChanged = false;
               BloodPressureRangeType? rangeTypeToCallback;
+
               if (_focusIndex == -1 ||
                   _focusIndex >= trends.length ||
                   isFirstLoad) {
@@ -542,17 +639,42 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   final int oldFocusIndex = _focusIndex;
                   _focusIndex = latestIndex;
                   focusIndexChanged = oldFocusIndex != _focusIndex;
+                  // Cache the focused node info
+                  _cacheFocusedNode(trends[_focusIndex]);
                   rangeTypeToCallback = BloodPressureRangeType.fromTitle(
                       trends[_focusIndex].type ?? '');
                 }
+              } else if (_shouldScrollToFocus && _cachedFocusDate != null) {
+                // Period filter changed - try to find matching node in new timeline
+                final int matchingIndex = _findMatchingNodeIndex(trends);
+                if (matchingIndex >= 0 && matchingIndex < trends.length) {
+                  // Found matching node - use it
+                  final int oldFocusIndex = _focusIndex;
+                  _focusIndex = matchingIndex;
+                  focusIndexChanged = oldFocusIndex != _focusIndex;
+                  // Update cache with the matched node
+                  _cacheFocusedNode(trends[_focusIndex]);
+                  rangeTypeToCallback = BloodPressureRangeType.fromTitle(
+                      trends[_focusIndex].type ?? '');
+                } else {
+                  // No matching node found - focus on latest point
+                  final int latestIndex = trends.length - 1;
+                  if (latestIndex >= 0 && latestIndex < trends.length) {
+                    final int oldFocusIndex = _focusIndex;
+                    _focusIndex = latestIndex;
+                    focusIndexChanged = oldFocusIndex != _focusIndex;
+                    // Cache the new focused node
+                    _cacheFocusedNode(trends[_focusIndex]);
+                    rangeTypeToCallback = BloodPressureRangeType.fromTitle(
+                        trends[_focusIndex].type ?? '');
+                  }
+                }
               } else {
-                // Focus index is valid - ensure callback is called to update UI
-                // This happens when period filter changes and focus index is still valid
+                // Focus index is valid and no period filter change - ensure callback is called
                 if (_focusIndex >= 0 && _focusIndex < trends.length) {
                   rangeTypeToCallback = BloodPressureRangeType.fromTitle(
                       trends[_focusIndex].type ?? '');
-                  // When _shouldScrollToFocus is true (set in reloadData when period filter changes),
-                  // we need to scroll to the focused point
+                  // When _shouldScrollToFocus is true, we need to scroll to the focused point
                   if (_shouldScrollToFocus) {
                     focusIndexChanged = true;
                   }
@@ -587,6 +709,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
               _lastTrendsLength = 0;
               _initialScrollApplied =
                   false; // Reset scroll flag for empty trends
+              // Clear cached focus info
+              _cacheFocusedNode(null);
             }
           }
 
@@ -742,6 +866,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           // Move to previous node
                           setState(() {
                             _focusIndex = max(0, _focusIndex - 1);
+                            // Cache the focused node info for mapping across timelines
+                            _cacheFocusedNode(trends[_focusIndex]);
                           });
 
                           // Update callback with the selected point's range type
@@ -812,6 +938,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                           setState(() {
                             _focusIndex =
                                 min(trends.length - 1, _focusIndex + 1);
+                            // Cache the focused node info for mapping across timelines
+                            _cacheFocusedNode(trends[_focusIndex]);
                           });
 
                           // Update callback with the selected point's range type
@@ -1147,6 +1275,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                           panIndex < trends.length) {
                                         setState(() {
                                           _focusIndex = panIndex;
+                                          // Cache the focused node info for mapping across timelines
+                                          _cacheFocusedNode(
+                                              trends[_focusIndex]);
                                         });
                                         final rangeType =
                                             BloodPressureRangeType.fromTitle(
@@ -1159,6 +1290,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                     // Long press end or pan end - reset focus but keep double-tap tracking
                                     previousDate = 0;
                                     _focusIndex = -1;
+                                    // Clear cached focus info
+                                    _cacheFocusedNode(null);
                                   }
                                 }),
                             gridData: FlGridData(show: false),
