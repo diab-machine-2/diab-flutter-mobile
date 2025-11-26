@@ -45,6 +45,8 @@ class _BloodPressureDetailTabbarControllerState
   String? _aiSuggestion;
   bool _isDetailViewed =
       false; // Track if user has viewed Blood Pressure detail page
+  bool _isFirstLoad =
+      true; // Track if this is the first load when entering dashboard
 
   BloodPressureRangeType _rangeType = BloodPressureRangeType.normal;
 
@@ -54,7 +56,8 @@ class _BloodPressureDetailTabbarControllerState
     // _tabController = new TabController(vsync: this, length: 2);
     Observable.instance.addObserver(this);
     _loadDetailViewedState();
-    _reload();
+    // Pass isNew = true on first load to ensure chart focuses on latest point
+    _reload(true);
   }
 
   Future<void> _loadDetailViewedState() async {
@@ -144,7 +147,14 @@ class _BloodPressureDetailTabbarControllerState
   }
 
   void _reload([bool isNew = false]) async {
-    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType, isNew);
+    // On first load, always pass isNew = true to ensure chart focuses on latest point
+    final bool shouldReset = isNew || _isFirstLoad;
+    if (_isFirstLoad) {
+      _isFirstLoad = false;
+    }
+
+    _bloodPressureTrendKey.currentState
+        ?.reloadData(_periodFilterType, shouldReset);
     _bloodPressureDistributionChartKey.currentState
         ?.reloadData(_periodFilterType);
     await _loadAITrend();
@@ -210,7 +220,7 @@ class _BloodPressureDetailTabbarControllerState
                 style: TextStyle(
                     fontSize: 15,
                     color: R.color.white,
-                    fontFamily: R.font.sfpro  ),
+                    fontFamily: R.font.sfpro),
               ),
             ),
           ),

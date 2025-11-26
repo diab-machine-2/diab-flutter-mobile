@@ -63,6 +63,10 @@ class BloodPressureChartState extends State<BloodPressureChart>
   void initState() {
     _periodFilterType = widget.initPeriodFilterType;
     super.initState();
+    // Reset flags to ensure first load will focus on latest point
+    _initialScrollApplied = false;
+    _lastTrendsLength = null;
+    _focusIndex = -1;
     _registerEmptyNavigation();
   }
 
@@ -477,24 +481,30 @@ class BloodPressureChartState extends State<BloodPressureChart>
             }
 
             if (trends.isNotEmpty) {
-              // Check if trends length changed (new data loaded)
-              final bool trendsChanged = _lastTrendsLength != trends.length;
+              // Check if trends length changed (new data loaded) or first time loading
+              final bool isFirstLoad = _lastTrendsLength == null;
+              final bool trendsChanged = _lastTrendsLength != null &&
+                  _lastTrendsLength != trends.length;
 
-              if (trendsChanged) {
-                // Reset scroll flag when trends change so it will scroll to latest point
+              if (isFirstLoad || trendsChanged) {
+                // Reset scroll flag when trends change or first load so it will scroll to latest point
                 _initialScrollApplied = false;
                 _lastTrendsLength = trends.length;
               }
 
-              if (_focusIndex == -1 || _focusIndex >= trends.length) {
-                // Set focus to latest point (last index)
-                _focusIndex = (trends.length - 1);
-                if (_focusIndex >= 0 && _focusIndex < trends.length) {
+              // Always focus on latest point when entering dashboard or when focus index is invalid
+              // This ensures that when entering dashboard, the latest data point is always focused
+              if (_focusIndex == -1 ||
+                  _focusIndex >= trends.length ||
+                  isFirstLoad) {
+                // Set focus to latest point (last index) - this is the newest data point
+                final int latestIndex = trends.length - 1;
+                if (latestIndex >= 0 && latestIndex < trends.length) {
+                  _focusIndex = latestIndex;
                   final rangeType = BloodPressureRangeType.fromTitle(
                       trends[_focusIndex].type ?? '');
-                  Future.delayed(Duration(milliseconds: 200)).then((value) {
-                    widget.bloodPressureChartCallback(rangeType);
-                  });
+                  // Call callback immediately to update UI with latest point data
+                  widget.bloodPressureChartCallback(rangeType);
                 }
               }
             } else {
@@ -891,10 +901,19 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
                   if (enableScroll) {
                     // Ensure focus index is set to latest point before scrolling
+                    // This is important for first load when entering dashboard
                     if ((_focusIndex == -1 || _focusIndex >= trends.length) &&
                         trends.isNotEmpty) {
                       _focusIndex = trends.length - 1;
+                      // Update callback with latest point when setting focus
+                      if (_focusIndex >= 0 && _focusIndex < trends.length) {
+                        final rangeType = BloodPressureRangeType.fromTitle(
+                            trends[_focusIndex].type ?? '');
+                        widget.bloodPressureChartCallback(rangeType);
+                      }
                     }
+                    // Always try to ensure selected point is visible
+                    // This will scroll to latest point on first load
                     _ensureSelectedPointVisible(
                       trends: trends,
                       totalPoints: totalPoints,
@@ -902,6 +921,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                       effectivePointWidth: effectivePointWidth,
                     );
                   } else {
+                    // When scroll is not needed, ensure we're at the start
                     if (_scrollController.hasClients &&
                         _scrollController.position.pixels != 0.0) {
                       _scrollController.jumpTo(0.0);
