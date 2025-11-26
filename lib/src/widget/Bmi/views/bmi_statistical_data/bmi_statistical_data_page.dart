@@ -6,8 +6,8 @@ import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
-import 'package:medical/src/widget/Bmi/enum.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/revise_weight_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_record_card.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/widgets/bmi_statistical_data_app_bar.dart';
@@ -30,11 +30,15 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
     super.initState();
     _bmiBloc = context.read();
     _bmiBloc
+      ..savePeriodTypeForStatisticalView()
       ..changePeriodTime(
-        BmiDateFilterType.threeMonths,
+        _bmiBloc.periodType,
         isStatisticalView: false,
       )
       ..hasNewData = false;
+
+    // Explicitly fetch weight records with size 10 for the statistical data page
+    _bmiBloc.add(const BmiGetWeightRecordsEvent(page: 1, size: 10));
 
     _scrollController.addListener(_onScroll);
   }
@@ -63,25 +67,31 @@ class _BmiStatisticalDataPageState extends State<BmiStatisticalDataPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.glucose_bg_color,
-      resizeToAvoidBottomInset: true,
-      appBar: const BmiStatisticalDataAppBar(),
-      body: BlocBuilder<BmiBloc, BmiState>(
-          buildWhen: (previous, current) =>
-              current is BmiGetWeightIndexListState,
-          builder: (context, state) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: _HistoricalWeightListView(
-                    scrollController: _scrollController,
-                  ),
-                )
-              ],
-            );
-          }),
+    return WillPopScope(
+      onWillPop: () async {
+        _bmiBloc.restorePeriodTypeAndRefetch();
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: R.color.glucose_bg_color,
+        resizeToAvoidBottomInset: true,
+        appBar: const BmiStatisticalDataAppBar(),
+        body: BlocBuilder<BmiBloc, BmiState>(
+            buildWhen: (previous, current) =>
+                current is BmiGetWeightIndexListState,
+            builder: (context, state) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: _HistoricalWeightListView(
+                      scrollController: _scrollController,
+                    ),
+                  )
+                ],
+              );
+            }),
+      ),
     );
   }
 }
