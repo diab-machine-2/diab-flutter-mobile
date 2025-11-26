@@ -532,6 +532,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
               // - If focus index is invalid or first load, focus on latest point
               // - When period filter changes and focus index is still valid, keep it
               bool focusIndexChanged = false;
+              BloodPressureRangeType? rangeTypeToCallback;
               if (_focusIndex == -1 ||
                   _focusIndex >= trends.length ||
                   isFirstLoad) {
@@ -541,24 +542,30 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   final int oldFocusIndex = _focusIndex;
                   _focusIndex = latestIndex;
                   focusIndexChanged = oldFocusIndex != _focusIndex;
-                  final rangeType = BloodPressureRangeType.fromTitle(
+                  rangeTypeToCallback = BloodPressureRangeType.fromTitle(
                       trends[_focusIndex].type ?? '');
-                  // Call callback immediately to update UI with latest point data
-                  widget.bloodPressureChartCallback(rangeType);
                 }
               } else {
                 // Focus index is valid - ensure callback is called to update UI
                 // This happens when period filter changes and focus index is still valid
                 if (_focusIndex >= 0 && _focusIndex < trends.length) {
-                  final rangeType = BloodPressureRangeType.fromTitle(
+                  rangeTypeToCallback = BloodPressureRangeType.fromTitle(
                       trends[_focusIndex].type ?? '');
-                  widget.bloodPressureChartCallback(rangeType);
                   // When _shouldScrollToFocus is true (set in reloadData when period filter changes),
                   // we need to scroll to the focused point
                   if (_shouldScrollToFocus) {
                     focusIndexChanged = true;
                   }
                 }
+              }
+
+              // Call callback after build completes to avoid setState during build
+              if (rangeTypeToCallback != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    widget.bloodPressureChartCallback(rangeTypeToCallback!);
+                  }
+                });
               }
 
               // Always reset scroll flag when we need to scroll
@@ -975,10 +982,15 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         trends.isNotEmpty) {
                       _focusIndex = trends.length - 1;
                       // Update callback with latest point when setting focus
+                      // Use post frame callback to avoid setState during build
                       if (_focusIndex >= 0 && _focusIndex < trends.length) {
                         final rangeType = BloodPressureRangeType.fromTitle(
                             trends[_focusIndex].type ?? '');
-                        widget.bloodPressureChartCallback(rangeType);
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            widget.bloodPressureChartCallback(rangeType);
+                          }
+                        });
                       }
                       // Reset scroll flags to ensure scroll happens
                       _initialScrollApplied = false;
