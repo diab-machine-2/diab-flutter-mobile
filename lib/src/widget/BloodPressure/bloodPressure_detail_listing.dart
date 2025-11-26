@@ -284,7 +284,9 @@ class BloodPressureDetailListingControllerState
                             convertCustomDate(element.date!),
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: R.font.sfpro),
                           ),
                         )
                       : SizedBox(),
@@ -311,10 +313,10 @@ class BloodPressureDetailListingControllerState
                                   Text(
                                     '${element.systolic!.toInt().toString()}/${element.diastolic!.toInt().toString()}',
                                     style: TextStyle(
-                                        fontFamily: 'Viga',
+                                        fontFamily: R.font.sfpro,
                                         color: Color(0xFF111515),
                                         fontSize: 20,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.w700),
                                   ),
                                   SizedBox(width: 4),
                                   Text(
@@ -322,7 +324,8 @@ class BloodPressureDetailListingControllerState
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontSize: 15,
-                                        fontWeight: FontWeight.w400),
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: R.font.sfpro),
                                   ),
                                 ],
                               ),
@@ -332,6 +335,7 @@ class BloodPressureDetailListingControllerState
                                   color: toColor(element.backgroundColor),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
+                                  fontFamily: R.font.sfpro,
                                 ),
                               ),
                             ],
@@ -344,13 +348,15 @@ class BloodPressureDetailListingControllerState
                                   style: TextStyle(
                                       color: Color(0xFF5E6566),
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w400)),
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: R.font.sfpro)),
                               Text(
                                 convertToUTC(element.date!, 'HH:mm'),
                                 style: TextStyle(
                                     color: Color(0xFF5E6566),
                                     fontSize: 15,
-                                    fontWeight: FontWeight.w400),
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: R.font.sfpro),
                               ),
                             ],
                           ),
@@ -372,7 +378,8 @@ class BloodPressureDetailListingControllerState
                                           style: TextStyle(
                                               color: R.color.black,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w700),
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: R.font.sfpro),
                                         ),
                                         Expanded(
                                           child: Text(
@@ -380,7 +387,8 @@ class BloodPressureDetailListingControllerState
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w400),
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: R.font.sfpro),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
