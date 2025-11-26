@@ -155,16 +155,23 @@ class BloodPressureDetailListingControllerState
       appBar: AppBar(
         backgroundColor: R.color.greenGradientBottom,
         centerTitle: false,
+        automaticallyImplyLeading: false,
         leading: IconButton(
+          splashColor: R.color.transparent,
+          highlightColor: R.color.transparent,
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.arrow_back, color: R.color.white),
         ),
-        title: Text(
-          R.string.detail.tr(),
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: R.color.white,
+        title: Transform(
+          transform: Matrix4.translationValues(-20, 0.0, 0.0),
+          child: Text(
+            R.string.detail.tr(),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              fontFamily: R.font.sfpro,
+              color: R.color.white,
+            ),
           ),
         ),
       ),

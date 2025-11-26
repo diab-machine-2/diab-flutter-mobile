@@ -48,6 +48,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
   int? previousDate = 0;
   DateTime? _lastTapTime;
   int? _lastTappedIndex;
+  Timer? _scrollDelayTimer; // Timer to delay scroll for double tap detection
+  int?
+      _pendingScrollIndex; // Track which index is pending scroll (for double tap detection)
+  int?
+      _pendingNavigateIndex; // Track which index is pending navigation after scroll completes
 
   // Cached focused node info for mapping across different timelines
   int? _cachedFocusDate; // Timestamp in seconds
@@ -85,6 +90,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
   void dispose() {
     _scrollController.dispose();
     _subscription?.cancel();
+    _scrollDelayTimer?.cancel();
     _bloodPressureBloc.close();
     super.dispose();
   }
@@ -172,18 +178,54 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
     final now = DateTime.now();
 
-    // Detect double tap - check if tapping the same dot within 500ms (same as HbA1C)
+    // Detect double tap - check if tapping the same dot within 500ms
     if (_lastTappedIndex == tappedIndex &&
         _lastTapTime != null &&
         now.difference(_lastTapTime!).inMilliseconds < 500) {
-      // Double tap detected on the same dot - navigate to detail screen
+      // Double tap detected on the same dot - scroll first, then navigate
       print('Blood pressure chart Double tap on index: $tappedIndex');
-      _openDetailScreen(trends, tappedIndex);
+
+      // Don't cancel scroll - let it complete, then navigate
+      // Set flag to navigate after scroll completes
+      _pendingNavigateIndex = tappedIndex;
+
+      // Cancel any pending scroll delay timer
+      _scrollDelayTimer?.cancel();
+      _scrollDelayTimer = null;
+
+      // Set pending scroll index and navigation index
+      _pendingScrollIndex = tappedIndex;
+      _pendingNavigateIndex = tappedIndex;
+
+      // If scroll is already in progress for this index, the onComplete callback will handle navigation
+      // Otherwise, trigger scroll immediately (no delay for double tap)
+      if (_lastTotalPoints > 0 &&
+          _lastViewWidth > 0 &&
+          _lastEffectivePointWidth > 0) {
+        _scrollToSelectedPoint(
+          totalPoints: _lastTotalPoints,
+          viewWidth: _lastViewWidth,
+          effectivePointWidth: _lastEffectivePointWidth,
+          onComplete: () {
+            // Navigate after scroll completes
+            if (_pendingNavigateIndex != null && mounted) {
+              final navigateIndex = _pendingNavigateIndex!;
+              _pendingNavigateIndex = null;
+              _openDetailScreen(trends, navigateIndex);
+            }
+          },
+        );
+      } else {
+        // If scroll can't be triggered, navigate immediately
+        _pendingNavigateIndex = null;
+        _openDetailScreen(trends, tappedIndex);
+      }
+
       // Reset tracking after double tap
       _lastTappedIndex = null;
       _lastTapTime = null;
     } else {
-      // Single tap - always update focus to the tapped node
+      // Single tap - update focus immediately but delay scroll slightly to detect double tap
       previousDate = 0;
       if (!mounted) return;
 
@@ -198,16 +240,38 @@ class BloodPressureChartState extends State<BloodPressureChart>
           BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
       widget.bloodPressureChartCallback(rangeType);
 
-      // Always scroll to center the selected point when tapped
-      if (_lastTotalPoints > 0 &&
-          _lastViewWidth > 0 &&
-          _lastEffectivePointWidth > 0) {
-        _scrollToSelectedPoint(
-          totalPoints: _lastTotalPoints,
-          viewWidth: _lastViewWidth,
-          effectivePointWidth: _lastEffectivePointWidth,
-        );
-      }
+      // Cancel any previous scroll delay timer
+      _scrollDelayTimer?.cancel();
+
+      // Clear any pending navigation
+      _pendingNavigateIndex = null;
+
+      // Set pending scroll index to track this tap
+      _pendingScrollIndex = tappedIndex;
+
+      // Delay scroll slightly to allow double tap detection (100ms delay for faster, smoother response)
+      // If double tap happens within this time, scroll will still execute but navigate after
+      _scrollDelayTimer = Timer(const Duration(milliseconds: 100), () {
+        if (!mounted) return;
+
+        // Only scroll if this is still a single tap (pendingScrollIndex matches and wasn't cleared)
+        // and no navigation is pending (double tap not detected)
+        if (_pendingScrollIndex == tappedIndex &&
+            _scrollDelayTimer != null &&
+            _pendingNavigateIndex == null) {
+          if (_lastTotalPoints > 0 &&
+              _lastViewWidth > 0 &&
+              _lastEffectivePointWidth > 0) {
+            _scrollToSelectedPoint(
+              totalPoints: _lastTotalPoints,
+              viewWidth: _lastViewWidth,
+              effectivePointWidth: _lastEffectivePointWidth,
+            );
+          }
+        }
+        _scrollDelayTimer = null;
+        // Don't clear _pendingScrollIndex here - it will be cleared after scroll completes
+      });
 
       // Update tracking for next potential double tap
       _lastTappedIndex = tappedIndex;
@@ -479,8 +543,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
       if (!_scrollController.hasClients ||
           !_scrollController.position.hasContentDimensions) {
         _initialScrollApplied = false; // Reset to allow retry
-        // Retry after a short delay
-        Future.delayed(const Duration(milliseconds: 50), () {
+        // Retry after a short delay (reduced for faster response)
+        Future.delayed(const Duration(milliseconds: 30), () {
           if (mounted) {
             _ensureSelectedPointVisible(
               trends: trends,
@@ -518,11 +582,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
         _shouldScrollToFocus = false;
       } else {
         // Point is not at the beginning, animate smoothly to center it
+        // Use faster, smoother animation (150ms) for better UX
         _scrollController
             .animateTo(
           desiredOffset,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
         )
             .then((_) {
           // Set flag after animation completes
@@ -540,6 +605,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
     required double viewWidth,
     required double effectivePointWidth,
     int retry = 0,
+    VoidCallback? onComplete,
   }) {
     if (!_scrollController.hasClients) return;
     if (totalPoints <= 0) return;
@@ -553,13 +619,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
       // Check if scroll controller is ready with proper dimensions
       if (!_scrollController.position.hasContentDimensions) {
-        // Retry after a short delay
-        Future.delayed(const Duration(milliseconds: 50), () {
+        // Retry after a short delay (reduced for faster response)
+        Future.delayed(const Duration(milliseconds: 30), () {
           _scrollToSelectedPoint(
             totalPoints: totalPoints,
             viewWidth: viewWidth,
             effectivePointWidth: effectivePointWidth,
             retry: retry + 1,
+            onComplete: onComplete,
           );
         });
         return;
@@ -579,12 +646,21 @@ class BloodPressureChartState extends State<BloodPressureChart>
       final double desiredOffset =
           rawOffset.clamp(0.0, maxScrollExtent).toDouble();
 
-      // Animate to the desired position
-      _scrollController.animateTo(
+      // Animate to the desired position with faster, smoother animation (150ms)
+      _scrollController
+          .animateTo(
         desiredOffset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-      );
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+      )
+          .then((_) {
+        // Clear pending scroll index after scroll completes
+        _pendingScrollIndex = null;
+        // Call onComplete callback if provided
+        if (onComplete != null && mounted) {
+          onComplete();
+        }
+      });
     });
   }
 

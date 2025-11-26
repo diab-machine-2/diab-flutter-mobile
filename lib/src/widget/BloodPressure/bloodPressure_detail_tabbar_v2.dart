@@ -201,7 +201,7 @@ class _BloodPressureDetailTabbarControllerState
         title: Text(
           R.string.huyet_ap.tr(),
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
             fontFamily: R.font.sfpro,
             color: R.color.white,
