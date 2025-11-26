@@ -54,6 +54,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
   double _lastEffectivePointWidth = 0;
   int _lastTotalPoints = 0;
   bool _initialScrollApplied = false;
+  int? _lastTrendsLength; // Track trends length to detect changes
 
   final double _mediumLow = 90;
   final double _mediumHigh = 140;
@@ -98,6 +99,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
     _registerEmptyNavigation();
     if (isNew) {
       _focusIndex = -1;
+      // Reset scroll flag so it will scroll to latest point when new data loads
+      _initialScrollApplied = false;
+      _lastTrendsLength = null;
     }
     _periodFilterType = periodFilter;
     _refresh();
@@ -146,25 +150,30 @@ class BloodPressureChartState extends State<BloodPressureChart>
       _lastTappedIndex = null;
       _lastTapTime = null;
     } else {
-      // Single tap - update focus
+      // Single tap - always update focus to the tapped node
       previousDate = 0;
-      if (tappedIndex != _focusIndex) {
-        if (!mounted) return;
-        setState(() {
-          _focusIndex = tappedIndex;
-        });
-        final rangeType =
-            BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
-        widget.bloodPressureChartCallback(rangeType);
-        // Scroll to center the selected point
-        if (_lastTotalPoints > 0 && _lastViewWidth > 0) {
-          _scrollToSelectedPoint(
-            totalPoints: _lastTotalPoints,
-            viewWidth: _lastViewWidth,
-            effectivePointWidth: _lastEffectivePointWidth,
-          );
-        }
+      if (!mounted) return;
+
+      setState(() {
+        _focusIndex = tappedIndex;
+      });
+
+      // Update callback with the selected point's range type
+      final rangeType =
+          BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+      widget.bloodPressureChartCallback(rangeType);
+
+      // Always scroll to center the selected point when tapped
+      if (_lastTotalPoints > 0 &&
+          _lastViewWidth > 0 &&
+          _lastEffectivePointWidth > 0) {
+        _scrollToSelectedPoint(
+          totalPoints: _lastTotalPoints,
+          viewWidth: _lastViewWidth,
+          effectivePointWidth: _lastEffectivePointWidth,
+        );
       }
+
       // Update tracking for next potential double tap
       _lastTappedIndex = tappedIndex;
       _lastTapTime = now;
@@ -355,6 +364,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
         return;
       }
 
+      // Determine selected index: use _focusIndex if valid, otherwise default to last point (latest data)
       final int selectedIndex = _focusIndex >= 0 && _focusIndex < trends.length
           ? _focusIndex
           : (trends.length > 0 ? trends.length - 1 : 0);
@@ -467,7 +477,17 @@ class BloodPressureChartState extends State<BloodPressureChart>
             }
 
             if (trends.isNotEmpty) {
+              // Check if trends length changed (new data loaded)
+              final bool trendsChanged = _lastTrendsLength != trends.length;
+
+              if (trendsChanged) {
+                // Reset scroll flag when trends change so it will scroll to latest point
+                _initialScrollApplied = false;
+                _lastTrendsLength = trends.length;
+              }
+
               if (_focusIndex == -1 || _focusIndex >= trends.length) {
+                // Set focus to latest point (last index)
                 _focusIndex = (trends.length - 1);
                 if (_focusIndex >= 0 && _focusIndex < trends.length) {
                   final rangeType = BloodPressureRangeType.fromTitle(
@@ -480,6 +500,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             } else {
               // Reset focus index when trends is empty
               _focusIndex = -1;
+              _lastTrendsLength = 0;
             }
           }
 
@@ -632,15 +653,20 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 InkWell(
                   onTap: _focusIndex > 0
                       ? () {
+                          // Move to previous node
                           setState(() {
                             _focusIndex = max(0, _focusIndex - 1);
                           });
+
+                          // Update callback with the selected point's range type
                           final rangeType = BloodPressureRangeType.fromTitle(
                               trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
-                          if (_focusIndex > 0 &&
-                              _lastTotalPoints > 0 &&
-                              _lastViewWidth > 0) {
+
+                          // Always scroll to center the selected point when using prev button
+                          if (_lastTotalPoints > 0 &&
+                              _lastViewWidth > 0 &&
+                              _lastEffectivePointWidth > 0) {
                             _scrollToSelectedPoint(
                               totalPoints: _lastTotalPoints,
                               viewWidth: _lastViewWidth,
@@ -696,16 +722,21 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 InkWell(
                   onTap: _focusIndex < trends.length - 1
                       ? () {
+                          // Move to next node
                           setState(() {
                             _focusIndex =
                                 min(trends.length - 1, _focusIndex + 1);
                           });
+
+                          // Update callback with the selected point's range type
                           final rangeType = BloodPressureRangeType.fromTitle(
                               trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
-                          if (_focusIndex < trends.length - 1 &&
-                              _lastTotalPoints > 0 &&
-                              _lastViewWidth > 0) {
+
+                          // Always scroll to center the selected point when using next button
+                          if (_lastTotalPoints > 0 &&
+                              _lastViewWidth > 0 &&
+                              _lastEffectivePointWidth > 0) {
                             _scrollToSelectedPoint(
                               totalPoints: _lastTotalPoints,
                               viewWidth: _lastViewWidth,
@@ -859,6 +890,11 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   _lastTotalPoints = totalPoints;
 
                   if (enableScroll) {
+                    // Ensure focus index is set to latest point before scrolling
+                    if ((_focusIndex == -1 || _focusIndex >= trends.length) &&
+                        trends.isNotEmpty) {
+                      _focusIndex = trends.length - 1;
+                    }
                     _ensureSelectedPointVisible(
                       trends: trends,
                       totalPoints: totalPoints,
