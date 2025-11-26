@@ -47,6 +47,8 @@ class _BloodPressureDetailTabbarControllerState
       false; // Track if user has viewed Blood Pressure detail page
   bool _isFirstLoad =
       true; // Track if this is the first load when entering dashboard
+  bool _hasBloodPressureData =
+      false; // Track if there is blood pressure data available
 
   BloodPressureRangeType _rangeType = BloodPressureRangeType.normal;
 
@@ -299,8 +301,8 @@ class _BloodPressureDetailTabbarControllerState
                               ),
                             ),
                           ),
-                          // Show dot indicator if detail hasn't been viewed
-                          if (!_isDetailViewed)
+                          // Show dot indicator if detail hasn't been viewed and there is data
+                          if (_hasBloodPressureData && !_isDetailViewed)
                             Positioned(
                               left: 44,
                               top: 0,
@@ -394,6 +396,14 @@ class _BloodPressureDetailTabbarControllerState
         setState(() {
           _rangeType = rangeType;
         });
+      },
+      onDataLoaded: (hasData) {
+        if (!mounted) return;
+        if (_hasBloodPressureData != hasData) {
+          setState(() {
+            _hasBloodPressureData = hasData;
+          });
+        }
       },
     );
   }

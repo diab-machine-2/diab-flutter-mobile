@@ -19,15 +19,18 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 typedef BloodPressureChartCallback = void Function(
     BloodPressureRangeType rangeType);
+typedef BloodPressureDataCallback = void Function(bool hasData);
 
 class BloodPressureChart extends StatefulWidget {
   BloodPressureChart({
     Key? key,
     required this.initPeriodFilterType,
     required this.bloodPressureChartCallback,
+    this.onDataLoaded,
   }) : super(key: key);
   final int initPeriodFilterType;
   final BloodPressureChartCallback bloodPressureChartCallback;
+  final BloodPressureDataCallback? onDataLoaded;
   @override
   BloodPressureChartState createState() => BloodPressureChartState();
 }
@@ -691,6 +694,16 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
             if (model.trendItems.items.isNotEmpty) {
               trends = _getTrends(model);
+            }
+
+            // Notify parent about data availability
+            final bool hasData = trends.isNotEmpty;
+            if (widget.onDataLoaded != null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  widget.onDataLoaded!(hasData);
+                }
+              });
             }
 
             if (trends.isNotEmpty) {
