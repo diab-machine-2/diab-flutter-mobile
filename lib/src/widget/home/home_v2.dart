@@ -596,8 +596,9 @@ class _HomeControllerState extends State<HomeController>
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
 
-              List<HomeMeasurementData> dinduongs =
-                  state.model.measurements!.where((e) => e.title.toLowerCase() == "dinh dưỡng").toList();
+              List<HomeMeasurementData> dinduongs = state.model.measurements!
+                  .where((e) => e.title.toLowerCase() == "dinh dưỡng")
+                  .toList();
               _haveInputFoodAlready = dinduongs.isNotEmpty &&
                   dinduongs.first.value1?.isNotEmpty == true &&
                   dinduongs.first.value1 != "--";
@@ -746,7 +747,8 @@ class _HomeControllerState extends State<HomeController>
                         end: Alignment.topCenter,
                       ),
                     ),
-                    child: HomeHeader(sharedCode: widget.sharedCode, homeModel: model),
+                    child: HomeHeader(
+                        sharedCode: widget.sharedCode, homeModel: model),
                   ),
                   Expanded(
                     child: SingleChildScrollView(
@@ -780,15 +782,27 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // check first time open blood pressure intro
-                              if (routeName == NavigatorName.add_blood_pressure &&
+                              if (routeName ==
+                                      NavigatorName.add_blood_pressure &&
                                   !_haveInputBloodpressureAlready) {
-                                Navigator.of(context)
-                                    .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                                Navigator.of(context).pushNamed(NavigatorName
+                                    .blood_pressure_intro_1st_page);
                                 return;
                               }
                               // check first time open dinh duong
-                              if (routeName == NavigatorName.add_food && !_haveInputFoodAlready) {
-                                FoodActionPopup.show(context);
+                              if (routeName == NavigatorName.add_food) {
+                                // Check if user has food data
+                                bool hasFoodData = await _checkHasFoodData();
+
+                                if (hasFoodData) {
+                                  // User has data, navigate to detail page directly
+                                  Navigator.pushNamed(
+                                      context, NavigatorName.detail_food);
+                                } else {
+                                  // User has no data, navigate to onboarding
+                                  Navigator.pushNamed(context,
+                                      NavigatorName.nutrient_intro_1st_page);
+                                }
                                 return;
                               }
                               // case input exercise
@@ -1215,9 +1229,18 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
-        // case dinh duong
+        // case dinh duong - check if user has data
         if (item.navigatorName == NavigatorName.add_food) {
-          FoodActionPopup.show(context);
+          // Check if user has food data
+          bool hasFoodData = await _checkHasFoodData();
+
+          if (hasFoodData) {
+            // User has data, navigate to detail page directly
+            Navigator.pushNamed(context, NavigatorName.detail_food);
+          } else {
+            // User has no data, navigate to onboarding
+            Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
+          }
           return;
         }
         // case HbA1C - check if user has data
@@ -1572,6 +1595,25 @@ class _HomeControllerState extends State<HomeController>
             hasValidDateTime;
 
         return hasHbA1cData;
+      }
+
+      return false;
+    } catch (e) {
+      // In case of error, assume no data
+      return false;
+    }
+  }
+
+  /// Check if user has food/nutrition data
+  Future<bool> _checkHasFoodData() async {
+    try {
+      final homeModel = await AppSettings.getHome();
+
+      if (homeModel != null) {
+        final hasFoodData = homeModel.energyCard?.consumedEnergy != null &&
+            homeModel.energyCard!.consumedEnergy! > 0;
+
+        return hasFoodData;
       }
 
       return false;

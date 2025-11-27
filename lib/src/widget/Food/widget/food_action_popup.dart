@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_functions.dart';
 
 class FoodActionPopup extends StatelessWidget {
@@ -10,19 +11,23 @@ class FoodActionPopup extends StatelessWidget {
 
   final bool fromDashboard;
 
-  void _handleItemTap(BuildContext context, String timeframeId, String timeframe) {
+  void _handleItemTap(
+      BuildContext context, String timeframeId, String timeframe) {
     Navigator.pop(context);
-    FoodFunctions.showModalAddData(
-      context,
-      timeframe: timeframe,
-      timeframeId: timeframeId,
-      fromDashboard: fromDashboard,
-    );
+    // FoodFunctions.showModalAddData(
+    //   context,
+    //   timeframe: timeframe,
+    //   timeframeId: timeframeId,
+    //   fromDashboard: fromDashboard,
+    // );
+    Navigator.pushNamed(context, NavigatorName.food_image_capture,
+        arguments: {'timeframe': timeframe, 'timeframeId': timeframeId});
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<_FoodPopupItemModel> items = _FoodPopupItemModel.getFoodPopupItems();
+    final List<_FoodPopupItemModel> items =
+        _FoodPopupItemModel.getFoodPopupItems();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -60,9 +65,9 @@ class FoodActionPopup extends StatelessWidget {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Food Action Items List
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -79,9 +84,9 @@ class FoodActionPopup extends StatelessWidget {
             }).toList(),
           ),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         SafeArea(
           top: false,
           bottom: true,
@@ -147,7 +152,8 @@ class FoodActionPopup extends StatelessWidget {
   static void show(BuildContext context, {bool fromDashboard = false}) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       backgroundColor: Colors.white,
       isScrollControlled: true,
       builder: (context) => Container(

@@ -156,6 +156,9 @@ class NavigatorName {
   static const String hba1c_intro_2nd_page = '/hba1c_intro_2nd_page';
   static const String add_hba1c_result = '/add_hba1c_result';
   
+  // New Nutrition
+  static const String nutrient_intro_1st_page = '/nutrient_intro_1st_page';
+  
   // Phone Update Flow
   static const String update_phone_number = '/update_phone_number';
   static const String confirm_phone_verify_otp = '/confirm_phone_verify_otp';

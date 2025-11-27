@@ -48,6 +48,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_detail_page.dart';
 import 'package:medical/src/widget/HbA1C/intro/hba1c_intro_1st_page.dart';
 import 'package:medical/src/widget/HbA1C/intro/hba1c_intro_2nd_page.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_result.dto.dart';
+import 'package:medical/src/widget/Food/intro/nutrient_intro_1st_page.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
@@ -303,6 +304,10 @@ class App extends StatelessWidget {
                         settings, HbA1cIntro1stPage(goalId: data?['goalId']));
                   case NavigatorName.hba1c_intro_2nd_page:
                     return _buildRoute(settings, HbA1cIntro2ndPage());
+                  case NavigatorName.nutrient_intro_1st_page:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(settings,
+                        NutrientIntro1stPage(goalId: data?['goalId']));
                   case NavigatorName.hba1c_detail_page:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(

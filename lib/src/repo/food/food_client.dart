@@ -13,7 +13,9 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
+import 'package:medical/src/modal/food/nutrition_lesson.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -276,8 +278,10 @@ class FoodClient extends FetchClient {
         final totalCalories = foods[i].calorie != null
             ? foods[i].calorie!.toDouble() * (foods[i].portion ?? 0).toDouble()
             : 0.0;
-        final isGptResult = (foods[i].id == null || foods[i].id!.isEmpty) ? 'true' : 'false';
-        params['foods[$i].id'] = foods[i].id ?? '00000000-0000-0000-0000-000000000000';
+        final isGptResult =
+            (foods[i].id == null || foods[i].id!.isEmpty) ? 'true' : 'false';
+        params['foods[$i].id'] =
+            foods[i].id ?? '00000000-0000-0000-0000-000000000000';
         params['foods[$i].name'] = foods[i].name ?? '';
         params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
         params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
@@ -510,5 +514,22 @@ class FoodClient extends FetchClient {
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
+  }
+
+  Future<List<NutritionLesson>?> fetchNutritionLessons() async {
+    final Response response =
+        await super.fetchData(url: '/App/Lesson/LessonSupport', params: {});
+
+    if (response.statusCode == 200) {
+      final listResponse = ListResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        NutritionLesson.fromJson,
+      );
+      final data = listResponse.data;
+      if (data == null) return null;
+      // Filter out inactive lessons (status == 2)
+      return data.where((e) => e.status != 2).toList();
+    }
+    return null;
   }
 }
