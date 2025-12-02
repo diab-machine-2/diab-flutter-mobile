@@ -6,7 +6,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
@@ -553,73 +552,6 @@ class _RegisterControllerState extends State<RegisterController> {
         ));
       },
     );
-  }
-
-  loginFB() async {
-    final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logIn([R.string.email.tr()]);
-    dynamic profile;
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        try {
-          BotToast.showLoading();
-          final token = result.accessToken?.token;
-          final graphResponse = await http.get(Uri.parse(
-              'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token'));
-          profile = jsonDecode(graphResponse.body);
-          await LoginClient().login({
-            "client_id": Const.CLIENT_ID,
-            "client_secret": Const.CLIENT_SECRET,
-            "grant_type": "external",
-            "external_token": token,
-            "provider": 'Facebook'
-          });
-          final user = await UserClient().fetchUser();
-          BotToast.closeAllLoading();
-          if (user == null) {
-            registerAccount(
-                result.accessToken?.userId,
-                result.accessToken?.token,
-                'Facebook',
-                profile['name'] ?? R.string.user_name_default.tr(),
-                true);
-            // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
-            //   'type': 'facebook',
-            //   'facebookAccount': result,
-            //   'userInfo': profile
-            // });
-          } else {
-            LoginRouting().navigateToHome(context);
-          }
-        } catch (error) {
-          BotToast.closeAllLoading();
-          if (error is Error) {
-            if (error.code == '5' && profile != null) {
-              registerAccount(
-                  result.accessToken?.userId,
-                  result.accessToken?.token,
-                  'Facebook',
-                  profile['name'] ?? R.string.user_name_default.tr(),
-                  false);
-              // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-              //     arguments: {
-              //       'type': 'facebook',
-              //       'facebookAccount': result,
-              //       'userInfo': profile
-              //     });
-            }
-          } else {
-            Message.showToastMessage(context, error.toString());
-          }
-        }
-
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        break;
-      case FacebookLoginStatus.error:
-        Message.showToastMessage(context, result.errorMessage);
-        break;
-    }
   }
 
   loginGG() async {

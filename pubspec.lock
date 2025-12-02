@@ -50,13 +50,13 @@ packages:
     source: hosted
     version: "2.0.2"
   app_links:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: app_links
-      sha256: "4acba851087b25136e8f6e32a53bd4536eb3bec69947ddb66e7b9a5792ceb0c7"
+      sha256: "85ed8fc1d25a76475914fff28cc994653bd900bc2c26e4b57a49e097febb54ba"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.0"
+    version: "6.4.0"
   app_links_linux:
     dependency: transitive
     description:
@@ -605,10 +605,10 @@ packages:
     dependency: "direct main"
     description:
       name: external_app_launcher
-      sha256: fb55cddd706c62ede11056750d5e018ef379820e09739e967873211dd537d833
+      sha256: "5657341c5aa7bf7383efdf3e68db80cb3019e80afa9f1df3250c14818e844857"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "4.0.3"
   fake_async:
     dependency: transitive
     description:
@@ -879,15 +879,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  flutter_facebook_login:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: null_safety
-      resolved-ref: c05ccadb8d48178a9771d122ebb1f798b47caa4a
-      url: "https://github.com/samlythemanly/flutter_facebook_login.git"
-    source: git
-    version: "3.0.0-nullsafety"
   flutter_html:
     dependency: "direct main"
     description:
@@ -1685,10 +1676,10 @@ packages:
     dependency: "direct main"
     description:
       name: mixpanel_flutter
-      sha256: c1e35c54d8cfc1c50d35d2e8cc11416295efc45bb6dcaa88aec8f82219274833
+      sha256: "549c48a774e9625f2b21a044a4bc177fd2f60c020de2ed4a77136e8870184a4c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.3"
+    version: "2.4.3"
   modal_bottom_sheet:
     dependency: "direct main"
     description:
@@ -1729,16 +1720,8 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  package_info:
-    dependency: "direct main"
-    description:
-      name: package_info
-      sha256: "6c07d9d82c69e16afeeeeb6866fe43985a20b3b50df243091bfc4a4ad2b03b75"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
   package_info_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: package_info_plus
       sha256: "88bc797f44a94814f2213db1c9bd5badebafdfb8290ca9f78d4b9ee2a3db4d79"
@@ -2174,26 +2157,26 @@ packages:
     dependency: "direct main"
     description:
       name: sign_in_with_apple
-      sha256: "0975c23b9f8b30a80e27d5659a75993a093d4cb5f4eb7d23a9ccc586fea634e0"
+      sha256: "8bd875c8e8748272749eb6d25b896f768e7e9d60988446d543fe85a37a2392b8"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "7.0.1"
   sign_in_with_apple_platform_interface:
     dependency: transitive
     description:
       name: sign_in_with_apple_platform_interface
-      sha256: a5883edee09ed6be19de19e7d9f618a617fe41a6fa03f76d082dfb787e9ea18d
+      sha256: "981bca52cf3bb9c3ad7ef44aace2d543e5c468bb713fd8dda4275ff76dfa6659"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "2.0.0"
   sign_in_with_apple_web:
     dependency: transitive
     description:
       name: sign_in_with_apple_web
-      sha256: "44b66528f576e77847c14999d5e881e17e7223b7b0625a185417829e5306f47a"
+      sha256: f316400827f52cafcf50d00e1a2e8a0abc534ca1264e856a81c5f06bd5b10fed
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "3.0.0"
   simple_sparse_list:
     dependency: transitive
     description:
@@ -2283,10 +2266,10 @@ packages:
     dependency: "direct main"
     description:
       name: store_redirect
-      sha256: "0f00455cc7e3ea896daac5db45fca3a09560eb7ba53a79533df3b80506047286"
+      sha256: ec635bc2f89c1f19b2f384784ddbfc8eb46b27d28224db32cadfe3820eeea6ca
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.4"
   stream_channel:
     dependency: transitive
     description:
@@ -2399,30 +2382,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
-  uni_links:
-    dependency: "direct main"
-    description:
-      name: uni_links
-      sha256: "051098acfc9e26a9fde03b487bef5d3d228ca8f67693480c6f33fd4fbb8e2b6e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.1"
-  uni_links_platform_interface:
-    dependency: transitive
-    description:
-      name: uni_links_platform_interface
-      sha256: "929cf1a71b59e3b7c2d8a2605a9cf7e0b125b13bc858e55083d88c62722d4507"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
-  uni_links_web:
-    dependency: transitive
-    description:
-      name: uni_links_web
-      sha256: "7539db908e25f67de2438e33cc1020b30ab94e66720b5677ba6763b25f6394df"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
   unicode:
     dependency: transitive
     description:

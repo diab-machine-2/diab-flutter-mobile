@@ -1,4 +1,3 @@
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/user/secure.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/notification_manager.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactController extends StatefulWidget {
@@ -18,12 +17,11 @@ class ContactController extends StatefulWidget {
 }
 
 class _ContactControllerState extends State<ContactController> {
-
   @override
   void initState() {
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,8 +83,8 @@ class _ContactControllerState extends State<ContactController> {
                           //   'subject': 'Hỗ trợ diaB',
                           //   'body': 'Version app: $appVersion\nModel: $model\nVersion OS: $systemVersion\n'
                           // },
-                         query:
-                             'subject=Hỗ trợ diaB&body=Version app: $appVersion\nModel: $model\nVersion OS: $systemVersion\n',
+                          query:
+                              'subject=Hỗ trợ diaB&body=Version app: $appVersion\nModel: $model\nVersion OS: $systemVersion\n',
                         );
                         final String _url = _emailLaunchUri.toString();
                         await canLaunch(_url)

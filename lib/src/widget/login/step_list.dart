@@ -28,7 +28,7 @@ import 'package:medical/src/widget/home/widget/sync_modal.dart';
 import 'package:medical/src/widgets/button_language_picker.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/spacing_row.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import 'widgets/social_login_section.dart';

@@ -63,16 +63,12 @@ dependencies:
   # html: ^0.15.0
   image_cropper: 6.0.0
   carousel_slider: 4.2.1
-  flutter_facebook_login:
-    git:
-      url: https://github.com/samlythemanly/flutter_facebook_login.git
-      ref: null_safety
   # flutter_statusbar_manager:
   #   git:
   #     url: https://github.com/NarHakobyan/flutter_statusbar_manager.git
   google_sign_in: 5.4.4
-  sign_in_with_apple: 5.0.0
-  package_info: 2.0.2
+  sign_in_with_apple: 7.0.1
+  package_info_plus: 5.0.1
   flutter_svg: 1.1.6
   # google_fonts: ^3.0.1
   firebase_core: 2.27.0
@@ -114,8 +110,8 @@ dependencies:
     git:
       url: https://github.com/srinimachi/qr_code_scanner
   #Deep link
-  uni_links: 0.5.1
-  external_app_launcher: 3.1.0
+  app_links: 6.4.0
+  external_app_launcher: 4.0.3
   flutter_native_splash: 2.3.7
   share_plus: 7.2.2
   dartz: 0.10.1
@@ -132,7 +128,7 @@ dependencies:
   # flutter_app_version_checker: ^0.3.2
   flutter_blue_plus: 1.34.5
   # fwfh_text_style: ^2.22.8+3
-  store_redirect: 2.0.1
+  store_redirect: 2.0.4
   youtube_player_flutter: 9.0.3
   # zoom video sdk
   # flutter_zoom_videosdk:
@@ -167,7 +163,7 @@ dependencies:
     git:
       url: https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git
       ref: 1.0.4
-  mixpanel_flutter: 2.3.3
+  mixpanel_flutter: 2.4.3
   animated_text_kit: 4.2.2
   geolocator: 11.1.0
   flutter_widget_from_html_core: 0.14.12

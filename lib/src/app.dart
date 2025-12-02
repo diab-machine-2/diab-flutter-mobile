@@ -224,7 +224,6 @@ class App extends StatelessWidget {
                           phone: data?['phone'],
                           zaloAccount: data?['zaloAccount'],
                           googleAccount: data?['googleAccount'],
-                          facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],
                           userInfo: data?['userInfo'],
                           referalCode: data?['referalCode'],
@@ -252,7 +251,6 @@ class App extends StatelessWidget {
                                 data?['remainingRequestCount'],
                             referalCode: data?['referalCode'],
                             googleAccount: data?['googleAccount'],
-                            facebookAccount: data?['facebookAccount'],
                             appleAccount: data?['appleAccount'],
                             userInfo: data?['userInfo']));
 
