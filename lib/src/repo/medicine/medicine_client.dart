@@ -67,7 +67,7 @@ class MedicineClient extends FetchClient {
 
   Future<bool> createNewPrescription({required PrescriptionModel prescription, required Map<String, String>? paths}) async {
     final Map<String, String> params = {
-      'Data': jsonEncode(prescription.toJson()),
+      'Data': jsonEncode(prescription.toJson(includePrescriptionId: false, includedMedicationId: false)),
     };
 
     try {
@@ -174,7 +174,7 @@ class MedicineClient extends FetchClient {
   Future<MedicineScheduleModel> fetchMedicineScheduleByDate({required int timestamp}) async {
     try {
       final response = await super.fetchData(
-          url: '/App/Target',
+          url: '/App/Target/Medication',
           params: {'day': timestamp.toString()}
       );
 

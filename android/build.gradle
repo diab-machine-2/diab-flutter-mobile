@@ -63,3 +63,10 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+subprojects { subproject ->
+    subproject.configurations.all { config ->
+        config.exclude group: 'com.google.android', module: 'flexbox'
+        config.exclude group: 'com.google.android.flexbox'
+    }
+}

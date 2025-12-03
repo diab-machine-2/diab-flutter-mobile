@@ -57,8 +57,8 @@ class PrescriptionModel {
     );
   }
 
-  Map<String, dynamic> toJson({bool includedMedicationId = true}) => {
-    if (id != null) 'id': id,
+  Map<String, dynamic> toJson({bool includePrescriptionId = true, bool includedMedicationId = true}) => {
+    if (id != null && includePrescriptionId == true) 'id': id,
     'prescriptionName': prescriptionName,
     'startDate': startDate != null
         ? (startDate!.millisecondsSinceEpoch ~/ 1000)

@@ -39,6 +39,7 @@ class PrescriptionAddPage extends StatefulWidget {
 }
 
 class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
+  late MedicineBloc _bloc;
   final List<MedicineItemModel> _medicines = [];
 
   final TextEditingController _controllerPrescriptionName = TextEditingController();
@@ -53,6 +54,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   @override
   void initState() {
     super.initState();
+    _bloc = MedicineBloc();
     selectedDate = DateTime.now();
     if (widget.prescriptionMode == null) {
       _prescriptionMode = PrescriptionMode.create;
@@ -376,74 +378,86 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   }
 
   Widget _buildSetTimeButton() {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      child: GestureDetector(
-        onTap: () {
-          if (_controllerPrescriptionName.text.isEmpty) return;
-
-          _prescription = _prescription.copyWith(
-            prescriptionName: _controllerPrescriptionName.text,
-            note: _controllerNote.text,
-            startDate: selectedDate,
-            patientMedications: _medicines,
-            status: 0,
-          );
-
-          List<ImageNoteModel> oldPaths = <ImageNoteModel>[];
-          Map<String, String> newPaths = {};
-
-          final data = _sectionAddNoteKey.currentState!.getNote();
-          int index = 0;
-
-          for (var file in (data.files)) {
-            if (file is PickedFile) {
-              final fieldName = 'ImagesPrescription';
-              newPaths[fieldName] = file.path;
-            } else if (file is ImagesModel) {
-              final id = (file.url ?? '').split('/').last.trim();
-              oldPaths.add(
-                ImageNoteModel(order: index, id: id),
-              );
-            }
-            index++;
-          }
-
-          _prescription.patientMedications?.forEach((medicine) {
-            if (medicine.uploadFiles != null) newPaths.addAll(medicine.uploadFiles!);
-          });
-
-
-          _prescription = _prescription.copyWith(
-            imagesPrescription: oldPaths,
-          );
-
-          if (_prescriptionMode == PrescriptionMode.reuse) {
-            Navigator.pop(context, true);
-            context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(_prescription, newPaths));
-          } else {
-            Navigator.pushNamed(context, NavigatorName.prescription_remind, arguments: {
-              'prescription': _prescription,
-              'paths': newPaths,
-            });
+    return BlocProvider.value(
+      value: _bloc,
+      child: BlocListener<MedicineBloc, MedicineState>(
+        listener: (context, state) {
+          if (state is CreatePrescriptionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Tạo đơn thuốc thành công!')),
+            );
+            Navigator.pushReplacementNamed(context, NavigatorName.prescription);
           }
         },
         child: Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: R.color.mainColor,
-            borderRadius: BorderRadius.circular(200),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.centerRight,
-              colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
-            ),
-          ),
-          child: Center(
-            child: Text(
-              _prescriptionMode == PrescriptionMode.reuse ? R.string.reuse_prescription.tr() : R.string.set_time.tr(),
-              style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
+          color: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+          child: GestureDetector(
+            onTap: () {
+              if (_controllerPrescriptionName.text.isEmpty) return;
+
+              _prescription = _prescription.copyWith(
+                prescriptionName: _controllerPrescriptionName.text,
+                note: _controllerNote.text,
+                startDate: selectedDate,
+                patientMedications: _medicines,
+                status: 0,
+              );
+
+              List<ImageNoteModel> oldPaths = <ImageNoteModel>[];
+              Map<String, String> newPaths = {};
+
+              final data = _sectionAddNoteKey.currentState!.getNote();
+              int index = 0;
+
+              for (var file in (data.files)) {
+                if (file is PickedFile) {
+                  final fieldName = 'ImagesPrescription';
+                  newPaths[fieldName] = file.path;
+                } else if (file is ImagesModel) {
+                  final id = (file.url ?? '').split('/').last.trim();
+                  oldPaths.add(
+                    ImageNoteModel(order: index, id: id),
+                  );
+                }
+                index++;
+              }
+
+              _prescription.patientMedications?.forEach((medicine) {
+                if (medicine.uploadFiles != null) newPaths.addAll(medicine.uploadFiles!);
+              });
+
+
+              _prescription = _prescription.copyWith(
+                imagesPrescription: oldPaths,
+              );
+
+              if (_prescriptionMode == PrescriptionMode.reuse) {
+                _bloc.add(CreateNewPrescriptionEvent(_prescription, newPaths));
+              } else {
+                Navigator.pushNamed(context, NavigatorName.prescription_remind, arguments: {
+                  'prescription': _prescription,
+                  'paths': newPaths,
+                });
+              }
+            },
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                color: R.color.mainColor,
+                borderRadius: BorderRadius.circular(200),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.centerRight,
+                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  _prescriptionMode == PrescriptionMode.reuse ? R.string.reuse_prescription.tr() : R.string.set_time.tr(),
+                  style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
+                ),
+              ),
             ),
           ),
         ),

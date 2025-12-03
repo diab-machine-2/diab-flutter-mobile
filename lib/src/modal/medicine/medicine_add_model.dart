@@ -79,4 +79,14 @@ class DayTimeSchedule {
     required this.dayTime,
     required this.time,
   });
+
+  DayTimeSchedule copyWith({
+    DayTime? dayTime,
+    TimeOfDay? time,
+  }) {
+    return DayTimeSchedule(
+      dayTime: dayTime ?? this.dayTime,
+      time: time ?? this.time,
+    );
+  }
 }

@@ -189,7 +189,10 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
             initialTime: schedule.time,
           );
           if (picked != null) {
-            _schedules[index] = schedule;
+            _schedules[index] = schedule.copyWith(time: picked);
+            setState(() {
+
+            });
           }
         },
       ),
@@ -400,8 +403,8 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
             mainAxisSize: MainAxisSize.min, // quan trọng
             children: [
               const SizedBox(height: 16),
-              const Text(
-                "Chọn giờ",
+              Text(
+                R.string.select_hour.tr(),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Expanded(
@@ -441,7 +444,7 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text("Huỷ"),
+                      child: Text(R.string.cancel.tr()),
                     ),
                   ),
                   const SizedBox(width: 8),
