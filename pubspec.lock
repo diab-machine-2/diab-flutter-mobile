@@ -573,10 +573,10 @@ packages:
     dependency: "direct main"
     description:
       name: easy_localization
-      sha256: de63e3b422adfc97f256cbb3f8cf12739b6a4993d390f3cadb3f51837afaefe5
+      sha256: "2ccdf9db8fe4d9c5a75c122e6275674508fd0f0d49c827354967b8afcc56bbed"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.3"
+    version: "3.0.8"
   easy_logger:
     dependency: transitive
     description:
@@ -1676,10 +1676,10 @@ packages:
     dependency: "direct main"
     description:
       name: mixpanel_flutter
-      sha256: "549c48a774e9625f2b21a044a4bc177fd2f60c020de2ed4a77136e8870184a4c"
+      sha256: "0ecd870cceed1cf4600c403e5544b88efa65b8fd3f30fad679702d1ae9e0ac15"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.3"
+    version: "2.4.4"
   modal_bottom_sheet:
     dependency: "direct main"
     description:

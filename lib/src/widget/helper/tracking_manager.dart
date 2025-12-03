@@ -69,7 +69,7 @@ class TrackingManager {
     }
   }
 
-  static void initializeMixpanel() async {
+  static Future<void> initializeMixpanel() async {
     _mixpanel = await Mixpanel.init("457ac685ce1ba9f3d0ab636880de4c72",
         trackAutomaticEvents: true);
   }

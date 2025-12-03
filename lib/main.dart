@@ -100,7 +100,7 @@ Future<void> main() async {
   // ]);
   //await initializeDateFormatting('vi_VN');
   await TrackingManager.initializeFlutterFire();
-  TrackingManager.initializeMixpanel();
+  await TrackingManager.initializeMixpanel();
   // final window = widgetsBinding.window;
   // await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();

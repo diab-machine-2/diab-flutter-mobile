@@ -45,7 +45,7 @@ dependencies:
   # freezed: ^2.1.0+1
   freezed_annotation: 2.4.1
   # Multi Languages
-  easy_localization: 3.0.3
+  easy_localization: 3.0.8
   csv: 5.1.1
   loadmore: 2.1.0
   flutter_spinkit: 5.2.0
@@ -163,7 +163,7 @@ dependencies:
     git:
       url: https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git
       ref: 1.0.4
-  mixpanel_flutter: 2.4.3
+  mixpanel_flutter: 2.4.4
   animated_text_kit: 4.2.2
   geolocator: 11.1.0
   flutter_widget_from_html_core: 0.14.12

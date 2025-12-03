@@ -1,12 +1,13 @@
 buildscript {
     ext {
-        buildToolsVersion = "34.0.0"
+        buildToolsVersion = "36.0.0"
         minSdkVersion = 24
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        kotlin_version = '1.9.0'
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        kotlin_version = '1.9.25'
 
-        ndkVersion = "26.1.10909125"
+        // Use NDK r28 for 16KB page size support
+        ndkVersion = "28.0.13004108"
 
         // if (System.properties['os.arch'] == "aarch64") {
         //     // For M1 Users we need to use the NDK 24 which added support for aarch64
@@ -23,7 +24,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.1'
+        classpath 'com.android.tools.build:gradle:8.6.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.4.1'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
