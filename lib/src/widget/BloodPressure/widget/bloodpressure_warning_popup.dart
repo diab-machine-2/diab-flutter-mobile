@@ -212,7 +212,7 @@ class _BloodPressureWarningPopupWidgetState
                           ),
                           child: Center(
                             child: Text(
-                              R.string.confirm.tr(),
+                              "Lưu",
                               style: TextStyle(
                                 color: _isConfirmEnable
                                     ? R.color.white
