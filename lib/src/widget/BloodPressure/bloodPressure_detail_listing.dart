@@ -54,6 +54,21 @@ class BloodPressureDetailListingControllerState
 
   String? bloodPressureID;
 
+  String formatDateOrToday(int timeStamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime itemDate = DateTime(date.year, date.month, date.day);
+
+    if (itemDate == today) {
+      return 'Hôm nay';
+    } else if (itemDate == today.subtract(Duration(days: 1))) {
+      return 'Hôm qua';
+    } else {
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    }
+  }
+
   @override
   void initState() {
     _periodFilterType = widget.initPeriodFilterType;
@@ -263,8 +278,8 @@ class BloodPressureDetailListingControllerState
 
         final showDate = previousElement == null
             ? true
-            : (convertCustomDate(element.date!) !=
-                convertCustomDate(previousElement.date!));
+            : (formatDateOrToday(element.date!) !=
+                formatDateOrToday(previousElement.date!));
 
         return GestureDetector(
             onTap: () {
@@ -281,7 +296,7 @@ class BloodPressureDetailListingControllerState
                       ? Padding(
                           padding: EdgeInsets.only(top: 8, bottom: 10),
                           child: Text(
-                            convertCustomDate(element.date!),
+                            formatDateOrToday(element.date!),
                             textAlign: TextAlign.left,
                             style: TextStyle(
                                 fontSize: 18,

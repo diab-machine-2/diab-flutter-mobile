@@ -681,7 +681,7 @@ class _AddBloodPressureControllerState
                   style: TextStyle(
                       color: R.color.black,
                       fontSize: 48,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                       fontFamily: R.font.sfpro),
                   decoration: InputDecoration(
                       hintText: '0',
@@ -691,7 +691,7 @@ class _AddBloodPressureControllerState
                       hintStyle: TextStyle(
                           color: R.color.captionColorGray,
                           fontSize: 48,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                           fontFamily: R.font.sfpro)),
                 ),
               ),
@@ -758,7 +758,7 @@ class _AddBloodPressureControllerState
                     style: TextStyle(
                         color: R.color.black,
                         fontSize: 48,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w700,
                         fontFamily: R.font.sfpro),
                     decoration: InputDecoration(
                       hintText: '0',
@@ -767,7 +767,7 @@ class _AddBloodPressureControllerState
                       hintStyle: TextStyle(
                           color: R.color.captionColorGray,
                           fontSize: 48,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w700,
                           fontFamily: R.font.sfpro),
                     ),
                   ),
