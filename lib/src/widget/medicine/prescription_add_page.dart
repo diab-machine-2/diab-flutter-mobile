@@ -127,57 +127,150 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: R.color.backgroundColorNew,
-      appBar: AppBar(
-        leading: IconButton(
-            splashColor: R.color.transparent,
-            highlightColor: R.color.transparent,
-            icon: Icon(Icons.arrow_back, color: R.color.white),
-            onPressed: () {
-              Navigator.of(context).pop();
-            }),
-        title: Transform(
-          transform: Matrix4.translationValues(-20, 0.0, 0.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Text(
-              R.string.add_prescription.tr(),
-              style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
-            ),
-          ),
-        ),
-        actions: [
-          Center(
-            child: InkWell(
-              onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  R.string.tutorial.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15, fontWeight: FontWeight.w400),
-                ),
+    return WillPopScope(
+      onWillPop: () async {
+        final shouldLeave = await _showConfirmDialog(context);
+        return shouldLeave; // true = pop, false = stay
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: R.color.backgroundColorNew,
+        appBar: AppBar(
+          leading: IconButton(
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
+              icon: Icon(Icons.arrow_back, color: R.color.white),
+              onPressed: () {
+                _showConfirmDialog(context);
+              }),
+          title: Transform(
+            transform: Matrix4.translationValues(-20, 0.0, 0.0),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Text(
+                R.string.add_prescription.tr(),
+                style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
               ),
             ),
           ),
-        ],
-        backgroundColor: R.color.transparent,
-        //No more green
-        elevation: 0.0,
-        //Shadow gone
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [R.color.greenGradientMid, R.color.greenGradientBottom],
+          actions: [
+            Center(
+              child: InkWell(
+                onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    R.string.tutorial.tr(),
+                    style: TextStyle(color: R.color.white, fontSize: 15, fontWeight: FontWeight.w400),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          backgroundColor: R.color.transparent,
+          //No more green
+          elevation: 0.0,
+          //Shadow gone
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [R.color.greenGradientMid, R.color.greenGradientBottom],
+              ),
             ),
           ),
         ),
+        body: _buildBody(),
       ),
-      body: _buildBody(),
     );
+  }
+
+  Future<bool> _showConfirmDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(R.drawable.ic_back_icon, width: 64, height: 64),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(R.string.ban_muon_quay_lai.tr(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(R.string.confirm_to_back.tr(),
+                              textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                        ),
+                        SizedBox(height: 16),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Expanded(
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
+                                    child: Center(
+                                      child: Text(R.string.van_o_lai.tr(),
+                                          style: TextStyle(
+                                              color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                                    ))),
+                          ),
+                          SizedBox(width: 14),
+                          Expanded(
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                      color: R.color.red,
+                                      borderRadius: BorderRadius.circular(200),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.centerRight,
+                                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                                  child: Center(
+                                    child: Text(R.string.confirm.tr(),
+                                        style:
+                                            TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                                  ),
+                                )),
+                          ),
+                        ])
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                        icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                  )
+                ],
+              ),
+            );
+          },
+        ) ??
+        false;
   }
 
   Widget _buildBody() {
@@ -240,7 +333,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: TextField(
-              autofocus: true,
+              // autofocus: true,
               controller: _controllerPrescriptionName,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -369,6 +462,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
       child: SectionAddNote(
         controllerNote: _controllerNote,
         maxMedia: 5,
+        maxLength: 50,
         key: _sectionAddNoteKey,
         initialFiles: _files,
         noteTitle: R.string.ghi_chu.tr(),
@@ -427,7 +521,6 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 if (medicine.uploadFiles != null) newPaths.addAll(medicine.uploadFiles!);
               });
 
-
               _prescription = _prescription.copyWith(
                 imagesPrescription: oldPaths,
               );
@@ -454,7 +547,9 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
               ),
               child: Center(
                 child: Text(
-                  _prescriptionMode == PrescriptionMode.reuse ? R.string.reuse_prescription.tr() : R.string.set_time.tr(),
+                  _prescriptionMode == PrescriptionMode.reuse
+                      ? R.string.reuse_prescription.tr()
+                      : R.string.set_time.tr(),
                   style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
                 ),
               ),

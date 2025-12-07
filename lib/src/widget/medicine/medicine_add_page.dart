@@ -869,6 +869,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         // focusNode: _focusNode,
         controllerNote: _noteController,
         maxMedia: 5,
+        maxLength: 50,
         key: _sectionAddNoteKey,
         initialFiles: _files,
         noteTitle: R.string.ghi_chu.tr(),

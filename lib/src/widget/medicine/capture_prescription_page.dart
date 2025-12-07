@@ -48,20 +48,29 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
     super.dispose();
   }
 
-  Future<void> _captureFromCamera() async {
+  Future<void> _captureFromCamera(BuildContext context) async {
     if (!_cameraController!.value.isInitialized) return;
     final image = await _cameraController!.takePicture();
+
     setState(() {
       _selectedImage = File(image.path);
     });
+
+    _callApi(context);
   }
 
   Future<void> _pickFromGallery(BuildContext context) async {
-    final result = await Navigator.of(context).pushNamed(NavigatorName.medicine_photo_picker);
-    if (result != null) {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1920, // optional
+      imageQuality: 85, // optional
+    );
+
+    if (pickedFile != null) {
       setState(() {
-        _selectedImage = result as File?;
+        _selectedImage = File(pickedFile.path);
       });
+
       _callApi(context);
     }
   }
@@ -156,7 +165,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.of(context).pop();
-                                      _captureFromCamera();
+                                      _captureFromCamera(context);
                                     },
                                     child: Container(
                                       height: 48,
@@ -357,7 +366,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
             padding: const EdgeInsets.only(top: 16.0, bottom: 40),
             child: UploadTakePhotoButtons(
               onUploadTap: () => _pickFromGallery(context),
-              onTakePhotoTap: _captureFromCamera,
+              onTakePhotoTap: () => _captureFromCamera(context),
             ))
       ],
     );

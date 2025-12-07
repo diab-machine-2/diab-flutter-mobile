@@ -1,7 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../res/R.dart';
+import '../../app_setting/firebase_tracking/activity_list_tracking.dart';
+import '../../utils/navigation_util.dart';
 import '../../utils/navigator_name.dart';
+import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 
 class TutorialPage extends StatelessWidget {
   const TutorialPage({super.key});
@@ -40,18 +43,18 @@ class TutorialPage extends StatelessWidget {
                   colors: [R.color.greenGradientMid, R.color.greenGradientBottom])),
         ),
       ),
-      body: _buildBody(),
+      body: _buildBody(context),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(16),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildNeedSupport(),
+            _buildNeedSupport(context),
             const SizedBox(height: 16),
             _buildShouldDoAndNotDo(),
           ],
@@ -60,7 +63,7 @@ class TutorialPage extends StatelessWidget {
     );
   }
 
-  Widget _buildNeedSupport() {
+  Widget _buildNeedSupport(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -81,6 +84,7 @@ class TutorialPage extends StatelessWidget {
               child: _buildNeedSupportItem(
                 imageAsset: R.drawable.ic_mobile,
                 text: R.string.use_schedule_medicine.tr(),
+                onTap: () => _navigateToLessonDetail(context, '142c710d-8aed-463f-c86b-08d9f022ae7d', 1),
               ),
             ),
             const SizedBox(width: 11),
@@ -89,6 +93,7 @@ class TutorialPage extends StatelessWidget {
               child: _buildNeedSupportItem(
                 imageAsset: R.drawable.ic_medicine_calendar,
                 text: R.string.why_schedule_medicine.tr(),
+                onTap: () => _navigateToLessonDetail(context, 'c1bb1875-5d2e-43d3-6869-08d9ef854092', 1),
               ),
             ),
           ],
@@ -284,6 +289,23 @@ class TutorialPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _navigateToLessonDetail(BuildContext context, String id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
+
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id,
+        onComplete: (_, __) {},
       ),
     );
   }

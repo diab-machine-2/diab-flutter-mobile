@@ -292,7 +292,7 @@ class AppRoutes {
       case NavigatorName.medicine_search:
         final data = settings.arguments as Map<String, dynamic>?;
         final mode = data?['mode'] as MedicineMode?;
-        final index = data?['mode'];
+        final index = data?['index'];
         page = MedicineSearchPage(medicineMode: mode, index: index);
         break;
       case NavigatorName.medicine_add:

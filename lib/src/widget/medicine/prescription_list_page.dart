@@ -77,11 +77,14 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           if (state is FetchPrescriptionsSuccess && state.prescriptionsResult.isEmpty) {
             Navigator.of(context).pushReplacementNamed(NavigatorName.medicine);
           }
+          if (state is StopPrescriptionSuccess) {
+            _bloc.add(FetchPrescriptionsEvent());
+          }
         },
         child: BlocBuilder<MedicineBloc, MedicineState>(builder: (context, state) {
-          if (state is MedicineLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          // if (state is MedicineLoading) {
+          //   return const Center(child: CircularProgressIndicator());
+          // }
           if (state is FetchPrescriptionsSuccess && state.prescriptionsResult.isEmpty) {
             return const SizedBox.shrink();
           }
@@ -427,7 +430,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                         onConfirm: () {
                                           Navigator.pop(context);
                                           _bloc.add(StopPrescriptionEvent(prescription.id ?? ''));
-                                          _bloc.add(FetchPrescriptionsEvent());
+                                          // _bloc.add(FetchPrescriptionsEvent());
                                         },
                                       ),
                                     );
