@@ -66,7 +66,7 @@ class _LoginControllerState extends State<LoginController> {
     AppSettings.currentScreenName = 'login';
     // phoneFocusNode.addListener(() async {
     //   if (phoneFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'login',
@@ -76,7 +76,7 @@ class _LoginControllerState extends State<LoginController> {
     //     );
     //   } else {
     //     bool isValid = phone.length == 9 || phone.length == 10;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'login',
@@ -90,7 +90,7 @@ class _LoginControllerState extends State<LoginController> {
     // });
     // passwordFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'login',
@@ -100,7 +100,7 @@ class _LoginControllerState extends State<LoginController> {
     //     );
     //   } else {
     //     bool isValid = password.length >= 6;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'login',

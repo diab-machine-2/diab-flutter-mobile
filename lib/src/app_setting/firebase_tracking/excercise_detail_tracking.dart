@@ -23,13 +23,13 @@ class ExcerciseDetailTracking {
     required CustomPlayerEventType eventType,
   }) async {
     if (eventType == CustomPlayerEventType.videoPlay) {
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'component_clicked',
         parameters: {
           "screen_name": screenName,
           'component_name': 'video_player_exercise',
-          'object_id': objectId,
-          'object_title': objectTitle,
+          'object_id': objectId ?? '',
+          'object_title': objectTitle ?? '',
         },
       );
     } else {
@@ -54,11 +54,11 @@ class ExcerciseDetailTracking {
           // TODO: Handle this case.
           break;
       }
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'component_video_action',
         parameters: {
-          'object_id': objectId,
-          'object_title': objectTitle,
+          'object_id': objectId ?? '',
+          'object_title': objectTitle ?? '',
           "screen_name": screenName,
           'component_action': componentAction,
           'component_name': 'video_player_lesson',

@@ -154,7 +154,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer {
               ])),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              await TrackingManager.analytics.logEvent(
+              await TrackingManager.logEvent(
                 name: 'cta_button_clicked',
                 parameters: {
                   "screen_name": 'remind',
@@ -226,7 +226,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer {
                   activeColor: R.color.greenGradientBottom,
                   value: models![index].isActive!,
                   onChanged: (value) async {
-                    await TrackingManager.analytics.logEvent(
+                    await TrackingManager.logEvent(
                       name: 'component_clicked',
                       parameters: {
                         "screen_name": 'remind',

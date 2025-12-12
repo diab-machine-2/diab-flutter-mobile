@@ -68,7 +68,7 @@ class _RulesControllerState extends State<RulesController> {
         margin: EdgeInsets.all(16),
         child: GestureDetector(
           onTap: () async {
-            // await TrackingManager.analytics.logEvent(
+            // await TrackingManager.logEvent(
             //   name: 'cta_button_clicked',
             //   parameters: {
             //     "screen_name": 'privacy',

@@ -184,7 +184,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
                             item: lessonModule.name ?? '',
                             isSelected: _cubit.listSelectedLessonModule[index],
                             onSelect: () async {
-                              await TrackingManager.analytics.logEvent(
+                              await TrackingManager.logEvent(
                                 name: 'component_clicked',
                                 parameters: {
                                   "screen_name": 'qna_home',
@@ -328,7 +328,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
             _questionScrollController.position.maxScrollExtent &&
         !_questionScrollController.position.outOfRange) {
       //reach the bottom
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'component_loadmore',
         parameters: {
           "screen_name": 'qna_home',
@@ -369,7 +369,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
       currentAccountId: _cubit.userInfo!.accountId!,
       lessonModules: _cubit.lessonModules,
       callbackDetail: () async {
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'component_clicked',
           parameters: {
             "screen_name": 'qna_home',
@@ -378,7 +378,7 @@ class _AllQuestionAnswerPageState extends State<AllQuestionAnswerPage>
             'object_title': questionModel.body,
           },
         );
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'select_content',
           parameters: {
             "screen_name": 'qna_home',

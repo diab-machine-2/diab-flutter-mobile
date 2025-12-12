@@ -29,7 +29,6 @@ import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
-import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class RegisterController extends StatefulWidget {
@@ -81,7 +80,7 @@ class _RegisterControllerState extends State<RegisterController> {
     AppSettings.currentScreenName = 'sign_up';
     // phoneFocusNode.addListener(() async {
     //   if (phoneFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -91,7 +90,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //     );
     //   } else {
     //     bool isValid = phone.length == 9 || phone.length == 10;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -105,7 +104,7 @@ class _RegisterControllerState extends State<RegisterController> {
     // });
     // passwordFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -115,7 +114,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //     );
     //   } else {
     //     bool isValid = password.length >= 6;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -130,7 +129,7 @@ class _RegisterControllerState extends State<RegisterController> {
     // });
     // confirmPasswordFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -149,7 +148,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //       errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
     //       validateState = 'fail';
     //     }
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'text_field_input',
     //   parameters: {
     //     "screen_name": 'sign_up',
@@ -163,7 +162,7 @@ class _RegisterControllerState extends State<RegisterController> {
     // });
     // referralCodeFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -179,7 +178,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //       errorMessage = R.string.data_input_not_valid.tr();
     //       validateState = 'fail';
     //     }
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -423,7 +422,7 @@ class _RegisterControllerState extends State<RegisterController> {
   }
 
   verify() async {
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'cta_button_clicked',
     //   parameters: {
     //     "screen_name": 'sign_up',

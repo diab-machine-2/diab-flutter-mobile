@@ -183,7 +183,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
                             item: _cubit.lessonModules[index].name ?? '',
                             isSelected: _cubit.listSelectedLessonModule[index],
                             onSelect: () async {
-                              await TrackingManager.analytics.logEvent(
+                              await TrackingManager.logEvent(
                                 name: 'component_clicked',
                                 parameters: {
                                   "screen_name": 'qna_home',
@@ -368,7 +368,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
       currentAccountId: _cubit.userInfo!.accountId!,
       lessonModules: _cubit.lessonModules,
       callbackDetail: () async {
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'component_clicked',
           parameters: {
             "screen_name": 'qna_home',
@@ -377,7 +377,7 @@ class _MyQuestionAnswerPageState extends State<MyQuestionAnswerPage>
             'object_title': questionModel.body,
           },
         );
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'select_content',
           parameters: {
             "screen_name": 'qna_home',

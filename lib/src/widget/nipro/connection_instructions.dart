@@ -14,7 +14,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/nipro/list_devices.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:timelines/timelines.dart';
+import 'package:timelines_plus/timelines_plus.dart';
 import 'package:app_settings/app_settings.dart' as Settings;
 
 class ConnectionInstructionsController extends StatefulWidget {

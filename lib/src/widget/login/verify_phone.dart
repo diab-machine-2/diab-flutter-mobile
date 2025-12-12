@@ -400,7 +400,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             isSyncAccount: arguments.containsKey("syncAccount") &&
                 arguments["syncAccount"]);
         BotToast.closeAllLoading();
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'sign_up',
         //   parameters: {
         //     "screen_name": 'otp_verify',

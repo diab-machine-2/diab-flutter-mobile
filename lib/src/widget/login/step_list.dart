@@ -276,7 +276,7 @@ class _StepListControllerState extends State<StepListController>
                             child: PageView.builder(
                                 onPageChanged: (index) async {
                                   // final name = data[index]['name']!;
-                                  // await TrackingManager.analytics.logEvent(
+                                  // await TrackingManager.logEvent(
                                   //     name: 'component_clicked',
                                   //     parameters: {
                                   //       "screen_name": 'welcome',
@@ -387,7 +387,7 @@ class _StepListControllerState extends State<StepListController>
                                   // Expanded(
                                   //   child: GestureDetector(
                                   //     onTap: () async {
-                                  //       await TrackingManager.analytics.logEvent(
+                                  //       await TrackingManager.logEvent(
                                   //         name: 'cta_button_clicked',
                                   //         parameters: {
                                   //           "screen_name": 'welcome',
@@ -474,7 +474,7 @@ class _StepListControllerState extends State<StepListController>
                           SocialLoginSection(),
                           // GestureDetector(
                           //   onTap: () async {
-                          //     await TrackingManager.analytics.logEvent(
+                          //     await TrackingManager.logEvent(
                           //       name: 'cta_button_clicked',
                           //       parameters: {
                           //         "screen_name": 'welcome',
@@ -644,7 +644,7 @@ class _StepListControllerState extends State<StepListController>
       context,
       onTapSync: () async {
         Navigator.pushNamed(context, NavigatorName.sync_screen);
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'zalo_select_sync',
           parameters: {
             "screen_name": widget.screenName,
@@ -663,7 +663,7 @@ class _StepListControllerState extends State<StepListController>
         );
         await AppSettings.setIsFirstDownload(false);
         try {
-          await TrackingManager.analytics.logEvent(
+          await TrackingManager.logEvent(
             name: 'zalo_select_sync',
             parameters: {
               "screen_name": widget.screenName,

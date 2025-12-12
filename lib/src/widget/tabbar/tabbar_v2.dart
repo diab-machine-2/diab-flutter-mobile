@@ -321,7 +321,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'login_session_end',
         parameters: {
           "screen_name": AppSettings.currentScreenName,

@@ -92,7 +92,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     nameFocusNode.addListener(() async {
       String nameValue = nameController.text;
       if (nameFocusNode.hasFocus) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'text_field_focus',
         //   parameters: {
         //     "screen_name": 'register_information',
@@ -107,7 +107,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         //   validateState = 'fail';
         //   errorMessage = R.string.ban_chua_nhap_ho_ten.tr();
         // }
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'text_field_input',
         //   parameters: {
         //     "screen_name": 'register_information',
