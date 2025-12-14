@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../res/R.dart';
@@ -7,6 +9,7 @@ import '../../../modal/medicine/dose_model.dart';
 import '../../../modal/medicine/medicine_add_model.dart';
 
 enum FrequencyType { everyday, weekDays, everyOtherDay }
+
 extension FrequencyTypeExt on FrequencyType {
   String get label {
     switch (this) {
@@ -21,6 +24,7 @@ extension FrequencyTypeExt on FrequencyType {
 }
 
 enum MomentType { before_meal, after_meal, during_meal }
+
 extension MomentTypeExt on MomentType {
   String get label {
     switch (this) {
@@ -54,8 +58,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
 
   // Ngày trong tuần states
   double _quantityOnDayInWeek = 0;
+
   // List to hold the currently selected days
   final List<int> _selectedDayIndexes = [];
+
   // List of all available days
   final List<String> _weekDays = [
     R.string.chip_monday.tr(),
@@ -128,11 +134,14 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       final afternoonQuantity = double.tryParse(_quantityInAfternoon.text) ?? 0.0;
       final eveningQuantity = double.tryParse(_quantityInEvening.text) ?? 0.0;
       if (_selectedFrequency == FrequencyType.everyday) {
-        _submitBtnEnabled = morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0;
+        _submitBtnEnabled =
+            morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0;
       } else if (_selectedFrequency == FrequencyType.weekDays) {
-        _submitBtnEnabled = (_selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0) && (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
+        _submitBtnEnabled = (_selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0) &&
+            (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
       } else {
-        _submitBtnEnabled = (_everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0) && (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
+        _submitBtnEnabled = (_everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0) &&
+            (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
       }
     });
   }
@@ -148,84 +157,51 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       maxChildSize: maxHeight / screenHeight,
       builder: (context, scrollController) => Container(
         width: double.infinity,
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 72,
-              child: GestureDetector(
-                onVerticalDragUpdate: (details) {
-                  // final newSize = scrollController.offset + (details.primaryDelta ?? 0);
-                  // scrollController.jumpTo(
-                  //   newSize.clamp(0.2, maxHeight/screenHeight),
-                  // );
-                  scrollController.jumpTo(200);
-
-                  // scrollController.animateTo(100, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-                  // scrollController.jumpTo(scrollController.offset + (details.primaryDelta ?? 0));
-                  // scrollController.animateTo(scrollController.offset + (details.primaryDelta ?? 0), duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-                  print('onVerticalDragUpdate: scrollController.offset ${scrollController.offset}');
-                  print('onVerticalDragUpdate: details.primaryDelta  ${details.primaryDelta ?? 0}');
-                },
-                onVerticalDragStart: (details) {
-                  print('onVerticalDragStart: scrollController.offset ${scrollController.offset}');
-                },
-                onVerticalDragDown: (details) {
-                  print('onVerticalDragDown: scrollController.offset ${scrollController.offset}');
-                },
-                onVerticalDragEnd: (details) {
-                  print('onVerticalDragEnd: scrollController.offset ${scrollController.offset}');
-                },
-                child: Column(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 56,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    _buildHeader(),
-                  ],
-                )
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildHeader(),
+                          Container(
+                            color: Colors.white,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 16),
+                                _buildSectionTitle(R.string.time_of_use.tr()),
+                                _buildMomentSelector(),
+                                const SizedBox(height: 16),
+                                _buildSectionTitle(R.string.frequency_of_use.tr()),
+                                _buildFrequencySelector(),
+                                const SizedBox(height: 16),
+                                if (_selectedFrequency == FrequencyType.everyday)
+                                  ..._buildEveryDayController()
+                                else if (_selectedFrequency == FrequencyType.weekDays)
+                                  ..._buildDayInWeekController()
+                                else
+                                  ..._buildEveryOtherDayController(),
+                                const SizedBox(height: 24),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )),
+                ),
               ),
-            ),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 16),
-                        _buildSectionTitle(R.string.time_of_use.tr()),
-                        _buildMomentSelector(),
-                        const SizedBox(height: 16),
-                        _buildSectionTitle(R.string.frequency_of_use.tr()),
-                        _buildFrequencySelector(),
-                        const SizedBox(height: 16),
-                        if (_selectedFrequency == FrequencyType.everyday)
-                          ..._buildEveryDayController()
-                        else if (_selectedFrequency == FrequencyType.weekDays)
-                          ..._buildDayInWeekController()
-                        else
-                          ..._buildEveryOtherDayController(),
-                        const SizedBox(height: 24),
-                      ],
-                    )
-                ),
-              )
-            ),
-            _buildConfirmButton(),
-          ],
+              _buildConfirmButton(),
+            ],
+          ),
         ),
       ),
     );
@@ -233,31 +209,30 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
 
   Widget _buildHeader() {
     return Container(
-      width: double.infinity,
-      height: 56,
-      padding: const EdgeInsets.fromLTRB(0, 15, 0, 17),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEAF9F7),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        width: double.infinity,
+        height: 56,
+        padding: const EdgeInsets.fromLTRB(0, 15, 0, 17),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEAF9F7),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        R.string.dosage.tr(),
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-          height: 1.32,
-          letterSpacing: 0.2,
-        ),
-      )
-    );
+        alignment: Alignment.center,
+        child: Text(
+          R.string.dosage.tr(),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            height: 1.32,
+            letterSpacing: 0.2,
+          ),
+        ));
   }
 
   Widget _buildSectionTitle(String title) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
       child: Text(
         title,
@@ -358,47 +333,63 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   List<Widget> _buildEveryDayController() {
     return [
       _buildSectionTitle(R.string.dosage.tr()),
-      _buildDosageRow(R.string.the_morning.tr(), R.icons.ic_morning, _quantityInMorning, (value) => setState(() {
-        _quantityInMorning.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_noon.tr(), R.icons.ic_noon, _quantityInNoon, (value) => setState(() {
-        _quantityInNoon.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_afternoon.tr(), R.icons.ic_afternoon, _quantityInAfternoon, (value) => setState(() {
-        _quantityInAfternoon.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_night.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
-        _quantityInEvening.text = value;
-        _checkEnableSubmitBtnState();
-      })),
+      _buildDosageRow(
+          R.string.the_morning.tr(),
+          R.icons.ic_morning,
+          _quantityInMorning,
+          (value) => setState(() {
+                _quantityInMorning.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_noon.tr(),
+          R.icons.ic_noon,
+          _quantityInNoon,
+          (value) => setState(() {
+                _quantityInNoon.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_afternoon.tr(),
+          R.icons.ic_afternoon,
+          _quantityInAfternoon,
+          (value) => setState(() {
+                _quantityInAfternoon.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_night.tr(),
+          R.icons.ic_night,
+          _quantityInEvening,
+          (value) => setState(() {
+                _quantityInEvening.text = value;
+                _checkEnableSubmitBtnState();
+              })),
       if (getQuantity(_quantityInMorning) == 0.0 &&
-          getQuantity(_quantityInNoon) == 0.0 && getQuantity(_quantityInAfternoon) == 0.0 && getQuantity(_quantityInEvening) == 0.0)
+          getQuantity(_quantityInNoon) == 0.0 &&
+          getQuantity(_quantityInAfternoon) == 0.0 &&
+          getQuantity(_quantityInEvening) == 0.0)
         Padding(
           padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-          child: Row(
-            children: [
-              SvgPicture.asset(
-                R.icons.ic_information,
-                width: 14,
-                height: 14,
-                semanticsLabel: 'caution',
+          child: Row(children: [
+            SvgPicture.asset(
+              R.icons.ic_information,
+              width: 14,
+              height: 14,
+              semanticsLabel: 'caution',
+            ),
+            SizedBox(width: 3),
+            Text(
+              R.string.please_input_dosage.tr(),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                height: 1.50,
+                letterSpacing: 0.2,
+                color: Color(0xFFAF0000),
               ),
-              SizedBox(width: 3),
-              Text(
-                R.string.please_input_dosage.tr(),
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12,
-                  height: 1.50,
-                  letterSpacing: 0.2,
-                  color: Color(0xFFAF0000),
-                ),
-              ),
-            ]
-          ),
+            ),
+          ]),
         ),
     ];
   }
@@ -407,7 +398,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     return double.tryParse(controller.text) ?? 0.0;
   }
 
-  Widget _buildDosageRow(String title, String iconRes, TextEditingController controller, Function(String) onValueChange) {
+  Widget _buildDosageRow(
+      String title, String iconRes, TextEditingController controller, Function(String) onValueChange) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Row(
@@ -470,7 +462,17 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         child: TextField(
           controller: controller,
           textAlign: TextAlign.center,
-          keyboardType: TextInputType.number,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+            TextInputFormatter.withFunction((oldValue, newValue) {
+              final text = newValue.text.replaceAll(',', '.');
+              return newValue.copyWith(
+                text: text,
+                selection: TextSelection.collapsed(offset: text.length),
+              );
+            }),
+          ],
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: '0.0',
@@ -575,61 +577,75 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         endIndent: 12,
       ),
       const SizedBox(height: 20),
-
       _buildCounterController(
-          R.string.current_medicine_quantity.tr(),
-          _quantityOnDayInWeek,
-          '0.0',
-          () => _updateCounter(() => _quantityOnDayInWeek++),
-          () => _updateCounter(() => _quantityOnDayInWeek--),
-          (value) => _updateCounter(() {
-            _quantityOnDayInWeek = double.tryParse(value) ?? 0;
-          }),
+        R.string.current_medicine_quantity.tr(),
+        _quantityOnDayInWeek,
+        '0.0',
+        () => _updateCounter(() => _quantityOnDayInWeek++),
+        () => _updateCounter(() => _quantityOnDayInWeek--),
+        (value) => _updateCounter(() {
+          _quantityOnDayInWeek = double.tryParse(value) ?? 0;
+        }),
       ),
-
       const SizedBox(height: 20),
       _buildSectionTitle(R.string.dosage.tr()),
-      _buildDosageRow(R.string.the_morning.tr(), R.icons.ic_morning, _quantityInMorning, (value) => setState(() {
-        _quantityInMorning.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_noon.tr(), R.icons.ic_noon, _quantityInNoon, (value) => setState(() {
-        _quantityInNoon.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_afternoon.tr(), R.icons.ic_afternoon, _quantityInAfternoon, (value) => setState(() {
-        _quantityInAfternoon.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_night.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
-        _quantityInEvening.text = value;
-        _checkEnableSubmitBtnState();
-      })),
+      _buildDosageRow(
+          R.string.the_morning.tr(),
+          R.icons.ic_morning,
+          _quantityInMorning,
+          (value) => setState(() {
+                _quantityInMorning.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_noon.tr(),
+          R.icons.ic_noon,
+          _quantityInNoon,
+          (value) => setState(() {
+                _quantityInNoon.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_afternoon.tr(),
+          R.icons.ic_afternoon,
+          _quantityInAfternoon,
+          (value) => setState(() {
+                _quantityInAfternoon.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_night.tr(),
+          R.icons.ic_night,
+          _quantityInEvening,
+          (value) => setState(() {
+                _quantityInEvening.text = value;
+                _checkEnableSubmitBtnState();
+              })),
       if (getQuantity(_quantityInMorning) == 0.0 &&
-          getQuantity(_quantityInNoon) == 0.0 && getQuantity(_quantityInAfternoon) == 0.0 && getQuantity(_quantityInEvening) == 0.0)
+          getQuantity(_quantityInNoon) == 0.0 &&
+          getQuantity(_quantityInAfternoon) == 0.0 &&
+          getQuantity(_quantityInEvening) == 0.0)
         Padding(
           padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-          child: Row(
-              children: [
-                SvgPicture.asset(
-                  R.icons.ic_information,
-                  width: 14,
-                  height: 14,
-                  semanticsLabel: 'caution',
-                ),
-                SizedBox(width: 3),
-                Text(
-                  R.string.please_input_dosage.tr(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                    height: 1.50,
-                    letterSpacing: 0.2,
-                    color: Color(0xFFAF0000),
-                  ),
-                ),
-              ]
-          ),
+          child: Row(children: [
+            SvgPicture.asset(
+              R.icons.ic_information,
+              width: 14,
+              height: 14,
+              semanticsLabel: 'caution',
+            ),
+            SizedBox(width: 3),
+            Text(
+              R.string.please_input_dosage.tr(),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                height: 1.50,
+                letterSpacing: 0.2,
+                color: Color(0xFFAF0000),
+              ),
+            ),
+          ]),
         ),
       const SizedBox(height: 20),
     ];
@@ -670,50 +686,65 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         () => _updateCounter(() => _quantityOnEveryOtherDay--),
         (value) => _updateCounter(() => _quantityOnEveryOtherDay = double.tryParse(value) ?? 0.0),
       ),
-
       const SizedBox(height: 20),
       _buildSectionTitle(R.string.dosage.tr()),
-      _buildDosageRow(R.string.the_morning.tr(), R.icons.ic_morning, _quantityInMorning, (value) => setState(() {
-        _quantityInMorning.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_noon.tr(), R.icons.ic_noon, _quantityInNoon, (value) => setState(() {
-        _quantityInNoon.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_afternoon.tr(), R.icons.ic_afternoon, _quantityInAfternoon, (value) => setState(() {
-        _quantityInAfternoon.text = value;
-        _checkEnableSubmitBtnState();
-      })),
-      _buildDosageRow(R.string.the_night.tr(), R.icons.ic_night, _quantityInEvening, (value) => setState(() {
-        _quantityInEvening.text = value;
-        _checkEnableSubmitBtnState();
-      })),
+      _buildDosageRow(
+          R.string.the_morning.tr(),
+          R.icons.ic_morning,
+          _quantityInMorning,
+          (value) => setState(() {
+                _quantityInMorning.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_noon.tr(),
+          R.icons.ic_noon,
+          _quantityInNoon,
+          (value) => setState(() {
+                _quantityInNoon.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_afternoon.tr(),
+          R.icons.ic_afternoon,
+          _quantityInAfternoon,
+          (value) => setState(() {
+                _quantityInAfternoon.text = value;
+                _checkEnableSubmitBtnState();
+              })),
+      _buildDosageRow(
+          R.string.the_night.tr(),
+          R.icons.ic_night,
+          _quantityInEvening,
+          (value) => setState(() {
+                _quantityInEvening.text = value;
+                _checkEnableSubmitBtnState();
+              })),
       if (getQuantity(_quantityInMorning) == 0.0 &&
-          getQuantity(_quantityInNoon) == 0.0 && getQuantity(_quantityInAfternoon) == 0.0 && getQuantity(_quantityInEvening) == 0.0)
+          getQuantity(_quantityInNoon) == 0.0 &&
+          getQuantity(_quantityInAfternoon) == 0.0 &&
+          getQuantity(_quantityInEvening) == 0.0)
         Padding(
           padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-          child: Row(
-              children: [
-                SvgPicture.asset(
-                  R.icons.ic_information,
-                  width: 14,
-                  height: 14,
-                  semanticsLabel: 'caution',
-                ),
-                SizedBox(width: 3),
-                Text(
-                  R.string.please_input_dosage.tr(),
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                    height: 1.50,
-                    letterSpacing: 0.2,
-                    color: Color(0xFFAF0000),
-                  ),
-                ),
-              ]
-          ),
+          child: Row(children: [
+            SvgPicture.asset(
+              R.icons.ic_information,
+              width: 14,
+              height: 14,
+              semanticsLabel: 'caution',
+            ),
+            SizedBox(width: 3),
+            Text(
+              R.string.please_input_dosage.tr(),
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                height: 1.50,
+                letterSpacing: 0.2,
+                color: Color(0xFFAF0000),
+              ),
+            ),
+          ]),
         ),
       const SizedBox(height: 20),
     ];
@@ -728,84 +759,82 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     Function(String) onValueChange,
   ) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12.0),
-      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
-      height: 64,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: Color(0xFF008479), width: 1),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              height: 1.46,
-              color: Color(0xFF111515),
-            ),
-          ),
-          const Spacer(),
-          GestureDetector(
-            onTap: onDecrement,
-            child: Container(
-              width: 34,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Color(0xFFF4F7F7),
-                borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
-              ),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                R.icons.ic_minus,
-                width: 10,
-                height: 2,
+        margin: EdgeInsets.symmetric(horizontal: 12.0),
+        padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
+        height: 64,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          border: Border.all(color: Color(0xFF008479), width: 1),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                height: 1.46,
+                color: Color(0xFF111515),
               ),
             ),
-          ),
-          // Counter value text
-          Container(
-            width: 60,
-            height: 36,
-            alignment: Alignment.center,
-            child: TextField(
-              controller: TextEditingController(text: value.toStringAsFixed(0)),
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: hint,
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
+            const Spacer(),
+            GestureDetector(
+              onTap: onDecrement,
+              child: Container(
+                width: 34,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Color(0xFFF4F7F7),
+                  borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
+                ),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  R.icons.ic_minus,
+                  width: 10,
+                  height: 2,
+                ),
               ),
-              onChanged: (value) {
-                onValueChange(value);
-              },
+            ),
+            // Counter value text
+            Container(
+                width: 60,
+                height: 36,
+                alignment: Alignment.center,
+                child: TextField(
+                  controller: TextEditingController(text: value.toStringAsFixed(0)),
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: hint,
+                    contentPadding: EdgeInsets.zero,
+                    isDense: true,
+                  ),
+                  onChanged: (value) {
+                    onValueChange(value);
+                  },
+                )),
+            // Increment button
+            GestureDetector(
+              onTap: onIncrement,
+              child: Container(
+                width: 34,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Color(0xFFF4F7F7),
+                  borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+                ),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  R.icons.ic_plus,
+                  width: 12,
+                  height: 12,
+                ),
+              ),
             )
-          ),
-          // Increment button
-          GestureDetector(
-            onTap: onIncrement,
-            child: Container(
-              width: 34,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Color(0xFFF4F7F7),
-                borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
-              ),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                R.icons.ic_plus,
-                width: 12,
-                height: 12,
-              ),
-            ),
-          )
-        ],
-      )
-    );
+          ],
+        ));
   }
 
   // Submit button
@@ -814,90 +843,87 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       width: double.infinity,
       height: 90,
       padding: const EdgeInsets.fromLTRB(12, 16, 12, 30),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          // Shadow on top
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: Offset(0, -1),
-          ),
-          // Glowing effect
-          BoxShadow(
-            color: Color(0xFF0DAB9C).withOpacity(0.6),
-            spreadRadius: 1,
-            blurRadius: 20,
-            offset: Offset(0, 12),
-          ),
-        ]
-      ),
+      decoration: BoxDecoration(color: Colors.white, boxShadow: [
+        // Shadow on top
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 1,
+          blurRadius: 10,
+          offset: Offset(0, -1),
+        ),
+        // Glowing effect
+        BoxShadow(
+          color: Color(0xFF0DAB9C).withOpacity(0.6),
+          spreadRadius: 1,
+          blurRadius: 20,
+          offset: Offset(0, 12),
+        ),
+      ]),
       child: GestureDetector(
-        onTap: () {
-          print("Bottom sheet - morning controller ${_quantityInMorning.text} - parse: ${double.tryParse(_quantityInMorning.text)}");
-          DosageModel dosage;
-          if (FrequencyType.everyday == _selectedFrequency) {
-            dosage = DosageModel(
-              momentName: _selectedMoment.label,
-              moment: _selectedMoment.index + 1,
-              frequencyName: _selectedFrequency.label,
-              frequency: _selectedFrequency.index + 1,
-              quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
-              quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-              quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-              quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
-            );
-          } else if (FrequencyType.weekDays == _selectedFrequency) {
-            dosage = DosageModel(
-              momentName: _selectedMoment.label,
-              moment: _selectedMoment.index + 1,
-              frequencyName: _selectedFrequency.label,
-              frequency: _selectedFrequency.index + 1,
-              selectedDaysInWeek: _selectedDayIndexes,
-              quantityForDaysInWeek: _quantityOnDayInWeek,
-              quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
-              quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-              quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-              quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
-            );
-          } else {
-            dosage = DosageModel(
-              momentName: _selectedMoment.label,
-              moment: _selectedMoment.index + 1,
-              frequencyName: _selectedFrequency.label,
-              frequency: _selectedFrequency.index + 1,
-              everyOtherDayNumber: _everyOtherDayNumber,
-              quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-              quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
-              quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-              quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-              quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
-            );
-          }
-          Navigator.of(context).pop(dosage);
-        },
-        child: Container(
-          width: double.infinity,
-          height: 44,
-          decoration: BoxDecoration(
-            color: _submitBtnEnabled ? const Color(0xFF008D67) : Color(0xFFBFC6C6),
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Center(
-            child: Text(
-              R.string.confirm.tr(),
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
-                height: 1.46,
-                letterSpacing: 0.4,
-                color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
+          onTap: () {
+            print(
+                "Bottom sheet - morning controller ${_quantityInMorning.text} - parse: ${double.tryParse(_quantityInMorning.text)}");
+            DosageModel dosage;
+            if (FrequencyType.everyday == _selectedFrequency) {
+              dosage = DosageModel(
+                momentName: _selectedMoment.label,
+                moment: _selectedMoment.index + 1,
+                frequencyName: _selectedFrequency.label,
+                frequency: _selectedFrequency.index + 1,
+                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
+                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+              );
+            } else if (FrequencyType.weekDays == _selectedFrequency) {
+              dosage = DosageModel(
+                momentName: _selectedMoment.label,
+                moment: _selectedMoment.index + 1,
+                frequencyName: _selectedFrequency.label,
+                frequency: _selectedFrequency.index + 1,
+                selectedDaysInWeek: _selectedDayIndexes,
+                quantityForDaysInWeek: _quantityOnDayInWeek,
+                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
+                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+              );
+            } else {
+              dosage = DosageModel(
+                momentName: _selectedMoment.label,
+                moment: _selectedMoment.index + 1,
+                frequencyName: _selectedFrequency.label,
+                frequency: _selectedFrequency.index + 1,
+                everyOtherDayNumber: _everyOtherDayNumber,
+                quantityForEveryOtherDay: _quantityOnEveryOtherDay,
+                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
+                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+              );
+            }
+            Navigator.of(context).pop(dosage);
+          },
+          child: Container(
+            width: double.infinity,
+            height: 44,
+            decoration: BoxDecoration(
+              color: _submitBtnEnabled ? const Color(0xFF008D67) : Color(0xFFBFC6C6),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Center(
+              child: Text(
+                R.string.confirm.tr(),
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  height: 1.46,
+                  letterSpacing: 0.4,
+                  color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
+                ),
               ),
             ),
-          ),
-        )
-      ),
+          )),
     );
   }
 }

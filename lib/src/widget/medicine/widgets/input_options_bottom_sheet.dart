@@ -13,8 +13,7 @@ class InputOptionsBottomSheet extends StatelessWidget {
     this.onHandTap,
   }) : super(key: key);
 
-  static Future<void> show(BuildContext context,
-      {VoidCallback? onCameraTap, VoidCallback? onHandTap}) {
+  static Future<void> show(BuildContext context, {VoidCallback? onCameraTap, VoidCallback? onHandTap}) {
     return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -38,13 +37,25 @@ class InputOptionsBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            R.string.input_options.tr(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Colors.black,
-            ),
+          Row(
+            children: [
+              const SizedBox(width: 20),
+              Expanded(
+                child: Text(
+                  R.string.input_options.tr(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              InkWell(
+                onTap: () { Navigator.pop(context); },
+                child: Icon(Icons.close, size: 20),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           InputOptionItem(

@@ -19,7 +19,6 @@ import '../../utils/const.dart';
 import '../../utils/navigator_name.dart';
 import '../helper/helper.dart';
 import 'prescription_add_page.dart';
-import 'widgets/image_list.dart';
 import 'widgets/input_options_bottom_sheet.dart';
 import 'widgets/medicine_list.dart';
 import 'widgets/medicine_session_card.dart';

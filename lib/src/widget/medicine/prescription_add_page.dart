@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/src/modal/medicine/prescription_model.dart';
@@ -560,17 +559,82 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
     );
   }
 
-  void _showDatePicker(BuildContext context) {
-    CustomCalendarDatePicker2.showDatePicker(context,
-        minTime: DateTime.now(),
-        maxTime: DateTime.parse('3000-01-01 00:00:00.000Z'),
-        showTitleActions: true,
-        onChanged: (date) {}, onConfirm: (date) async {
-      setState(() {
-        selectedDate = date;
-      });
-    },
-        currentTime: selectedDate == null ? DateTime.parse('1970-01-01 00:00:00.000Z') : selectedDate,
-        locale: LocaleType.vi);
+  void _showDatePicker(BuildContext context) async {
+    // CustomCalendarDatePicker2.showDatePicker(context,
+    //   minTime: DateTime.now(),
+    //   maxTime: DateTime.parse('3000-01-01 00:00:00.000Z'),
+    //   showTitleActions: true,
+    //   onChanged: (date) {}, onConfirm: (date) async {
+    //     setState(() {
+    //       selectedDate = date;
+    //     });
+    //   },
+    //   currentTime: selectedDate == null ? DateTime.parse('1970-01-01 00:00:00.000Z') : selectedDate,
+    //   locale: LocaleType.vi);
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final values = await showCalendarDatePicker2Dialog(
+      context: context,
+      config: CalendarDatePicker2WithActionButtonsConfig(
+        calendarType: CalendarDatePicker2Type.single,
+        firstDate: today,
+        lastDate: DateTime(2100),
+        currentDate: DateTime.now(),
+        selectedDayHighlightColor: const Color(0xFF009688),
+        weekdayLabelTextStyle: const TextStyle(
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+        ),
+        dayTextStyle: const TextStyle(color: Colors.black87),
+        selectedDayTextStyle: const TextStyle(color: Colors.white),
+        todayTextStyle: const TextStyle(color: Colors.black87),
+        disabledDayTextStyle: const TextStyle(color: Colors.grey),
+        // calendarViewHeaderTextStyle: const TextStyle(
+        //   fontSize: 18,
+        //   fontWeight: FontWeight.bold,
+        //   color: Colors.black87,
+        // ),
+        cancelButtonTextStyle: const TextStyle(color: Colors.black54),
+        okButtonTextStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        okButton: Container(
+          width: 100,
+          height: 48,
+          decoration: BoxDecoration(
+            color: const Color(0xFF009688),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Center(
+            child: Text('Đồng ý', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+        cancelButton: Container(
+          width: 100,
+          height: 48,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            'Hủy',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.black54),
+          ),
+        ),
+      ),
+      // THÊM ĐÂY: Ràng buộc kích thước dialog để fix RenderBox
+      dialogSize: const Size(340, 480),  // Kích thước cố định, tránh infinite height
+      borderRadius: BorderRadius.circular(16),
+      value: [DateTime.now()],
+      dialogBackgroundColor: Colors.white,
+    );
+
+    setState(() {
+      selectedDate = (values?.isNotEmpty == true ? values!.first : null);
+    });
   }
 }

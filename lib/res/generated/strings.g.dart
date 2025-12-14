@@ -1414,7 +1414,6 @@ class Strings {
   String get prescription => 'prescription';
   String get prescription_using => 'prescription_using';
   String get prescription_out => 'prescription_out';
-  String get stop_prescription => 'stop_prescription';
   String get add_prescription_successfully => 'add_prescription_successfully';
   String get schedule_use_medicine => 'schedule_use_medicine';
 
@@ -1513,5 +1512,7 @@ class Strings {
   String get stop_medicine => 'stop_medicine';
   String get not_find_medicine => 'not_find_medicine';
   String get add => 'add';
+  String get stop_prescription => 'stop_prescription';
+  String get stop_prescription_description => 'stop_prescription_description';
   String get unknown_meal_image => 'unknown_meal_image';
 }

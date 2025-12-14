@@ -134,6 +134,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () {
+                                      _selectedImage = null;
                                       Navigator.of(context).pop();
                                       Navigator.of(context).pushNamed(NavigatorName.medicine_search);
                                     },
@@ -141,13 +142,12 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                                       height: 48,
                                       margin: const EdgeInsets.only(right: 8),
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(200),
-                                        border: Border.all(
-                                          width: 1,
-                                          color: R.color.color0xff008479,
-                                        ),
-                                        color: Colors.white
-                                      ),
+                                          borderRadius: BorderRadius.circular(200),
+                                          border: Border.all(
+                                            width: 1,
+                                            color: R.color.color0xff008479,
+                                          ),
+                                          color: Colors.white),
                                       child: Center(
                                         child: Text(
                                           R.string.enter_manually.tr(),
@@ -165,6 +165,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigator.of(context).pop();
+                                      _selectedImage = null;
                                       _captureFromCamera(context);
                                     },
                                     child: Container(
@@ -214,6 +215,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
           }
 
           if (state is UploadPrescriptionPhotoSuccess) {
+            _selectedImage = null;
             // Điều hướng sang PrescriptionAddPage
             Navigator.pushNamed(
               context,
@@ -233,10 +235,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-                          NavigatorName.tabbar,
-                              (route) => false,
-                        );
+                        Navigator.of(context).pop();
                       },
                     ),
                     title: Transform(
@@ -298,7 +297,6 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                   ),
                   body: buildBody(context),
                 ),
-
                 if (state is MedicineLoading)
                   Container(
                     color: Colors.black.withOpacity(0.5),
@@ -306,11 +304,14 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(color: Colors.white),
                           SizedBox(height: 16),
                           Text(
                             R.string.analyzing_prescription.tr(),
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              decoration: TextDecoration.none,
+                            ),
                           )
                         ],
                       ),
@@ -334,34 +335,33 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
             child: _selectedImage != null
                 ? Image.file(_selectedImage!)
                 : _isCameraInitialized
-                ? CameraPreview(_cameraController!)
-                : Center(child: CircularProgressIndicator()),
+                    ? CameraPreview(_cameraController!)
+                    : Center(child: CircularProgressIndicator()),
           ),
         ),
         Container(
-          padding: EdgeInsets.all(15),
-          color: Colors.black,
-          child: Center(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-              decoration: BoxDecoration(
-                color: R.color.color0xff008479,
-                borderRadius: BorderRadius.circular(16),
+            padding: EdgeInsets.all(15),
+            color: Colors.black,
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+                decoration: BoxDecoration(
+                  color: R.color.color0xff008479,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.info, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text(
+                      R.string.should_capture_advice.tr(),
+                      style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.info, color: Colors.white),
-                  SizedBox(width: 8),
-                  Text(
-                    R.string.should_capture_advice.tr(),
-                    style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          )
-        ),
+            )),
         Padding(
             padding: const EdgeInsets.only(top: 16.0, bottom: 40),
             child: UploadTakePhotoButtons(

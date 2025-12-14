@@ -43,7 +43,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   final TextEditingController _noteController = TextEditingController();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   MedicineUnit _unit = MedicineUnit.pill; // viên, gói, ống, ml, khác
-  int _amount = 5;
+  int _amount = 28;
   DosageModel? _dosage;
   List<File?> _files = [];
 
@@ -212,17 +212,14 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: R.color.white,
+      backgroundColor: Color(0xFFEAF9F7),
       appBar: AppBar(
         leading: IconButton(
             splashColor: R.color.transparent,
             highlightColor: R.color.transparent,
             icon: Icon(Icons.arrow_back, color: R.color.white),
             onPressed: () {
-              Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-                NavigatorName.tabbar,
-                    (route) => false,
-              );
+              Navigator.of(context).pop();
             }),
         title: Transform(
           transform: Matrix4.translationValues(-20, 0.0, 0.0),
@@ -261,21 +258,21 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         ),
       ),
       body: Container(
-          width: double.infinity,
-          color: Color(0xFFEAF9F7),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPrescriptionCard(),
-                _buildDescriptionCard(),
-              ],
-            ),
-          )
+        width: double.infinity,
+        color: Color(0xFFEAF9F7),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildPrescriptionCard(),
+              _buildDescriptionCard(),
+            ],
+          ),
+        ),
       ),
       // Submit button
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
         color: Colors.white,
         child: ElevatedButton(
           onPressed: () {
