@@ -214,7 +214,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                             barTouchData: BarTouchData(
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
-                                tooltipBgColor: R.color.yellow,
+                                getTooltipColor: (BarChartGroupData group) =>
+                                    R.color.yellow,
                                 tooltipPadding: const EdgeInsets.only(
                                     left: 12, right: 12, top: 4, bottom: 0),
                                 tooltipMargin: 22,
@@ -227,23 +228,23 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                                   int rodIndex,
                                 ) {
                                   return BarTooltipItem(
-                                    group.barRods.first.y.round().toString() +
+                                    group.barRods.first.toY.round().toString() +
                                         '/' +
-                                        group.barRods.last.y
+                                        group.barRods.last.toY
                                             .round()
                                             .toString() +
-                                        (group.barRods.first.y <=
-                                                group.barRods.last.y
+                                        (group.barRods.first.toY <=
+                                                group.barRods.last.toY
                                             ? '\n ↑' +
-                                                ((group.barRods.last.y -
+                                                ((group.barRods.last.toY -
                                                             group.barRods.first
-                                                                .y)
+                                                                .toY)
                                                         .round())
                                                     .toString()
                                             : '\n ↓' +
-                                                ((group.barRods.first.y -
-                                                            group
-                                                                .barRods.last.y)
+                                                ((group.barRods.first.toY -
+                                                            group.barRods.last
+                                                                .toY)
                                                         .round())
                                                     .toString()),
                                     TextStyle(
@@ -255,26 +256,35 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
                               ),
                             ),
                             titlesData: FlTitlesData(
-                              rightTitles: SideTitles(showTitles: false),
-                              topTitles: SideTitles(showTitles: false),
-                              show: true,
-                              bottomTitles: SideTitles(
-                                showTitles: true,
-                                getTextStyles: (context, value) => TextStyle(
-                                    color: R.color.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal),
-                                reservedSize: titleAlign,
-                                margin: titleMargin,
-                                getTitles: (double value) {
-                                  return convertToUTC(
-                                      model[value.toInt()].date!, 'dd/MM');
-                                },
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
                               ),
-                              leftTitles: SideTitles(
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              show: true,
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  reservedSize: titleAlign,
+                                  getTitlesWidget: (value, meta) {
+                                    return Text(
+                                      convertToUTC(
+                                          model[value.toInt()].date!, 'dd/MM'),
+                                      style: TextStyle(
+                                        color: R.color.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
                                   showTitles: false,
-                                  getTextStyles: (context, value) => TextStyle(
-                                      color: R.color.black, fontSize: 14)),
+                                ),
+                              ),
                             ),
                             gridData: FlGridData(show: false),
                             borderData: FlBorderData(show: false),
@@ -358,8 +368,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             topLeft: Radius.circular(4),
             topRight: Radius.circular(4),
           ),
-          y: model[index].preGlucose!,
-          colors: [toColor(model[index].preGlucoseColor)],
+          toY: model[index].preGlucose!,
+          color: toColor(model[index].preGlucoseColor),
           width: 8,
         ),
         BarChartRodData(
@@ -367,8 +377,8 @@ class BloodSugarCompareChartState extends State<BloodSugarCompareChart>
             topLeft: Radius.circular(4),
             topRight: Radius.circular(4),
           ),
-          y: model[index].postGlucose!,
-          colors: [toColor(model[index].postGlucoseColor)],
+          toY: model[index].postGlucose!,
+          color: toColor(model[index].postGlucoseColor),
           width: 8,
         )
       ],
