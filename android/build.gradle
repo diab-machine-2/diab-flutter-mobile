@@ -1,32 +1,24 @@
 buildscript {
     ext {
-        buildToolsVersion = "36.0.0"
-        minSdkVersion = 24
-        compileSdkVersion = 36
-        targetSdkVersion = 36
-        kotlin_version = '1.9.25'
-
-        // Use NDK r28 for 16KB page size support
+        buildToolsVersion = "34.0.0"
+        minSdkVersion = 28
+        compileSdkVersion = 36  // Updated to 36 for camera_android plugin compatibility
+        targetSdkVersion = 35
+        kotlin_version = '2.1.0'  // Updated to support Kotlin 2.1.0 metadata from play-services-measurement-api-23.0.0
+        // NDK r28 is required for 16KB page size support
         ndkVersion = "28.0.13004108"
-
-        // if (System.properties['os.arch'] == "aarch64") {
-        //     // For M1 Users we need to use the NDK 24 which added support for aarch64
-        //     ndkVersion = "24.0.8215888"
-        // } else {
-        //     // Otherwise we default to the side-by-side NDK version from AGP.
-        //     ndkVersion = "21.4.7075529"
-        // }
-
     }
+
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.0'
+        // AGP 8.5.1+ required for 16KB page size support
+        classpath 'com.android.tools.build:gradle:8.7.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.4.1'
+        classpath 'com.google.gms:google-services:4.4.2'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
     }
 }
@@ -39,13 +31,19 @@ allprojects {
             dirs 'libs'
         }
     }
+}
 
-    subprojects {
-        afterEvaluate { project ->
-            if (project.hasProperty('android')) {
-                project.android {
-                    if (namespace == null) {
-                        namespace project.group
+rootProject.buildDir = '../build'
+
+// Configure coreLibraryDesugaring for subprojects before they're evaluated
+gradle.beforeProject { project ->
+    if (project != rootProject && project.parent == rootProject) {
+        project.afterEvaluate {
+            if (it.hasProperty('android')) {
+                def android = it.android
+                if (android != null && android.compileOptions != null && android.compileOptions.coreLibraryDesugaringEnabled) {
+                    it.dependencies {
+                        coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.3"
                     }
                 }
             }
@@ -53,11 +51,8 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(':app')
 }
 

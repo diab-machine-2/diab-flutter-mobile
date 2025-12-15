@@ -2,151 +2,204 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
 }
 
 def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
+def localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
+    localPropertiesFile.withReader("UTF-8") { reader -> localProperties.load(reader) }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode", "1")
+def flutterVersionName = localProperties.getProperty("flutter.versionName", "1.0")
 
 def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
+def keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
 android {
-    namespace 'com.vbhc.diab'
-    compileSdkVersion 36
+    namespace "com.vbhc.diab"
 
-    // compileSdk = flutter.compileSdkVersion
-    // ndkVersion flutter.ndkVersion
-    // Use NDK r28 for 16KB page size support
-    ndkVersion "28.0.13004108"
-
-    lintOptions {
-        checkReleaseBuilds false
-    }
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    ndkVersion rootProject.ext.ndkVersion
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-        // Java 17 is required for AGP 8.5+ and Flutter 3.19.6
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    sourceSets { 
+    kotlinOptions { jvmTarget = "17" }
+
+    // IMPORTANT: place native libraries in src/main/jniLibs/
+    sourceSets {
         main {
-            java.srcDirs += 'src/main/kotlin'
-            jniLibs.srcDirs = ['libs']
+            java.srcDirs += "src/main/kotlin"
+            jniLibs.srcDirs = ["src/main/jniLibs"]
         }
     }
 
-    packagingOptions {
-        pickFirst 'lib/arm64-v8a/libc++_shared.so'
-        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
-        pickFirst 'lib/x86/libc++_shared.so'
-        pickFirst 'lib/x86_64/libc++_shared.so'
-
-        jniLibs.useLegacyPackaging = true
+    // Note: libc++_shared.so is now handled by flutter_zoom_meeting plugin
+    // The plugin copies it from NDK and includes it in its AAR
+    
+    aaptOptions {
+        noCompress "so"     // ensures all .so remain uncompressed
     }
 
-    lintOptions {
-        disable 'InvalidPackage'
-        checkReleaseBuilds false
+    packaging {
+        jniLibs {
+            // Required for page-size alignment: disables merging into a single blob
+            useLegacyPackaging = true
+            // Resolve libc++_shared.so conflicts per Zoom SDK documentation
+            // https://developers.zoom.us/docs/meeting-sdk/android/integrate/#troubleshooting-conflicts-with-libc_sharedso
+            pickFirsts += [
+                "lib/arm64-v8a/libc++_shared.so"
+            ]
+            // Drop armeabi-v7a to avoid duplicate libc++_shared.so from mobilertc
+            excludes += [
+                "lib/armeabi-v7a/**"
+            ]
+        }
+        resources {
+            // Exclude unnecessary resources to reduce APK size
+            excludes += [
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            ]
+            // Resolve resource conflicts with Zoom SDK (e.g., stroke_width)
+            // Resource merging is handled automatically by Gradle
+            // If conflicts occur, they will be resolved using pickFirst or by taking the first occurrence
+        }
+    }
+    // --------------------------------------------------------
+
+    lint {
         abortOnError false
+        checkReleaseBuilds false
+        disable "InvalidPackage"
     }
 
     defaultConfig {
         applicationId "com.vbhc.diab"
-        minSdkVersion 26
-        targetSdkVersion 36
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
         multiDexEnabled true
+
         ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+            // Reduce bundle size: ship arm64 only (minSdk 28+)
+            abiFilters = ["arm64-v8a", "x86_64"]
         }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
-       release {
-           keyAlias keystoreProperties['keyAlias']
-           keyPassword keystoreProperties['keyPassword']
-           storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-           storePassword keystoreProperties['storePassword']
+        release {
+            keyAlias keystoreProperties["keyAlias"]
+            keyPassword keystoreProperties["keyPassword"]
+            storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+            storePassword keystoreProperties["storePassword"]
+        }
+        debug {
+            keyAlias keystoreProperties["keyAlias"]
+            keyPassword keystoreProperties["keyPassword"]
+            storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+            storePassword keystoreProperties["storePassword"]
         }
     }
 
     buildTypes {
+        debug {
+         minifyEnabled false
+         shrinkResources false
+         // Apply ProGuard rules even in debug to ensure plugin classes are kept
+         // This is needed because flutter_zoom_meeting plugin has minifyEnabled=true
+         proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+       }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // shrinkResources false
+            // minifyEnabled true
+            // shrinkResources true
+            // Note: shrinkResources must be false for Zoom SDK to work properly
+            shrinkResources false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
 
     configurations {
-        implementation.exclude group: 'com.amazon.device', module: 'amazon-appstore-sdk'
+        implementation.exclude group: "com.amazon.device", module: "amazon-appstore-sdk"
+        // Resolve potential conflicts with Zoom SDK
+        all {
+            resolutionStrategy {
+                // Updated to 1.15.0 for OnUserLeaveHintProvider support (compatible with AGP 8.7.3)
+                // 1.17.0-rc01 requires AGP 8.9.1+, but 1.15.0 works with AGP 8.7.3
+                force 'androidx.core:core-ktx:1.15.0'
+                force 'androidx.core:core:1.15.0'
+                // Exclude conflicting transitive dependencies if needed
+                exclude group: 'com.google.guava', module: 'listenablefuture'
+            }
+            // Ensure flutter_zoom_meeting plugin classes are included
+            // Don't exclude the plugin's classes
+        }
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    // implementation platform('com.google.firebase:firebase-bom:26.5.0')
-    implementation platform('com.google.firebase:firebase-bom:32.7.1')
-    implementation 'com.google.firebase:firebase-analytics:21.5.0'
-    implementation "com.google.firebase:firebase-messaging:23.4.0"
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
-    implementation 'com.google.android.exoplayer:exoplayer:2.17.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.ext.kotlin_version"
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation files('libs\\iBLE.jar')
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.android.support:multidex:2.0.1'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
-    implementation 'com.android.billingclient:billing:5.2.1'
-    // implementation "us.zoom.videosdk:zoomvideosdk-core:1.10.11"
-    // implementation "us.zoom.videosdk:zoomvideosdk-videoeffects:1.10.11"
-    // implementation "us.zoom.videosdk:zoomvideosdk-annotation:1.10.11"
-    implementation 'io.branch.sdk.android:library:5.+'
+    implementation platform("com.google.firebase:firebase-bom:34.6.0")
+    implementation "com.google.firebase:firebase-analytics"
+    implementation "com.google.firebase:firebase-messaging"
+    // Crashlytics now handled by BOM; explicit version removed
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    // NOTE: Do NOT force a specific Media3 ExoPlayer version here.
+    // `better_player_plus` brings its own compatible Media3 dependency.
+    // Forcing 1.6.1 caused a `NoSuchMethodError` for
+    // `androidx.media3.exoplayer.ExoPlayer.getAudioComponent()` at runtime
+    // when initializing videos. Removing this direct dependency lets Gradle
+    // resolve the version expected by the plugin.
+    // implementation "androidx.media3:media3-exoplayer:1.6.1"  // Migrated from deprecated ExoPlayer
 
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
-    implementation (name: 'merchant-1.0.25', ext: 'aar')
+    implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "com.google.android.material:material:1.12.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.2.0"
+    implementation "androidx.multidex:multidex:2.0.1"
+    implementation "androidx.core:core-ktx:1.15.0"  // Updated for OnUserLeaveHintProvider support (compatible with AGP 8.7.3)
+
+    implementation files("libs/iBLE.jar")
+
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    implementation "io.reactivex.rxjava2:rxjava:2.1.7"
+
+    implementation "com.android.billingclient:billing:8.2.0"
+
+    // Provide legacy ExoPlayer UI classes used by Zoom SDK (com.google.android.exoplayer2.ui.*)
+    implementation "com.google.android.exoplayer:exoplayer:2.19.1"
+    implementation "com.google.android.exoplayer:exoplayer-ui:2.19.1"
+
+    implementation "io.branch.sdk.android:library:5.20.3"
+
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.3"  // Updated to 2.0.3 as required by flutter_zoom_meeting
+
+    implementation "com.google.code.gson:gson:2.8.5"
+    implementation "com.squareup.okhttp3:okhttp:4.9.2"
+
+    // Contains native .so → must remain uncompressed
+    implementation(name: "merchant-1.0.25", ext: "aar")
 }
 
 flutter {
-    source '../..'
+    source "../.."
 }
