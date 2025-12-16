@@ -8,6 +8,7 @@ import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -42,6 +43,12 @@ class _BloodPressureDetailTabbarControllerState
 
   int _periodFilterType = 3;
   String? _aiSuggestion;
+  bool _isDetailViewed =
+      false; // Track if user has viewed Blood Pressure detail page
+  bool _isFirstLoad =
+      true; // Track if this is the first load when entering dashboard
+  bool _hasBloodPressureData =
+      false; // Track if there is blood pressure data available
 
   BloodPressureRangeType _rangeType = BloodPressureRangeType.normal;
 
@@ -50,24 +57,34 @@ class _BloodPressureDetailTabbarControllerState
     super.initState();
     // _tabController = new TabController(vsync: this, length: 2);
     Observable.instance.addObserver(this);
-    _reload();
-    // DartNotificationCenter.subscribe(
-    //     channel: 'BloodPressure_change_data',
-    //     observer: this,
-    //     onNotification: (_) {
-    //       overViewKey.currentState!.reloadData(periodFilterType);
-    //       detailKey.currentState!.reloadData(periodFilterType);
-    //     });
-
-    // _tabController!.addListener(() {
-    //   if (_tabController!.indexIsChanging) {
-    //     if (_tabController!.index == 1) {
-    //       KpiBloodPressureTracking.clickDetailTab();
-    //       print("tracking KpiBloodPressureTracking.clickDetailTab()");
-    //     }
-    //   }
-    // });
+    _loadDetailViewedState();
+    // Pass isNew = true on first load to ensure chart focuses on latest point
+    _reload(true);
   }
+
+  Future<void> _loadDetailViewedState() async {
+    _isDetailViewed = await AppStorages.isBloodPressureDetailViewed();
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  // DartNotificationCenter.subscribe(
+  //     channel: 'BloodPressure_change_data',
+  //     observer: this,
+  //     onNotification: (_) {
+  //       overViewKey.currentState!.reloadData(periodFilterType);
+  //       detailKey.currentState!.reloadData(periodFilterType);
+  //     });
+
+  // _tabController!.addListener(() {
+  //   if (_tabController!.indexIsChanging) {
+  //     if (_tabController!.index == 1) {
+  //       KpiBloodPressureTracking.clickDetailTab();
+  //       print("tracking KpiBloodPressureTracking.clickDetailTab()");
+  //     }
+  //   }
+  // });
 
   @override
   void update(
@@ -81,22 +98,34 @@ class _BloodPressureDetailTabbarControllerState
   static bool _isDisposing = false;
 
   @override
-  void dispose() async {
+  void dispose() {
     if (_isDisposing) {
-      return; // Already disposing, do nothing
+      // Already disposing, ensure super.dispose() is still called
+      super.dispose();
+      return;
     }
     _isDisposing = true;
     try {
       Observable.instance.removeObserver(this);
-      // Add your await statement, it won't be executed concurrently
-      await AppSettings.syncDataFromHealthApp();
+      // Fire-and-forget async operation - don't await in dispose()
+      AppSettings.syncDataFromHealthApp().catchError((error) {
+        // Silently handle errors in background operation
+      });
+    } catch (e) {
+      // Handle any synchronous errors
     } finally {
       _isDisposing = false;
       super.dispose();
     }
   }
 
-  void _viewListing() {
+  void _viewListing() async {
+    // Đánh dấu đã xem chi tiết
+    await AppStorages.setBloodPressureDetailViewed();
+    setState(() {
+      _isDetailViewed = true;
+    });
+
     Navigator.pushNamed(context, NavigatorName.detail_bloodpressure_listing,
         arguments: {'initPeriodFilterType': _periodFilterType});
   }
@@ -120,7 +149,14 @@ class _BloodPressureDetailTabbarControllerState
   }
 
   void _reload([bool isNew = false]) async {
-    _bloodPressureTrendKey.currentState?.reloadData(_periodFilterType, isNew);
+    // On first load, always pass isNew = true to ensure chart focuses on latest point
+    final bool shouldReset = isNew || _isFirstLoad;
+    if (_isFirstLoad) {
+      _isFirstLoad = false;
+    }
+
+    _bloodPressureTrendKey.currentState
+        ?.reloadData(_periodFilterType, shouldReset);
     _bloodPressureDistributionChartKey.currentState
         ?.reloadData(_periodFilterType);
     await _loadAITrend();
@@ -167,8 +203,9 @@ class _BloodPressureDetailTabbarControllerState
         title: Text(
           R.string.huyet_ap.tr(),
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
+            fontFamily: R.font.sfpro,
             color: R.color.white,
           ),
         ),
@@ -182,7 +219,10 @@ class _BloodPressureDetailTabbarControllerState
               },
               child: Text(
                 R.string.huong_dan.tr(),
-                style: TextStyle(fontSize: 15, color: R.color.white),
+                style: TextStyle(
+                    fontSize: 15,
+                    color: R.color.white,
+                    fontFamily: R.font.sfpro),
               ),
             ),
           ),
@@ -221,37 +261,100 @@ class _BloodPressureDetailTabbarControllerState
               ),
             ),
 
-            // Sticky bottom button
+            // Sticky bottom buttons
             Container(
               padding: EdgeInsets.only(
-                bottom: 8 + MediaQuery.of(context).padding.bottom / 2,
+                bottom: 16 + MediaQuery.of(context).padding.bottom / 2,
                 left: 12,
                 right: 12,
-                top: 8,
+                top: 16,
               ),
               color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: InkWell(
-                  onTap: _doInputBloodPressure,
-                  child: Container(
-                    height: 48,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: R.color.greenGradientBottom,
-                      borderRadius: BorderRadius.circular(24),
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                child: Row(
+                  children: [
+                    // Detail button
+                    Container(
+                      width: 60,
+                      height: 44,
+                      child: Stack(
+                        children: [
+                          InkWell(
+                            onTap: _viewListing,
+                            child: Container(
+                              width: 60,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: Color(0xffDCFFFC),
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                              child: Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Image.asset(
+                                    R.drawable.ic_view_detail,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Show dot indicator if detail hasn't been viewed and there is data
+                          if (_hasBloodPressureData && !_isDetailViewed)
+                            Positioned(
+                              left: 44,
+                              top: 0,
+                              child: Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFAF0000),
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                    child: Center(
-                      child: Text(
-                        R.string.enter_blood_pressure.tr(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(width: 12),
+                    // Input button
+                    Expanded(
+                      child: InkWell(
+                        onTap: _doInputBloodPressure,
+                        child: Container(
+                          height: 44,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                R.color.greenGradientTop,
+                                R.color.greenGradientBottom,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Nhập huyết áp",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: R.font.sfpro,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -273,7 +376,9 @@ class _BloodPressureDetailTabbarControllerState
     return HorizontalSelector(
       onSelected: (value) {
         _periodFilterType = value + 1;
-        _reload();
+        // When period filter changes, pass isNew = false to keep focus index if valid
+        // The chart will handle scrolling to the focused point
+        _reload(false);
       },
       initialValue: selectedIndex,
       values: values,
@@ -291,6 +396,14 @@ class _BloodPressureDetailTabbarControllerState
         setState(() {
           _rangeType = rangeType;
         });
+      },
+      onDataLoaded: (hasData) {
+        if (!mounted) return;
+        if (_hasBloodPressureData != hasData) {
+          setState(() {
+            _hasBloodPressureData = hasData;
+          });
+        }
       },
     );
   }
