@@ -54,6 +54,21 @@ class BloodPressureDetailListingControllerState
 
   String? bloodPressureID;
 
+  String formatDateOrToday(int timeStamp) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime itemDate = DateTime(date.year, date.month, date.day);
+
+    if (itemDate == today) {
+      return 'Hôm nay';
+    } else if (itemDate == today.subtract(Duration(days: 1))) {
+      return 'Hôm qua';
+    } else {
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    }
+  }
+
   @override
   void initState() {
     _periodFilterType = widget.initPeriodFilterType;
@@ -155,16 +170,23 @@ class BloodPressureDetailListingControllerState
       appBar: AppBar(
         backgroundColor: R.color.greenGradientBottom,
         centerTitle: false,
+        automaticallyImplyLeading: false,
         leading: IconButton(
+          splashColor: R.color.transparent,
+          highlightColor: R.color.transparent,
           onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.arrow_back, color: R.color.white),
         ),
-        title: Text(
-          R.string.detail.tr(),
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: R.color.white,
+        title: Transform(
+          transform: Matrix4.translationValues(-20, 0.0, 0.0),
+          child: Text(
+            R.string.detail.tr(),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              fontFamily: R.font.sfpro,
+              color: R.color.white,
+            ),
           ),
         ),
       ),
@@ -256,8 +278,8 @@ class BloodPressureDetailListingControllerState
 
         final showDate = previousElement == null
             ? true
-            : (convertCustomDate(element.date!) !=
-                convertCustomDate(previousElement.date!));
+            : (formatDateOrToday(element.date!) !=
+                formatDateOrToday(previousElement.date!));
 
         return GestureDetector(
             onTap: () {
@@ -274,10 +296,12 @@ class BloodPressureDetailListingControllerState
                       ? Padding(
                           padding: EdgeInsets.only(top: 8, bottom: 10),
                           child: Text(
-                            convertCustomDate(element.date!),
+                            formatDateOrToday(element.date!),
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: R.font.sfpro),
                           ),
                         )
                       : SizedBox(),
@@ -304,10 +328,10 @@ class BloodPressureDetailListingControllerState
                                   Text(
                                     '${element.systolic!.toInt().toString()}/${element.diastolic!.toInt().toString()}',
                                     style: TextStyle(
-                                        fontFamily: 'Viga',
+                                        fontFamily: R.font.sfpro,
                                         color: Color(0xFF111515),
                                         fontSize: 20,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.w700),
                                   ),
                                   SizedBox(width: 4),
                                   Text(
@@ -315,7 +339,8 @@ class BloodPressureDetailListingControllerState
                                     style: TextStyle(
                                         color: R.color.black,
                                         fontSize: 15,
-                                        fontWeight: FontWeight.w400),
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: R.font.sfpro),
                                   ),
                                 ],
                               ),
@@ -325,6 +350,7 @@ class BloodPressureDetailListingControllerState
                                   color: toColor(element.backgroundColor),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
+                                  fontFamily: R.font.sfpro,
                                 ),
                               ),
                             ],
@@ -337,13 +363,15 @@ class BloodPressureDetailListingControllerState
                                   style: TextStyle(
                                       color: Color(0xFF5E6566),
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w400)),
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: R.font.sfpro)),
                               Text(
                                 convertToUTC(element.date!, 'HH:mm'),
                                 style: TextStyle(
                                     color: Color(0xFF5E6566),
                                     fontSize: 15,
-                                    fontWeight: FontWeight.w400),
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: R.font.sfpro),
                               ),
                             ],
                           ),
@@ -365,7 +393,8 @@ class BloodPressureDetailListingControllerState
                                           style: TextStyle(
                                               color: R.color.black,
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w700),
+                                              fontWeight: FontWeight.w700,
+                                              fontFamily: R.font.sfpro),
                                         ),
                                         Expanded(
                                           child: Text(
@@ -373,7 +402,8 @@ class BloodPressureDetailListingControllerState
                                             style: TextStyle(
                                                 color: R.color.black,
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w400),
+                                                fontWeight: FontWeight.w400,
+                                                fontFamily: R.font.sfpro),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
