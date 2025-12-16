@@ -44,19 +44,24 @@ class AddBloodPressureController extends StatefulWidget {
 
   AddBloodPressureController({this.type, this.id, this.goalId});
   @override
-  _AddBloodPressureControllerState createState() => _AddBloodPressureControllerState();
+  _AddBloodPressureControllerState createState() =>
+      _AddBloodPressureControllerState();
 }
 
-class _AddBloodPressureControllerState extends BaseState<AddBloodPressureController>
+class _AddBloodPressureControllerState
+    extends BaseState<AddBloodPressureController>
     with SingleTickerProviderStateMixin {
   final TextEditingController _controllerSystolic = TextEditingController();
   final TextEditingController _controllerDiastolic = TextEditingController();
   final TextEditingController _controllerHeart = TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  bool _diastolicIsEmpty = false;
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
   FocusNode _systolicFocus = FocusNode();
   FocusNode _diastolicFocus = FocusNode();
   FocusNode _heartFocus = FocusNode();
+  final FocusNode _diastolicKeyListenerFocus = FocusNode();
   final List<dynamic> _files = [];
   DateTime selectedDate = DateTime.now();
   bool isClicked = false;
@@ -80,7 +85,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   // Range tâm trương (diastolic): 25-250
   // Systolic phải lớn hơn diastolic
   bool get _isNotValidInput {
-    if (_controllerSystolic.text.isNotEmpty && _controllerDiastolic.text.isNotEmpty) {
+    if (_controllerSystolic.text.isNotEmpty &&
+        _controllerDiastolic.text.isNotEmpty) {
       double systolic = double.tryParse(_controllerSystolic.text) ?? 0;
       double diastolic = double.tryParse(_controllerDiastolic.text) ?? 0;
       if (systolic < 30 ||
@@ -150,12 +156,33 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     _loadDescription();
     _firebaseSetup();
     _initData();
+    _setupDiastolicFocusListener();
+  }
+
+  void _setupDiastolicFocusListener() {
+    // Sync key listener focus with diastolic focus
+    _diastolicFocus.addListener(_onDiastolicFocusChange);
+  }
+
+  void _onDiastolicFocusChange() {
+    if (_diastolicFocus.hasFocus) {
+      _diastolicKeyListenerFocus.requestFocus();
+      _diastolicIsEmpty = _controllerDiastolic.text.isEmpty;
+    } else {
+      _diastolicKeyListenerFocus.unfocus();
+    }
   }
 
   @override
   void dispose() {
+    // Remove listener before disposing
+    _diastolicFocus.removeListener(_onDiastolicFocusChange);
     _controller.dispose();
     _focusNode.dispose();
+    _systolicFocus.dispose();
+    _diastolicFocus.dispose();
+    _heartFocus.dispose();
+    _diastolicKeyListenerFocus.dispose();
     _controllerSystolic.dispose();
     _controllerDiastolic.dispose();
     _controllerHeart.dispose();
@@ -164,19 +191,36 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   void _doGuide() async {
-    Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+    Navigator.of(context)
+        .pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
   }
 
   void _initData() async {
     BotToast.showLoading();
 
-    // Init input heart rate at the first time
-    bool? willInputHeartRate = await AppSettings.getInputHeartRateWithBloodPressure();
-    if (willInputHeartRate == null) {
-      willInputHeartRate = true;
-      AppSettings.setInputHeartRateWithBloodPressure(willInputHeartRate);
+    // Init input heart rate based on type:
+    // - Default ON if first time input (type != 'update') AND no preference exists (user chưa có chỉ số hoặc lần đầu nhập)
+    // - Use saved preference if exists (lần nhập trước đó không nhập nhịp tim → OFF)
+    // - Default based on previous input if updating (will be set in _loadDataDetail)
+    if (widget.type != 'update') {
+      // Check if there's a saved preference
+      bool? willInputHeartRate =
+          await AppSettings.getInputHeartRateWithBloodPressure();
+      if (willInputHeartRate == null) {
+        // No preference exists - first time ever, default to ON (user chưa có chỉ số hoặc lần đầu nhập)
+        _isInputHeartRate = true;
+      } else {
+        // Use saved preference (could be OFF if last time switch was ON but no pulse rate entered)
+        _isInputHeartRate = willInputHeartRate;
+      }
     } else {
-      _isInputHeartRate = willInputHeartRate;
+      // For update, will be set in _loadDataDetail based on previous pulseRate
+      // For now, get from settings as fallback
+      bool? willInputHeartRate =
+          await AppSettings.getInputHeartRateWithBloodPressure();
+      if (willInputHeartRate != null) {
+        _isInputHeartRate = willInputHeartRate;
+      }
     }
     try {
       Map<String, List<int>> ranges = await BloodPressureClient().fetchRange();
@@ -195,7 +239,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
 
   Future<void> _firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-        screenName: "kpi_blood_pressure_add", screenClass: "AddBloodPressureController");
+        screenName: "kpi_blood_pressure_add",
+        screenClass: "AddBloodPressureController");
 
     AppSettings.currentScreenName = 'kpi_blood_pressure_add';
     await TrackingManager.analytics.logEvent(
@@ -218,29 +263,37 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       _controllerDiastolic.text = model!.diastolic?.toInt().toString() ?? '';
       if (model!.pulseRate != null && model!.pulseRate! > 0) {
         _controllerHeart.text = model!.pulseRate!.toInt().toString();
+        // If previous input had pulse rate, default switch to ON
+        _isInputHeartRate = true;
       } else {
         _controllerHeart.text = '';
+        // If previous input didn't have pulse rate, default switch to OFF
+        _isInputHeartRate = false;
       }
+      // Save the preference for next time
+      AppSettings.setInputHeartRateWithBloodPressure(_isInputHeartRate);
       _controllerNote.text = model?.note ?? '';
       selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
       _files.addAll(model!.images);
       if (_sectionAddNoteKey.currentState != null) {
-        _sectionAddNoteKey.currentState!.updateFilesAndNote(_files, model?.note ?? '');
+        _sectionAddNoteKey.currentState!
+            .updateFilesAndNote(_files, model?.note ?? '');
       }
       if (_times.isNotEmpty) {
         if (model!.timeFrameId == null) {
           _lastTimeFrameIndex = 0;
           _selectedTimeFrame = _times.first;
         } else {
-          _lastTimeFrameIndex =
-              _times.indexWhere((timeFrame) => timeFrame.id == model!.timeFrameId);
+          _lastTimeFrameIndex = _times
+              .indexWhere((timeFrame) => timeFrame.id == model!.timeFrameId);
           if (_lastTimeFrameIndex != -1) {
             _selectedTimeFrame = _times[_lastTimeFrameIndex];
           }
         }
       }
     }
-    if ((_selectedTimeFrame == null || _lastTimeFrameIndex == -1) && _times.isNotEmpty) {
+    if ((_selectedTimeFrame == null || _lastTimeFrameIndex == -1) &&
+        _times.isNotEmpty) {
       _lastTimeFrameIndex = 0;
       _selectedTimeFrame = _times.first;
     }
@@ -253,8 +306,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final result = await Future.wait([
       BloodPressureClient().fetchBloodPressureTimeFrame(),
       BloodPressureClient().fetchColorConfig(),
-      BloodPressureClient()
-          .fetchBloodPressureTimeFrame(time: selectedDate.millisecondsSinceEpoch ~/ 1000),
+      BloodPressureClient().fetchBloodPressureTimeFrame(
+          time: selectedDate.millisecondsSinceEpoch ~/ 1000),
     ]);
     BloodPressureClient().fetchReasons().then((value) {
       _reasons = value;
@@ -269,8 +322,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         if (timeFramesSelected?.isNotEmpty == true &&
             timeFrames.any((e) => timeFramesSelected!.first.id == e.id)) {
           final firstTimeframeId = timeFramesSelected!.first.id;
-          _selectedTimeFrame = timeFrames.where((e) => firstTimeframeId == e.id).first;
-          _lastTimeFrameIndex = _times.indexWhere((timeFrame) => timeFrame.id == firstTimeframeId);
+          _selectedTimeFrame =
+              timeFrames.where((e) => firstTimeframeId == e.id).first;
+          _lastTimeFrameIndex = _times
+              .indexWhere((timeFrame) => timeFrame.id == firstTimeframeId);
         } else {
           _selectedTimeFrame = timeFrames.first;
           _lastTimeFrameIndex = 0;
@@ -310,7 +365,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   void _doHealthConnect() async {
-    RequestHealthConnect.showModal(context, callback: () => Navigator.pop(context));
+    RequestHealthConnect.showModal(context,
+        callback: () => Navigator.pop(context));
   }
 
   BloodPressureRangeType _fromIndexDetected(int index) {
@@ -368,17 +424,20 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     return false;
   }
 
-  void _navigateAfterSuccess(
-      String id, List<ImagesModel> images, List<String> reasons, String pulseRateStatus,
+  void _navigateAfterSuccess(String id, List<ImagesModel> images,
+      List<String> reasons, String pulseRateStatus,
       [bool? isDataChange = false]) {
     // Observable.instance.notifyObservers([], notifyName: "glucose_change_data");
-    double _valueOfSystolic = double.tryParse(_controllerSystolic.text.replaceAll(",", ".") != ""
-        ? _controllerSystolic.text.replaceAll(",", ".")
-        : "0")!;
-    double _valueOfDiastolic = double.tryParse(_controllerDiastolic.text.replaceAll(",", ".") != ""
-        ? _controllerDiastolic.text.replaceAll(",", ".")
-        : "0")!;
-    int indexRange = _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
+    double _valueOfSystolic = double.tryParse(
+        _controllerSystolic.text.replaceAll(",", ".") != ""
+            ? _controllerSystolic.text.replaceAll(",", ".")
+            : "0")!;
+    double _valueOfDiastolic = double.tryParse(
+        _controllerDiastolic.text.replaceAll(",", ".") != ""
+            ? _controllerDiastolic.text.replaceAll(",", ".")
+            : "0")!;
+    int indexRange =
+        _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
     BloodPressureRangeType rangeType = _fromIndexDetected(indexRange);
     final data = BloodPressureResultDto(
       id: id,
@@ -390,7 +449,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       rangeColors: _colorList,
       diastolic: _valueOfDiastolic,
       systolic: _valueOfSystolic,
-      pulse: _isInputHeartRate ? (double.tryParse(_controllerHeart.text) ?? 0) : 0,
+      pulse:
+          _isInputHeartRate ? (double.tryParse(_controllerHeart.text) ?? 0) : 0,
       pulseRateStatus: pulseRateStatus,
       reasons: reasons,
       note: _controllerNote.text,
@@ -401,11 +461,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       goalId: widget.goalId,
       isNew: widget.type == 'update' ? false : true,
     );
-    
+
     // Set flag to show phone validation after successful blood pressure input
     PhoneValidationManager.setShouldShowPhoneValidation();
-    Navigator.of(context)
-        .pushReplacementNamed(NavigatorName.add_bloodpressure_result, arguments: data);
+    Navigator.of(context).pushReplacementNamed(
+        NavigatorName.add_bloodpressure_result,
+        arguments: data);
   }
 
   @override
@@ -441,12 +502,14 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                             _inputSection(),
                             const SizedBox(height: 12),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               child: _bloodPressureRange(),
                             ),
                             const SizedBox(height: 20),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
                               child: _dateTimeFrameV2(),
                             ),
                             const SizedBox(height: 20),
@@ -491,8 +554,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
             ? R.string.update_blood_pressure.tr()
             : R.string.enter_blood_pressure.tr(),
         style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+          fontFamily: R.font.sfpro,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
           color: R.color.white,
         ),
       ),
@@ -515,7 +580,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
                   R.string.huong_dan.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    color: R.color.white,
+                    fontSize: 15,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
+                  ),
                 ),
               ),
             ),
@@ -541,10 +612,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  convertToUTC(selectedDate.millisecondsSinceEpoch ~/ 1000, 'HH:mm - dd/MM/yyyy'),
+                  convertToUTC(selectedDate.millisecondsSinceEpoch ~/ 1000,
+                      'HH:mm - dd/MM/yyyy'),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
+                    fontFamily: R.font.sfpro,
                     color: R.color.textDark,
                   ),
                 ),
@@ -580,7 +653,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           Opacity(
             opacity: 0,
             child: Text(R.string.mm_hg.tr(),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: R.font.sfpro)),
           ),
           Column(
             children: [
@@ -602,7 +678,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   ],
                   textAlign: TextAlign.right,
                   keyboardType: TextInputType.number,
-                  style: TextStyle(color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      color: R.color.black,
+                      fontSize: 48,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: R.font.sfpro),
                   decoration: InputDecoration(
                       hintText: '0',
                       counterText: '',
@@ -611,7 +691,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                       hintStyle: TextStyle(
                           color: R.color.captionColorGray,
                           fontSize: 48,
-                          fontWeight: FontWeight.w500)),
+                          fontWeight: FontWeight.w700,
+                          fontFamily: R.font.sfpro)),
                 ),
               ),
             ],
@@ -622,40 +703,83 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                 style: TextStyle(
                   fontSize: 42,
                   color: Color(0xFF636A6B),
+                  fontFamily: R.font.sfpro,
                 )),
           ),
           Column(
             children: [
               Container(
                 width: 90,
-                child: TextField(
-                  focusNode: _diastolicFocus,
-                  onChanged: (value) {
-                    _checkValidateInput();
-                    if (value.length == 3) {
-                      _heartFocus.requestFocus();
+                child: Focus(
+                  focusNode: _diastolicKeyListenerFocus,
+                  skipTraversal: true,
+                  canRequestFocus: false,
+                  onKeyEvent: (node, event) {
+                    // Detect backspace key when diastolic text is empty and field is focused
+                    if (_diastolicFocus.hasFocus &&
+                        event is KeyDownEvent &&
+                        event.logicalKey == LogicalKeyboardKey.backspace &&
+                        _diastolicIsEmpty &&
+                        _controllerDiastolic.text.isEmpty) {
+                      // Move focus to systolic field
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _systolicFocus.requestFocus();
+                        // Move cursor to end of systolic text
+                        _controllerSystolic.selection =
+                            TextSelection.fromPosition(
+                          TextPosition(offset: _controllerSystolic.text.length),
+                        );
+                      });
+                      return KeyEventResult.handled;
                     }
-                    setState(() {});
+                    return KeyEventResult.ignored;
                   },
-                  controller: _controllerDiastolic,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(3),
-                  ],
-                  textAlign: TextAlign.left,
-                  keyboardType: TextInputType.number,
-                  style: TextStyle(color: R.color.black, fontSize: 48, fontWeight: FontWeight.w500),
-                  decoration: InputDecoration(
-                    hintText: '0',
-                    contentPadding: EdgeInsets.only(bottom: 8),
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(
-                        color: R.color.captionColorGray, fontSize: 48, fontWeight: FontWeight.w500),
+                  child: TextField(
+                    focusNode: _diastolicFocus,
+                    onChanged: (value) {
+                      _checkValidateInput();
+                      if (value.length == 3) {
+                        _heartFocus.requestFocus();
+                      }
+                      // Mark when text becomes empty
+                      if (value.isEmpty) {
+                        _diastolicIsEmpty = true;
+                      } else {
+                        _diastolicIsEmpty = false;
+                      }
+                      setState(() {});
+                    },
+                    controller: _controllerDiastolic,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(3),
+                    ],
+                    textAlign: TextAlign.left,
+                    keyboardType: TextInputType.number,
+                    style: TextStyle(
+                        color: R.color.black,
+                        fontSize: 48,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: R.font.sfpro),
+                    decoration: InputDecoration(
+                      hintText: '0',
+                      contentPadding: EdgeInsets.only(bottom: 8),
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(
+                          color: R.color.captionColorGray,
+                          fontSize: 48,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: R.font.sfpro),
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          Text(R.string.mm_hg.tr(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+          Text(R.string.mm_hg.tr(),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: R.font.sfpro)),
         ],
       ),
     );
@@ -667,31 +791,38 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     double _valueOfDiastolic = 0;
 
     try {
-      _valueOfSystolic = double.tryParse(_controllerSystolic.text.replaceAll(",", ".") != ""
-          ? _controllerSystolic.text.replaceAll(",", ".")
-          : "0")!;
-      _valueOfDiastolic = double.tryParse(_controllerDiastolic.text.replaceAll(",", ".") != ""
-          ? _controllerDiastolic.text.replaceAll(",", ".")
-          : "0")!;
+      _valueOfSystolic = double.tryParse(
+          _controllerSystolic.text.replaceAll(",", ".") != ""
+              ? _controllerSystolic.text.replaceAll(",", ".")
+              : "0")!;
+      _valueOfDiastolic = double.tryParse(
+          _controllerDiastolic.text.replaceAll(",", ".") != ""
+              ? _controllerDiastolic.text.replaceAll(",", ".")
+              : "0")!;
     } catch (e) {
       _valueOfSystolic = 0;
       _valueOfDiastolic = 0;
     }
 
-    int indexRangeSystolic = _findIndexInRanges(_valueOfSystolic, _rangeValueSystolic);
-    int indexRangeDiastolic = _findIndexInRanges(_valueOfDiastolic, _rangeValueDiastolic);
+    int indexRangeSystolic =
+        _findIndexInRanges(_valueOfSystolic, _rangeValueSystolic);
+    int indexRangeDiastolic =
+        _findIndexInRanges(_valueOfDiastolic, _rangeValueDiastolic);
     // 12*2 side padding + 16*2 component padding
-    num widthRange = (AppMediaQuery.deviceWidth - (12 * 2) - (12 * 2)) / (_rangeLabel.length + 1);
+    num widthRange = (AppMediaQuery.deviceWidth - (12 * 2) - (12 * 2)) /
+        (_rangeLabel.length + 1);
     widthRange = widthRange.roundToDouble();
 
     // num width = _number == 0 ? 0 : widthRange * (indexRange);
-    num widthOfSystolic = _valueOfSystolic == 0 ? 0 : widthRange * (indexRangeSystolic);
+    num widthOfSystolic =
+        _valueOfSystolic == 0 ? 0 : widthRange * (indexRangeSystolic);
     if (indexRangeSystolic >= 2) {
       widthOfSystolic += widthRange;
     } else {
       widthOfSystolic *= 2;
     }
-    num widthDiastolic = _valueOfDiastolic == 0 ? 0 : widthRange * (indexRangeDiastolic);
+    num widthDiastolic =
+        _valueOfDiastolic == 0 ? 0 : widthRange * (indexRangeDiastolic);
     if (indexRangeDiastolic >= 2) {
       widthDiastolic += widthRange;
     } else {
@@ -699,6 +830,14 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
 
     if (_valueOfDiastolic != 0 || _valueOfSystolic != 0) {
+      // Validate indices to prevent RangeError
+      if (indexRangeSystolic < 0 ||
+          indexRangeSystolic >= _rangeValueSystolic.length ||
+          indexRangeDiastolic < 0 ||
+          indexRangeDiastolic >= _rangeValueDiastolic.length) {
+        // Return empty widget if indices are invalid
+        return SizedBox.shrink();
+      }
       num minSystolic = _rangeValueSystolic[indexRangeSystolic];
       num minDiastolic = _rangeValueDiastolic[indexRangeDiastolic];
 
@@ -715,39 +854,60 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       num pxPerValueSystolic = widthRange / maximumValueSystolic;
       num pxPerValueDiastolic = widthRange / maximumValueDiastolic;
 
-      num widthPlusSystolic = pxPerValueSystolic * (_valueOfSystolic - minSystolic);
-      num widthPlusDiastolic = pxPerValueDiastolic * (_valueOfDiastolic - minDiastolic);
+      num widthPlusSystolic =
+          pxPerValueSystolic * (_valueOfSystolic - minSystolic);
+      num widthPlusDiastolic =
+          pxPerValueDiastolic * (_valueOfDiastolic - minDiastolic);
 
       widthOfSystolic += widthPlusSystolic;
       widthDiastolic += widthPlusDiastolic;
 
-      widthOfSystolic = widthOfSystolic > (widthRange * _rangeValueSystolic.length)
-          ? widthRange * _rangeValueSystolic.length
-          : widthOfSystolic;
-      widthDiastolic = widthDiastolic > (widthRange * _rangeValueDiastolic.length)
-          ? widthRange * _rangeValueDiastolic.length
-          : widthDiastolic;
+      widthOfSystolic =
+          widthOfSystolic > (widthRange * _rangeValueSystolic.length)
+              ? widthRange * _rangeValueSystolic.length
+              : widthOfSystolic;
+      widthDiastolic =
+          widthDiastolic > (widthRange * _rangeValueDiastolic.length)
+              ? widthRange * _rangeValueDiastolic.length
+              : widthDiastolic;
     }
-    int indexRange = _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
+    int indexRange =
+        _determineBloodPressureType(_valueOfSystolic, _valueOfDiastolic);
+    // Validate indexRange to prevent RangeError
+    bool isValidIndex = indexRange >= 0 &&
+        indexRange < _rangeLabel.length &&
+        indexRange < _colorList.length;
+
     return SpacingColumn(
       spacing: 16,
       children: [
         if (_isNotValidInput)
           Text(
             'Chỉ số không hợp lệ!',
-            style: TextStyle(color: Color(0xFFFF3C3C), fontSize: 13, fontWeight: FontWeight.w400),
+            style: TextStyle(
+                color: Color(0xFFFF3C3C),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                fontFamily: R.font.sfpro),
           )
-        else if (_valueOfSystolic != 0 && _valueOfDiastolic != 0)
+        else if (_valueOfSystolic != 0 &&
+            _valueOfDiastolic != 0 &&
+            isValidIndex)
           RichText(
             text: TextSpan(
               text: 'Huyết áp đang ở mức ',
-              style: TextStyle(color: R.color.textDark, fontWeight: FontWeight.w400, fontSize: 16),
+              style: TextStyle(
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  fontFamily: R.font.sfpro),
               children: <TextSpan>[
                 TextSpan(
                   text: '“${_rangeLabel[indexRange]}”',
                   style: TextStyle(
                     color: _colorList[indexRange],
                     fontWeight: FontWeight.w700,
+                    fontFamily: R.font.sfpro,
                   ),
                 ),
               ],
@@ -782,13 +942,15 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
             Positioned(
               left: widthDiastolic.toDouble() - 18,
               bottom: -5,
-              child: Container(child: Icon(Icons.arrow_drop_up_rounded, size: 40)),
+              child:
+                  Container(child: Icon(Icons.arrow_drop_up_rounded, size: 40)),
             ),
             // Arrow systolic
             Positioned(
               left: widthOfSystolic.toDouble() - 18,
               top: -5,
-              child: Container(child: Icon(Icons.arrow_drop_down_rounded, size: 40)),
+              child: Container(
+                  child: Icon(Icons.arrow_drop_down_rounded, size: 40)),
             ),
             // Range diastolic (text values)
             Positioned.fill(
@@ -816,12 +978,14 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                                             style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
+                                              fontFamily: R.font.sfpro,
                                             ),
                                           )
                                         : Text(
                                             '$e',
                                             style: TextStyle(
                                               fontSize: 12,
+                                              fontFamily: R.font.sfpro,
                                               // Default style for other values of e
                                             ),
                                           ),
@@ -860,12 +1024,14 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                                             style: TextStyle(
                                               fontSize: 10,
                                               fontWeight: FontWeight.bold,
+                                              fontFamily: R.font.sfpro,
                                             ),
                                           )
                                         : Text(
                                             '$e',
                                             style: TextStyle(
                                               fontSize: 12,
+                                              fontFamily: R.font.sfpro,
                                               // Default style for other values of e
                                             ),
                                           ),
@@ -895,8 +1061,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                                 child: Text(
                                   '|',
                                   style: TextStyle(
-                                    color: entry.key == 0 ? Colors.transparent : Color(0xFFD7D7D7),
+                                    color: entry.key == 0
+                                        ? Colors.transparent
+                                        : Color(0xFFD7D7D7),
                                     fontSize: 5,
+                                    fontFamily: R.font.sfpro,
                                   ),
                                 ),
                               ),
@@ -923,8 +1092,11 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                                 child: Text(
                                   '|',
                                   style: TextStyle(
-                                    color: entry.key == 0 ? Colors.transparent : Color(0xFFD7D7D7),
+                                    color: entry.key == 0
+                                        ? Colors.transparent
+                                        : Color(0xFFD7D7D7),
                                     fontSize: 5,
+                                    fontFamily: R.font.sfpro,
                                   ),
                                 ),
                               ),
@@ -952,6 +1124,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         selectionTextStyle: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.bold,
+          fontFamily: R.font.sfpro,
         ),
         onChange: (index) async {
           _lastTimeFrameIndex = index;
@@ -990,7 +1163,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
                   R.string.heart_rate.tr(),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: R.font.sfpro),
                 ),
               ),
               CupertinoSwitch(
@@ -1028,7 +1204,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         maxLength: 3,
                         keyboardType: TextInputType.number,
                         style: TextStyle(
-                            color: R.color.black, fontSize: 48, fontWeight: FontWeight.bold),
+                            color: R.color.black,
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: R.font.sfpro),
                         decoration: InputDecoration(
                           hintText: '0',
                           counterText: '',
@@ -1037,7 +1216,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                           hintStyle: TextStyle(
                               color: R.color.captionColorGray,
                               fontSize: 48,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w500,
+                              fontFamily: R.font.sfpro),
                         ),
                       ),
                     ),
@@ -1045,13 +1225,19 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   SizedBox(
                     width: 80,
                     child: Text(R.string.time_per_minute.tr(),
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: R.font.sfpro)),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 2),
-            Container(height: 1, width: double.infinity, color: R.color.color0xffE5E5E5),
+            Container(
+                height: 1,
+                width: double.infinity,
+                color: R.color.color0xffE5E5E5),
             if (_isNotValidHeartRate)
               Padding(
                 padding: const EdgeInsets.only(top: 12.0),
@@ -1063,6 +1249,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                       color: Color(0xFFFF3C3C),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
+                      fontFamily: R.font.sfpro,
                     ),
                   ),
                 ),
@@ -1093,7 +1280,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     return FutureBuilder(
       future: AppStorages.getHealthAppPermission(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting || snapshot.hasError) {
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.hasError) {
           return SizedBox.shrink();
         }
 
@@ -1104,8 +1292,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           }
         }
 
-        String healthIcon =
-            Platform.isIOS ? R.drawable.logo_healthkit : R.drawable.logo_healthConnect;
+        String healthIcon = Platform.isIOS
+            ? R.drawable.logo_healthkit
+            : R.drawable.logo_healthConnect;
         String healthTitle = Platform.isIOS
             ? R.string.connect_from_Apple_Health.tr()
             : R.string.connect_from_Health_Connect.tr();
@@ -1118,15 +1307,20 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
               alignment: Alignment.center,
               child: Row(
                 children: [
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+                  Expanded(
+                      child: Container(
+                          height: 1, color: R.color.greenGradientBottom)),
                   Text(
                     '   ${R.string.or.tr()}   ',
                     style: TextStyle(
                       fontSize: 14,
                       color: R.color.greenGradientBottom,
+                      fontFamily: R.font.sfpro,
                     ),
                   ),
-                  Expanded(child: Container(height: 1, color: R.color.greenGradientBottom)),
+                  Expanded(
+                      child: Container(
+                          height: 1, color: R.color.greenGradientBottom)),
                 ],
               ),
             ),
@@ -1152,6 +1346,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                         style: TextStyle(
                           fontSize: 15,
                           color: R.color.dark,
+                          fontFamily: R.font.sfpro,
                         ),
                       ),
                     ),
@@ -1182,7 +1377,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
             child: SafeArea(
               top: false,
               child: Container(
-                  margin: EdgeInsets.only(top: 16, bottom: 16, left: 12, right: 12),
+                  margin:
+                      EdgeInsets.only(top: 16, bottom: 16, left: 12, right: 12),
                   height: 48,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -1191,58 +1387,77 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.centerRight,
-                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
+                          colors: [
+                            R.color.greenGradientTop,
+                            R.color.greenGradientBottom
+                          ])),
                   child: Center(
                       child: Text(R.string.confirm.tr(),
                           style: TextStyle(
-                              color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16)))),
+                              color: R.color.white,
+                              fontFamily: R.font.sfpro,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.4,
+                              fontSize: 15)))),
             ),
           )
         : SafeArea(
             top: false,
             child: Container(
                 margin: EdgeInsets.all(16),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  GestureDetector(
-                    onTap: () {
-                      _showDialogDelete(context);
-                    },
-                    child: Container(
-                        height: 48,
-                        width: 164,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(200),
-                            border: Border.all(color: R.color.red, width: 2)),
-                        child: Center(
-                          child: Text(R.string.xoa_du_lieu.tr(),
-                              style: TextStyle(
-                                  color: R.color.red, fontSize: 16, fontWeight: FontWeight.w600)),
-                        )),
-                  ),
-                  GestureDetector(
-                    onTap: _isInputEnough
-                        ? () {
-                            _editData();
-                          }
-                        : null,
-                    child: Container(
-                      height: 48,
-                      width: 164,
-                      decoration: BoxDecoration(
-                          color: R.color.greenGradientBottom,
-                          borderRadius: BorderRadius.circular(200),
-                          gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                      child: Center(
-                        child: Text(R.string.confirm.tr(),
-                            style: TextStyle(
-                                color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _showDialogDelete(context);
+                        },
+                        child: Container(
+                            height: 48,
+                            width: 164,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(200),
+                                border:
+                                    Border.all(color: R.color.red, width: 2)),
+                            child: Center(
+                              child: Text(R.string.xoa_du_lieu.tr(),
+                                  style: TextStyle(
+                                      color: R.color.red,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: R.font.sfpro)),
+                            )),
                       ),
-                    ),
-                  ),
-                ])),
+                      GestureDetector(
+                        onTap: _isInputEnough
+                            ? () {
+                                _editData();
+                              }
+                            : null,
+                        child: Container(
+                          height: 48,
+                          width: 164,
+                          decoration: BoxDecoration(
+                              color: R.color.greenGradientBottom,
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    R.color.greenGradientTop,
+                                    R.color.greenGradientBottom
+                                  ])),
+                          child: Center(
+                            child: Text(R.string.confirm.tr(),
+                                style: TextStyle(
+                                    color: R.color.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: R.font.sfpro)),
+                          ),
+                        ),
+                      ),
+                    ])),
           );
   }
 
@@ -1251,14 +1466,16 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     int diastolicIndex = -1;
 
     for (int i = 0; i < _rangeValueSystolic.length - 1; i++) {
-      if (systolic >= _rangeValueSystolic[i] && systolic < _rangeValueSystolic[i + 1]) {
+      if (systolic >= _rangeValueSystolic[i] &&
+          systolic < _rangeValueSystolic[i + 1]) {
         systolicIndex = i;
         break;
       }
     }
 
     for (int i = 0; i < _rangeValueDiastolic.length - 1; i++) {
-      if (diastolic >= _rangeValueDiastolic[i] && diastolic < _rangeValueDiastolic[i + 1]) {
+      if (diastolic >= _rangeValueDiastolic[i] &&
+          diastolic < _rangeValueDiastolic[i + 1]) {
         diastolicIndex = i;
         break;
       }
@@ -1307,6 +1524,10 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       } else if (systolic == diastolic) {
         typeIndex = _determineCustomTypeIndex(systolic, false);
       }
+      // Ensure we never return -1, default to highest index if still -1
+      if (typeIndex == -1) {
+        typeIndex = 5; // Default to highest range (Tăng huyết áp độ 3)
+      }
     }
 
     return typeIndex;
@@ -1343,6 +1564,9 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   }
 
   int _findIndexInRanges(double number, List<int> ranges) {
+    if (ranges.isEmpty) {
+      return 0; // Return default index if ranges is empty
+    }
     for (int i = 0; i < ranges.length - 1; i++) {
       if (number >= ranges[i] && number < ranges[i + 1]) {
         return i;
@@ -1357,7 +1581,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     final diastolic = _controllerDiastolic.text;
     if (systolic.isNotEmpty && diastolic.isNotEmpty) {
       try {
-        final result = await BloodPressureClient().checkBloodPressureInput(systolic, diastolic);
+        final result = await BloodPressureClient()
+            .checkBloodPressureInput(systolic, diastolic);
         setState(() {
           textValidate = result;
           // TODO: BLOOD PRESSURE
@@ -1380,10 +1605,12 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
   void _deleteData() async {
     try {
       BotToast.showLoading();
-      final result = await BloodPressureClient().deleteBloodPressureInput(widget.id);
+      final result =
+          await BloodPressureClient().deleteBloodPressureInput(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        Observable.instance.notifyObservers([], notifyName: "BloodPressure_change_data");
+        Observable.instance
+            .notifyObservers([], notifyName: "BloodPressure_change_data");
       }
       BotToast.closeAllLoading();
     } catch (e, _) {
@@ -1439,13 +1666,15 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           paths.add(file.path);
         }
       }
-      
-    List<String> currentReason = model?.reason
-        ?.split("|")
-        .map((e) => e.trim())
-        .where((e) => e.isNotEmpty)
-        .toList() ?? [];
-      final reasonsOrNull = await _showReasonsDialog('', systolic, diastolic, currentReason);
+
+      List<String> currentReason = model?.reason
+              ?.split("|")
+              .map((e) => e.trim())
+              .where((e) => e.isNotEmpty)
+              .toList() ??
+          [];
+      final reasonsOrNull =
+          await _showReasonsDialog('', systolic, diastolic, currentReason);
       if (reasonsOrNull == false) {
         // request focus on systolic input
         _systolicFocus.requestFocus();
@@ -1466,14 +1695,15 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
       if (result != null) {
         List<String> reasons = [];
         if (reasonsOrNull is List<KeyValue>) {
-          final List<String> reasonKeys = reasonsOrNull.map((e) => e.key).toList();
+          final List<String> reasonKeys =
+              reasonsOrNull.map((e) => e.key).toList();
           if (reasonKeys.isNotEmpty) {
             await BloodPressureClient().updateReasons(result.id, reasonKeys);
           }
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
-        _navigateAfterSuccess(
-            result.id, result.images, reasons, result.pulseRateStatus, _isDataChange());
+        _navigateAfterSuccess(result.id, result.images, reasons,
+            result.pulseRateStatus, _isDataChange());
       }
 
       BotToast.closeAllLoading();
@@ -1533,13 +1763,34 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
         // );
         List<String> reasons = [];
         if (reasonsOrNull is List<KeyValue>) {
-          final List<String> reasonKeys = reasonsOrNull.map((e) => e.key).toList();
+          final List<String> reasonKeys =
+              reasonsOrNull.map((e) => e.key).toList();
           if (reasonKeys.isNotEmpty) {
             await BloodPressureClient().updateReasons(result.id, reasonKeys);
           }
           reasons = reasonsOrNull.map((e) => e.value).toList();
         }
-        _navigateAfterSuccess(result.id, result.images, reasons, result.pulseRateStatus);
+        // Update preference based on actual pulse rate input
+        // If switch was ON but user didn't enter pulse rate (empty or 0),
+        // set preference to OFF for next time
+        final actualPulseRate = pulseRate.trim();
+        final hasActualPulseRate = actualPulseRate.isNotEmpty &&
+            actualPulseRate != '0' &&
+            (double.tryParse(actualPulseRate) ?? 0) > 0;
+
+        if (_isInputHeartRate && !hasActualPulseRate) {
+          // Switch was ON but no pulse rate was entered, set OFF for next time
+          AppSettings.setInputHeartRateWithBloodPressure(false);
+        } else if (_isInputHeartRate && hasActualPulseRate) {
+          // Switch was ON and pulse rate was entered, keep ON for next time
+          AppSettings.setInputHeartRateWithBloodPressure(true);
+        } else {
+          // Switch was OFF, keep OFF for next time
+          AppSettings.setInputHeartRateWithBloodPressure(false);
+        }
+
+        _navigateAfterSuccess(
+            result.id, result.images, reasons, result.pulseRateStatus);
       }
 
       BotToast.closeAllLoading();
@@ -1553,10 +1804,13 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
     }
   }
 
-  Future<dynamic> _showReasonsDialog(String id, String systolic, String diastolic, [List<String>? initReason]) async {
-    initReason ??= [];   
+  Future<dynamic> _showReasonsDialog(
+      String id, String systolic, String diastolic,
+      [List<String>? initReason]) async {
+    initReason ??= [];
     double systolicValue = double.tryParse(systolic.replaceAll(",", ".")) ?? 0;
-    double diastolicValue = double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
+    double diastolicValue =
+        double.tryParse(diastolic.replaceAll(",", ".")) ?? 0;
     int indexRange = _determineBloodPressureType(systolicValue, diastolicValue);
     BloodPressureRangeType detectedType = _fromIndexDetected(indexRange);
     if (detectedType.value > BloodPressureRangeType.normal_high.value) {
@@ -1575,7 +1829,7 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
           });
     }
     return null;
-}
+  }
 
   void _showDialogDelete(BuildContext context) {
     showDialog(
@@ -1598,59 +1852,67 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600)),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: R.font.sfpro)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_remove_data.tr(),
-                            textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle
+                                .copyWith(fontFamily: R.font.sfpro)),
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 16),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200),
-                                      color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(R.string.back.tr(),
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600)),
-                                  )),
-                            ),
-                          ),
-                          SizedBox(width: 14),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                                _deleteData();
-                              },
-                              child: Container(
-                                height: 43,
-                                decoration: BoxDecoration(
-                                  color: R.color.red,
-                                  borderRadius: BorderRadius.circular(200),
-                                ),
-                                child: Center(
-                                  child: Text(R.string.delete.tr(),
-                                      style: TextStyle(
-                                          color: R.color.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          color: R.color.grayBorder),
+                                      child: Center(
+                                        child: Text(R.string.back.tr(),
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: R.font.sfpro)),
+                                      )),
                                 ),
                               ),
-                            ),
-                          ),
-                        ]),
+                              SizedBox(width: 14),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    _deleteData();
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                      color: R.color.red,
+                                      borderRadius: BorderRadius.circular(200),
+                                    ),
+                                    child: Center(
+                                      child: Text(R.string.delete.tr(),
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: R.font.sfpro)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]),
                       ),
                     ],
                   ),
@@ -1713,7 +1975,8 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Image.asset(R.drawable.ic_back_icon, width: 64, height: 64),
+                      Image.asset(R.drawable.ic_back_icon,
+                          width: 64, height: 64),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.ban_muon_quay_lai.tr(),
@@ -1721,62 +1984,71 @@ class _AddBloodPressureControllerState extends BaseState<AddBloodPressureControl
                             style: TextStyle(
                                 color: R.color.textDark,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600)),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: R.font.sfpro)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: Text(R.string.confirm_to_back.tr(),
-                            textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle
+                                .copyWith(fontFamily: R.font.sfpro)),
                       ),
                       SizedBox(height: 16),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(200),
-                                      color: R.color.grayBorder),
-                                  child: Center(
-                                    child: Text(R.string.van_o_lai.tr(),
-                                        style: TextStyle(
-                                            color: R.color.textDark,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600)),
-                                  ))),
-                        ),
-                        SizedBox(width: 14),
-                        Expanded(
-                          child: GestureDetector(
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                height: 43,
-                                decoration: BoxDecoration(
-                                    color: R.color.red,
-                                    borderRadius: BorderRadius.circular(200),
-                                    gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [
-                                          R.color.greenGradientTop,
-                                          R.color.greenGradientBottom
-                                        ])),
-                                child: Center(
-                                  child: Text(R.string.confirm.tr(),
-                                      style: TextStyle(
-                                          color: R.color.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600)),
-                                ),
-                              )),
-                        ),
-                      ])
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          color: R.color.grayBorder),
+                                      child: Center(
+                                        child: Text(R.string.van_o_lai.tr(),
+                                            style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: R.font.sfpro)),
+                                      ))),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                        color: R.color.red,
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              R.color.greenGradientTop,
+                                              R.color.greenGradientBottom
+                                            ])),
+                                    child: Center(
+                                      child: Text(R.string.confirm.tr(),
+                                          style: TextStyle(
+                                              color: R.color.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily: R.font.sfpro)),
+                                    ),
+                                  )),
+                            ),
+                          ])
                     ],
                   ),
                 ),
@@ -1850,25 +2122,34 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                   children: [
                     Padding(
                       padding: EdgeInsets.only(left: 16, right: 4),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Text(R.string.pick_date.tr(),
-                            style: TextStyle(
-                                color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)),
-                        IconButton(
-                            icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            })
-                      ]),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(R.string.pick_date.tr(),
+                                style: TextStyle(
+                                    color: R.color.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: R.font.sfpro)),
+                            IconButton(
+                                icon: Icon(Icons.close,
+                                    color: R.color.color0xffBEC0C8),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                })
+                          ]),
                     ),
                     CustomCalendarDatePicker(
-                        initialDate: widget.initDate == null ? DateTime.now() : widget.initDate!,
+                        initialDate: widget.initDate == null
+                            ? DateTime.now()
+                            : widget.initDate!,
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) {
                           selectedDate = datetime ?? DateTime.now();
                           if (_calendarDatePickerKey.currentState != null) {
-                            _calendarDatePickerKey.currentState!.setSelectedDate(selectedDate!);
+                            _calendarDatePickerKey.currentState!
+                                .setSelectedDate(selectedDate!);
                           }
                         }),
                     Row(
@@ -1878,7 +2159,10 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         ),
                         Text(R.string.pick_time.tr(),
                             style: TextStyle(
-                                color: R.color.black, fontSize: 16, fontWeight: FontWeight.w700)),
+                                color: R.color.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: R.font.sfpro)),
                       ],
                     ),
                     SizedBox(height: 20),
@@ -1903,14 +2187,16 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                             height: 43,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(21.5),
-                              border: Border.all(color: R.color.greenGradientBottom),
+                              border: Border.all(
+                                  color: R.color.greenGradientBottom),
                             ),
                             child: Center(
                               child: Text(R.string.cancel.tr(),
                                   style: TextStyle(
                                       color: R.color.greenGradientBottom,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w700)),
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: R.font.sfpro)),
                             ),
                           ),
                         ),
@@ -1919,8 +2205,12 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            selectedDate = DateTime(selectedDate!.year, selectedDate!.month,
-                                selectedDate!.day, selectedHour, selectedMinute);
+                            selectedDate = DateTime(
+                                selectedDate!.year,
+                                selectedDate!.month,
+                                selectedDate!.day,
+                                selectedHour,
+                                selectedMinute);
 
                             widget.callback!(selectedDate);
 
@@ -1936,7 +2226,8 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                       style: TextStyle(
                                           color: R.color.white,
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w700)))),
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: R.font.sfpro)))),
                         ),
                       ),
                       SizedBox(width: 16),
@@ -1961,7 +2252,11 @@ class CustomTimePicker extends StatefulWidget {
   final TimeHourCallback? callback;
   final DateTime? initSelectedDate;
   CustomTimePicker(
-      {Key? key, this.selectedHour, this.selectedMinute, this.callback, this.initSelectedDate})
+      {Key? key,
+      this.selectedHour,
+      this.selectedMinute,
+      this.callback,
+      this.initSelectedDate})
       : super(key: key);
   @override
   CustomTimePickerState createState() => CustomTimePickerState();
@@ -1988,7 +2283,8 @@ class CustomTimePickerState extends State<CustomTimePicker> {
       selectedMinute = widget.selectedMinute;
     }
     hourController = FixedExtentScrollController(initialItem: selectedHour!);
-    minuteController = FixedExtentScrollController(initialItem: selectedMinute!);
+    minuteController =
+        FixedExtentScrollController(initialItem: selectedMinute!);
   }
 
   void setSelectedDate(DateTime date) {
@@ -2047,7 +2343,8 @@ class CustomTimePickerState extends State<CustomTimePicker> {
                                       ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
-                                  fontWeight: FontWeight.bold)),
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: R.font.sfpro)),
                         ))
                     .toList())),
         SizedBox(width: 24),
@@ -2079,10 +2376,34 @@ class CustomTimePickerState extends State<CustomTimePicker> {
                                       ? R.color.greenGradientBottom
                                       : R.color.color0xffC0C2C5,
                                   fontSize: 24,
-                                  fontWeight: FontWeight.bold)),
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: R.font.sfpro)),
                         ))
                     .toList()))
       ],
     );
+  }
+}
+
+// Custom TextInputFormatter to detect backspace when text is empty
+class _BackspaceWhenEmptyFormatter extends TextInputFormatter {
+  final VoidCallback onBackspaceWhenEmpty;
+
+  _BackspaceWhenEmptyFormatter({required this.onBackspaceWhenEmpty});
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // If old value was empty and new value is still empty (backspace pressed),
+    // trigger the callback
+    if (oldValue.text.isEmpty && newValue.text.isEmpty) {
+      // Use a small delay to ensure the callback is called after the text update
+      Future.delayed(Duration(milliseconds: 10), () {
+        onBackspaceWhenEmpty();
+      });
+    }
+    return newValue;
   }
 }
