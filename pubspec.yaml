@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: "none"
 
-version: 2.5.0+199
+version: 2.5.0+200
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -159,7 +159,7 @@ dependencies:
   flutter_zoom_meeting:
     git:
       url: https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git
-      ref: 1.0.7
+      ref: 1.0.8
   mixpanel_flutter: 2.4.4
   animated_text_kit: 4.2.2
   geolocator: 11.1.0

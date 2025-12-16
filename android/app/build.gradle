@@ -58,12 +58,13 @@ android {
             // Resolve libc++_shared.so conflicts per Zoom SDK documentation
             // https://developers.zoom.us/docs/meeting-sdk/android/integrate/#troubleshooting-conflicts-with-libc_sharedso
             pickFirsts += [
+                "lib/armeabi-v7a/libc++_shared.so",
                 "lib/arm64-v8a/libc++_shared.so"
             ]
-            // Drop armeabi-v7a to avoid duplicate libc++_shared.so from mobilertc
-            excludes += [
-                "lib/armeabi-v7a/**"
-            ]
+            // Old config - excluded armeabi-v7a (now commented to support 32-bit devices)
+            // excludes += [
+            //     "lib/armeabi-v7a/**"
+            // ]
         }
         resources {
             // Exclude unnecessary resources to reduce APK size
@@ -97,10 +98,10 @@ android {
 
         multiDexEnabled true
 
-        ndk {
-            // Reduce bundle size: ship arm64 only (minSdk 28+)
-            abiFilters = ["arm64-v8a", "x86_64"]
-        }
+        // ndk {
+        //     // Reduce bundle size: ship arm64 only (minSdk 28+)
+        //     abiFilters = ["armeabi-v7a", "arm64-v8a", "x86_64"]
+        // }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -130,11 +131,13 @@ android {
        }
         release {
             signingConfig signingConfigs.release
-            // minifyEnabled true
+            minifyEnabled false  // Explicitly set to false to prevent any code removal
             // shrinkResources true
             // Note: shrinkResources must be false for Zoom SDK to work properly
             shrinkResources false
-            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            // Keep ProGuard rules for plugin compatibility even when minifyEnabled is false
+            // Some plugins (like Zoom SDK) require these rules
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 

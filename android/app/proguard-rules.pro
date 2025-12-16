@@ -58,6 +58,46 @@
 -keep class * implements io.flutter.plugin.common.EventChannel$StreamHandler { *; }
 -keep class * implements io.flutter.plugin.common.BinaryMessenger { *; }
 
+# Keep Pigeon-generated classes for shared_preferences_android
+# CRITICAL: These classes are generated at build time and must not be obfuscated or removed
+-keep class dev.flutter.pigeon.** { *; }
+-keep class dev.flutter.pigeon.shared_preferences_android.** { *; }
+-keepclassmembers class dev.flutter.pigeon.shared_preferences_android.** {
+    <methods>;
+    <fields>;
+    <init>(...);
+    *;
+}
+-keepclassmembers class dev.flutter.pigeon.shared_preferences_android.SharedPreferencesApi {
+    <methods>;
+    <fields>;
+    <init>(...);
+    *;
+}
+
+# Keep shared_preferences_android plugin classes and all implementations
+-keep class io.flutter.plugins.sharedpreferences.** { *; }
+-keep class * extends io.flutter.embedding.engine.plugins.FlutterPlugin { *; }
+-keep class * implements io.flutter.plugins.sharedpreferences.** { *; }
+-keepclassmembers class io.flutter.plugins.sharedpreferences.** {
+    <methods>;
+    <fields>;
+    <init>(...);
+    *;
+}
+
+# Keep all Pigeon codec classes (used for serialization)
+-keep class dev.flutter.pigeon.**$* { *; }
+-keep interface dev.flutter.pigeon.** { *; }
+
+# CRITICAL: Prevent Zoom plugin's minification from affecting shared_preferences_android
+# The flutter_zoom_meeting plugin has minifyEnabled=true, which can affect other plugins
+-dontwarn dev.flutter.pigeon.shared_preferences_android.**
+-dontwarn io.flutter.plugins.sharedpreferences.**
+# Ensure shared_preferences plugin is never removed or obfuscated
+-keep,allowobfuscation,allowshrinking class io.flutter.plugins.sharedpreferences.** { *; }
+-keep,allowobfuscation,allowshrinking class dev.flutter.pigeon.shared_preferences_android.** { *; }
+
 # Keep method channel names to prevent obfuscation
 -keepclassmembers class * {
     public static final java.lang.String *;

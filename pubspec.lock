@@ -1163,8 +1163,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1.0.7"
-      resolved-ref: ae31fd22dde8e48f8becb55f0814b38f8944b803
+      ref: "1.0.8"
+      resolved-ref: bf2bf926b4e73550a674d0a9ea5d2e296856419c
       url: "https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git"
     source: git
     version: "1.0.4"
