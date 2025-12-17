@@ -135,6 +135,10 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                                   child: GestureDetector(
                                     onTap: () {
                                       _selectedImage = null;
+                                      _isCameraInitialized = true;
+                                      setState(() {
+
+                                      });
                                       Navigator.of(context).pop();
                                       Navigator.of(context).pushNamed(NavigatorName.medicine_search);
                                     },
@@ -166,7 +170,10 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
                                     onTap: () {
                                       Navigator.of(context).pop();
                                       _selectedImage = null;
-                                      _captureFromCamera(context);
+                                      _isCameraInitialized = true;
+                                      setState(() {
+
+                                      });
                                     },
                                     child: Container(
                                       height: 48,
@@ -216,6 +223,7 @@ class _CapturePrescriptionPageState extends State<CapturePrescriptionPage> {
 
           if (state is UploadPrescriptionPhotoSuccess) {
             _selectedImage = null;
+            _isCameraInitialized = true;
             // Điều hướng sang PrescriptionAddPage
             Navigator.pushNamed(
               context,
