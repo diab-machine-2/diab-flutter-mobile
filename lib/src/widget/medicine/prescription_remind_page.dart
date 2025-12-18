@@ -442,21 +442,56 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(R.string.cancel.tr()),
+                    child: Container(
+                      padding: EdgeInsets.only(left: 10),
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF00A78E)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24), // 👈 bo tròn mạnh
+                          ),
+                        ),
+                        child: Text(
+                          R.string.cancel.tr(),
+                          style: const TextStyle(
+                            color: Color(0xFF00A78E),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00A78E), // màu xanh gradient thì cần thêm
+                    child: Container(
+                      padding: EdgeInsets.only(right: 10),
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(
+                            context,
+                            TimeOfDay(hour: selectedHour, minute: selectedMinute),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00A78E),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24), // 👈 pill
+                          ),
+                        ),
+                        child: const Text(
+                          "Đồng ý",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
+                        ),
                       ),
-                      onPressed: () {
-                        Navigator.pop(context, TimeOfDay(hour: selectedHour, minute: selectedMinute));
-                      },
-                      child: const Text("Đồng ý"),
                     ),
                   ),
                 ],

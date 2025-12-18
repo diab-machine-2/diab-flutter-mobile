@@ -104,7 +104,7 @@ class LessonModel {
   final String name;
   final int status;
   final int type;
-  final String level;
+  final String? level;
   final String module;
   final int learningStatus;
   final int percentComplete;
@@ -124,7 +124,7 @@ class LessonModel {
     required this.name,
     required this.status,
     required this.type,
-    required this.level,
+    this.level,
     required this.module,
     required this.learningStatus,
     required this.percentComplete,
@@ -146,15 +146,15 @@ class LessonModel {
       name: json['name'],
       status: json['status'],
       type: json['type'],
-      level: json['level'],
-      module: json['module'],
+      level: json['lessonLevelId'],
+      module: json['module'] ?? '',
       learningStatus: json['learningStatus'],
       percentComplete: json['percentComplete'],
-      order: json['order'],
-      levelOrder: json['levelOrder'],
-      isNew: json['isNew'],
-      activeDateTime: json['activeDateTime'],
-      description: json['description'],
+      order: json['order'] ?? 0,
+      levelOrder: json['levelOrder'] ?? 0,
+      isNew: json['isNew'] ?? false,
+      activeDateTime: json['activeDateTime'] ?? 0,
+      description: json['description'] ?? '',
       // lessonTagMappings: json['lessonTagMappings'],
       image: json['image'] != null ? ImagesModel.fromJson(json['image']) : null,
       // lessonLevelOrder: json['lessonLevelOrder'],

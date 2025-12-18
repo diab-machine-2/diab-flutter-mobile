@@ -84,7 +84,7 @@ class TutorialPage extends StatelessWidget {
               child: _buildNeedSupportItem(
                 imageAsset: R.drawable.ic_mobile,
                 text: R.string.use_schedule_medicine.tr(),
-                onTap: () => _navigateToLessonDetail(context, '142c710d-8aed-463f-c86b-08d9f022ae7d', 1),
+                onTap: () => _navigateToLessonDetail(context, '495c2864-6243-47b5-e5c1-08d9f1cbf93f', 1),
               ),
             ),
             const SizedBox(width: 11),

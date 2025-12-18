@@ -11,6 +11,7 @@ import '../../utils/navigator_name.dart';
 import '../../widgets/network_image_widget.dart';
 import '../my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'widgets/input_options_bottom_sheet.dart';
+import 'package:medical/src/utils/utils.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -229,7 +230,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               child: _buildNeedSupportItem(
                 imageAsset: R.drawable.ic_mobile,
                 text: R.string.use_schedule_medicine.tr(),
-                onTap: () => _navigateToLessonDetail('142c710d-8aed-463f-c86b-08d9f022ae7d', 1),
+                onTap: () => _navigateToLessonDetail('495c2864-6243-47b5-e5c1-08d9f1cbf93f', 1),
               ),
             ),
             const SizedBox(width: 11),
@@ -376,7 +377,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               NetWorkImageWidget(
-                imageUrl: lesson.image?.url,
+                imageUrl: Utils.getImageUrl(lesson.image?.id),
                 fit: BoxFit.cover,
                 height: 150.0,
                 width: double.infinity,
