@@ -57,21 +57,32 @@ class PrescriptionModel {
     );
   }
 
-  Map<String, dynamic> toJson({bool includePrescriptionId = true, bool includedMedicationId = true}) => {
-    if (id != null && includePrescriptionId == true) 'id': id,
-    'prescriptionName': prescriptionName,
-    'startDate': startDate != null
-        ? (startDate!.millisecondsSinceEpoch ~/ 1000)
-        : null,
-    'note': note,
-    'patientMedications': patientMedications?.map((e) => e.toJson(includeId: includedMedicationId)).toList(),
-    'reminderTimes': reminderTimes?.map((e) => e.toJson()).toList(),
-    'remainDays': remainDays,
-    'isNotify': isNotify,
-    'description': description,
-    'photos': photos,
-    'status': status,
-  };
+  Map<String, dynamic> toJson({
+    bool includePrescriptionId = true,
+    bool includedMedicationId = true,
+  }) {
+    final json = {
+      if (id != null && includePrescriptionId) 'id': id,
+      'prescriptionName': prescriptionName,
+      'startDate': startDate != null
+          ? (startDate!.millisecondsSinceEpoch ~/ 1000)
+          : null,
+      'note': note,
+      'patientMedications':
+      patientMedications?.map((e) => e.toJson(includeId: includedMedicationId)).toList(),
+      'reminderTimes': reminderTimes?.map((e) => e.toJson()).toList(),
+      'remainDays': remainDays,
+      'isNotify': isNotify,
+      'description': description,
+      'photos': photos,
+      'status': status,
+    };
+
+    // ✨ XÓA TẤT CẢ FIELD NULL
+    json.removeWhere((key, value) => value == null);
+
+    return json;
+  }
 
   PrescriptionModel copyWith({
     String? id,

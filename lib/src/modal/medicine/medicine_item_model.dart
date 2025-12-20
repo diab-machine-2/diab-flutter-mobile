@@ -71,6 +71,7 @@ class MedicineItemModel {
 
   Map<String, dynamic> toJson({bool includeId = true}) {
     final json = {
+      if (includeId && id != null) 'id': id,
       'medicationName': medicationName,
       'moment': moment,
       'frequency': frequency,
@@ -84,9 +85,9 @@ class MedicineItemModel {
       'breakDay': breakDay,
       'note': note,
     };
-    // if (includeId && id != null) {
-    //   json['id'] = id;
-    // }
+
+    json.removeWhere((key, value) => value == null);
+
     return json;
   }
 
@@ -146,7 +147,7 @@ extension MedicineItemModelMapper on MedicineItemModel {
       );
 
       // Parse frequency
-      final freq = int.parse((map['frequency'] as String?) ?? '1');
+      final freq = parseFrequency(map['frequency']);
 
       double morning = 0, afternoon = 0, midDay = 0, night = 0;
 
@@ -185,6 +186,36 @@ extension MedicineItemModelMapper on MedicineItemModel {
         night: night,
       );
     }).toList();
+  }
+
+  static int parseFrequency(dynamic raw) {
+    if (raw == null) return 1;
+
+    // Nếu đã là số
+    if (raw is int) return raw;
+
+    // Nếu là string
+    if (raw is String) {
+      final value = raw.trim().toLowerCase();
+
+      // String là số: "3"
+      final numValue = int.tryParse(value);
+      if (numValue != null) return numValue;
+
+      // String là chữ
+      switch (value) {
+        case 'sáng':
+          return 1;
+        case 'trưa':
+          return 3; // hoặc 2 tuỳ business
+        case 'chiều':
+          return 2;
+        case 'tối':
+          return 4;
+      }
+    }
+
+    return 1; // default fallback
   }
 
   static String? parseUnit(String amount) {
