@@ -55,7 +55,7 @@ class _AddEmoControllerState extends BaseState<AddEmoController> {
       screenName: "kpi_emotional_add",
       screenClass: "AddEmoController",
     );
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'kpi_add_begin',
     //   parameters: {
     //     "screen_name": 'kpi_emotional_add',

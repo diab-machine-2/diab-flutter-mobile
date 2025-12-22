@@ -226,7 +226,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   index: index,
                   onTap: () async {
                     QuizLessonQuiz? quiz = _cubit.listQuiz[index]?.quiz;
-                    await TrackingManager.analytics.logEvent(
+                    await TrackingManager.logEvent(
                       name: 'component_clicked',
                       parameters: {
                         "screen_name": 'quiz_lession',
@@ -264,7 +264,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                     child: listGlobal.isNotEmpty
                         ? CardCourseQuizPage(
                             onAnswerQuestion: (indexAnswer) async {
-                              await TrackingManager.analytics.logEvent(
+                              await TrackingManager.logEvent(
                                 name: 'select_quiz_answer',
                                 parameters: {
                                   "screen_name": 'quiz_lession',
@@ -291,7 +291,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             onTapPrevious: _cubit.selectedCourseIndex == 0
                 ? null
                 : () async {
-                    await TrackingManager.analytics.logEvent(
+                    await TrackingManager.logEvent(
                       name: 'cta_button_clicked',
                       parameters: {
                         "screen_name": 'quiz_lession',
@@ -309,7 +309,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
             isNextButtonActive:
                 lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz - 1,
             onTapNext: () async {
-              await TrackingManager.analytics.logEvent(
+              await TrackingManager.logEvent(
                 name: 'cta_button_clicked',
                 parameters: {
                   "screen_name": 'quiz_lession',
@@ -334,7 +334,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                 widget.onComplete!();
                 //   }
                 _buildDialogCompleted(seeResultCallback: () async {
-                  await TrackingManager.analytics.logEvent(
+                  await TrackingManager.logEvent(
                     name: 'cta_button_clicked',
                     parameters: {
                       "screen_name": 'quiz_lession',
@@ -348,7 +348,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                       duration: duration,
                       preferPosition: AutoScrollPosition.begin);
                 }, retryCallback: () async {
-                  await TrackingManager.analytics.logEvent(
+                  await TrackingManager.logEvent(
                     name: 'cta_button_clicked',
                     parameters: {
                       "screen_name": 'quiz_lession',
@@ -362,7 +362,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                       duration: duration,
                       preferPosition: AutoScrollPosition.begin);
                 }, continueLearnCallback: () async {
-                  await TrackingManager.analytics.logEvent(
+                  await TrackingManager.logEvent(
                     name: 'cta_button_clicked',
                     parameters: {
                       "screen_name": 'quiz_lession',
@@ -373,7 +373,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
                   );
                   onDoneQuiz(context);
                 }, skipCallback: () async {
-                  await TrackingManager.analytics.logEvent(
+                  await TrackingManager.logEvent(
                     name: 'cta_button_clicked',
                     parameters: {
                       "screen_name": 'quiz_lession',
@@ -503,7 +503,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     required VoidCallback skipCallback,
     double? rate,
   }) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_displayed',
       parameters: {
         "screen_name": 'quiz_lession',
@@ -530,7 +530,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   }
 
   Future<void> onDoneQuiz(BuildContext context) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'quiz_lesson_complete',
       parameters: {
         "screen_name": 'quiz_lession',

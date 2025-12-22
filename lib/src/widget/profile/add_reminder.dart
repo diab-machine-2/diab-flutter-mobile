@@ -166,7 +166,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   String ctaButtonName = value
                                       ? "switcher_add_remind_on"
                                       : "switcher_add_remind_off";
-                                  await TrackingManager.analytics.logEvent(
+                                  await TrackingManager.logEvent(
                                     name: 'component_clicked',
                                     parameters: {
                                       "screen_name": 'add_remind',
@@ -227,7 +227,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                                   }
                                   return GestureDetector(
                                     onTap: () async {
-                                      await TrackingManager.analytics.logEvent(
+                                      await TrackingManager.logEvent(
                                         name: 'component_clicked',
                                         parameters: {
                                           "screen_name": 'add_remind',
@@ -292,7 +292,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
                           child: Column(children: [
                             GestureDetector(
                               onTap: () async {
-                                await TrackingManager.analytics.logEvent(
+                                await TrackingManager.logEvent(
                                   name: 'component_clicked',
                                   parameters: {
                                     "screen_name": 'add_remind',
@@ -564,7 +564,7 @@ class _AddReminderControllerState extends BaseState<AddReminderController> {
             selectedIndex: (model.remindType ?? 1) - 1,
             selectedItems: model.days ?? [],
             callback: (index, items) async {
-              await TrackingManager.analytics.logEvent(
+              await TrackingManager.logEvent(
                 name: 'cta_button_clicked',
                 parameters: {
                   "screen_name": 'add_remind',

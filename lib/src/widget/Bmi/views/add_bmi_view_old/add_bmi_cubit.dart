@@ -129,7 +129,7 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
           note,
           selectedTimeFrame!.id);
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_body_weight_add',

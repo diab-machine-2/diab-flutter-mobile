@@ -224,10 +224,11 @@ class HbA1CChartState extends State<HbA1CChart>
                         },
                         touchTooltipData: BarTouchTooltipData(
                           fitInsideVertically: true,
-                          tooltipBgColor: touchIndex == -1
-                              ? R.color.transparent
-                              : toColor(model.trendItems!.items[touchIndex]
-                                  .backgroundColor),
+                          getTooltipColor: (BarChartGroupData group) =>
+                              touchIndex == -1
+                                  ? R.color.transparent
+                                  : toColor(model.trendItems!.items[touchIndex]
+                                      .backgroundColor),
                           tooltipPadding: const EdgeInsets.only(
                               left: 8, right: 8, top: 4, bottom: 0),
                           tooltipMargin: 22,
@@ -238,7 +239,7 @@ class HbA1CChartState extends State<HbA1CChart>
                             int rodIndex,
                           ) {
                             return BarTooltipItem(
-                              rod.y.toString().split('.').join(',') + '%',
+                              rod.toY.toString().split('.').join(',') + '%',
                               TextStyle(
                                 color: touchIndex == -1
                                     ? R.color.white
@@ -251,27 +252,36 @@ class HbA1CChartState extends State<HbA1CChart>
                         ),
                       ),
                       titlesData: FlTitlesData(
-                        rightTitles: SideTitles(showTitles: false),
-                        topTitles: SideTitles(showTitles: false),
-                        show: true,
-                        bottomTitles: SideTitles(
-                          showTitles: true,
-                          getTextStyles: (context, value) => TextStyle(
-                              color: R.color.black,
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal),
-                          margin: 16,
-                          reservedSize: -16,
-                          getTitles: (double value) {
-                            return convertToUTC(
-                                model.trendItems!.items[value.toInt()].date!,
-                                'dd/MM');
-                          },
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
                         ),
-                        leftTitles: SideTitles(
-                          showTitles: false,
-                          getTextStyles: (context, value) =>
-                              TextStyle(color: R.color.black, fontSize: 14),
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        show: true,
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 16,
+                            getTitlesWidget: (value, meta) {
+                              return Text(
+                                convertToUTC(
+                                    model
+                                        .trendItems!.items[value.toInt()].date!,
+                                    'dd/MM'),
+                                style: TextStyle(
+                                  color: R.color.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: false,
+                          ),
                         ),
                       ),
                       gridData: FlGridData(show: false),
@@ -312,7 +322,7 @@ class HbA1CChartState extends State<HbA1CChart>
                         touchTooltipData: LineTouchTooltipData(
                             // showOnTopOfTheChartBoxArea: true,
                             fitInsideVertically: true,
-                            tooltipBgColor:
+                            getTooltipColor: (LineBarSpot touchedSpot) =>
                                 toColor(model.trendItems!.items.last.color),
                             tooltipPadding: const EdgeInsets.only(
                                 left: 8, right: 8, top: 4, bottom: 4),
@@ -334,21 +344,24 @@ class HbA1CChartState extends State<HbA1CChart>
                             }),
                       ),
                       titlesData: FlTitlesData(
-                        rightTitles: SideTitles(showTitles: false),
-                        topTitles: SideTitles(showTitles: false),
-                        bottomTitles: SideTitles(
-                          margin: 16,
-                          reservedSize: -16,
-                          showTitles: true,
-                          getTitles: (value) {
-                            return '';
-                          },
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
                         ),
-                        leftTitles: SideTitles(
-                          showTitles: false,
-                          getTitles: (value) {
-                            return '';
-                          },
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 16,
+                            getTitlesWidget: (value, meta) => const Text(''),
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: false,
+                            getTitlesWidget: (value, meta) => const Text(''),
+                          ),
                         ),
                       ),
                       borderData: FlBorderData(
@@ -360,7 +373,7 @@ class HbA1CChartState extends State<HbA1CChart>
                       minY: minY.toDouble(),
                       lineBarsData: linesBarData(model),
                     ),
-                    swapAnimationDuration: Duration(milliseconds: 250),
+                    duration: Duration(milliseconds: 250),
                   )),
             ),
             SizedBox(height: 340)
@@ -378,8 +391,12 @@ class HbA1CChartState extends State<HbA1CChart>
         BarChartRodData(
             width: 20,
             borderRadius: BorderRadius.circular(0),
-            y: model.trendItems!.items[index].hbA1C!,
-            colors: [color.withOpacity(0.5), color]),
+            toY: model.trendItems!.items[index].hbA1C!,
+            gradient: LinearGradient(
+              colors: [color.withOpacity(0.5), color],
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+            )),
       ],
     );
   }
@@ -391,7 +408,7 @@ class HbA1CChartState extends State<HbA1CChart>
             (index + 0.5).toDouble(), model.trendItems!.items[index].hbA1C!);
       }),
       isCurved: false,
-      colors: [R.color.black],
+      color: R.color.black,
       barWidth: 1,
       isStrokeCapRound: true,
       dotData: FlDotData(

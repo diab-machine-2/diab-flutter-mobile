@@ -1014,7 +1014,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_emotional_add',

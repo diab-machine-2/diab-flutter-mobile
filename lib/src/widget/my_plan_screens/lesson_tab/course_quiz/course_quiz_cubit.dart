@@ -95,7 +95,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
       if (listQuiz.isNotEmpty != true) {
         emit(const CourseQuizDone());
       } else {
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'quiz_lesson_begin',
           parameters: {
             "screen_name": 'quiz_lession',
@@ -215,7 +215,7 @@ class CourseQuizCubit extends Cubit<CourseQuizState> {
   }
 
   Future<void> setCompletedLessonQuiz() async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'lesson_complete',
       parameters: {
         "screen_name": 'quiz_lession',

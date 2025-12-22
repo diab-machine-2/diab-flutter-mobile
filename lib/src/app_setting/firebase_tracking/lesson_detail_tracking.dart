@@ -20,7 +20,7 @@ class LessonDetailTracking {
     required String objectTitle,
     required String objectId,
   }) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'lesson_begin',
       parameters: {
         'object_id': objectId,
@@ -31,7 +31,7 @@ class LessonDetailTracking {
   }
 
   static Future<void> tabLessonRecommend() async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'my_schedule',
@@ -68,7 +68,7 @@ class LessonDetailTracking {
         componentAction = 'video_play';
         break;
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_video_action',
       parameters: {
         'object_id': objectId,
@@ -86,11 +86,11 @@ class LessonDetailTracking {
     required String? objectId,
     required String? objectTitle,
   }) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_video_hit_target',
       parameters: {
-        'object_id': objectId,
-        'object_title': objectTitle,
+        'object_id': objectId ?? '',
+        'object_title': objectTitle ?? '',
         "screen_name": screenName,
         'component_name': 'video_player_lesson',
       },
@@ -101,7 +101,7 @@ class LessonDetailTracking {
     required String objectId,
     required String objectTitle,
   }) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": screenName,
@@ -131,7 +131,7 @@ class LessonDetailTracking {
     } else {
       objectValue = '100%';
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_scrolling',
       parameters: {
         "screen_name": screenName,
@@ -147,12 +147,12 @@ class LessonDetailTracking {
     required String? objectId,
     required String? objectTitle,
   }) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'lesson_complete',
       parameters: {
         "screen_name": screenName,
-        'object_id': objectId,
-        'object_title': objectTitle
+        'object_id': objectId ?? '',
+        'object_title': objectTitle ?? ''
       },
     );
   }

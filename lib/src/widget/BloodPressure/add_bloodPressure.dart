@@ -157,7 +157,7 @@ class _AddBloodPressureControllerState
         screenClass: "AddBloodPressureController");
 
     AppSettings.currentScreenName = 'kpi_blood_pressure_add';
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'kpi_glycemic_add',
       parameters: {
         "screen_name": 'kpi_blood_pressure_add',
@@ -1499,7 +1499,7 @@ class _AddBloodPressureControllerState
           reason,
           paths);
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_blood_pressure_add',

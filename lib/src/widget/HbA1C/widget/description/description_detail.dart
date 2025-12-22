@@ -68,10 +68,9 @@ class DetailDescription extends StatelessWidget {
                                             : data?.content4) ??
                                         "",
                                     onLinkTap: (String? url,
-                                        RenderContext context,
                                         Map<String, String> attributes,
-                                        dom.Element? element) async {
-                                      await Utils.launchURL(url ?? "");
+                                        dom.Element? element) {
+                                      Utils.launchURL(url ?? "");
                                     })
                               ]),
                             ),

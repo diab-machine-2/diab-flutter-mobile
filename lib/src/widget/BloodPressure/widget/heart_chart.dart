@@ -237,8 +237,9 @@ class HeartChartState extends State<HeartChart>
                                   showOnTopOfTheChartBoxArea: true,
                                   fitInsideVertically: true,
                                   fitInsideHorizontally: true,
-                                  tooltipBgColor: toColor(model.colors!.first)
-                                      .withOpacity(0.2),
+                                  getTooltipColor: (LineBarSpot touchedSpot) =>
+                                      toColor(model.colors!.first)
+                                          .withOpacity(0.2),
                                   tooltipRoundedRadius: 8,
                                   getTooltipItems:
                                       (List<LineBarSpot> lineBarsSpot) {

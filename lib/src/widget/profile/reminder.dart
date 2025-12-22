@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -155,7 +154,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer {
               ])),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              await TrackingManager.analytics.logEvent(
+              await TrackingManager.logEvent(
                 name: 'cta_button_clicked',
                 parameters: {
                   "screen_name": 'remind',
@@ -177,25 +176,37 @@ class _ReminderControllerState extends State<ReminderController> with Observer {
         Navigator.pushNamed(context, NavigatorName.add_reminder,
             arguments: {'type': 'update', 'id': models![index].id});
       },
-      child: Slidable(
-        actionPane: SlidableDrawerActionPane(),
-        secondaryActions: [
-          IconSlideAction(
+      child: Dismissible(
+        key: ValueKey(models![index].id),
+        direction: DismissDirection.endToStart,
+        confirmDismiss: (_) async {
+          _showDialogDelete(context, models![index]);
+          return false;
+        },
+        background: Container(
+          margin: const EdgeInsets.only(left: 4),
+          decoration: BoxDecoration(
             color: R.color.color0xffFF5552,
-            iconWidget:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-              SizedBox(height: 4),
-              Text(R.string.detele_notificaiton.tr(),
-                  style: TextStyle(
-                      color: R.color.white, fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center),
-            ]),
-            onTap: () {
-              _showDialogDelete(context, models![index]);
-            },
+            borderRadius: BorderRadius.circular(8),
           ),
-        ],
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+              const SizedBox(height: 4),
+              Text(
+                R.string.detele_notificaiton.tr(),
+                style: TextStyle(
+                    color: R.color.white, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
         child: Padding(
           padding: EdgeInsets.only(left: 16, right: 16),
           child: Container(
@@ -215,7 +226,7 @@ class _ReminderControllerState extends State<ReminderController> with Observer {
                   activeColor: R.color.greenGradientBottom,
                   value: models![index].isActive!,
                   onChanged: (value) async {
-                    await TrackingManager.analytics.logEvent(
+                    await TrackingManager.logEvent(
                       name: 'component_clicked',
                       parameters: {
                         "screen_name": 'remind',

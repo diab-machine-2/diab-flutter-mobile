@@ -432,13 +432,15 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                           touchTooltipData: BarTouchTooltipData(
                               fitInsideVertically: true,
                               fitInsideHorizontally: true,
-                              tooltipBgColor: touchIndex == null
-                                  ? toColor(model
-                                      .trendItems
-                                      .items[model.trendItems.items.length - 1]
-                                      .targetColor)
-                                  : toColor(model.trendItems.items[touchIndex!]
-                                      .targetColor),
+                              getTooltipColor: (BarChartGroupData group) =>
+                                  touchIndex == null
+                                      ? toColor(model
+                                          .trendItems
+                                          .items[
+                                              model.trendItems.items.length - 1]
+                                          .targetColor)
+                                      : toColor(model.trendItems
+                                          .items[touchIndex!].targetColor),
                               maxContentWidth: 180,
                               tooltipPadding: const EdgeInsets.only(
                                   top: 8, bottom: 4, left: 8, right: 8),
@@ -481,44 +483,54 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
                             setState(() {});
                           }),
                       titlesData: FlTitlesData(
-                        rightTitles: SideTitles(showTitles: false),
-                        topTitles: SideTitles(showTitles: false),
-                        show: true,
-                        bottomTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: -16,
-                          margin: 16,
-                          getTextStyles: (context, value) => TextStyle(
-                              color: R.color.black,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400),
-                          getTitles: (double value) {
-                            if (model.trendItems.items[value.toInt()]
-                                        .firstDateOfWeek !=
-                                    null &&
-                                model.trendItems.items[value.toInt()]
-                                        .lastDateOfWeek !=
-                                    null) {
-                              return convertToUTC(
-                                      model.trendItems.items[value.toInt()]
-                                          .firstDateOfWeek!,
-                                      'dd' + '-') +
-                                  convertToUTC(
-                                      model.trendItems.items[value.toInt()]
-                                          .lastDateOfWeek!,
-                                      'dd/MM');
-                            }
-                            return convertToUTC(
-                                model.trendItems.items[value.toInt()].date!,
-                                'dd/MM');
-                          },
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
                         ),
-                        leftTitles: SideTitles(
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        show: true,
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 16,
+                            getTitlesWidget: (value, meta) {
+                              String text;
+                              if (model.trendItems.items[value.toInt()]
+                                          .firstDateOfWeek !=
+                                      null &&
+                                  model.trendItems.items[value.toInt()]
+                                          .lastDateOfWeek !=
+                                      null) {
+                                text = convertToUTC(
+                                        model.trendItems.items[value.toInt()]
+                                            .firstDateOfWeek!,
+                                        'dd' + '-') +
+                                    convertToUTC(
+                                        model.trendItems.items[value.toInt()]
+                                            .lastDateOfWeek!,
+                                        'dd/MM');
+                              } else {
+                                text = convertToUTC(
+                                    model.trendItems.items[value.toInt()].date!,
+                                    'dd/MM');
+                              }
+                              return Text(
+                                text,
+                                style: TextStyle(
+                                  color: R.color.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
                             showTitles: false,
-                            getTextStyles: (context, value) => TextStyle(
-                                color: R.color.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400)),
+                          ),
+                        ),
                       ),
                       gridData: FlGridData(show: false),
                       borderData: FlBorderData(
@@ -580,8 +592,8 @@ class ExercrisesTrendChartState extends State<ExercrisesTrendChart>
         BarChartRodData(
             width: 20,
             borderRadius: BorderRadius.circular(0),
-            y: (model.trendItems.items[index].duration! / 60),
-            colors: [toColor(model.trendItems.items[index].targetColor)]),
+            toY: (model.trendItems.items[index].duration! / 60),
+            color: toColor(model.trendItems.items[index].targetColor)),
       ],
     );
   }

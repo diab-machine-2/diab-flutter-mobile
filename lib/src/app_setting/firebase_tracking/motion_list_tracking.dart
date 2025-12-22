@@ -17,7 +17,7 @@ class MotionListTracking {
   }
 
   static Future<void> clickChangeRoadMap() async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'cta_button_clicked',
       parameters: {
         'cta_button_name': 'cta_exercise_route',
@@ -29,7 +29,7 @@ class MotionListTracking {
     required String objectTitle,
     required String objectId,
   }) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'cta_button_clicked',
       parameters: {
         "screen_name": screenName,
@@ -44,7 +44,7 @@ class MotionListTracking {
     required String objectTitle,
     required String objectId,
   }) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'cta_button_clicked',
       parameters: {
         "screen_name": screenName,
@@ -76,7 +76,7 @@ class MotionListTracking {
         break;
     }
 
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": screenName,
@@ -111,12 +111,12 @@ class MotionListTracking {
         status = 'lock';
         break;
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         'screen_name': screenName,
         'component_name': 'calendar_motion_select_day',
-        'object_title': objectTitle,
+        'object_title': objectTitle ?? '',
         'object_index': objectIndex,
         'object_status': status,
       },

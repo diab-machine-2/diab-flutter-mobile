@@ -391,7 +391,7 @@ class _DatePickerModeToggleButtonState
                           child: Text(
                             widget.title,
                             overflow: TextOverflow.ellipsis,
-                            style: textTheme.subtitle2?.copyWith(
+                            style: textTheme.titleSmall?.copyWith(
                               color: controlColor,
                             ),
                           ),
@@ -1280,7 +1280,7 @@ class _YearPickerState extends State<_YearPicker> {
     } else {
       textColor = colorScheme.onSurface.withOpacity(0.87);
     }
-    final TextStyle? itemStyle = textTheme.bodyText1?.apply(color: textColor);
+    final TextStyle? itemStyle = textTheme.bodyLarge?.apply(color: textColor);
 
     BoxDecoration? decoration;
     if (isSelected) {

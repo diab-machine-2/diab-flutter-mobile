@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -390,20 +391,34 @@ class _CalendarControllerState extends State<CalendarController> {
               ),
               Row(
                 children: [
-                  Image.network(
-                    widget.pickSlot.coachAvatar.isEmpty
-                        ? Const.DEFAULT_BG_COACH
-                        : widget.pickSlot.coachAvatar,
-                    height: 118,
-                    width: 98,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.network(
-                        Const.DEFAULT_BG_COACH,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.pickSlot.coachAvatar.isEmpty
+                          ? Const.DEFAULT_BG_COACH
+                          : widget.pickSlot.coachAvatar,
+                      height: 118,
+                      width: 98,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
                         height: 118,
                         width: 98,
-                      );
-                    },
+                        color: Colors.grey[300],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => CachedNetworkImage(
+                        imageUrl: Const.DEFAULT_BG_COACH,
+                        height: 118,
+                        width: 98,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
+                  GapW(16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -6,7 +6,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:medical/res/R.dart';
@@ -30,7 +29,6 @@ import 'package:medical/src/widget/base/text_field_custom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
-import 'package:medical/src/widgets/qr_scan_widget.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class RegisterController extends StatefulWidget {
@@ -82,7 +80,7 @@ class _RegisterControllerState extends State<RegisterController> {
     AppSettings.currentScreenName = 'sign_up';
     // phoneFocusNode.addListener(() async {
     //   if (phoneFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -92,7 +90,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //     );
     //   } else {
     //     bool isValid = phone.length == 9 || phone.length == 10;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -106,7 +104,7 @@ class _RegisterControllerState extends State<RegisterController> {
     // });
     // passwordFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -116,7 +114,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //     );
     //   } else {
     //     bool isValid = password.length >= 6;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -131,7 +129,7 @@ class _RegisterControllerState extends State<RegisterController> {
     // });
     // confirmPasswordFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -150,7 +148,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //       errorMessage = R.string.nhap_lai_mat_khau_khong_chinh_xac.tr();
     //       validateState = 'fail';
     //     }
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'text_field_input',
     //   parameters: {
     //     "screen_name": 'sign_up',
@@ -164,7 +162,7 @@ class _RegisterControllerState extends State<RegisterController> {
     // });
     // referralCodeFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -180,7 +178,7 @@ class _RegisterControllerState extends State<RegisterController> {
     //       errorMessage = R.string.data_input_not_valid.tr();
     //       validateState = 'fail';
     //     }
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'sign_up',
@@ -424,7 +422,7 @@ class _RegisterControllerState extends State<RegisterController> {
   }
 
   verify() async {
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'cta_button_clicked',
     //   parameters: {
     //     "screen_name": 'sign_up',
@@ -553,73 +551,6 @@ class _RegisterControllerState extends State<RegisterController> {
         ));
       },
     );
-  }
-
-  loginFB() async {
-    final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logIn([R.string.email.tr()]);
-    dynamic profile;
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        try {
-          BotToast.showLoading();
-          final token = result.accessToken?.token;
-          final graphResponse = await http.get(Uri.parse(
-              'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token'));
-          profile = jsonDecode(graphResponse.body);
-          await LoginClient().login({
-            "client_id": Const.CLIENT_ID,
-            "client_secret": Const.CLIENT_SECRET,
-            "grant_type": "external",
-            "external_token": token,
-            "provider": 'Facebook'
-          });
-          final user = await UserClient().fetchUser();
-          BotToast.closeAllLoading();
-          if (user == null) {
-            registerAccount(
-                result.accessToken?.userId,
-                result.accessToken?.token,
-                'Facebook',
-                profile['name'] ?? R.string.user_name_default.tr(),
-                true);
-            // Navigator.pushReplacementNamed(context, NavigatorName.update_info, arguments: {
-            //   'type': 'facebook',
-            //   'facebookAccount': result,
-            //   'userInfo': profile
-            // });
-          } else {
-            LoginRouting().navigateToHome(context);
-          }
-        } catch (error) {
-          BotToast.closeAllLoading();
-          if (error is Error) {
-            if (error.code == '5' && profile != null) {
-              registerAccount(
-                  result.accessToken?.userId,
-                  result.accessToken?.token,
-                  'Facebook',
-                  profile['name'] ?? R.string.user_name_default.tr(),
-                  false);
-              // Navigator.pushReplacementNamed(context, NavigatorName.update_info,
-              //     arguments: {
-              //       'type': 'facebook',
-              //       'facebookAccount': result,
-              //       'userInfo': profile
-              //     });
-            }
-          } else {
-            Message.showToastMessage(context, error.toString());
-          }
-        }
-
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        break;
-      case FacebookLoginStatus.error:
-        Message.showToastMessage(context, result.errorMessage);
-        break;
-    }
   }
 
   loginGG() async {

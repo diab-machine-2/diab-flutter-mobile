@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -1359,88 +1358,10 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
     }
   }
 
-  linkedFacebook() async {
-    final user = AppSettings.userInfo!;
-
-    if (user.isLinkedFacebook == true) {
-      if (user.firstLinkedAccount != 'Facebook') {
-        unlinkedFacebook();
-      }
-      return;
-    }
-    final facebookLogin = FacebookLogin();
-    await facebookLogin.logOut();
-    final resultFacebook = await facebookLogin.logIn([R.string.email.tr()]);
-    switch (resultFacebook.status) {
-      case FacebookLoginStatus.loggedIn:
-        try {
-          BotToast.showLoading();
-
-          final result = await LoginClient().linkedAccountOTP({
-            'providerName': 'Facebook',
-            'providerKey': resultFacebook.accessToken?.userId,
-            'phoneNumber': user.phoneNumber
-          });
-          BotToast.closeAllLoading();
-          if (result.isSuccess != true) {
-            _showDialogError(user.phoneNumber);
-          } else {
-            Navigator.pushNamed(context, NavigatorName.verify, arguments: {
-              'type': 'linked_facebook',
-              'otp': result.token,
-              'phone': user.phoneNumber,
-              'remainingRequestCount': result.remainingRequestCount,
-              'facebookAccount': resultFacebook
-            });
-          }
-        } catch (e, _) {
-          BotToast.closeAllLoading();
-          if (e is Error) {
-            if (e.code == 'USER002') {
-              Message.showToastMessage(
-                  context, R.string.account_already_used.tr());
-            } else {
-              Message.showToastMessage(context, e.message);
-            }
-          }
-        }
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        break;
-      case FacebookLoginStatus.error:
-        Message.showToastMessage(context, resultFacebook.errorMessage);
-        break;
-    }
-  }
-
   unlinkedGoogle() async {
     try {
       BotToast.showLoading();
       await LoginClient().unLinkedAccount({'providerName': 'Google'});
-      final refreshToken = await AppSettings.getRefreshToken();
-      await LoginClient().login({
-        "client_id": Const.CLIENT_ID,
-        "client_secret": Const.CLIENT_SECRET,
-        "grant_type": "refresh_token",
-        "refresh_token": refreshToken
-      });
-      await UserClient().fetchUser();
-      BotToast.closeAllLoading();
-      Message.showToastMessage(context, R.string.unlinked.tr());
-    } catch (e, _) {
-      BotToast.closeAllLoading();
-      if (e is Error) {
-        Message.showToastMessage(context, e.message);
-      } else {
-        Message.showToastMessage(context, e.toString());
-      }
-    }
-  }
-
-  unlinkedFacebook() async {
-    try {
-      BotToast.showLoading();
-      await LoginClient().unLinkedAccount({'providerName': 'Facebook'});
       final refreshToken = await AppSettings.getRefreshToken();
       await LoginClient().login({
         "client_id": Const.CLIENT_ID,

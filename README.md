@@ -15,6 +15,60 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+## Flutter Version
+
+This project uses **Flutter 3.27.4** (stable channel).
+Tools • Dart 3.6.2 • DevTools 2.40.3
+
+To verify your Flutter version:
+```bash
+flutter --version
+```
+
+## Zoom Meeting SDK Setup
+
+This project uses Zoom Meeting SDK for video conferencing functionality.
+
+### SDK Versions
+- **Android**: v6.3.10.27979
+- **iOS**: v6.3.10.22850
+
+### Setting Up Zoom Meeting SDK
+
+To set up the Zoom Meeting SDK in this project:
+
+1. **Add dependency**: First, add `flutter_zoom_meeting` as a dependency in your `pubspec.yaml` file:
+   ```yaml
+   flutter_zoom_meeting:
+     git:
+       url: https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git
+       ref: 1.0.8
+   ```
+
+2. **Get dependencies**: Run the following command to fetch the package:
+   ```bash
+   flutter pub get
+   ```
+
+3. **Download SDK files**: Download the SDK files from Google Drive.
+
+4. **Locate flutter_zoom_meeting package**: Find the `flutter_zoom_meeting` package path on your PC. It's typically located in:
+   - Windows: `C:\Users\<YourUsername>\AppData\Local\Pub\Cache\git\flutter_zoom_meeting_sdk-<hash>`
+   - Or `C:\Users\<YourUsername>\.pub-cache\git\flutter_zoom_meeting_sdk-<hash>`
+   - Or check your Flutter packages cache directory
+
+5. **Add Android SDK files**: Place the Android SDK files in:
+   ```
+   flutter_zoom_meeting/android/libs/
+   ```
+
+6. **Add iOS SDK files**: Place the iOS SDK files in:
+   ```
+   flutter_zoom_meeting/ios/
+   ```
+
+**Note**: After running `pub get`, you must run the setup script to get Zoom SDK for the first time. Make sure the native SDK files match the versions specified above (Android: v6.3.10.27979, iOS: v6.3.10.22850).
+
 ## Building APK for Development
 
 To build an APK file for the development environment that can be shared with clients, follow these steps:

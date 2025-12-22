@@ -315,7 +315,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
         context,
         onTapSync: () async {
           Navigator.pushNamed(context, NavigatorName.sync_screen);
-          await TrackingManager.analytics.logEvent(
+          await TrackingManager.logEvent(
             name: 'zalo_select_sync',
             parameters: {
               "screen_name": widget.screenName,
@@ -327,7 +327,7 @@ class _HomeControllerState extends State<HomeController> with Observer {
           Navigator.pop(context);
           await AppSettings.setIsFirstDownload(false);
           try {
-            await TrackingManager.analytics.logEvent(
+            await TrackingManager.logEvent(
               name: 'zalo_select_sync',
               parameters: {
                 "screen_name": widget.screenName,

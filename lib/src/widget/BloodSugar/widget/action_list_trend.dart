@@ -38,7 +38,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
   }
 
   Future firebaseSetup() async {
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'component_displayed',
     //   parameters: {
     //     "screen_name": 'kpi_glycemic_add',
@@ -81,7 +81,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 GestureDetector(
                   onTap: () async {
-                    // await TrackingManager.analytics.logEvent(
+                    // await TrackingManager.logEvent(
                     //   name: 'cta_button_clicked',
                     //   parameters: {
                     //     "screen_name": 'time_section_glycemic',
@@ -119,7 +119,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
             child: Center(
               child: GestureDetector(
                 onTap: () async {
-                  // await TrackingManager.analytics.logEvent(
+                  // await TrackingManager.logEvent(
                   //   name: 'cta_button_clicked',
                   //   parameters: {
                   //     "screen_name": 'time_section_glycemic',
@@ -164,7 +164,7 @@ class _ActionListTrendState extends State<ActionListTrend> {
         children: [
           GestureDetector(
             onTap: () async {
-              // await TrackingManager.analytics.logEvent(
+              // await TrackingManager.logEvent(
               //   name: 'component_clicked',
               //   parameters: {
               //     "screen_name": 'time_section_glycemic',

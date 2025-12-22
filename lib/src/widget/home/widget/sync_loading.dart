@@ -39,7 +39,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
 
   loginSuccess(String loginFrom) async {
     try {
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'login',
         parameters: {
           "screen_name": 'login',
@@ -70,7 +70,7 @@ class _SyncLoadingControllerState extends State<SyncLoadingController> {
           widget.phoneNumber, widget.providerKey);
       AppSettings.isSyncSuccess = true;
       await AppSettings.setIsFirstDownload(false);
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'zalo_sync',
         parameters: {
           "screen_name": "Zalo Sync Completed",
