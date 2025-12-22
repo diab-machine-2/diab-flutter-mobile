@@ -408,8 +408,6 @@ class _StatisticalDataViewButton extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        _bmiBloc.fetchHistoricalWeight();
-
         Navigator.pushNamed(
           context,
           NavigatorName.bmiHistoricalPage,
@@ -493,7 +491,7 @@ class _StatisticalDataViewButton extends StatelessWidget {
 //       screenName: "kpi_body_weight_add",
 //       screenClass: "AddBmiController",
 //     );
-//     // await TrackingManager.analytics.logEvent(
+//     // await TrackingManager.logEvent(
 //     //   name: 'kpi_add_begin',
 //     //   parameters: {
 //     //     "screen_name": 'kpi_body_weight_add',

@@ -343,7 +343,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                     status = 'lock';
                     break;
                 }
-                await TrackingManager.analytics.logEvent(
+                await TrackingManager.logEvent(
                   name: 'component_clicked',
                   parameters: {
                     "screen_name": 'my_schedule',

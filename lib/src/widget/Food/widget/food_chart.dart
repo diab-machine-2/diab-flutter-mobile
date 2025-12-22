@@ -338,11 +338,14 @@ class FoodChartState extends State<FoodChart>
                             touchTooltipData: BarTouchTooltipData(
                               fitInsideVertically: true,
                               fitInsideHorizontally: true,
-                              tooltipBgColor: touchIndex == -1
-                                  ? R.color.transparent
-                                  : toColor(isEnergyTab
-                                      ? model.energyChart[touchIndex].colorCode
-                                      : model.carbChart[touchIndex].colorCode),
+                              getTooltipColor: (BarChartGroupData group) =>
+                                  touchIndex == -1
+                                      ? R.color.transparent
+                                      : toColor(isEnergyTab
+                                          ? model
+                                              .energyChart[touchIndex].colorCode
+                                          : model
+                                              .carbChart[touchIndex].colorCode),
                               tooltipPadding: const EdgeInsets.only(
                                   left: 12, right: 12, top: 4, bottom: 0),
                               tooltipMargin: 22,
@@ -363,27 +366,36 @@ class FoodChartState extends State<FoodChart>
                             ),
                           ),
                           titlesData: FlTitlesData(
-                            rightTitles: SideTitles(showTitles: false),
-                            topTitles: SideTitles(showTitles: false),
-                            show: true,
-                            bottomTitles: SideTitles(
-                              margin: 16,
-                              reservedSize: -16,
-                              showTitles: true,
-                              getTextStyles: (context, value) => TextStyle(
-                                  color: R.color.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.normal),
-                              getTitles: (double value) {
-                                return convertToUTC(
-                                    model.energyChart[value.toInt()].date!,
-                                    'dd/MM');
-                              },
+                            rightTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
                             ),
-                            leftTitles: SideTitles(
+                            topTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            show: true,
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 16,
+                                getTitlesWidget: (value, meta) {
+                                  return Text(
+                                    convertToUTC(
+                                        model.energyChart[value.toInt()].date!,
+                                        'dd/MM'),
+                                    style: TextStyle(
+                                      color: R.color.black,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
                                 showTitles: false,
-                                getTextStyles: (context, value) => TextStyle(
-                                    color: R.color.black, fontSize: 14)),
+                              ),
+                            ),
                           ),
                           gridData: FlGridData(show: false),
                           borderData: FlBorderData(
@@ -417,8 +429,8 @@ class FoodChartState extends State<FoodChart>
         BarChartRodData(
             width: 20,
             borderRadius: BorderRadius.circular(0),
-            y: model.value!,
-            colors: [R.color.transparent],
+            toY: model.value!,
+            color: R.color.transparent,
             rodStackItems: List.generate(model.details.length, (idx) {
               final total = totalValue;
               totalValue += model.details[idx].value!;

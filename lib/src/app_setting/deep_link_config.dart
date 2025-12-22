@@ -1,27 +1,27 @@
 import 'dart:async';
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:medical/src/app_setting/dynamic_link_config.dart';
-import 'package:medical/src/utils/const.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:app_links/app_links.dart';
 
 class DeepLinkConfig {
   DeepLinkConfig._privateConstructor();
   static final DeepLinkConfig instance = DeepLinkConfig._privateConstructor();
 
-  late StreamSubscription _subUni;
-  late StreamSubscription _subLink;
+  final AppLinks _appLinks = AppLinks();
+  StreamSubscription? _subLink;
 
   String? sharedCode;
 
   static void setUpHandleDeepLink(
       {required Function(String? code) onHaveLink}) {
-    linkStream.listen((link) {
+    instance._subLink = instance._appLinks.uriLinkStream.listen((Uri? uri) {
+      if (uri == null) return;
+      String link = uri.toString();
       bool haveMeetLink = _tryCaptureMeetLink(link);
       if (haveMeetLink) return;
-      bool ignorePatterns = instance._branchioIgnorePatterns(link ?? "");
+      bool ignorePatterns = instance._branchioIgnorePatterns(link);
       if (ignorePatterns) return;
-      if (link != null &&
-          !link.contains("click.diab.com.vn") &&
+      if (!link.contains("click.diab.com.vn") &&
           !link.contains("referralCode") &&
           !link.contains("activityId") &&
           !link.contains("lessonId") &&
@@ -29,14 +29,13 @@ class DeepLinkConfig {
           !link.contains('diabvnpay')) {
         onHaveLink(getShareCodeFromUrl(link));
       }
-      // else if (link != null &&
-      //     !link.contains("click.diab.com.vn") &&
+      // else if (!link.contains("click.diab.com.vn") &&
       //     !link.contains("referralCode") &&
       //     !link.contains("activityId") &&
       //     !link.contains("lessonId") &&
       //     !link.contains("calendar")) {
       //   if (Platform.isAndroid) {
-      //     DynamicLinkConfig.instance.progressDynamicLink(link);
+      //     DynamicLinkConfig.instance.progressDynamicLink(uri);
       //   }
       // }
     });
@@ -44,23 +43,24 @@ class DeepLinkConfig {
 
   Future<String?> getInitLink() async {
     try {
-      final String? initialLink = await getInitialLink();
+      final Uri? initialUri = await _appLinks.getInitialLink();
+      if (initialUri == null) return null;
+      String initialLink = initialUri.toString();
       bool haveMeetLink = _tryCaptureMeetLink(initialLink);
       if (haveMeetLink) return null;
-      bool ignorePatterns = instance._branchioIgnorePatterns(initialLink ?? "");
+      bool ignorePatterns = instance._branchioIgnorePatterns(initialLink);
       if (ignorePatterns) return null;
-      if (initialLink != null &&
-          !initialLink.contains("click.diab.com.vn") &&
+      if (!initialLink.contains("click.diab.com.vn") &&
           !initialLink.contains("referralCode") &&
           !initialLink.contains("calendar") &&
           !initialLink.contains('diabvnpay')) {
         sharedCode = getShareCodeFromUrl(initialLink);
         return sharedCode;
       }
-    } on PlatformException {}
-    try {
-      final Uri? _ = await getInitialUri();
-    } on FormatException {}
+    } on PlatformException {
+    } catch (e) {
+      // Handle any other exceptions
+    }
     return null;
   }
 
@@ -96,8 +96,7 @@ class DeepLinkConfig {
   // }
 
   void dispose() {
-    _subLink.cancel();
-    _subUni.cancel();
+    _subLink?.cancel();
   }
 
   static String getShareCodeFromUrl(String? url) {

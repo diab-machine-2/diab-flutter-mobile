@@ -40,7 +40,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
   }
 
   Future firebaseSetup() async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_displayed',
       parameters: {
         "screen_name": 'my_schedule',
@@ -60,7 +60,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
           background: R.drawable.bg_welcome,
           showCloseBackButton: true,
           onTapClose: () async {
-            await TrackingManager.analytics.logEvent(
+            await TrackingManager.logEvent(
               name: 'component_clicked',
               parameters: {
                 "screen_name": 'my_schedule',
@@ -162,7 +162,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
         //       fontWeight: FontWeight.w400,
         //     ),
         //     onTap: () async {
-        //       await TrackingManager.analytics.logEvent(
+        //       await TrackingManager.logEvent(
         //         name: 'component_clicked',
         //         parameters: {
         //           "screen_name": 'my_schedule',
@@ -205,7 +205,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
                   nameFilter.add(element?.text ?? "");
                 }
               });
-              await TrackingManager.analytics.logEvent(
+              await TrackingManager.logEvent(
                 name: 'cta_button_clicked',
                 parameters: {
                   "screen_name": 'my_schedule',
@@ -232,7 +232,7 @@ class _LessonFilterPageState extends State<LessonFilterPage> {
             borderColor: R.color.greenGradientBottom,
             textColor: R.color.greenGradientBottom,
             onPressed: () async {
-              await TrackingManager.analytics.logEvent(
+              await TrackingManager.logEvent(
                 name: 'cta_button_clicked',
                 parameters: {
                   "screen_name": 'my_schedule',

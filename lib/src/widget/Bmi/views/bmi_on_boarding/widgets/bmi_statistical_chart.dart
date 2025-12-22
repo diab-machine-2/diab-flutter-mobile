@@ -20,9 +20,9 @@ class BmiStatisticalChart extends StatefulWidget {
 }
 
 class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
-  static final double _heightOfChart = 120;
+  static final double _heightOfChart = 160;
   static final double _widthOfSideBar = 32;
-  static final double _marginOfWeight = 15;
+  static final double _marginOfWeight = 10; // Reduced margin to fit more data
   static final double _itemWidth = 40;
 
   late BmiBloc _bmiBloc;
@@ -57,13 +57,59 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
           double widthChart = enableScroll
               ? data.length * _itemWidth
               : MediaQuery.of(context).size.width - _widthOfSideBar - 24;
-          double _minWeightOnChart = _bmiBloc.getLowestOfChart(_marginOfWeight);
-          double _maxWeightOnChart =
-              _bmiBloc.getHighestOfChart(_marginOfWeight);
-          double _bendmarkPadding =
-              (_heightOfChart / (_maxWeightOnChart - _minWeightOnChart)) *
-                      ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
-                  _marginOfWeight + 6;
+
+          // Calculate min/max from actual data points to ensure all are visible
+          double actualMinWeight = double.infinity;
+          double actualMaxWeight = double.negativeInfinity;
+          if (data.isNotEmpty) {
+            for (var record in data) {
+              if (record.weight != null) {
+                if (record.weight! < actualMinWeight) {
+                  actualMinWeight = record.weight!;
+                }
+                if (record.weight! > actualMaxWeight) {
+                  actualMaxWeight = record.weight!;
+                }
+              }
+            }
+          }
+
+          // Use actual data range with smaller margin to fit within fixed height
+          double _minWeightOnChart;
+          double _maxWeightOnChart;
+
+          if (actualMinWeight != double.infinity &&
+              actualMaxWeight != double.negativeInfinity) {
+            // Use actual data points with margin
+            _minWeightOnChart = actualMinWeight - _marginOfWeight;
+            _maxWeightOnChart = actualMaxWeight + _marginOfWeight;
+          } else {
+            // Fallback to statistical data
+            _minWeightOnChart = _bmiBloc.getLowestOfChart(_marginOfWeight);
+            _maxWeightOnChart = _bmiBloc.getHighestOfChart(_marginOfWeight);
+          }
+
+          // Ensure weight goal is included in range if it exists
+          if (_bmiBloc.weightGoal != null) {
+            if (_bmiBloc.weightGoal! < _minWeightOnChart) {
+              _minWeightOnChart = _bmiBloc.weightGoal! - _marginOfWeight;
+            }
+            if (_bmiBloc.weightGoal! > _maxWeightOnChart) {
+              _maxWeightOnChart = _bmiBloc.weightGoal! + _marginOfWeight;
+            }
+          }
+
+          // Calculate bendmark padding with safety checks
+          double _bendmarkPadding = 0.0;
+          final weightRange = _maxWeightOnChart - _minWeightOnChart;
+          if (weightRange > 0 && _bmiBloc.weightGoal != null) {
+            _bendmarkPadding = (_heightOfChart / weightRange) *
+                    ((_bmiBloc.weightGoal ?? 60) - _minWeightOnChart) -
+                _marginOfWeight +
+                6;
+            // Clamp padding to valid range (0 to _heightOfChart)
+            _bendmarkPadding = _bendmarkPadding.clamp(0.0, _heightOfChart);
+          }
 
           if (enableScroll) _focusToSelectedPoint(totalPoint: data.length);
 
@@ -99,36 +145,48 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   controller: _scrollController,
+                  clipBehavior: Clip.none,
                   child: Container(
                     width: widthChart,
                     height: _heightOfChart,
-                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    clipBehavior: Clip.none,
                     child: LineChart(
                       LineChartData(
                         minY: _minWeightOnChart,
                         maxY: _maxWeightOnChart,
                         minX: data.length == 1 ? -0.5 : 0,
                         maxX: data.length == 1 ? 0 : data.length - 1,
+                        clipData: FlClipData.none(),
                         gridData: FlGridData(show: false),
                         titlesData: FlTitlesData(
-                          leftTitles: SideTitles(showTitles: false),
-                          rightTitles: SideTitles(showTitles: false),
-                          topTitles: SideTitles(showTitles: false),
-                          bottomTitles: SideTitles(
-                            showTitles: true,
-                            getTitles: (value) {
-                              final int index = value.toInt();
-                              if (index >= 0 && index < data.length) {
-                                if (data[index].waist == 0) return '-';
-                                if (value < 0) return '';
-                                return data[index].waist?.toStringAsFixed(0) ??
-                                    '';
-                              }
-                              return "";
-                            },
-                            interval: 1,
-                            getTextStyles: (context, value) =>
-                                R.style.smallTextStyle,
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: 1,
+                              getTitlesWidget: (value, meta) {
+                                final int index = value.toInt();
+                                if (index >= 0 && index < data.length) {
+                                  if (data[index].waist == 0)
+                                    return const Text('-');
+                                  if (value < 0) return const Text('');
+                                  return Text(
+                                    data[index].waist?.toStringAsFixed(0) ?? '',
+                                    style: R.style.smallTextStyle,
+                                  );
+                                }
+                                return const Text("");
+                              },
+                            ),
                           ),
                         ),
                         borderData: FlBorderData(show: false),
@@ -139,7 +197,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                               (i) => FlSpot(i.toDouble(), data[i].weight ?? 0),
                             ),
                             isCurved: false,
-                            colors: [Colors.green],
+                            color: Colors.green,
                             barWidth: 2,
                             dotData: FlDotData(
                               show: true,
@@ -153,19 +211,21 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                                   strokeWidth: isSelected ? 6 : 0,
                                   strokeColor: isSelected
                                       ? data[index].bmiColor.withOpacity(0.4)
-                                      : null,
+                                      : Colors.transparent,
                                 );
                               },
                             ),
                             belowBarData: BarAreaData(
                                 show: true,
-                                colors: [
-                                  Colors.green.withOpacity(0.2),
-                                  Colors.transparent,
-                                ],
-                                gradientFrom: Offset(0.5, 0),
-                                gradientTo: Offset(0.5, 1),
-                                gradientColorStops: [0.5, 1]),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.green.withOpacity(0.2),
+                                    Colors.transparent,
+                                  ],
+                                  stops: [0.5, 1],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                )),
                           ),
                         ],
                         lineTouchData: LineTouchData(
@@ -181,7 +241,12 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                             },
                             handleBuiltInTouches: true,
                             touchTooltipData: LineTouchTooltipData(
-                              tooltipBgColor: Colors.transparent,
+                              getTooltipColor: (LineBarSpot touchedSpot) =>
+                                  Colors.transparent,
+                              fitInsideHorizontally: true,
+                              fitInsideVertically: false,
+                              tooltipPadding: EdgeInsets.zero,
+                              tooltipMargin: 12,
                               getTooltipItems: (touchedSpots) {
                                 return touchedSpots.map((spot) {
                                   bool isInteger =
@@ -190,7 +255,8 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                                     '${isInteger ? spot.y.floor() : spot.y.toStringAsFixed(1)}',
                                     TextStyle(
                                         color: data[spot.spotIndex].bmiColor,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
                                   );
                                 }).toList();
                               },

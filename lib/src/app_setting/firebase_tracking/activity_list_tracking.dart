@@ -34,13 +34,13 @@ class ActivityListTracking {
         objectStatus = 'fail';
         break;
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": screenName,
         'component_name': 'calendar_activity_select_week',
         'object_index': objectIndex,
-        'object_title': objectTitle,
+        'object_title': objectTitle ?? '',
         'object_status': objectStatus,
       },
     );
@@ -48,7 +48,7 @@ class ActivityListTracking {
 
   // Nhấn Thống kê
   static Future<void> clickStatistical() async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'cta_button_clicked',
       parameters: {
         "screen_name": screenName,
@@ -82,7 +82,7 @@ class ActivityListTracking {
 
   // Nhấn Play Video bài tập vận động
   // static Future<void> clickStatistical() async {
-  //   await TrackingManager.analytics.logEvent(
+  //   await TrackingManager.logEvent(
   //     name: 'cta_button_clicked',
   //     parameters: {
   //       "screen_name": screenName,

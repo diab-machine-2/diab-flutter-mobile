@@ -1387,4 +1387,6 @@ doctor_good_at,Bác sĩ giỏi về,Doctor good at,
 language,Ngôn ngữ,Language,
 no_data_within,Không có dữ liệu\ntrong {} ngày gần nhất,No data\nwithin {} latest days,
 introduce,Giới thiệu,Introduce,
-dao_tao,Đào tạo,Education
+dao_tao,Đào tạo,Education,
+no_data_within,Không có dữ liệu\ntrong {} ngày gần nhất,No data\nwithin {} latest days,
+yesterday,Hôm qua,Yesterday

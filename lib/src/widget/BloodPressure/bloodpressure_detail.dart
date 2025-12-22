@@ -23,7 +23,7 @@ class _BloodPressureDetailState extends State<BloodPressureDetail> with Observer
   }
 
   @override
-  void dispose() async {
+  void dispose() {
     Observable.instance.removeObserver(this);
     super.dispose();
   }

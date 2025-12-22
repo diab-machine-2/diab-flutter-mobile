@@ -68,17 +68,22 @@ class NoticeChangePage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: isShowTextHtml == true ? 6 : 20),
-                if(isShowTextHtml == true)
+                if (isShowTextHtml == true)
                   Html(
                     data: htmlText ?? '',
-                    style: {"body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),},
-                    onLinkTap: (url, context, attributes, element) async {
-                      await canLaunch(url!)
-                          ? await launch(url, forceSafariVC: false, forceWebView: false)
-                          : throw 'Could not launch $url';
+                    style: {
+                      "body": Style(
+                        padding: HtmlPaddings.zero,
+                        margin: Margins.zero,
+                      ),
+                    },
+                    onLinkTap: (url, attributes, element) {
+                      if (url == null) return;
+                      launchUrl(Uri.parse(url),
+                          mode: LaunchMode.externalApplication);
                     },
                   )
-                else 
+                else
                   Text(
                     description,
                     style: TextStyle(

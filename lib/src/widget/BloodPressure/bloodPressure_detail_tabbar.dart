@@ -88,15 +88,21 @@ class _BloodPressureDetailTabbarControllerState
   static bool _isDisposing = false;
 
   @override
-  void dispose() async {
+  void dispose() {
     if (_isDisposing) {
-      return; // Already disposing, do nothing
+      // Already disposing, ensure super.dispose() is still called
+      super.dispose();
+      return;
     }
     _isDisposing = true;
     try {
       Observable.instance.removeObserver(this);
-      // Add your await statement, it won't be executed concurrently
-      await AppSettings.syncDataFromHealthApp();
+      // Fire-and-forget async operation - don't await in dispose()
+      AppSettings.syncDataFromHealthApp().catchError((error) {
+        // Silently handle errors in background operation
+      });
+    } catch (e) {
+      // Handle any synchronous errors
     } finally {
       _isDisposing = false;
       super.dispose();

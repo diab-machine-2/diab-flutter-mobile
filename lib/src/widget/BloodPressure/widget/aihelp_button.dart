@@ -24,7 +24,8 @@ class AIHelpButton extends StatelessWidget {
   void _actionByRangeType(BuildContext context) async {
     if (_isLowPressure) {
       // Redirect to "Redirect ‘AI Chat’"
-      Observable.instance.notifyObservers([], notifyName: Const.NAVIGATE_TO_CHAT_TAB);
+      Observable.instance
+          .notifyObservers([], notifyName: Const.NAVIGATE_TO_CHAT_TAB);
     } else if (_isHighPressure) {
       // Redirect ‘Tư vấn sống khoẻ’ (PSC Booking Online 816, màn hình chọn nhu cầu tư vấn)
       Navigator.of(context).push(
@@ -52,6 +53,7 @@ class AIHelpButton extends StatelessWidget {
               : 'Đặt lịch tư vấn với chuyên gia',
           style: TextStyle(
             color: R.color.mainColor,
+            fontFamily: R.font.sfpro,
             fontSize: 15,
             fontWeight: FontWeight.bold,
           ),

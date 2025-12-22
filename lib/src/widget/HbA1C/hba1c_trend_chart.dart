@@ -757,8 +757,8 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                 showOnTopOfTheChartBoxArea: true,
                                 fitInsideVertically: true,
                                 fitInsideHorizontally: true,
-                                tooltipBgColor:
-                                    Colors.grey.shade800.withOpacity(0.9),
+                                getTooltipColor: (LineBarSpot touchedSpot) =>
+                                    Colors.transparent,
                                 tooltipRoundedRadius: 8,
                                 getTooltipItems:
                                     (List<LineBarSpot> lineBarsSpot) {
@@ -771,7 +771,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                       return LineTooltipItem(
                                         '${dataPoint.value.toStringAsFixed(1)}%',
                                         TextStyle(
-                                          color: Colors.white,
+                                          color: dataPoint.color,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 14,
                                           fontFamily: R.font.sfpro,
@@ -785,10 +785,18 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                             ),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
-                              rightTitles: SideTitles(showTitles: false),
-                              topTitles: SideTitles(showTitles: false),
-                              leftTitles: SideTitles(showTitles: false),
-                              bottomTitles: SideTitles(showTitles: false),
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
                             ),
                             borderData: FlBorderData(show: false),
                             minX: -0.5,
@@ -810,8 +818,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                               ],
                             ),
                           ),
-                          swapAnimationDuration:
-                              const Duration(milliseconds: 250),
+                          duration: const Duration(milliseconds: 250),
                         ),
                       ),
                     ),
@@ -842,7 +849,7 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
       LineChartBarData(
         spots: spots,
         isCurved: false,
-        colors: [Color(0xFF23C559)], // Main line color - green #23C559
+        color: Color(0xFF23C559), // Main line color - green #23C559
         barWidth: 2,
         isStrokeCapRound: true,
         dotData: FlDotData(
@@ -863,7 +870,8 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
               radius: 3,
               color: dotColor,
               strokeWidth: isSelected ? 6 : 0,
-              strokeColor: isSelected ? dotColor.withOpacity(0.3) : null,
+              strokeColor:
+                  isSelected ? dotColor.withOpacity(0.3) : Colors.transparent,
             );
           },
         ),
@@ -871,15 +879,17 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
           show: true,
           // Gradient colors from top to bottom
           // Reversed: green at top -> white/transparent at bottom
-          colors: [
-            Color(0xFFC7F6D7).withOpacity(1), // Darker green at top
-            Color(0xFFC7F6D7).withOpacity(0.7), // Light green in middle
-            Color(0xFFFDFDFD)
-                .withOpacity(0.4), // Almost transparent white at bottom
-          ],
-          gradientColorStops: [0.0, 0.5, 1.0], // Distribute colors evenly
-          gradientFrom: Offset(0, 0), // Start from line
-          gradientTo: Offset(0, 1), // End at bottom
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFC7F6D7).withOpacity(1), // Darker green at top
+              Color(0xFFC7F6D7).withOpacity(0.7), // Light green in middle
+              Color(0xFFFDFDFD)
+                  .withOpacity(0.4), // Almost transparent white at bottom
+            ],
+            stops: [0.0, 0.5, 1.0], // Distribute colors evenly
+            begin: Alignment.topCenter, // Start from line
+            end: Alignment.bottomCenter, // End at bottom
+          ),
           // Ensure gradient always fills to a minimum depth for visibility
           applyCutOffY: false, // Don't apply cutoff, fill to chart bottom
         ),

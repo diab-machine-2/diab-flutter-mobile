@@ -68,7 +68,7 @@ class _RulesControllerState extends State<RulesController> {
         margin: EdgeInsets.all(16),
         child: GestureDetector(
           onTap: () async {
-            // await TrackingManager.analytics.logEvent(
+            // await TrackingManager.logEvent(
             //   name: 'cta_button_clicked',
             //   parameters: {
             //     "screen_name": 'privacy',
@@ -130,11 +130,10 @@ class _RulesControllerState extends State<RulesController> {
                 ),
                 Html(
                     data: term,
-                    onLinkTap: (url, context, attributes, element) async {
-                      await canLaunch(url!)
-                          ? await launch(url,
-                              forceSafariVC: false, forceWebView: false)
-                          : throw 'Could not launch $url';
+                    onLinkTap: (url, attributes, element) {
+                      if (url == null) return;
+                      launchUrl(Uri.parse(url),
+                          mode: LaunchMode.externalApplication);
                     })
               ]),
             ),

@@ -2,7 +2,7 @@ library new_version;
 
 import 'package:http/http.dart' as http;
 import 'package:medical/src/utils/app_log.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';

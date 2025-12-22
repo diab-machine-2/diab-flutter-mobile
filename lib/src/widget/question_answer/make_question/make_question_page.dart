@@ -48,7 +48,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
       screenName: "qna_add",
       screenClass: "MakeQuestionPage",
     );
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'qna_begin',
       parameters: {
         "screen_name": 'qna_add',
@@ -70,7 +70,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
             } else {
               BotToast.closeAllLoading();
               if (state is SendQuestionSuccess) {
-                await TrackingManager.analytics.logEvent(
+                await TrackingManager.logEvent(
                   name: 'qna_complete',
                   parameters: {
                     "screen_name": 'qna_add',
@@ -316,7 +316,7 @@ class _MakeQuestionPageState extends State<MakeQuestionPage> {
   }
 
   _submitData() async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'cta_button_clicked',
       parameters: {
         "screen_name": 'add_question',

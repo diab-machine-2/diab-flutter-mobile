@@ -258,7 +258,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.blood_sugar_schedule_single_line.tr(),
                           image: R.drawable.ic_blood_sugar_testing_schedule,
                           onTap: () async {
-                            await TrackingManager.analytics.logEvent(
+                            await TrackingManager.logEvent(
                               name: 'cta_button_clicked',
                               parameters: {
                                 "screen_name": 'profile',
@@ -277,7 +277,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.goal_setting.tr(),
                           image: R.drawable.ic_set_goal,
                           onTap: () async {
-                            await TrackingManager.analytics.logEvent(
+                            await TrackingManager.logEvent(
                               name: 'cta_button_clicked',
                               parameters: {
                                 "screen_name": 'profile',
@@ -298,7 +298,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                           title: R.string.remind.tr(),
                           image: R.drawable.ic_remind,
                           onTap: () async {
-                            await TrackingManager.analytics.logEvent(
+                            await TrackingManager.logEvent(
                               name: 'cta_button_clicked',
                               parameters: {
                                 "screen_name": 'profile',
@@ -321,7 +321,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                             //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
                             //   return;
                             // }
-                            await TrackingManager.analytics.logEvent(
+                            await TrackingManager.logEvent(
                               name: 'cta_button_clicked',
                               parameters: {
                                 "screen_name": 'profile',
@@ -445,7 +445,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
     bool isSvgIcon = icon.split('.').last == "svg";
     return GestureDetector(
       onTap: () async {
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'component_clicked',
           parameters: {
             "screen_name": 'profile',

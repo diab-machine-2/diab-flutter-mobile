@@ -202,7 +202,7 @@ class _AddBloodSugarControllerNewState
         screenName: "kpi_glycemic_add",
         screenClass: "BloodSugarDetailController");
     AppSettings.currentScreenName = 'kpi_glycemic_add';
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'kpi_add_begin',
     //   parameters: {
     //     "screen_name": 'kpi_glycemic_add',
@@ -763,7 +763,7 @@ class _AddBloodSugarControllerNewState
       removeIDs.clear();
       removeIDs.addAll(data.removeIDs);
     }
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'cta_button_clicked',
     //   parameters: {
     //     "screen_name": 'kpi_glycemic_add',
@@ -1772,7 +1772,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
   }
 
   Future firebaseSetup() async {
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'component_displayed',
     //   parameters: {
     //     "screen_name": 'kpi_glycemic_add',
@@ -1816,7 +1816,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 icon: Icon(Icons.close,
                                     color: R.color.color0xffBEC0C8),
                                 onPressed: () async {
-                                  // await TrackingManager.analytics.logEvent(
+                                  // await TrackingManager.logEvent(
                                   //   name: 'cta_button_clicked',
                                   //   parameters: {
                                   //     "screen_name": 'date_picker_glycemic',
@@ -1834,7 +1834,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         firstDate: DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate: DateTime.now(),
                         onDateChanged: (datetime) async {
-                          // await TrackingManager.analytics.logEvent(
+                          // await TrackingManager.logEvent(
                           //   name: 'component_clicked',
                           //   parameters: {
                           //     "screen_name": 'date_picker_glycemic',
@@ -1860,7 +1860,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                         selectedHour: selectedHour,
                         selectedMinute: selectedMinute,
                         callback: (hour, minute) async {
-                          // await TrackingManager.analytics.logEvent(
+                          // await TrackingManager.logEvent(
                           //   name: 'component_clicked',
                           //   parameters: {
                           //     "screen_name": 'date_picker_glycemic',
@@ -1876,7 +1876,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () async {
-                            // await TrackingManager.analytics.logEvent(
+                            // await TrackingManager.logEvent(
                             //   name: 'cta_button_clicked',
                             //   parameters: {
                             //     "screen_name": 'date_picker_glycemic',
@@ -1910,7 +1910,7 @@ class _DateMultiPickerState extends State<DateMultiPicker> {
                                 selectedMinute);
 
                             widget.callback!(selectedDate);
-                            // await TrackingManager.analytics.logEvent(
+                            // await TrackingManager.logEvent(
                             //   name: 'cta_button_clicked',
                             //   parameters: {
                             //     "screen_name": 'date_picker_glycemic',
