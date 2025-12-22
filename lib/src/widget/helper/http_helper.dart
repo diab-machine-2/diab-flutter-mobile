@@ -392,8 +392,18 @@ class FetchClient {
     //     error: true,
     //     logPrint: (object) {});
     // dio.interceptors.add(dioLog);
-    // dio.interceptors.add(LogInterceptor(request: true, responseBody: false));
-    // dio.interceptors.add(TrackingInterceptor());
+    dio.interceptors.add(LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+      logPrint: (object) {
+        print(object);
+      },
+    ));
+    dio.interceptors.add(TrackingInterceptor());
   }
 
   checkNetwork() async {

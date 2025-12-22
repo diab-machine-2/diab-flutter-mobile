@@ -18,6 +18,7 @@ class _ManualDetailControllerState extends State<ManualDetailController> {
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,11 +52,10 @@ class _ManualDetailControllerState extends State<ManualDetailController> {
                 child: ListView(padding: EdgeInsets.all(0), children: [
                   Html(
                       data: widget.model!.answer,
-                      onLinkTap: (url, context, attributes, element) async {
-                        await canLaunch(url!)
-                            ? await launch(url,
-                                forceSafariVC: false, forceWebView: false)
-                            : throw 'Could not launch $url';
+                      onLinkTap: (url, attributes, element) {
+                        if (url == null) return;
+                        launchUrl(Uri.parse(url),
+                            mode: LaunchMode.externalApplication);
                       })
                 ]),
               )

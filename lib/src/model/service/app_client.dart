@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
@@ -7,6 +9,96 @@ import '../app_api.dart';
 
 const _defaultConnectTimeout = Duration.millisecondsPerMinute;
 const _defaultReceiveTimeout = Duration.millisecondsPerMinute;
+
+/// Custom logging interceptor that handles long responses without truncation
+class FullLogInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    debugPrint('*** Request ***');
+    debugPrint('uri: ${options.uri}');
+    debugPrint('method: ${options.method}');
+    debugPrint('responseType: ${options.responseType}');
+    debugPrint('followRedirects: ${options.followRedirects}');
+    debugPrint('connectTimeout: ${options.connectTimeout}');
+    debugPrint('sendTimeout: ${options.sendTimeout}');
+    debugPrint('receiveTimeout: ${options.receiveTimeout}');
+    debugPrint(
+        'receiveDataWhenStatusError: ${options.receiveDataWhenStatusError}');
+    debugPrint('extra: ${options.extra}');
+    debugPrint('headers:');
+    options.headers.forEach((key, value) {
+      debugPrint(' $key: $value');
+    });
+    debugPrint('data:');
+    if (options.data != null) {
+      _printLongMessage(options.data.toString());
+    } else {
+      debugPrint('null');
+    }
+    debugPrint('');
+    handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    debugPrint('*** Response ***');
+    debugPrint('uri: ${response.requestOptions.uri}');
+    debugPrint('statusCode: ${response.statusCode}');
+    debugPrint('headers:');
+    response.headers.forEach((key, values) {
+      debugPrint(' $key: ${values.join(', ')}');
+    });
+    debugPrint('Response Text:');
+    if (response.data != null) {
+      String responseText;
+      if (response.data is String) {
+        responseText = response.data;
+      } else {
+        // Pretty print JSON
+        try {
+          responseText =
+              const JsonEncoder.withIndent('  ').convert(response.data);
+        } catch (e) {
+          responseText = response.data.toString();
+        }
+      }
+      _printLongMessage(responseText);
+    } else {
+      debugPrint('null');
+    }
+    debugPrint('');
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioError err, ErrorInterceptorHandler handler) {
+    debugPrint('*** Error ***');
+    debugPrint('uri: ${err.requestOptions.uri}');
+    debugPrint('error: ${err.error}');
+    debugPrint('type: ${err.type}');
+    if (err.response != null) {
+      debugPrint('statusCode: ${err.response?.statusCode}');
+      debugPrint('response:');
+      _printLongMessage(err.response?.data?.toString() ?? 'null');
+    }
+    debugPrint('');
+    handler.next(err);
+  }
+
+  /// Print long messages by splitting them into chunks
+  /// This prevents truncation in Android logs
+  void _printLongMessage(String message) {
+    if (message.isEmpty) return;
+
+    // Split into chunks of 800 characters (Android logcat limit is ~1024)
+    const chunkSize = 800;
+    for (int i = 0; i < message.length; i += chunkSize) {
+      final end =
+          (i + chunkSize < message.length) ? i + chunkSize : message.length;
+      debugPrint(message.substring(i, end));
+    }
+  }
+}
 
 class AppClient {
   late AppApi appClient;
@@ -43,6 +135,11 @@ class AppClient {
     //     error: true,
     //     compact: true,
     //     maxWidth: 1000));
+
+    // Add custom logging interceptor to capture all API calls without truncation
+    if (kDebugMode) {
+      _dio.interceptors.add(FullLogInterceptor());
+    }
 
     _dio.interceptors
         .add(InterceptorsWrapper(onRequest: (options, handler) async {

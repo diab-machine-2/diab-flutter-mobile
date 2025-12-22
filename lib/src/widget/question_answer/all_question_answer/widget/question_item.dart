@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
@@ -56,36 +55,38 @@ class _QuestionItemState extends State<QuestionItem>
     if (widget.questionModel.status == 0) {
       return _buildQuestionItemInCard(widget.questionModel);
     }
-    return Slidable(
-      actionPane: SlidableDrawerActionPane(),
-      secondaryActions: [
-        Container(
-          margin: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
-          clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-          child: IconSlideAction(
-            color: R.color.color0xffFF5552,
-            iconWidget: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                  SizedBox(height: 8),
-                  Text(R.string.delete_question.tr(),
-                      style: TextStyle(
-                          color: R.color.white, fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.center),
-                ],
-              ),
-            ),
-            onTap: () {
-              _showDialogDelete(context, questionModel.id!);
-            },
-          ),
-        ),
-      ],
+    return Dismissible(
+      key: ValueKey(questionModel.id),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) async {
+        _showDialogDelete(context, questionModel.id!);
+        return false;
+      },
+      background: _buildDismissBg(),
       child: _buildQuestionItemInCard(widget.questionModel),
+    );
+  }
+
+  Widget _buildDismissBg() {
+    return Container(
+      margin: EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+      decoration: BoxDecoration(
+          color: R.color.color0xffFF5552, borderRadius: BorderRadius.circular(8)),
+      alignment: Alignment.centerRight,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+          SizedBox(height: 8),
+          Text(R.string.delete_question.tr(),
+              style: TextStyle(
+                  color: R.color.white, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center),
+        ],
+      ),
     );
   }
 

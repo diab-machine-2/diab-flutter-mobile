@@ -106,7 +106,8 @@ class _LineChartSample3State extends State<LineChartSample3> {
                           );
                         }).toList();
                       }),
-                  touchCallback: (FlTouchEvent event, LineTouchResponse? lineTouch) {
+                  touchCallback:
+                      (FlTouchEvent event, LineTouchResponse? lineTouch) {
                     if (lineTouch!.lineBarSpots!.length == 1 &&
                         event is! FlLongPressEnd &&
                         event is! FlPanEndEvent) {
@@ -149,13 +150,15 @@ class _LineChartSample3State extends State<LineChartSample3> {
                   ],
                   belowBarData: BarAreaData(
                     show: true,
-                    colors: [
-                      R.color.orange.withOpacity(0.5),
-                      R.color.orange.withOpacity(0.0),
-                    ],
-                    gradientColorStops: [0.5, 1.0],
-                    gradientFrom: const Offset(0, 0),
-                    gradientTo: const Offset(0, 1),
+                    gradient: LinearGradient(
+                      colors: [
+                        R.color.orange.withOpacity(0.5),
+                        R.color.orange.withOpacity(0.0),
+                      ],
+                      stops: [0.5, 1.0],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                     spotsLine: BarAreaSpotsLine(
                       show: true,
                       flLineStyle: FlLine(

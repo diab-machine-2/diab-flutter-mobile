@@ -224,7 +224,6 @@ class App extends StatelessWidget {
                           phone: data?['phone'],
                           zaloAccount: data?['zaloAccount'],
                           googleAccount: data?['googleAccount'],
-                          facebookAccount: data?['facebookAccount'],
                           appleAccount: data?['appleAccount'],
                           userInfo: data?['userInfo'],
                           referalCode: data?['referalCode'],
@@ -252,7 +251,6 @@ class App extends StatelessWidget {
                                 data?['remainingRequestCount'],
                             referalCode: data?['referalCode'],
                             googleAccount: data?['googleAccount'],
-                            facebookAccount: data?['facebookAccount'],
                             appleAccount: data?['appleAccount'],
                             userInfo: data?['userInfo']));
 
@@ -729,8 +727,8 @@ class App extends StatelessWidget {
                     return _buildRoute(settings, TestOcrPage());
                   case NavigatorName.test_ocr_camera:
                     return _buildRoute(settings, TestOcrCamera());
-                  case NavigatorName.test_ocr_gallery:
-                    return _buildRoute(settings, TestOcrGallery());
+                  // case NavigatorName.test_ocr_gallery:
+                  //   return _buildRoute(settings, TestOcrGallery());
 
                   // DSMES Booking
                   case NavigatorName.dsmes_booking:

@@ -115,7 +115,7 @@ class RevenueCatService {
   static Future<void> logout() async {
     try {
       _currentAppUserId = null;
-      
+
       await Purchases.logOut();
     } on PlatformException catch (e) {
       debugPrint('[SUBSCRIPTION] Error logging out: ${e.message}');
@@ -178,25 +178,25 @@ class RevenueCatService {
   // Debug method to verify iOS setup
   // static Future<void> debugiOSSetup() async {
   //   if (!Platform.isIOS) return;
-    
+
   //   try {
   //     log('[SUBSCRIPTION] [iOS Debug] Checking RevenueCat configuration...');
-      
+
   //     // Check if RevenueCat is configured
   //     final customerInfo = await Purchases.getCustomerInfo();
   //     log('[SUBSCRIPTION] [iOS Debug] Customer info retrieved: ${customerInfo.originalAppUserId}');
-      
+
   //     // Check available offerings
   //     final offerings = await Purchases.getOfferings();
   //     log('[SUBSCRIPTION] [iOS Debug] Available offerings: ${offerings.all.keys.toList()}');
-      
+
   //     if (offerings.current != null) {
   //       log('[SUBSCRIPTION] [iOS Debug] Current offering packages: ${offerings.current!.availablePackages.length}');
   //       for (var package in offerings.current!.availablePackages) {
   //         log('[SUBSCRIPTION] [iOS Debug] Package: ${package.storeProduct.identifier} - ${package.storeProduct.title}');
   //       }
   //     }
-      
+
   //     // Check App Store connection
   //     try {
   //       await Purchases.syncPurchases();
@@ -204,7 +204,7 @@ class RevenueCatService {
   //     } catch (e) {
   //       log('[SUBSCRIPTION] [iOS Debug] Failed to sync with App Store: $e');
   //     }
-      
+
   //   } catch (e) {
   //     log('[SUBSCRIPTION] [iOS Debug] Error during setup verification: $e');
   //   }
@@ -215,37 +215,37 @@ class RevenueCatService {
     // if (Platform.isIOS) {
     //   await debugiOSSetup();
     // }
-    
+
     try {
       // log('[SUBSCRIPTION] Starting purchase for package: ${package.storeProduct.identifier}');
       // log('[SUBSCRIPTION] Package price: ${package.storeProduct.priceString}');
-      
+
       // On iOS, ensure we're logged in first
       if (Platform.isIOS && _currentAppUserId != null) {
         // log('[SUBSCRIPTION] [iOS] Ensuring user is logged in: $_currentAppUserId');
         await login(_currentAppUserId!);
       }
-      
+
       final customerInfo = await Purchases.purchasePackage(package);
-      
+
       // log('[SUBSCRIPTION] Purchase completed. CustomerInfo: ${customerInfo.toString()}');
       // log('[SUBSCRIPTION] Active entitlements: ${customerInfo.entitlements.active.keys.toList()}');
-      
+
       // On iOS, double-check the purchase by getting fresh customer info
       if (Platform.isIOS) {
         await Future.delayed(Duration(milliseconds: 500)); // Brief delay for processing
         final freshCustomerInfo = await Purchases.getCustomerInfo();
         return freshCustomerInfo.isActivelySubscribed;
       }
-      
+
       final hasActiveSubscription = customerInfo.entitlements.active.isNotEmpty;
       // log('[SUBSCRIPTION] Has active subscription: $hasActiveSubscription');
-      
+
       return hasActiveSubscription;
     } on PlatformException catch (e) {
       log('[SUBSCRIPTION] PlatformException during purchase: ${e.code} - ${e.message}');
       log('[SUBSCRIPTION] PlatformException details: ${e.details}');
-      
+
       if (e.code == 'purchase_cancelled') {
         log('[SUBSCRIPTION] User cancelled the purchase');
       } else if (e.code == 'user_cancelled') {
@@ -286,7 +286,7 @@ extension CustomerInfoApp on CustomerInfo {
   String? get purchasedProductIdentifier {
     if (this.allPurchasedProductIdentifiers.isNotEmpty) {
       return this.allPurchasedProductIdentifiers.any(
-        (identifier) => productIdentifiers.contains(identifier),
+                (identifier) => productIdentifiers.contains(identifier),
       ) ? this.allPurchasedProductIdentifiers.first : null;
     }
     return null;

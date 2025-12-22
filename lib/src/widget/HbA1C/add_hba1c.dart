@@ -153,7 +153,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       screenName: "kpi_hba1c_add",
       screenClass: "AddHBA1CController",
     );
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'kpi_add_begin',
     //   parameters: {
     //     "screen_name": 'kpi_hba1c_add',
@@ -1080,7 +1080,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       final result = await HbA1CClient()
           .postIndexHbA1C(exactTimestamp, numberInput, data.note, paths);
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_hba1c_add',

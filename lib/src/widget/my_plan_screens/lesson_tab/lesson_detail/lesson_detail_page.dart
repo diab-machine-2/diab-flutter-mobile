@@ -283,10 +283,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                                         'lesson_detail',
                                                     "component_name":
                                                         'close_lesson',
-                                                    'object_id':
-                                                        _cubit.lessonDetail?.id,
+                                                    'object_id': _cubit
+                                                            .lessonDetail?.id ??
+                                                        '',
                                                     'object_title': _cubit
-                                                        .lessonDetail?.name,
+                                                            .lessonDetail
+                                                            ?.name ??
+                                                        '',
                                                   },
                                                 ).catchError((e) {
                                                   debugPrint(
@@ -540,13 +543,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                               CustomBottomBarWidget(
                                 isPreviousButtonActive: _cubit.isFirstSection,
                                 onTapPrevious: () async {
-                                  await TrackingManager.analytics.logEvent(
+                                  await TrackingManager.logEvent(
                                     name: 'cta_button_clicked',
                                     parameters: {
                                       "screen_name": 'lesson_detail',
                                       "component_name": 'cta_previous_lesson',
-                                      'object_id': _cubit.lessonDetail?.id,
-                                      'object_title': _cubit.lessonDetail?.name,
+                                      'object_id':
+                                          _cubit.lessonDetail?.id ?? '',
+                                      'object_title':
+                                          _cubit.lessonDetail?.name ?? '',
                                     },
                                   );
                                   _cubit.onChangeSection(
@@ -556,13 +561,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                     (_cubit.currentSectionDetail?.isComplete ??
                                         false)),
                                 onTapNext: () async {
-                                  await TrackingManager.analytics.logEvent(
+                                  await TrackingManager.logEvent(
                                     name: 'cta_button_clicked',
                                     parameters: {
                                       "screen_name": 'lesson_detail',
                                       "component_name": 'cta_next_lesson',
-                                      'object_id': _cubit.lessonDetail?.id,
-                                      'object_title': _cubit.lessonDetail?.name,
+                                      'object_id':
+                                          _cubit.lessonDetail?.id ?? '',
+                                      'object_title':
+                                          _cubit.lessonDetail?.name ?? '',
                                     },
                                   );
                                   _cubit.onChangeSection(

@@ -160,24 +160,33 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                         clipData: FlClipData.none(),
                         gridData: FlGridData(show: false),
                         titlesData: FlTitlesData(
-                          leftTitles: SideTitles(showTitles: false),
-                          rightTitles: SideTitles(showTitles: false),
-                          topTitles: SideTitles(showTitles: false),
-                          bottomTitles: SideTitles(
-                            showTitles: true,
-                            getTitles: (value) {
-                              final int index = value.toInt();
-                              if (index >= 0 && index < data.length) {
-                                if (data[index].waist == 0) return '-';
-                                if (value < 0) return '';
-                                return data[index].waist?.toStringAsFixed(0) ??
-                                    '';
-                              }
-                              return "";
-                            },
-                            interval: 1,
-                            getTextStyles: (context, value) =>
-                                R.style.smallTextStyle,
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: 1,
+                              getTitlesWidget: (value, meta) {
+                                final int index = value.toInt();
+                                if (index >= 0 && index < data.length) {
+                                  if (data[index].waist == 0)
+                                    return const Text('-');
+                                  if (value < 0) return const Text('');
+                                  return Text(
+                                    data[index].waist?.toStringAsFixed(0) ?? '',
+                                    style: R.style.smallTextStyle,
+                                  );
+                                }
+                                return const Text("");
+                              },
+                            ),
                           ),
                         ),
                         borderData: FlBorderData(show: false),
@@ -188,7 +197,7 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                               (i) => FlSpot(i.toDouble(), data[i].weight ?? 0),
                             ),
                             isCurved: false,
-                            colors: [Colors.green],
+                            color: Colors.green,
                             barWidth: 2,
                             dotData: FlDotData(
                               show: true,
@@ -202,19 +211,21 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                                   strokeWidth: isSelected ? 6 : 0,
                                   strokeColor: isSelected
                                       ? data[index].bmiColor.withOpacity(0.4)
-                                      : null,
+                                      : Colors.transparent,
                                 );
                               },
                             ),
                             belowBarData: BarAreaData(
                                 show: true,
-                                colors: [
-                                  Colors.green.withOpacity(0.2),
-                                  Colors.transparent,
-                                ],
-                                gradientFrom: Offset(0.5, 0),
-                                gradientTo: Offset(0.5, 1),
-                                gradientColorStops: [0.5, 1]),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.green.withOpacity(0.2),
+                                    Colors.transparent,
+                                  ],
+                                  stops: [0.5, 1],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                )),
                           ),
                         ],
                         lineTouchData: LineTouchData(
@@ -230,7 +241,8 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                             },
                             handleBuiltInTouches: true,
                             touchTooltipData: LineTouchTooltipData(
-                              tooltipBgColor: Colors.transparent,
+                              getTooltipColor: (LineBarSpot touchedSpot) =>
+                                  Colors.transparent,
                               fitInsideHorizontally: true,
                               fitInsideVertically: false,
                               tooltipPadding: EdgeInsets.zero,

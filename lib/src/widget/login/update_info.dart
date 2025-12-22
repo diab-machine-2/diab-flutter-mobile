@@ -3,7 +3,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,7 +38,6 @@ import '../../widgets/CalendarPicker/custom_date_picker2.dart';
 class UpdateInfoController extends StatefulWidget {
   final String? type;
   final GoogleSignInAccount? googleAccount;
-  final FacebookLoginResult? facebookAccount;
   final ZaloLoginResult? zaloAccount;
   final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
@@ -50,7 +48,6 @@ class UpdateInfoController extends StatefulWidget {
   UpdateInfoController(
       {this.type,
       this.googleAccount,
-      this.facebookAccount,
       this.appleAccount,
       this.userInfo,
       this.referalCode,
@@ -77,8 +74,6 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
       nameController.text = '';
     } else if (widget.type == 'google') {
       nameController.text = widget.googleAccount?.displayName ?? '';
-    } else if (widget.type == 'facebook') {
-      nameController.text = widget.userInfo['name'] ?? '';
     } else if (widget.type == 'apple') {
       nameController.text =
           '${widget.appleAccount?.familyName ?? ''} ${widget.appleAccount?.givenName ?? ''}';
@@ -97,7 +92,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
     nameFocusNode.addListener(() async {
       String nameValue = nameController.text;
       if (nameFocusNode.hasFocus) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'text_field_focus',
         //   parameters: {
         //     "screen_name": 'register_information',
@@ -112,7 +107,7 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
         //   validateState = 'fail';
         //   errorMessage = R.string.ban_chua_nhap_ho_ten.tr();
         // }
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'text_field_input',
         //   parameters: {
         //     "screen_name": 'register_information',
@@ -546,20 +541,6 @@ class _UpdateInfoControllerState extends State<UpdateInfoController> {
           "grant_type": "external",
           "external_token": authen.accessToken,
           "provider": 'Google'
-        });
-      } else if (widget.type == 'facebook') {
-        params['username'] = widget.facebookAccount!.accessToken?.userId;
-        await LoginClient().registerWithSocial({
-          'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken?.userId,
-          'IsHasPatient': false
-        });
-        await LoginClient().login({
-          "client_id": Const.CLIENT_ID,
-          "client_secret": Const.CLIENT_SECRET,
-          "grant_type": "external",
-          "external_token": widget.facebookAccount!.accessToken?.token,
-          "provider": 'Facebook'
         });
       } else if (widget.type == 'apple') {
         params['username'] = widget.appleAccount?.userIdentifier;

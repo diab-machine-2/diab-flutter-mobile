@@ -24,7 +24,7 @@ class _MakeQuestionHeaderState extends State<MakeQuestionHeader> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'cta_button_clicked',
           parameters: {
             "screen_name": 'qna_home',
