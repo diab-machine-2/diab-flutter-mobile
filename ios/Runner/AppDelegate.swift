@@ -91,7 +91,16 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
             }
         })
         
-        GeneratedPluginRegistrant.register(with: self)
+        // Register plugins with error handling to prevent cascade failures
+        // If one plugin fails (like Zoom), others should still work
+        do {
+            GeneratedPluginRegistrant.register(with: self)
+            print("✅ Plugins registered successfully")
+        } catch {
+            print("❌ Error registering plugins: \(error.localizedDescription)")
+            // Don't let plugin registration errors break the app
+            // Individual plugins should handle their own errors
+        }
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 

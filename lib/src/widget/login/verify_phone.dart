@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -26,7 +25,6 @@ class VerifyPhoneController extends StatefulWidget {
   final int? remainingRequestCount;
   final String? referalCode;
   final GoogleSignInAccount? googleAccount;
-  final FacebookLoginResult? facebookAccount;
   final AuthorizationCredentialAppleID? appleAccount;
   final dynamic userInfo;
   const VerifyPhoneController(
@@ -37,7 +35,6 @@ class VerifyPhoneController extends StatefulWidget {
       this.remainingRequestCount,
       this.referalCode,
       this.googleAccount,
-      this.facebookAccount,
       this.appleAccount,
       this.userInfo});
   @override
@@ -350,26 +347,6 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
           BotToast.closeAllLoading();
           Navigator.pushReplacementNamed(context, NavigatorName.rules);
         }
-      } else if (widget.type == 'facebook') {
-        await LoginClient().verifyOTP(widget.phone, otpCode);
-        await LoginClient().login({
-          "client_id": Const.CLIENT_ID,
-          "client_secret": Const.CLIENT_SECRET,
-          "grant_type": "external",
-          "external_token": widget.facebookAccount!.accessToken?.token,
-          "provider": 'Facebook'
-        });
-        final result = await LoginClient().createPatient(widget.userInfo);
-        if (result == true) {
-          await TrackingManager.trackEvent(
-            'sign_up',
-            'otp_verify',
-          );
-          final user = await UserClient().fetchUser();
-          BotToast.closeAllLoading();
-          Navigator.pushReplacementNamed(context, NavigatorName.rules);
-        }
-        BotToast.closeAllLoading();
       } else if (widget.type == 'apple') {
         await LoginClient().verifyOTP(widget.phone, otpCode);
         await LoginClient().login({
@@ -407,23 +384,6 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
         await UserClient().fetchUser();
         BotToast.closeAllLoading();
         Navigator.pop(context);
-      } else if (widget.type == 'linked_facebook') {
-        final result = await LoginClient().linkedAccount({
-          'providerName': 'Facebook',
-          'providerKey': widget.facebookAccount!.accessToken?.userId,
-          'phoneNumber': widget.phone,
-          'token': otpCode
-        });
-        final token = await AppSettings.getToken();
-        await LoginClient().login({
-          "client_id": Const.CLIENT_ID,
-          "client_secret": Const.CLIENT_SECRET,
-          "grant_type": "refresh_token",
-          "refresh_token": token
-        });
-        await UserClient().fetchUser();
-        BotToast.closeAllLoading();
-        Navigator.pop(context);
       } else if (widget.type == 'forgot_password') {
         final result =
             await LoginClient().verifyOTPRecover(widget.phone, otpCode);
@@ -440,7 +400,7 @@ class _VerifyPhoneControllerState extends State<VerifyPhoneController> {
             isSyncAccount: arguments.containsKey("syncAccount") &&
                 arguments["syncAccount"]);
         BotToast.closeAllLoading();
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'sign_up',
         //   parameters: {
         //     "screen_name": 'otp_verify',

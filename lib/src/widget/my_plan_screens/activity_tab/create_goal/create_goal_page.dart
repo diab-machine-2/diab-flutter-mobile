@@ -122,7 +122,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 title: R.string.setup_smart_goal_title.tr(),
                 showCloseBackButton: true,
                 onTapClose: () async {
-                  await TrackingManager.analytics.logEvent(
+                  await TrackingManager.logEvent(
                     name: 'cta_button_clicked',
                     parameters: {
                       "screen_name": 'target_setting',
@@ -168,7 +168,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                                       CreateGoalStatus.complete
                                   ? 'cta_target_complete'
                                   : 'cta_target_add';
-                              await TrackingManager.analytics.logEvent(
+                              await TrackingManager.logEvent(
                                 name: 'cta_button_clicked',
                                 parameters: {
                                   "screen_name": 'target_setting',
@@ -194,7 +194,7 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
   }
 
   selectorTargetAdd(String title) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'target_setting',
@@ -797,12 +797,14 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
         Html(
           data: _cubit.getSubTitle(),
           style: {
-            "body": Style(padding: EdgeInsets.zero, margin: EdgeInsets.zero),
+            "body": Style(
+              padding: HtmlPaddings.zero,
+              margin: Margins.zero,
+            ),
           },
-          onLinkTap: (url, context, attributes, element) async {
-            await canLaunch(url!)
-                ? await launch(url, forceSafariVC: false, forceWebView: false)
-                : throw 'Could not launch $url';
+          onLinkTap: (url, attributes, element) {
+            if (url == null) return;
+            launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
           },
         ),
         //   Text(_cubit.getSubTitle(), style: R.style.normalTextStyle),
@@ -900,13 +902,12 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                     data: message ?? '',
                     style: {
                       "body": Style(
-                          padding: EdgeInsets.zero, margin: EdgeInsets.zero),
+                          padding: HtmlPaddings.zero, margin: Margins.zero),
                     },
-                    onLinkTap: (url, context, attributes, element) async {
-                      await canLaunch(url!)
-                          ? await launch(url,
-                              forceSafariVC: false, forceWebView: false)
-                          : throw 'Could not launch $url';
+                    onLinkTap: (url, attributes, element) {
+                      if (url == null) return;
+                      launchUrl(Uri.parse(url),
+                          mode: LaunchMode.externalApplication);
                     },
                   ),
                   // Text(

@@ -338,6 +338,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         quality: 100,
         name: imageName,
         androidRelativePath: "Pictures/DiaB",
+        androidExistNotSave: false,
       );
 
       print('Image saved to gallery: $result');

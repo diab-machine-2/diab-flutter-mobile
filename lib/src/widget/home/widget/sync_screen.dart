@@ -185,7 +185,7 @@ class _SyncScreenControllerState extends State<SyncScreenController> {
   }
 
   loginSuccess(String loginFrom) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'login',
       parameters: {
         "screen_name": 'login',

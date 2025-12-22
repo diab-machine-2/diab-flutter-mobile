@@ -122,7 +122,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
       screenName: "kpi_motion_add",
       screenClass: "AddExercrisesController",
     );
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'kpi_add_begin',
     //   parameters: {
     //     "screen_name": 'kpi_motion_add',
@@ -1219,7 +1219,7 @@ class _AddExercrisesControllerState extends BaseState<AddExercrisesController>
           selectedCategory.first,
           paths,'');
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_motion_add',

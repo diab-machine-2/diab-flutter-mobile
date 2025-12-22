@@ -149,7 +149,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     // auto-focus the new last item (the newly added data point)
     final bool wasLastPreviously =
         _previousTrends.isNotEmpty && _focusIndex == _previousTrends.length - 1;
-    final bool hasNewTail = _previousTrends.isNotEmpty && trends.isNotEmpty &&
+    final bool hasNewTail = _previousTrends.isNotEmpty &&
+        trends.isNotEmpty &&
         (_previousTrends.last.id != trends.last.id ||
             _previousTrends.last.date != trends.last.date);
     if (wasLastPreviously && hasNewTail) {
@@ -918,7 +919,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
             showOnTopOfTheChartBoxArea: true,
             fitInsideHorizontally: true,
             fitInsideVertically: true,
-            tooltipBgColor: R.color.transparent,
+            getTooltipColor: (LineBarSpot touchedSpot) => R.color.transparent,
             tooltipRoundedRadius: 8,
             tooltipPadding: const EdgeInsets.only(bottom: 50),
             getTooltipItems: (lineBarsSpot) {
@@ -940,7 +941,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
           },
         ),
       ),
-      swapAnimationDuration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
     );
   }
 
@@ -1005,7 +1006,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
           return FlSpot((index).toDouble(), trends[index].glucose!);
         }),
         isCurved: false,
-        colors: [Color(0xFF008479)],
+        color: Color(0xFF008479),
         barWidth: 1.5,
         isStrokeCapRound: false,
         dotData: FlDotData(
@@ -1018,19 +1019,21 @@ class BloodSugarChartState extends State<BloodSugarChart>
               strokeWidth: index == _focusIndex ? 6 : 0,
               strokeColor: index == _focusIndex
                   ? toColor(trends[index].color).withOpacity(0.3)
-                  : null,
+                  : Colors.transparent,
             );
           },
         ),
         belowBarData: BarAreaData(
           show: true,
-          colors: [
-            R.color.greenGradientMid.withOpacity(0.2),
-            R.color.greenGradientMid.withOpacity(0.0),
-          ],
-          gradientColorStops: const [0.5, 1.0],
-          gradientFrom: const Offset(0.5, 0),
-          gradientTo: const Offset(0.5, 1),
+          gradient: LinearGradient(
+            colors: [
+              R.color.greenGradientMid.withOpacity(0.2),
+              R.color.greenGradientMid.withOpacity(0.0),
+            ],
+            stops: const [0.5, 1.0],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
       ),
     ];

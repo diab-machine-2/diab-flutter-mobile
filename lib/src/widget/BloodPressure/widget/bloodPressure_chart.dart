@@ -1303,7 +1303,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                   showOnTopOfTheChartBoxArea: true,
                                   fitInsideVertically: true,
                                   fitInsideHorizontally: true,
-                                  tooltipBgColor: Colors.transparent,
+                                  getTooltipColor: (LineBarSpot touchedSpot) =>
+                                      Colors.transparent,
                                   tooltipRoundedRadius: 8,
                                   getTooltipItems:
                                       (List<LineBarSpot> lineBarsSpot) {
@@ -1385,46 +1386,57 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
-                              rightTitles: SideTitles(showTitles: false),
-                              topTitles: SideTitles(showTitles: false),
-                              bottomTitles: SideTitles(
-                                showTitles: true,
-                                margin: 16,
-                                reservedSize: 16,
-                                interval: 1,
-                                getTextStyles: (context, value) {
-                                  return TextStyle(
-                                      color: _focusIndex == value.toInt()
-                                          ? R.color.color0xff111515
-                                          : R.color.color0xff636A6B,
-                                      fontSize: 12,
-                                      fontWeight: _focusIndex == value.toInt()
-                                          ? FontWeight.w700
-                                          : FontWeight.normal,
-                                      fontFamily: R.font.sfpro,
-                                      height: 1.5);
-                                },
-                                getTitles: (double value) {
-                                  // padding left
-                                  if (value <= -0.5 ||
-                                      value >= (trends.length - 0.5)) return '';
-                                  int index = value.toInt();
-                                  if (index < 0 ||
-                                      index >= trends.length ||
-                                      trends[index].pulseRate == null ||
-                                      trends[index].pulseRate == 0) {
-                                    return '--';
-                                  }
-                                  // return heart rate value
-                                  return trends[index]
-                                      .pulseRate!
-                                      .round()
-                                      .toString();
-                                },
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
                               ),
-                              leftTitles: SideTitles(
-                                showTitles: false,
-                                reservedSize: 50,
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  reservedSize: 16,
+                                  interval: 1,
+                                  getTitlesWidget:
+                                      (double value, TitleMeta meta) {
+                                    // padding left
+                                    if (value <= -0.5 ||
+                                        value >= (trends.length - 0.5)) {
+                                      return const Text('');
+                                    }
+                                    int index = value.toInt();
+                                    if (index < 0 ||
+                                        index >= trends.length ||
+                                        trends[index].pulseRate == null ||
+                                        trends[index].pulseRate == 0) {
+                                      return const Text('--');
+                                    }
+                                    // return heart rate value
+                                    return Text(
+                                      trends[index]
+                                          .pulseRate!
+                                          .round()
+                                          .toString(),
+                                      style: TextStyle(
+                                          color: _focusIndex == value.toInt()
+                                              ? R.color.color0xff111515
+                                              : R.color.color0xff636A6B,
+                                          fontSize: 12,
+                                          fontWeight:
+                                              _focusIndex == value.toInt()
+                                                  ? FontWeight.w700
+                                                  : FontWeight.normal,
+                                          fontFamily: R.font.sfpro,
+                                          height: 1.5),
+                                    );
+                                  },
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: false,
+                                  reservedSize: 50,
+                                ),
                               ),
                             ),
                             borderData: FlBorderData(show: false),
@@ -1450,7 +1462,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                               ],
                             ),
                           ),
-                          swapAnimationDuration: Duration(milliseconds: 250),
+                          duration: const Duration(milliseconds: 250),
                         ),
                       ),
                     ),
@@ -1507,7 +1519,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             ),
           ],
         ),
-      ],
+      ], 
     );
   }
 
@@ -1524,7 +1536,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
-        colors: [Color(0xFF008479)],
+        color: Color(0xFF008479),
         barWidth: 1,
         isStrokeCapRound: true,
         dotData: FlDotData(
@@ -1537,7 +1549,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 radius: 3,
                 color: color,
                 strokeWidth: isSelected ? 6 : 0,
-                strokeColor: isSelected ? color.withOpacity(0.3) : null,
+                strokeColor:
+                    isSelected ? color.withOpacity(0.3) : Colors.transparent,
               );
             }),
         belowBarData: BarAreaData(show: false),
@@ -1549,7 +1562,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
-        colors: [Color(0xFF95682E)],
+        color: Color(0xFF95682E),
         barWidth: 1,
         isStrokeCapRound: true,
         dotData: FlDotData(
@@ -1562,7 +1575,8 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 radius: 3,
                 color: color,
                 strokeWidth: isSelected ? 6 : 0,
-                strokeColor: isSelected ? color.withOpacity(0.3) : null,
+                strokeColor:
+                    isSelected ? color.withOpacity(0.3) : Colors.transparent,
               );
             }),
         belowBarData: BarAreaData(show: false),

@@ -32,7 +32,7 @@ import 'package:medical/src/widget/my_plan_screens/my_plan/my_plan.dart';
 import 'package:medical/src/widget/profile/profile_controller.dart';
 import 'package:medical/src/widget/question_answer/question_answer_page.dart';
 import 'package:medical/src/widget/tabbar/bottom_tabbar.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -62,7 +62,7 @@ class _TabbarControllerState extends State<TabbarController>
 
   @override
   void initState() {
-    initData(); 
+    initData();
     super.initState();
   }
 
@@ -167,7 +167,7 @@ class _TabbarControllerState extends State<TabbarController>
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'login_session_end',
         parameters: {
           "screen_name": AppSettings.currentScreenName,

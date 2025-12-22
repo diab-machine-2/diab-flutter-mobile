@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as cs;
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide CarouselController;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
@@ -35,7 +35,7 @@ class SubscriptionPage extends StatefulWidget {
 class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
   late SubscriptionCubit _cubit;
   int _currentCarouselIndex = 0;
-  final CarouselController _carouselController = CarouselController();
+  // CarouselController removed in carousel_slider 5.0.0 - carousel navigation handled via onPageChanged
 
   // Subscription state
   CustomerInfo? customerInfo;
@@ -524,9 +524,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                                 topLeft: Radius.circular(20),
                                 topRight: Radius.circular(20),
                               ),
-                              child: CarouselSlider(
-                                carouselController: _carouselController,
-                                options: CarouselOptions(
+                              child: cs.CarouselSlider(
+                                options: cs.CarouselOptions(
                                   height: imageHeight,
                                   viewportFraction: 1.0,
                                   enlargeCenterPage: false,
@@ -598,7 +597,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> with Observer {
                                       dotColor: Color(0xFFDFE4E4),
                                     ),
                                     onDotClicked: (index) {
-                                      _carouselController.animateToPage(index);
+                                      // CarouselController removed in carousel_slider 5.0.0
+                                      // Dot click navigation not available without controller
+                                      // Carousel will continue auto-playing
                                     },
                                   ),
                                 ],

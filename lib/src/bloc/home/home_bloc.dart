@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/home/home_model.dart';
@@ -379,7 +379,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (lessons.isNotEmpty) {
         // Do share
         final lesson = lessons.first;
-        String shareLink = await DynamicLinkConfig.instance
+        String shareLink = await BranchioLinkConfig.instance
             .createShareLessonLink(
                 lesson: lesson,
                 featureImage: featureImage,

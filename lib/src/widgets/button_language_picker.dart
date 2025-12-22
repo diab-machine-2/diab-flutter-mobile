@@ -21,10 +21,10 @@ class ButtonLanguagePicker extends StatelessWidget {
     String appLanguage = AppPreference().appLanguage;
     return GestureDetector(
       onTap: () async {
-        await TrackingManager.analytics.logEvent(
+        await TrackingManager.logEvent(
           name: 'component_clicked',
           parameters: {
-            "screen_name": screenName,
+            "screen_name": screenName ?? '',
             'cta_button_name': 'cta_profile_change_language',
           },
         );
