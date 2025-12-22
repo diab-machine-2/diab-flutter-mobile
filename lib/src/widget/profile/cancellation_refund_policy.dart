@@ -148,8 +148,8 @@ class _CancellationRefundPolicyControllerState
                     data: policyHtml,
                     style: {
                       "body": Style(
-                        margin: EdgeInsets.zero,
-                        padding: EdgeInsets.zero,
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
                       ),
                     },
                   ),

@@ -388,28 +388,39 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
     cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
 
-    if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.popUntil((route) => route.isFirst);
+    // Pop until dsmes_booking
+    DsmesNavigationMixin.getNavigationKey()
+        .currentState
+        ?.popUntil((route) => route.isFirst);
 
-      await DsmesNavigationMixin.getNavigationKey()
+    // Handle rebooking for booking dsmes center
+    if (bookingType == Const.BOOKING_TYPE_CENTER) {
+      // Then push to select date
+      if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
+        await DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+          'serviceType': appointment.mode,
+          'action': 'create',
+        });
+      } else {
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
+          'action': 'create',
+          'clinic': cubit.selectedClinic,
+          'serviceType': appointment.mode,
+          'bookingType': bookingType,
+        });
+      }
+    } else {
+      // Handle rebooking for booking clinic
+      DsmesNavigationMixin.getNavigationKey()
           .currentState
           ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
         'serviceType': appointment.mode,
         'action': 'create',
-      });
-    } else {
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.popUntil((route) => route.isFirst);
-
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
-        'action': 'create',
-        'clinic': cubit.selectedClinic,
-        'serviceType': appointment.mode,
+        'bookingType': bookingType,
       });
     }
   }
