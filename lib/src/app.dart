@@ -106,6 +106,7 @@ import 'widget/ocr/test_ocr_camera_page.dart';
 import 'widget/ocr/test_ocr_page.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
+import 'widget/webinar/webinar_info_page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -602,6 +603,14 @@ class App extends StatelessWidget {
                     return _buildRoute(
                       settings,
                       NewsDetailView(id: data?['id']),
+                    );
+                  case NavigatorName.webinar_info:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      WebinarInfoPage(
+                        id: data?['id'],
+                      ),
                     );
                   case NavigatorName.connection_instructions:
                     final data = settings.arguments as Map<String, dynamic>?;

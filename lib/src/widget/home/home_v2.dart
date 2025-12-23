@@ -596,8 +596,9 @@ class _HomeControllerState extends State<HomeController>
                   huyetAps.first.value1?.isNotEmpty == true &&
                   huyetAps.first.value1 != "--";
 
-              List<HomeMeasurementData> dinduongs =
-                  state.model.measurements!.where((e) => e.title.toLowerCase() == "dinh dưỡng").toList();
+              List<HomeMeasurementData> dinduongs = state.model.measurements!
+                  .where((e) => e.title.toLowerCase() == "dinh dưỡng")
+                  .toList();
               _haveInputFoodAlready = dinduongs.isNotEmpty &&
                   dinduongs.first.value1?.isNotEmpty == true &&
                   dinduongs.first.value1 != "--";
@@ -721,15 +722,15 @@ class _HomeControllerState extends State<HomeController>
                   (stateLoaded?.activities ?? []).length > 3 ||
                   (stateLoaded?.reminders ?? []).length > 2;
 
-          List<String> banners = (stateLoaded?.banners ?? [])
+          final allBanners = (stateLoaded?.banners ?? [])
               .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
-              .map((banner) => banner.imageBannerUrl!.url!)
               .toList();
 
-          List<String> bannerLinks = (stateLoaded?.banners ?? [])
-              .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
-              .map((banner) => banner.link ?? '')
-              .toList();
+          List<String> banners =
+              allBanners.map((banner) => banner.imageBannerUrl!.url!).toList();
+
+          List<String> bannerLinks =
+              allBanners.map((banner) => banner.link ?? '').toList();
 
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
@@ -746,7 +747,8 @@ class _HomeControllerState extends State<HomeController>
                         end: Alignment.topCenter,
                       ),
                     ),
-                    child: HomeHeader(sharedCode: widget.sharedCode, homeModel: model),
+                    child: HomeHeader(
+                        sharedCode: widget.sharedCode, homeModel: model),
                   ),
                   Expanded(
                     child: SingleChildScrollView(
@@ -780,14 +782,16 @@ class _HomeControllerState extends State<HomeController>
                                 return;
                               }
                               // check first time open blood pressure intro
-                              if (routeName == NavigatorName.add_blood_pressure &&
+                              if (routeName ==
+                                      NavigatorName.add_blood_pressure &&
                                   !_haveInputBloodpressureAlready) {
-                                Navigator.of(context)
-                                    .pushNamed(NavigatorName.blood_pressure_intro_1st_page);
+                                Navigator.of(context).pushNamed(NavigatorName
+                                    .blood_pressure_intro_1st_page);
                                 return;
                               }
                               // check first time open dinh duong
-                              if (routeName == NavigatorName.add_food && !_haveInputFoodAlready) {
+                              if (routeName == NavigatorName.add_food &&
+                                  !_haveInputFoodAlready) {
                                 FoodActionPopup.show(context);
                                 return;
                               }
@@ -879,17 +883,13 @@ class _HomeControllerState extends State<HomeController>
                                   initialPage: 0,
                                   padEnds: true,
                                 ),
-                                itemCount: banners.length,
+                                itemCount: allBanners.length,
                                 itemBuilder: (BuildContext context, int index,
                                         int pageViewIndex) =>
                                     ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: GestureDetector(
                                     onTap: () async {
-                                      if (bannerLinks[index].isEmpty) {
-                                        return;
-                                      }
-
                                       await TrackingManager.trackEvent(
                                           'home_select_banner', _screenName,
                                           params: {
@@ -898,13 +898,34 @@ class _HomeControllerState extends State<HomeController>
                                                 '',
                                             "index": index,
                                           });
+                                      final selectedBanner = allBanners[index];
+                                      final isWebinar = (selectedBanner
+                                                  .accountId !=
+                                              null &&
+                                          selectedBanner
+                                              .accountId!.isNotEmpty &&
+                                          selectedBanner.accountId !=
+                                              '00000000-0000-0000-0000-000000000000' &&
+                                          selectedBanner.eventType != null);
 
-                                      final launchUri =
-                                          Uri.parse(bannerLinks[index]);
-                                      if (await canLaunchUrl(launchUri)) {
-                                        await launchUrl(launchUri);
+                                      if (isWebinar &&
+                                          selectedBanner.id != null) {
+                                        Navigator.pushNamed(
+                                          context,
+                                          NavigatorName.webinar_info,
+                                          arguments: {'id': selectedBanner.id},
+                                        );
                                       } else {
-                                        throw 'Could not launch banner link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
+                                        if (bannerLinks[index].isEmpty) {
+                                          return;
+                                        }
+                                        final launchUri =
+                                            Uri.parse(bannerLinks[index]);
+                                        if (await canLaunchUrl(launchUri)) {
+                                          await launchUrl(launchUri);
+                                        } else {
+                                          throw 'Could not launch banner link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
+                                        }
                                       }
                                     },
                                     child: NetWorkImageWidget(

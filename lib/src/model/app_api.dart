@@ -454,6 +454,20 @@ abstract class AppApi {
   Future<LearningPostListResponse> getBanners(
       {@Query('Position') int? position});
 
+  // Webinar / Events
+  @GET('/App/LearningPost/event/{id}')
+  Future<WebinarDetailResponse> getLearningPostEvent(
+    @Path('id') String id,
+  );
+
+  @GET('/App/LearningPost/events')
+  Future<List<WebinarDetailResponse>> getLearningPostEvents();
+
+  @POST('/App/LearningPost/events/register/{id}')
+  Future<void> registerLearningPostEvent(
+    @Path('id') String id,
+  );
+
   // Customer Receives
   @PUT("/App/CustomerReceives/interview/{courseId}")
   Future<void> updateDoneInterview(String courseId);
