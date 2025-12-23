@@ -15,6 +15,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
@@ -217,7 +218,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     if (eventDateTime == null) return null;
 
     // duration is stored in HOURS
-    final duration = (model.duration ?? 0) - 22;
+    final duration = (model.duration ?? 0);
     return eventDateTime.add(Duration(hours: duration));
   }
 
@@ -950,175 +951,186 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
   }
 
   Widget _buildSimilarEventItem(LearningPostModel item) {
-    return SizedBox(
-      width: 260.w,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Banner with bottom overlay (only when event has started)
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: NetWorkImageWidget(
-                  imageUrl: item.imageBannerUrl?.url ??
-                      item.imageUrl.url ??
-                      '', // fallback
-                  width: 260.w,
-                  height: 120.h,
-                  fit: BoxFit.cover,
+    return InkWell(
+      onTap: () {
+        if (item.id != null && item.id!.isNotEmpty) {
+          Navigator.pushNamed(
+            context,
+            NavigatorName.webinar_info,
+            arguments: {'id': item.id},
+          );
+        }
+      },
+      child: SizedBox(
+        width: 260.w,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Banner with bottom overlay (only when event has started)
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: NetWorkImageWidget(
+                    imageUrl: item.imageBannerUrl?.url ??
+                        item.imageUrl.url ??
+                        '', // fallback
+                    width: 260.w,
+                    height: 120.h,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              if (_isEventStarted(item))
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(12),
-                        bottomRight: Radius.circular(12),
+                if (_isEventStarted(item))
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Teal pill: ● Đang diễn ra
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff0FB4A5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 6.w,
+                                  height: 6.h,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                GapW(6.w),
+                                Text(
+                                  'Đang diễn ra',
+                                  style: TextStyle(
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (item.eventJoinCount != null)
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.group,
+                                  size: 16.sp,
+                                  color: Colors.white,
+                                ),
+                                GapW(4.w),
+                                Text(
+                                  '${item.eventJoinCount}',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // Teal pill: ● Đang diễn ra
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10.w, vertical: 6.h),
-                          decoration: BoxDecoration(
-                            color: const Color(0xff0FB4A5),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 6.w,
-                                height: 6.h,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              GapW(6.w),
-                              Text(
-                                'Đang diễn ra',
-                                style: TextStyle(
-                                  fontSize: 11.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (item.eventJoinCount != null)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.group,
-                                size: 16.sp,
-                                color: Colors.white,
-                              ),
-                              GapW(4.w),
-                              Text(
-                                '${item.eventJoinCount}',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
+                  ),
+              ],
+            ),
+            SizedBox(height: 8.h),
+            // Calendar icon + eventTime + weekdayText, dd/MM/yyyy
+            Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 14.sp,
+                  color: const Color(0xFF6B7280),
+                ),
+                GapW(4.w),
+                Expanded(
+                  child: Text(
+                    _formatEventDateTimeForSimilar(item),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: const Color(0xFF6B7280),
                     ),
                   ),
                 ),
-            ],
-          ),
-          SizedBox(height: 8.h),
-          // Calendar icon + eventTime + weekdayText, dd/MM/yyyy
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_today,
-                size: 14.sp,
-                color: const Color(0xFF6B7280),
-              ),
-              GapW(4.w),
-              Expanded(
-                child: Text(
-                  _formatEventDateTimeForSimilar(item),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: const Color(0xFF6B7280),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          // Event title
-          Text(
-            item.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF111827),
+              ],
             ),
-          ),
-          SizedBox(height: 4.h),
-          // eventAddress or "Sự kiện trực tuyến" based on eventType
-          Row(
-            children: [
-              Icon(
-                // eventType true = offline, false = online
-                item.eventType == true
-                    ? Icons.location_on_outlined
-                    : Icons.videocam,
-                size: 14.sp,
-                color: const Color(0xFF6B7280),
+            SizedBox(height: 4.h),
+            // Event title
+            Text(
+              item.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF111827),
               ),
-              GapW(4.w),
-              Expanded(
-                child: Text(
+            ),
+            SizedBox(height: 4.h),
+            // eventAddress or "Sự kiện trực tuyến" based on eventType
+            Row(
+              children: [
+                Icon(
                   // eventType true = offline, false = online
                   item.eventType == true
-                      ? (item.eventAddress ?? '')
-                      : 'Sự kiện trực tuyến',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: const Color(0xFF6B7280),
+                      ? Icons.location_on_outlined
+                      : Icons.videocam,
+                  size: 14.sp,
+                  color: const Color(0xFF6B7280),
+                ),
+                GapW(4.w),
+                Expanded(
+                  child: Text(
+                    // eventType true = offline, false = online
+                    item.eventType == true
+                        ? (item.eventAddress ?? '')
+                        : 'Sự kiện trực tuyến',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: const Color(0xFF6B7280),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          // {eventJoinCount} lượt tham gia
-          if (item.eventJoinCount != null)
-            Text(
-              '${item.eventJoinCount} lượt tham gia',
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: const Color(0xFF6B7280),
-              ),
+              ],
             ),
-        ],
+            SizedBox(height: 4.h),
+            // {eventJoinCount} lượt tham gia
+            if (item.eventJoinCount != null)
+              Text(
+                '${item.eventJoinCount} lượt tham gia',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: const Color(0xFF6B7280),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
