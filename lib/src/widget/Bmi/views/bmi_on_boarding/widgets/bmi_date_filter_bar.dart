@@ -25,10 +25,17 @@ class _BmiDateFilterBarState extends State<BmiDateFilterBar>
   final List<Widget> _tabs = BmiDateFilterType.values
       .map((e) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text("${e.days} ${R.string.day.tr()}",
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                "${e.days} ${R.string.day.tr()}",
                 style: TextStyle(
                   fontSize: 14,
-                )),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ))
       .toList();
 
