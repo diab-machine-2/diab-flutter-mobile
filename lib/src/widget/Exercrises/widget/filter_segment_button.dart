@@ -134,12 +134,18 @@ class _FilterSegmentButtonState extends BaseState<FilterSegmentButton> {
 
   Widget _buildSegmentButtonItem(String title, int index, bool isSelected) {
     return Container(
-      child: Text(
-        title,
-        style: TextStyle(
-          color: isSelected ? R.color.white : R.color.color0xff636A6B,
-          fontSize: 15,
-          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+      alignment: Alignment.center,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          title,
+          style: TextStyle(
+            color: isSelected ? R.color.white : R.color.color0xff636A6B,
+            fontSize: 15,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
