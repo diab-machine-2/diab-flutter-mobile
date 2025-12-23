@@ -652,16 +652,35 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                             ),
                                             GapW(4.w),
                                             Expanded(
-                                              child: Text(
-                                                // eventType true = offline, false = online
-                                                webinar.eventType == true
-                                                    ? (webinar.eventAddress ??
-                                                        '')
-                                                    : 'Sự kiện trực tuyến',
-                                                style: TextStyle(
-                                                  fontSize: 13.sp,
-                                                  color:
-                                                      const Color(0xFF6B7280),
+                                              child: InkWell(
+                                                onTap: () async {
+                                                  // Only make it clickable for offline events with a valid link
+                                                  if (webinar.eventType ==
+                                                          true &&
+                                                      webinar.link != null &&
+                                                      webinar.link!
+                                                          .trim()
+                                                          .isNotEmpty) {
+                                                    final uri = Uri.tryParse(
+                                                        webinar.link!.trim());
+                                                    if (uri != null &&
+                                                        await canLaunchUrl(
+                                                            uri)) {
+                                                      await launchUrl(uri);
+                                                    }
+                                                  }
+                                                },
+                                                child: Text(
+                                                  // eventType true = offline, false = online
+                                                  webinar.eventType == true
+                                                      ? (webinar.eventAddress ??
+                                                          '')
+                                                      : 'Sự kiện trực tuyến',
+                                                  style: TextStyle(
+                                                    fontSize: 13.sp,
+                                                    color:
+                                                        const Color(0xFF6B7280),
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -743,15 +762,23 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                         ),
                       ),
                     ),
-                    SafeArea(
-                      top: false,
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                        ),
-                        child: _buildActionButton(),
-                      ),
+                    Builder(
+                      builder: (context) {
+                        final actionButton = _buildActionButton();
+                        if (actionButton == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return SafeArea(
+                          top: false,
+                          child: Container(
+                            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            child: actionButton,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -1135,9 +1162,9 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget? _buildActionButton() {
     final webinar = _webinar;
-    if (webinar == null) return const SizedBox.shrink();
+    if (webinar == null) return null;
 
     final isJoined = webinar.isJoin == true;
     final isOnlineEvent = webinar.eventType == false;
@@ -1179,7 +1206,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
         );
       }
       // If user didn't join, hide the button
-      return const SizedBox.shrink();
+      return null;
     }
 
     // State 3: Event is currently happening (during event)
