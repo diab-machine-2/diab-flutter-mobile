@@ -59,7 +59,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     url = widget.url;
-    debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.initState url=$url isYouTube=${widget.isYouTubeLink}');
+    debugPrint(
+        '[VIDEO][${_getTimestamp()}] VideoWidget.initState url=$url isYouTube=${widget.isYouTubeLink}');
     initializeVideo();
   }
 
@@ -69,7 +70,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     if (oldWidget.url != widget.url) {
       url = widget.url;
       retryCount = 0;
-      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.didUpdateWidget url changed to $url');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] VideoWidget.didUpdateWidget url changed to $url');
       _cleanupAndRefresh();
     }
   }
@@ -77,60 +79,70 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.dispose called, starting cleanup');
+    debugPrint(
+        '[VIDEO][${_getTimestamp()}] VideoWidget.dispose called, starting cleanup');
     _isDisposed = true;
     _isInitializing = false;
-    _cleanup();
+    _cleanup(isFullDisposal: true);
     super.dispose();
   }
 
-  void _cleanup() {
+  void _cleanup({bool isFullDisposal = false}) {
     try {
-      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup begin - isInitializing: $_isInitializing');
-      _isDisposed = true;
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] VideoWidget._cleanup begin - isInitializing: $_isInitializing, isFullDisposal: $isFullDisposal');
+      if (isFullDisposal) {
+        _isDisposed = true;
+      }
       _isInitializing = false;
-      
+
       // IMPORTANT: Pause playerController FIRST before disposing videoManager
       // because videoManager.disposeAllVideo() will dispose the controller
       // and playerController might be the same object
       if (playerController != null) {
-        debugPrint('[VIDEO][${_getTimestamp()}] Pausing player controller before disposal');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Pausing player controller before disposal');
         try {
           // Check if controller is still valid before pausing
           final videoPlayerController = playerController!.videoPlayerController;
-          if (videoPlayerController != null && 
+          if (videoPlayerController != null &&
               videoPlayerController.value.initialized == true &&
               !videoPlayerController.value.hasError) {
             playerController!.pause();
             debugPrint('[VIDEO][${_getTimestamp()}] Player controller paused');
-            
+
             // Additional pause for video player controller if available
             try {
               videoPlayerController.pause();
-              debugPrint('[VIDEO][${_getTimestamp()}] Video player controller paused');
+              debugPrint(
+                  '[VIDEO][${_getTimestamp()}] Video player controller paused');
             } catch (e) {
-              debugPrint('[VIDEO][${_getTimestamp()}] Error pausing video player controller: $e');
+              debugPrint(
+                  '[VIDEO][${_getTimestamp()}] Error pausing video player controller: $e');
             }
           }
         } catch (e) {
-          debugPrint('[VIDEO][${_getTimestamp()}] Error pausing player controller: $e');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Error pausing player controller: $e');
         }
-        
+
         // Don't dispose playerController here - it will be disposed by videoManager
         playerController = null;
       }
-      
+
       // Now dispose video manager (which will dispose the controller)
       if (videoManager != null) {
-        debugPrint('[VIDEO][${_getTimestamp()}] Disposing video manager during cleanup');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Disposing video manager during cleanup');
         try {
           videoManager?.disposeAllVideo();
         } catch (e) {
-          debugPrint('[VIDEO][${_getTimestamp()}] Error disposing video manager: $e');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Error disposing video manager: $e');
         }
         videoManager = null;
       }
-      
+
       debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget._cleanup completed');
     } catch (e) {
       debugPrint('[VIDEO][${_getTimestamp()}] Error during cleanup: $e');
@@ -138,14 +150,16 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       try {
         if (playerController != null) {
           try {
-            final videoPlayerController = playerController!.videoPlayerController;
-            if (videoPlayerController != null && 
+            final videoPlayerController =
+                playerController!.videoPlayerController;
+            if (videoPlayerController != null &&
                 videoPlayerController.value.initialized == true &&
                 !videoPlayerController.value.hasError) {
               playerController?.pause();
             }
           } catch (e2) {
-            debugPrint('[VIDEO][${_getTimestamp()}] Error pausing player controller in catch: $e2');
+            debugPrint(
+                '[VIDEO][${_getTimestamp()}] Error pausing player controller in catch: $e2');
           }
         }
       } catch (e2) {
@@ -154,7 +168,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       try {
         videoManager?.disposeAllVideo();
       } catch (e3) {
-        debugPrint('[VIDEO][${_getTimestamp()}] Error disposing video manager in catch: $e3');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Error disposing video manager in catch: $e3');
       }
       playerController = null;
       videoManager = null;
@@ -164,7 +179,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
   void _cleanupAndRefresh() {
     debugPrint('[VIDEO][${_getTimestamp()}] _cleanupAndRefresh called');
-    _cleanup();
+    _cleanup(isFullDisposal: false); // Don't mark as disposed during refresh
     playerController = null;
     videoManager = null;
     if (!_isDisposed) {
@@ -279,9 +294,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _refreshVideo() async {
-    debugPrint('[VIDEO][${_getTimestamp()}] _refreshVideo called - mounted: $mounted, disposed: $_isDisposed');
+    debugPrint(
+        '[VIDEO][${_getTimestamp()}] _refreshVideo called - mounted: $mounted, disposed: $_isDisposed');
     if (!mounted || _isDisposed) {
-      debugPrint('[VIDEO][${_getTimestamp()}] _refreshVideo aborted - not mounted or disposed');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] _refreshVideo aborted - not mounted or disposed');
       return;
     }
 
@@ -296,27 +313,31 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
   Future<void> initializeVideo() async {
     if (_isDisposed) {
-      debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo aborted - already disposed');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] initializeVideo aborted - already disposed');
       return;
     }
     _isInitializing = true;
     debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo started');
     await _initializeVideoWithRetry();
-    
+
     // Check disposal state before completing initialization
     if (_isDisposed) {
-      debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo aborted - disposed during initialization');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] initializeVideo aborted - disposed during initialization');
       return;
     }
-    
+
     _isInitializing = false;
     debugPrint('[VIDEO][${_getTimestamp()}] initializeVideo completed');
   }
 
   Future<void> _initializeVideoWithRetry() async {
-    debugPrint('[VIDEO][${_getTimestamp()}] _initializeVideoWithRetry started - mounted: $mounted, disposed: $_isDisposed');
+    debugPrint(
+        '[VIDEO][${_getTimestamp()}] _initializeVideoWithRetry started - mounted: $mounted, disposed: $_isDisposed');
     if (!mounted || _isDisposed) {
-      debugPrint('[VIDEO][${_getTimestamp()}] _initializeVideoWithRetry aborted - not mounted or disposed');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] _initializeVideoWithRetry aborted - not mounted or disposed');
       return;
     }
 
@@ -378,9 +399,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
     // Attempt initialization with retry logic
     for (int attempt = 0; attempt <= maxRetries; attempt++) {
-      debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1}/${maxRetries + 1} - mounted: $mounted, disposed: $_isDisposed');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1}/${maxRetries + 1} - mounted: $mounted, disposed: $_isDisposed');
       if (!mounted || _isDisposed) {
-        debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - not mounted or disposed');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - not mounted or disposed');
         return;
       }
 
@@ -389,14 +412,16 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
             '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1}/${maxRetries + 1} for URL: $finalUrl');
 
         if (_isDisposed) {
-          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed before video manager creation');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed before video manager creation');
           return;
         }
-        
+
         await _createVideoManager();
 
         if (_isDisposed) {
-          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after video manager creation');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after video manager creation');
           return;
         }
 
@@ -408,27 +433,31 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         }
 
         if (_isDisposed) {
-          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after controller creation');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after controller creation');
           // Force pause the controller before returning to prevent audio
           try {
             playerController?.pause();
           } catch (e) {
-            debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller after disposal: $e');
+            debugPrint(
+                '[VIDEO][${_getTimestamp()}] Error pausing controller after disposal: $e');
           }
           return;
         }
 
         // Check video readiness with shorter timeout
         final isReady = await _waitForVideoReady(maxAttempts: 30);
-        
+
         // Check disposal state after waiting for video ready
         if (_isDisposed) {
-          debugPrint('[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after video ready check');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Initialization attempt ${attempt + 1} aborted - disposed after video ready check');
           // Force pause the controller before returning to prevent audio
           try {
             playerController?.pause();
           } catch (e) {
-            debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller after disposal: $e');
+            debugPrint(
+                '[VIDEO][${_getTimestamp()}] Error pausing controller after disposal: $e');
           }
           return;
         }
@@ -448,7 +477,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
           try {
             playerController?.pause();
           } catch (e) {
-            debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller before exception: $e');
+            debugPrint(
+                '[VIDEO][${_getTimestamp()}] Error pausing controller before exception: $e');
           }
           throw Exception('Video metadata failed to load (duration = 0)');
         }
@@ -460,36 +490,40 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         try {
           playerController?.pause();
         } catch (e2) {
-          debugPrint('[VIDEO][${_getTimestamp()}] Error pausing controller in catch block: $e2');
+          debugPrint(
+              '[VIDEO][${_getTimestamp()}] Error pausing controller in catch block: $e2');
         }
 
         if (attempt < maxRetries) {
           // Check disposal state before retry
           if (_isDisposed) {
-            debugPrint('[VIDEO][${_getTimestamp()}] Retry aborted - disposed during cleanup');
+            debugPrint(
+                '[VIDEO][${_getTimestamp()}] Retry aborted - disposed during cleanup');
             return;
           }
-          
+
           // Clean up failed attempt
-          _cleanup();
+          _cleanup(isFullDisposal: false);
           playerController = null;
           videoManager = null;
 
           // Check disposal state before delay
           if (_isDisposed) {
-            debugPrint('[VIDEO][${_getTimestamp()}] Retry aborted - disposed before delay');
+            debugPrint(
+                '[VIDEO][${_getTimestamp()}] Retry aborted - disposed before delay');
             return;
           }
 
           // Shorter wait before retry
           await Future.delayed(Duration(seconds: 1));
-          
+
           // Check disposal state after delay
           if (_isDisposed) {
-            debugPrint('[VIDEO][${_getTimestamp()}] Retry aborted - disposed after delay');
+            debugPrint(
+                '[VIDEO][${_getTimestamp()}] Retry aborted - disposed after delay');
             return;
           }
-          
+
           debugPrint('[VIDEO][${_getTimestamp()}] Retrying in 1 second...');
         } else {
           // Final attempt failed
@@ -507,25 +541,29 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Future<void> _createVideoManager() async {
-    debugPrint('[VIDEO][${_getTimestamp()}] _createVideoManager called - mounted: $mounted, disposed: $_isDisposed, isInitializing: $_isInitializing');
+    debugPrint(
+        '[VIDEO][${_getTimestamp()}] _createVideoManager called - mounted: $mounted, disposed: $_isDisposed, isInitializing: $_isInitializing');
     if (!mounted || _isDisposed) {
-      debugPrint('[VIDEO][${_getTimestamp()}] _createVideoManager aborted - not mounted or disposed');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] _createVideoManager aborted - not mounted or disposed');
       return;
     }
-    
+
     // Prevent multiple video managers from being created
     if (videoManager != null) {
-      debugPrint('[VIDEO][${_getTimestamp()}] Video manager already exists, disposing old one');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] Video manager already exists, disposing old one');
       videoManager?.disposeAllVideo();
       videoManager = null;
     }
-    
+
     // Double check disposal state before creating new manager
     if (_isDisposed) {
-      debugPrint('[VIDEO][${_getTimestamp()}] _createVideoManager aborted - disposed during cleanup');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] _createVideoManager aborted - disposed during cleanup');
       return;
     }
-    
+
     videoManager = VideoManager(
       url: url,
       callbackEventListener: widget.callbackEventListener,
@@ -557,7 +595,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       debugPrint('[VIDEO][${_getTimestamp()}] Setting video manager in parent');
       widget.setVideoManager(videoManager!);
     } else {
-      debugPrint('[VIDEO][${_getTimestamp()}] Not setting video manager - not mounted or disposed');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] Not setting video manager - not mounted or disposed');
     }
   }
 
@@ -566,10 +605,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     while (attempts < 20 && mounted && !_isDisposed) {
       // Check disposal state before each attempt
       if (_isDisposed) {
-        debugPrint('[VIDEO][${_getTimestamp()}] _getControllerWithRetry aborted - disposed during retry');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] _getControllerWithRetry aborted - disposed during retry');
         return null;
       }
-      
+
       try {
         final controller = await videoManager?.controller;
         if (controller != null) {
@@ -581,13 +621,14 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
         debugPrint(
             '[VIDEO][${_getTimestamp()}] Error getting controller (attempt ${attempts + 1}): $e');
       }
-      
+
       // Check disposal state before delay
       if (_isDisposed) {
-        debugPrint('[VIDEO][${_getTimestamp()}] _getControllerWithRetry aborted - disposed before delay');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] _getControllerWithRetry aborted - disposed before delay');
         return null;
       }
-      
+
       await Future.delayed(Duration(milliseconds: 500));
       attempts++;
     }
@@ -602,10 +643,11 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     while (attempts < maxAttempts && mounted && !_isDisposed) {
       // Check disposal state before each attempt
       if (_isDisposed) {
-        debugPrint('[VIDEO][${_getTimestamp()}] _waitForVideoReady aborted - disposed during check');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] _waitForVideoReady aborted - disposed during check');
         return false;
       }
-      
+
       try {
         final videoPlayerController = playerController!.videoPlayerController;
         debugPrint(
@@ -640,7 +682,8 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
       // Check disposal state before delay
       if (_isDisposed) {
-        debugPrint('[VIDEO][${_getTimestamp()}] _waitForVideoReady aborted - disposed before delay');
+        debugPrint(
+            '[VIDEO][${_getTimestamp()}] _waitForVideoReady aborted - disposed before delay');
         return false;
       }
 
@@ -705,12 +748,14 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (hasError) {
-      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.build -> error: $errorMessage');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] VideoWidget.build -> error: $errorMessage');
       return _buildErrorWidget();
     }
 
     if (isInitializing || playerController == null) {
-      debugPrint('[VIDEO][${_getTimestamp()}] VideoWidget.build -> loading... (playerController is ${playerController == null ? 'null' : 'not null'})');
+      debugPrint(
+          '[VIDEO][${_getTimestamp()}] VideoWidget.build -> loading... (playerController is ${playerController == null ? 'null' : 'not null'})');
       return Container(
         height: 200,
         color: R.color.backgroundColorNew,

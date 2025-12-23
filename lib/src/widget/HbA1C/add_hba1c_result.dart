@@ -144,7 +144,7 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
       List<String> paths = [];
       final data = _sectionAddNoteKey.currentState!.getNote();
       for (var file in data.files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }

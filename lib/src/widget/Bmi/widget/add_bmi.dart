@@ -847,7 +847,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
                                                     children: [
                                                       Positioned.fill(
                                                         child: files[index]
-                                                                is PickedFile
+                                                                is PickedFile ||
+                                                            files[index] is XFile
                                                             ? Image.file(
                                                                 File(
                                                                     files[index]
@@ -869,7 +870,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
                                                           onPressed: () {
                                                             setState(() {
                                                               if (files[index]
-                                                                  is PickedFile) {
+                                                                  is PickedFile ||
+                                                              files[index] is XFile) {
                                                                 files.removeAt(
                                                                     index);
                                                               } else {
@@ -1039,7 +1041,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
     try {
       List<String> paths = [];
       for (var file in files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }
