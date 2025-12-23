@@ -299,7 +299,7 @@ class _FoodImagesSelectionState extends State<FoodImagesSelection> {
             Positioned.fill(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: image is PickedFile
+                child: image is PickedFile || image is XFile
                     ? Image.file(
                         File(image.path),
                         fit: BoxFit.cover,
@@ -450,7 +450,7 @@ class _FoodImagesSelectionState extends State<FoodImagesSelection> {
   void _removeImage(int index) {
     setState(() {
       final image = _selectedImages[index];
-      if (image is PickedFile) {
+      if (image is PickedFile || image is XFile) {
         _selectedImages.removeAt(index);
       } else {
         _removeIDs.add(image.id);
