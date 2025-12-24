@@ -47,7 +47,8 @@ class SectionSelectImage extends StatelessWidget with AddBmiMixin {
                           alignment: AlignmentDirectional.topEnd,
                           children: [
                             Positioned.fill(
-                              child: cubit.files[index] is PickedFile
+                              child: cubit.files[index] is PickedFile ||
+                                  cubit.files[index] is XFile
                                   ? Image.file(
                                       File(cubit.files[index].path),
                                       fit: BoxFit.cover,
@@ -59,7 +60,8 @@ class SectionSelectImage extends StatelessWidget with AddBmiMixin {
                             IconButton(
                                 icon: Image.asset(R.drawable.ic_trash),
                                 onPressed: () {
-                                  if (cubit.files[index] is PickedFile) {
+                                  if (cubit.files[index] is PickedFile ||
+                                      cubit.files[index] is XFile) {
                                     cubit.files.removeAt(index);
                                   } else {
                                     cubit.removeIDs.add(cubit.files[index].id);

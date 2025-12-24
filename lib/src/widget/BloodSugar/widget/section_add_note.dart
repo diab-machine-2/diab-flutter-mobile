@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -369,15 +370,26 @@ class SectionAddNoteState extends State<SectionAddNote> {
     try {
       // Check storage permission for gallery access on Android
       if (Platform.isAndroid) {
-        final permission = await Permission.photos.status;
-        if (!permission.isGranted) {
-          final newPermission = await Permission.photos.request();
-          if (!newPermission.isGranted) {
-            _showGalleryPermissionDialog(context);
-            return;
-          }
+      // For Android 13+ use photos, for <=12 use storage
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final sdkInt = androidInfo.version.sdkInt;
+
+      Permission permissionToRequest;
+      if (sdkInt >= 33) {
+        permissionToRequest = Permission.photos;      // READ_MEDIA_IMAGES
+      } else {
+        permissionToRequest = Permission.storage;     // READ_EXTERNAL_STORAGE
+      }
+
+      final status = await permissionToRequest.status;
+      if (!status.isGranted) {
+        final newStatus = await permissionToRequest.request();
+        if (!newStatus.isGranted) {
+          _showGalleryPermissionDialog(context);
+          return;
         }
       }
+    }
 
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
