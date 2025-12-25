@@ -256,7 +256,8 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                           width: 56,
                           height: 56,
                           clipBehavior: Clip.hardEdge,
-                          child: _isFileObject(_files[index])
+                          child: _files[index] is PickedFile ||
+                                  _files[index] is XFile
                               ? Image.file(
                                   File(_files[index].path),
                                   fit: BoxFit.cover,
@@ -272,7 +273,8 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (_isFileObject(_files[index])) {
+                              if (_files[index] is PickedFile ||
+                                  _files[index] is XFile) {
                                 _files.removeAt(index);
                                 _fileNetworkName.removeAt(index);
                               } else {
@@ -305,7 +307,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            _isFileObject(_files[index])
+            _files[index] is PickedFile || _files[index] is XFile
                 ? Image.file(
                     File(_files[index].path),
                     fit: BoxFit.contain,

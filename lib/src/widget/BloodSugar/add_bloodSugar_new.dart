@@ -720,7 +720,7 @@ class _AddBloodSugarControllerNewState
     try {
       List<String> paths = [];
       for (var file in files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }

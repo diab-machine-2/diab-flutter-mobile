@@ -3,7 +3,7 @@ description: DiaB mobile application
 
 publish_to: "none"
 
-version: 2.5.0+200
+version: 2.5.1+201
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -140,8 +140,8 @@ dependencies:
 
   flutter_in_app_pip: 1.7.3
   carp_serializable: 1.2.0
-  purchases_flutter: 8.10.6
-  purchases_ui_flutter: 8.10.6
+  purchases_flutter: 8.11.0
+  purchases_ui_flutter: 8.11.0
   youtube_explode_dart: 2.5.2
   saver_gallery: 3.0.6
   photo_manager: 3.7.1

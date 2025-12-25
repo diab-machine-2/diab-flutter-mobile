@@ -966,7 +966,7 @@ class _AddHBA1CControllerState extends BaseState<AddHBA1CController> {
       List<String> paths = [];
       final data = _sectionAddNoteKey.currentState!.getNote();
       for (var file in (data.files)) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }

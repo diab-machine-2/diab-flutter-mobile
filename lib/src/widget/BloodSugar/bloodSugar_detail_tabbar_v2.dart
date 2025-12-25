@@ -389,6 +389,7 @@ class _BloodSugarDetailTabbarControllerState
         initialValue: selectedIndex,
         values: values,
         labels: labels,
+        fontSize: 15,
       ),
     );
   }
