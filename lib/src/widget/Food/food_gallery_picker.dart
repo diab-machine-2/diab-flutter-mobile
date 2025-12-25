@@ -91,11 +91,21 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       final PermissionState currentState =
           await PhotoManager.requestPermissionExtend();
       print('Permission state after request: $currentState');
+      print('Permission isAuth: ${currentState.isAuth}');
+      print(
+          'Permission isAuthorized: ${currentState == PermissionState.authorized}');
+      print('Permission isLimited: ${currentState == PermissionState.limited}');
 
       if (_isDisposed || !mounted) return;
 
       // On Android 13+, sometimes permission state is incorrectly reported as denied
       // even when permission is actually granted. Let's try to access photos directly.
+      // Also, if permission is already granted (authorized/limited), proceed to load photos
+      if (currentState == PermissionState.authorized ||
+          currentState == PermissionState.limited ||
+          currentState.isAuth) {
+        print('Permission appears to be granted, attempting to load photos...');
+      }
       await _tryLoadPhotosDirectly();
     } catch (e) {
       print('Error in permission process: $e');
@@ -181,11 +191,38 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     } catch (e) {
       print('Error accessing photos directly: $e');
       if (!mounted) return;
+
+      // On Android 13+, check permission state even if there was an error
+      // Sometimes errors occur even when permission is granted
+      try {
+        final PermissionState currentState =
+            await PhotoManager.requestPermissionExtend();
+        print('Permission state after error: $currentState');
+
+        // If permission is actually granted (authorized, limited, or isAuth),
+        // set hasPermission to true even if there was an error accessing photos
+        if (currentState == PermissionState.authorized ||
+            currentState == PermissionState.limited ||
+            currentState.isAuth) {
+          print(
+              'Permission is actually granted despite error - treating as granted');
+          setState(() {
+            _hasPermission = true;
+            _isLoading = false;
+            _hasCheckedEmptyGallery = true;
+            _recentPhotos = []; // Empty list since we couldn't load photos
+          });
+          return;
+        }
+      } catch (permissionCheckError) {
+        print('Error checking permission state: $permissionCheckError');
+      }
+
       // Mark as checked to prevent infinite retries
       setState(() {
         _isLoading = false;
         _hasCheckedEmptyGallery = true;
-        // If we got here with an error, assume permission issue
+        // Only set to false if permission is truly denied
         _hasPermission = false;
       });
     }

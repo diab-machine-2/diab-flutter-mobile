@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:medical/res/R.dart';
@@ -20,6 +22,11 @@ class LoginClient extends FetchClient {
         final loginModel = LoginModel.fromJson(response.data);
         await AppSettings.saveToken(loginModel.access_token);
         await AppSettings.saveRefreshToken(loginModel.refresh_token);
+        
+        // Log bearer token after successful login
+        log('Bearer ${loginModel.access_token}');
+        Console.log('Bearer Token', loginModel.access_token);
+        
         return loginModel;
       } else {
         final error = Error.fromJson1(response);
