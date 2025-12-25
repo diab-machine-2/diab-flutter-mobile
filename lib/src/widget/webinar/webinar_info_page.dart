@@ -21,6 +21,10 @@ import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/response/user_info_response.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:medical/src/utils/const.dart';
 
 class WebinarInfoPage extends StatefulWidget {
   final String id;
@@ -128,6 +132,13 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
   Future<void> _onWatchReplay() async {
     final webinar = _webinar;
     if (webinar == null) return;
+
+    // Check if user is free user
+    final isFreeUser = AppSettings.userInfo?.packageType == PackageType.free;
+    if (isFreeUser) {
+      showUpdateRequirePopup(context: context);
+      return;
+    }
 
     // Use lessonId if available, otherwise try to get it from lesson object
     final lessonId = webinar.lessonId ?? webinar.lesson?.id;
@@ -1398,6 +1409,188 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                   ),
                 ),
         ),
+      ),
+    );
+  }
+
+  void showUpdateRequirePopup({
+    required BuildContext context,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext bc) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF008076),
+                Color(0xFF0DA99C),
+                Color(0xFFEAF9F7),
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 8),
+                child: Image.asset(
+                  R.drawable.img_upgrade_package_v2,
+                  width: 35,
+                  height: 35,
+                ),
+              ),
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text(
+                  R.string.unlock_advanced_lessons.tr(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              GapH(16),
+              Container(
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                          ),
+                          child: Text(
+                            R.string.membership_benefits.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.greenGradientBottom,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    GapH(12),
+                    _benefitRow(
+                        R.string
+                            .pathology_nutrition_exercise_psychology_knowledge_diverse
+                            .tr(),
+                        R.string.pathology_nutrition_knowledge.tr()),
+                    _benefitRow(
+                        R.string.personalized_healthy_lifestyle_roadmap.tr(),
+                        R.string.healthy_lifestyle_roadmap.tr()),
+                    _benefitRow(R.string.use_all_advanced_features.tr(),
+                        R.string.advanced_features.tr()),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Observable.instance.notifyObservers(
+                          [],
+                          notifyName: Const
+                              .NAVIGATE_TO_MY_PLAN_TAB_AUTO_TRIGGER_SUBSCRIPTION,
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(vertical: 8),
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: R.color.mainColor,
+                          borderRadius: BorderRadius.circular(200),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom,
+                              R.color.greenGradientBottom,
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                              textScaler: MediaQuery.of(context)
+                                  .textScaler
+                                  .clamp(
+                                      minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                            ),
+                            child: Text(
+                              R.string.tim_hieu_them.tr(),
+                              style: TextStyle(
+                                color: R.color.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _benefitRow(String text, String boldPart) {
+    final parts = text.split(boldPart);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Image.asset(
+            R.drawable.ic_subscription_bullet,
+            width: 20,
+            height: 20,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
+                children: [
+                  TextSpan(text: parts[0]),
+                  TextSpan(
+                    text: boldPart,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  if (parts.length > 1) TextSpan(text: parts[1]),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
