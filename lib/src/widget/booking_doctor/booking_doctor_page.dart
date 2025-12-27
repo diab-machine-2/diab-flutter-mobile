@@ -426,7 +426,7 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                       .currentState
                       ?.pushNamed(NavigatorName.dsmes_booking_history,
                           arguments: {
-                        'bookingType': Const.BOOKING_TYPE_CLINIC,
+                        'bookingType': Const.BOOKING_TYPE_DOCTOR,
                       });
                 },
                 child: Container(

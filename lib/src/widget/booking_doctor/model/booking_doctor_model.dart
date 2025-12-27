@@ -119,7 +119,7 @@ class BookingDoctorModel {
               : ServiceList.fromJson({})
           : ServiceList.fromJson(json['service_list'] ?? {}),
 
-      schedule: _parseSchedule(json['schedule'] ?? {}),
+      schedule: _parseSchedule(json['schedule']),
       aptInterval: json['apt_interval'] ?? '',
       extraAvatar: (json['extra_avatar'] as List?)
               ?.map((e) => ExtraAvatar.fromJson(e))
@@ -165,9 +165,21 @@ class BookingDoctorModel {
     return null;
   }
 
-  static Map<String, Map<String, int>> _parseSchedule(
-      Map<String, dynamic> json) {
+  static Map<String, Map<String, int>> _parseSchedule(dynamic scheduleData) {
     Map<String, Map<String, int>> result = {};
+
+    // Handle case where schedule is a List (empty or otherwise)
+    if (scheduleData is List) {
+      return result; // Return empty map if schedule is a List
+    }
+
+    // Handle case where schedule is null or not a Map
+    if (scheduleData == null || scheduleData is! Map) {
+      return result; // Return empty map
+    }
+
+    // Handle case where schedule is a Map
+    final json = scheduleData as Map<String, dynamic>;
     json.forEach((key, value) {
       if (value is Map) {
         result[key] = Map<String, int>.from(value);

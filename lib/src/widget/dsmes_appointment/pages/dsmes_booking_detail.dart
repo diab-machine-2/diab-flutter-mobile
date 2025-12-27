@@ -573,6 +573,39 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   ),
                 ],
               ),
+            if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) GapH(4),
+            if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Text(
+                      R.string.doctor_name.tr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff777E90,
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 7,
+                    child: Text(
+                      widget.appointment.doctor?.name ?? '',
+                      maxLines: 2,
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

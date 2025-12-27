@@ -110,7 +110,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             scheduleDateTime.minute == selectedDate!.minute;
       })
           ? selectedDate!.hour < 12
-          : DateTime.parse(schedules.first.startTime).hour < 12;
+          : schedules.isNotEmpty
+              ? DateTime.parse(schedules.first.startTime).hour < 12
+              : true;
 
       isAllowReschedule = isSelectedScheduleAvailable();
     });
@@ -408,8 +410,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     }
 
     // When selected booking schedule is before active dates
-    if (DateTime.parse(selectedBookingSchedule!.startTime)
-        .isBefore(activeDates.first)) {
+    if (activeDates.isNotEmpty &&
+        DateTime.parse(selectedBookingSchedule!.startTime)
+            .isBefore(activeDates.first)) {
       Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
       return;
     }
@@ -444,8 +447,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     }
 
     // When selected booking schedule is before active dates
-    if (DateTime.parse(selectedBookingSchedule!.startTime)
-        .isBefore(activeDates.first)) {
+    if (activeDates.isNotEmpty &&
+        DateTime.parse(selectedBookingSchedule!.startTime)
+            .isBefore(activeDates.first)) {
       Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
       return;
     }
@@ -477,8 +481,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     }
 
     // When selected booking schedule is before active dates
-    if (DateTime.parse(selectedBookingSchedule!.startTime)
-        .isBefore(activeDates.first)) {
+    if (activeDates.isNotEmpty &&
+        DateTime.parse(selectedBookingSchedule!.startTime)
+            .isBefore(activeDates.first)) {
       Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
       return;
     }
@@ -571,8 +576,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             }
 
             // When selected booking schedule is before active dates
-            if (DateTime.parse(selectedBookingSchedule!.startTime)
-                .isBefore(activeDates.first)) {
+            if (activeDates.isNotEmpty &&
+                DateTime.parse(selectedBookingSchedule!.startTime)
+                    .isBefore(activeDates.first)) {
               Message.showToastMessage(
                   context, R.string.vui_long_chon_gio_kham.tr());
               return;
@@ -695,8 +701,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             }
 
             // When selected booking schedule is before active dates
-            if (DateTime.parse(selectedBookingSchedule!.startTime)
-                .isBefore(activeDates.first)) {
+            if (activeDates.isNotEmpty &&
+                DateTime.parse(selectedBookingSchedule!.startTime)
+                    .isBefore(activeDates.first)) {
               Message.showToastMessage(
                   context, R.string.vui_long_chon_gio_kham.tr());
               return;
@@ -867,10 +874,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   selectedDate = datetime;
                   availableBookingSchedule =
                       _filterAvailableSchedules(fullSchedule, datetime);
-                  isMorningSelected =
-                      DateTime.parse(availableBookingSchedule.first.startTime)
+                  isMorningSelected = availableBookingSchedule.isNotEmpty
+                      ? DateTime.parse(availableBookingSchedule.first.startTime)
                               .hour <
-                          12;
+                          12
+                      : true;
                 });
               }
             },

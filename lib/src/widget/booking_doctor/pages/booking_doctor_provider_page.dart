@@ -250,49 +250,17 @@ class _BookingDoctorProvidersPageState
                         _refreshController.loadComplete();
                         setState(() {});
                       },
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          child: Column(
-                            children: [
-                              ListView.separated(
-                                physics: NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                itemCount:
-                                    _cubit.listBookingClinicProvider.length,
-                                separatorBuilder: (context, index) {
-                                  final currentData =
-                                      _cubit.listBookingClinicProvider[index];
-                                  final nextData = index + 1 <
-                                          _cubit
-                                              .listBookingClinicProvider.length
-                                      ? _cubit
-                                          .listBookingClinicProvider[index + 1]
-                                      : null;
-                                  final currentService = _getLowestPriceService(
-                                      currentData.service, currentData);
-                                  final nextService = nextData != null
-                                      ? _getLowestPriceService(
-                                          nextData.service, nextData)
-                                      : null;
-                                  if (currentService == null ||
-                                      nextService == null) {
-                                    return SizedBox(height: 0);
-                                  }
-                                  return GapH(12);
-                                },
-                                itemBuilder: (context, index) {
-                                  BookingClinicProvider data =
-                                      _cubit.listBookingClinicProvider[index];
-                                  return _buildDoctorItem(data);
-                                },
-                              ),
-                              GapH(16),
-                            ],
-                          ),
-                        ),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                        itemCount: _cubit.listBookingClinicProvider.length,
+                        separatorBuilder: (context, index) {
+                          return GapH(12);
+                        },
+                        itemBuilder: (context, index) {
+                          BookingClinicProvider data =
+                              _cubit.listBookingClinicProvider[index];
+                          return _buildDoctorItem(data);
+                        },
                       ),
                     ),
         ),
@@ -398,34 +366,24 @@ class _BookingDoctorProvidersPageState
       return null;
     }
 
-    // Filter out services with zero prices and only telemedicine type
-    final servicesWithPrice = services
-        .where((service) =>
-                service.type == "telemedicine" && service.fromPrice != 0
-            // &&
-            // service.name.toLowerCase().contains(data.name
-            //     .toLowerCase()), // Wait BE support filter services belong to each doctor
-            )
-        .toList();
+    // Only look for telemedicine services
+    final telemedicineServices =
+        services.where((service) => service.type == "telemedicine").toList();
 
-    if (servicesWithPrice.isEmpty) {
-      // If no telemedicine services have prices, return the first telemedicine service or null
-      final telemedicineServices =
-          services.where((service) => service.type == "telemedicine").toList();
-      return telemedicineServices.isNotEmpty
-          ? telemedicineServices.first
-          : null;
+    if (telemedicineServices.isEmpty) {
+      return null;
     }
 
-    final result = servicesWithPrice.reduce(
+    // Return the telemedicine service with the lowest price (even if price is 0)
+    return telemedicineServices.reduce(
         (current, next) => current.fromPrice < next.fromPrice ? current : next);
-
-    return result;
   }
 
   _buildDoctorItem(BookingClinicProvider data) {
     final consultService = _getLowestPriceService(data.service, data);
-    if (consultService == null) return SizedBox(height: 0);
+    // Show item even if no telemedicine service, but with 0 price and disabled button
+    final hasValidService =
+        consultService != null && consultService.fromPrice > 0;
 
     return GestureDetector(
       onTap: () async {
@@ -600,10 +558,9 @@ class _BookingDoctorProvidersPageState
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    Utils.formatMoney(consultService == null
-                                            ? 0
-                                            : consultService.fromPrice) ??
-                                        '',
+                                    Utils.formatMoney(
+                                            consultService?.fromPrice ?? 0) ??
+                                        '0',
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
@@ -634,74 +591,88 @@ class _BookingDoctorProvidersPageState
                         children: [
                           Expanded(
                             child: InkWell(
-                              onTap: () async {
-                                if (isProcessing['bookingClinic']!) return;
-                                isProcessing['bookingClinic'] = true;
-                                try {
-                                  final detailSuccess =
-                                      await _cubit.getClinicDetail(
-                                          id: data.doctorClinicInfo!.id,
-                                          isLoading: false);
+                              onTap: hasValidService
+                                  ? () async {
+                                      if (isProcessing['bookingClinic']!)
+                                        return;
+                                      isProcessing['bookingClinic'] = true;
+                                      try {
+                                        final detailSuccess =
+                                            await _cubit.getClinicDetail(
+                                                id: data.doctorClinicInfo!.id,
+                                                isLoading: false);
 
-                                  if (!detailSuccess ||
-                                      _cubit.selectedClinic == null) {
-                                    return;
-                                  }
+                                        if (!detailSuccess ||
+                                            _cubit.selectedClinic == null) {
+                                          return;
+                                        }
 
-                                  final detailDoctorSuccess =
-                                      await _cubit.getDoctorDetail(id: data.id);
+                                        final detailDoctorSuccess = await _cubit
+                                            .getDoctorDetail(id: data.id);
 
-                                  if (!detailDoctorSuccess ||
-                                      _cubit.selectedDoctor == null) {
-                                    return;
-                                  }
+                                        if (!detailDoctorSuccess ||
+                                            _cubit.selectedDoctor == null) {
+                                          return;
+                                        }
 
-                                  _cubit.initCreateDsmesBookingRequest(
-                                      locale: context.locale.languageCode);
+                                        _cubit.initCreateDsmesBookingRequest(
+                                            locale:
+                                                context.locale.languageCode);
 
-                                  _cubit.updateBookingDoctorInfoCreateRequest(
-                                      doctorId: _cubit.selectedDoctor!.id);
+                                        _cubit
+                                            .updateBookingDoctorInfoCreateRequest(
+                                                doctorId:
+                                                    _cubit.selectedDoctor!.id);
 
-                                  _cubit
-                                      .updateCreateDsmesBookingRequestServiceList(
-                                          // payment type will update later
-                                          selectedServices: [
-                                        ServiceItem(
-                                          id: int.tryParse(
-                                                  consultService?.id ?? '') ??
-                                              0,
-                                          quantity: 1,
-                                        )
-                                      ]);
+                                        _cubit
+                                            .updateCreateDsmesBookingRequestServiceList(
+                                                // payment type will update later
+                                                selectedServices: [
+                                              ServiceItem(
+                                                id: int.tryParse(
+                                                        consultService?.id ??
+                                                            '') ??
+                                                    0,
+                                                quantity: 1,
+                                              )
+                                            ]);
 
-                                  await DsmesNavigationMixin.getNavigationKey()
-                                      .currentState
-                                      ?.pushNamed(
-                                          NavigatorName
-                                              .dsmes_booking_select_date,
-                                          arguments: {
-                                        'serviceType': DsmesAppointmentMode
-                                            .telemedicine
-                                            .toString(),
-                                        'action': 'create',
-                                        'bookingType':
-                                            Const.BOOKING_TYPE_DOCTOR,
-                                      });
-                                } finally {
-                                  isProcessing['bookingClinic'] = false;
-                                }
-                              },
+                                        await DsmesNavigationMixin
+                                                .getNavigationKey()
+                                            .currentState
+                                            ?.pushNamed(
+                                                NavigatorName
+                                                    .dsmes_booking_select_date,
+                                                arguments: {
+                                              'serviceType':
+                                                  DsmesAppointmentMode
+                                                      .telemedicine
+                                                      .toString(),
+                                              'action': 'create',
+                                              'bookingType':
+                                                  Const.BOOKING_TYPE_DOCTOR,
+                                            });
+                                      } finally {
+                                        isProcessing['bookingClinic'] = false;
+                                      }
+                                    }
+                                  : null,
                               child: Container(
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      R.color.greenGradientTop02,
-                                      R.color.greenGradientBottom
-                                    ],
-                                  ),
+                                  gradient: hasValidService
+                                      ? LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            R.color.greenGradientTop02,
+                                            R.color.greenGradientBottom
+                                          ],
+                                        )
+                                      : null,
+                                  color: hasValidService
+                                      ? null
+                                      : R.color.color0xffBFC6C6,
                                   borderRadius: BorderRadius.circular(200),
                                 ),
                                 padding: EdgeInsets.all(10),
@@ -710,7 +681,9 @@ class _BookingDoctorProvidersPageState
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
-                                    color: R.color.white,
+                                    color: hasValidService
+                                        ? R.color.white
+                                        : R.color.grey200,
                                   ),
                                 ),
                               ),
@@ -1043,9 +1016,18 @@ class _BookingDoctorProvidersPageState
     // Clear the current selections
     _selectedOtherCities.clear();
 
-    // Add cities that are in selectedDistricts
+    // Get default cities to exclude them
+    final defaultCities = getDefaultCities();
+    final defaultCitySlugs = defaultCities.map((city) => city.slug).toSet();
+
+    // Add cities that are in selectedDistricts but NOT in default cities
     if (selectedDistricts.isNotEmpty) {
       for (String slug in selectedDistricts) {
+        // Skip default cities - they are already displayed in the grid
+        if (defaultCitySlugs.contains(slug)) {
+          continue;
+        }
+
         final city = getListCityModel()
             .where(
               (city) => city.slug == slug,
@@ -1087,10 +1069,21 @@ class _BookingDoctorProvidersPageState
                 GestureDetector(
                   onTap: () {
                     setState(() {
+                      // Preserve default city selections
+                      final defaultCities = getDefaultCities();
+                      final defaultCitySlugs =
+                          defaultCities.map((city) => city.slug).toSet();
+                      final preservedDefaultSelections = selectedDistricts
+                          .where((slug) => defaultCitySlugs.contains(slug))
+                          .toSet();
+
                       // Clear existing district selections
                       selectedDistricts.clear();
 
-                      // Add only currently selected cities
+                      // Restore preserved default city selections
+                      selectedDistricts.addAll(preservedDefaultSelections);
+
+                      // Add currently selected non-default cities
                       for (CityModel city in _selectedOtherCities) {
                         selectedDistricts.add(city.slug);
                       }

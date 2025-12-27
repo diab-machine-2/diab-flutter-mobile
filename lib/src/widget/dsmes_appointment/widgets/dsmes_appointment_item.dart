@@ -170,7 +170,18 @@ class DsmesAppointmentItem extends StatelessWidget {
   String _getName(DsmesAppointment data, String bookingType) {
     final isBookingDoctor = bookingType == Const.BOOKING_TYPE_DOCTOR;
     if (isBookingDoctor) {
-      return data.doctor?.displayName ?? data.clinic.name;
+      final doctor = data.doctor;
+      if (doctor != null) {
+        // Use name if it's not null and not empty
+        if (doctor.name.isNotEmpty) {
+          return doctor.name;
+        }
+        // Otherwise, use graduateName + displayName
+        final graduateName =
+            doctor.graduateName.isNotEmpty ? '${doctor.graduateName} ' : '';
+        return '$graduateName${doctor.displayName}';
+      }
+      return data.clinic.name;
     } else {
       return data.clinic.name;
     }
