@@ -7,8 +7,8 @@ import 'package:medical/src/utils/utils.dart';
 
 import '../app_api.dart';
 
-const _defaultConnectTimeout = Duration.millisecondsPerMinute;
-const _defaultReceiveTimeout = Duration.millisecondsPerMinute;
+const _defaultConnectTimeout = Duration(minutes: 1);
+const _defaultReceiveTimeout = Duration(minutes: 1);
 
 /// Custom logging interceptor that handles long responses without truncation
 class FullLogInterceptor extends Interceptor {
@@ -71,7 +71,7 @@ class FullLogInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) {
     debugPrint('*** Error ***');
     debugPrint('uri: ${err.requestOptions.uri}');
     debugPrint('error: ${err.error}');

@@ -75,26 +75,28 @@ abstract class NetworkExceptions with _$NetworkExceptions {
     if (error is Exception) {
       try {
         NetworkExceptions? networkExceptions;
-        if (error is DioError) {
+        if (error is DioException) {
           switch (error.type) {
-            case DioErrorType.cancel:
+            case DioExceptionType.cancel:
               networkExceptions = NetworkExceptions.requestCancelled();
               break;
-            case DioErrorType.connectTimeout:
+            case DioExceptionType.connectionTimeout:
               networkExceptions = NetworkExceptions.requestTimeout();
               break;
-            case DioErrorType.other:
-              networkExceptions = NetworkExceptions.noInternetConnection();
-              break;
-            case DioErrorType.receiveTimeout:
+            case DioExceptionType.receiveTimeout:
               networkExceptions = NetworkExceptions.sendTimeout();
               break;
-            case DioErrorType.response:
+            case DioExceptionType.sendTimeout:
+              networkExceptions = NetworkExceptions.sendTimeout();
+              break;
+            case DioExceptionType.badResponse:
               networkExceptions =
-                  NetworkExceptions.handleResponse(error.response!.data, error.response!.statusCode);
+                  NetworkExceptions.handleResponse(error.response?.data, error.response?.statusCode);
               break;
-            case DioErrorType.sendTimeout:
-              networkExceptions = NetworkExceptions.sendTimeout();
+            case DioExceptionType.badCertificate:
+            case DioExceptionType.connectionError:
+            case DioExceptionType.unknown:
+              networkExceptions = NetworkExceptions.noInternetConnection();
               break;
           }
         } else if (error is SocketException) {
