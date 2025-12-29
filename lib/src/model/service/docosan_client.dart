@@ -5,8 +5,8 @@ import 'package:medical/src/utils/utils.dart';
 
 import '../docosan_api.dart';
 
-const _defaultConnectTimeout = Duration.millisecondsPerMinute;
-const _defaultReceiveTimeout = Duration.millisecondsPerMinute;
+const _defaultConnectTimeout = Duration(minutes: 1);
+const _defaultReceiveTimeout = Duration(minutes: 1);
 
 class DocosanClient {
   late DocosanApi docosanClient;

@@ -465,7 +465,7 @@ class TrackingInterceptor extends Interceptor {
   }
 
   @override
-  Future<void> onError(DioError err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
       final token = await AppSettings.getToken();
       UserModel? userInfo = AppSettings.userInfo;
