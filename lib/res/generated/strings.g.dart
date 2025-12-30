@@ -1431,4 +1431,5 @@ class Strings {
   String get no_data_within => 'no_data_within';
   String get change => 'change';
   String get change_roadmap => 'change_roadmap';
+  String get yesterday => 'yesterday';
 }

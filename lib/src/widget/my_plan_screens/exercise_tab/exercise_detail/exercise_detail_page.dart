@@ -255,7 +255,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                             title: R.string.confirm.tr(),
                             height: 43,
                             onPressed: () async {
-                              await TrackingManager.analytics.logEvent(
+                              await TrackingManager.logEvent(
                                 name: 'cta_button_clicked',
                                 parameters: {
                                   "screen_name": 'excercise_detail',
@@ -336,7 +336,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                   icon: const Icon(Icons.close_rounded),
                   iconSize: 24,
                   onPressed: () async {
-                    await TrackingManager.analytics.logEvent(
+                    await TrackingManager.logEvent(
                       name: 'cta_button_clicked',
                       parameters: {
                         "screen_name": 'excercise_detail',

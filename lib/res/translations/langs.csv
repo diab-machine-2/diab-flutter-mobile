@@ -1381,4 +1381,5 @@ incomplete_activities,Hoạt động chưa hoàn thành,Incomplete activities,
 unknown_meal_image,"Không thể xác định món ăn. Vui lòng thử lại.","Cannot identify meal from image. Please try again.",
 no_data_within,Không có dữ liệu\ntrong {} ngày gần nhất,No data\nwithin {} latest days,
 change,Thay đổi,Change,
-change_roadmap,Thay đổi lộ trình,Change roadmap
+change_roadmap,Thay đổi lộ trình,Change roadmap,
+yesterday,Hôm qua,Yesterday

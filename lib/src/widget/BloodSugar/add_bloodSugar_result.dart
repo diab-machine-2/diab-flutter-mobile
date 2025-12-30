@@ -75,11 +75,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
       if (_haveEditNote) {
         List<String> paths = [];
         for (var file in _files) {
-          if (file is PickedFile) {
-            paths.add(file.path);
-          } else if (file is XFile) {
-            paths.add(file.path);
-          } else if (file is File) {
+          if (file is PickedFile || file is XFile) {
             paths.add(file.path);
           }
         }

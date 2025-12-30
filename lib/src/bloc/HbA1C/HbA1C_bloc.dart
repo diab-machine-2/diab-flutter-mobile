@@ -71,9 +71,8 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
     try {
       // Use the periodFilterType passed from the event, don't override it
       final client = HbA1CClient();
-      final HbA1CState currenState = state;
 
-      // Show loading only when fetching first page (filter change)
+      // Show loading only when fetching first page
       if (page == 1) {
         yield HbA1CLoading();
       }
@@ -82,11 +81,7 @@ class HbA1CBloc extends Bloc<HbA1CEvent, HbA1CState> {
           currentDateTime, periodFilterType, page,
           takeAll: takeAll);
 
-      if (currenState is HbA1CDetailLoaded) {
-        if (page != 1) {
-          model.inputs.insertAll(0, currenState.inputHbA1CModel);
-        }
-      }
+      // Return only the new page's items - UI will handle accumulation
       yield HbA1CDetailLoaded(
           inputHbA1CModel: model.inputs, hasMore: model.hasMore);
     } catch (e, _) {

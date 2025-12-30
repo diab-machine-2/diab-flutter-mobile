@@ -1,10 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +14,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/modal/base/referral_code_temp.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -50,7 +47,7 @@ import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.da
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:medical/src/widgets/common_page.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:store_redirect/store_redirect.dart';
 
 // Lightweight global accessor for current tab index
@@ -324,7 +321,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'login_session_end',
         parameters: {
           "screen_name": AppSettings.currentScreenName,

@@ -63,7 +63,7 @@ class _BloodSugarDetailTabbarControllerState
     _checkGlucoseScheduler();
     _checkDetailListingVisitStatus();
     super.initState();
-    // _initPeriodFilterType();
+    _initPeriodFilterType();
     Observable.instance.addObserver(this);
     KpiGlycemicTracking.firebaseSetup();
     _reload();
@@ -389,6 +389,7 @@ class _BloodSugarDetailTabbarControllerState
         initialValue: selectedIndex,
         values: values,
         labels: labels,
+        fontSize: 15,
       ),
     );
   }

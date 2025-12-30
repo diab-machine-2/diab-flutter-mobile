@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -50,6 +51,13 @@ class ZoomService {
       String username = AppSettings.userInfo?.fullName ?? "Test Meeting";
       String jwtToken = _generateToken(username);
 
+      if (kDebugMode) {
+        print("[Zoom Service] Preparing to initialize Zoom SDK");
+        print("[Zoom Service] Meeting ID: $meetingID");
+        print("[Zoom Service] Username: $username");
+        print("[Zoom Service] JWT Token length: ${jwtToken.length}");
+      }
+
       ZoomOptions zoomOptions = ZoomOptions(
         domain: "zoom.us",
         jwtToken: jwtToken,
@@ -77,28 +85,93 @@ class ZoomService {
       );
 
       final zoom = ZoomView();
-      final results = await zoom.initZoom(zoomOptions);
-      if (results[0] == 0) {
-        zoom.onMeetingStatus().listen((status) {
-          if (kDebugMode) {
-            print("[Meeting Status Stream] : " + status[0] + " - " + status[1]);
-          }
-          if (_isMeetingEnded(status[0])) {
-            _unInitialize();
+
+      // Add timeout and better error handling for method channel calls
+      // Increased timeout to 30 seconds as Zoom SDK 6.6.0 initialization can take longer
+      List<dynamic> results;
+      try {
+        if (kDebugMode) {
+          print("[Zoom Init] Starting initialization with JWT token...");
+        }
+        results = await zoom.initZoom(zoomOptions).timeout(
+          const Duration(seconds: 30),
+          onTimeout: () {
             if (kDebugMode) {
-              print("[Meeting Status] :- Ended");
+              print(
+                  "[Zoom Init] Timeout after 30 seconds - SDK may be hanging");
             }
-          }
-        });
+            throw TimeoutException(
+                'Zoom SDK initialization timed out after 30 seconds');
+          },
+        );
+        if (kDebugMode) {
+          print("[Zoom Init] Initialization result: $results");
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print("[Init Zoom Error] : $e");
+        }
+        TrackingManager.recordError(e, null);
+        rethrow;
+      }
+
+      if (results.isNotEmpty && results[0] == 0) {
+        // Set up meeting status listener with error handling
+        zoom.onMeetingStatus().listen(
+          (status) {
+            if (kDebugMode) {
+              print("[Meeting Status Stream] : " +
+                  (status.isNotEmpty ? status[0] : "unknown") +
+                  " - " +
+                  (status.length > 1 ? status[1] : "no message"));
+            }
+            if (status.isNotEmpty && _isMeetingEnded(status[0])) {
+              _unInitialize();
+              if (kDebugMode) {
+                print("[Meeting Status] :- Ended");
+              }
+            }
+          },
+          onError: (error) {
+            if (kDebugMode) {
+              print("[Meeting Status Stream Error] : $error");
+            }
+            TrackingManager.recordError(error, null);
+          },
+        );
+
         if (kDebugMode) {
           print("listen on event channel");
         }
 
-        await zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {});
+        // Join meeting with timeout
+        try {
+          final joinMeetingResult =
+              await zoom.joinMeeting(meetingOptions).timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              if (kDebugMode) {
+                print("[Zoom Join] Timeout after 15 seconds");
+              }
+              throw TimeoutException('Join meeting timed out');
+            },
+          );
+          if (kDebugMode) {
+            print("[Join Meeting Result] : $joinMeetingResult");
+          }
+        } catch (error) {
+          if (kDebugMode) {
+            print("[Join Meeting Error] : $error");
+          }
+          TrackingManager.recordError(error, null);
+          BotToast.showText(text: "Lỗi kết nối cuộc họp");
+          // Don't rethrow here - let the outer catch handle it
+        }
       } else {
         if (kDebugMode) {
           print("[Error] : $results");
         }
+        throw Exception("Zoom SDK initialization failed: $results");
       }
     } catch (e, s) {
       print("$e, $s");
@@ -108,22 +181,21 @@ class ZoomService {
       BotToast.closeAllLoading();
     }
   }
-  
-  Future<bool> returnToMeeting() async {
-  try {
-    final zoom = ZoomView();
-    final result = await zoom.returnToMeeting();
-    if (kDebugMode) {
-      print("[Return To Meeting]: $result");
-    }
-    return result;
-  } catch (e, s) {
-    print("Error returning to meeting: $e, $s");
-    TrackingManager.recordError(e, s);
-    return false;
-  }
-}
 
+  Future<bool> returnToMeeting() async {
+    try {
+      final zoom = ZoomView();
+      final result = await zoom.returnToMeeting();
+      if (kDebugMode) {
+        print("[Return To Meeting]: $result");
+      }
+      return result;
+    } catch (e, s) {
+      print("Error returning to meeting: $e, $s");
+      TrackingManager.recordError(e, s);
+      return false;
+    }
+  }
 
   String _generateToken(String username) {
     const Map configs = {

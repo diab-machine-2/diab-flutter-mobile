@@ -94,7 +94,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
       screenName: "kpi_nutrition_add",
       screenClass: "DailyNutritionPage",
     );
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'kpi_add_begin',
     //   parameters: {
     //     "screen_name": 'kpi_nutrition_add',

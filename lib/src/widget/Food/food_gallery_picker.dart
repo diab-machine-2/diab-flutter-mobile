@@ -91,11 +91,21 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       final PermissionState currentState =
           await PhotoManager.requestPermissionExtend();
       print('Permission state after request: $currentState');
+      print('Permission isAuth: ${currentState.isAuth}');
+      print(
+          'Permission isAuthorized: ${currentState == PermissionState.authorized}');
+      print('Permission isLimited: ${currentState == PermissionState.limited}');
 
       if (_isDisposed || !mounted) return;
 
       // On Android 13+, sometimes permission state is incorrectly reported as denied
       // even when permission is actually granted. Let's try to access photos directly.
+      // Also, if permission is already granted (authorized/limited), proceed to load photos
+      if (currentState == PermissionState.authorized ||
+          currentState == PermissionState.limited ||
+          currentState.isAuth) {
+        print('Permission appears to be granted, attempting to load photos...');
+      }
       await _tryLoadPhotosDirectly();
     } catch (e) {
       print('Error in permission process: $e');
@@ -108,7 +118,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   }
 
   Future<void> _tryLoadPhotosDirectly() async {
-    if (_isDisposed || !mounted) return;
+    if (_isDisposed || !mounted || _hasCheckedEmptyGallery) return;
 
     try {
       print('Attempting to load photos directly...');
@@ -150,22 +160,71 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
         await _loadPhotosPage(0, isInitialLoad: true);
       } else {
-        print('No albums found - permission might actually be denied');
-        if (!_hasCheckedEmptyGallery) {
-          await _handlePermissionDenied();
+        // No albums found - check permission state to determine if it's empty gallery or denied
+        print('No albums found - checking permission state...');
+        final PermissionState currentState =
+            await PhotoManager.requestPermissionExtend();
+
+        // If permission is limited or authorized but no albums, treat as empty gallery
+        if (currentState == PermissionState.limited ||
+            currentState == PermissionState.authorized ||
+            currentState.isAuth) {
+          print('Permission granted but no albums - gallery is empty');
+          if (!mounted) return;
+          setState(() {
+            _recentPhotos = [];
+            _isLoading = false;
+            _hasPermission = true; // Permission is granted, just no photos
+            _hasCheckedEmptyGallery = true;
+          });
+        } else {
+          // Permission is truly denied
+          print('Permission denied - cannot access gallery');
+          if (!mounted) return;
+          setState(() {
+            _hasPermission = false;
+            _isLoading = false;
+            _hasCheckedEmptyGallery = true; // Stop retrying
+          });
         }
       }
     } catch (e) {
       print('Error accessing photos directly: $e');
       if (!mounted) return;
-      // Only retry if we haven't already checked for empty gallery
-      if (!_hasCheckedEmptyGallery) {
-        await _handlePermissionDenied();
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
+
+      // On Android 13+, check permission state even if there was an error
+      // Sometimes errors occur even when permission is granted
+      try {
+        final PermissionState currentState =
+            await PhotoManager.requestPermissionExtend();
+        print('Permission state after error: $currentState');
+
+        // If permission is actually granted (authorized, limited, or isAuth),
+        // set hasPermission to true even if there was an error accessing photos
+        if (currentState == PermissionState.authorized ||
+            currentState == PermissionState.limited ||
+            currentState.isAuth) {
+          print(
+              'Permission is actually granted despite error - treating as granted');
+          setState(() {
+            _hasPermission = true;
+            _isLoading = false;
+            _hasCheckedEmptyGallery = true;
+            _recentPhotos = []; // Empty list since we couldn't load photos
+          });
+          return;
+        }
+      } catch (permissionCheckError) {
+        print('Error checking permission state: $permissionCheckError');
       }
+
+      // Mark as checked to prevent infinite retries
+      setState(() {
+        _isLoading = false;
+        _hasCheckedEmptyGallery = true;
+        // Only set to false if permission is truly denied
+        _hasPermission = false;
+      });
     }
   }
 
@@ -173,6 +232,9 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     if (_isDisposed || !mounted || _hasCheckedEmptyGallery) return;
 
     print('Handling permission denied state...');
+
+    // Mark as checked to prevent infinite retries
+    _hasCheckedEmptyGallery = true;
 
     // Try one more permission request
     try {
@@ -186,6 +248,8 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           permission == PermissionState.limited ||
           permission.isAuth) {
         print('Permission granted on final attempt');
+        // Reset the flag to allow one more try
+        _hasCheckedEmptyGallery = false;
         await _tryLoadPhotosDirectly();
         return;
       }
@@ -203,7 +267,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   }
 
   Future<void> _loadRecentPhotos() async {
-    if (_isDisposed || !mounted) return;
+    if (_isDisposed || !mounted || _hasCheckedEmptyGallery) return;
 
     try {
       if (!mounted) return;
@@ -241,17 +305,34 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
         await _loadPhotosPage(0, isInitialLoad: true);
       } else {
-        print('No albums found - this might indicate permission issues');
+        print(
+            'No albums found - checking if gallery is empty or permission denied');
         if (!mounted) return;
-        setState(() {
-          _recentPhotos = [];
-          _isLoading = false;
-        });
 
-        // If no albums found, it might be a permission issue
-        // Try to request permission again only if we haven't checked for empty gallery
-        if (!_hasCheckedEmptyGallery) {
-          await _handlePermissionDenied();
+        // Check permission state to determine if it's empty gallery or denied
+        final PermissionState currentState =
+            await PhotoManager.requestPermissionExtend();
+
+        // If permission is limited or authorized but no albums, treat as empty gallery
+        if (currentState == PermissionState.limited ||
+            currentState == PermissionState.authorized ||
+            currentState.isAuth) {
+          print('Permission granted but no albums - gallery is empty');
+          setState(() {
+            _recentPhotos = [];
+            _isLoading = false;
+            _hasPermission = true;
+            _hasCheckedEmptyGallery = true;
+          });
+        } else {
+          // Permission is truly denied
+          print('Permission denied - cannot access gallery');
+          setState(() {
+            _recentPhotos = [];
+            _isLoading = false;
+            _hasPermission = false;
+            _hasCheckedEmptyGallery = true; // Stop retrying
+          });
         }
       }
     } catch (e) {
@@ -260,13 +341,9 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       setState(() {
         _recentPhotos = [];
         _isLoading = false;
+        _hasCheckedEmptyGallery = true; // Stop retrying on error
+        _hasPermission = false;
       });
-
-      // If there's an error loading photos, it might be permission related
-      // Only retry if we haven't already checked for empty gallery
-      if (!_hasCheckedEmptyGallery) {
-        await _handlePermissionDenied();
-      }
     }
   }
 
@@ -592,12 +669,16 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       );
     }
 
+    // If gallery is empty (checked and confirmed), show empty state with only capture button
+    if (_recentPhotos.isEmpty && _hasCheckedEmptyGallery) {
+      return _buildEmptyState();
+    }
+
     return Column(
       children: [
         // Recent photos grid
         Expanded(
-          child:
-              _recentPhotos.isEmpty ? _buildEmptyState() : _buildPhotosGrid(),
+          child: _buildPhotosGrid(),
         ),
       ],
     );
@@ -608,12 +689,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            R.drawable.ic_image_placeholder,
-            width: 80,
-            height: 80,
-            color: Colors.grey,
-          ),
+          _buildCaptureButton(),
           const SizedBox(height: 16),
           Text(
             'Không có ảnh nào trong thư viện',
@@ -622,23 +698,32 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
               color: Colors.grey[600],
             ),
           ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: _captureImage,
-            icon: const Icon(Icons.camera_alt),
-            label: const Text('Chụp ảnh'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: R.color.greenGradientBottom,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildPhotosGrid() {
+    // If gallery is empty, show only capture button
+    if (_recentPhotos.isEmpty && _hasCheckedEmptyGallery) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildCaptureButton(),
+            const SizedBox(height: 16),
+            Text(
+              'Không có ảnh nào trong thư viện',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return GridView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.all(8),
@@ -675,6 +760,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     return GestureDetector(
       onTap: _captureImage,
       child: Container(
+        padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
@@ -693,7 +779,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Chụp ảnh',
+              R.string.chup_anh.tr(),
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],

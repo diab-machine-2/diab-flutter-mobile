@@ -2,9 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/res/colors.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/enum.dart';
+import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 
 class BmiDateFilterBar extends StatefulWidget {
   const BmiDateFilterBar({super.key, this.onChanged});
@@ -15,57 +15,40 @@ class BmiDateFilterBar extends StatefulWidget {
   State<BmiDateFilterBar> createState() => _BmiDateFilterBarState();
 }
 
-class _BmiDateFilterBarState extends State<BmiDateFilterBar>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _BmiDateFilterBarState extends State<BmiDateFilterBar> {
   late BmiBloc _bmiBloc;
-
-  final List<Widget> _tabs = BmiDateFilterType.values
-      .map((e) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Text("${e.days} ${R.string.day.tr()}",
-                style: TextStyle(
-                  fontSize: 14,
-                )),
-          ))
-      .toList();
 
   @override
   void initState() {
-    _bmiBloc = context.read();
-    _tabController = TabController(
-      length: _tabs.length,
-      vsync: this,
-      initialIndex: _bmiBloc.periodType.index,
-    );
     super.initState();
+    _bmiBloc = context.read();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(color: AppColors.neutral5),
-          borderRadius: BorderRadius.circular(
-            50.0,
-          ),
-          color: Colors.white),
-      child: TabBar(
-        controller: _tabController,
-        unselectedLabelColor: AppColors.neutral3,
-        indicator: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            50.0,
-          ),
-          color: R.color.mainColor,
-        ),
-        tabs: _tabs,
-        labelStyle: R.style.boldLargeStyle.copyWith(color: Colors.white),
-        unselectedLabelStyle:
-            R.style.largeTextStyle.copyWith(color: AppColors.neutral3),
-        onTap: (value) =>
-            widget.onChanged?.call(BmiDateFilterType.values[value]),
-      ),
+    final currentPeriodType = _bmiBloc.periodType;
+
+    // Build labels like "7 day(s)" etc. to match existing text
+    final labels = BmiDateFilterType.values
+        .map((e) => "${e.days} ${R.string.day.tr()}")
+        .toList();
+
+    // Values are just indices; HorizontalSelector uses the index in the callback
+    final values =
+        List<int>.generate(BmiDateFilterType.values.length, (index) => index);
+
+    final selectedIndex = currentPeriodType.index;
+
+    return HorizontalSelector(
+      onSelected: (index) {
+        final filterType = BmiDateFilterType.values[index];
+        widget.onChanged?.call(filterType);
+      },
+      initialValue: selectedIndex,
+      values: values,
+      labels: labels,
+      height: 42,
+      fontSize: 14,
     );
   }
 }

@@ -704,7 +704,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     String? objectTitle,
     bool isDone,
   ) async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'my_schedule',

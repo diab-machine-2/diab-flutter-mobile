@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -57,9 +56,8 @@ class NotificationControllerState extends State<NotificationController>
 
   Future firebaseSetup() async {
     await TrackingManager.analytics.logScreenView(
-      screenName: "notification_center", 
-      screenClass: "NotificationController"
-    );
+        screenName: "notification_center",
+        screenClass: "NotificationController");
     AppSettings.currentScreenName = 'notification_center';
   }
 
@@ -204,32 +202,19 @@ class NotificationControllerState extends State<NotificationController>
               onTap: () {
                 _onTapNotify(notificationModel);
               },
-              child: Slidable(
-                actionPane: const SlidableDrawerActionPane(),
-                secondaryActions: widget.isRemovealbe != true
-                    ? []
-                    : [
-                        IconSlideAction(
-                          color: R.color.color0xffFF5552,
-                          iconWidget: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(R.drawable.ic_trash2,
-                                    width: 24, height: 24),
-                                const SizedBox(height: 4),
-                                Text(R.string.detele_notificaiton.tr(),
-                                    style: TextStyle(
-                                        color: R.color.white,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.center),
-                              ]),
-                          onTap: () {
-                            _showDialogDelete(context, notificationModel);
-                          },
-                        ),
-                      ],
-                child: _buildSingleNotification(notificationModel, isRead),
-              ),
+              child: widget.isRemovealbe != true
+                  ? _buildSingleNotification(notificationModel, isRead)
+                  : Dismissible(
+                      key: ValueKey(notificationModel.id),
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (_) async {
+                        _showDialogDelete(context, notificationModel);
+                        return false;
+                      },
+                      background: _buildDismissBg(),
+                      child:
+                          _buildSingleNotification(notificationModel, isRead),
+                    ),
             );
           }
         },
@@ -507,5 +492,29 @@ class NotificationControllerState extends State<NotificationController>
         );
       }
     }
+  }
+
+  Widget _buildDismissBg() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+          color: R.color.color0xffFF5552,
+          borderRadius: BorderRadius.circular(8)),
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+          const SizedBox(height: 4),
+          Text(R.string.detele_notificaiton.tr(),
+              style:
+                  TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center),
+        ],
+      ),
+    );
   }
 }

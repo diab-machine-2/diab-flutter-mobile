@@ -136,7 +136,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
       screenName: "kpi_body_weight_add",
       screenClass: "AddBmiController",
     );
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'kpi_add_begin',
     //   parameters: {
     //     "screen_name": 'kpi_body_weight_add',
@@ -847,7 +847,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
                                                     children: [
                                                       Positioned.fill(
                                                         child: files[index]
-                                                                is PickedFile
+                                                                is PickedFile ||
+                                                            files[index] is XFile
                                                             ? Image.file(
                                                                 File(
                                                                     files[index]
@@ -869,7 +870,8 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
                                                           onPressed: () {
                                                             setState(() {
                                                               if (files[index]
-                                                                  is PickedFile) {
+                                                                  is PickedFile ||
+                                                              files[index] is XFile) {
                                                                 files.removeAt(
                                                                     index);
                                                               } else {
@@ -1039,7 +1041,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
     try {
       List<String> paths = [];
       for (var file in files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }
@@ -1115,7 +1117,7 @@ class _AddBmiControllerState extends BaseState<AddBmiController>
           selectedTimeFrame!.id);
       BotToast.closeAllLoading();
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_body_weight_add',

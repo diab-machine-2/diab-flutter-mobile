@@ -63,6 +63,7 @@ class SubTrendItemModel {
   final String? type;
   final int? date;
   final String? timeFrameName;
+  final String? id;
 
   SubTrendItemModel({
     required this.systolic,
@@ -72,6 +73,7 @@ class SubTrendItemModel {
     this.type,
     this.date,
     this.timeFrameName,
+    this.id,
   });
   @override
   factory SubTrendItemModel.fromJson(Map<String, dynamic> json) {
@@ -83,6 +85,7 @@ class SubTrendItemModel {
       type: json['type'],
       date: json['date'],
       timeFrameName: json['timeFrameName'],
+      id: json['id'],
     );
   }
 

@@ -189,7 +189,7 @@ class GlucoseClient extends FetchClient {
       int? page,
       String? timeFrameType,
       String? glucoseDistributionType,
-      {String size = '20'}) async {
+      {String size = '10'}) async {
     try {
       // periodFilterType =
       //     await AppSettings.getPeriodByScreen(ScreenList.BLOOD_SUGAR.index);
@@ -461,6 +461,7 @@ class GlucoseClient extends FetchClient {
       bool isGestationalDiabetes = Utils.isGestationalDiabetes();
       Map<String, String?> requestData = {
         'page': page,
+        'size': '500',
         "currentDateTime": currentDateTime,
         'periodFilterType': periodFilterType,
         'thresholdType': isGestationalDiabetes ? '1' : '0',

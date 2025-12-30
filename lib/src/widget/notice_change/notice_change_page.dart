@@ -87,13 +87,14 @@ class NoticeChangePage extends StatelessWidget {
                     data: htmlText ?? '',
                     style: {
                       "body": Style(
-                          padding: EdgeInsets.zero, margin: EdgeInsets.zero),
+                        padding: HtmlPaddings.zero,
+                        margin: Margins.zero,
+                      ),
                     },
-                    onLinkTap: (url, context, attributes, element) async {
-                      await canLaunch(url!)
-                          ? await launch(url,
-                              forceSafariVC: false, forceWebView: false)
-                          : throw 'Could not launch $url';
+                    onLinkTap: (url, attributes, element) {
+                      if (url == null) return;
+                      launchUrl(Uri.parse(url),
+                          mode: LaunchMode.externalApplication);
                     },
                   )
                 else

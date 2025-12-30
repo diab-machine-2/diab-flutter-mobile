@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/date_utils.dart';
@@ -38,31 +37,11 @@ class SmartGoalItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: Slidable(
-        actionPane: const SlidableDrawerActionPane(),
-        enabled: type.removeAble,
-        secondaryActions: [
-          Container(
-            margin: const EdgeInsets.only(left: 4),
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-            child: IconSlideAction(
-              color: R.color.color0xffFF5552,
-              iconWidget: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
-                    const SizedBox(height: 4),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(R.string.cancel_smart_goal.tr(),
-                          style: TextStyle(
-                              color: R.color.white,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center),
-                    ),
-                  ]),
-              onTap: () async {
+      child: type.removeAble
+          ? Dismissible(
+              key: ValueKey(appointmentDate ?? subject),
+              direction: DismissDirection.endToStart,
+              confirmDismiss: (_) async {
                 bool isUnableToRemove = DateUtil.isBefore(
                         appointmentDate, AppSettings.currentDateTime) ??
                     false;
@@ -72,124 +51,113 @@ class SmartGoalItem extends StatelessWidget {
                 } else {
                   _showDeletePopup(context);
                 }
+                return false;
               },
-            ),
-          ),
-        ],
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-            decoration: BoxDecoration(
-              color: R.color.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: R.color.color0xffE5E5E5),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Container(
-                //   width: 60,
-                //   height: 60,
-                //   alignment: Alignment.center,
-                //   decoration: BoxDecoration(
-                //     color: R.color.grey_6,
-                //     shape: BoxShape.circle,
-                //   ),
-                //   child: Image.asset(
-                //     type.icon,
-                //     width: 40,
-                //     height: 40,
-                //   ),
-                // ),
-                Container(
-                  width: 60,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        type.icon,
-                        width: 24,
-                        height: 24,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        Utils.getActivityIconDescription(type),
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Utils.getActivityIconTextColor(type),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+              background: _buildDismissBg(),
+              child: _buildCard(),
+            )
+          : _buildCard(),
+    );
+  }
+
+  Widget _buildCard() {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(7, 15, 15, 15),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: R.color.color0xffE5E5E5),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 60,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    type.icon,
+                    width: 24,
+                    height: 24,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (type != ScheduleType.lesson &&
-                          type != ScheduleType.survey)
-                        Text(
-                          name.isNotEmpty ? name : type.title,
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700),
-                        ),
-                      if ((type == ScheduleType.lesson ||
-                          type == ScheduleType.survey))
-                        Text(
-                          frequency.isNotEmpty ? frequency : name,
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            color: R.color.textDark,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          maxLines: 2,
-                        ),
-                      if (frequency.isNotEmpty && subject.isNotEmpty)
-                        const SizedBox(height: 4),
-                      if (frequency.isNotEmpty && subject.isNotEmpty)
-                        Text(
-                          getSubtitle(type),
-                          style: TextStyle(
-                              color: R.color.textDark,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400),
-                        ),
-                    ],
+                  const SizedBox(height: 4),
+                  Text(
+                    Utils.getActivityIconDescription(type),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Utils.getActivityIconTextColor(type),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                state == ScheduleState.in_progress.stateIndex
-                    ? Image.asset(R.drawable.ic_learning,
-                        width: 24, height: 24, color: R.color.mainColor)
-                    : Container(
-                        margin: EdgeInsets.only(left: 20),
-                        width: 24,
-                        height: 24,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: isDone
-                              ? R.color.greenGradientBottom
-                              : R.color.white,
-                          border: isDone
-                              ? null
-                              : Border.all(color: R.color.grey_2, width: 1.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.check_rounded,
-                          color: isDone ? R.color.white : R.color.grey_2,
-                          size: 20,
-                        ),
-                      ),
-              ],
+                ],
+              ),
             ),
-          ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (type != ScheduleType.lesson &&
+                      type != ScheduleType.survey)
+                    Text(
+                      name.isNotEmpty ? name : type.title,
+                      style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  if (type == ScheduleType.lesson ||
+                          type == ScheduleType.survey)
+                    Text(
+                      frequency.isNotEmpty ? frequency : name,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: R.color.textDark,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 2,
+                    ),
+                  if (frequency.isNotEmpty && subject.isNotEmpty)
+                    const SizedBox(height: 4),
+                  if (frequency.isNotEmpty && subject.isNotEmpty)
+                    Text(
+                      getSubtitle(type),
+                      style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
+                    ),
+                ],
+              ),
+            ),
+            state == ScheduleState.in_progress.stateIndex
+                ? Image.asset(R.drawable.ic_learning,
+                    width: 24, height: 24, color: R.color.mainColor)
+                : Container(
+                    margin: EdgeInsets.only(left: 20),
+                    width: 24,
+                    height: 24,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color:
+                          isDone ? R.color.greenGradientBottom : R.color.white,
+                      border: isDone
+                          ? null
+                          : Border.all(color: R.color.grey_2, width: 1.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_rounded,
+                      color: isDone ? R.color.white : R.color.grey_2,
+                      size: 20,
+                    ),
+                  ),
+          ],
         ),
       ),
     );
@@ -301,5 +269,30 @@ class SmartGoalItem extends StatelessWidget {
     if (result is bool && result) {
       onRemove.call();
     }
+  }
+
+  Widget _buildDismissBg() {
+    return Container(
+      margin: const EdgeInsets.only(left: 4),
+      decoration: BoxDecoration(
+        color: R.color.color0xffFF5552,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(R.drawable.ic_trash2, width: 24, height: 24),
+          const SizedBox(height: 4),
+          Text(R.string.cancel_smart_goal.tr(),
+              style:
+                  TextStyle(color: R.color.white, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center),
+        ],
+      ),
+    );
   }
 }

@@ -69,8 +69,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
   bool _shouldAutoScroll = true; // ✅ Mặc định scroll 1 lần khi có data mới
 
-  final Debouncer _toastDebouncer = Debouncer(milliseconds: 1000);
-
   void _scrollToSelectd({bool animated = true, int retry = 0}) {
     if (!_shouldAutoScroll || !mounted) return;
 
@@ -119,11 +117,6 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
 
     if (trends.isEmpty) {
       _focusIndex = -1;
-      _toastDebouncer.run(() {
-        if (mounted) {
-          Message.showToastMessage(context, R.string.no_data.tr());
-        }
-      });
       return;
     }
 
@@ -753,7 +746,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
             showOnTopOfTheChartBoxArea: true,
             fitInsideHorizontally: true,
             fitInsideVertically: true,
-            tooltipBgColor: R.color.transparent,
+            getTooltipColor: (LineBarSpot touchedSpot) => R.color.transparent,
             tooltipRoundedRadius: 8,
             tooltipPadding: const EdgeInsets.only(bottom: 50),
             getTooltipItems: (lineBarsSpot) {
@@ -775,7 +768,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
           },
         ),
       ),
-      swapAnimationDuration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
     );
   }
 
@@ -865,7 +858,7 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
           return FlSpot((index).toDouble(), trends[index].duration!);
         }),
         isCurved: false,
-        colors: [Color(0xFF008479)],
+        color: Color(0xFF008479),
         barWidth: 1.5,
         isStrokeCapRound: false,
         dotData: FlDotData(
@@ -878,19 +871,21 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
               strokeWidth: index == _focusIndex ? 6 : 0,
               strokeColor: index == _focusIndex
                   ? toColor(trends[index].targetColor).withOpacity(0.3)
-                  : null,
+                  : Colors.transparent,
             );
           },
         ),
         belowBarData: BarAreaData(
           show: true,
-          colors: [
-            R.color.greenGradientMid.withOpacity(0.2),
-            R.color.greenGradientMid.withOpacity(0.0),
-          ],
-          gradientColorStops: const [0.5, 1.0],
-          gradientFrom: const Offset(0.5, 0),
-          gradientTo: const Offset(0.5, 1),
+          gradient: LinearGradient(
+            colors: [
+              R.color.greenGradientMid.withOpacity(0.2),
+              R.color.greenGradientMid.withOpacity(0.0),
+            ],
+            stops: const [0.5, 1.0],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
       ),
     ];
