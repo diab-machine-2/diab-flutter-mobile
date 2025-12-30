@@ -80,7 +80,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- Deep Links, Branch, App Links, VNPay etc. (kept as you had) -->
+            <!-- VNPay deep link intent-filter -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="diabvnpay" />
+            </intent-filter>
+
+            <!-- Deep Links, Branch, App Links etc. (kept as you had) -->
             <!-- ... (all your existing intent-filter sections unchanged) ... -->
 
         </activity>

@@ -97,6 +97,8 @@ public class MainActivity extends FlutterFragmentActivity {
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// Handle VNPay deep link if app was launched from VNPay redirect
+		handleIntent(getIntent());
 	}
 
     @Override
@@ -585,22 +587,25 @@ public class MainActivity extends FlutterFragmentActivity {
    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent); // Important: set the new intent so getIntent() returns the latest
+        handleIntent(intent);
+    }
+
+    /**
+     * Handle incoming intents (both from onCreate and onNewIntent)
+     */
+    private void handleIntent(Intent intent) {
+        if (intent == null) return;
 
         String scheme = intent.getScheme();
         String data = intent.getDataString();
 
-        Log.d(TAG, "[VNPAY] New Intent received: " + data + " with scheme: " + scheme);
+        Log.d(TAG, "[VNPAY] Intent received: " + data + " with scheme: " + scheme);
 
         // Handle VNPay app scheme returns
-        if (VNPAY_APP_SCHEME.equals(scheme)) {
+        if (VNPAY_APP_SCHEME.equals(scheme) && data != null) {
             handleVNPayAppSchemeReturn(data);
         }
-        // // Handle custom merchant return URLs from web
-        // else if (data != null && (data.startsWith("http://success.sdk.merchantbackapp") ||
-        //                         data.startsWith("http://cancel.sdk.merchantbackapp") ||
-        //                         data.startsWith("http://fail.sdk.merchantbackapp"))) {
-        //     handleVNPayMerchantReturn(data);
-        // }
     }
 
     private void handleVNPayAppSchemeReturn(String data) {
