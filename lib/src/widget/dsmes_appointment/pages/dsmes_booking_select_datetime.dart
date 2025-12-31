@@ -146,6 +146,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     // return widget.isMergedSchedule == false
     //     ? _cubit.selectedClinic?.getBookingSchedules() ?? []
     //     : await _cubit.getDiabClinicsSchedule();
+    if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
+      return _cubit.selectedDoctor?.getBookingSchedules() ?? [];
+    }
     return _cubit.selectedClinic?.getBookingSchedules() ?? [];
   }
 

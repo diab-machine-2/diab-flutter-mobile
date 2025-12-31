@@ -442,7 +442,7 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                     ),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
@@ -453,13 +453,18 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                         fit: BoxFit.scaleDown,
                       ),
                       GapW(4),
-                      Text(
-                        R.string.consulting_history.tr(),
-                        style: TextStyle(
-                          fontSize: 13,
-                          // fontFamily: 'sfpro',
-                          fontWeight: FontWeight.w700,
-                          color: R.color.color0xff239A90,
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            R.string.consulting_history.tr(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              // fontFamily: 'sfpro',
+                              fontWeight: FontWeight.w700,
+                              color: R.color.color0xff239A90,
+                            ),
+                          ),
                         ),
                       ),
                     ],

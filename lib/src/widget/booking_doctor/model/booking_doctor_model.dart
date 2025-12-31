@@ -120,7 +120,8 @@ class BookingDoctorModel {
           : ServiceList.fromJson(json['service_list'] ?? {}),
 
       schedule: _parseSchedule(json['schedule']),
-      aptInterval: json['apt_interval'] ?? '',
+      aptInterval: json['apt_interval'] ??
+          _calculateIntervalFromSchedule(_parseSchedule(json['schedule'])),
       extraAvatar: (json['extra_avatar'] as List?)
               ?.map((e) => ExtraAvatar.fromJson(e))
               .toList() ??
@@ -188,6 +189,70 @@ class BookingDoctorModel {
       }
     });
     return result;
+  }
+
+  static String _calculateIntervalFromSchedule(
+      Map<String, Map<String, int>> schedule) {
+    // Try to find interval from consecutive slots within each date
+    List<int> intervals = [];
+
+    schedule.forEach((date, slots) {
+      if (slots.length < 2)
+        return; // Need at least 2 slots to calculate interval
+
+      // Convert time strings to minutes and sort
+      List<MapEntry<String, int>> sortedSlots = slots.entries.toList()
+        ..sort((a, b) {
+          try {
+            final aParts = a.key.split('.');
+            final bParts = b.key.split('.');
+            final aHour = int.parse(aParts[0]);
+            final aMinutes = aParts.length > 1 ? int.parse(aParts[1]) : 0;
+            final bHour = int.parse(bParts[0]);
+            final bMinutes = bParts.length > 1 ? int.parse(bParts[1]) : 0;
+
+            final aTotal = aHour * 60 + aMinutes;
+            final bTotal = bHour * 60 + bMinutes;
+            return aTotal.compareTo(bTotal);
+          } catch (e) {
+            return 0;
+          }
+        });
+
+      // Calculate intervals between consecutive slots
+      for (int i = 0; i < sortedSlots.length - 1; i++) {
+        try {
+          final time1Parts = sortedSlots[i].key.split('.');
+          final time2Parts = sortedSlots[i + 1].key.split('.');
+
+          final hour1 = int.parse(time1Parts[0]);
+          final minutes1 = time1Parts.length > 1 ? int.parse(time1Parts[1]) : 0;
+          final hour2 = int.parse(time2Parts[0]);
+          final minutes2 = time2Parts.length > 1 ? int.parse(time2Parts[1]) : 0;
+
+          final total1 = hour1 * 60 + minutes1;
+          final total2 = hour2 * 60 + minutes2;
+
+          final interval = total2 - total1;
+          if (interval > 0) {
+            intervals.add(interval);
+          }
+        } catch (e) {
+          // Skip invalid time formats
+          continue;
+        }
+      }
+    });
+
+    // Return the most common interval, or the first one found, or default
+    if (intervals.isNotEmpty) {
+      // Find the minimum interval (most likely the appointment interval)
+      intervals.sort();
+      return intervals.first.toString();
+    }
+
+    // Default fallback if we can't calculate
+    return '30';
   }
 
   List<GoodAt> getGoodAtByLocale(String locale) {

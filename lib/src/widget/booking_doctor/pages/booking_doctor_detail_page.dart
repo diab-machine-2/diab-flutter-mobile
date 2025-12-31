@@ -453,71 +453,79 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                   ),
                 ],
               ),
-            GapH(24),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Image.asset(R.drawable.ic_language),
-                    ),
-                    GapW(8),
-                    Flexible(
-                      child: Text(
-                        R.string.language.tr(),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                GapH(8),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: R.color.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      Utils.getBoxShadowDropCard(),
-                    ],
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                  child: Wrap(
-                    spacing: 12, // Gap width between items
-                    runSpacing: 8, // Gap between rows if items wrap
-                    children: data.language.map((e) {
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
+            Visibility(
+              visible: data.language.isNotEmpty,
+              child: Column(
+                children: [
+                  GapH(24),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
                           SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: SvgPicture.asset(
-                                Utils.getLanguageFlag(e),
+                            width: 30,
+                            height: 30,
+                            child: Image.asset(R.drawable.ic_language),
+                          ),
+                          GapW(8),
+                          Flexible(
+                            child: Text(
+                              R.string.language.tr(),
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
-                          GapW(8), // Gap between flag and text
-                          Text(
-                            Utils.getLanguageName(e),
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: R.color.color0xff111515,
-                            ),
-                          ),
                         ],
-                      );
-                    }).toList(),
+                      ),
+                      GapH(8),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: R.color.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            Utils.getBoxShadowDropCard(),
+                          ],
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                        child: Wrap(
+                          spacing: 12, // Gap width between items
+                          runSpacing: 8, // Gap between rows if items wrap
+                          children: data.language.map((e) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: FittedBox(
+                                    fit: BoxFit.contain,
+                                    child: SvgPicture.asset(
+                                      Utils.getLanguageFlag(e),
+                                    ),
+                                  ),
+                                ),
+                                GapW(8), // Gap between flag and text
+                                Text(
+                                  Utils.getLanguageName(e),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: R.color.color0xff111515,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Visibility(
               visible: _cubit.listClinicReview.isNotEmpty,
