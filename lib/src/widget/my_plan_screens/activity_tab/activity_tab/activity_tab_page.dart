@@ -672,7 +672,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       ),
       ...dailyList.map((smartGoal) {
         final ScheduleType type =
-            ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
+            ScheduleTypeExtend.getTypeFromIndexWithLessonData(smartGoal?.type,
+                lessonData: smartGoal?.lessonData);
         index++;
         return SmartGoalItem(
           type: type,
@@ -748,7 +749,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       ...smartGoalList.map((smartGoal) {
         index++;
         final ScheduleType type =
-            ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
+            ScheduleTypeExtend.getTypeFromIndexWithLessonData(smartGoal?.type,
+                lessonData: smartGoal?.lessonData);
         return SmartGoalItem(
           type: type,
           name: smartGoal?.name ?? '',
@@ -799,7 +801,8 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       ...notDone.map((smartGoal) {
         index++;
         final ScheduleType type =
-            ScheduleTypeExtend.getTypeFromIndex(smartGoal?.type);
+            ScheduleTypeExtend.getTypeFromIndexWithLessonData(smartGoal?.type,
+                lessonData: smartGoal?.lessonData);
         return SmartGoalItem(
           type: type,
           name: smartGoal?.name ?? '',
@@ -909,7 +912,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     final bool isDone = smartGoal.progress == 1;
                     final bool isLocked = (smartGoal.state ?? 0) == 3;
                     final ScheduleType type =
-                        ScheduleTypeExtend.getTypeFromIndex(smartGoal.type);
+                        ScheduleTypeExtend.getTypeFromIndexWithLessonData(
+                            smartGoal.type,
+                            lessonData: smartGoal.lessonData);
                     return GestureDetector(
                       onTap: isLocked
                           ? null
