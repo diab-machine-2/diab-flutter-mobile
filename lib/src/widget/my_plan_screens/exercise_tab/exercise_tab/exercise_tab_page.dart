@@ -10,14 +10,17 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/motion_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -25,7 +28,6 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../../../utils/utils.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
-import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../exercise_detail/exercise_detail.dart';
 import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
@@ -81,7 +83,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
       child: BlocConsumer<ExerciseTabCubit, ExerciseTabState>(
         listener: (context, state) {
           if (state is ExerciseTabLoading) {
-            BotToast.showLoading();
+            if (_cubit.roadmapId.isNotEmpty) {
+              BotToast.showLoading();
+            }
           } else {
             if (state is! ExerciseTabWeekChanged) {
               BotToast.closeAllLoading();
@@ -91,9 +95,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           if (state is ExerciseTabFailure) {
             Message.showToastMessage(context, state.error);
           }
-          if (state is ExerciseTabRoadmapEmpty) {
-            changeRoadMap();
-          }
+          // Removed navigation call - roadmap list will be shown inline
           if (state is ExerciseTabWeekChanged) {
             animateToIndex(state.newIndex, refresh: false);
           }
@@ -106,100 +108,70 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: R.color.backgroundColorNew,
-                child: Column(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        changeRoadMap();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            flex: 9,
-                            child: Text(
-                              _cubit.roadMapName.isNotEmpty
-                                  ? _cubit.roadMapName
-                                  : R.string.title_route.tr(),
-                              style: TextStyle(
-                                color: R.color.hba1c_text_color,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
+              if (_cubit.roadmapId.isNotEmpty)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  color: R.color.backgroundColorNew,
+                  child: Column(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          changeRoadMap();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 9,
+                              child: Text(
+                                _cubit.roadMapName.isNotEmpty
+                                    ? _cubit.roadMapName
+                                    : R.string.title_route.tr(),
+                                style: TextStyle(
+                                  color: R.color.hba1c_text_color,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                softWrap: true,
+                                maxLines: null,
                               ),
-                              softWrap: true,
-                              maxLines: null,
                             ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: Text(
-                              R.string.change.tr(),
-                              style: TextStyle(
-                                color: R.color.accentColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                R.string.change.tr(),
+                                style: TextStyle(
+                                  color: R.color.accentColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                textAlign: TextAlign.end,
                               ),
-                              textAlign: TextAlign.end,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    // _buildScheduleWidget(),
-                    // const SizedBox(height: 20),
-                  ],
+                      // _buildScheduleWidget(),
+                      // const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-              ),
               Expanded(
                 child: SafeArea(
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () async {
-                      await _cubit.onRefresh(isRefresh: true);
+                      // If roadmap is empty, refresh roadmap list; otherwise refresh exercise data
+                      if (_cubit.roadmapId.isEmpty) {
+                        await _cubit.getRoadAppRoadMap();
+                      } else {
+                        await _cubit.onRefresh(isRefresh: true);
+                      }
                     },
-                    child: (_cubit.exerciseMovementResponse?.data?.isEmpty ==
-                                null ||
-                            _cubit.exerciseMovementResponse?.data?.isEmpty ==
-                                true)
-                        ? GestureDetector(
-                            onTap: () {
-                              changeRoadMap();
-                            },
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                      padding: EdgeInsets.all(8),
-                                      child: Text(
-                                        R.string.please_select_roadmap.tr(),
-                                        style: TextStyle(
-                                            fontSize: 14, color: R.color.black),
-                                        textAlign: TextAlign.center,
-                                      )),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        R.string.select_road_map.tr(),
-                                        style: TextStyle(
-                                          color: R.color.greenGradientBottom,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
+                    child: (_cubit.roadmapId.isEmpty)
+                        ? _buildInlineRoadmapList(state)
                         : Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1099,6 +1071,196 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInlineRoadmapList(ExerciseTabState state) {
+    // Show loading indicator while fetching roadmap list
+    if (state is ExerciseTabLoading && _cubit.roadMapList.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            // const SizedBox(height: 16),
+            // Text(
+            //   R.string.please_select_roadmap.tr(),
+            //   style: TextStyle(fontSize: 14, color: R.color.black),
+            //   textAlign: TextAlign.center,
+            // ),
+          ],
+        ),
+      );
+    }
+
+    // Show message if roadmap list is empty after loading
+    if (_cubit.roadMapList.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              child: Text(
+                R.string.please_select_roadmap.tr(),
+                style: TextStyle(fontSize: 14, color: R.color.black),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+      children: _cubit.roadMapList
+          .map((item) => _buildInlineRoadMapItem(item))
+          .toList(),
+    );
+  }
+
+  Widget _buildInlineRoadMapItem(ListRoadmapResponseData? itemData) {
+    if (itemData == null) return const SizedBox.shrink();
+    final bool isJoined = itemData.joined == true;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image at top
+            Container(
+              clipBehavior: Clip.hardEdge,
+              height: 171.5,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: NetWorkImageWidget(
+                imageUrl: itemData.image?.url,
+              ),
+            ),
+            GapH(16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Intensity label (red)
+                if (itemData.exerciseIntensity?.name != null)
+                  Text(
+                    itemData.exerciseIntensity?.name ?? '',
+                    style: TextStyle(
+                      color: R.color.blood_pressure_color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                GapH(4),
+                // Title
+                Text(
+                  itemData.name ?? '',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                GapH(8),
+                // Description
+                if (itemData.description != null &&
+                    itemData.description!.isNotEmpty)
+                  Text(
+                    itemData.description ?? '',
+                    style: TextStyle(
+                      color: R.color.captionColorGray,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                GapH(16),
+                // Action button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: isJoined
+                        ? null
+                        : () {
+                            MotionListTracking.clickJoinRoadMap(
+                              objectId: '${itemData.id}',
+                              objectTitle: '${itemData.name}',
+                            );
+                            // Check if user already has a roadmap
+                            if (_cubit.currentRoadMap != null &&
+                                _cubit.currentRoadMap?.id != itemData.id) {
+                              showDialog(
+                                barrierColor:
+                                    R.color.color0xff003F38.withOpacity(0.5),
+                                context: context,
+                                builder: (_) => NoticeChangePage(
+                                    isShowTextHtml: false,
+                                    title: R.string.change_roadmap.tr(),
+                                    htmlText:
+                                        '''<p><span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;">Bạn đang tham gia ${_cubit.formatRoadmapName(_cubit.currentRoadMap?.name ?? '')}, bạn có chắc muốn đổi lộ trình khác không?</span></p>''',
+                                    description: R.string.ask_for_change_roadmap
+                                        .tr(args: [
+                                      _cubit.currentRoadMap?.name ?? ''
+                                    ]),
+                                    negativeButtonTitle: R.string.lan_sau.tr(),
+                                    onClick: () {
+                                      MotionListTracking
+                                          .clickConfirmJoinRoadMap(
+                                        objectId: '${itemData.id}',
+                                        objectTitle: '${itemData.name}',
+                                      );
+                                      _cubit.changeRoadMapInline(itemData);
+                                    },
+                                    gradientColor: false),
+                              );
+                            } else {
+                              // Direct selection if no current roadmap
+                              _cubit.changeRoadMapInline(itemData);
+                            }
+                          },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isJoined ? R.string.joining.tr() : R.string.join.tr(),
+                          style: TextStyle(
+                            color:
+                                isJoined ? R.color.grayCaption : R.color.main_1,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (!isJoined) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward_outlined,
+                            size: 18,
+                            color: R.color.main_1,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
