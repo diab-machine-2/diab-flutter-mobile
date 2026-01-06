@@ -407,9 +407,12 @@ extension ScheduleTypeExtend on ScheduleType {
     final type = getTypeFromIndex(index);
     // If type is lesson (11) and lessonData is provided, check if it's quiz
     if (type == ScheduleType.lesson && index == 11) {
-      // If lessonData is null, it's a quiz; if not null, it's a lesson
-      if (lessonData == null) {
-        return ScheduleType.quiz;
+      // Check if lessonData.code contains "quiz" - if yes, it's a quiz
+      if (lessonData != null) {
+        final lessonCode = lessonData.code?.toLowerCase() ?? '';
+        if (lessonCode.contains('quiz')) {
+          return ScheduleType.quiz;
+        }
       }
     }
     return type;

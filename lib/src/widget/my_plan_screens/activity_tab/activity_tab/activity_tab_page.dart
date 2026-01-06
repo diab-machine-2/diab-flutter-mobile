@@ -177,11 +177,6 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                 icon: R.drawable.img_smart_goal_day_achive,
                 description: R.string.congratulation_achive_daily.tr());
           }
-          if (state is ActivityTabWeeklyGoalCompleted) {
-            _showPopupCongratulation(
-                icon: R.drawable.img_smart_goal_week_achive,
-                description: R.string.congratulation_achive_weekly.tr());
-          }
         },
         builder: (context, state) {
           return VisibilityDetector(
@@ -829,11 +824,19 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   }
 
   Widget _buildKnowledgeFromLessons() {
-    final List<SmartGoalList?> lessons =
-        _cubit.lessonsWeekly.where((e) => e != null).where((e) {
-      final t = e!.type;
-      return t == ScheduleType.lesson.typeIndex ||
-          t == ScheduleType.infographic.typeIndex;
+    final List<SmartGoalList> lessons = _cubit.lessonsWeekly
+        .where((e) => e != null)
+        .cast<SmartGoalList>()
+        .where((e) {
+      final t = e.type;
+      // Include lessons (type 11) and infographics
+      // Exclude quizzes (type 11 where lesson.code contains "quiz")
+      if (t == ScheduleType.lesson.typeIndex) {
+        // Check if lesson.code contains "quiz" - if yes, it's a quiz, exclude it
+        final lessonCode = e.lesson?.code?.toLowerCase() ?? '';
+        return !lessonCode.contains('quiz');
+      }
+      return t == ScheduleType.infographic.typeIndex;
     }).toList();
 
     if (lessons.isEmpty) {

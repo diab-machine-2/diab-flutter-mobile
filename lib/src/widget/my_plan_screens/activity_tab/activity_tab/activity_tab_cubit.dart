@@ -135,7 +135,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       bool selectLastDay = false}) async {
     currentWeekIndex = newWeekIndex;
     isChangeNewWeek = true;
-    refreshData(keepCurrentDay: false);
 
     // Set flags for day selection after week change
     if (selectFirstDay) {
@@ -143,6 +142,8 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     } else if (selectLastDay) {
       _selectLastDayAfterWeekChange = true;
     }
+
+    refreshData(keepCurrentDay: false);
   }
 
   // Flags to handle day selection after week change
@@ -150,9 +151,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   bool _selectLastDayAfterWeekChange = false;
 
   void onSelectDay(int newDayIndex) {
-    currentDayIndex = newDayIndex;
-    isChangeNewWeek = false;
-    getListSmartGoal(isShowLoading: true);
+    if (newDayIndex < dayStatesList.length) {
+      currentDayIndex = newDayIndex;
+      isChangeNewWeek = false;
+      getListSmartGoal(isShowLoading: true);
+    }
   }
 
   Future<void> initData() async {
@@ -165,6 +168,23 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       if (currentWeekIndex == -1) currentWeekIndex = 0;
     } else {
       currentWeekIndex = 0;
+    }
+
+    // Load persisted daily goal showed state
+    // Check if popup was shown today - if shown on a different day, reset it
+    final lastShownDate = await getDailyGoalShowedDateFromPreferences();
+    if (lastShownDate != null) {
+      final today = DateTime.now();
+      final lastShown = DateTime.fromMillisecondsSinceEpoch(lastShownDate);
+      // If last shown date is not today, reset the flag
+      if (!DateUtil.isSameDate(lastShown, today)) {
+        congratulationState.dailyShowed = false;
+        await saveDailyGoalShowedDateFromPreferences(null);
+      } else {
+        congratulationState.dailyShowed = true;
+      }
+    } else {
+      congratulationState.dailyShowed = false;
     }
 
     //  await getSmartGoalStatistics(hideLoadingAfterDone: false);
@@ -186,6 +206,83 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         isRefresh: isRefresh,
         hideLoadingAfterDone: true,
         keepCurrentDay: keepCurrentDay);
+
+    // Process target date selection AFTER statistics are loaded but BEFORE API call
+    // This ensures we use the correct day index for the API call
+    if (!keepCurrentDay &&
+        _targetDateToSelect != null &&
+        dayStatesList.isNotEmpty) {
+      final targetDate = _targetDateToSelect!;
+      final targetDateUtc = DateTime.utc(
+        targetDate.year,
+        targetDate.month,
+        targetDate.day,
+        0,
+        0,
+        0,
+      );
+      final targetTimestamp =
+          (targetDateUtc.millisecondsSinceEpoch ~/ 1000).toInt();
+
+      // Check if target date is within the current week's range
+      if (dayStatesList.isNotEmpty) {
+        final firstDay = dayStatesList.first?.day;
+        final lastDay = dayStatesList.last?.day;
+        if (firstDay != null && lastDay != null) {
+          // If target date is after the last day of current week, try next week
+          if (targetTimestamp > lastDay &&
+              currentWeekIndex != null &&
+              currentWeekIndex! < weekStatesList.length - 1) {
+            _targetDateToSelect = targetDate;
+            onSelectWeek(currentWeekIndex! + 1);
+            return;
+          }
+          // If target date is before the first day of current week, try previous week
+          else if (targetTimestamp < firstDay &&
+              currentWeekIndex != null &&
+              currentWeekIndex! > 0) {
+            _targetDateToSelect = targetDate;
+            onSelectWeek(currentWeekIndex! - 1);
+            return;
+          }
+        }
+      }
+
+      // Try to find exact match
+      bool found = false;
+      for (int i = 0; i < dayStatesList.length; i++) {
+        final ts = dayStatesList[i]?.day;
+        if (ts == targetTimestamp) {
+          currentDayIndex = i;
+          isChangeNewWeek = false;
+          found = true;
+          break;
+        }
+      }
+
+      // If not found, find closest
+      if (!found && dayStatesList.isNotEmpty) {
+        int closestIndex = 0;
+        int minDifference = (dayStatesList[0]?.day ?? 0) - targetTimestamp;
+        if (minDifference < 0) minDifference = -minDifference;
+
+        for (int i = 1; i < dayStatesList.length; i++) {
+          if (dayStatesList[i]?.day != null) {
+            final diff = (dayStatesList[i]!.day! - targetTimestamp);
+            final absDiff = diff < 0 ? -diff : diff;
+            if (absDiff < minDifference) {
+              minDifference = absDiff;
+              closestIndex = i;
+            }
+          }
+        }
+        currentDayIndex = closestIndex;
+        isChangeNewWeek = false;
+      }
+
+      _targetDateToSelect = null;
+    }
+
     await getListSmartGoal(isRefresh: isRefresh);
   }
 
@@ -197,8 +294,12 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     if (isShowLoading) {
       emit(const ActivityTabLoading());
     }
+
+    final dayParam = currentDay;
+    final weekParam = currentWeek;
+
     final ApiResult<SmartGoalListReponse> apiResult =
-        await repository.getListSmartGoal(day: currentDay, week: currentWeek);
+        await repository.getListSmartGoal(day: dayParam, week: weekParam);
     apiResult.when(success: (SmartGoalListReponse response) {
       smartGoalDayList = response.data?.daily ?? [];
       smartGoalWeekList = response.data?.weekly ?? [];
@@ -214,14 +315,16 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       congratulationState.currentDate =
           DateUtil.parseTimespanToDateTime(currentDay!);
 
-      if (response.isWeeklyGoalCompleted &&
-          congratulationState.shouldShowWeekPopup) {
-        congratulationState.weeklyShowed = true;
-        emit(const ActivityTabWeeklyGoalCompleted());
-      }
+      // Show daily goal completed popup only when both conditions are met:
+      // 1. Daily goals are completed
+      // 2. Activities not complete in weekly are also completed
       if (response.isDailyGoalCompleted &&
+          response.isActivitiesNotCompleteInWeekCompleted &&
           congratulationState.shouldShowDailyPopup) {
         congratulationState.dailyShowed = true;
+        // Persist the current date so popup only shows once per day
+        final today = DateTime.now();
+        saveDailyGoalShowedDateFromPreferences(today.millisecondsSinceEpoch);
         emit(const ActivityTabDailyGoalCompleted());
       }
 
@@ -241,13 +344,28 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
           isChangeNewWeek = false;
         }
       } else if (_targetDateToSelect != null) {
-        // Find and select the target date (e.g., today or picked date)
-        final targetTimestamp = DateUtil.getDayInMillis(_targetDateToSelect!);
+        // This should not happen if we process _targetDateToSelect in refreshData
+        // But keep it as a fallback
+        final targetDate = _targetDateToSelect!;
+        final targetDateUtc = DateTime.utc(
+          targetDate.year,
+          targetDate.month,
+          targetDate.day,
+          0,
+          0,
+          0,
+        );
+        final targetTimestamp =
+            (targetDateUtc.millisecondsSinceEpoch ~/ 1000).toInt();
+
         for (int i = 0; i < dayStatesList.length; i++) {
           if (dayStatesList[i]?.day == targetTimestamp) {
             currentDayIndex = i;
             isChangeNewWeek = false;
-            break;
+            _targetDateToSelect = null;
+            // Call API again with correct day index
+            getListSmartGoal(isShowLoading: false);
+            return;
           }
         }
         _targetDateToSelect = null;
@@ -434,27 +552,89 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     return hasNewReports;
   }
 
+  Future<void> saveDailyGoalShowedDateFromPreferences(int? dateMillis) async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    if (dateMillis != null) {
+      prefs.setInt('dailyGoalShowedDate', dateMillis);
+    } else {
+      prefs.remove('dailyGoalShowedDate');
+    }
+  }
+
+  Future<int?> getDailyGoalShowedDateFromPreferences() async {
+    final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+    final SharedPreferences prefs = await _prefs;
+    final dateMillis = prefs.getInt('dailyGoalShowedDate');
+    return dateMillis;
+  }
+
   // Calendar navigation methods
   void onPreviousDay() {
-    if (currentDayIndex > 0) {
-      onSelectDay(currentDayIndex - 1);
-    } else {
-      // Go to previous week and select the last day
-      if (currentWeekIndex != null && currentWeekIndex! > 0) {
-        onSelectWeek(currentWeekIndex! - 1, selectLastDay: true);
+    // Use the actual timestamp from current day to calculate previous day
+    if (currentDay == null ||
+        dayStatesList.isEmpty ||
+        currentDayIndex >= dayStatesList.length) {
+      return;
+    }
+
+    final currentTimestamp = dayStatesList[currentDayIndex]?.day;
+    if (currentTimestamp == null) return;
+
+    // Calculate previous day timestamp (subtract 1 day = 86400 seconds)
+    final previousTimestamp = currentTimestamp - 86400;
+
+    // Check if previous date is in current week's dayStatesList
+    for (int i = 0; i < dayStatesList.length; i++) {
+      if (dayStatesList[i]?.day == previousTimestamp) {
+        onSelectDay(i);
+        return;
       }
+    }
+
+    // If not found in current week, navigate to previous week and find the date
+    if (currentWeekIndex != null && currentWeekIndex! > 0) {
+      // Convert timestamp to DateTime for _targetDateToSelect
+      final previousDate = DateTime.fromMillisecondsSinceEpoch(
+              previousTimestamp * 1000,
+              isUtc: true)
+          .toLocal();
+      _targetDateToSelect = previousDate;
+      onSelectWeek(currentWeekIndex! - 1);
     }
   }
 
   void onNextDay() {
-    if (currentDayIndex < dayStatesList.length - 1) {
-      onSelectDay(currentDayIndex + 1);
-    } else {
-      // Go to next week and select the first day
-      if (currentWeekIndex != null &&
-          currentWeekIndex! < weekStatesList.length - 1) {
-        onSelectWeek(currentWeekIndex! + 1, selectFirstDay: true);
+    // Use the actual timestamp from current day to calculate next day
+    if (currentDay == null ||
+        dayStatesList.isEmpty ||
+        currentDayIndex >= dayStatesList.length) {
+      return;
+    }
+
+    final currentTimestamp = dayStatesList[currentDayIndex]?.day;
+    if (currentTimestamp == null) return;
+
+    // Calculate next day timestamp (add 1 day = 86400 seconds)
+    final nextTimestamp = currentTimestamp + 86400;
+
+    // Check if next date is in current week's dayStatesList
+    for (int i = 0; i < dayStatesList.length; i++) {
+      if (dayStatesList[i]?.day == nextTimestamp) {
+        onSelectDay(i);
+        return;
       }
+    }
+
+    // If not found in current week, navigate to next week and find the date
+    if (currentWeekIndex != null &&
+        currentWeekIndex! < weekStatesList.length - 1) {
+      // Convert timestamp to DateTime for _targetDateToSelect
+      final nextDate =
+          DateTime.fromMillisecondsSinceEpoch(nextTimestamp * 1000, isUtc: true)
+              .toLocal();
+      _targetDateToSelect = nextDate;
+      onSelectWeek(currentWeekIndex! + 1);
     }
   }
 
@@ -477,14 +657,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
     // If today is not in current week, navigate to currentWeekStudying (the actual current week)
     // and select today
-    print(
-        'Today (${today.day}/${today.month}) not found in current week ${currentWeekIndex}');
-    print(
-        'Available days in current week: ${dayStatesList.map((d) => d?.day).toList()}');
-    print('Navigating to currentWeekStudying: $currentWeekStudying');
-
-    // Find the index in weekStatesList where week == currentWeekStudying
-    // (week is 1-indexed, but array index is 0-indexed)
     int? targetWeekIndex;
     for (int i = 0; i < weekStatesList.length; i++) {
       if (weekStatesList[i]?.completionStatus == CompletionStatus.studying) {
@@ -495,50 +667,50 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
     // Navigate to the current studying week and select today
     if (targetWeekIndex != null) {
-      print(
-          'Found currentWeekStudying ($currentWeekStudying) at index $targetWeekIndex');
       _targetDateToSelect = today;
       onSelectWeek(targetWeekIndex);
     } else {
       // Fallback: try to calculate which week contains today
-      print(
-          'currentWeekStudying ($currentWeekStudying) not found in weekStatesList, using fallback logic');
       _findAndNavigateToWeekContainingDate(today);
     }
   }
 
   void onDatePicked(DateTime pickedDate) {
-    // Compare at day precision only; timestamp differences are ignored
+    // Use the date components directly to avoid timezone issues
+    // Create a local date at midnight for the picked date
+    final pickedDateLocal = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      0,
+      0,
+      0,
+    );
+
+    // Convert to UTC at midnight for timestamp comparison
+    final pickedDateUtc = DateTime.utc(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      0,
+      0,
+      0,
+    );
+
+    final pickedTimestamp =
+        (pickedDateUtc.millisecondsSinceEpoch ~/ 1000).toInt();
 
     // Check if the picked date is in the current week
     for (int i = 0; i < dayStatesList.length; i++) {
       final ts = dayStatesList[i]?.day;
-      if (ts == null) continue;
-      final date =
-          DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true).toLocal();
-      if (DateUtil.isSameDate(date, pickedDate)) {
+      if (ts == pickedTimestamp) {
         onSelectDay(i);
         return;
       }
     }
 
-    // If picked date is not in current week, check if it's in a past or future week
-    final today = DateTime.now();
-    final pickedWeekIndex = _calculateWeekIndexForDate(pickedDate);
-    final todayWeekIndex = _calculateWeekIndexForDate(today);
-
-    // If the picked date is in a different week than today, navigate to today's week and select today
-    if (pickedWeekIndex != null &&
-        todayWeekIndex != null &&
-        pickedWeekIndex != todayWeekIndex) {
-      // Navigate to current week and select today
-      _targetDateToSelect = today;
-      onSelectWeek(todayWeekIndex);
-      return;
-    }
-
-    // Otherwise, use the existing behavior to navigate to the week containing the picked date
-    _findAndNavigateToWeekContainingDate(pickedDate);
+    // If picked date is not in current week, navigate to the week containing the picked date
+    _findAndNavigateToWeekContainingDate(pickedDateLocal);
   }
 
   void _findAndNavigateToWeekContainingDate(DateTime targetDate) {
@@ -548,19 +720,11 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     // Calculate which week the target date belongs to
     final targetWeekIndex = _calculateWeekIndexForDate(targetDate);
 
-    print(
-        'Target date: ${targetDate.day}/${targetDate.month}/${targetDate.year}');
-    print('Calculated week index: $targetWeekIndex');
-    print('Current week index: $currentWeekIndex');
-
     if (targetWeekIndex != null && targetWeekIndex != currentWeekIndex) {
       // Navigate to the week containing the target date
-      print('Navigating to week $targetWeekIndex');
       onSelectWeek(targetWeekIndex);
     } else {
       // If we're already in the correct week, just refresh data
-      print(
-          'Already in correct week or week calculation failed, refreshing data');
       refreshData(keepCurrentDay: false);
     }
   }
@@ -568,7 +732,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
   int? _calculateWeekIndexForDate(DateTime targetDate) {
     if (user.ownPackage?.endDateFirst == null) {
       // For basic accounts, try to find the week by checking existing week data
-      print('No package found, using basic account logic');
       return _findWeekIndexForBasicAccount(targetDate);
     }
 
@@ -578,16 +741,9 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     var weekStartDate = DateTime.utc(
         endDateFirst.year, endDateFirst.month, endDateFirst.day, 0, 0, 0);
 
-    print(
-        'Package endDateFirst: ${endDateFirst.day}/${endDateFirst.month}/${endDateFirst.year}');
-    print(
-        'Week start date: ${weekStartDate.day}/${weekStartDate.month}/${weekStartDate.year}');
-
     // Adjust if endDateFirst is Sunday (add 1 day to get Monday)
     if (weekStartDate.weekday == DateTime.sunday) {
       weekStartDate = weekStartDate.add(const Duration(days: 1));
-      print(
-          'Adjusted week start date (was Sunday): ${weekStartDate.day}/${weekStartDate.month}/${weekStartDate.year}');
     }
 
     // Calculate the difference in days between target date and week start
@@ -595,9 +751,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
         targetDate.year, targetDate.month, targetDate.day, 0, 0, 0);
     final daysDifference = targetDateOnly.difference(weekStartDate).inDays;
 
-    print('Days difference: $daysDifference');
-
-    // Calculate which week this date belongs to (0-based index)
     // Handle negative differences (dates before the first week)
     int weekIndex;
     if (daysDifference < 0) {
@@ -605,11 +758,17 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
       weekIndex = ((daysDifference - 6) / 7)
           .floor(); // -6 to round down properly for negative numbers
     } else {
+      // For positive differences, calculate week index
+      // When daysDifference is exactly divisible by 7, it's the START of the next week
       weekIndex = (daysDifference / 7).floor();
-    }
 
-    print('Calculated week index: $weekIndex');
-    print('Available weeks: ${weekStatesList.length}');
+      // If daysDifference is exactly divisible by 7, the date is at the boundary
+      // and belongs to the NEXT week (not the current calculated week)
+      // Example: day 49 = 7*7, which should be week 8, not week 7
+      if (daysDifference % 7 == 0 && daysDifference > 0) {
+        weekIndex = weekIndex + 1;
+      }
+    }
 
     // Ensure the week index is within valid range
     if (weekIndex >= 0 && weekIndex < weekStatesList.length) {
@@ -618,12 +777,10 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
 
     // If the calculated week is negative or out of range, try to find the closest valid week
     if (weekIndex < 0) {
-      print('Week index is negative, checking if target date is in week 0');
       // Check if the target date falls within week 0 by checking the actual days
       return _checkIfDateInWeek(targetDate, 0) ? 0 : null;
     }
 
-    print('Week index out of range: $weekIndex');
     return null;
   }
 
@@ -643,55 +800,6 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     }
 
     return false;
-  }
-
-  int? _findWeekContainingDate(DateTime targetDate) {
-    // Try to find which week contains the target date by checking week boundaries
-    // This is a more reliable approach than calculating from endDateFirst
-
-    final targetTimestamp = DateUtil.getDayInMillis(targetDate);
-
-    // For now, let's try a simple approach: check if the date is within a reasonable range
-    // of the current week's dates
-    if (dayStatesList.isNotEmpty) {
-      final firstDay = dayStatesList.first?.day;
-      final lastDay = dayStatesList.last?.day;
-
-      if (firstDay != null && lastDay != null) {
-        // Check if target date is within the current week's range
-        if (targetTimestamp >= firstDay && targetTimestamp <= lastDay) {
-          return currentWeekIndex;
-        }
-
-        // If target date is before the current week, it might be in a previous week
-        if (targetTimestamp < firstDay) {
-          // Try previous weeks
-          for (int i = (currentWeekIndex ?? 0) - 1; i >= 0; i--) {
-            // This is a simplified check - in reality you'd need to load each week's data
-            // For now, we'll assume it's in week 0 if it's before the current week
-            if (i == 0) {
-              return 0;
-            }
-          }
-        }
-
-        // If target date is after the current week, it might be in a future week
-        if (targetTimestamp > lastDay) {
-          // Try future weeks
-          for (int i = (currentWeekIndex ?? 0) + 1;
-              i < weekStatesList.length;
-              i++) {
-            // This is a simplified check - in reality you'd need to load each week's data
-            // For now, we'll assume it's in the last available week if it's after the current week
-            if (i == weekStatesList.length - 1) {
-              return i;
-            }
-          }
-        }
-      }
-    }
-
-    return null;
   }
 
   int? _findWeekIndexForBasicAccount(DateTime targetDate) {
@@ -734,12 +842,17 @@ class ActivityTabCubit extends Cubit<ActivityTabState> {
     return false;
   }
 
-  // Get current date as DateTime
+  // Get current date as DateTime (local time, date only)
   DateTime get currentDateTime {
     if (currentDay != null) {
-      return DateUtil.parseTimespanToDateTime(currentDay!);
+      // Parse timestamp as UTC and convert to local, then extract date components only
+      final utcDate = DateUtil.parseTimespanToDateTime(currentDay!);
+      final localDate = utcDate.toLocal();
+      // Return a local DateTime with just the date components to avoid timezone issues
+      return DateTime(localDate.year, localDate.month, localDate.day);
     }
-    return DateTime.now();
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
   }
 
   // Check if current date is today

@@ -528,6 +528,14 @@ class SmartGoalListReponse {
     return true;
   }
 
+  bool get isActivitiesNotCompleteInWeekCompleted {
+    if (data?.activitiesNotCompleteInWeekly?.isNotEmpty != true) return false;
+    for (final SmartGoalList? data in data?.activitiesNotCompleteInWeekly ?? []) {
+      if (data?.progress != 1) return false;
+    }
+    return true;
+  }
+
   SmartGoalListReponse.fromJson(Map<String, dynamic> json) {
     meta = (json['meta'] != null)
         ? SmartGoalListReponseMeta.fromJson(json['meta'])
