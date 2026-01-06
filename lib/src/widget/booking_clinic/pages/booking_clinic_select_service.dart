@@ -20,6 +20,7 @@ class BookingCLinicSelectServicePage extends StatefulWidget {
   final String serviceType;
   final String action; // 'create' or 'reschedule'
   final String bookingType; // 'clinic' or 'center' or 'doctor'
+  final String? examinationType;
 
   const BookingCLinicSelectServicePage({
     Key? key,
@@ -27,6 +28,7 @@ class BookingCLinicSelectServicePage extends StatefulWidget {
     required this.serviceType,
     this.action = 'create',
     this.bookingType = Const.BOOKING_TYPE_CLINIC,
+    this.examinationType,
   }) : super(key: key);
 
   @override
@@ -51,6 +53,49 @@ class _BookingCLinicSelectServicePageState
       selectedServices.addAll(_cubit
           .createDsmesBookingRequest!.paymentInfo!.services
           .map((service) => service.id));
+    }
+
+    // Auto-select services for examination flow
+    if (widget.examinationType != null && widget.examinationType!.isNotEmpty) {
+      _autoSelectExaminationServices();
+    }
+  }
+
+  void _autoSelectExaminationServices() {
+    if (widget.examinationType == null || widget.examinationType!.isEmpty) {
+      return;
+    }
+
+    final examinationTypeLower = widget.examinationType!.toLowerCase();
+    final allServices = widget.clinic.serviceList.categories
+        .expand((category) => category.data)
+        .toList();
+
+    for (final service in allServices) {
+      final serviceNameLower = service.name.toLowerCase();
+
+      // Check if service name contains both "xét nghiệm" (or "xet nghiem") and the examination type
+      final hasExaminationKeyword = serviceNameLower.contains('xét nghiệm') ||
+          serviceNameLower.contains('xet nghiem');
+      final hasExaminationType =
+          serviceNameLower.contains(examinationTypeLower);
+
+      if (hasExaminationKeyword && hasExaminationType) {
+        if (selectedServices.length < maxServices) {
+          selectedServices.add(service.id);
+        }
+      }
+    }
+
+    // Update the cubit with selected services
+    if (selectedServices.isNotEmpty) {
+      List<ServiceItem> serviceItems = selectedServices
+          .map((serviceId) => ServiceItem(id: serviceId, quantity: 1))
+          .toList();
+      _cubit.updateCreateDsmesBookingRequestServiceList(
+        paymentType: 'local_banking',
+        selectedServices: serviceItems,
+      );
     }
   }
 
@@ -398,6 +443,7 @@ class _BookingCLinicSelectServicePageState
       final route = ModalRoute.of(context)?.settings;
       final args = route?.arguments as Map<String, dynamic>?;
       final isEditing = args?['isEditing'] ?? false;
+      final isExamination = args?['isExamination'] ?? false;
 
       if (isEditing) {
         // First pop the current select_service page
@@ -426,6 +472,7 @@ class _BookingCLinicSelectServicePageState
           'serviceType': widget.serviceType,
           'action': widget.action,
           'bookingType': widget.bookingType,
+          'isExamination': isExamination,
         });
       } else {
         await DsmesNavigationMixin.getNavigationKey()
@@ -434,6 +481,7 @@ class _BookingCLinicSelectServicePageState
           'serviceType': widget.serviceType,
           'action': widget.action,
           'bookingType': widget.bookingType,
+          'isExamination': isExamination,
         });
       }
 

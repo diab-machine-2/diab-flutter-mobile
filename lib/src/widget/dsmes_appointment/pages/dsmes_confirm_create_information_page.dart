@@ -29,6 +29,7 @@ class DsmesConfirmCreateInformation extends StatefulWidget {
   final String action;
   final int? appointmentId;
   final String bookingType; // 'clinic' or 'center' or 'doctor'
+  final bool isExamination;
 
   const DsmesConfirmCreateInformation({
     Key? key,
@@ -36,6 +37,7 @@ class DsmesConfirmCreateInformation extends StatefulWidget {
     this.action = 'create',
     this.appointmentId,
     this.bookingType = Const.BOOKING_TYPE_CENTER,
+    this.isExamination = false,
   }) : super(key: key);
 
   @override
@@ -187,7 +189,9 @@ class _DsmesConfirmCreateInformationState
                         children: [
                           _buildPatientInformation(),
                           GapH(12),
-                          _buildConsultingInformation(),
+                          widget.isExamination
+                              ? _buildExaminationInformation()
+                              : _buildConsultingInformation(),
                           if (widget.serviceType ==
                               DsmesAppointmentMode.telemedicine.toString())
                             GapH(12),
@@ -436,6 +440,59 @@ class _DsmesConfirmCreateInformationState
     final date = DateFormat('yyyy-MM-dd HH:mm').parse(startTime);
     final weekDay = DateUtil.weekDayToString(date, isDisplayfull: true);
     return '$weekDay, ${DateFormat('dd/MM/yyyy').format(date)}';
+  }
+
+  Widget _buildExaminationInformation() {
+    if (_cubit.createDsmesBookingRequest == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Appointment time',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: R.color.color0xff636A6B,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                getTimeRange(_cubit.createDsmesBookingRequest!.startTime,
+                    _cubit.createDsmesBookingRequest!.endTime),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.greenGradientBottom,
+                ),
+              ),
+              Text(
+                getFormattedDate(_cubit.createDsmesBookingRequest!.startTime),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.greenGradientBottom,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   _buildPatientInformation() {

@@ -1440,4 +1440,7 @@ class Strings {
   String get quiz => 'quiz';
   String get booking => 'booking';
   String get interview => 'interview';
+  String get appointment_time => 'appointment_time';
+  String get xet_nghiem_tai_nha => 'xet_nghiem_tai_nha';
+  String get xet_nghiem_tai_co_so => 'xet_nghiem_tai_co_so';
 }

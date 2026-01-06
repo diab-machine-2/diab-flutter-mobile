@@ -109,7 +109,12 @@ class AppRoutes {
         }
       case NavigatorName.booking_clinic:
         {
-          page = BookingClinicPage();
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BookingClinicPage(
+            isExamination: args?['isExamination'] ?? false,
+            examinationClinicId: args?['examinationClinicId'],
+            examinationType: args?['examinationType'],
+          );
           break;
         }
       case NavigatorName.add_blood_sugar_result:
@@ -134,7 +139,6 @@ class AppRoutes {
         );
         break;
       case NavigatorName.blood_sugar_image_capture:
-        final data = settings.arguments as Map<String, dynamic>?;
         page = BloodSugarImageCapture();
         break;
       case NavigatorName.paywall_screen:
@@ -173,7 +177,8 @@ class AppRoutes {
           generatedFoods: (data?['foods'] ?? []) as List<FoodModel>,
           timeframe: data?['timeframe'] ?? '-',
           timeframeId: data?['timeframeId'] ?? '-',
-          files: data?['files'] != null ? List<String>.from(data!['files']) : [],
+          files:
+              data?['files'] != null ? List<String>.from(data!['files']) : [],
         );
         break;
       case NavigatorName.food_image_capture:

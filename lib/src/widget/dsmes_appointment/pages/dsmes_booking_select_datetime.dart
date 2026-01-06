@@ -24,6 +24,8 @@ class DsmesCalendarSection extends StatefulWidget {
   final int? appointmentId;
   final bool isMergedSchedule;
   final String bookingType; // 'clinic' or 'center' or 'doctor'
+  final bool isExamination;
+  final String? examinationType;
 
   const DsmesCalendarSection({
     Key? key,
@@ -32,6 +34,8 @@ class DsmesCalendarSection extends StatefulWidget {
     this.appointmentId,
     this.isMergedSchedule = false,
     this.bookingType = Const.BOOKING_TYPE_CENTER,
+    this.isExamination = false,
+    this.examinationType,
   }) : super(key: key);
 
   @override
@@ -266,11 +270,48 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     final route = ModalRoute.of(context)?.settings;
     final args = route?.arguments as Map<String, dynamic>?;
     final isEditing = args?['isEditing'] ?? false;
+    final isExamination = args?['isExamination'] ?? widget.isExamination;
 
     if (widget.action == 'reschedule' || isEditing) {
       return _buildButton(R.string.tiep_tuc.tr(), () {
         _handleClinicContinueButton();
       }, isDisabled: !isAllowReschedule);
+    }
+
+    // Examination flow: single button that behaves like telemedicine booking
+    if (isExamination) {
+      return Container(
+        color: R.color.white,
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: GestureDetector(
+          onTap: () {
+            _handleBookingClinicTelemedicine();
+          },
+          child: Container(
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  R.color.greenGradientTop02,
+                  R.color.greenGradientBottom
+                ],
+              ),
+              borderRadius: BorderRadius.circular(200),
+            ),
+            child: Text(
+              R.string.submit_booking.tr(),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: R.color.white,
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     if (listServiceTypes.length == 2) {
@@ -456,6 +497,8 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
         'serviceType': DsmesAppointmentMode.telemedicine.toString(),
         'action': widget.action,
         'bookingType': widget.bookingType,
+        'isExamination': widget.isExamination,
+        'examinationType': widget.examinationType,
       });
     } finally {
       setState(() => isProcessingClinic['telemedicine'] = false);

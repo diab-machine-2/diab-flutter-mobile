@@ -12,7 +12,6 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
@@ -33,9 +32,19 @@ import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_i
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 class BookingClinicPage extends StatefulWidget {
-  const BookingClinicPage({Key? key}) : super(key: key);
+  final bool isExamination;
+  final int? examinationClinicId;
+  final String? examinationType;
+
+  const BookingClinicPage({
+    Key? key,
+    this.isExamination = false,
+    this.examinationClinicId,
+    this.examinationType,
+  }) : super(key: key);
 
   @override
   _BookingClinicPageState createState() => _BookingClinicPageState();
@@ -62,6 +71,13 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
     // _cubit.getDsmesAppointmentList();
     _cubit.initDsmesBooking();
+
+    if (widget.isExamination) {
+      // Delay navigation to ensure nested navigator is ready.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _startExaminationAtHomeFlow();
+      });
+    }
   }
 
   @override
@@ -195,6 +211,8 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           appointmentId: args["appointmentId"],
                           isMergedSchedule: args["isMergedSchedule"] ?? false,
                           bookingType: args["bookingType"],
+                          isExamination: args["isExamination"] ?? false,
+                          examinationType: args["examinationType"],
                         ),
                       );
                     }
@@ -209,6 +227,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           action: args["action"],
                           appointmentId: args["appointmentId"],
                           bookingType: args["bookingType"],
+                          isExamination: args["isExamination"] ?? false,
                         ),
                       );
                     }
@@ -295,6 +314,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           serviceType: args["serviceType"],
                           action: args["action"],
                           bookingType: args["bookingType"],
+                          examinationType: args["examinationType"],
                         ),
                       );
                     }
@@ -479,7 +499,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
             controller: _controller,
             onRefresh: () async {
               final docosanToken = await AppSettings.getDocosanToken();
-              if (docosanToken == null || docosanToken.isEmpty) {
+              if (docosanToken.isEmpty) {
                 BotToast.closeAllLoading();
                 _controller.refreshCompleted();
                 return;
@@ -538,6 +558,36 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _startExaminationAtHomeFlow() async {
+    final clinicId = widget.examinationClinicId ?? 816;
+
+    final detailSuccess =
+        await _cubit.getClinicDetail(id: clinicId, isLoading: false);
+
+    if (!detailSuccess || _cubit.selectedClinic == null) {
+      return;
+    }
+
+    _cubit.initCreateDsmesBookingRequest(
+        locale: DsmesNavigationMixin.getNavigationKey()
+                .currentContext
+                ?.locale
+                .languageCode ??
+            'vi');
+
+    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+      NavigatorName.dsmes_booking_select_date,
+      arguments: {
+        'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+        'action': 'create',
+        'bookingType': Const.BOOKING_TYPE_CLINIC,
+        'isMergedSchedule': false,
+        'isExamination': true,
+        'examinationType': widget.examinationType,
+      },
     );
   }
 
