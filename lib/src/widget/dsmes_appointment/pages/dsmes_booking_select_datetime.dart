@@ -118,6 +118,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
       isAllowReschedule = isSelectedScheduleAvailable();
     });
+
+    // Close any global loading (e.g., from examination flow) once
+    // the datetime screen has finished loading its data.
+    BotToast.closeAllLoading();
   }
 
   bool isSelectedScheduleAvailable() {
@@ -205,11 +209,19 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.getNavigationKey()
-                            .currentState
-                            ?.pop(DsmesNavigationMixin.getNavigationKey()
-                                .currentState
-                                ?.context);
+                        // For examination flow, navigate directly back to the
+                        // activity tab (root navigator), instead of going back
+                        // through the intermediate booking clinic container.
+                        if (widget.isExamination) {
+                          BotToast.closeAllLoading();
+                          Navigator.of(context, rootNavigator: true).pop();
+                        } else {
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pop(DsmesNavigationMixin.getNavigationKey()
+                                  .currentState
+                                  ?.context);
+                        }
                       },
                     ),
                   ),

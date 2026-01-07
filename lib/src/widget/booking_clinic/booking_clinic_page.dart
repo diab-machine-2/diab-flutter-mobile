@@ -69,8 +69,12 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
-    // _cubit.getDsmesAppointmentList();
+    // Initialize Docosan user & location
     _cubit.initDsmesBooking();
+    // Only load existing clinic appointments in normal booking flow
+    if (!widget.isExamination) {
+      _cubit.fetchDsmesAppointmentList(showLoading: false);
+    }
 
     if (widget.isExamination) {
       // Delay navigation to ensure nested navigator is ready.
@@ -346,12 +350,16 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
       listener: (context, state) {
         print('Current state: $state');
-        if (state is DsmesAppointmentFailure) {
-          BotToast.closeAllLoading();
-          Message.showToastMessage(context, state.error);
-        } else {
-          BotToast.closeAllLoading();
-          _controller.refreshCompleted();
+        // For examination flow, we manage loading manually so that it stays
+        // visible until the datetime page has finished loading.
+        if (!widget.isExamination) {
+          if (state is DsmesAppointmentFailure) {
+            BotToast.closeAllLoading();
+            Message.showToastMessage(context, state.error);
+          } else {
+            BotToast.closeAllLoading();
+            _controller.refreshCompleted();
+          }
         }
       },
       builder: (
@@ -359,11 +367,13 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
         DsmesAppointmentState state,
       ) {
         print('Building with state: $state');
-        if (state is DsmesAppointmentLoading) {
-          BotToast.showLoading(allowClick: false);
-        } else {
-          BotToast.closeAllLoading();
-          _controller.refreshCompleted();
+        if (!widget.isExamination) {
+          if (state is DsmesAppointmentLoading) {
+            BotToast.showLoading(allowClick: false);
+          } else {
+            BotToast.closeAllLoading();
+            _controller.refreshCompleted();
+          }
         }
         return _buildPage(context, state);
       },
@@ -562,6 +572,11 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
   }
 
   Future<void> _startExaminationAtHomeFlow() async {
+    // Show a global loading overlay to prevent user interaction on the
+    // intermediate booking clinic container while we prepare the
+    // examination flow and navigate to the datetime screen.
+    BotToast.showLoading(allowClick: false);
+
     final clinicId = widget.examinationClinicId ?? 816;
 
     final detailSuccess =
@@ -587,6 +602,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
         'isMergedSchedule': false,
         'isExamination': true,
         'examinationType': widget.examinationType,
+        'fromExamination': true,
       },
     );
   }
