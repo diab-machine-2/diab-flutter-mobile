@@ -367,8 +367,10 @@ class _BookingDoctorProvidersPageState
     }
 
     // Only look for telemedicine services
-    final telemedicineServices =
-        services.where((service) => service.type == "telemedicine").toList();
+    final telemedicineServices = services
+        .where((service) =>
+            service.type == "telemedicine" && service.fromPrice > 0)
+        .toList();
 
     if (telemedicineServices.isEmpty) {
       return null;
