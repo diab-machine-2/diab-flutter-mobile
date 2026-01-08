@@ -40,6 +40,12 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   Map<String, bool> requestSyncData = {};
   DateTime releaseDate = DateTime(2023, 4, 1);
 
+  // Track last sync completion time to prevent duplicate syncs
+  static DateTime? _lastSyncCompletionTime;
+  static const Duration _syncDebounceDuration =
+      Duration(seconds: 30); // Increased to 30 seconds
+  static bool _isSyncInProgress = false; // Track if sync is currently running
+
   @override
   Stream<HealthAppState> mapEventToState(HealthAppEvent event) async* {
     if (event is SubmitSyncData) {
@@ -55,7 +61,9 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
   // Tâm thu - Tâm trương - Nhịp tim
   syncSystolicAndDiastolic() async {
-    DateTime dateTo = DateTime.now();
+    DateTime now = DateTime.now();
+    // Set dateTo to end of current day (23:59:59.999)
+    DateTime dateTo = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
     DateTime dateFrom = releaseDate;
 
     // Lấy thời gian sync dữ liệu gần nhất
@@ -71,6 +79,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       }
     }
 
+    // Normalize dateFrom to start of day (00:00:00)
+    dateFrom = DateTime(dateFrom.year, dateFrom.month, dateFrom.day);
     dateFrom = dateFrom.add(Duration(milliseconds: 1));
 
     if (dateFrom.difference(dateTo).inDays.abs() > 90) {
@@ -98,7 +108,8 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
     double heartRate = 0;
     for (var element in bloodPressureSystolic) {
-      double systolic = roundDouble(element.value);
+      double systolic = roundDouble(
+          (element.value as NumericHealthValue).numericValue.toDouble());
 
       HealthDataPoint? heartRateData = healthRateList.firstWhereOrNull((item) {
         Duration difference = item.dateFrom.difference(element.dateFrom);
@@ -106,7 +117,9 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       });
 
       if (heartRateData != null) {
-        heartRate = roundDouble(heartRateData.value);
+        heartRate = roundDouble((heartRateData.value as NumericHealthValue)
+            .numericValue
+            .toDouble());
       } else {
         heartRate = 0;
       }
@@ -116,37 +129,40 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       if (diastolicData != null) {
         dataSync.add(SyncSystolicAndDiastolicModel(
             dateFrom: element.dateFrom,
-            diastolic: roundDouble(diastolicData.value),
+            diastolic: roundDouble((diastolicData.value as NumericHealthValue)
+                .numericValue
+                .toDouble()),
             heartRate: heartRate,
             systolic: systolic));
       }
     }
 
     if (dataSync.isNotEmpty) {
-      // Bắt đầu sync
-      int dataSyncLength = dataSync.length;
-      int count = 0;
-      List<Map<String, dynamic>> syncData = [];
-      if (count != dataSyncLength) {
+      try {
+        final timeFrames =
+            await BloodPressureClient().fetchBloodPressureTimeFrame();
+        final batKiTimeFrame = timeFrames.firstWhere(
+          (tf) => tf.name == "Bất kì" || tf.code == "Prd19",
+          orElse: () => timeFrames.first,
+        );
+        final timeFrameId = batKiTimeFrame.id ?? "";
+
         for (SyncSystolicAndDiastolicModel element in dataSync) {
-          syncData.add({
-            'systolic': element.systolic.toString(),
-            'diastolic': element.diastolic.toString(),
-            'pulseRate': element.heartRate
-                .toString(), // Assuming element.heartRate is of type int or double
-            'date': element.dateFrom.millisecondsSinceEpoch ~/ 1000,
-            'timeFrameId': "",
-            "timeFrameValue": DateUtil.getDayInMillis(element.dateFrom),
-            'note': "",
-            'reason': "Đồng bộ dữ liệu từ Health App",
-            'files': [],
-          });
-          count++;
+          await BloodPressureClient().postBloodPressureInput(
+            element.systolic.toString(),
+            element.diastolic.toString(),
+            element.heartRate.toString(),
+            element.dateFrom.millisecondsSinceEpoch ~/ 1000,
+            timeFrameId,
+            "",
+            "Đồng bộ dữ liệu từ Health App",
+            [],
+          );
         }
+        result = true;
+      } catch (e) {
+        result = false;
       }
-      if (syncData.isNotEmpty)
-        BloodPressureClient().postBloodPressureInputs(syncData);
-      result = true;
     }
     responseSyncData['syncSYSTOLICAndDIASTOLIC'] = result;
   }
@@ -618,16 +634,13 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
               height: heightList.isNotEmpty ? parsedHeight : userInfo.height,
             ),
           );
-        } catch (e, stackTrace) {
-          print('Error in updateUserInfo: $e');
-          print('Stack trace: $stackTrace');
+        } catch (e) {
         } finally {
           await AppSettings.setIsSyncing(false);
         }
         result = true;
       }
-      Observable.instance
-              .notifyObservers([], notifyName: "reload_user_info");
+      Observable.instance.notifyObservers([], notifyName: "reload_user_info");
     }
 
     responseSyncData['syncWeight'] = result;
@@ -671,8 +684,12 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
       List<Map<String, String>> glucosedList = [];
       dataSync.forEach((element) {
         double glucose = roundAsFixed(isMilligramPerDeciliter
-            ? roundDouble(element.value)
-            : roundDouble(element.value) / mmollToMgdlFactor);
+            ? roundDouble(
+                (element.value as NumericHealthValue).numericValue.toDouble())
+            : roundDouble((element.value as NumericHealthValue)
+                    .numericValue
+                    .toDouble()) /
+                mmollToMgdlFactor);
         glucosedList.add({
           'glucose': glucose.toString(),
           'date': DateUtil.getDayInMillis(element.dateFrom).toString(),
@@ -753,7 +770,25 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
   }
 
   Stream<HealthAppState> _syncData(SubmitSyncData event) async* {
-    print("PHUONG Stream<HealthAppState> _syncData");
+    // Prevent duplicate syncs if sync is in progress
+    if (_isSyncInProgress) {
+      yield state.copyWith(blocStatus: BlocStatus.success);
+      return;
+    }
+
+    // Prevent duplicate syncs if sync was completed recently
+    if (_lastSyncCompletionTime != null) {
+      final timeSinceLastSync =
+          DateTime.now().difference(_lastSyncCompletionTime!);
+      if (timeSinceLastSync < _syncDebounceDuration) {
+        yield state.copyWith(blocStatus: BlocStatus.success);
+        return;
+      }
+    }
+
+    // Mark sync as in progress
+    _isSyncInProgress = true;
+
     yield state.copyWith(blocStatus: BlocStatus.loading);
     final List<HealthDataType> _types = HealthSetting.instance.types;
     requestSyncData = {
@@ -766,13 +801,13 @@ class HealthAppBloc extends Bloc<HealthAppEvent, HealthAppState> {
 
     try {
       await _requestSyncData();
+      _lastSyncCompletionTime = DateTime.now();
     } catch (e) {
-      print('Error in x: $e');
+      // Don't update timestamp on error to allow retry
     } finally {
+      _isSyncInProgress = false;
       await AppSettings.setIsSyncing(false);
     }
-    yield state.copyWith(
-      types: _types,
-    );
+    yield state.copyWith(types: _types);
   }
 }

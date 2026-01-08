@@ -83,6 +83,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
+            <!-- Intention to show Permissions screen for Health Connect API -->
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+
             <!-- Deep Links, Branch, App Links, VNPay etc. (kept as you had) -->
             <!-- ... (all your existing intent-filter sections unchanged) ... -->
 
