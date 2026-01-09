@@ -6,7 +6,6 @@ import io.flutter.embedding.android.FlutterFragmentActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugins.GeneratedPluginRegistrant;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -115,6 +114,7 @@ public class MainActivity extends FlutterFragmentActivity {
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
+        Log.d(TAG, "configureFlutterEngine called - plugins auto-registered by super.configureFlutterEngine()");
         context = this;
 
         // Register EventChannel for iBle SDK streaming events

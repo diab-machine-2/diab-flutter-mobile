@@ -739,7 +739,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                         children: [
                                                           Positioned.fill(
                                                             child: files[index]
-                                                                    is PickedFile
+                                                                    is PickedFile ||
+                                                                files[index] is XFile
                                                                 ? Image.file(
                                                                     File(files[
                                                                             index]
@@ -762,7 +763,8 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
                                                                 setState(() {
                                                                   if (files[
                                                                           index]
-                                                                      is PickedFile) {
+                                                                      is PickedFile ||
+                                                                      files[index] is XFile) {
                                                                     files.removeAt(
                                                                         index);
                                                                   } else {
@@ -935,7 +937,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
     try {
       List<String> paths = [];
       for (var file in files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }
@@ -1014,7 +1016,7 @@ class _AddInsightControllerState extends BaseState<AddInsightController> {
           note,
           paths);
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_emotional_add',

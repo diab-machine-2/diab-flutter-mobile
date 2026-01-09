@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/res/colors.dart';
+import 'package:medical/res/dimens.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/blood_pressure/bloodpressure_lesson.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
@@ -12,7 +14,6 @@ import 'package:medical/src/widget/BloodPressure/bloodpressure_functions.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
-import 'package:medical/src/widgets/network_image_widget.dart';
 
 import 'widgets/bloodpresure_lesson_section.dart';
 
@@ -27,6 +28,8 @@ class BloodPressureIntro1stPage extends StatefulWidget {
 
 class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   final List<BloodPressureLesson> _pinedLessons = [];
+  bool _isLoadingLessons = false;
+  bool _hasLoadedLessons = false;
 
   @override
   void initState() {
@@ -35,16 +38,36 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   }
 
   void _loadLessons() async {
+    // Chỉ load nếu chưa load hoặc list đang empty
+    if (_isLoadingLessons || (_hasLoadedLessons && _pinedLessons.isNotEmpty)) {
+      return;
+    }
+
+    setState(() {
+      _isLoadingLessons = true;
+    });
+
     try {
-      _pinedLessons.clear();
       final lessons = await BloodPressureClient().fetchBloodPressureLessons();
-      if (lessons != null) {
+      if (lessons != null && mounted) {
         setState(() {
+          _pinedLessons.clear();
           _pinedLessons.addAll(lessons);
+          _hasLoadedLessons = true;
+          _isLoadingLessons = false;
+        });
+      } else if (mounted) {
+        setState(() {
+          _isLoadingLessons = false;
         });
       }
     } catch (e, s) {
       TrackingManager.recordError(e, s);
+      if (mounted) {
+        setState(() {
+          _isLoadingLessons = false;
+        });
+      }
     }
   }
 
@@ -101,8 +124,10 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
       title: Text(
         R.string.huyet_ap.tr(),
         style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontFamily: R.font.sfpro,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
           color: R.color.white,
         ),
       ),
@@ -126,7 +151,13 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
                   R.string.huong_dan.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    color: R.color.white,
+                    fontSize: 15,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
+                  ),
                 ),
               ),
             ),
@@ -176,8 +207,10 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 Text(
                   R.string.did_you_know.tr(),
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
+                    fontFamily: R.font.sfpro,
                     fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -188,24 +221,37 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                     height: 24 / 15,
                     fontWeight: FontWeight.w400,
                     color: R.color.primaryGreyColor,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
                   ),
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _navigateToInputSelection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: R.color.mainColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    minimumSize: Size.fromHeight(40),
-                  ),
-                  child: Text(
-                    R.string.enter_blood_pressure.tr(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                InkWell(
+                  onTap: _navigateToInputSelection,
+                  child: Container(
+                    width: double.infinity,
+                    height: 44,
+                    decoration: BoxDecoration(
+                        color: R.color.greenGradientBottom,
+                        borderRadius: BorderRadius.circular(200),
+                        gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom
+                            ])),
+                    child: Center(
+                      child: Text(
+                        R.string.enter_blood_pressure.tr(),
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: R.font.sfpro,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -218,6 +264,11 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
   }
 
   Widget _buildPinnedLessonsSection() {
+    // Giữ layout ổn định để tránh flash
+    final hasData = _pinedLessons.isNotEmpty;
+    final showFirstRow = hasData;
+    final showSecondRow = hasData && _pinedLessons.length > 2;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -225,7 +276,7 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 0),
             child: Text(
               R.string.bloodpressure_intro_help_title.tr(),
               style: TextStyle(
@@ -233,36 +284,99 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
                 fontWeight: FontWeight.w700,
                 height: 24 / 18,
                 color: R.color.dark,
+                fontFamily: R.font.sfpro,
+                letterSpacing: 0.2,
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          if (_pinedLessons.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          if (showFirstRow) ...[
             Row(
               children: [
                 Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                     child: _pinedLessons.length > 1
                         ? _buildPinnedLessonItem(_pinedLessons[1])
                         : const SizedBox()),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+          ] else if (_isLoadingLessons) ...[
+            // Hiển thị placeholder khi đang load để giữ layout
+            Row(
+              children: [
+                Expanded(child: _buildPlaceholderItem()),
+                const SizedBox(width: 12),
+                Expanded(child: _buildPlaceholderItem()),
+              ],
+            ),
+            const SizedBox(height: 12),
           ],
-          if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+          if (showSecondRow) ...[
             Row(
               children: [
                 Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                     child: _pinedLessons.length > 3
                         ? _buildPinnedLessonItem(_pinedLessons[3])
                         : const SizedBox()),
               ],
             ),
+          ] else if (_isLoadingLessons && showFirstRow) ...[
+            // Hiển thị placeholder cho row thứ 2 khi đang load
+            Row(
+              children: [
+                Expanded(child: _buildPlaceholderItem()),
+                const SizedBox(width: 12),
+                Expanded(child: _buildPlaceholderItem()),
+              ],
+            ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderItem() {
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Container(
+        decoration: R.decorationStyle.mediumRadiusCardStyles,
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(
+                color: AppColors.neutral5,
+                child: Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(AppColors.neutral4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                height: 16,
+                width: double.infinity,
+                margin: EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.neutral5,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+          ],
+        ),
       ),
     );
   }
@@ -282,36 +396,48 @@ class _BloodPressureIntro1stPageState extends State<BloodPressureIntro1stPage> {
     String? imageUrl = lesson.imageUrl;
     return InkWell(
       onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        height: 152.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          border: Border.all(color: R.color.grayComponentBorder),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NetWorkImageWidget(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              width: 72,
-              height: 72,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                height: 20 / 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: Container(
+          decoration: R.decorationStyle.mediumRadiusCardStyles,
+          child: Column(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(AppDimens.mediumRadius),
+                    topRight: Radius.circular(AppDimens.mediumRadius),
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl ?? "",
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.neutral5,
+                      child: Icon(
+                        Icons.image_not_supported_rounded,
+                        size: 56,
+                        color: AppColors.neutral4,
+                      ),
+                    ),
+                    fit: BoxFit.cover,
+                    width: double.maxFinite,
+                  ),
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                  title,
+                  style: R.style.normalTextStyle.copyWith(
+                    fontFamily: R.font.sfpro,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+            ],
+          ),
         ),
       ),
     );

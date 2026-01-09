@@ -69,6 +69,22 @@ class AppStorages {
     await prefs.remove('hba1c_detail_viewed');
   }
 
+  // Blood Pressure Notification Badge Methods
+  static Future<bool> isBloodPressureDetailViewed() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('blood_pressure_detail_viewed') ?? false;
+  }
+
+  static Future<void> setBloodPressureDetailViewed() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('blood_pressure_detail_viewed', true);
+  }
+
+  static Future<void> resetBloodPressureDetailViewed() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('blood_pressure_detail_viewed');
+  }
+
   static final AppStorages _instance = AppStorages._internal();
   factory AppStorages() {
     return _instance;

@@ -488,11 +488,13 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 touchTooltipData: LineTouchTooltipData(
                                   showOnTopOfTheChartBoxArea: true,
                                   fitInsideVertically: true,
-                                  tooltipBgColor: touchIndex == -1
-                                      ? toColor(trends.last.colorCode)
-                                          .withOpacity(0.8)
-                                      : toColor(trends[touchIndex].colorCode)
-                                          .withOpacity(0.8),
+                                  getTooltipColor: (LineBarSpot touchedSpot) =>
+                                      touchIndex == -1
+                                          ? toColor(trends.last.colorCode)
+                                              .withOpacity(0.8)
+                                          : toColor(
+                                                  trends[touchIndex].colorCode)
+                                              .withOpacity(0.8),
                                   tooltipRoundedRadius: 8,
                                   getTooltipItems:
                                       (List<LineBarSpot> lineBarsSpot) {
@@ -529,49 +531,57 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                                 }),
                             gridData: FlGridData(show: false),
                             titlesData: FlTitlesData(
-                              rightTitles: SideTitles(showTitles: false),
-                              topTitles: SideTitles(showTitles: false),
-                              bottomTitles: SideTitles(
-                                showTitles: true,
-                                margin: 16,
-                                reservedSize: -16,
-                                getTextStyles: (context, value) {
-                                  return TextStyle(
-                                      color: touchIndex == value.toInt()
-                                          ? R.color.black
-                                          : R.color.color0xffC0C2C5,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.normal);
-                                },
-                                getTitles: (double value) {
-                                  if (value.toInt() > dates.length - 1) {
-                                    return '';
-                                  }
-                                  final date = dates[value.toInt()];
-
-                                  if (previousDate == date) return '';
-                                  previousDate = date;
-
-                                  if (date == null) {
-                                    return '';
-                                  } else {
-                                    final dateTime =
-                                        DateTime.fromMillisecondsSinceEpoch(
-                                            date * 1000);
-                                    if (dateTime.hour > 0 &&
-                                        dateTime.hour < 7) {
-                                      return convertToGMT0(date, 'dd/MM');
-                                    } else {
-                                      return convertToUTC(date, 'dd/MM');
-                                    }
-                                  }
-                                },
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
                               ),
-                              leftTitles: SideTitles(
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
                                   showTitles: true,
-                                  getTitles: (double value) {
-                                    return '';
-                                  }),
+                                  reservedSize: 16,
+                                  getTitlesWidget: (value, meta) {
+                                    if (value.toInt() > dates.length - 1) {
+                                      return const Text('');
+                                    }
+                                    final date = dates[value.toInt()];
+
+                                    if (previousDate == date)
+                                      return const Text('');
+                                    previousDate = date;
+
+                                    if (date == null) {
+                                      return const Text('');
+                                    } else {
+                                      final dateTime =
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              date * 1000);
+                                      final text =
+                                          dateTime.hour > 0 && dateTime.hour < 7
+                                              ? convertToGMT0(date, 'dd/MM')
+                                              : convertToUTC(date, 'dd/MM');
+                                      return Text(
+                                        text,
+                                        style: TextStyle(
+                                          color: touchIndex == value.toInt()
+                                              ? R.color.black
+                                              : R.color.color0xffC0C2C5,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  getTitlesWidget: (value, meta) =>
+                                      const Text(''),
+                                ),
+                              ),
                             ),
                             borderData: FlBorderData(
                               show: false,
@@ -582,7 +592,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                             minY: minY,
                             lineBarsData: linesBarData(model),
                           ),
-                          swapAnimationDuration: Duration(milliseconds: 250),
+                          duration: Duration(milliseconds: 250),
                         )),
                     SizedBox(height: 340)
                   ])),
@@ -624,7 +634,7 @@ class BmiHipTrendChartState extends State<BmiHipTrendChart>
                 return FlSpot((index).toDouble(), trends[index].value!);
               }),
               isCurved: false,
-              colors: [R.color.black],
+              color: R.color.black,
               barWidth: 0.75,
               isStrokeCapRound: true,
               dotData: FlDotData(

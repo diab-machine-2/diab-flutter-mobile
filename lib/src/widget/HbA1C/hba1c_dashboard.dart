@@ -684,9 +684,9 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
   Widget _buildFilter() {
     final List<String> labels = [
       R.string.all.tr(),
-      '6 tháng',
-      '12 tháng',
-      '24 tháng',
+      '6 ${R.string.month.tr()}',
+      '12 ${R.string.month.tr()}',
+      '24 ${R.string.month.tr()}',
     ];
     final List<int> values = [0, 1, 2, 3];
     return Padding(
@@ -698,6 +698,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         initialValue: _selectedUIIndex, // Use tracked UI selection
         values: values,
         labels: labels,
+        fontSize: 15,
       ),
     );
   }
@@ -794,51 +795,35 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              height: 38,
+              constraints: BoxConstraints(
+                minHeight: 38,
+              ),
               decoration: BoxDecoration(
                 color: R.color.white,
                 borderRadius: BorderRadius.circular(19),
                 border: Border.all(color: R.color.color0xffE5E5E5, width: 1),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    currentDataPoint.timeOfDay,
-                    style: TextStyle(
-                      fontFamily: R.font.sfpro,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF636A6B),
-                      height: 1.46,
-                      letterSpacing: 0.4,
+              child: IntrinsicHeight(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        currentDataPoint.timeOfDay,
+                        style: TextStyle(
+                          fontFamily: R.font.sfpro,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF636A6B),
+                          height: 1.46,
+                          letterSpacing: 0.4,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  Container(
-                    width: 3,
-                    height: 3,
-                    margin: EdgeInsets.only(left: 3, right: 3),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFFBFC6C6),
-                    ),
-                  ),
-                  Text(
-                    "${currentDataPoint.date.day.toString().padLeft(2, '0')}/${currentDataPoint.date.month.toString().padLeft(2, '0')}",
-                    style: TextStyle(
-                      fontFamily: R.font.sfpro,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF636A6B),
-                      height: 1.46,
-                      letterSpacing: 0.4,
-                    ),
-                  ),
-                  // Reading counter for multiple readings same day
-                  if (_focusIndex >= 0 &&
-                      _focusIndex < _groupedPoints.length &&
-                      _groupedPoints[_focusIndex].length > 1) ...[
                     Container(
                       width: 3,
                       height: 3,
@@ -848,18 +833,53 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
                         color: Color(0xFFBFC6C6),
                       ),
                     ),
-                    Text(
-                      "${_focusSubIndex + 1}/${_groupedPoints[_focusIndex].length}",
-                      style: TextStyle(
-                        fontFamily: R.font.sfpro,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(
-                            0xFF008479), // Highlight color for reading counter
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "${currentDataPoint.date.day.toString().padLeft(2, '0')}/${currentDataPoint.date.month.toString().padLeft(2, '0')}",
+                        style: TextStyle(
+                          fontFamily: R.font.sfpro,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF636A6B),
+                          height: 1.46,
+                          letterSpacing: 0.4,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    // Reading counter for multiple readings same day
+                    if (_focusIndex >= 0 &&
+                        _focusIndex < _groupedPoints.length &&
+                        _groupedPoints[_focusIndex].length > 1) ...[
+                      Container(
+                        width: 3,
+                        height: 3,
+                        margin: EdgeInsets.only(left: 3, right: 3),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFFBFC6C6),
+                        ),
+                      ),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "${_focusSubIndex + 1}/${_groupedPoints[_focusIndex].length}",
+                          style: TextStyle(
+                            fontFamily: R.font.sfpro,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(
+                                0xFF008479), // Highlight color for reading counter
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ],

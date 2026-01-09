@@ -173,14 +173,77 @@ class MeasurementSummary extends StatelessWidget {
     final withUnit = data.unit.isNotEmpty;
     double valueFontSize = withUnit ? 12.0 : 14.0;
     double height = (valueFontSize + 4.0) / valueFontSize;
-    if (data.value2 != null && data.value2!.isNotEmpty) {
-      // build textspan with different style data.color
+
+    // Determine the display value
+    var value1 = data.value1 ?? "--";
+    var value2 = data.value2;
+
+    // Debug log for blood pressure
+    if (data.title.toLowerCase() == "huyết áp") {
+      print('🔍 Blood Pressure Display Check:');
+      print('  value1: $value1');
+      print('  value2: $value2');
+      print('  value1Color: ${data.value1Color}');
+      print('  value2Color: ${data.value2Color}');
+    }
+
+    // Special handling for Blood Pressure: Force empty state if value2 is null or value2Color is noValueColor
+    // Backend may return default values (120/90) even when there's no real data
+    // The key indicators are:
+    // 1. value2Color is null (when haveBloodPressure is false)
+    // 2. value1Color or value2Color equals _noValueColor (0xFF172823) - indicates no real data
+    if (data.title.toLowerCase() == "huyết áp") {
+      const int noValueColor = 0xFF172823; // _noValueColor from home_bloc.dart
+
+      // If value2Color is null, treat as no data
+      if (data.value2Color == null) {
+        value1 = "--";
+        value2 = null;
+      }
+      // If value2Color equals noValueColor, treat as no data (backend returned default values)
+      else if (data.value2Color == noValueColor) {
+        value1 = "--";
+        value2 = null;
+      }
+      // If value1Color equals noValueColor, treat as no data
+      else if (data.value1Color == noValueColor) {
+        value1 = "--";
+        value2 = null;
+      }
+      // If value2 is null, treat as no data
+      if (value2 == null) {
+        value1 = "--";
+        value2 = null;
+      }
+      // Also check if value1 is "--" - this is the explicit empty state marker
+      if (value1 == "--" || value1.isEmpty) {
+        value1 = "--";
+        value2 = null;
+      }
+    }
+
+    // Check if we should display as "value1 / value2" format
+    // Only show dual format if:
+    // 1. value2 is not null and not empty
+    // 2. value1 is not "--" (empty state)
+    // 3. value2 is not "--" (empty state)
+    // 4. value2Color is not null (indicates valid data)
+    final shouldShowDualFormat = value2 != null &&
+        value2.isNotEmpty &&
+        value2 != "--" &&
+        value1 != "--" &&
+        value1.isNotEmpty &&
+        data.value2Color !=
+            null; // Additional check: value2Color should exist for valid data
+
+    if (shouldShowDualFormat) {
+      // Display as "value1 / value2" with different colors
       valueWidget = RichText(
         textScaleFactor: textScaleFactor,
         text: TextSpan(
           children: [
             TextSpan(
-              text: data.value1,
+              text: value1,
               style: TextStyle(color: Color(data.value1Color)),
             ),
             TextSpan(
@@ -188,7 +251,7 @@ class MeasurementSummary extends StatelessWidget {
               style: TextStyle(color: R.color.color0xff666666),
             ),
             TextSpan(
-              text: data.value2,
+              text: value2,
               style: TextStyle(color: Color(data.value2Color!)),
             ),
           ],
@@ -201,8 +264,11 @@ class MeasurementSummary extends StatelessWidget {
         ),
       );
     } else {
+      // Display single value (either "--" or value1)
+      // If value1 is "--", ensure we display it as empty state
+      final displayValue = (value1 == "--" || value1.isEmpty) ? "--" : value1;
       valueWidget = Text(
-        data.value1 ?? "--",
+        displayValue,
         style: TextStyle(
             color: Color(data.value1Color),
             fontWeight: FontWeight.bold,

@@ -129,7 +129,7 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
           note,
           selectedTimeFrame!.id);
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_body_weight_add',
@@ -267,7 +267,7 @@ class AddBmiCubit extends Cubit<CubitBaseState> {
 
     List<String> paths = [];
     for (var file in files) {
-      if (file is PickedFile) {
+      if (file is PickedFile || file is XFile) {
         paths.add(file.path);
       }
     }

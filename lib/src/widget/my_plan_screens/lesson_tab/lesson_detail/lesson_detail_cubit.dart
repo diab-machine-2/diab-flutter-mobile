@@ -90,9 +90,10 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     currentSection = newSection;
     percentComplete = ((currentSection + 1) / sectionList.length).round() * 100;
 
-    videoManager?.refreshUrl(
-      url: currentSectionDetail?.videoAddressLink,
-    );
+    // Clear the video manager reference - the VideoWidget will create a new one
+    // This prevents race conditions where the widget disposes the manager while we're trying to refresh it
+    // The widget will detect the URL change through didUpdateWidget and recreate the video manager properly
+    videoManager = null;
 
     audioManager?.refreshUrl(
       url: currentSectionDetail?.audioAddressLink,

@@ -17,7 +17,7 @@ class KpiNutritionTracking {
 
   // Nhấn Tab Chi tiết bên trong 1 KPI
   static Future<void> clickDetailTab() async {
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'component_clicked',
     //   parameters: {
     //     "screen_name": screenName,
@@ -30,7 +30,7 @@ class KpiNutritionTracking {
 
   // Chọn 1 item KPI từ danh sách trong Tab Chi Tiết
   static Future<void> clickKpiItem() async {
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": screenName,

@@ -76,7 +76,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
 
                               if (widget.sectionList[index]?.name ==
                                   'Câu hỏi trắc nghiệm') {
-                                await TrackingManager.analytics.logEvent(
+                                await TrackingManager.logEvent(
                                   name: 'component_clicked',
                                   parameters: {
                                     "screen_name": 'lesson_detail',
@@ -86,7 +86,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                                   },
                                 );
                               } else {
-                                await TrackingManager.analytics.logEvent(
+                                await TrackingManager.logEvent(
                                   name: 'component_clicked',
                                   parameters: {
                                     "screen_name": 'lesson_detail',

@@ -5,18 +5,103 @@
 -keep class com.pauldemarco.flutter_blue.** { *; }
 
 # for for zoom video sdk
--keep class  us.zoom.**{*;}
--keep class  com.zipow.**{*;}
--keep class  us.zipow.**{*;}
--keep class  org.webrtc.**{*;}
--keep class  us.google.protobuf.**{*;}
--keep class  com.google.crypto.tink.**{*;}
--keep class  androidx.security.crypto.**{*;}
+-keep class us.zoom.**{*;}
+-keep class com.zipow.**{*;}
+-keep class us.zipow.**{*;}
+-keep class us.zipow.**{*;}
+-keep class org.webrtc.**{*;}
+-keep class us.google.protobuf.**{*;}
+-keep class com.google.crypto.tink.**{*;}
+-keep class androidx.security.crypto.**{*;}
+
+# Keep flutter_zoom_meeting plugin classes to prevent method channel crashes
+# CRITICAL: These rules prevent FlutterZoomPlugin from being removed by ProGuard/R8
+# The plugin has minifyEnabled=true in its build.gradle, so these rules are essential
+-keep class com.zoualfkar.flutter_zoom.** { *; }
+-keep class com.zoualfkar.flutter_zoom.FlutterZoomPlugin { *; }
+-keep class com.zoualfkar.flutter_zoom.StatusStreamHandler { *; }
+-keepclassmembers class com.zoualfkar.flutter_zoom.** { *; }
+# Keep all constructors and methods - prevent removal during plugin's own minification
+-keepclassmembers class com.zoualfkar.flutter_zoom.FlutterZoomPlugin {
+    <init>(...);
+    <methods>;
+    <fields>;
+    *;
+}
+# Keep the plugin class and all its dependencies - prevent obfuscation
+-keep,allowobfuscation class com.zoualfkar.flutter_zoom.FlutterZoomPlugin
+-keep,allowobfuscation class * extends com.zoualfkar.flutter_zoom.FlutterZoomPlugin
+# Keep all FlutterPlugin implementations from the plugin
+-keep class * implements io.flutter.embedding.engine.plugins.FlutterPlugin {
+    <init>(...);
+}
+# Don't warn about missing classes from the plugin
+-dontwarn com.zoualfkar.flutter_zoom.**
 
 # for zalo
 -keep class com.zing.zalo.**{ *; }
 -keep enum com.zing.zalo.**{ *; }
 -keep interface com.zing.zalo.**{ *; }
+
+# Keep Flutter plugins that use method channels
+# Mixpanel Flutter plugin
+-keep class com.mixpanel.android.** { *; }
+-keep class com.mixpanel.** { *; }
+-keep class com.mixpanel.mixpanel_flutter.** { *; }
+-dontwarn com.mixpanel.**
+
+# Keep all Flutter plugin classes to prevent method channel failures
+-keep class io.flutter.plugins.** { *; }
+-keep class * implements io.flutter.plugin.common.PluginRegistry$Registrar { *; }
+-keep class * implements io.flutter.embedding.engine.plugins.FlutterPlugin { *; }
+-keep class * implements io.flutter.plugin.common.MethodCallHandler { *; }
+-keep class * implements io.flutter.plugin.common.EventChannel$StreamHandler { *; }
+-keep class * implements io.flutter.plugin.common.BinaryMessenger { *; }
+
+# Keep Pigeon-generated classes for shared_preferences_android
+# CRITICAL: These classes are generated at build time and must not be obfuscated or removed
+-keep class dev.flutter.pigeon.** { *; }
+-keep class dev.flutter.pigeon.shared_preferences_android.** { *; }
+-keepclassmembers class dev.flutter.pigeon.shared_preferences_android.** {
+    <methods>;
+    <fields>;
+    <init>(...);
+    *;
+}
+-keepclassmembers class dev.flutter.pigeon.shared_preferences_android.SharedPreferencesApi {
+    <methods>;
+    <fields>;
+    <init>(...);
+    *;
+}
+
+# Keep shared_preferences_android plugin classes and all implementations
+-keep class io.flutter.plugins.sharedpreferences.** { *; }
+-keep class * extends io.flutter.embedding.engine.plugins.FlutterPlugin { *; }
+-keep class * implements io.flutter.plugins.sharedpreferences.** { *; }
+-keepclassmembers class io.flutter.plugins.sharedpreferences.** {
+    <methods>;
+    <fields>;
+    <init>(...);
+    *;
+}
+
+# Keep all Pigeon codec classes (used for serialization)
+-keep class dev.flutter.pigeon.**$* { *; }
+-keep interface dev.flutter.pigeon.** { *; }
+
+# CRITICAL: Prevent Zoom plugin's minification from affecting shared_preferences_android
+# The flutter_zoom_meeting plugin has minifyEnabled=true, which can affect other plugins
+-dontwarn dev.flutter.pigeon.shared_preferences_android.**
+-dontwarn io.flutter.plugins.sharedpreferences.**
+# Ensure shared_preferences plugin is never removed or obfuscated
+-keep,allowobfuscation,allowshrinking class io.flutter.plugins.sharedpreferences.** { *; }
+-keep,allowobfuscation,allowshrinking class dev.flutter.pigeon.shared_preferences_android.** { *; }
+
+# Keep method channel names to prevent obfuscation
+-keepclassmembers class * {
+    public static final java.lang.String *;
+}
 
 -dontwarn com.crashlytics.android.ndk.CrashlyticsNdk
 -dontwarn com.google.android.exoplayer2.trackselection.TrackSelectionOverrides$Builder
@@ -57,7 +142,6 @@
 -dontwarn us.zoom.prism.R$styleable
 -dontwarn us.zoom.thirdparty.dialog.NoBrowserDialog
 -dontwarn us.zoom.thirdparty.login.util.CustomTabsHelper
-
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn com.microsoft.intune.mam.client.app.MAMComponents
@@ -91,3 +175,98 @@
 -dontwarn xcrash.ICrashCallback
 -dontwarn xcrash.XCrash$InitParameters
 -dontwarn xcrash.XCrash
+
+# R8 missing classes - optional dependencies from Zoom SDK and other libraries
+# BlueParrott SDK (optional dependency)
+-dontwarn com.blueparrott.blueparrottsdk.BPHeadset
+-dontwarn com.blueparrott.blueparrottsdk.BPHeadsetListener
+-dontwarn com.blueparrott.blueparrottsdk.BPSdk
+-dontwarn com.blueparrott.blueparrottsdk.IBPHeadsetListener
+
+# ExoPlayer (optional dependency)
+-dontwarn com.google.android.exoplayer2.TracksInfo$TrackGroupInfo
+
+# Gson (optional dependency)
+-dontwarn com.google.gson.Strictness
+
+# ML Kit Vision (optional dependency for Zoom SDK)
+-dontwarn com.google.mlkit.vision.common.InputImage
+-dontwarn com.google.mlkit.vision.text.Text$Line
+-dontwarn com.google.mlkit.vision.text.Text$TextBlock
+-dontwarn com.google.mlkit.vision.text.Text
+-dontwarn com.google.mlkit.vision.text.TextRecognition
+-dontwarn com.google.mlkit.vision.text.TextRecognizer
+-dontwarn com.google.mlkit.vision.text.TextRecognizerOptionsInterface
+-dontwarn com.google.mlkit.vision.text.latin.TextRecognizerOptions$Builder
+-dontwarn com.google.mlkit.vision.text.latin.TextRecognizerOptions
+
+# ZXing (QR code library - optional dependency for Zoom SDK)
+-dontwarn com.google.zxing.BarcodeFormat
+-dontwarn com.google.zxing.Binarizer
+-dontwarn com.google.zxing.BinaryBitmap
+-dontwarn com.google.zxing.DecodeHintType
+-dontwarn com.google.zxing.EncodeHintType
+-dontwarn com.google.zxing.LuminanceSource
+-dontwarn com.google.zxing.PlanarYUVLuminanceSource
+-dontwarn com.google.zxing.RGBLuminanceSource
+-dontwarn com.google.zxing.Reader
+-dontwarn com.google.zxing.ReaderException
+-dontwarn com.google.zxing.Result
+-dontwarn com.google.zxing.ResultMetadataType
+-dontwarn com.google.zxing.ResultPoint
+-dontwarn com.google.zxing.ResultPointCallback
+-dontwarn com.google.zxing.WriterException
+-dontwarn com.google.zxing.common.BitMatrix
+-dontwarn com.google.zxing.common.DecoderResult
+-dontwarn com.google.zxing.common.DetectorResult
+-dontwarn com.google.zxing.common.HybridBinarizer
+-dontwarn com.google.zxing.qrcode.QRCodeReader
+-dontwarn com.google.zxing.qrcode.QRCodeWriter
+-dontwarn com.google.zxing.qrcode.decoder.Decoder
+-dontwarn com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+-dontwarn com.google.zxing.qrcode.decoder.QRCodeDecoderMetaData
+-dontwarn com.google.zxing.qrcode.detector.Detector
+
+# Smart Refresh Layout (optional dependency for Zoom SDK)
+-dontwarn com.scwang.smart.refresh.footer.ClassicsFooter
+-dontwarn com.scwang.smart.refresh.layout.SmartRefreshLayout
+-dontwarn com.scwang.smart.refresh.layout.api.RefreshFooter
+-dontwarn com.scwang.smart.refresh.layout.api.RefreshLayout
+-dontwarn com.scwang.smart.refresh.layout.listener.OnLoadMoreListener
+
+# Retrofit (optional dependency for Zoom SDK)
+-dontwarn retrofit2.Call
+-dontwarn retrofit2.CallAdapter$Factory
+-dontwarn retrofit2.CallAdapter
+-dontwarn retrofit2.Callback
+-dontwarn retrofit2.Converter$Factory
+-dontwarn retrofit2.Converter
+-dontwarn retrofit2.Response
+-dontwarn retrofit2.Retrofit$Builder
+-dontwarn retrofit2.Retrofit
+-dontwarn retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
+-dontwarn retrofit2.http.Body
+-dontwarn retrofit2.http.Header
+-dontwarn retrofit2.http.POST
+
+# Media3 (for updated ExoPlayer)
+-keep class androidx.media3.** { *; }
+-dontwarn androidx.media3.exoplayer.**
+
+# Additional optimizations for bundle size reduction
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-verbose
+
+# Remove logging in release builds
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}
+
+# Aggressive optimization
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
+-allowaccessmodification
+-repackageclasses ''

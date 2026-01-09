@@ -11,15 +11,24 @@ class AppTheme {
       appBarTheme: AppBarTheme(
           elevation: 0,
           centerTitle: true,
-          color: R.color.primaryColor, toolbarTextStyle: TextTheme(
-              headline6: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.white)).bodyText2, titleTextStyle: TextTheme(
-              headline6: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.white)).headline6, systemOverlayStyle: SystemUiOverlayStyle.dark),
+          color: R.color.primaryColor,
+          toolbarTextStyle: TextTheme(
+                  titleLarge: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: R.color.white))
+              .bodyMedium,
+          titleTextStyle: TextTheme(
+                  titleLarge: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: R.color.white))
+              .titleLarge,
+          systemOverlayStyle: SystemUiOverlayStyle.dark),
       primaryIconTheme: IconThemeData(color: R.color.white),
-      brightness: Brightness.light, colorScheme: ThemeData().colorScheme.copyWith(primary: R.color.mainColor).copyWith(secondary: R.color.mainColor));
+      brightness: Brightness.light,
+      colorScheme: ThemeData()
+          .colorScheme
+          .copyWith(primary: R.color.mainColor)
+          .copyWith(secondary: R.color.mainColor));
 }

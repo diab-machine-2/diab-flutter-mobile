@@ -392,8 +392,18 @@ class FetchClient {
     //     error: true,
     //     logPrint: (object) {});
     // dio.interceptors.add(dioLog);
-    // dio.interceptors.add(LogInterceptor(request: true, responseBody: false));
-    // dio.interceptors.add(TrackingInterceptor());
+    dio.interceptors.add(LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
+      responseBody: true,
+      error: true,
+      logPrint: (object) {
+        print(object);
+      },
+    ));
+    dio.interceptors.add(TrackingInterceptor());
   }
 
   checkNetwork() async {
@@ -446,7 +456,7 @@ class TrackingInterceptor extends Interceptor {
   }
 
   @override
-  Future<void> onError(DioError err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
       final token = await AppSettings.getToken();
       UserModel? userInfo = AppSettings.userInfo;

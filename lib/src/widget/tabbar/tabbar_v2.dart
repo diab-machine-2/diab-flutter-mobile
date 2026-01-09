@@ -47,7 +47,7 @@ import 'package:medical/src/widget/tabbar/tabbar_v2_data.dart';
 import 'package:medical/src/widget/voucher/presentation/widgets/webview_store.dart';
 import 'package:medical/curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:store_redirect/store_redirect.dart';
 
 // Lightweight global accessor for current tab index
@@ -321,7 +321,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
   Future<void> update(Observable observable, String? notifyName,
       Map<dynamic, dynamic>? map) async {
     if (notifyName == 'unauthorized') {
-      await TrackingManager.analytics.logEvent(
+      await TrackingManager.logEvent(
         name: 'login_session_end',
         parameters: {
           "screen_name": AppSettings.currentScreenName,
