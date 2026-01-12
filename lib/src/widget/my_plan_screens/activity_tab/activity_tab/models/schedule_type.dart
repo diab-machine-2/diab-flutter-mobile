@@ -140,7 +140,7 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.book_1_1:
         return R.string.coaching_11.tr();
       case ScheduleType.book_1_n:
-        return R.string.coaching_1n.tr();
+        return R.string.lesson.tr();
       case ScheduleType.survey:
         return R.string.survey.tr();
       case ScheduleType.lesson:
