@@ -111,11 +111,10 @@ class SmartGoalItem extends StatelessWidget {
                           fontSize: 16,
                           fontWeight: FontWeight.w700),
                     ),
-                  if ((type == ScheduleType.lesson ||
-                          type == ScheduleType.survey) &&
-                      frequency.isNotEmpty)
+                  if (type == ScheduleType.lesson ||
+                      type == ScheduleType.survey)
                     Text(
-                      frequency,
+                      frequency.isNotEmpty ? frequency : name,
                       style: TextStyle(
                         fontSize: 16.0,
                         color: R.color.textDark,

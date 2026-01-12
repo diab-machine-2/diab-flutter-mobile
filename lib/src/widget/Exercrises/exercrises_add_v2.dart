@@ -17,6 +17,7 @@ import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_note_with_media.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -32,11 +33,13 @@ class ExercrisesAddV2 extends StatefulWidget {
   final bool? isUpdate;
   final String? exerciseInputId;
   final DateTime? datetime;
+  final String? goalId;
   ExercrisesAddV2({
     Key? key,
     this.isUpdate,
     this.exerciseInputId,
     this.datetime,
+    this.goalId,
   }) : super(key: key);
 
   ExercrisesAddV2State createState() => ExercrisesAddV2State();
@@ -927,6 +930,10 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           // BotToast.showText(text: 'Thêm bài tập thành công!');
           Message.showToastMessage(
               context, R.string.add_exercise_successfully.tr());
+
+          await HomeClient().completeSmartGoal(selectedDate!,
+              widget.goalId ?? '', 1, ScheduleType.exercise.typeIndex);
+              
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data_v2");
 

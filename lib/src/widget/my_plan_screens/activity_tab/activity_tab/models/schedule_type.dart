@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 
 enum ScheduleType {
   blood_sugar,
@@ -14,6 +15,7 @@ enum ScheduleType {
   book_1_n,
   survey,
   lesson,
+  quiz,
   io_evaluate,
   update_profile,
   output_assessment,
@@ -60,15 +62,20 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.custom:
         return R.drawable.ic_schedule_custom;
       case ScheduleType.book_1_1:
-      case ScheduleType.book_1_n:
+        return R.drawable.ic_schedule_book_1_1;
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
+        return R.drawable.ic_interview;
       case ScheduleType.booking_solo:
-        return R.drawable.ic_schedule_book_1_1;
+        return R.drawable.ic_booking_1_1;
+      case ScheduleType.book_1_n:
+        return R.drawable.ic_schedule_book_1_n;
       case ScheduleType.survey:
         return R.drawable.ic_schedule_survey;
       case ScheduleType.lesson:
         return R.drawable.ic_schedule_lesson;
+      case ScheduleType.quiz:
+        return R.drawable.ic_schedule_quiz;
       case ScheduleType.io_evaluate:
         return R.drawable.ic_schedule_io_evaluate;
       case ScheduleType.update_profile:
@@ -133,11 +140,13 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.book_1_1:
         return R.string.coaching_11.tr();
       case ScheduleType.book_1_n:
-        return R.string.coaching_1n.tr();
+        return R.string.lesson.tr();
       case ScheduleType.survey:
         return R.string.survey.tr();
       case ScheduleType.lesson:
         return R.string.smart_goal_lesson.tr();
+      case ScheduleType.quiz:
+        return R.string.quiz.tr();
       case ScheduleType.io_evaluate:
         return R.string.input_evaluate;
       case ScheduleType.update_profile:
@@ -199,6 +208,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return -1;
       case ScheduleType.lesson:
         return -1;
+      case ScheduleType.quiz:
+        return -1;
       case ScheduleType.io_evaluate:
         return -1;
       case ScheduleType.update_profile:
@@ -236,6 +247,8 @@ extension ScheduleTypeExtend on ScheduleType {
       case ScheduleType.io_evaluate:
         return 10;
       case ScheduleType.lesson:
+        return 11;
+      case ScheduleType.quiz:
         return 11;
       case ScheduleType.survey:
         return 12;
@@ -311,6 +324,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return false;
       case ScheduleType.lesson:
         return false;
+      case ScheduleType.quiz:
+        return true;
       case ScheduleType.survey:
         return true;
       case ScheduleType.update_profile:
@@ -385,5 +400,21 @@ extension ScheduleTypeExtend on ScheduleType {
       return ScheduleType.infographic;
 
     return ScheduleType.custom;
+  }
+
+  static ScheduleType getTypeFromIndexWithLessonData(int? index,
+      {LessonSectionListResponseData? lessonData}) {
+    final type = getTypeFromIndex(index);
+    // If type is lesson (11) and lessonData is provided, check if it's quiz
+    if (type == ScheduleType.lesson && index == 11) {
+      // Check if lessonData.code contains "quiz" - if yes, it's a quiz
+      if (lessonData != null) {
+        final lessonCode = lessonData.code?.toLowerCase() ?? '';
+        if (lessonCode.contains('quiz')) {
+          return ScheduleType.quiz;
+        }
+      }
+    }
+    return type;
   }
 }

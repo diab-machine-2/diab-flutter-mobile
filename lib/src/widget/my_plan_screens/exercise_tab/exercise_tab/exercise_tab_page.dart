@@ -6,18 +6,21 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/motion_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_movement_response.dart';
+import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/notice_change/notice_change_page.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/day_in_week_widget.dart';
-import 'package:medical/src/widgets/lesson_status_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -25,7 +28,6 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../../../utils/utils.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
-import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../exercise_detail/exercise_detail.dart';
 import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
@@ -43,6 +45,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
   final AutoScrollController _exerciseScrollController = AutoScrollController();
+  final ScrollController _progressScrollController = ScrollController();
 
   @override
   void initState() {
@@ -53,6 +56,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     _cubit = ExerciseTabCubit(appRepository, _myPlanCubit);
     _cubit.initData();
     MotionListTracking.firebaseSetup();
+
+    // Scroll synchronization will be handled via NotificationListener in the build method
   }
 
   @override
@@ -66,6 +71,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    _progressScrollController.dispose();
     super.dispose();
   }
 
@@ -77,7 +83,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
       child: BlocConsumer<ExerciseTabCubit, ExerciseTabState>(
         listener: (context, state) {
           if (state is ExerciseTabLoading) {
-            BotToast.showLoading();
+            if (_cubit.roadmapId.isNotEmpty) {
+              BotToast.showLoading();
+            }
           } else {
             if (state is! ExerciseTabWeekChanged) {
               BotToast.closeAllLoading();
@@ -87,9 +95,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           if (state is ExerciseTabFailure) {
             Message.showToastMessage(context, state.error);
           }
-          if (state is ExerciseTabRoadmapEmpty) {
-            changeRoadMap();
-          }
+          // Removed navigation call - roadmap list will be shown inline
           if (state is ExerciseTabWeekChanged) {
             animateToIndex(state.newIndex, refresh: false);
           }
@@ -102,118 +108,134 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppBarBottom(
-                child: Column(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        changeRoadMap();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            R.string.change_road_map.tr(),
-                            style: TextStyle(
-                              color: R.color.greenGradientBottom,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+              if (_cubit.roadmapId.isNotEmpty)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  color: R.color.backgroundColorNew,
+                  child: Column(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          changeRoadMap();
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 9,
+                              child: Text(
+                                _cubit.roadMapName.isNotEmpty
+                                    ? _cubit.roadMapName
+                                    : R.string.title_route.tr(),
+                                style: TextStyle(
+                                  color: R.color.hba1c_text_color,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                softWrap: true,
+                                maxLines: null,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Image.asset(
-                            R.drawable.ic_start_exercise_bold,
-                            width: 16,
-                            height: 16,
-                          ),
-                        ],
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                R.string.change.tr(),
+                                style: TextStyle(
+                                  color: R.color.accentColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                textAlign: TextAlign.end,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    _buildScheduleWidget(),
-                    const SizedBox(height: 20),
-                  ],
+                      // _buildScheduleWidget(),
+                      // const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-              ),
               Expanded(
                 child: SafeArea(
                   top: false,
                   child: SmartRefresher(
                     controller: _controller,
                     onRefresh: () async {
-                      await _cubit.onRefresh(isRefresh: true);
+                      // If roadmap is empty, refresh roadmap list; otherwise refresh exercise data
+                      if (_cubit.roadmapId.isEmpty) {
+                        await _cubit.getRoadAppRoadMap();
+                      } else {
+                        await _cubit.onRefresh(isRefresh: true);
+                      }
                     },
-                    child: (_cubit.exerciseMovementResponse?.data?.isEmpty ==
-                                null ||
-                            _cubit.exerciseMovementResponse?.data?.isEmpty ==
-                                true)
-                        ? GestureDetector(
-                            onTap: () {
-                              changeRoadMap();
-                            },
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                      padding: EdgeInsets.all(8),
-                                      child: Text(
-                                        R.string.please_select_roadmap.tr(),
-                                        style: TextStyle(
-                                            fontSize: 14, color: R.color.black),
-                                        textAlign: TextAlign.center,
-                                      )),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        R.string.select_road_map.tr(),
-                                        style: TextStyle(
-                                          color: R.color.greenGradientBottom,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : ListView.separated(
-                            controller: _exerciseScrollController,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 20),
-                            itemCount: _cubit.isHasRoadmapUser
-                                ? 1
-                                : _cubit.dataLength + 1,
-                            itemBuilder: (context, index) {
-                              return AutoScrollTag(
-                                  key: ValueKey(index),
-                                  controller: _exerciseScrollController,
-                                  index: index,
-                                  child: index < _cubit.dataLength
-                                      ? _buildExerciseWidget(
+                    child: (_cubit.roadmapId.isEmpty)
+                        ? _buildInlineRoadmapList(state)
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Progress tracking bar on the left
+                              _buildProgressTrackingBar(),
+                              // Exercise list with scroll notification listener
+                              Expanded(
+                                child: NotificationListener<ScrollNotification>(
+                                  onNotification:
+                                      (ScrollNotification notification) {
+                                    // Sync progress bar scrolling with exercise list
+                                    if (notification
+                                            is ScrollUpdateNotification &&
+                                        _progressScrollController.hasClients) {
+                                      final double offset =
+                                          notification.metrics.pixels;
+                                      if ((_progressScrollController.offset -
+                                                  offset)
+                                              .abs() >
+                                          0.5) {
+                                        final maxExtent =
+                                            _progressScrollController.position
+                                                    .hasContentDimensions
+                                                ? _progressScrollController
+                                                    .position.maxScrollExtent
+                                                : double.infinity;
+                                        final clamped =
+                                            offset.clamp(0.0, maxExtent);
+                                        _progressScrollController
+                                            .jumpTo(clamped);
+                                      }
+                                    }
+                                    return false;
+                                  },
+                                  child: ListView.separated(
+                                    controller: _exerciseScrollController,
+                                    padding: const EdgeInsets.only(
+                                        left: 16, right: 16, top: 0, bottom: 0),
+                                    itemCount: _cubit.dataLength + 1,
+                                    itemBuilder: (context, index) {
+                                      return AutoScrollTag(
+                                          key: ValueKey(index),
+                                          controller: _exerciseScrollController,
                                           index: index,
-                                          exerciseItem: _cubit.isHasRoadmapUser
-                                              ? _cubit.currentExercise
-                                              : _cubit.exerciseMovementResponse
-                                                  ?.data?[index])
-                                      : SizedBox(height: 20.h));
-                            },
-                            separatorBuilder: (context, index) {
-                              return (_cubit.exerciseMovementResponse
-                                          ?.data?[index]?.isBlank ==
-                                      true)
-                                  ? Container()
-                                  : Container(
-                                      height: 1,
-                                      color: R.color.grayBorder,
-                                    );
-                            }),
+                                          child: index < _cubit.dataLength
+                                              ? _buildExerciseWidget(
+                                                  index: index,
+                                                  exerciseItem: _cubit
+                                                      .exerciseMovementResponse
+                                                      ?.data?[index])
+                                              : SizedBox(height: 20.h));
+                                    },
+                                    separatorBuilder: (context, index) {
+                                      return const SizedBox(height: 16);
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
               ),
+              // GapH(32),
             ],
           );
         },
@@ -230,6 +252,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     if (index >= _cubit.weekStatesList.length) {
       index = _cubit.weekStatesList.length - 1;
       refresh = false;
+    }
+    // Check if scroll controller is attached before animating
+    if (!_scrollController.hasClients) {
+      if (refresh) {
+        _cubit.onSelectWeek(index);
+      }
+      return;
     }
     final double newPosition = index * 96 + (6 * index.toDouble());
     _scrollController.animateTo(
@@ -308,24 +337,45 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
     required int index,
     required ExerciseMovementResponseData? exerciseItem,
   }) {
-    if (exerciseItem?.name == null) return _buildDayNoExerciseWidget();
-    if (exerciseItem?.name == 'Ngày nghỉ') return _buildDayOffWidget();
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
-      color: R.color.transparent,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-              clipBehavior: Clip.hardEdge,
-              height: 87,
-              width: 87,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-              child:
-                  NetWorkImageWidget(imageUrl: exerciseItem?.image?.url ?? '')),
-          const SizedBox(width: 14),
-          Expanded(
-            child: InkWell(
+    final int dayNumber = exerciseItem?.day ?? (index + 1);
+    if (exerciseItem?.name == null)
+      return _buildDayNoExerciseWidget(dayNumber: dayNumber);
+    if (exerciseItem?.name == 'Ngày nghỉ')
+      return _buildDayOffWidget(dayNumber: dayNumber);
+
+    final bool isCompleted =
+        exerciseItem?.exerciseMovementStates == Const.LESSON_LEARNT;
+    final bool isLocked =
+        exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED ||
+            exerciseItem?.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN;
+
+    // Unified height 153: padding 16 + title 24 + spacing 12 + subcard (16 + 70 + 16) + extra space
+    const double fixedHeight = 153.0;
+
+    return SizedBox(
+      height: fixedHeight,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: R.color.gray_btn),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Day title
+            Text(
+              'Ngày $dayNumber',
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Activity sub-card
+            InkWell(
               onTap: () async {
                 late String status = '';
                 switch (exerciseItem?.exerciseMovementStates) {
@@ -368,146 +418,380 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                   _showLockedDialog();
                   return;
                 }
+                if (!isLocked) {
+                  await NavigationUtil.navigatePage(
+                    context,
+                    ExerciseDetail(
+                      exerciseData: exerciseItem,
+                    ),
+                  );
+                  _controller.requestRefresh();
+                }
               },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: R.color.color0xffF2F6F9,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    // Image thumbnail
+                    Container(
+                      clipBehavior: Clip.hardEdge,
+                      height: 70,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: NetWorkImageWidget(
+                        imageUrl: exerciseItem?.image?.url ?? '',
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    // Activity details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            exerciseItem?.name ?? '',
+                            style: TextStyle(
+                              color: exerciseItem?.exerciseMovementStates ==
+                                      Const.LESSON_LOCKED
+                                  ? R.color.grayCaption
+                                  : R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${exerciseItem?.practiceTime ?? ''} ${R.string.minute.tr()}',
+                            style: TextStyle(
+                              color: R.color.grey_2,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Status icon (checkmark or padlock)
+                    if (isCompleted)
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: R.color.greenGradientBottom,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check_rounded,
+                          size: 16,
+                          color: R.color.white,
+                        ),
+                      )
+                    else if (isLocked)
+                      Icon(
+                        Icons.lock_outline,
+                        size: 20,
+                        color: R.color.grayCaption,
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressTrackingBar() {
+    if (_cubit.exerciseMovementResponse?.data == null ||
+        _cubit.exerciseMovementResponse!.data!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final data = _cubit.exerciseMovementResponse!.data!;
+
+    // Find the index where isToday is true in the original data (mark position)
+    // This is similar to DayInWeekWidget's mark - lines before this are thick, after are thin
+    int markIndex = -1;
+    for (int i = 0; i < data.length; i++) {
+      if (data[i] != null && data[i]!.isToday == true) {
+        markIndex = i;
+        break;
+      }
+    }
+
+    // Calculate exact item height to match exercise widget (fixed at 153px)
+    // Card: padding 16 + title (center at 16 + 9 = 25px) + spacing 12 + subcard (16 + 70 + 16)
+    const double itemHeight = 153.0; // Current fixed card height
+    const double iconSize = 20.0; // dayStatusIcon is 20x20
+    const double separatorHeight = 16.0;
+
+    // Icon should align with "Ngày X" text center
+    // Title font size is 18 → text center = 16 + (18 / 2) = 25px
+    // Icon top = text center - (iconSize / 2) = 25 - 10 = 15px
+    const double iconTopOffset = 15.0; // aligns spot center with title center
+
+    return Container(
+      width: 24,
+      margin: const EdgeInsets.only(left: 12),
+      child: ListView.separated(
+        controller: _progressScrollController,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.zero,
+
+        itemCount: _cubit.dataLength + 1, // Match exercise list itemCount
+        itemBuilder: (context, index) {
+          // Handle the spacer at the end (same as exercise list)
+          if (index >= _cubit.dataLength) {
+            return SizedBox(height: 20.h);
+          }
+
+          final item = data[index];
+
+          // Determine status icon considering today and before/after today for not learned items
+          final completionStatus =
+              item?.completionStatus ?? CompletionStatus.not_completed;
+          final bool isToday = (item?.isToday == true);
+
+          CompletionStatus statusToShow;
+          if (isToday) {
+            // Today uses the special learning icon via dayStatusIcon(isToday=true)
+            statusToShow = CompletionStatus.studying;
+          } else if (item?.exerciseMovementStates == Const.LESSON_LOCKED) {
+            statusToShow = CompletionStatus.not_start_yet;
+          } else {
+            // Default mapping based on completionStatus
+            statusToShow = completionStatus == CompletionStatus.completed
+                ? CompletionStatus.completed
+                : CompletionStatus.not_completed;
+          }
+
+          // Calculate line height to connect from current icon center to next icon center
+          // Current icon center: iconTopOffset + (iconSize / 2) = 15 + 10 = 25px (from top of current item)
+          // Next icon center target: ~191px (from top of current item) with itemHeight=145 and separator=16
+          // We apply a small visual fudge so the line reliably touches the next spot.
+          final double lineStart =
+              iconTopOffset + (iconSize / 2); // 25px - current icon center
+          // Visual correction so next center effectively lands at ~191px
+          const double visualFudge = 5.0;
+          final double nextIconCenter = itemHeight +
+              separatorHeight +
+              iconTopOffset +
+              (iconSize / 2) +
+              visualFudge; // ~196px - next icon center from top of current item (with fudge)
+          final double lineHeight =
+              nextIconCenter - lineStart + 1; // ~172px, ensures touching
+
+          return SizedBox(
+            height: itemHeight,
+            child: Stack(
+              clipBehavior: Clip.none, // Allow line to overflow to next item
+              alignment: Alignment.topCenter,
+              children: [
+                // Vertical line segment between items (except for last item)
+                // Line connects from center of current icon to center of next icon
+                if (index < _cubit.dataLength - 1)
+                  Positioned(
+                    top: lineStart, // Start from current icon center
+                    left:
+                        index < markIndex ? 10 : 12, // Center of the 24px width
+                    child: Container(
+                      width: index < markIndex
+                          ? 4
+                          : 2, // Thick before mark, thin after (like DayInWeekWidget)
+                      height: lineHeight, // Extend to next icon center
+                      color: index < markIndex
+                          ? R.color.accentColor // Active color before today
+                          : R.color
+                              .color0xffE5E5E5, // Inactive color after today
+                    ),
+                  ),
+                // Progress marker using dayStatusIcon - aligned with "Ngày X" text
+                Positioned(
+                  top: iconTopOffset, // Align with "Ngày X" text center
+                  child: statusToShow.dayStatusIcon(false, isToday),
+                ),
+              ],
+            ),
+          );
+        },
+        separatorBuilder: (context, index) {
+          // Match the exercise list separator (always 16px)
+          if (index >= _cubit.dataLength) {
+            return const SizedBox.shrink();
+          }
+          return const SizedBox(height: separatorHeight);
+        },
+      ),
+    );
+  }
+
+  Widget _buildDayOffWidget({int? dayNumber}) {
+    // Unified height and padding to match exercise card
+    const double fixedHeight = 153.0;
+
+    return SizedBox(
+      height: fixedHeight,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: R.color.gray_btn),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Day title
+            Text(
+              dayNumber != null
+                  ? 'Ngày $dayNumber'
+                  : R.string.today_is_day_off.tr(),
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Activity sub-card (not clickable)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              decoration: BoxDecoration(
+                color: R.color.color0xffF2F6F9,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          exerciseItem?.name ?? '',
+                  // Image thumbnail
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    height: 70,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset(R.drawable.img_activity_empty),
+                  ),
+                  const SizedBox(width: 4),
+                  // Activity details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          R.string.today_is_day_off.tr(),
                           style: TextStyle(
                             color: R.color.textDark,
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${exerciseItem?.practiceTime ?? ''} ${R.string.minute.tr()}',
-                        style: TextStyle(
+                        const SizedBox(height: 4),
+                        Text(
+                          R.string.today_is_day_off_description.tr(),
+                          style: TextStyle(
                             color: R.color.grey_2,
                             fontSize: 12,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Visibility(
-                    visible: (exerciseItem?.exerciseMovementStates !=
-                            Const.LESSON_LOCKED) &&
-                        (exerciseItem?.exerciseMovementStates !=
-                            Const.LESSON_CAN_NOT_LEARN),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildCustomIconButton(
-                            title: R.string.start_exercise.tr(),
-                            icon: R.drawable.ic_start_exercise,
-                            borderColor: R.color.greenGradientBottom,
-                            backgroundColor: R.color.greenGradientBottom,
-                            textColor: R.color.white,
-                            onTap: () async {
-                              await NavigationUtil.navigatePage(
-                                context,
-                                ExerciseDetail(
-                                  exerciseData: exerciseItem,
-                                ),
-                              );
-                              _controller.requestRefresh();
-                              //   _cubit.onRefresh(isRefresh: true, keepSelectedDayIndex: true);
-                            },
+                            fontWeight: FontWeight.w400,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ),
-                  LessonStatusWidget(
-                    learningStatus: exerciseItem?.exerciseMovementStates,
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildDayOffWidget() {
-    if (!_cubit.isHasRoadmapUser) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Image.asset(R.drawable.img_activity_empty),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              children: [
-                Text(
-                  R.string.today_is_day_off.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  R.string.today_is_day_off_description.tr(),
-                  textAlign: TextAlign.center,
-                  style: R.style.normalTextStyle,
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
+  Widget _buildDayNoExerciseWidget({int? dayNumber}) {
+    // Unified height and padding to match exercise card
+    const double fixedHeight = 153.0;
 
-  Widget _buildDayNoExerciseWidget() {
-    if (!_cubit.isHasRoadmapUser) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Image.asset(R.drawable.img_day_no_exercise),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              children: [
-                Text(
-                  R.string.today_is_day_no_exercise.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  R.string.today_is_day_off_description.tr(),
-                  textAlign: TextAlign.center,
-                  style: R.style.normalTextStyle,
-                ),
-              ],
+    return SizedBox(
+      height: fixedHeight,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: R.color.gray_btn),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Day title
+            Text(
+              dayNumber != null
+                  ? 'Ngày $dayNumber'
+                  : R.string.today_is_day_no_exercise.tr(),
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          )
-        ],
+            const SizedBox(height: 12),
+            // Activity sub-card (not clickable)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              decoration: BoxDecoration(
+                color: R.color.color0xffF2F6F9,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  // Image thumbnail
+                  Container(
+                    clipBehavior: Clip.hardEdge,
+                    height: 70,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset(R.drawable.img_day_no_exercise),
+                  ),
+                  const SizedBox(width: 4),
+                  // Activity details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          R.string.today_is_day_no_exercise.tr(),
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          R.string.today_is_day_off_description.tr(),
+                          style: TextStyle(
+                            color: R.color.grey_2,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -787,6 +1071,196 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInlineRoadmapList(ExerciseTabState state) {
+    // Show loading indicator while fetching roadmap list
+    if (state is ExerciseTabLoading && _cubit.roadMapList.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            // const SizedBox(height: 16),
+            // Text(
+            //   R.string.please_select_roadmap.tr(),
+            //   style: TextStyle(fontSize: 14, color: R.color.black),
+            //   textAlign: TextAlign.center,
+            // ),
+          ],
+        ),
+      );
+    }
+
+    // Show message if roadmap list is empty after loading
+    if (_cubit.roadMapList.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              child: Text(
+                R.string.please_select_roadmap.tr(),
+                style: TextStyle(fontSize: 14, color: R.color.black),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+      children: _cubit.roadMapList
+          .map((item) => _buildInlineRoadMapItem(item))
+          .toList(),
+    );
+  }
+
+  Widget _buildInlineRoadMapItem(ListRoadmapResponseData? itemData) {
+    if (itemData == null) return const SizedBox.shrink();
+    final bool isJoined = itemData.joined == true;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image at top
+            Container(
+              clipBehavior: Clip.hardEdge,
+              height: 171.5,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: NetWorkImageWidget(
+                imageUrl: itemData.image?.url,
+              ),
+            ),
+            GapH(16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Intensity label (red)
+                if (itemData.exerciseIntensity?.name != null)
+                  Text(
+                    itemData.exerciseIntensity?.name ?? '',
+                    style: TextStyle(
+                      color: R.color.blood_pressure_color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                GapH(4),
+                // Title
+                Text(
+                  itemData.name ?? '',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                GapH(8),
+                // Description
+                if (itemData.description != null &&
+                    itemData.description!.isNotEmpty)
+                  Text(
+                    itemData.description ?? '',
+                    style: TextStyle(
+                      color: R.color.captionColorGray,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                GapH(16),
+                // Action button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: isJoined
+                        ? null
+                        : () {
+                            MotionListTracking.clickJoinRoadMap(
+                              objectId: '${itemData.id}',
+                              objectTitle: '${itemData.name}',
+                            );
+                            // Check if user already has a roadmap
+                            if (_cubit.currentRoadMap != null &&
+                                _cubit.currentRoadMap?.id != itemData.id) {
+                              showDialog(
+                                barrierColor:
+                                    R.color.color0xff003F38.withOpacity(0.5),
+                                context: context,
+                                builder: (_) => NoticeChangePage(
+                                    isShowTextHtml: false,
+                                    title: R.string.change_roadmap.tr(),
+                                    htmlText:
+                                        '''<p><span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;">Bạn đang tham gia ${_cubit.formatRoadmapName(_cubit.currentRoadMap?.name ?? '')}, bạn có chắc muốn đổi lộ trình khác không?</span></p>''',
+                                    description: R.string.ask_for_change_roadmap
+                                        .tr(args: [
+                                      _cubit.currentRoadMap?.name ?? ''
+                                    ]),
+                                    negativeButtonTitle: R.string.lan_sau.tr(),
+                                    onClick: () {
+                                      MotionListTracking
+                                          .clickConfirmJoinRoadMap(
+                                        objectId: '${itemData.id}',
+                                        objectTitle: '${itemData.name}',
+                                      );
+                                      _cubit.changeRoadMapInline(itemData);
+                                    },
+                                    gradientColor: false),
+                              );
+                            } else {
+                              // Direct selection if no current roadmap
+                              _cubit.changeRoadMapInline(itemData);
+                            }
+                          },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isJoined ? R.string.joining.tr() : R.string.join.tr(),
+                          style: TextStyle(
+                            color:
+                                isJoined ? R.color.grayCaption : R.color.main_1,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (!isJoined) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward_outlined,
+                            size: 18,
+                            color: R.color.main_1,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

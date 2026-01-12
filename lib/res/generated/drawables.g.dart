@@ -290,10 +290,13 @@ class Drawables {
   String get ic_schedule_io_evaluate =>
       "lib/res/drawables/ic_schedule_io_evaluate.png";
   String get ic_schedule_lesson => "lib/res/drawables/ic_schedule_lesson.png";
+  String get ic_schedule_quiz => "lib/res/drawables/ic_schedule_quiz.png";
   String get ic_schedule_survey => "lib/res/drawables/ic_schedule_survey.png";
   String get ic_schedule_update_profile =>
       "lib/res/drawables/ic_schedule_update_profile.png";
   String get ic_schedule_weight => "lib/res/drawables/ic_schedule_weight.png";
+  String get ic_interview => "lib/res/drawables/ic_interview.png";
+  String get ic_booking_1_1 => "lib/res/drawables/ic_booking_1_1.png";
   String get ic_search => "lib/res/drawables/ic_search.png";
   String get ic_security => "lib/res/drawables/ic_security.png";
   String get ic_send => "lib/res/drawables/ic_send.png";
