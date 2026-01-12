@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
@@ -355,6 +356,7 @@ class GlucoseClient extends FetchClient {
       if (reason != null) {
         params['reason'] = reason;
       }
+      log('Glucose input params: $params');
       final response = await super
           .postHttp(path: '/App/Glucose/Input', params: params, files: files);
 

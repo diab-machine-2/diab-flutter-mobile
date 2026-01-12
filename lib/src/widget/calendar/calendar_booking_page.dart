@@ -31,12 +31,14 @@ class CalendarBookingController extends StatefulWidget {
   final String endTime;
   final int interviewType;
   final SmartGoalList? smartGoal;
+  final bool fromActivityTab;
   const CalendarBookingController(
       {Key? key,
       required this.courseId,
       required this.endTime,
       required this.interviewType,
-      this.smartGoal})
+      this.smartGoal,
+      this.fromActivityTab = false})
       : super(key: key);
   @override
   _CalendarBookingControllerState createState() =>
@@ -209,9 +211,20 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     return WillPopScope(
       onWillPop: () async {
         print('[ONBOARDING] on pop scope calendar booking page');
-        if (Navigator.of(context).canPop()) {
-          print('[ONBOARDING] pop scope calendar booking page');
-          Navigator.of(context).pop();
+        if (widget.fromActivityTab) {
+          // Navigate back to activity tab
+          Navigator.of(context, rootNavigator: true)
+              .popUntil((route) =>
+                  route.isFirst ||
+                  route.settings.name == NavigatorName.tabbar);
+          Observable.instance.notifyObservers([],
+              notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+          return false;
+        } else {
+          if (Navigator.of(context).canPop()) {
+            print('[ONBOARDING] pop scope calendar booking page');
+            Navigator.of(context).pop();
+          }
         }
         return true;
       },
@@ -244,6 +257,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                                     "bookingQuantity":
                                         CalendarBookingCubit.updateCount,
                                     "interviewType": widget.interviewType,
+                                    "fromActivityTab": widget.fromActivityTab,
                                   })
                             }
                         },
@@ -297,13 +311,23 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                   onPressed: () {
                     CalendarBookingCubit.myCalendar = null;
                     CalendarBookingCubit.updateCount = 0;
-                    Observable.instance
-                        .notifyObservers([], notifyName: 'refresh_home');
-                    Navigator.of(context, rootNavigator: true)
-                        .pushNamedAndRemoveUntil(
-                      NavigatorName.tabbar,
-                      (route) => false, // This removes all routes from stack
-                    );
+                    if (widget.fromActivityTab) {
+                      // Navigate back to activity tab
+                      Navigator.of(context, rootNavigator: true)
+                          .popUntil((route) =>
+                              route.isFirst ||
+                              route.settings.name == NavigatorName.tabbar);
+                      Observable.instance.notifyObservers([],
+                          notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+                    } else {
+                      Observable.instance
+                          .notifyObservers([], notifyName: 'refresh_home');
+                      Navigator.of(context, rootNavigator: true)
+                          .pushNamedAndRemoveUntil(
+                        NavigatorName.tabbar,
+                        (route) => false, // This removes all routes from stack
+                      );
+                    }
                   }),
             ),
             Expanded(
@@ -371,7 +395,8 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                                   'endTime': widget.endTime,
                                   "bookingQuantity":
                                       CalendarBookingCubit.updateCount,
-                                  "type": widget.interviewType,
+                                  "interviewType": widget.interviewType,
+                                  "fromActivityTab": widget.fromActivityTab,
                                 });
                             BotToast.closeAllLoading();
                             return;

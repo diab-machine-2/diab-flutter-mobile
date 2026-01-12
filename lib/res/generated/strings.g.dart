@@ -1430,7 +1430,15 @@ class Strings {
   String get please_select_at_least_one_image =>
       'please_select_at_least_one_image';
   String get max_image_select_dynamic => 'max_image_select_dynamic';
+  String get view_report => 'view_report';
+  String get incomplete_activities => 'incomplete_activities';
   String get unknown_meal_image => 'unknown_meal_image';
   String get no_data_within => 'no_data_within';
+  String get change => 'change';
+  String get change_roadmap => 'change_roadmap';
   String get yesterday => 'yesterday';
+  String get webinar => 'webinar';
+  String get quiz => 'quiz';
+  String get booking => 'booking';
+  String get interview => 'interview';
 }
