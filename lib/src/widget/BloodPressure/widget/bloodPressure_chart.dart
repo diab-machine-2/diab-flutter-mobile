@@ -186,7 +186,6 @@ class BloodPressureChartState extends State<BloodPressureChart>
         _lastTapTime != null &&
         now.difference(_lastTapTime!).inMilliseconds < 500) {
       // Double tap detected on the same dot - scroll first, then navigate
-      print('Blood pressure chart Double tap on index: $tappedIndex');
 
       // Don't cancel scroll - let it complete, then navigate
       // Set flag to navigate after scroll completes
@@ -304,90 +303,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
         final dataModel = await client.fetchBloodPressureInput(
           (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
           _periodFilterType.toString(),
-          null, // bloodPressureType
-          1, // page
-          size: '100', // Get more items to find the matching one
+          null,
+          1,
+          size: '100',
         );
 
-        // Find matching item by date, timeFrameName, and values (systolic/diastolic)
-        BloodPressureModel? matchingItem;
-        try {
-          matchingItem = dataModel.inputs.firstWhere(
-            (item) {
-              // Compare dates (same timestamp or same day)
-              final trendDate = DateTime.fromMillisecondsSinceEpoch(
-                selectedTrend.date! * 1000,
-                isUtc: true,
-              );
-              final itemDate = DateTime.fromMillisecondsSinceEpoch(
-                item.date! * 1000,
-                isUtc: true,
-              );
+        final matchingItem = _findMatchingItem(dataModel.inputs, selectedTrend);
 
-              // First try exact timestamp match (within 1 minute tolerance)
-              final timeDiff = (trendDate.millisecondsSinceEpoch -
-                      itemDate.millisecondsSinceEpoch)
-                  .abs();
-              final exactTimeMatch = timeDiff < 60000; // 1 minute tolerance
-
-              // Fallback to same day if exact time doesn't match
-              final sameDay = trendDate.year == itemDate.year &&
-                  trendDate.month == itemDate.month &&
-                  trendDate.day == itemDate.day;
-
-              // Compare timeFrameName
-              final sameTimeFrame =
-                  item.timeFrame == selectedTrend.timeFrameName;
-
-              // Compare systolic and diastolic values (exact match)
-              final sameSystolic = item.systolic != null &&
-                  selectedTrend.systolic != null &&
-                  (item.systolic!.round() == selectedTrend.systolic!.round());
-
-              final sameDiastolic = item.diastolic != null &&
-                  selectedTrend.diastolic != null &&
-                  (item.diastolic!.round() == selectedTrend.diastolic!.round());
-
-              // Match if: (exact time OR same day) AND same timeFrame AND same values
-              return (exactTimeMatch || sameDay) &&
-                  sameTimeFrame &&
-                  sameSystolic &&
-                  sameDiastolic;
-            },
-          );
-        } catch (e) {
-          // Item not found, try without value matching
-          try {
-            matchingItem = dataModel.inputs.firstWhere(
-              (item) {
-                final trendDate = DateTime.fromMillisecondsSinceEpoch(
-                  selectedTrend.date! * 1000,
-                  isUtc: true,
-                );
-                final itemDate = DateTime.fromMillisecondsSinceEpoch(
-                  item.date! * 1000,
-                  isUtc: true,
-                );
-
-                final sameDay = trendDate.year == itemDate.year &&
-                    trendDate.month == itemDate.month &&
-                    trendDate.day == itemDate.day;
-
-                final sameTimeFrame =
-                    item.timeFrame == selectedTrend.timeFrameName;
-
-                return sameDay && sameTimeFrame;
-              },
-            );
-          } catch (e2) {
-            // Item not found, will fallback to listing screen
-            matchingItem = null;
-          }
-        }
-
-        if (matchingItem != null &&
-            matchingItem.id != null &&
-            matchingItem.id!.isNotEmpty) {
+        if (matchingItem?.id != null && matchingItem!.id!.isNotEmpty) {
           Navigator.pushNamed(
             currentContext,
             NavigatorName.add_blood_pressure,
@@ -396,8 +319,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           return;
         }
       } catch (e) {
-        // If error, fallback to listing screen
-        print('Error fetching blood pressure id: $e');
+        // Fall through to listing screen on error
       }
     }
 
@@ -409,6 +331,65 @@ class BloodPressureChartState extends State<BloodPressureChart>
         'initPeriodFilterType': _periodFilterType,
       },
     );
+  }
+
+  BloodPressureModel? _findMatchingItem(
+      List<BloodPressureModel> items, SubTrendItemModel selectedTrend) {
+    final trendDate = DateTime.fromMillisecondsSinceEpoch(
+      selectedTrend.date! * 1000,
+      isUtc: true,
+    );
+
+    for (final item in items) {
+      final itemDate = DateTime.fromMillisecondsSinceEpoch(
+        item.date! * 1000,
+        isUtc: true,
+      );
+
+      final timeDiff =
+          (trendDate.millisecondsSinceEpoch - itemDate.millisecondsSinceEpoch)
+              .abs();
+      final exactTimeMatch = timeDiff < 60000; // 1 minute tolerance
+      final sameDay = trendDate.year == itemDate.year &&
+          trendDate.month == itemDate.month &&
+          trendDate.day == itemDate.day;
+
+      final isSyncedData =
+          (item.reason != null && item.reason!.contains("Đồng bộ")) ||
+              ((item.timeFrameId == null || item.timeFrameId!.isEmpty) &&
+                  (item.timeFrame == "Bất kì" ||
+                      item.timeFrame == null ||
+                      item.timeFrame!.isEmpty));
+
+      final itemTimeFrame = item.timeFrame ?? "";
+      final trendTimeFrame = selectedTrend.timeFrameName ?? "";
+      final sameTimeFrame = isSyncedData
+          ? (trendTimeFrame == "Bất kì" ||
+              itemTimeFrame == "Bất kì" ||
+              itemTimeFrame.isEmpty ||
+              trendTimeFrame.isEmpty ||
+              itemTimeFrame == trendTimeFrame)
+          : itemTimeFrame == trendTimeFrame;
+
+      final sameSystolic = item.systolic != null &&
+          selectedTrend.systolic != null &&
+          (item.systolic!.round() == selectedTrend.systolic!.round());
+      final sameDiastolic = item.diastolic != null &&
+          selectedTrend.diastolic != null &&
+          (item.diastolic!.round() == selectedTrend.diastolic!.round());
+
+      final isMatch = isSyncedData
+          ? (sameDay && sameSystolic && sameDiastolic && sameTimeFrame)
+          : ((exactTimeMatch || sameDay) &&
+              sameTimeFrame &&
+              sameSystolic &&
+              sameDiastolic);
+
+      if (isMatch) {
+        return item;
+      }
+    }
+    return null;
   }
 
   List<SubTrendItemModel> _getTrends(BloodPressureTrendModel model) {
@@ -1519,7 +1500,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
             ),
           ],
         ),
-      ], 
+      ],
     );
   }
 
