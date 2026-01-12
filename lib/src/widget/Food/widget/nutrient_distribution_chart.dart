@@ -134,7 +134,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        R.string.phan_bo_dinh_duong.tr(),
+                                        'Phân bổ dinh dưỡng',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w600,
