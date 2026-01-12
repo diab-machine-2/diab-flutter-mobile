@@ -63,6 +63,10 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       yield* fetchStatisticDistribute(
           event.currentDateTime, event.periodFilterType);
     }
+    if (event is FetchFoodGroupDistribute) {
+      yield* fetchFoodGroupDistribute(
+          event.currentDateTime, event.periodFilterType);
+    }
   }
 
   Stream<FoodState> fetchFoodLatest(int page) async* {
@@ -74,9 +78,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -90,9 +92,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -106,9 +106,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -122,9 +120,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -148,9 +144,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -175,9 +169,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
-        yield FoodError(
-            message:
-                R.string.error_can_not_connect_to_server.tr());
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
       }
     }
   }
@@ -281,6 +273,26 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       yield FoodLoading();
       yield FoodStatisticDistributeLoaded(
           model: await client.fetchStatisticDistribute(
+              currentDateTime, periodFilterType));
+    } catch (e, _) {
+      if (e is Error) {
+        yield FoodError(message: e.message);
+      } else {
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
+      }
+    }
+  }
+
+  // Handler cho phân bổ theo nhóm thực phẩm (Admin API)
+  Stream<FoodState> fetchFoodGroupDistribute(
+      String? currentDateTime, String? periodFilterType) async* {
+    try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
+      final client = FoodClient();
+      yield FoodLoading();
+      yield FoodGroupDistributeLoaded(
+          model: await client.fetchFoodGroupDistribute(
               currentDateTime, periodFilterType));
     } catch (e, _) {
       if (e is Error) {

@@ -85,228 +85,415 @@ class EnergyChartState extends State<EnergyChart>
                   child: const Center(child: CircularProgressIndicator()))
               : Container(
                   padding: const EdgeInsets.all(16),
-                  child: SizedBox(
-                    width: width,
-                    height: height,
-                    child: Stack(children: [
-                      Positioned(
-                        top: 70,
-                        left: 0,
-                        child: Stack(
-                            alignment: AlignmentDirectional.center,
-                            children: [
-                              SizedBox(
-                                  width: heightApple,
-                                  height: heightApple,
-                                  child: CustomPaint(
-                                      painter: GradientArcPainter(
-                                    progress: 1,
-                                    startColor: R.color.white,
-                                    endColor: R.color.white,
-                                    width: 56.0,
-                                  ))),
-                              SizedBox(
-                                  width: heightApple,
-                                  height: heightApple,
-                                  child: CustomPaint(
-                                      painter: GradientArcPainter(
-                                    progress: model.goal == null
-                                        ? 0
-                                        : model.total! / model.goal!,
-                                    startColor: toColor(model.colorCode)
-                                        .withOpacity(0.3),
-                                    endColor: toColor(model.colorCode),
-                                    width: 56.0,
-                                  ))),
-                            ]),
-                      ),
-                      Positioned(
-                        top: top,
-                        left: 0,
-                        child: Center(
-                          child: Container(
-                              height: heightLA,
-                              width: heightApple,
-                              color: toColor(model.colorCode)),
-                        ),
-                      ),
-                      Image.asset(R.drawable.bg_apple_orange),
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(R.string.nang_luong.tr(),
-                                style: TextStyle(
-                                    color: R.color.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700)),
-                            GestureDetector(
-                              onTap: () async {
-                                final int inputEnergy = model!.goal!.round();
-                                final newInputEnergy = await showDialog(
-                                  barrierColor:
-                                      R.color.color0xff003F38.withOpacity(0.5),
-                                  context: context,
-                                  builder: (_) =>
-                                      AddTargetFood(goal: model!.goal!.round()),
-                                );
-                                if (newInputEnergy is int &&
-                                    newInputEnergy != inputEnergy) {
-                                  showDialog(
-                                    barrierColor: R.color.color0xff003F38
-                                        .withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => NoticeChangePage(
-                                        description: R.string.consumption.tr(),
-                                        onClick: () {
-                                          updateGoal(newInputEnergy);
-                                          Future.delayed(
-                                              const Duration(milliseconds: 200),
-                                              () {
-                                            _appRepository
-                                                .createMenu(CreateMenuRequest(
-                                              kcal: newInputEnergy,
-                                              includeBreakfast:
-                                                  model?.includeBreakfast ??
-                                                      false,
-                                              includeLunch:
-                                                  model?.includeLunch ?? false,
-                                              includeDinner:
-                                                  model?.includeDinner ?? false,
-                                            ));
-                                          });
-                                        }),
-                                  );
-                                }
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      R.drawable.ic_circle_plus_exe,
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(R.string.muc_tieu_moi.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        top: 58,
-                        right: 43,
-                        child: SizedBox(
-                          height: 170,
-                          child: Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: List.generate(
-                                    model.mealDetails.length,
-                                    (index) => Row(children: [
-                                          NetWorkImageWidget(imageUrl: 
-                                              model!.mealDetails[index].icon
-                                                      .url ??
-                                                  '',
-                                              width: 24,
-                                              height: 24),
-                                          const SizedBox(width: 4),
-                                          Text(model.mealDetails[index].text!),
-                                        ])),
-                              ),
-                              const SizedBox(width: 20),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: List.generate(
-                                    model.mealDetails.length,
-                                    (index) => SizedBox(
-                                          height: 24,
-                                          child: Text(
-                                              model!.mealDetails[index].value!
-                                                  .round()
-                                                  .toString(),
-                                              style: TextStyle(
-                                                  fontFamily: 'Viga',
-                                                  color: R.color.black,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 18)),
-                                        )),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: top,
-                        left: 0,
-                        child: Container(
-                          width: heightApple,
-                          height: heightApple,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                  child: Column(
+                    children: [
+                      // Header section (Blood Sugar style)
+                      _buildHeader(model),
+                      const SizedBox(height: 16),
+                      // Apple chart
+                      SizedBox(
+                        width: width,
+                        height: height,
+                        child: Stack(children: [
+                          Positioned(
+                            top: 70,
+                            left: 0,
+                            child: Stack(
+                                alignment: AlignmentDirectional.center,
                                 children: [
-                                  Image.asset(R.drawable.ic_bat,
-                                      width: 24, height: 24),
-                                  const SizedBox(width: 4),
-                                  Text(model.total!.round().toString(),
-                                      style: TextStyle(
-                                          fontFamily: 'Viga',
-                                          color: R.color.black,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w400)),
+                                  SizedBox(
+                                      width: heightApple,
+                                      height: heightApple,
+                                      child: CustomPaint(
+                                          painter: GradientArcPainter(
+                                        progress: 1,
+                                        startColor: R.color.white,
+                                        endColor: R.color.white,
+                                        width: 56.0,
+                                      ))),
+                                  SizedBox(
+                                      width: heightApple,
+                                      height: heightApple,
+                                      child: CustomPaint(
+                                          painter: GradientArcPainter(
+                                        progress: model.goal == null
+                                            ? 0
+                                            : model.total! / model.goal!,
+                                        startColor: toColor(model.colorCode)
+                                            .withOpacity(0.3),
+                                        endColor: toColor(model.colorCode),
+                                        width: 56.0,
+                                      ))),
+                                ]),
+                          ),
+                          Positioned(
+                            top: top,
+                            left: 0,
+                            child: Center(
+                              child: Container(
+                                  height: heightLA,
+                                  width: heightApple,
+                                  color: toColor(model.colorCode)),
+                            ),
+                          ),
+                          Image.asset(R.drawable.bg_apple_orange),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 16, left: 16, right: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(R.string.nang_luong.tr(),
+                                    style: TextStyle(
+                                        color: R.color.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700)),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final int inputEnergy =
+                                        model!.goal!.round();
+                                    final newInputEnergy = await showDialog(
+                                      barrierColor: R.color.color0xff003F38
+                                          .withOpacity(0.5),
+                                      context: context,
+                                      builder: (_) => AddTargetFood(
+                                          goal: model!.goal!.round()),
+                                    );
+                                    if (newInputEnergy is int &&
+                                        newInputEnergy != inputEnergy) {
+                                      showDialog(
+                                        barrierColor: R.color.color0xff003F38
+                                            .withOpacity(0.5),
+                                        context: context,
+                                        builder: (_) => NoticeChangePage(
+                                            description:
+                                                R.string.consumption.tr(),
+                                            onClick: () {
+                                              updateGoal(newInputEnergy);
+                                              Future.delayed(
+                                                  const Duration(
+                                                      milliseconds: 200), () {
+                                                _appRepository.createMenu(
+                                                    CreateMenuRequest(
+                                                  kcal: newInputEnergy,
+                                                  includeBreakfast:
+                                                      model?.includeBreakfast ??
+                                                          false,
+                                                  includeLunch:
+                                                      model?.includeLunch ??
+                                                          false,
+                                                  includeDinner:
+                                                      model?.includeDinner ??
+                                                          false,
+                                                ));
+                                              });
+                                            }),
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    color: R.color.transparent,
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          R.drawable.ic_circle_plus_exe,
+                                          width: 24,
+                                          height: 24,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(R.string.muc_tieu_moi.tr(),
+                                            style: TextStyle(
+                                                color: R.color.mainColor,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w700)),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            top: 58,
+                            right: 43,
+                            child: SizedBox(
+                              height: 170,
+                              child: Row(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(
+                                        model.mealDetails.length,
+                                        (index) => Row(children: [
+                                              NetWorkImageWidget(
+                                                  imageUrl: model!
+                                                          .mealDetails[index]
+                                                          .icon
+                                                          .url ??
+                                                      '',
+                                                  width: 24,
+                                                  height: 24),
+                                              const SizedBox(width: 4),
+                                              Text(model
+                                                  .mealDetails[index].text!),
+                                            ])),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: List.generate(
+                                        model.mealDetails.length,
+                                        (index) => SizedBox(
+                                              height: 24,
+                                              child: Text(
+                                                  model!
+                                                      .mealDetails[index].value!
+                                                      .round()
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                      fontFamily: 'Viga',
+                                                      color: R.color.black,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      fontSize: 18)),
+                                            )),
+                                  )
                                 ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                  model.goal == null
-                                      ? '0 ${R.string.kcal.tr()}'
-                                      : '/${formatNumber(model.goal)} ${R.string.kcal.tr()}',
-                                  style: TextStyle(
-                                      color: R.color.primaryGreyColor))
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 16,
-                        right: 16,
-                        child: Row(
-                          children: [
-                            NetWorkImageWidget(imageUrl: model.image!.url ?? '',
-                                width: 65, height: 110),
-                            const SizedBox(width: 25),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(model.note ?? ''),
+                          Positioned(
+                            top: top,
+                            left: 0,
+                            child: Container(
+                              width: heightApple,
+                              height: heightApple,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(R.drawable.ic_bat,
+                                          width: 24, height: 24),
+                                      const SizedBox(width: 4),
+                                      Text(model.total!.round().toString(),
+                                          style: TextStyle(
+                                              fontFamily: 'Viga',
+                                              color: R.color.black,
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w400)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                      model.goal == null
+                                          ? '0 ${R.string.kcal.tr()}'
+                                          : '/${formatNumber(model.goal)} ${R.string.kcal.tr()}',
+                                      style: TextStyle(
+                                          color: R.color.primaryGreyColor))
+                                ],
                               ),
-                            )
-                          ],
-                        ),
-                      )
-                    ]),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 16,
+                            right: 16,
+                            child: Row(
+                              children: [
+                                NetWorkImageWidget(
+                                    imageUrl: model.image!.url ?? '',
+                                    width: 65,
+                                    height: 110),
+                                const SizedBox(width: 25),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: Text(model.note ?? ''),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ]),
+                      ),
+                    ],
                   ),
                 );
         }));
+  }
+
+  Widget _buildHeader(FoodCaloModel model) {
+    // Sample data - replace with actual meal data from API
+    String selectedDate = DateFormat('dd/MM').format(DateTime.now());
+    String selectedDateTime = DateFormat('HH:mm').format(DateTime.now());
+    String selectedStatus = 'Cân bằng'; // Get from model
+    String selectedMeal =
+        model.mealDetails.isNotEmpty ? model.mealDetails[0].text! : 'Bữa trưa';
+    String selectedPoints = '8 điểm'; // Get from model
+    String selectedKcal = '${model.total!.round()} Kcal';
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: R.color.white,
+                borderRadius: BorderRadius.circular(19),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$selectedDateTime',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
+                    ),
+                  ),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    margin: EdgeInsets.only(left: 4, right: 4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFBFC6C6),
+                    ),
+                  ),
+                  Text(
+                    '$selectedDate',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(width: 16),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: R.color.color0xffE5E5E5,
+                  width: 1,
+                ),
+                color: Colors.white,
+              ),
+              child: Icon(
+                Icons.chevron_left,
+                size: 20,
+                color: R.color.color0xffE5E5E5, // Disabled for now
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: Text(
+                  selectedStatus,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.greenGradientBottom,
+                    height: 36 / 24,
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: R.color.color0xffE5E5E5,
+                  width: 1,
+                ),
+                color: Colors.white,
+              ),
+              child: Icon(
+                Icons.chevron_right,
+                size: 20,
+                color: R.color.color0xffE5E5E5, // Disabled for now
+              ),
+            ),
+            const SizedBox(width: 16),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$selectedMeal',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: R.color.color0xff5E6566,
+              ),
+            ),
+            Container(
+              width: 4,
+              height: 4,
+              margin: EdgeInsets.only(left: 4, right: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFBFC6C6),
+              ),
+            ),
+            Text(
+              '$selectedPoints',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.textDark,
+              ),
+            ),
+            Container(
+              width: 4,
+              height: 4,
+              margin: EdgeInsets.only(left: 4, right: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFBFC6C6),
+              ),
+            ),
+            Text(
+              '$selectedKcal',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.textDark,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   updateGoal(int goal) async {
@@ -334,7 +521,7 @@ class GradientArcPainter extends CustomPainter {
     required this.startColor,
     required this.endColor,
     required this.width,
-  })  : super();
+  }) : super();
 
   final double progress;
   final Color startColor;

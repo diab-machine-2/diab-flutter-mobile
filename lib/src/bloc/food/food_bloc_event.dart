@@ -79,3 +79,11 @@ class FetchStatisticDistribute extends FoodEvent {
 
   FetchStatisticDistribute({this.currentDateTime, this.periodFilterType});
 }
+
+// Event cho phân bổ theo nhóm thực phẩm (Tinh bột, Chất đạm, Chất béo, Rau củ, Hoa quả)
+class FetchFoodGroupDistribute extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchFoodGroupDistribute({this.currentDateTime, this.periodFilterType});
+}

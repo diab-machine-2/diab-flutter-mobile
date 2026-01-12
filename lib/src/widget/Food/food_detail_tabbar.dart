@@ -21,6 +21,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
 import 'widget/food_action_popup.dart';
+import '../BloodPressure/widget/horizontal_selector.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   final int? initialTabIndex;
@@ -134,16 +135,37 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        appBar: CustomAppBar(
-            backgroundColor: R.color.white,
-            title: Text(R.string.dinh_duong.tr(),
-                style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.textDark)),
-            leadingIcon: GestureDetector(
-                onTap: () {
+        appBar: AppBar(
+          backgroundColor: R.color.greenGradientBottom,
+          leading: IconButton(
+            onPressed: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamedAndRemoveUntil(
+                  NavigatorName.tabbar,
+                  (route) => false,
+                );
+              }
+            },
+            icon: Icon(Icons.arrow_back, color: R.color.white),
+          ),
+          leadingWidth: 30,
+          centerTitle: false,
+          title: Text(
+            R.string.dinh_duong.tr(),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: R.color.white,
+            ),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: TextButton(
+                onPressed: () {
                   showDialog(
                     barrierColor: R.color.color0xff003F38.withOpacity(0.3),
                     useSafeArea: false,
@@ -151,83 +173,73 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
                     builder: (_) => ActionListPanel(selectedIndex: 4),
                   );
                 },
-                child:
-                    Icon(Icons.format_list_bulleted, color: R.color.textDark)),
-            actions: [
-              CustomActionDescription(
-                  key: customActionDesKey,
-                  callback: (value) {
-                    customTabbarKey.currentState!.showDescription();
-                  }),
-              IconButton(
-                  icon: Icon(Icons.close, color: R.color.black),
-                  onPressed: () {
-                    // pushReplacement removes the previous route, so canPop may be false
-                    // If we can't pop, navigate to tabbar instead
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    } else {
-                      // Navigate to tabbar when there's nothing to pop back to
-                      Navigator.of(context, rootNavigator: true)
-                          .pushNamedAndRemoveUntil(
-                        NavigatorName.tabbar,
-                        (route) => false,
-                      );
-                    }
-                  }),
-              const SizedBox(width: 12),
-            ]),
-        body: Column(children: [
-          GestureDetector(
-            onTap: () async {
-              // if(userInfo?.ownPackage == null) {
-              //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
-              //   return;
-              // }
-
-              await NavigationUtil.navigatePage(context, const FoodMenuPage());
-              overviewKey.currentState!.reloadData(periodFilterType);
-            },
-            child: Container(
-              color: R.color.white,
-              padding: const EdgeInsets.only(top: 14, bottom: 14, right: 18),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Image.asset(
-                    R.drawable.ic_bowl_of_food,
-                    width: 24,
-                    height: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    R.string.food_menu.tr(),
-                    style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
+                child: Text(
+                  R.string.huong_dan.tr(),
+                  style: TextStyle(fontSize: 15, color: R.color.white),
+                ),
               ),
             ),
-          ),
-          CustomTabbarImage(
-              key: customTabbarKey,
-              tabController: _tabController,
-              data: des,
-              callback: (periodFilter) {
-                periodFilterType = periodFilter;
+          ],
+        ),
+        body: Column(children: [
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: HorizontalSelector(
+              onSelected: (value) {
+                periodFilterType = value + 1;
                 overviewKey.currentState!.reloadData(periodFilterType);
                 if (detailKey.currentState != null) {
                   detailKey.currentState!.reloadData(periodFilterType);
                 }
-              }),
+              },
+              initialValue: periodFilterType - 1,
+              values: [0, 1, 2, 3],
+              labels: [
+                R.string.filter_day.tr(args: ['7']),
+                R.string.filter_day.tr(args: ['14']),
+                R.string.filter_day.tr(args: ['30']),
+                R.string.filter_day.tr(args: ['90']),
+              ],
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            color: R.color.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TabBar(
+                  isScrollable: true,
+                  labelColor: R.color.mainColor,
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: R.color.mainColor,
+                  ),
+                  unselectedLabelColor: R.color.captionColorGray,
+                  unselectedLabelStyle: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  tabs: [
+                    Tab(text: R.string.bieu_do.tr()),
+                    Tab(text: R.string.detail.tr()),
+                  ],
+                  controller: _tabController,
+                  indicatorColor: R.color.mainColor,
+                  indicatorWeight: 3,
+                ),
+              ],
+            ),
+          ),
           Expanded(
-              child: TabBarView(controller: _tabController, children: [
-            FoodOverviewController(key: overviewKey),
-            FoodDetailController(key: detailKey)
-          ])),
+            child: TabBarView(controller: _tabController, children: [
+              FoodOverviewController(key: overviewKey),
+              FoodDetailController(key: detailKey)
+            ]),
+          ),
         ]),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

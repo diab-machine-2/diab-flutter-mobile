@@ -8,7 +8,6 @@ import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
-import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
@@ -25,7 +24,6 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
   int periodFilterType = 1;
-  bool isEnergyTab = true;
   int? touchIndex;
 
   @override
@@ -72,7 +70,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
 
           if (state is FoodStatisticDistributeLoaded) {
             model = state.model;
-            final data = isEnergyTab ? model!.energyChart : model!.carbChart;
+            final data = model!.energyChart;
             data.forEach((element) {
               total += element.percentValue!;
             });
@@ -87,12 +85,6 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(R.string.nang_luong_phan_bo.tr(),
-                          style: TextStyle(
-                              color: R.color.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600)),
-                      SizedBox(height: 16),
                       total == 0
                           ? EmptyDataBox(
                               text: "chỉ số Dinh dưỡng",
@@ -107,184 +99,136 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                               },
                             )
                           : Container(
+                              padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: R.color.grey.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(14),
-                                  color: R.color.white),
+                                  borderRadius: BorderRadius.circular(16),
+                                  color: Color(0xFFF5F5F5)),
                               child: Column(
                                 children: [
-                                  SizedBox(
-                                    height: 32,
-                                  ),
+                                  // Header with title and arrow
                                   Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              isEnergyTab = true;
-                                            });
-                                          },
-                                          child: Container(
-                                              height: 32,
-                                              width: 135,
-                                              padding: EdgeInsets.only(
-                                                  left: 18, right: 18),
-                                              decoration: BoxDecoration(
-                                                  color: isEnergyTab
-                                                      ? R.color.mainColor
-                                                      : R.color.transparent,
-                                                  border: Border.all(
-                                                      color: isEnergyTab
-                                                          ? R.color.mainColor
-                                                          : R.color
-                                                              .primaryGreyColor,
-                                                      width: 0.5),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16)),
-                                              child: Center(
-                                                child: Text(
-                                                    R.string.nang_luong.tr(),
-                                                    style: TextStyle(
-                                                        color: isEnergyTab
-                                                            ? R.color.white
-                                                            : R.color
-                                                                .primaryGreyColor,
-                                                        fontSize: 14,
-                                                        fontWeight: isEnergyTab
-                                                            ? FontWeight.w700
-                                                            : FontWeight.w400)),
-                                              )),
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        R.string.nang_luong_phan_bo.tr(),
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                          color: R.color.black,
                                         ),
-                                        SizedBox(width: 16),
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              isEnergyTab = false;
-                                            });
-                                          },
-                                          child: Container(
-                                              height: 32,
-                                              width: 135,
-                                              decoration: BoxDecoration(
-                                                  color: isEnergyTab
-                                                      ? R.color.transparent
-                                                      : R.color.mainColor,
-                                                  border: Border.all(
-                                                      color: isEnergyTab
-                                                          ? R.color
-                                                              .primaryGreyColor
-                                                          : R.color.white,
-                                                      width: 0.5),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16)),
-                                              child: Center(
-                                                child: Text(
-                                                    R.string.chat_bot_duong
-                                                        .tr(),
-                                                    style: TextStyle(
-                                                        color: isEnergyTab
-                                                            ? R.color
-                                                                .primaryGreyColor
-                                                            : R.color.white,
-                                                        fontSize: 14,
-                                                        fontWeight: isEnergyTab
-                                                            ? FontWeight.w400
-                                                            : FontWeight.w700)),
-                                              )),
-                                        )
-                                      ]),
+                                      ),
+                                      Icon(
+                                        Icons.chevron_right,
+                                        color: R.color.black,
+                                        size: 24,
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 24),
+                                  // Donut chart and legend
                                   Row(
                                     children: <Widget>[
                                       Expanded(
                                         child: AspectRatio(
                                           aspectRatio: 1,
-                                          child: PieChart(
-                                            PieChartData(
-                                                startDegreeOffset: 270,
-                                                borderData: FlBorderData(
-                                                  show: false,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              PieChart(
+                                                PieChartData(
+                                                  startDegreeOffset: 270,
+                                                  borderData: FlBorderData(
+                                                    show: false,
+                                                  ),
+                                                  sectionsSpace: 0,
+                                                  centerSpaceRadius: 50,
+                                                  sections: List.generate(
+                                                      model.energyChart.length,
+                                                      (i) {
+                                                    final double radius = 40;
+                                                    final item =
+                                                        model!.energyChart[i];
+                                                    return PieChartSectionData(
+                                                      color: toColor(
+                                                          item.colorCode),
+                                                      value: item.percentValue,
+                                                      showTitle: false,
+                                                      radius: radius,
+                                                    );
+                                                  }),
                                                 ),
-                                                sectionsSpace: 0,
-                                                centerSpaceRadius: 60,
-                                                sections: List.generate(
-                                                    isEnergyTab
-                                                        ? model
-                                                            .energyChart.length
-                                                        : model.carbChart
-                                                            .length, (i) {
-                                                  final double radius = 35;
-                                                  final item = isEnergyTab
-                                                      ? model!.energyChart[i]
-                                                      : model!.carbChart[i];
-                                                  return PieChartSectionData(
-                                                    color:
-                                                        toColor(item.colorCode),
-                                                    value: item.percentValue,
-                                                    showTitle: false,
-                                                    radius: radius,
-                                                  );
-                                                })),
+                                              ),
+                                              // Center content
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    '${total.round()}%',
+                                                    style: TextStyle(
+                                                      fontSize: 32,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: R.color.black,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    '${model.energyChart.length} Bữa ăn',
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: R.color
+                                                          .primaryGreyColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
+                                      SizedBox(width: 32),
+                                      // Legend
                                       Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 2.0, bottom: 8),
-                                            child: Text(
-                                              R.string.chu_thich.tr(),
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: R.color.textDark),
-                                            ),
-                                          ),
-                                          Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: List.generate(
-                                                  isEnergyTab
-                                                      ? model.energyChart.length
-                                                      : model.carbChart.length,
-                                                  (i) {
-                                                final item = isEnergyTab
-                                                    ? model!.energyChart[i]
-                                                    : model!.carbChart[i];
-                                                return Padding(
-                                                  padding: EdgeInsets.only(
-                                                      bottom: 4),
-                                                  child: Indicator(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: List.generate(
+                                            model.energyChart.length, (i) {
+                                          final item = model!.energyChart[i];
+                                          return Padding(
+                                            padding:
+                                                EdgeInsets.only(bottom: 12),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 12,
+                                                  height: 12,
+                                                  decoration: BoxDecoration(
                                                     color:
                                                         toColor(item.colorCode),
-                                                    number: roundNumber(item
-                                                            .percentValue!) +
-                                                        '%',
-                                                    text: item.text,
-                                                    textColor: R.color.white,
-                                                    isSquare: true,
+                                                    shape: BoxShape.circle,
                                                   ),
-                                                );
-                                              })),
-                                        ],
+                                                ),
+                                                SizedBox(width: 8),
+                                                Text(
+                                                  item.text ?? '',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: R.color.black,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        }),
                                       ),
-                                      SizedBox(
-                                        width: 28,
-                                      ),
+                                      SizedBox(width: 16),
                                     ],
                                   ),
                                 ],

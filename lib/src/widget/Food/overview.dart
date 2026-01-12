@@ -4,6 +4,7 @@ import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
+import 'package:medical/src/widget/Food/widget/nutrient_distribution_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_trend_chart.dart';
 import 'package:medical/src/widget/Food/widget/starch_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
@@ -24,6 +25,8 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   GlobalKey<EnergyChartState> energyKey = GlobalKey();
   GlobalKey<StarchChartState> starchKey = GlobalKey();
   GlobalKey<FoodDistributionChartState> distributionKey = GlobalKey();
+  GlobalKey<NutrientDistributionChartState> nutrientDistributionKey =
+      GlobalKey();
   GlobalKey<FoodTrendChartState> trendKey = GlobalKey();
   GlobalKey<FoodChartState> foodKey = GlobalKey();
 
@@ -49,6 +52,9 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
     if (foodKey.currentState != null) {
       foodKey.currentState!.reloadData(periodFilterType);
     }
+    if (nutrientDistributionKey.currentState != null) {
+      nutrientDistributionKey.currentState!.reloadData(periodFilterType);
+    }
   }
 
   @override
@@ -73,6 +79,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
         StarchChart(key: starchKey),
         FoodChart(key: foodKey),
         FoodTrendChart(key: trendKey),
+        NutrientDistributionChart(key: nutrientDistributionKey),
         FoodDistributionChart(key: distributionKey),
         CourseSuggest(position: 7),
         SizedBox(height: 36)

@@ -464,6 +464,27 @@ class FoodClient extends FetchClient {
     }
   }
 
+  // lấy biểu đồ phân bổ theo nhóm thực phẩm (Tinh bột, Chất đạm, Chất béo, Rau củ, Hoa quả)
+  Future<FoodDistributeModel> fetchFoodGroupDistribute(
+      String? currentDateTime, String? periodFilterType) async {
+    try {
+      final Response response = await super
+          .fetchData(url: '/App/Admin/Diet/Statistic/distribute', params: {
+        'currentDateTime': currentDateTime,
+        'periodFilterType': periodFilterType,
+        'takeAll': 'true'
+      });
+      if (response.statusCode == 200) {
+        return FoodDistributeModel.fromJson(response.data['data']);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
   // lay danh sach cuong do van dong
 
   Future<List<ExerciseIntensityModel>> fetchIntensity() async {
