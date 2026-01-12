@@ -287,9 +287,11 @@ class _CustomCalendarDatePickerState extends State<CustomCalendarDatePicker> {
     return Stack(
       children: <Widget>[
         SizedBox(
+          // Increase height buffer when activeDates is provided to prevent clipping
+          // Add extra space to accommodate months with 31 days that need 6 rows
           height: _subHeaderHeight +
               _maxDayPickerHeight +
-              (widget.activeDates != null ? 20 : 0),
+              (widget.activeDates != null ? 60 : 0),
           child: _buildPicker(),
         ),
         // Put the mode toggle button on top so that it won't be covered up by the _MonthPicker
@@ -1056,115 +1058,118 @@ class _DayPickerState extends State<_DayPicker> {
     final int month = widget.displayedMonth.month;
 
     final int daysInMonth = utils.getDaysInMonth(year, month);
-    final int dayOffset = utils.firstDayOffset(year, month, localizations);
+
+    // Calculate offset based on Sunday-first week (since _dayHeaders always uses Sunday-Saturday order)
+    // DateTime.weekday: 1=Monday, 2=Tuesday, ..., 7=Sunday
+    // We need: 0=Sunday, 1=Monday, ..., 6=Saturday
+    final int firstDayWeekday = DateTime(year, month).weekday;
+    final int dayOffset = (firstDayWeekday == 7)
+        ? 0
+        : firstDayWeekday; // Sunday (7) -> 0, Monday (1) -> 1, etc.
 
     final List<Widget> dayItems = _dayHeaders(headerStyle, localizations);
     // 1-based day of month, e.g. 1-31 for January, and 1-29 for February on
     // a leap year.
-    int day = -(dayOffset + 1);
+    // Add empty containers for days before the 1st of the month
+    for (int i = 0; i < dayOffset; i++) {
+      dayItems.add(Container(
+        child: Center(child: Container()),
+      ));
+    }
+    // Start from day 1 of the month
+    int day = 0;
     while (day < daysInMonth) {
       day++;
-      if (day < 1) {
-        dayItems.add(Container());
+      final DateTime dayToBuild = DateTime(year, month, day);
+      final bool isDisabled = dayToBuild.isAfter(widget.lastDate) ||
+          dayToBuild.isBefore(widget.firstDate) ||
+          (widget.selectableDayPredicate != null &&
+              !widget.selectableDayPredicate!(dayToBuild));
+      final bool isSelectedDay =
+          utils.isSameDay(widget.selectedDate, dayToBuild);
+
+      final bool isActiveDay = (widget.activeDates != null &&
+          widget.activeDates!.any((date) => utils.isSameDay(date, dayToBuild)));
+      final bool isToday = utils.isSameDay(widget.currentDate, dayToBuild);
+
+      BoxDecoration? decoration;
+      Color dayColor = enabledDayColor;
+      if (isActiveDay) {
+        dayColor = R.color.mainColor;
+      }
+      if (isSelectedDay) {
+        // The selected day gets a circle background highlight, and a
+        // contrasting text color.
+        dayColor = selectedDayColor;
+        decoration = BoxDecoration(
+          color: selectedDayBackground,
+          shape: BoxShape.circle,
+        );
+      } else if (isDisabled || (widget.activeDates != null && !isActiveDay)) {
+        dayColor = disabledDayColor;
+      } else if (isToday) {
+        // The current day gets a different text color and a circle stroke
+        // border.
+        dayColor = todayColor;
+        decoration = BoxDecoration(
+          border: Border.all(color: todayColor, width: 1),
+          shape: BoxShape.circle,
+        );
+      }
+
+      Widget dayWidget = Container(
+        decoration: decoration,
+        child: Center(
+          child: Text(localizations.formatDecimal(day),
+              style: dayStyle.apply(color: dayColor)),
+        ),
+      );
+
+      if (isDisabled || (widget.activeDates != null && !isActiveDay)) {
+        dayWidget = ExcludeSemantics(
+          child: dayWidget,
+        );
       } else {
-        final DateTime dayToBuild = DateTime(year, month, day);
-        final bool isDisabled = dayToBuild.isAfter(widget.lastDate) ||
-            dayToBuild.isBefore(widget.firstDate) ||
-            (widget.selectableDayPredicate != null &&
-                !widget.selectableDayPredicate!(dayToBuild));
-        final bool isSelectedDay =
-            utils.isSameDay(widget.selectedDate, dayToBuild);
-
-        final bool isActiveDay = (widget.activeDates != null &&
-            widget.activeDates!
-                .any((date) => utils.isSameDay(date, dayToBuild)));
-        final bool isToday = utils.isSameDay(widget.currentDate, dayToBuild);
-
-        BoxDecoration? decoration;
-        Color dayColor = enabledDayColor;
-        if (isActiveDay) {
-          dayColor = R.color.mainColor;
-        }
-        if (isSelectedDay) {
-          // The selected day gets a circle background highlight, and a
-          // contrasting text color.
-          dayColor = selectedDayColor;
-          decoration = BoxDecoration(
-            color: selectedDayBackground,
-            shape: BoxShape.circle,
-          );
-        } else if (isDisabled || (widget.activeDates != null && !isActiveDay)) {
-          dayColor = disabledDayColor;
-        } else if (isToday) {
-          // The current day gets a different text color and a circle stroke
-          // border.
-          dayColor = todayColor;
-          decoration = BoxDecoration(
-            border: Border.all(color: todayColor, width: 1),
-            shape: BoxShape.circle,
-          );
-        }
-
-        Widget dayWidget = Container(
-          decoration: decoration,
-          child: Center(
-            child: Text(localizations.formatDecimal(day),
-                style: dayStyle.apply(color: dayColor)),
+        dayWidget = InkResponse(
+          focusNode: _dayFocusNodes[day - 1],
+          onTap: () => widget.onChanged(dayToBuild),
+          radius: _dayPickerRowHeight / 2 + 4,
+          splashColor: selectedDayBackground.withOpacity(0.38),
+          child: Semantics(
+            // We want the day of month to be spoken first irrespective of the
+            // locale-specific preferences or TextDirection. This is because
+            // an accessibility user is more likely to be interested in the
+            // day of month before the rest of the date, as they are looking
+            // for the day of month. To do that we prepend day of month to the
+            // formatted full date.
+            label:
+                '${localizations.formatDecimal(day)}, ${localizations.formatFullDate(dayToBuild)}',
+            selected: isSelectedDay,
+            excludeSemantics: true,
+            child: dayWidget,
           ),
         );
-
-        if (isDisabled || (widget.activeDates != null && !isActiveDay)) {
-          dayWidget = ExcludeSemantics(
-            child: dayWidget,
-          );
-        } else {
-          dayWidget = InkResponse(
-            focusNode: _dayFocusNodes[day - 1],
-            onTap: () => widget.onChanged(dayToBuild),
-            radius: _dayPickerRowHeight / 2 + 4,
-            splashColor: selectedDayBackground.withOpacity(0.38),
-            child: Semantics(
-              // We want the day of month to be spoken first irrespective of the
-              // locale-specific preferences or TextDirection. This is because
-              // an accessibility user is more likely to be interested in the
-              // day of month before the rest of the date, as they are looking
-              // for the day of month. To do that we prepend day of month to the
-              // formatted full date.
-              label:
-                  '${localizations.formatDecimal(day)}, ${localizations.formatFullDate(dayToBuild)}',
-              selected: isSelectedDay,
-              excludeSemantics: true,
-              child: dayWidget,
-            ),
-          );
-        }
-
-        dayItems.add(dayWidget);
       }
+
+      dayItems.add(dayWidget);
     }
 
     return Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: _monthPickerHorizontalPadding,
         ),
-        child: widget.activeDates != null
-            ? GridView.count(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                crossAxisCount: 7,
-                children: dayItems,
-                crossAxisSpacing: 4,
-                physics: const NeverScrollableScrollPhysics(),
-              )
-            : GridView.custom(
-                physics: const ClampingScrollPhysics(),
-                gridDelegate: _dayPickerGridDelegate,
-                childrenDelegate: SliverChildListDelegate(
-                  dayItems,
-                  addRepaintBoundaries: false,
-                ),
-              ));
-    ;
+        child: GridView.custom(
+          padding: EdgeInsets.zero,
+          shrinkWrap: widget.activeDates != null,
+          physics: widget.activeDates != null
+              ? const NeverScrollableScrollPhysics()
+              : const ClampingScrollPhysics(),
+          gridDelegate: _dayPickerGridDelegate,
+          childrenDelegate: SliverChildListDelegate(
+            dayItems,
+            addRepaintBoundaries: false,
+          ),
+        ));
   }
 }
 

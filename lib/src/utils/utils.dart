@@ -552,13 +552,12 @@ class Utils {
         return R.string.interview.tr();
       case ScheduleType.booking_solo:
         return R.string.booking.tr();
-      case ScheduleType.book_1_n:
-        return R.string.webinar.tr();
       case ScheduleType.survey:
       case ScheduleType.update_profile:
         return R.string.survey.tr();
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
+      case ScheduleType.book_1_n:
         return R.string.lesson.tr();
       case ScheduleType.custom:
         return R.string.target.tr();
@@ -602,7 +601,6 @@ class Utils {
       case ScheduleType.book_1_1:
       case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
-      case ScheduleType.book_1_n:
         return R.color.event_color;
       case ScheduleType.booking_solo:
         return R.color.greenGradientTop02;
@@ -614,6 +612,7 @@ class Utils {
         return R.color.survey_color;
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
+      case ScheduleType.book_1_n:
         return R.color.lesson_color;
       case ScheduleType.update_profile:
         return R.color.survey_color;
