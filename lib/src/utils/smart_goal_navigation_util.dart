@@ -363,6 +363,7 @@ class SmartGoalNavigationUtil {
                 "endTime": '',
                 "bookingQuantity": bookingQuantity,
                 "interviewType": interviewType,
+                "fromActivityTab": true,
               });
               return;
             }
@@ -375,7 +376,8 @@ class SmartGoalNavigationUtil {
                   'courseId': courseId,
                   'endTime': '',
                   'interviewType': interviewType,
-                  'smartGoal': smartGoal
+                  'smartGoal': smartGoal,
+                  'fromActivityTab': true,
                 });
           }
         },
@@ -388,7 +390,8 @@ class SmartGoalNavigationUtil {
                 'courseId': courseId,
                 'endTime': '',
                 'interviewType': interviewType,
-                'smartGoal': smartGoal
+                'smartGoal': smartGoal,
+                'fromActivityTab': true,
               });
         },
       );
