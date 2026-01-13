@@ -11,8 +11,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
-/// Widget hiển thị phân bổ dinh dưỡng với các thanh tiến trình ngang
-/// Hiển thị tỷ lệ phần trăm các nhóm dinh dưỡng: Tinh bột, Chất đạm, Chất béo, Rau củ, Hoa quả
 class NutrientDistributionChart extends StatefulWidget {
   NutrientDistributionChart({Key? key}) : super(key: key);
   @override

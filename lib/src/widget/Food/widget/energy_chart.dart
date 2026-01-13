@@ -335,10 +335,21 @@ class EnergyChartState extends State<EnergyChart>
     String selectedDate = DateFormat('dd/MM').format(DateTime.now());
     String selectedDateTime = DateFormat('HH:mm').format(DateTime.now());
     String selectedStatus = 'Cân bằng'; // Get from model
-    String selectedMeal =
-        model.mealDetails.isNotEmpty ? model.mealDetails[0].text! : 'Bữa trưa';
-    String selectedPoints = '8 điểm'; // Get from model
-    String selectedKcal = '${model.total!.round()} Kcal';
+
+    // Find meal with highest energy
+    String selectedMeal = 'Bữa trưa';
+    double maxEnergy = 0;
+    if (model.mealDetails.isNotEmpty) {
+      for (var meal in model.mealDetails) {
+        if ((meal.value ?? 0) > maxEnergy) {
+          maxEnergy = meal.value ?? 0;
+          selectedMeal = meal.text!;
+        }
+      }
+    }
+
+    String selectedPoints = '8 điểm'; // TODO: Get from model when available
+    String selectedKcal = '${maxEnergy.round()} Kcal';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
