@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/revise_weight_record_request.dart';
@@ -94,6 +96,14 @@ class WeightRepository {
   Future<ApiResult<SubmitWeightRecordResponse>> submitWeightRecord(
       SubmitWeightRecordRequest request) async {
     try {
+      final params = {
+        'date': request.date.toString(),
+        'weight': request.weight.toString(),
+        'height': request.height.toString(),
+        'waist': request.waist?.toString(),
+        'note': request.note,
+      };
+      log('Weight input params: $params');
       final SubmitWeightRecordResponse response =
           await appClient.submitWeightRecord(
         date: request.date ~/ 1000,

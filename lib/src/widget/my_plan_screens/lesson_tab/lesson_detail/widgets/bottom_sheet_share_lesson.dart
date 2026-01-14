@@ -20,6 +20,7 @@ class BottomSheetShareLesson extends StatelessWidget {
   }) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       isDismissible: true,
       backgroundColor: Colors.transparent,
       builder: (context) => BottomSheetShareLesson(

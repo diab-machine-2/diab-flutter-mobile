@@ -109,10 +109,10 @@ class SmartGoalNavigationUtil {
         _showCustomGoalPopup(context, smartGoal: smartGoal);
         break;
       case ScheduleType.book_1_1:
-      case ScheduleType.book_1_n:
         _showCoachingPopup(context, smartGoal);
         break;
       case ScheduleType.survey:
+      case ScheduleType.quiz:
         _showSurveyPopup(context, survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
@@ -121,6 +121,7 @@ class SmartGoalNavigationUtil {
         break;
       case ScheduleType.lesson:
       case ScheduleType.infographic:
+      case ScheduleType.book_1_n:
         await _handleLesson(context, smartGoal);
         break;
       case ScheduleType.io_evaluate:
@@ -208,7 +209,8 @@ class SmartGoalNavigationUtil {
       'goalId': smartGoal?.id,
       BmiOnBoardingPage.bmiBlocKey: context.read<BmiBloc>(),
     };
-    await Navigator.pushNamed(context, NavigatorName.bmiInputPage, arguments: args);
+    await Navigator.pushNamed(context, NavigatorName.bmiInputPage,
+        arguments: args);
   }
 
   static Future<void> _handleEmotion(
@@ -361,6 +363,7 @@ class SmartGoalNavigationUtil {
                 "endTime": '',
                 "bookingQuantity": bookingQuantity,
                 "interviewType": interviewType,
+                "fromActivityTab": true,
               });
               return;
             }
@@ -373,7 +376,8 @@ class SmartGoalNavigationUtil {
                   'courseId': courseId,
                   'endTime': '',
                   'interviewType': interviewType,
-                  'smartGoal': smartGoal
+                  'smartGoal': smartGoal,
+                  'fromActivityTab': true,
                 });
           }
         },
@@ -386,7 +390,8 @@ class SmartGoalNavigationUtil {
                 'courseId': courseId,
                 'endTime': '',
                 'interviewType': interviewType,
-                'smartGoal': smartGoal
+                'smartGoal': smartGoal,
+                'fromActivityTab': true,
               });
         },
       );

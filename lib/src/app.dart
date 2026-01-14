@@ -683,6 +683,7 @@ class App extends StatelessWidget {
                           interviewType:
                               arguments?['interviewType'] as int? ?? 30,
                           smartGoal: arguments?['smartGoal'],
+                          fromActivityTab: arguments?['fromActivityTab'] as bool? ?? false,
                         ),
                       );
                     }
@@ -699,6 +700,7 @@ class App extends StatelessWidget {
                             args["endTime"],
                             args["bookingQuantity"],
                             args["interviewType"],
+                            fromActivityTab: args["fromActivityTab"] as bool? ?? false,
                           ));
                     }
 
