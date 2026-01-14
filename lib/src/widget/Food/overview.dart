@@ -4,6 +4,7 @@ import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
+import 'package:medical/src/widget/Food/widget/food_ai_suggestion.dart';
 import 'package:medical/src/widget/Food/widget/meal_distribution_widget.dart';
 import 'package:medical/src/widget/Food/widget/nutrient_distribution_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_trend_chart.dart';
@@ -31,6 +32,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
       GlobalKey();
   GlobalKey<FoodTrendChartState> trendKey = GlobalKey();
   GlobalKey<FoodChartState> foodKey = GlobalKey();
+  GlobalKey<FoodAISuggestionState> aiSuggestionKey = GlobalKey();
 
   @override
   void initState() {
@@ -41,6 +43,9 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   reloadData(int periodFilterType) {
     if (energyKey.currentState != null) {
       energyKey.currentState!.reloadData(periodFilterType);
+    }
+    if (aiSuggestionKey.currentState != null) {
+      aiSuggestionKey.currentState!.reloadData(periodFilterType);
     }
     if (starchKey.currentState != null) {
       starchKey.currentState!.reloadData(periodFilterType);
@@ -81,6 +86,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
               stops: const [0.0, 0.3, 0.8, 1.0])),
       child: ListView(physics: const ClampingScrollPhysics(), children: [
         EnergyChart(key: energyKey),
+        FoodAISuggestion(key: aiSuggestionKey, initialPeriodFilterType: 1),
         StarchChart(key: starchKey),
         FoodChart(key: foodKey),
         FoodTrendChart(key: trendKey),

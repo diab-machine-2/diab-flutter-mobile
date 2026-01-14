@@ -70,3 +70,10 @@ class FoodGroupDistributeLoaded extends FoodState {
 
   FoodGroupDistributeLoaded({this.model});
 }
+
+// State cho AI Analysis
+class FoodDietAnalysisLoaded extends FoodState {
+  final String? dietAnalysis;
+
+  FoodDietAnalysisLoaded({this.dietAnalysis});
+}

@@ -127,110 +127,132 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                   ),
                                   SizedBox(height: 24),
                                   // Donut chart and legend
-                                  Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: AspectRatio(
-                                          aspectRatio: 1,
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              PieChart(
-                                                PieChartData(
-                                                  startDegreeOffset: 270,
-                                                  borderData: FlBorderData(
-                                                    show: false,
+                                  Builder(builder: (context) {
+                                    // Count only meals with actual data
+                                    int actualMealCount = model!.energyChart
+                                        .where((item) => (item.value ?? 0) > 0)
+                                        .length;
+
+                                    return Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: AspectRatio(
+                                            aspectRatio: 1,
+                                            child: Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                PieChart(
+                                                  PieChartData(
+                                                    startDegreeOffset: 270,
+                                                    borderData: FlBorderData(
+                                                      show: false,
+                                                    ),
+                                                    sectionsSpace: 0,
+                                                    centerSpaceRadius: 50,
+                                                    sections: List.generate(
+                                                        model.energyChart
+                                                            .length, (i) {
+                                                      final double radius = 40;
+                                                      final item =
+                                                          model!.energyChart[i];
+                                                      final bool showTitle =
+                                                          i == 0 &&
+                                                              total.round() ==
+                                                                  100;
+
+                                                      return PieChartSectionData(
+                                                        color: toColor(
+                                                            item.colorCode),
+                                                        value:
+                                                            item.percentValue,
+                                                        title: showTitle
+                                                            ? '${total.round()}%'
+                                                            : '',
+                                                        titleStyle: TextStyle(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Colors.white,
+                                                        ),
+                                                        radius: radius,
+                                                      );
+                                                    }),
                                                   ),
-                                                  sectionsSpace: 0,
-                                                  centerSpaceRadius: 50,
-                                                  sections: List.generate(
-                                                      model.energyChart.length,
-                                                      (i) {
-                                                    final double radius = 40;
-                                                    final item =
-                                                        model!.energyChart[i];
-                                                    return PieChartSectionData(
+                                                ),
+                                                // Center content - meal count only
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      '$actualMealCount',
+                                                      style: TextStyle(
+                                                        fontSize: 32,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        color: R.color.black,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      'Bữa ăn',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: R.color
+                                                            .primaryGreyColor,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 32),
+                                        // Legend
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: List.generate(
+                                              model.energyChart.length, (i) {
+                                            final item = model!.energyChart[i];
+                                            return Padding(
+                                              padding:
+                                                  EdgeInsets.only(bottom: 12),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    width: 12,
+                                                    height: 12,
+                                                    decoration: BoxDecoration(
                                                       color: toColor(
                                                           item.colorCode),
-                                                      value: item.percentValue,
-                                                      showTitle: false,
-                                                      radius: radius,
-                                                    );
-                                                  }),
-                                                ),
-                                              ),
-                                              // Center content
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    '${total.round()}%',
-                                                    style: TextStyle(
-                                                      fontSize: 32,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      color: R.color.black,
+                                                      shape: BoxShape.circle,
                                                     ),
                                                   ),
-                                                  SizedBox(height: 4),
+                                                  SizedBox(width: 8),
                                                   Text(
-                                                    '${model.energyChart.length} Bữa ăn',
+                                                    item.text ?? '',
                                                     style: TextStyle(
-                                                      fontSize: 14,
+                                                      fontSize: 15,
                                                       fontWeight:
                                                           FontWeight.w400,
-                                                      color: R.color
-                                                          .primaryGreyColor,
+                                                      color: R.color.black,
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                            ],
-                                          ),
+                                            );
+                                          }),
                                         ),
-                                      ),
-                                      SizedBox(width: 32),
-                                      // Legend
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: List.generate(
-                                            model.energyChart.length, (i) {
-                                          final item = model!.energyChart[i];
-                                          return Padding(
-                                            padding:
-                                                EdgeInsets.only(bottom: 12),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  width: 12,
-                                                  height: 12,
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        toColor(item.colorCode),
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 8),
-                                                Text(
-                                                  item.text ?? '',
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: R.color.black,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        }),
-                                      ),
-                                      SizedBox(width: 16),
-                                    ],
-                                  ),
+                                        SizedBox(width: 16),
+                                      ],
+                                    );
+                                  }),
                                 ],
                               ),
                             ),

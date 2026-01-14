@@ -87,3 +87,14 @@ class FetchFoodGroupDistribute extends FoodEvent {
 
   FetchFoodGroupDistribute({this.currentDateTime, this.periodFilterType});
 }
+
+// Event cho AI Analysis
+class FetchDietAnalysis extends FoodEvent {
+  final String currentDateTime;
+  final String periodFilterType;
+
+  FetchDietAnalysis({
+    required this.currentDateTime,
+    required this.periodFilterType,
+  });
+}

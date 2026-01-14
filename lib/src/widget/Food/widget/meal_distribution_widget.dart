@@ -5,6 +5,7 @@ import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MealDistributionWidget extends StatefulWidget {
   MealDistributionWidget({Key? key}) : super(key: key);
@@ -18,11 +19,30 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
   int periodFilterType = 1;
+  bool _hasVisitedMealInput = false;
 
   @override
   void initState() {
     periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
+    _checkMealInputVisitStatus();
+  }
+
+  void _checkMealInputVisitStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    _hasVisitedMealInput = prefs.getBool('has_visited_meal_input') ?? false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _markMealInputAsVisited() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_visited_meal_input', true);
+    _hasVisitedMealInput = true;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   reloadData(int periodFilter) {
@@ -257,6 +277,126 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                           fontSize: 20,
                                           fontWeight: FontWeight.w700,
                                           color: R.color.mainColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 16),
+                                  // Sample Menu Button
+                                  GestureDetector(
+                                    onTap: () {
+                                      // TODO: Navigate to sample menu
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Colors.grey[300]!),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Image.asset(
+                                            R.drawable.im_food_intro,
+                                            width: 48,
+                                            height: 48,
+                                          ),
+                                          SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              'Thực đơn mẫu',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                color: R.color.black,
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.chevron_right,
+                                            color: R.color.black,
+                                            size: 24,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 12),
+                                  // Input Meal Section (icon + button)
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      // Icon with notification badge
+                                      Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Container(
+                                            width: 48,
+                                            height: 48,
+                                            decoration: BoxDecoration(
+                                              color: R.color.mainColor
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Center(
+                                              child: Image.asset(
+                                                R.drawable.ic_view_detail,
+                                                width: 24,
+                                                height: 24,
+                                                color: R.color.mainColor,
+                                              ),
+                                            ),
+                                          ),
+                                          // Red notification dot
+                                          if (!_hasVisitedMealInput)
+                                            Positioned(
+                                              top: -2,
+                                              right: -2,
+                                              child: Container(
+                                                width: 12,
+                                                height: 12,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      SizedBox(width: 12),
+                                      // Large Button
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            _markMealInputAsVisited();
+                                            // TODO: Navigate to add meal
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: R.color.mainColor,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 18),
+                                            elevation: 0,
+                                          ),
+                                          child: Text(
+                                            'Nhập bữa ăn',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],

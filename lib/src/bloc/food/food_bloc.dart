@@ -67,6 +67,9 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       yield* fetchFoodGroupDistribute(
           event.currentDateTime, event.periodFilterType);
     }
+    if (event is FetchDietAnalysis) {
+      yield* fetchDietAnalysis(event.currentDateTime, event.periodFilterType);
+    }
   }
 
   Stream<FoodState> fetchFoodLatest(int page) async* {
@@ -294,6 +297,27 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       yield FoodGroupDistributeLoaded(
           model: await client.fetchFoodGroupDistribute(
               currentDateTime, periodFilterType));
+    } catch (e, _) {
+      if (e is Error) {
+        yield FoodError(message: e.message);
+      } else {
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
+      }
+    }
+  }
+
+  // Handler cho AI Analysis
+  Stream<FoodState> fetchDietAnalysis(
+      String currentDateTime, String periodFilterType) async* {
+    try {
+      final client = FoodClient();
+      yield FoodLoading();
+
+      final dietAnalysis = await client.fetchDietAnalysis(
+        int.parse(periodFilterType),
+      );
+
+      yield FoodDietAnalysisLoaded(dietAnalysis: dietAnalysis ?? '');
     } catch (e, _) {
       if (e is Error) {
         yield FoodError(message: e.message);

@@ -9,17 +9,10 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
-import 'package:medical/src/widget/Food/widget/add_target_food.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/notice_change/notice_change_page.dart';
-
-import '../../../widgets/network_image_widget.dart';
 
 class EnergyChart extends StatefulWidget {
   const EnergyChart({Key? key}) : super(key: key);
@@ -29,7 +22,6 @@ class EnergyChart extends StatefulWidget {
 
 class EnergyChartState extends State<EnergyChart>
     with AutomaticKeepAliveClientMixin<EnergyChart> {
-  final AppRepository _appRepository = AppRepository();
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
@@ -56,12 +48,6 @@ class EnergyChartState extends State<EnergyChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final width = MediaQuery.of(context).size.width - 32;
-    final height = width / 1029 * 1044;
-    final heightApple = 185 * height / 348;
-
-    final heightLA = height * 22 / 348;
-    final top = height * 66 / 348;
 
     return BlocProvider<FoodBloc>(
         create: (context) => FoodBloc(),
@@ -79,251 +65,18 @@ class EnergyChartState extends State<EnergyChart>
           if (state is FoodStatisticCaloLoaded) {
             model = state.model;
           }
+
           return model == null
               ? Container(
-                  height: 491.5,
+                  height: 100,
                   child: const Center(child: CircularProgressIndicator()))
               : Container(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      // Header section (Blood Sugar style)
+                      // Header section (Balance status, meal, time, kcal)
                       _buildHeader(model),
-                      const SizedBox(height: 16),
-                      // Apple chart
-                      SizedBox(
-                        width: width,
-                        height: height,
-                        child: Stack(children: [
-                          Positioned(
-                            top: 70,
-                            left: 0,
-                            child: Stack(
-                                alignment: AlignmentDirectional.center,
-                                children: [
-                                  SizedBox(
-                                      width: heightApple,
-                                      height: heightApple,
-                                      child: CustomPaint(
-                                          painter: GradientArcPainter(
-                                        progress: 1,
-                                        startColor: R.color.white,
-                                        endColor: R.color.white,
-                                        width: 56.0,
-                                      ))),
-                                  SizedBox(
-                                      width: heightApple,
-                                      height: heightApple,
-                                      child: CustomPaint(
-                                          painter: GradientArcPainter(
-                                        progress: model.goal == null
-                                            ? 0
-                                            : model.total! / model.goal!,
-                                        startColor: toColor(model.colorCode)
-                                            .withOpacity(0.3),
-                                        endColor: toColor(model.colorCode),
-                                        width: 56.0,
-                                      ))),
-                                ]),
-                          ),
-                          Positioned(
-                            top: top,
-                            left: 0,
-                            child: Center(
-                              child: Container(
-                                  height: heightLA,
-                                  width: heightApple,
-                                  color: toColor(model.colorCode)),
-                            ),
-                          ),
-                          Image.asset(R.drawable.bg_apple_orange),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 16, left: 16, right: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(R.string.nang_luong.tr(),
-                                    style: TextStyle(
-                                        color: R.color.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w700)),
-                                GestureDetector(
-                                  onTap: () async {
-                                    final int inputEnergy =
-                                        model!.goal!.round();
-                                    final newInputEnergy = await showDialog(
-                                      barrierColor: R.color.color0xff003F38
-                                          .withOpacity(0.5),
-                                      context: context,
-                                      builder: (_) => AddTargetFood(
-                                          goal: model!.goal!.round()),
-                                    );
-                                    if (newInputEnergy is int &&
-                                        newInputEnergy != inputEnergy) {
-                                      showDialog(
-                                        barrierColor: R.color.color0xff003F38
-                                            .withOpacity(0.5),
-                                        context: context,
-                                        builder: (_) => NoticeChangePage(
-                                            description:
-                                                R.string.consumption.tr(),
-                                            onClick: () {
-                                              updateGoal(newInputEnergy);
-                                              Future.delayed(
-                                                  const Duration(
-                                                      milliseconds: 200), () {
-                                                _appRepository.createMenu(
-                                                    CreateMenuRequest(
-                                                  kcal: newInputEnergy,
-                                                  includeBreakfast:
-                                                      model?.includeBreakfast ??
-                                                          false,
-                                                  includeLunch:
-                                                      model?.includeLunch ??
-                                                          false,
-                                                  includeDinner:
-                                                      model?.includeDinner ??
-                                                          false,
-                                                ));
-                                              });
-                                            }),
-                                      );
-                                    }
-                                  },
-                                  child: Container(
-                                    color: R.color.transparent,
-                                    child: Row(
-                                      children: [
-                                        Image.asset(
-                                          R.drawable.ic_circle_plus_exe,
-                                          width: 24,
-                                          height: 24,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(R.string.muc_tieu_moi.tr(),
-                                            style: TextStyle(
-                                                color: R.color.mainColor,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w700)),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 58,
-                            right: 43,
-                            child: SizedBox(
-                              height: 170,
-                              child: Row(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: List.generate(
-                                        model.mealDetails.length,
-                                        (index) => Row(children: [
-                                              NetWorkImageWidget(
-                                                  imageUrl: model!
-                                                          .mealDetails[index]
-                                                          .icon
-                                                          .url ??
-                                                      '',
-                                                  width: 24,
-                                                  height: 24),
-                                              const SizedBox(width: 4),
-                                              Text(model
-                                                  .mealDetails[index].text!),
-                                            ])),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: List.generate(
-                                        model.mealDetails.length,
-                                        (index) => SizedBox(
-                                              height: 24,
-                                              child: Text(
-                                                  model!
-                                                      .mealDetails[index].value!
-                                                      .round()
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                      fontFamily: 'Viga',
-                                                      color: R.color.black,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      fontSize: 18)),
-                                            )),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: top,
-                            left: 0,
-                            child: Container(
-                              width: heightApple,
-                              height: heightApple,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(R.drawable.ic_bat,
-                                          width: 24, height: 24),
-                                      const SizedBox(width: 4),
-                                      Text(model.total!.round().toString(),
-                                          style: TextStyle(
-                                              fontFamily: 'Viga',
-                                              color: R.color.black,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.w400)),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                      model.goal == null
-                                          ? '0 ${R.string.kcal.tr()}'
-                                          : '/${formatNumber(model.goal)} ${R.string.kcal.tr()}',
-                                      style: TextStyle(
-                                          color: R.color.primaryGreyColor))
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: 16,
-                            right: 16,
-                            child: Row(
-                              children: [
-                                NetWorkImageWidget(
-                                    imageUrl: model.image!.url ?? '',
-                                    width: 65,
-                                    height: 110),
-                                const SizedBox(width: 25),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 8),
-                                    child: Text(model.note ?? ''),
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        ]),
-                      ),
+                      // Removed the yellow "Năng lượng" box with apple chart
                     ],
                   ),
                 );

@@ -553,4 +553,31 @@ class FoodClient extends FetchClient {
     }
     return null;
   }
+
+  // Lấy AI analysis cho dinh dưỡng
+  Future<String?> fetchDietAnalysis(int periodFilterType) async {
+    try {
+      print(
+          '🔍 Fetching Diet AI Analysis with periodFilterType: $periodFilterType');
+      final Response response = await super.fetchData(
+        url: '/App/Diet/Analysis/HealthTrend',
+        params: {
+          'periodFilterType': periodFilterType.toString(),
+        },
+      );
+      print('✅ API Response Status: ${response.statusCode}');
+      print('📦 API Response Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final result = response.data['data'] as String?;
+        print('✨ AI Analysis Result: $result');
+        return result;
+      }
+      print('⚠️ Non-200 status code');
+      return null;
+    } catch (e) {
+      print('❌ fetchDietAnalysis Error: $e');
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
 }
