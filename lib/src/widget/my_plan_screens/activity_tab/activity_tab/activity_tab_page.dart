@@ -75,6 +75,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       showBloodPressureIntro: true,
       hasInputBloodPressure: false,
       hasInputGlucose: false,
+      customExaminationHandler: _handleExaminationNavigation,
     ));
   }
 
@@ -1151,13 +1152,18 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
+  Future<void> _handleExaminationNavigation(
+      BuildContext context, SmartGoalList? smartGoal) async {
+    final examinationType = _extractExaminationType(smartGoal);
+    await _showExaminationOptionsBottomSheet(examinationType: examinationType);
+  }
+
   bool _isExaminationActivity(ScheduleType type, SmartGoalList? smartGoal) {
-    final name = ("Xét nghiệm HbA1C").toLowerCase();
-    return name.contains('xét nghiệm') || name.contains('xet nghiem');
+    return type == ScheduleType.examination;
   }
 
   String? _extractExaminationType(SmartGoalList? smartGoal) {
-    final name = "Xét nghiệm HbA1C" ?? '';
+    final name = smartGoal?.name ?? '';
     if (name.isEmpty) return null;
 
     // List of valid examination types
@@ -1203,7 +1209,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           margin: EdgeInsets.only(
             bottom: MediaQuery.of(context).padding.bottom,
           ),
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 56),
           decoration: BoxDecoration(
             color: R.color.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
@@ -1211,33 +1217,36 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Stack(
+                alignment: Alignment.center,
                 children: [
                   Text(
-                    'Chọn cách nhập',
+                    R.string.choose_input_method.tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: R.color.color0xff111515,
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.close, color: R.color.color0xff111515),
-                    onPressed: () => Navigator.of(context).pop(),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xff111515),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               _buildExaminationOptionItem(
-                icon: R.drawable.ic_home_doctor_consult,
-                title: 'Xét nghiệm tại nhà',
+                icon: R.drawable.ic_examination_at_home,
+                title: R.string.xet_nghiem_tai_nha.tr(),
                 onTap: () => Navigator.of(context).pop('at_home'),
               ),
               const SizedBox(height: 12),
               _buildExaminationOptionItem(
                 icon: R.drawable.ic_booking_clinic,
-                title: 'Xét nghiệm tại cơ sở',
+                title: R.string.xet_nghiem_tai_co_so.tr(),
                 onTap: () => Navigator.of(context).pop('at_clinic'),
               ),
             ],
@@ -1249,8 +1258,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     if (result == 'at_home') {
       _startExaminationAtHomeFlow(examinationType: examinationType);
     } else if (result == 'at_clinic') {
-      // Currently no special flow for "examination at facility".
-      // This can be implemented later if needed.
+      _startExaminationAtClinicFlow(examinationType: examinationType);
     }
   }
 
@@ -1295,6 +1303,17 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       arguments: {
         'isExamination': true,
         'examinationClinicId': 816,
+        'examinationType': examinationType,
+      },
+    );
+  }
+
+  void _startExaminationAtClinicFlow({String? examinationType}) {
+    Navigator.of(context).pushNamed(
+      NavigatorName.booking_clinic,
+      arguments: {
+        'isExamination': true,
+        'isExaminationAtClinic': true,
         'examinationType': examinationType,
       },
     );

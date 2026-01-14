@@ -1389,4 +1389,7 @@ booking,Đặt hẹn,Booking,
 interview,Phỏng vấn,Interview,
 appointment_time,"Thời gian hẹn","Appointment time",
 xet_nghiem_tai_nha,"Xét nghiệm tại nhà","Examination at home",
-xet_nghiem_tai_co_so,"Xét nghiệm tại cơ sở","Examination at facility"
+xet_nghiem_tai_co_so,"Xét nghiệm tại cơ sở","Examination at facility",
+examination,"Xét nghiệm",Examination.
+choose_input_method,"Chọn cách nhập",Choose input method,
+centre_name,Tên cơ sở,Centre name

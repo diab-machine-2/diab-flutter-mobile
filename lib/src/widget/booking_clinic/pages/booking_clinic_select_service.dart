@@ -56,17 +56,19 @@ class _BookingCLinicSelectServicePageState
     }
 
     // Auto-select services for examination flow
-    if (widget.examinationType != null && widget.examinationType!.isNotEmpty) {
+    if (_cubit.isExamination &&
+        _cubit.examinationType != null &&
+        _cubit.examinationType!.isNotEmpty) {
       _autoSelectExaminationServices();
     }
   }
 
   void _autoSelectExaminationServices() {
-    if (widget.examinationType == null || widget.examinationType!.isEmpty) {
+    if (_cubit.examinationType == null || _cubit.examinationType!.isEmpty) {
       return;
     }
 
-    final examinationTypeLower = widget.examinationType!.toLowerCase();
+    final examinationTypeLower = _cubit.examinationType!.toLowerCase();
     final allServices = widget.clinic.serviceList.categories
         .expand((category) => category.data)
         .toList();
@@ -443,7 +445,6 @@ class _BookingCLinicSelectServicePageState
       final route = ModalRoute.of(context)?.settings;
       final args = route?.arguments as Map<String, dynamic>?;
       final isEditing = args?['isEditing'] ?? false;
-      final isExamination = args?['isExamination'] ?? false;
 
       if (isEditing) {
         // First pop the current select_service page
@@ -472,7 +473,6 @@ class _BookingCLinicSelectServicePageState
           'serviceType': widget.serviceType,
           'action': widget.action,
           'bookingType': widget.bookingType,
-          'isExamination': isExamination,
         });
       } else {
         await DsmesNavigationMixin.getNavigationKey()
@@ -481,7 +481,6 @@ class _BookingCLinicSelectServicePageState
           'serviceType': widget.serviceType,
           'action': widget.action,
           'bookingType': widget.bookingType,
-          'isExamination': isExamination,
         });
       }
 

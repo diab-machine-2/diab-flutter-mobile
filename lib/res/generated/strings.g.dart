@@ -1443,4 +1443,7 @@ class Strings {
   String get appointment_time => 'appointment_time';
   String get xet_nghiem_tai_nha => 'xet_nghiem_tai_nha';
   String get xet_nghiem_tai_co_so => 'xet_nghiem_tai_co_so';
+  String get examination => 'examination';
+  String get choose_input_method => 'choose_input_method';
+  String get centre_name => 'centre_name';
 }

@@ -95,9 +95,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     }
 
     // Initialize without handling deeplinks yet
-    _cubit.initDsmesBooking();
-    // Load current DSMES appointments list
-    _cubit.fetchDsmesAppointmentList(showLoading: false);
+    _cubit.initDsmesBooking(isExamination: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.bloodPressureConsult == true) {

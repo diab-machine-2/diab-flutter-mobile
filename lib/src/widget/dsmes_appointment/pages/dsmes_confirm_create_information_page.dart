@@ -189,7 +189,7 @@ class _DsmesConfirmCreateInformationState
                         children: [
                           _buildPatientInformation(),
                           GapH(12),
-                          widget.isExamination
+                          _cubit.isExamination
                               ? _buildExaminationInformation()
                               : _buildConsultingInformation(),
                           if (widget.serviceType ==
@@ -447,6 +447,11 @@ class _DsmesConfirmCreateInformationState
       return const SizedBox.shrink();
     }
 
+    final isAtClinic = _cubit.examinationLocation == 'clinic';
+    final examinationTitle = isAtClinic
+        ? R.string.xet_nghiem_tai_co_so.tr()
+        : R.string.xet_nghiem_tai_nha.tr();
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
@@ -456,40 +461,130 @@ class _DsmesConfirmCreateInformationState
           Utils.getBoxShadowDropCard(),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Appointment time',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: R.color.color0xff636A6B,
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                getTimeRange(_cubit.createDsmesBookingRequest!.startTime,
-                    _cubit.createDsmesBookingRequest!.endTime),
+                examinationTitle,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: R.color.greenGradientBottom,
+                  color: R.color.color0xff141416,
                 ),
               ),
-              Text(
-                getFormattedDate(_cubit.createDsmesBookingRequest!.startTime),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: R.color.greenGradientBottom,
+              InkWell(
+                onTap: () {
+                  // Navigate to edit examination details
+                  // At home: navigate to datetime page
+                  // At clinic: navigate to provider page
+                  if (_cubit.examinationLocation == 'home') {
+                    // Navigate to datetime selection page for editing
+                    DsmesNavigationMixin.getNavigationKey()
+                        .currentState
+                        ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                            arguments: {
+                          'serviceType': widget.serviceType,
+                          'action': widget.action,
+                          'bookingType': widget.bookingType,
+                          'isMergedSchedule': false,
+                          'isEditing': true,
+                          'previousRoute':
+                              NavigatorName.dsmes_confirm_information,
+                        });
+                  } else {
+                    // Navigate to provider page for editing clinic selection
+                    DsmesNavigationMixin.getNavigationKey()
+                        .currentState
+                        ?.pushNamed(NavigatorName.clinic_providers, arguments: {
+                      'specialtyId': 0,
+                      'examinationType': _cubit.examinationType,
+                      'isEditing': true,
+                      'previousRoute': NavigatorName.dsmes_confirm_information,
+                    });
+                  }
+                },
+                child: Text(
+                  R.string.chinh_sua.tr(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.mainColor,
+                  ),
                 ),
               ),
             ],
           ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                R.string.appointment_time.tr(),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.color0xff636A6B,
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    getTimeRange(_cubit.createDsmesBookingRequest!.startTime,
+                        _cubit.createDsmesBookingRequest!.endTime),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                  Text(
+                    getFormattedDate(
+                        _cubit.createDsmesBookingRequest!.startTime),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (isAtClinic && _cubit.selectedClinic != null) ...[
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: Text(
+                    R.string.centre_name.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    _cubit.selectedClinic!.name ?? '',
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff141416,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

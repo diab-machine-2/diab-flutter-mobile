@@ -62,6 +62,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+
     if (_cubit.createDsmesBookingRequest != null) {
       final startTime = _cubit.createDsmesBookingRequest!.startTime;
       final endTime = _cubit.createDsmesBookingRequest!.endTime;
@@ -209,12 +210,36 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        // For examination flow, navigate directly back to the
-                        // activity tab (root navigator), instead of going back
-                        // through the intermediate booking clinic container.
-                        if (widget.isExamination) {
+                        // Check if we're in edit mode (coming from confirm page)
+                        final route = ModalRoute.of(context)?.settings;
+                        final args = route?.arguments as Map<String, dynamic>?;
+                        final isEditing = args?['isEditing'] ?? false;
+                        final previousRoute = args?['previousRoute'] as String?;
+
+                        // If editing from confirm page, pop back to confirm
+                        if (isEditing &&
+                            previousRoute ==
+                                NavigatorName.dsmes_confirm_information) {
                           BotToast.closeAllLoading();
-                          Navigator.of(context, rootNavigator: true).pop();
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pop();
+                          return;
+                        }
+
+                        // For examination flow, check location:
+                        // - at home: go back to activity tab (root navigator)
+                        // - at clinic: go back to provider page (normal pop)
+                        if (_cubit.isExamination) {
+                          BotToast.closeAllLoading();
+                          if (_cubit.examinationLocation == 'home') {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          } else {
+                            // At clinic: pop normally to go back to provider page
+                            DsmesNavigationMixin.getNavigationKey()
+                                .currentState
+                                ?.pop();
+                          }
                         } else {
                           DsmesNavigationMixin.getNavigationKey()
                               .currentState
@@ -282,7 +307,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     final route = ModalRoute.of(context)?.settings;
     final args = route?.arguments as Map<String, dynamic>?;
     final isEditing = args?['isEditing'] ?? false;
-    final isExamination = args?['isExamination'] ?? widget.isExamination;
+    final isExamination = _cubit.isExamination;
 
     if (widget.action == 'reschedule' || isEditing) {
       return _buildButton(R.string.tiep_tuc.tr(), () {
@@ -501,6 +526,19 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
           startTime: selectedBookingSchedule!.startTime,
           endTime: selectedBookingSchedule!.endTime);
 
+      // Check if we're in edit mode (coming from confirm page)
+      final route = ModalRoute.of(context)?.settings;
+      final args = route?.arguments as Map<String, dynamic>?;
+      final isEditing = args?['isEditing'] ?? false;
+      final previousRoute = args?['previousRoute'] as String?;
+
+      // If editing from confirm page, pop back to confirm
+      if (isEditing &&
+          previousRoute == NavigatorName.dsmes_confirm_information) {
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+        return;
+      }
+
       // Normal flow
       DsmesNavigationMixin.getNavigationKey()
           .currentState
@@ -509,8 +547,6 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
         'serviceType': DsmesAppointmentMode.telemedicine.toString(),
         'action': widget.action,
         'bookingType': widget.bookingType,
-        'isExamination': widget.isExamination,
-        'examinationType': widget.examinationType,
       });
     } finally {
       setState(() => isProcessingClinic['telemedicine'] = false);

@@ -36,12 +36,14 @@ import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_mod
 
 class BookingClinicPage extends StatefulWidget {
   final bool isExamination;
+  final bool isExaminationAtClinic;
   final int? examinationClinicId;
   final String? examinationType;
 
   const BookingClinicPage({
     Key? key,
     this.isExamination = false,
+    this.isExaminationAtClinic = false,
     this.examinationClinicId,
     this.examinationType,
   }) : super(key: key);
@@ -70,16 +72,16 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
     // Initialize Docosan user & location
-    _cubit.initDsmesBooking();
-    // Only load existing clinic appointments in normal booking flow
-    if (!widget.isExamination) {
-      _cubit.fetchDsmesAppointmentList(showLoading: false);
-    }
+    _cubit.initDsmesBooking(isExamination: widget.isExamination);
 
     if (widget.isExamination) {
       // Delay navigation to ensure nested navigator is ready.
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _startExaminationAtHomeFlow();
+        if (widget.isExaminationAtClinic) {
+          _startExaminationAtClinicFlow();
+        } else {
+          _startExaminationAtHomeFlow();
+        }
       });
     }
   }
@@ -215,8 +217,6 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           appointmentId: args["appointmentId"],
                           isMergedSchedule: args["isMergedSchedule"] ?? false,
                           bookingType: args["bookingType"],
-                          isExamination: args["isExamination"] ?? false,
-                          examinationType: args["examinationType"],
                         ),
                       );
                     }
@@ -304,6 +304,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         settings,
                         BookingClinicProvidersPage(
                           specialtyId: args!["specialtyId"],
+                          examinationType: args["examinationType"],
                         ),
                       );
                     }
@@ -318,7 +319,6 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           serviceType: args["serviceType"],
                           action: args["action"],
                           bookingType: args["bookingType"],
-                          examinationType: args["examinationType"],
                         ),
                       );
                     }
@@ -586,12 +586,19 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
       return;
     }
 
+    _cubit.setExaminationData(
+      isExamination: true,
+      examinationType: widget.examinationType,
+      examinationLocation: 'home',
+    );
+
     _cubit.initCreateDsmesBookingRequest(
         locale: DsmesNavigationMixin.getNavigationKey()
                 .currentContext
                 ?.locale
                 .languageCode ??
-            'vi');
+            'vi',
+        clearExamination: false);
 
     DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
       NavigatorName.dsmes_booking_select_date,
@@ -600,9 +607,24 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
         'action': 'create',
         'bookingType': Const.BOOKING_TYPE_CLINIC,
         'isMergedSchedule': false,
-        'isExamination': true,
+      },
+    );
+  }
+
+  Future<void> _startExaminationAtClinicFlow() async {
+    // Set examination data in cubit
+    _cubit.setExaminationData(
+      isExamination: true,
+      examinationType: widget.examinationType,
+      examinationLocation: 'clinic',
+    );
+
+    // Navigate to provider page with empty specialtyId and examinationType
+    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+      NavigatorName.clinic_providers,
+      arguments: {
+        'specialtyId': 0,
         'examinationType': widget.examinationType,
-        'fromExamination': true,
       },
     );
   }

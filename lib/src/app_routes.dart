@@ -112,6 +112,7 @@ class AppRoutes {
           final args = settings.arguments as Map<String, dynamic>?;
           page = BookingClinicPage(
             isExamination: args?['isExamination'] ?? false,
+            isExaminationAtClinic: args?['isExaminationAtClinic'] ?? false,
             examinationClinicId: args?['examinationClinicId'],
             examinationType: args?['examinationType'],
           );
