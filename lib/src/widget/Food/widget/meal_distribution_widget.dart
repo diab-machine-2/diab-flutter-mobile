@@ -67,7 +67,7 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
             final data = model!.energyChart;
             mealCount = data.length;
 
-            // Calculate total energy
+            // Calculate total energy - update
             data.forEach((element) {
               totalEnergy += element.value ?? 0;
             });
