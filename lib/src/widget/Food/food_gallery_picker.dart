@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:developer' as developer;
 import 'dart:typed_data';
+import 'package:app_settings/app_settings.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   List<String> _selectedImages = []; // Store photo IDs instead of file paths
   bool _isLoading = true;
   bool _hasPermission = false;
+  bool _isLimitedPermission = false; // Track if permission is limited
   final int _maxSelection = 5;
   bool _didApplyInitialSelectedPath = false;
 
@@ -87,7 +89,46 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       });
       print('Starting permission and photo loading process...');
 
-      // First try to request permission
+      // First, try to access photos directly without requesting permission
+      // This avoids triggering permission dialog if permission is already granted
+      try {
+        print(
+            'Attempting to access photos directly without requesting permission...');
+        final List<AssetPathEntity> albums =
+            await PhotoManager.getAssetPathList(
+          type: RequestType.image,
+          onlyAll: true,
+        );
+
+        if (albums.isNotEmpty) {
+          // Successfully accessed photos - permission is already granted
+          print('Successfully accessed photos without requesting permission');
+
+          // Now check permission state to determine if it's limited (without requesting)
+          // This should not trigger a dialog if permission is already granted
+          final PermissionState currentState =
+              await PhotoManager.requestPermissionExtend();
+          print('Permission state (already granted): $currentState');
+
+          if (!mounted) return;
+          final bool isLimited = currentState == PermissionState.limited;
+          setState(() {
+            _hasPermission = true;
+            _isLimitedPermission = isLimited;
+          });
+
+          _recentAlbum = albums.first;
+          await _loadPhotosPage(0, isInitialLoad: true);
+          return;
+        }
+      } catch (directAccessError) {
+        // Direct access failed - permission might not be granted
+        print(
+            'Direct access failed, need to request permission: $directAccessError');
+      }
+
+      // If direct access failed, request permission
+      print('Requesting permission...');
       final PermissionState currentState =
           await PhotoManager.requestPermissionExtend();
       print('Permission state after request: $currentState');
@@ -97,6 +138,13 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       print('Permission isLimited: ${currentState == PermissionState.limited}');
 
       if (_isDisposed || !mounted) return;
+
+      // Track if permission is limited
+      final bool isLimited = currentState == PermissionState.limited;
+      if (!mounted) return;
+      setState(() {
+        _isLimitedPermission = isLimited;
+      });
 
       // On Android 13+, sometimes permission state is incorrectly reported as denied
       // even when permission is actually granted. Let's try to access photos directly.
@@ -135,9 +183,16 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       if (albums.isNotEmpty) {
         print('Successfully accessed photos - permission is actually granted');
         if (!mounted) return;
+
+        // Check permission state again to update limited status
+        final PermissionState currentState =
+            await PhotoManager.requestPermissionExtend();
+        final bool isLimited = currentState == PermissionState.limited;
+
         setState(() {
           _hasPermission = true;
           _isLoading = false;
+          _isLimitedPermission = isLimited;
         });
         _recentAlbum = albums.first;
 
@@ -149,10 +204,15 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           // Gallery is empty - stop retrying
           print('Gallery is empty - no photos to load');
           if (!mounted) return;
+          // Check permission state to update limited status
+          final PermissionState currentState =
+              await PhotoManager.requestPermissionExtend();
+          final bool isLimited = currentState == PermissionState.limited;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
             _hasPermission = true; // Permission is granted, just no photos
+            _isLimitedPermission = isLimited;
             _hasCheckedEmptyGallery = true;
           });
           return;
@@ -209,6 +269,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           setState(() {
             _hasPermission = true;
             _isLoading = false;
+            _isLimitedPermission = currentState == PermissionState.limited;
             _hasCheckedEmptyGallery = true;
             _recentPhotos = []; // Empty list since we couldn't load photos
           });
@@ -248,6 +309,11 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           permission == PermissionState.limited ||
           permission.isAuth) {
         print('Permission granted on final attempt');
+        // Update limited permission status
+        if (!mounted) return;
+        setState(() {
+          _isLimitedPermission = permission == PermissionState.limited;
+        });
         // Reset the flag to allow one more try
         _hasCheckedEmptyGallery = false;
         await _tryLoadPhotosDirectly();
@@ -295,9 +361,14 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         final int assetCount = await _recentAlbum!.assetCountAsync;
         if (assetCount == 0) {
           if (!mounted) return;
+          // Check permission state to update limited status
+          final PermissionState currentState =
+              await PhotoManager.requestPermissionExtend();
+          final bool isLimited = currentState == PermissionState.limited;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
+            _isLimitedPermission = isLimited;
             _hasCheckedEmptyGallery = true;
           });
           return;
@@ -322,6 +393,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             _recentPhotos = [];
             _isLoading = false;
             _hasPermission = true;
+            _isLimitedPermission = currentState == PermissionState.limited;
             _hasCheckedEmptyGallery = true;
           });
         } else {
@@ -443,6 +515,49 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   Future<void> _loadMorePhotos() async {
     if (!_isLoadingMore && _hasMorePhotos && _recentAlbum != null) {
       await _loadPhotosPage(_currentPage + 1);
+    }
+  }
+
+  /// Handle the "Manage" button press to show system photo picker for limited access
+  /// Since the banner only shows when _isLimitedPermission is true, we can safely
+  /// call presentLimited() directly without re-checking permission
+  Future<void> _handleManageLimitedAccess() async {
+    if (_isDisposed || !mounted) return;
+
+    try {
+      // Directly present the system UI to manage selection
+      // No need to check permission again since banner only shows when limited
+      await PhotoManager.presentLimited();
+      print('PhotoManager.presentLimited() completed');
+
+      // Reload photos to reflect any new selection made by the user
+      if (mounted) {
+        print('Refreshing gallery after managing limited photos...');
+
+        // Clear thumbnail cache to force refresh
+        _thumbnailFutures.clear();
+
+        // Reload photos to reflect changes
+        await _loadRecentPhotos();
+      }
+    } catch (e) {
+      print('Error managing limited access: $e');
+
+      // On Android, presentLimited() might not work, fallback to app settings
+      if (Platform.isAndroid) {
+        print('Android: Falling back to app settings...');
+        await AppSettings.openAppSettings(type: AppSettingsType.settings);
+
+        if (mounted) {
+          _showErrorDialog(
+              'Vui lòng vào Cài đặt > Quyền > Ảnh và video để quản lý quyền truy cập ảnh.\n\n'
+              'Sau khi thay đổi, vui lòng quay lại ứng dụng và làm mới danh sách ảnh.');
+        }
+      } else {
+        if (mounted) {
+          _showErrorDialog('Lỗi khi quản lý quyền truy cập: $e');
+        }
+      }
     }
   }
 
@@ -676,11 +791,54 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
     return Column(
       children: [
+        // Show "Manage" button row if permission is limited
+        if (_isLimitedPermission && _hasPermission) _buildLimitedAccessBanner(),
         // Recent photos grid
         Expanded(
           child: _buildPhotosGrid(),
         ),
       ],
+    );
+  }
+
+  /// Build the "Manage" button banner for limited access
+  Widget _buildLimitedAccessBanner() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: R.color.backgroundColorNew,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              R.string.given_access_gallery_description.tr(),
+              style: TextStyle(
+                fontSize: 14,
+                color: R.color.greenGradientBottom,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          TextButton(
+            onPressed: _handleManageLimitedAccess,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              R.string.manage.tr(),
+              style: TextStyle(
+                fontSize: 15,
+                color: R.color.greenGradientBottom,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
