@@ -1428,4 +1428,6 @@ class Strings {
   String get unknown_meal_image => 'unknown_meal_image';
   String get no_data_within => 'no_data_within';
   String get yesterday => 'yesterday';
+  String get given_access_gallery_description => 'given_access_gallery_description';
+  String get manage => 'manage';
 }
