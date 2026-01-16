@@ -5,7 +5,10 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
+import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
+import 'package:medical/src/widget/food_menu_screens/intro_sample_menu/intro_sample_menu_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,7 +71,7 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
   }
 
   Future<bool> _refresh() async {
-    BlocProvider.of<FoodBloc>(currentContext).add(FetchFoodGroupDistribute(
+    BlocProvider.of<FoodBloc>(currentContext).add(FetchStatisticDistribute(
       currentDateTime:
           (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
@@ -89,7 +92,7 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
           int mealCount = 0;
 
           if (state is FoodInitial) {
-            BlocProvider.of<FoodBloc>(context).add(FetchFoodGroupDistribute(
+            BlocProvider.of<FoodBloc>(context).add(FetchStatisticDistribute(
               currentDateTime:
                   (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType: periodFilterType.toString(),
@@ -99,12 +102,13 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
             Message.showToastMessage(context, state.message);
           }
 
-          if (state is FoodGroupDistributeLoaded) {
+          if (state is FoodStatisticDistributeLoaded) {
             model = state.model;
             final data = model!.energyChart;
-            mealCount = data.length;
+            // Count only meals with actual data
+            mealCount = data.where((item) => (item.value ?? 0) > 0).length;
 
-            // Calculate total energy - update
+            totalEnergy = 0;
             data.forEach((element) {
               totalEnergy += element.value ?? 0;
             });
@@ -336,9 +340,48 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                   ),
                                   SizedBox(height: 16),
                                   // Sample Menu Button
-                                  GestureDetector(
-                                    onTap: () {
-                                      // TODO: Navigate to sample menu
+                                  InkWell(
+                                    onTap: () async {
+                                      // Check if user has sample menu already
+                                      final repository = AppRepository();
+                                      final result =
+                                          await repository.getCurrentUserInfo();
+
+                                      result.when(
+                                        success: (userInfoResponse) {
+                                          if (userInfoResponse
+                                                  .data?.hasFoodMenu ==
+                                              true) {
+                                            // User has sample menu → Go directly to FoodMenuPage
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FoodMenuPage(),
+                                              ),
+                                            );
+                                          } else {
+                                            // User doesn't have sample menu → Show intro page
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    IntroSampleMenuPage(),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        failure: (error) {
+                                          // On error, default to intro page
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  IntroSampleMenuPage(),
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
