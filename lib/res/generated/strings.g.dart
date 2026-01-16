@@ -1441,4 +1441,6 @@ class Strings {
   String get quiz => 'quiz';
   String get booking => 'booking';
   String get interview => 'interview';
+  String get given_access_gallery_description => 'given_access_gallery_description';
+  String get manage => 'manage';
 }

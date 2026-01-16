@@ -118,22 +118,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         _showErrorDialog('Camera permission is required to take photos');
         return;
       }
-
-      // Request photo library permission using photo_manager
-      final PermissionState photoPermission =
-          await PhotoManager.requestPermissionExtend();
-      final bool photoGranted = photoPermission == PermissionState.authorized ||
-          photoPermission == PermissionState.limited ||
-          photoPermission.isAuth;
-      print('Photo permission status (authorized/limited): $photoGranted');
-
-      // Fallback for older SDKs or permanently denied
-      if (!photoGranted) {
-        final bool fallbackGranted = await _requestGalleryPermission();
-        print(
-            'Fallback photo permission via permission_handler: $fallbackGranted');
-      }
-
+      
       _requestingPermission = false;
 
       // Wait a bit before initializing camera to ensure permissions are fully processed
