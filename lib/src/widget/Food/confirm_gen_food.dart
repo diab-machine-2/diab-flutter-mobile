@@ -19,6 +19,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
 import 'food_detail_tabbar.dart';
+import 'food_result.dto.dart';
 import 'search_food_controller.dart';
 
 class ConfirmGeneratedFood extends StatefulWidget {
@@ -607,9 +608,40 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       if (result == true) {
         // Clean up temporary files created on iOS after successful API submission
         await _cleanupTempFiles(paths);
+
+        // Create FoodResultDto for result screen
+        double totalCarbs = _calculateTotalCarbs();
+        double totalProtein = _calculateTotalProtein();
+        double totalFat = _calculateTotalFat();
+
+        final foodResult = FoodResultDto(
+          id: '', // API doesn't return ID
+          dateTime: selectedDate,
+          timeFrame: widget.timeframe,
+          timeFrameId: widget.timeframeId,
+          totalCalories: totalKcal,
+          goalCalories: 2000, // TODO: Get from user goal calories
+          carbs: totalCarbs,
+          protein: totalProtein,
+          fat: totalFat,
+          vegetables: null,
+          fruits: null,
+          foods: _selectedFoods,
+          note: note,
+          images: [], // Images will be loaded in result screen if needed
+          healthRecommendation: null, // Will be fetched in result screen
+          isFetchAnalysis: true,
+          score: null, // TODO: Get from API
+          balanceStatus: null, // TODO: Get from API
+        );
+
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         Navigator.pop(context);
-        // NavigationUtil.navigatePage(context, FoodDetailTabbarController(initialTabIndex: 1));
+        Navigator.pushNamed(
+          context,
+          NavigatorName.add_food_result,
+          arguments: foodResult,
+        );
       }
       print("[KPI] close all loading.");
       BotToast.closeAllLoading();
@@ -661,6 +693,30 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       developer.log('[CAPTURE] Error in cleanup process: $e',
           name: '[CAPTURE]');
     }
+  }
+
+  double _calculateTotalCarbs() {
+    double total = 0;
+    _selectedFoods.forEach((element) {
+      total += (element.glucose ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalProtein() {
+    double total = 0;
+    _selectedFoods.forEach((element) {
+      total += (element.protein ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalFat() {
+    double total = 0;
+    _selectedFoods.forEach((element) {
+      total += (element.lipid ?? 0) * (element.portion ?? 0);
+    });
+    return total;
   }
 
   void _showDialogSave() {

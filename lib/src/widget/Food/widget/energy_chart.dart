@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -87,22 +88,20 @@ class EnergyChartState extends State<EnergyChart>
     // Sample data - replace with actual meal data from API
     String selectedDate = DateFormat('dd/MM').format(DateTime.now());
     String selectedDateTime = DateFormat('HH:mm').format(DateTime.now());
-    String selectedStatus = 'Cân bằng'; // Get from model
+    String selectedStatus = 'Chưa cân bằng'; // TODO: Get from API
 
-    // Find meal with highest energy
+    // Get the latest meal (last in list) - assuming API returns meals in chronological order
     String selectedMeal = 'Bữa trưa';
-    double maxEnergy = 0;
+    double selectedEnergy = 0;
     if (model.mealDetails.isNotEmpty) {
-      for (var meal in model.mealDetails) {
-        if ((meal.value ?? 0) > maxEnergy) {
-          maxEnergy = meal.value ?? 0;
-          selectedMeal = meal.text!;
-        }
-      }
+      // Take the last meal in the list (most recent)
+      final latestMeal = model.mealDetails.last;
+      selectedMeal = latestMeal.text ?? 'Bữa ăn';
+      selectedEnergy = latestMeal.value ?? 0;
     }
 
-    String selectedPoints = '8 điểm'; // TODO: Get from model when available
-    String selectedKcal = '${maxEnergy.round()} Kcal';
+    String selectedPoints = '0 điểm'; // TODO: Get from API when available
+    String selectedKcal = '${selectedEnergy.round()} Kcal';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -256,7 +255,68 @@ class EnergyChartState extends State<EnergyChart>
             ),
           ],
         ),
+        const SizedBox(height: 16),
+        // Mockup line chart
+        Container(
+          height: 88,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildMockupChart(),
+        ),
       ],
+    );
+  }
+
+  Widget _buildMockupChart() {
+    // Mockup data points (waiting for API)
+    final mockupData = [
+      FlSpot(0, 500),
+      FlSpot(1, 650),
+      FlSpot(2, 720),
+      FlSpot(3, 580),
+      FlSpot(4, 690),
+    ];
+
+    return LineChart(
+      LineChartData(
+        minX: 0,
+        maxX: 4,
+        minY: 400,
+        maxY: 800,
+        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(show: false),
+        borderData: FlBorderData(show: false),
+        lineBarsData: [
+          LineChartBarData(
+            spots: mockupData,
+            isCurved: true,
+            color: R.color.greenGradientBottom,
+            barWidth: 2,
+            isStrokeCapRound: true,
+            dotData: FlDotData(
+              show: true,
+              getDotPainter: (spot, percent, barData, index) {
+                return FlDotCirclePainter(
+                  radius: 4,
+                  color: R.color.greenGradientBottom,
+                  strokeWidth: 2,
+                  strokeColor: Colors.white,
+                );
+              },
+            ),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                colors: [
+                  R.color.greenGradientBottom.withOpacity(0.3),
+                  R.color.greenGradientBottom.withOpacity(0.0),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

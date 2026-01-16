@@ -87,7 +87,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
       child: ListView(physics: const ClampingScrollPhysics(), children: [
         EnergyChart(key: energyKey),
         FoodAISuggestion(key: aiSuggestionKey, initialPeriodFilterType: 1),
-        StarchChart(key: starchKey),
+        // StarchChart(key: starchKey), // Hidden per user request
         FoodChart(key: foodKey),
         FoodTrendChart(key: trendKey),
         NutrientDistributionChart(key: nutrientDistributionKey),

@@ -33,12 +33,13 @@ class NavigatorName {
   static const String detail_blood_pressure = '/detail_blood_pressure';
   static const String detail_bmi = '/detail_bmi';
   static const String bmi = '/bmi';
-  
+
   static const String add_emo = '/add_emo';
   static const String add_symbo = '/add_symbo';
   static const String add_work = '/add_work';
   static const String add_insight = '/add_insight';
   static const String add_food = '/add_food';
+  static const String add_food_result = '/add_food_result';
   static const String confirm_food = '/confirm_food';
   static const String food_image_capture = '/food_image_capture';
   static const String detail_food = '/detail_food';
@@ -136,7 +137,8 @@ class NavigatorName {
   static const String blood_pressure_intro_2nd_page =
       '/blood_pressure_intro_2nd_page';
   static const String add_bloodpressure_result = '/add_bloodpressure_result';
-  static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
+  static const String detail_bloodpressure_listing =
+      '/detail_bloodpressure_listing';
 
   // Bmi
   static const String add_bmi = '/add_bmi';
@@ -155,10 +157,10 @@ class NavigatorName {
   static const String hba1c_intro_1st_page = '/hba1c_intro_1st_page';
   static const String hba1c_intro_2nd_page = '/hba1c_intro_2nd_page';
   static const String add_hba1c_result = '/add_hba1c_result';
-  
+
   // New Nutrition
   static const String nutrient_intro_1st_page = '/nutrient_intro_1st_page';
-  
+
   // Phone Update Flow
   static const String update_phone_number = '/update_phone_number';
   static const String confirm_phone_verify_otp = '/confirm_phone_verify_otp';
