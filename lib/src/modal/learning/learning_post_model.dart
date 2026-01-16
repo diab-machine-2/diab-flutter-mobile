@@ -1,6 +1,7 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/user_coach.dart';
+import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -29,6 +30,7 @@ class LearningPostModel {
   final int? duration; // Event duration in hours
   final String? lessonId; // ID of the lesson for replay
   final LessonSectionListResponseData? lesson; // Lesson data for replay
+  final Doctor? doctor; // Doctor information
 
   const LearningPostModel({
     required this.id,
@@ -54,6 +56,7 @@ class LearningPostModel {
     this.duration,
     this.lessonId,
     this.lesson,
+    this.doctor,
   });
   @override
   factory LearningPostModel.fromJson(Map<String, dynamic> json) {
@@ -106,6 +109,9 @@ class LearningPostModel {
           ? LessonSectionListResponseData.fromJson(
               json['lesson'] as Map<String, dynamic>)
           : null,
+      doctor: json['doctor'] != null && json['doctor'] is Map
+          ? Doctor.fromJson(json['doctor'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -144,6 +150,83 @@ class LearningPostModel {
       'duration': duration,
       'lessonId': lessonId,
       'lesson': lesson?.toJson(),
+      'doctor': doctor?.toJson(),
+    };
+  }
+}
+
+class Doctor {
+  final int id;
+  final String name;
+  final double? star;
+  final String status;
+  final String avatar;
+  final String graduateName;
+  final List<DoctorSpecialty> specialty;
+
+  Doctor({
+    required this.id,
+    required this.name,
+    this.star,
+    required this.status,
+    required this.avatar,
+    required this.graduateName,
+    required this.specialty,
+  });
+
+  factory Doctor.fromJson(Map<String, dynamic> json) {
+    return Doctor(
+      id: json['id'] is String
+          ? int.tryParse(json['id']) ?? 0
+          : json['id'] ?? 0,
+      name: json['name'] ?? '',
+      star: BookingClinicProvider.parseStarRating(json['star']),
+      status: json['status'] ?? '',
+      avatar: json['avatar'] ?? '',
+      graduateName: json['graduate_name'] ?? '',
+      specialty: json['specialty'] != null
+          ? (json['specialty'] as List)
+              .map((e) => DoctorSpecialty.fromJson(e))
+              .toList()
+          : [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'star': star,
+      'status': status,
+      'avatar': avatar,
+      'graduate_name': graduateName,
+      'specialty': specialty.map((s) => s.toJson()).toList(),
+    };
+  }
+}
+
+class DoctorSpecialty {
+  final int specialtyId;
+  final String name;
+
+  DoctorSpecialty({
+    required this.specialtyId,
+    required this.name,
+  });
+
+  factory DoctorSpecialty.fromJson(Map<String, dynamic> json) {
+    return DoctorSpecialty(
+      specialtyId: json['specialty_id'] is String
+          ? int.tryParse(json['specialty_id']) ?? 0
+          : json['specialty_id'] ?? 0,
+      name: json['name'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'specialty_id': specialtyId,
+      'name': name,
     };
   }
 }

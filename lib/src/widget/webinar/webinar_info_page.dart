@@ -722,7 +722,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                   ),
                                   // HTML content with ellipsis and show more
                                   _buildContentSection(webinar),
-                                  if (webinar.account != null) ...[
+                                  if (webinar.doctor != null) ...[
                                     SizedBox(height: 8.h),
                                     _buildSpeakerCard(webinar),
                                   ],
@@ -914,12 +914,23 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
   }
 
   Widget _buildSpeakerCard(LearningPostModel webinar) {
-    final coach = webinar.account!;
+    if (webinar.doctor == null) return const SizedBox.shrink();
+
+    final doctor = webinar.doctor!;
+    final specialtyName =
+        doctor.specialty.isNotEmpty ? doctor.specialty.first.name : '';
+    final titleText = doctor.graduateName.isNotEmpty && specialtyName.isNotEmpty
+        ? '${doctor.graduateName} $specialtyName'
+        : doctor.graduateName.isNotEmpty
+            ? doctor.graduateName
+            : specialtyName;
+    final displayName = '${doctor.name}'.trim();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Có sự tham gia',
+          R.string.participation.tr(),
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.w700,
@@ -937,10 +948,10 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
           child: Row(
             children: [
               CircleAvatar(
-                radius: 24.r,
+                radius: 36.r,
                 backgroundColor: const Color(0xFFE5E7EB),
-                backgroundImage: coach.avatar?.url != null
-                    ? NetworkImage(coach.avatar!.url!)
+                backgroundImage: doctor.avatar.isNotEmpty
+                    ? NetworkImage(doctor.avatar)
                     : null,
               ),
               SizedBox(width: 12.w),
@@ -948,22 +959,39 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      coach.fullName ?? '',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
-                      ),
-                    ),
-                    if (coach.accountPositionMappings != null &&
-                        coach.accountPositionMappings!.isNotEmpty)
+                    if (titleText.isNotEmpty)
                       Text(
-                        coach.accountPositionMappings!.first?.position?.name ??
-                            '',
+                        titleText,
                         style: TextStyle(
                           fontSize: 13.sp,
-                          color: const Color(0xFF6B7280),
+                          color: R.color.main_1,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    if (titleText.isNotEmpty) SizedBox(height: 4.h),
+                    Text(
+                      displayName,
+                      style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.color0xff111515),
+                    ),
+                    if (specialtyName.isNotEmpty) SizedBox(height: 8.h),
+                    if (specialtyName.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF3C7), // Light yellow/beige
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          specialtyName,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: R.color.color0xff95682E,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                   ],
