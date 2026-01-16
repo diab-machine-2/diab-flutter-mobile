@@ -1452,4 +1452,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get interview => 'interview';
   String get given_access_gallery_description => 'given_access_gallery_description';
   String get manage => 'manage';
+  String get participation => 'participation';
 }

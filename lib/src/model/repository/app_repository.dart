@@ -1022,6 +1022,29 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<WebinarDetailResponse>> getLearningPostEvent(
+      String id) async {
+    try {
+      final response = await appClient.getLearningPostEvent(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<WebinarDetailResponse>>> getLearningPostEvents() async {
+    try {
+      final response = await appClient.getLearningPostEvents();
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<void> registerLearningPostEvent(String id) async {
+    await appClient.registerLearningPostEvent(id);
+  }
+
   // Customer Receives
 
   Future<ApiResult<CommonResponse>> updateDoneInterview(String id) async {
