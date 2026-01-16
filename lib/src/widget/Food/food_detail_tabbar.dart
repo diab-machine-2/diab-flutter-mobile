@@ -115,6 +115,12 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     }
   }
 
+  void switchToTab(int index) {
+    if (_tabController != null && index >= 0 && index < 2) {
+      _tabController!.animateTo(index);
+    }
+  }
+
   checkShowDes() async {
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;

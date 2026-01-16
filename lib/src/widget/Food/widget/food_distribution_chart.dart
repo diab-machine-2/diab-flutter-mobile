@@ -155,21 +155,21 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                       final double radius = 40;
                                                       final item =
                                                           model!.energyChart[i];
-                                                      final bool showTitle =
-                                                          i == 0 &&
-                                                              total.round() ==
-                                                                  100;
+                                                      final percent =
+                                                          (item.percentValue ??
+                                                                  0)
+                                                              .round();
 
                                                       return PieChartSectionData(
                                                         color: toColor(
                                                             item.colorCode),
                                                         value:
                                                             item.percentValue,
-                                                        title: showTitle
-                                                            ? '${total.round()}%'
+                                                        title: percent > 0
+                                                            ? '$percent%'
                                                             : '',
                                                         titleStyle: TextStyle(
-                                                          fontSize: 16,
+                                                          fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.w700,
                                                           color: Colors.white,

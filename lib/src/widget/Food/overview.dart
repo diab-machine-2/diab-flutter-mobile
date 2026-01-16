@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
+import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/energy_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
@@ -11,6 +12,7 @@ import 'package:medical/src/widget/Food/widget/nutrient_distribution_chart.dart'
 import 'package:medical/src/widget/Food/widget/food_trend_chart.dart';
 import 'package:medical/src/widget/Food/widget/starch_chart.dart';
 import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodOverviewController extends StatefulWidget {
   FoodOverviewController({
@@ -35,10 +37,31 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   GlobalKey<FoodChartState> foodKey = GlobalKey();
   GlobalKey<FoodAISuggestionState> aiSuggestionKey = GlobalKey();
 
+  bool _hasVisitedDetailTab = false;
+
   @override
   void initState() {
     super.initState();
     KpiNutritionTracking.firebaseSetup();
+    _checkDetailTabVisitStatus();
+  }
+
+  void _checkDetailTabVisitStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    _hasVisitedDetailTab =
+        prefs.getBool('has_visited_food_detail_tab') ?? false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _markDetailTabAsVisited() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_visited_food_detail_tab', true);
+    _hasVisitedDetailTab = true;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   reloadData(int periodFilterType) {
@@ -126,43 +149,55 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Icon with notification badge
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: R.color.mainColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Image.asset(
-                            R.drawable.ic_view_detail,
-                            width: 24,
-                            height: 24,
-                            color: R.color.mainColor,
-                          ),
-                        ),
-                      ),
-                      // Red notification dot (you can add condition here)
-                      Positioned(
-                        top: -2,
-                        right: -2,
-                        child: Container(
-                          width: 12,
-                          height: 12,
+                  InkWell(
+                    onTap: () {
+                      _markDetailTabAsVisited();
+                      // Navigate to Detail tab
+                      final tabbarController =
+                          FoodDetailTabbarController.of(context);
+                      if (tabbarController != null) {
+                        tabbarController.switchToTab(1); // Index 1 = Detail tab
+                      }
+                    },
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
                           decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
+                            color: R.color.mainColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              R.drawable.ic_view_detail,
+                              width: 24,
+                              height: 24,
+                              color: R.color.mainColor,
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        // Red notification dot - only show if not visited
+                        if (!_hasVisitedDetailTab)
+                          Positioned(
+                            top: -2,
+                            right: -2,
+                            child: Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                   SizedBox(width: 12),
                   // Large Button

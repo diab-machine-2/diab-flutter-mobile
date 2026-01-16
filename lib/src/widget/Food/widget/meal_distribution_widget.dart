@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_observer/Observable.dart';
+import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
@@ -14,7 +16,7 @@ class MealDistributionWidget extends StatefulWidget {
 }
 
 class MealDistributionWidgetState extends State<MealDistributionWidget>
-    with AutomaticKeepAliveClientMixin<MealDistributionWidget> {
+    with AutomaticKeepAliveClientMixin<MealDistributionWidget>, Observer {
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
@@ -25,7 +27,22 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
   void initState() {
     periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
+    Observable.instance.addObserver(this);
     _checkMealInputVisitStatus();
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'food_change_data') {
+      _refresh();
+    }
   }
 
   void _checkMealInputVisitStatus() async {
@@ -142,33 +159,56 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                     final data = model!.energyChart;
                                     int balancedCount = 0;
                                     int unbalancedCount = 0;
+                                    int actualMealCount = 0;
 
                                     data.forEach((element) {
-                                      if ((element.percentValue ?? 0) >= 15) {
-                                        balancedCount++;
-                                      } else {
-                                        unbalancedCount++;
+                                      // Only count meals with actual data
+                                      if ((element.value ?? 0) > 0) {
+                                        actualMealCount++;
+                                        if ((element.percentValue ?? 0) >= 15) {
+                                          balancedCount++;
+                                        } else {
+                                          unbalancedCount++;
+                                        }
                                       }
                                     });
 
-                                    int balancedPercent = mealCount > 0
-                                        ? ((balancedCount / mealCount) * 100)
+                                    int balancedPercent = actualMealCount > 0
+                                        ? ((balancedCount / actualMealCount) *
+                                                100)
                                             .round()
                                         : 0;
                                     int unbalancedPercent =
                                         100 - balancedPercent;
 
+                                    // Debug log
+                                    print('🍽️ Meal Distribution Debug:');
+                                    print('  Total meals: ${data.length}');
+                                    print(
+                                        '  Actual meals (value > 0): $actualMealCount');
+                                    print(
+                                        '  Balanced (>= 15%): $balancedCount');
+                                    print(
+                                        '  Unbalanced (< 15%): $unbalancedCount');
+                                    print('  Balanced %: $balancedPercent');
+                                    print('  Unbalanced %: $unbalancedPercent');
+                                    data.forEach((e) {
+                                      print(
+                                          '    - ${e.text}: ${e.value} Kcal, ${e.percentValue}%');
+                                    });
+
                                     return Container(
                                       height: 40,
                                       child: Row(
                                         children: [
-                                          // Unbalanced portion
+                                          // Unbalanced portion - Yellow (bad)
                                           if (unbalancedPercent > 0)
                                             Expanded(
                                               flex: unbalancedPercent,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  color: Color(0xFFFDB913),
+                                                  color: Color(
+                                                      0xFFFDB913), // Yellow - chưa cân bằng
                                                 ),
                                                 alignment: Alignment.center,
                                                 child: Text(
@@ -181,13 +221,14 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                                 ),
                                               ),
                                             ),
-                                          // Balanced portion
+                                          // Balanced portion - Green (good)
                                           if (balancedPercent > 0)
                                             Expanded(
                                               flex: balancedPercent,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  color: Color(0xFF4CAF50),
+                                                  color: Color(
+                                                      0xFF4CAF50), // Green - cân bằng
                                                 ),
                                                 alignment: Alignment.center,
                                                 child: Text(
@@ -257,29 +298,41 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                   SizedBox(height: 16),
                                   Divider(height: 1, color: Colors.grey[300]),
                                   SizedBox(height: 16),
-                                  // Target Kcal
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Mục tiêu Kcal',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          color: R.color.primaryGreyColor,
-                                        ),
+                                  // Target Kcal with border
+                                  Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Colors.grey[300]!,
+                                        width: 1,
                                       ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        '${totalEnergy.toInt()} Kcal',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w700,
-                                          color: R.color.mainColor,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Mục tiêu Kcal',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: R.color.primaryGreyColor,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(height: 4),
+                                        Text(
+                                          '${totalEnergy.toInt()} Kcal',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w700,
+                                            color: R.color.mainColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                   SizedBox(height: 16),
                                   // Sample Menu Button
@@ -323,84 +376,84 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 12),
-                                  // Input Meal Section (icon + button)
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // Icon with notification badge
-                                      Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          Container(
-                                            width: 48,
-                                            height: 48,
-                                            decoration: BoxDecoration(
-                                              color: R.color.mainColor
-                                                  .withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Center(
-                                              child: Image.asset(
-                                                R.drawable.ic_view_detail,
-                                                width: 24,
-                                                height: 24,
-                                                color: R.color.mainColor,
-                                              ),
-                                            ),
-                                          ),
-                                          // Red notification dot
-                                          if (!_hasVisitedMealInput)
-                                            Positioned(
-                                              top: -2,
-                                              right: -2,
-                                              child: Container(
-                                                width: 12,
-                                                height: 12,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 2,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      SizedBox(width: 12),
-                                      // Large Button
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            _markMealInputAsVisited();
-                                            // TODO: Navigate to add meal
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: R.color.mainColor,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 18),
-                                            elevation: 0,
-                                          ),
-                                          child: Text(
-                                            'Nhập bữa ăn',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  // SizedBox(height: 12),
+                                  // // Input Meal Section (icon + button) - Hidden because of fixed bottom button
+                                  // Row(
+                                  //   crossAxisAlignment:
+                                  //       CrossAxisAlignment.center,
+                                  //   children: [
+                                  //     // Icon with notification badge
+                                  //     Stack(
+                                  //       clipBehavior: Clip.none,
+                                  //       children: [
+                                  //         Container(
+                                  //           width: 48,
+                                  //           height: 48,
+                                  //           decoration: BoxDecoration(
+                                  //             color: R.color.mainColor
+                                  //                 .withOpacity(0.1),
+                                  //             borderRadius:
+                                  //                 BorderRadius.circular(12),
+                                  //           ),
+                                  //           child: Center(
+                                  //             child: Image.asset(
+                                  //               R.drawable.ic_view_detail,
+                                  //               width: 24,
+                                  //               height: 24,
+                                  //               color: R.color.mainColor,
+                                  //             ),
+                                  //           ),
+                                  //         ),
+                                  //         // Red notification dot
+                                  //         if (!_hasVisitedMealInput)
+                                  //           Positioned(
+                                  //             top: -2,
+                                  //             right: -2,
+                                  //             child: Container(
+                                  //               width: 12,
+                                  //               height: 12,
+                                  //               decoration: BoxDecoration(
+                                  //                 color: Colors.red,
+                                  //                 shape: BoxShape.circle,
+                                  //                 border: Border.all(
+                                  //                   color: Colors.white,
+                                  //                   width: 2,
+                                  //                 ),
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //       ],
+                                  //     ),
+                                  //     SizedBox(width: 12),
+                                  //     // Large Button
+                                  //     Expanded(
+                                  //       child: ElevatedButton(
+                                  //         onPressed: () {
+                                  //           _markMealInputAsVisited();
+                                  //           // TODO: Navigate to add meal
+                                  //         },
+                                  //         style: ElevatedButton.styleFrom(
+                                  //           backgroundColor: R.color.mainColor,
+                                  //           shape: RoundedRectangleBorder(
+                                  //             borderRadius:
+                                  //                 BorderRadius.circular(100),
+                                  //           ),
+                                  //           padding: EdgeInsets.symmetric(
+                                  //               vertical: 18),
+                                  //           elevation: 0,
+                                  //         ),
+                                  //         child: Text(
+                                  //           'Nhập bữa ăn',
+                                  //           style: TextStyle(
+                                  //             fontSize: 16,
+                                  //             fontWeight: FontWeight.w700,
+                                  //             color: Colors.white,
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //     ),
+                                  //   ],
+                                  // ),
                                 ],
                               ),
                             ),
