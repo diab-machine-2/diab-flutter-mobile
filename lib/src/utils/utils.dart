@@ -664,6 +664,36 @@ class Utils {
     }
     return phoneNumber;
   }
+
+  static String getLanguageName(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.string.vietnamese.tr(),
+      'en': R.string.english.tr(),
+      'fr': R.string.french.tr(),
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
+
+  static String getLanguageFlag(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.icons.ic_flag_vn,
+      'en': R.icons.ic_flag_en,
+      'fr': R.icons.ic_flag_fr,
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
+
+    static bool get isSandboxVnPay {
+    if (AppSettings.environment == "product") {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
 
 extension Precision on double {

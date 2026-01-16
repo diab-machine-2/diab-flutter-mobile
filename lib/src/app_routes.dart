@@ -5,6 +5,7 @@ import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
+import 'package:medical/src/widget/booking_doctor/booking_doctor_page.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
@@ -20,6 +21,7 @@ import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
+import 'package:medical/src/widget/profile/cancellation_refund_policy.dart';
 
 import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
@@ -110,6 +112,11 @@ class AppRoutes {
       case NavigatorName.booking_clinic:
         {
           page = BookingClinicPage();
+          break;
+        }
+      case NavigatorName.booking_doctor:
+        {
+          page = BookingDoctorPage();
           break;
         }
       case NavigatorName.add_blood_sugar_result:
@@ -272,6 +279,9 @@ class AppRoutes {
           phone: data?['phone'] ?? '',
           isPhoneNumberExist: data?['isPhoneNumberExist'] ?? false,
         );
+        break;
+      case NavigatorName.cancellation_refund_policy:
+        page = CancellationRefundPolicyController();
         break;
 
       default:

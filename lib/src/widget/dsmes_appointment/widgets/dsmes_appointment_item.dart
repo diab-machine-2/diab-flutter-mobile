@@ -19,6 +19,7 @@ class DsmesAppointmentItem extends StatelessWidget {
   final VoidCallback onChooseService;
   final DsmesAppointmentCubit cubit;
   final bool displayActionButtons;
+  final String bookingType;
 
   const DsmesAppointmentItem({
     Key? key,
@@ -26,6 +27,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     required this.onChooseService,
     required this.cubit,
     this.displayActionButtons = true,
+    this.bookingType = Const.BOOKING_TYPE_CENTER,
   }) : super(key: key);
 
   @override
@@ -60,7 +62,8 @@ class DsmesAppointmentItem extends StatelessWidget {
           children: [
             _buildHeader(mode, icon, isPast: isPast),
             GapH(12),
-            _buildClinicInfo(data),
+            _buildClinicInfo(data, bookingType),
+            GapH(4),
             _buildDateTime(startDateTime, formattedDate, startTime, endTime),
             if (displayActionButtons)
               Padding(
@@ -125,7 +128,7 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
   }
 
-  Widget _buildClinicInfo(DsmesAppointment data) {
+  Widget _buildClinicInfo(DsmesAppointment data, String bookingType) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -134,14 +137,14 @@ class DsmesAppointmentItem extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Image.network(
-                "${Utils.getHostDocosanUrl()}${data.clinic.avatar}",
+                "${Utils.getHostDocosanUrl()}${_getAvatar(data, bookingType)}",
                 fit: BoxFit.cover,
               ),
             )),
         GapW(8),
         Flexible(
           child: Text(
-            data.clinic.name,
+            _getName(data, bookingType),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -153,6 +156,35 @@ class DsmesAppointmentItem extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _getAvatar(DsmesAppointment data, String bookingType) {
+    final isBookingDoctor = bookingType == Const.BOOKING_TYPE_DOCTOR;
+    if (isBookingDoctor) {
+      return data.doctor?.avatar ?? data.clinic.avatar;
+    } else {
+      return data.clinic.avatar;
+    }
+  }
+
+  String _getName(DsmesAppointment data, String bookingType) {
+    final isBookingDoctor = bookingType == Const.BOOKING_TYPE_DOCTOR;
+    if (isBookingDoctor) {
+      final doctor = data.doctor;
+      if (doctor != null) {
+        // Use name if it's not null and not empty
+        if (doctor.name.isNotEmpty) {
+          return doctor.name;
+        }
+        // Otherwise, use graduateName + displayName
+        final graduateName =
+            doctor.graduateName.isNotEmpty ? '${doctor.graduateName} ' : '';
+        return '$graduateName${doctor.displayName}';
+      }
+      return data.clinic.name;
+    } else {
+      return data.clinic.name;
+    }
   }
 
   Widget _buildDateTime(DateTime startDateTime, String formattedDate,
@@ -169,7 +201,7 @@ class DsmesAppointmentItem extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
+          padding: EdgeInsets.symmetric(horizontal: 4),
           child: Image.asset(R.drawable.ic_ellipse, width: 6, height: 6),
         ),
         Text(
@@ -367,28 +399,39 @@ class DsmesAppointmentItem extends StatelessWidget {
     );
     cubit.updateCreateDsmesBookingRequest(request: rebookingRequest);
 
-    if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.popUntil((route) => route.isFirst);
+    // Pop until dsmes_booking
+    DsmesNavigationMixin.getNavigationKey()
+        .currentState
+        ?.popUntil((route) => route.isFirst);
 
-      await DsmesNavigationMixin.getNavigationKey()
+    // Handle rebooking for booking dsmes center
+    if (bookingType == Const.BOOKING_TYPE_CENTER) {
+      // Then push to select date
+      if (appointment.mode == DsmesAppointmentMode.atClinic.toString()) {
+        await DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+          'serviceType': appointment.mode,
+          'action': 'create',
+        });
+      } else {
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
+          'action': 'create',
+          'clinic': cubit.selectedClinic,
+          'serviceType': appointment.mode,
+          'bookingType': bookingType,
+        });
+      }
+    } else {
+      // Handle rebooking for booking clinic
+      DsmesNavigationMixin.getNavigationKey()
           .currentState
           ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
         'serviceType': appointment.mode,
         'action': 'create',
-      });
-    } else {
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.popUntil((route) => route.isFirst);
-
-      DsmesNavigationMixin.getNavigationKey()
-          .currentState
-          ?.pushNamed(NavigatorName.dsmes_select_service, arguments: {
-        'action': 'create',
-        'clinic': cubit.selectedClinic,
-        'serviceType': appointment.mode,
+        'bookingType': bookingType,
       });
     }
   }

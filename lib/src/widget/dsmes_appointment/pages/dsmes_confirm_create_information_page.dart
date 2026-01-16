@@ -227,7 +227,8 @@ class _DsmesConfirmCreateInformationState
                     // Check if it's telemedicine clinic booking
                     bool isTelemedicineClinic = widget.serviceType ==
                             DsmesAppointmentMode.telemedicine.toString() &&
-                        widget.bookingType == Const.BOOKING_TYPE_CLINIC;
+                        (widget.bookingType == Const.BOOKING_TYPE_CLINIC ||
+                            widget.bookingType == Const.BOOKING_TYPE_DOCTOR);
 
                     // Handle reschedule case
                     if (widget.action == 'reschedule' &&
@@ -289,25 +290,25 @@ class _DsmesConfirmCreateInformationState
       _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
           symptomAttachments: data?.fileNetworkName ?? []);
 
-      // // Calculate total price
-      // int totalPrice = _calculateTotalPrice();
+      // Calculate total price
+      int totalPrice = _calculateTotalPrice();
 
-      // // Initialize VNPay service
-      // VNPayService paymentService = VNPayService(
-      //   context: context,
-      //   totalPrice: totalPrice,
-      //   bookingType: widget.bookingType,
-      //   serviceType: widget.serviceType,
-      //   cubit: _cubit,
-      // );
+      // Initialize VNPay service
+      VNPayService paymentService = VNPayService(
+        context: context,
+        totalPrice: totalPrice,
+        bookingType: widget.bookingType,
+        serviceType: widget.serviceType,
+        cubit: _cubit,
+      );
 
-      // bool initialized = await paymentService.initializePayment();
+      bool initialized = await paymentService.initializePayment();
 
-      // if (initialized) {
-      //   // Process payment directly
-      //   await paymentService.openVNPaySDK();
-      // }
-      _handleCreateBooking();
+      if (initialized) {
+        // Process payment directly
+        await paymentService.openVNPaySDK();
+      }
+      // _handleCreateBooking();
     } finally {
       setState(() => isProcessing['confirmBooking'] = false);
     }
@@ -676,7 +677,9 @@ class _DsmesConfirmCreateInformationState
                   Flexible(
                     flex: 3,
                     child: Text(
-                      R.string.center_name.tr(),
+                      widget.bookingType == Const.BOOKING_TYPE_DOCTOR
+                          ? R.string.doctor_name.tr()
+                          : R.string.center_name.tr(),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
@@ -687,7 +690,9 @@ class _DsmesConfirmCreateInformationState
                   Flexible(
                     flex: 7,
                     child: Text(
-                      _cubit.selectedClinic?.name ?? '',
+                      widget.bookingType == Const.BOOKING_TYPE_DOCTOR
+                          ? _cubit.selectedDoctor?.displayName ?? ''
+                          : _cubit.selectedClinic?.name ?? '',
                       maxLines: 2,
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
@@ -798,7 +803,8 @@ class _DsmesConfirmCreateInformationState
                     }
                   },
                   child: Visibility(
-                    visible: !isReschedule,
+                    visible: !isReschedule &&
+                        widget.bookingType != Const.BOOKING_TYPE_DOCTOR,
                     child: Container(
                       alignment: Alignment.center,
                       height: 20,
@@ -922,7 +928,8 @@ class _DsmesConfirmCreateInformationState
                     }
                   },
                   child: Visibility(
-                    visible: !isReschedule,
+                    visible: !isReschedule &&
+                        widget.bookingType != Const.BOOKING_TYPE_DOCTOR,
                     child: Container(
                       alignment: Alignment.center,
                       height: 20,
@@ -984,7 +991,7 @@ class _DsmesConfirmCreateInformationState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    R.string.estimated_cost.tr(),
+                    R.string.total_price.tr().replaceAll(':', ''),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w400,

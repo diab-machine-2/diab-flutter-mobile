@@ -12,7 +12,7 @@ class SearchBookingClinicListRequest {
   final String lng;
   final String lat;
   final String kind; // clinic, doctor
-  final List<String> timeframes; // weekend, weekday, after_hours
+  final List<String> timeframes; // cuoituan, trongtuan, ngoaigio
   final List<String> clinicTypes; // clinic, hospital, public_hospital, lab
 
   SearchBookingClinicListRequest({
@@ -28,7 +28,7 @@ class SearchBookingClinicListRequest {
     this.parentTerm = '',
     this.lng = '',
     this.lat = '',
-    this.kind = 'clinic',
+    this.kind = '',
     this.timeframes = const [],
     this.clinicTypes = const [],
   });

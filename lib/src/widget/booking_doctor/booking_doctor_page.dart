@@ -18,6 +18,8 @@ import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_p
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_select_service.dart';
 import 'package:medical/src/widget/booking_clinic/pages/other_diseases_page.dart';
+import 'package:medical/src/widget/booking_doctor/pages/booking_doctor_detail_page.dart';
+import 'package:medical/src/widget/booking_doctor/pages/booking_doctor_provider_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_appointment_history_page.dart';
@@ -34,14 +36,14 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class BookingClinicPage extends StatefulWidget {
-  const BookingClinicPage({Key? key}) : super(key: key);
+class BookingDoctorPage extends StatefulWidget {
+  const BookingDoctorPage({Key? key}) : super(key: key);
 
   @override
-  _BookingClinicPageState createState() => _BookingClinicPageState();
+  _BookingDoctorPageState createState() => _BookingDoctorPageState();
 }
 
-class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
+class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
   final RefreshController _controller = RefreshController();
   late DsmesAppointmentCubit _cubit;
   String _currentRoute = '/';
@@ -75,7 +77,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName == 'refresh_booking_clinic') {
+    if (notifyName == 'refresh_booking_doctor') {
       _refresh();
     }
   }
@@ -118,7 +120,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                     .currentState
                     ?.popUntil((route) => route.isFirst);
                 Observable.instance
-                    .notifyObservers([], notifyName: "refresh_booking_clinic");
+                    .notifyObservers([], notifyName: "refresh_booking_doctor");
                 return false;
               }
 
@@ -225,14 +227,15 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         ),
                       );
                     }
-                  case NavigatorName.dsmes_clinic_detail:
+                  case NavigatorName.doctor_detail:
                     {
                       Map<String, dynamic>? args =
                           settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
                         settings,
-                        DsmesClinicDetailPage(
+                        BookingDoctorDetailPage(
                           clinicId: args!["clinicId"],
+                          doctorId: args["doctorId"],
                           bookingType: args["bookingType"],
                         ),
                       );
@@ -270,17 +273,20 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         settings,
                         OtherDiseasesPage(
                           specialties: args!["specialties"],
+                          bookingType: args["bookingType"],
                         ),
                       );
                     }
-                  case NavigatorName.clinic_providers:
+                  case NavigatorName.doctor_providers:
                     {
                       Map<String, dynamic>? args =
                           settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
                         settings,
-                        BookingClinicProvidersPage(
+                        BookingDoctorProvidersPage(
                           specialtyId: args!["specialtyId"],
+                          specialtyName: args["specialtyName"],
+                          bookingType: args["bookingType"],
                         ),
                       );
                     }
@@ -420,7 +426,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                       .currentState
                       ?.pushNamed(NavigatorName.dsmes_booking_history,
                           arguments: {
-                        'bookingType': Const.BOOKING_TYPE_CLINIC,
+                        'bookingType': Const.BOOKING_TYPE_DOCTOR,
                       });
                 },
                 child: Container(
@@ -436,7 +442,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                     ),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
@@ -447,13 +453,18 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         fit: BoxFit.scaleDown,
                       ),
                       GapW(4),
-                      Text(
-                        R.string.consulting_history.tr(),
-                        style: TextStyle(
-                          fontSize: 13,
-                          // fontFamily: 'sfpro',
-                          fontWeight: FontWeight.w700,
-                          color: R.color.color0xff239A90,
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            R.string.consulting_history.tr(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              // fontFamily: 'sfpro',
+                              fontWeight: FontWeight.w700,
+                              color: R.color.color0xff239A90,
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -503,6 +514,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         final data = _cubit.listFilteredData[index];
                         return DsmesAppointmentItem(
                           data: data,
+                          bookingType: Const.BOOKING_TYPE_DOCTOR,
                           onChooseService: () async {
                             if (isProcessing['chooseService']!) return;
                             isProcessing['chooseService'] = true;
@@ -519,7 +531,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                                 arguments: {
                                   'serviceType': appointment?.mode,
                                   'appointment': appointment,
-                                  'bookingType': Const.BOOKING_TYPE_CLINIC,
+                                  'bookingType': Const.BOOKING_TYPE_DOCTOR,
                                 },
                               );
                             } finally {
@@ -567,7 +579,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                       .currentState
                       ?.pushNamed(NavigatorName.other_diseases, arguments: {
                     "specialties": specialties,
-                    "bookingType": Const.BOOKING_TYPE_CLINIC,
+                    "bookingType": Const.BOOKING_TYPE_DOCTOR,
                   });
                 } else {
                   _cubit.clearClinicProviders();
@@ -575,9 +587,9 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                   print('POSITION: $position');
                   DsmesNavigationMixin.getNavigationKey()
                       .currentState
-                      ?.pushNamed(NavigatorName.clinic_providers, arguments: {
+                      ?.pushNamed(NavigatorName.doctor_providers, arguments: {
                     "specialtyId": specialty.id,
-                    "bookingType": Const.BOOKING_TYPE_CLINIC,
+                    "bookingType": Const.BOOKING_TYPE_DOCTOR,
                   });
                 }
               },

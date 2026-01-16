@@ -253,6 +253,7 @@ class _DsmesAppointmentHistoryPageState
                                           return DsmesAppointmentItem(
                                             data: data,
                                             displayActionButtons: false,
+                                            bookingType: widget.bookingType,
                                             onChooseService: () async {
                                               if (isProcessing[
                                                   'chooseService']!) return;

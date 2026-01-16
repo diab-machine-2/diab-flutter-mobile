@@ -124,6 +124,12 @@ class NavigatorName {
   static const String clinic_providers = '/clinic_providers';
   static const String clinic_select_service = '/clinic_select_service';
   static const String clinic_payment = '/clinic_payment';
+
+  // BOOKING DOCTOR
+  static const String booking_doctor = '/booking_doctor';
+  static const String doctor_providers = '/doctor_providers';
+  static const String doctor_detail = '/doctor_detail';
+
   // SUBSCRIPTION
   static const String subscription_page = '/subscription_page';
   static const String paywall_screen = '/paywall_screen';
@@ -163,4 +169,8 @@ class NavigatorName {
   // Phone Update Flow
   static const String update_phone_number = '/update_phone_number';
   static const String confirm_phone_verify_otp = '/confirm_phone_verify_otp';
+
+  // Policy Pages
+  static const String cancellation_refund_policy =
+      '/cancellation_refund_policy';
 }

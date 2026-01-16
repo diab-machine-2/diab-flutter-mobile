@@ -640,11 +640,16 @@ class Drawables {
       "lib/res/drawables/dsmes_service/van-dong-va-tinh-than.png";
   String get ic_khac => "lib/res/drawables/dsmes_service/khac.png";
   String get dsmes_empty => "lib/res/drawables/dsmes_empty.png";
-  String get banner_cao_huyet_ap => "lib/res/drawables/clinic_specialty/cao-huyet-ap.png";
-  String get banner_suc_khoe_tim_mach => "lib/res/drawables/clinic_specialty/suc-khoe-tim-mach.png";
-  String get banner_suy_than_man => "lib/res/drawables/clinic_specialty/suy-than-man.png";
-  String get banner_tieu_duong => "lib/res/drawables/clinic_specialty/tieu-duong.png";
-  String get banner_benh_khac => "lib/res/drawables/clinic_specialty/benh-khac.png";
+  String get banner_cao_huyet_ap =>
+      "lib/res/drawables/clinic_specialty/cao-huyet-ap.png";
+  String get banner_suc_khoe_tim_mach =>
+      "lib/res/drawables/clinic_specialty/suc-khoe-tim-mach.png";
+  String get banner_suy_than_man =>
+      "lib/res/drawables/clinic_specialty/suy-than-man.png";
+  String get banner_tieu_duong =>
+      "lib/res/drawables/clinic_specialty/tieu-duong.png";
+  String get banner_benh_khac =>
+      "lib/res/drawables/clinic_specialty/benh-khac.png";
   String get bg_empty_clinic => "lib/res/drawables/bg_empty_clinic.png";
   String get ic_money => "lib/res/drawables/ic_money.png";
   String get ic_dialog_fail => "lib/res/drawables/ic_dialog_fail.png";
@@ -798,6 +803,14 @@ class Drawables {
   String get co_ban_bg => "lib/res/drawables/co_ban_bg.png";
   String get co_ban_badge => "lib/res/drawables/co_ban_badge.png";
   String get ic_dialog_failed => "lib/res/drawables/ic_dialog_failed.png";
+  String get ic_booking_doctor =>
+      "lib/res/drawables/home/ic_booking_doctor.png";
+  String get ic_map_pin => "lib/res/drawables/home/ic_map_pin.png";
+  String get ic_experience => "lib/res/drawables/home/ic_experience.png";
+  String get ic_introduce => "lib/res/drawables/ic_introduce.png";
+  String get ic_education => "lib/res/drawables/ic_education.png";
+  String get ic_archivement => "lib/res/drawables/ic_archivement.png";
+  String get ic_language => "lib/res/drawables/ic_language.png";
   String get ic_infographic => "lib/res/drawables/ic_infographic.png";
   String get subscription_program_full_1 =>
       "lib/res/drawables/subscription/subscription_program_full_1.png";
