@@ -11,6 +11,7 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import 'food_result.dto.dart';
+import 'widget/meal_items_display_widget.dart';
 import 'widget/nutrition_ai_help_button.dart';
 
 class PageAddFoodResult extends StatefulWidget {
@@ -286,6 +287,8 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             ),
             const SizedBox(height: 16),
             NutritionAIHelpButton(),
+            // Meal items display
+            MealItemsDisplayWidget(data: widget.data),
           ],
         ],
       ),
