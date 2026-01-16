@@ -8,12 +8,8 @@ class NutritionAIHelpButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFFF0F9FF),
+        color: Color(0xFFE6F7F5), // Light mint background
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Color(0xFF0EA5E9),
-          width: 1,
-        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -27,18 +23,15 @@ class NutritionAIHelpButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.restaurant_menu,
-                  color: Color(0xFF0EA5E9),
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Thiết lập mục tiêu Kcal',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF0EA5E9),
+                Flexible(
+                  child: Text(
+                    'Trò chuyện cùng Trợ lý Sống khoẻ',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF01645A), // Teal text
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
