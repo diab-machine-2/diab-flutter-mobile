@@ -134,121 +134,123 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          backgroundColor: R.color.greenGradientBottom,
-          leading: IconButton(
-            onPressed: () {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              } else {
-                Navigator.of(context, rootNavigator: true)
-                    .pushNamedAndRemoveUntil(
-                  NavigatorName.tabbar,
-                  (route) => false,
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: R.color.greenGradientBottom,
+        leading: IconButton(
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.of(context, rootNavigator: true)
+                  .pushNamedAndRemoveUntil(
+                NavigatorName.tabbar,
+                (route) => false,
+              );
+            }
+          },
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+        ),
+        leadingWidth: 30,
+        centerTitle: false,
+        title: Text(
+          R.string.dinh_duong.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: R.color.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: TextButton(
+              onPressed: () {
+                showDialog(
+                  barrierColor: R.color.color0xff003F38.withOpacity(0.3),
+                  useSafeArea: false,
+                  context: context,
+                  builder: (_) => ActionListPanel(selectedIndex: 4),
                 );
-              }
-            },
-            icon: Icon(Icons.arrow_back, color: R.color.white),
-          ),
-          leadingWidth: 30,
-          centerTitle: false,
-          title: Text(
-            R.string.dinh_duong.tr(),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: R.color.white,
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: TextButton(
-                onPressed: () {
-                  showDialog(
-                    barrierColor: R.color.color0xff003F38.withOpacity(0.3),
-                    useSafeArea: false,
-                    context: context,
-                    builder: (_) => ActionListPanel(selectedIndex: 4),
-                  );
-                },
-                child: Text(
-                  R.string.huong_dan.tr(),
-                  style: TextStyle(fontSize: 15, color: R.color.white),
-                ),
+              },
+              child: Text(
+                R.string.huong_dan.tr(),
+                style: TextStyle(fontSize: 15, color: R.color.white),
               ),
             ),
-          ],
+          ),
+        ],
+      ),
+      body: Column(children: [
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: HorizontalSelector(
+            onSelected: (value) {
+              periodFilterType = value + 1;
+              overviewKey.currentState!.reloadData(periodFilterType);
+              if (detailKey.currentState != null) {
+                detailKey.currentState!.reloadData(periodFilterType);
+              }
+            },
+            initialValue: periodFilterType - 1,
+            values: [0, 1, 2, 3],
+            labels: [
+              R.string.filter_day.tr(args: ['7']),
+              R.string.filter_day.tr(args: ['14']),
+              R.string.filter_day.tr(args: ['30']),
+              R.string.filter_day.tr(args: ['90']),
+            ],
+            fontSize: 15,
+          ),
         ),
-        body: Column(children: [
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: HorizontalSelector(
-              onSelected: (value) {
-                periodFilterType = value + 1;
-                overviewKey.currentState!.reloadData(periodFilterType);
-                if (detailKey.currentState != null) {
-                  detailKey.currentState!.reloadData(periodFilterType);
-                }
-              },
-              initialValue: periodFilterType - 1,
-              values: [0, 1, 2, 3],
-              labels: [
-                R.string.filter_day.tr(args: ['7']),
-                R.string.filter_day.tr(args: ['14']),
-                R.string.filter_day.tr(args: ['30']),
-                R.string.filter_day.tr(args: ['90']),
-              ],
-              fontSize: 15,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            color: R.color.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TabBar(
-                  isScrollable: true,
-                  labelColor: R.color.mainColor,
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.mainColor,
-                  ),
-                  unselectedLabelColor: R.color.captionColorGray,
-                  unselectedLabelStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  tabs: [
-                    Tab(text: R.string.bieu_do.tr()),
-                    Tab(text: R.string.detail.tr()),
-                  ],
-                  controller: _tabController,
-                  indicatorColor: R.color.mainColor,
-                  indicatorWeight: 3,
+        const SizedBox(height: 8),
+        Container(
+          color: R.color.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TabBar(
+                isScrollable: true,
+                labelColor: R.color.mainColor,
+                labelStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: R.color.mainColor,
                 ),
-              ],
-            ),
+                unselectedLabelColor: R.color.captionColorGray,
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+                tabs: [
+                  Tab(text: R.string.bieu_do.tr()),
+                  Tab(text: R.string.detail.tr()),
+                ],
+                controller: _tabController,
+                indicatorColor: R.color.mainColor,
+                indicatorWeight: 3,
+              ),
+            ],
           ),
-          Expanded(
-            child: TabBarView(controller: _tabController, children: [
-              FoodOverviewController(key: overviewKey),
-              FoodDetailController(key: detailKey)
-            ]),
-          ),
-        ]),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            FoodActionPopup.show(context, fromDashboard: true);
-            // NavigationUtil.navigatePage(
-            //     context, DailyNutritionPage(type: 'input', id: null));
-          },
-          child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
-        ));
+        ),
+        Expanded(
+          child: TabBarView(controller: _tabController, children: [
+            FoodOverviewController(key: overviewKey),
+            FoodDetailController(key: detailKey)
+          ]),
+        ),
+      ]),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     FoodActionPopup.show(context, fromDashboard: true);
+      //     // NavigationUtil.navigatePage(
+      //     //     context, DailyNutritionPage(type: 'input', id: null));
+      //   },
+      //   child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+      // ),
+    );
   }
 }
 
