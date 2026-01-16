@@ -27,7 +27,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../../../utils/utils.dart';
 import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
-import '../../my_plan/widgets/app_bar_bottom.dart';
 import '../lesson_detail/lesson_detail.dart';
 import '../lesson_filter/lesson_filter.dart';
 import '../lesson_filter/models/filter_data.dart';
@@ -168,7 +167,8 @@ class _LessonTabPageState extends State<LessonTabPage>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              AppBarBottom(
+              Container(
+                color: R.color.white,
                 child: Column(
                   children: [
                     // _buildWeekListWidget(),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
@@ -118,14 +120,13 @@ class HbA1CClient extends FetchClient {
   Future<bool> postIndexHbA1C(int date, String hbA1CIndex, String description,
       List<String> files) async {
     try {
-      final response = await super.postHttp(
-          path: '/App/HbA1C/Input',
-          params: {
-            'date': date.toString(),
-            'hbA1CIndex': hbA1CIndex,
-            'description': description
-          },
-          files: files);
+      final params = {
+        'date': date.toString(),
+        'hbA1CIndex': hbA1CIndex,
+        'description': description
+      };
+      log('HbA1C input params: $params');
+      final response = await super.postHttp(path: '/App/HbA1C/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         return true;
