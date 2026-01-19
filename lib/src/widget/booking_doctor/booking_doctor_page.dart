@@ -37,7 +37,14 @@ import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BookingDoctorPage extends StatefulWidget {
-  const BookingDoctorPage({Key? key}) : super(key: key);
+  final int? pendingDoctorId;
+  final bool fromWebinar;
+
+  const BookingDoctorPage({
+    Key? key,
+    this.pendingDoctorId,
+    this.fromWebinar = false,
+  }) : super(key: key);
 
   @override
   _BookingDoctorPageState createState() => _BookingDoctorPageState();
@@ -64,6 +71,71 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
     // _cubit.getDsmesAppointmentList();
     _cubit.initDsmesBooking();
+
+    // Auto-navigate to doctor detail if pendingDoctorId is provided
+    if (widget.pendingDoctorId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigateToDoctorDetail();
+      });
+    }
+  }
+
+  Future<void> _navigateToDoctorDetail() async {
+    if (widget.pendingDoctorId == null) return;
+
+    // Show loading if coming from webinar
+    if (widget.fromWebinar) {
+      BotToast.showLoading();
+    }
+
+    try {
+      // Fetch doctor detail to get clinic information
+      final detailSuccess = await _cubit.getDoctorDetail(
+        id: widget.pendingDoctorId!,
+        isLoading: false,
+      );
+
+      if (!detailSuccess) {
+        if (widget.fromWebinar) BotToast.closeAllLoading();
+        return;
+      }
+
+      final ownerClinic = _cubit.selectedDoctor?.getFirstOwnerClinic();
+
+      if (ownerClinic == null) {
+        if (widget.fromWebinar) BotToast.closeAllLoading();
+        return;
+      }
+
+      // Fetch doctor rate
+      await _cubit.getDoctorRate(id: widget.pendingDoctorId!);
+
+      // Fetch clinic detail
+      final clinicDetailSuccess = await _cubit.getClinicDetail(
+        id: ownerClinic.id,
+        isLoading: false,
+      );
+
+      if (detailSuccess && clinicDetailSuccess) {
+        BotToast.closeAllLoading();
+        // Navigate to doctor detail page
+        // Loading will be closed when detail page appears (in its initState)
+        DsmesNavigationMixin.getNavigationKey()
+            .currentState
+            ?.pushNamed(NavigatorName.doctor_detail, arguments: {
+          'clinicId': ownerClinic.id,
+          'doctorId': widget.pendingDoctorId,
+          'bookingType': Const.BOOKING_TYPE_DOCTOR,
+          'fromWebinar': widget.fromWebinar,
+        });
+      } else {
+        // Close loading if navigation fails
+        if (widget.fromWebinar) BotToast.closeAllLoading();
+      }
+    } catch (e) {
+      if (widget.fromWebinar) BotToast.closeAllLoading();
+      print('Error navigating to doctor detail: $e');
+    }
   }
 
   @override
@@ -98,6 +170,14 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
           child: WillPopScope(
             onWillPop: () async {
               print('[POP] root pop scope');
+
+              // If from webinar, always allow root pop to go back to webinar page
+              // Return true to allow the pop to proceed
+              if (widget.fromWebinar) {
+                BotToast.closeAllLoading();
+                return true; // Allow the pop to proceed
+              }
+
               if (_currentRoute == NavigatorName.dsmes_booking_detail) {
                 FocusScope.of(
                         DsmesNavigationMixin.getNavigationKey().currentContext!)
@@ -237,6 +317,7 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                           clinicId: args!["clinicId"],
                           doctorId: args["doctorId"],
                           bookingType: args["bookingType"],
+                          fromWebinar: args["fromWebinar"] ?? false,
                         ),
                       );
                     }

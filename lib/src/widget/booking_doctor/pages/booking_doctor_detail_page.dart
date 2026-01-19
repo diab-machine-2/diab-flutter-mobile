@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,11 +24,13 @@ class BookingDoctorDetailPage extends StatefulWidget {
   final int clinicId;
   final int doctorId;
   final String bookingType; // 'clinic' or 'center' or 'doctor'
+  final bool fromWebinar;
   const BookingDoctorDetailPage({
     Key? key,
     required this.clinicId,
     required this.doctorId,
     this.bookingType = Const.BOOKING_TYPE_DOCTOR,
+    this.fromWebinar = false,
   }) : super(key: key);
 
   @override
@@ -47,16 +50,42 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+    // Close loading when detail page appears
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BotToast.closeAllLoading();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: R.color.backgroundColorNew,
+    return WillPopScope(
+      onWillPop: () async {
+        // If from webinar, pop nested navigator first, then root navigator
+        if (widget.fromWebinar) {
+          // Get root navigator before popping nested navigator
+          final rootNavigator = Navigator.of(context, rootNavigator: true);
+          // Pop all routes in nested navigator until first route (BookingDoctorPage main content)
+          DsmesNavigationMixin.getNavigationKey()
+              .currentState
+              ?.popUntil((route) => route.isFirst);
+          // Then pop the root navigator to go back to WebinarInfoPage
+          // Use a delayed future to ensure nested pop completes first
+          await Future.delayed(const Duration(milliseconds: 50));
+          if (rootNavigator.canPop()) {
+            rootNavigator.pop();
+          }
+          return false; // Prevent default back behavior
+        }
+        // Otherwise, let the nested navigator handle it
+        return true;
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            color: R.color.backgroundColorNew,
+          ),
+          child: _buildPage(context),
         ),
-        child: _buildPage(context),
       ),
     );
   }
@@ -96,10 +125,28 @@ class _BookingDoctorDetailPageState extends State<BookingDoctorDetailPage> {
                     Icons.arrow_back,
                     color: R.color.white,
                   ),
-                  onPressed: () {
-                    DsmesNavigationMixin.getNavigationKey()
-                        .currentState
-                        ?.pop(context);
+                  onPressed: () async {
+                    // If from webinar, pop nested navigator first, then root navigator
+                    // Otherwise, pop within the nested navigator
+                    if (widget.fromWebinar) {
+                      // Get root navigator before popping nested navigator
+                      final rootNavigator =
+                          Navigator.of(context, rootNavigator: true);
+                      // Pop all routes in nested navigator until first route (BookingDoctorPage main content)
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.popUntil((route) => route.isFirst);
+                      // Then pop the root navigator to go back to WebinarInfoPage
+                      // Use a delayed future to ensure nested pop completes first
+                      await Future.delayed(const Duration(milliseconds: 50));
+                      if (rootNavigator.canPop()) {
+                        rootNavigator.pop();
+                      }
+                    } else {
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.pop(context);
+                    }
                   },
                 ),
               ),

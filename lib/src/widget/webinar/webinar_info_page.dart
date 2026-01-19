@@ -25,6 +25,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/widget/booking_doctor/booking_doctor_page.dart';
 
 class WebinarInfoPage extends StatefulWidget {
   final String id;
@@ -938,66 +939,70 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
           ),
         ),
         SizedBox(height: 12.h),
-        Container(
-          padding: EdgeInsets.all(12.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 36.r,
-                backgroundColor: const Color(0xFFE5E7EB),
-                backgroundImage: doctor.avatar.isNotEmpty
-                    ? NetworkImage(doctor.avatar)
-                    : null,
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (titleText.isNotEmpty)
-                      Text(
-                        titleText,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: R.color.main_1,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    if (titleText.isNotEmpty) SizedBox(height: 4.h),
-                    Text(
-                      displayName,
-                      style: TextStyle(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w700,
-                          color: R.color.color0xff111515),
-                    ),
-                    if (specialtyName.isNotEmpty) SizedBox(height: 8.h),
-                    if (specialtyName.isNotEmpty)
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEF3C7), // Light yellow/beige
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          specialtyName,
+        InkWell(
+          onTap: () => _navigateToDoctorDetail(doctor.id),
+          child: Container(
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 36.r,
+                  backgroundColor: const Color(0xFFE5E7EB),
+                  backgroundImage: doctor.avatar.isNotEmpty
+                      ? NetworkImage(doctor.avatar)
+                      : null,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (titleText.isNotEmpty)
+                        Text(
+                          titleText,
                           style: TextStyle(
-                            fontSize: 12.sp,
-                            color: R.color.color0xff95682E,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 13.sp,
+                            color: R.color.main_1,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
+                      if (titleText.isNotEmpty) SizedBox(height: 4.h),
+                      Text(
+                        displayName,
+                        style: TextStyle(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w700,
+                            color: R.color.color0xff111515),
                       ),
-                  ],
+                      if (specialtyName.isNotEmpty) SizedBox(height: 8.h),
+                      if (specialtyName.isNotEmpty)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color:
+                                const Color(0xFFFEF3C7), // Light yellow/beige
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            specialtyName,
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: R.color.color0xff95682E,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -1619,6 +1624,20 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _navigateToDoctorDetail(int doctorId) async {
+    // Navigate to BookingDoctorPage with doctorId and fromWebinar flag
+    // BookingDoctorPage will handle loading and auto-navigate to detail page
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookingDoctorPage(
+          pendingDoctorId: doctorId,
+          fromWebinar: true,
+        ),
       ),
     );
   }

@@ -290,25 +290,30 @@ class _DsmesConfirmCreateInformationState
       _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
           symptomAttachments: data?.fileNetworkName ?? []);
 
-      // Calculate total price
-      int totalPrice = _calculateTotalPrice();
+      _cubit.updateCreateDsmesBookingRequestServiceList(
+          paymentType: 'vnpay',
+          selectedServices:
+              _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? []);
 
-      // Initialize VNPay service
-      VNPayService paymentService = VNPayService(
-        context: context,
-        totalPrice: totalPrice,
-        bookingType: widget.bookingType,
-        serviceType: widget.serviceType,
-        cubit: _cubit,
-      );
+      // // Calculate total price
+      // int totalPrice = _calculateTotalPrice();
 
-      bool initialized = await paymentService.initializePayment();
+      // // Initialize VNPay service
+      // VNPayService paymentService = VNPayService(
+      //   context: context,
+      //   totalPrice: totalPrice,
+      //   bookingType: widget.bookingType,
+      //   serviceType: widget.serviceType,
+      //   cubit: _cubit,
+      // );
 
-      if (initialized) {
-        // Process payment directly
-        await paymentService.openVNPaySDK();
-      }
-      // _handleCreateBooking();
+      // bool initialized = await paymentService.initializePayment();
+
+      // if (initialized) {
+      //   // Process payment directly
+      //   await paymentService.openVNPaySDK();
+      // }
+      _handleCreateBooking();
     } finally {
       setState(() => isProcessing['confirmBooking'] = false);
     }
