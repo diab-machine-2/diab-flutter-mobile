@@ -141,94 +141,40 @@ extension MedicineItemModelMapper on MedicineItemModel {
     return items.map((e) {
       final map = e as Map<String, dynamic>;
 
-      // Parse amount "63 viên" => 63
-      final amount = int.tryParse(
-        (map['amount'] as String?)?.replaceAll(RegExp(r'[^0-9]'), '') ?? '',
-      );
-
-      // Parse frequency
-      final freq = parseFrequency(map['frequency']);
-
-      double morning = 0, afternoon = 0, midDay = 0, night = 0;
-
-      switch (freq) {
-        case 1:
-          morning = 1;
-          break;
-        case 2:
-          morning = 1;
-          afternoon = 1;
-          break;
-        case 3:
-          morning = 1;
-          afternoon = 1;
-          midDay = 1;
-          break;
-        case 4:
-          morning = 1;
-          afternoon = 1;
-          midDay = 1;
-          night = 1;
-          break;
-      }
+      final amount = int.tryParse(map['amount']?.toString() ?? '');
 
       return MedicineItemModel(
-        id: map['id'] as String?,
         medicationName: map['name'] as String?,
-        note: map['instruction'] as String?,
+
+        moment: parseMoment(map['usageTime'] as String?),
+        frequency: 1, // mỗi ngày (BE hiện chưa trả → fix cứng)
+
+        morning: double.tryParse(map['morning']?.toString() ?? '0'),
+        afternoon: double.tryParse(map['afternoon']?.toString() ?? '0'),
+        midDay: double.tryParse(map['midDay']?.toString() ?? '0'), // nếu BE chưa có → null / 0
+        night: double.tryParse(map['night']?.toString() ?? '0'),
+
+        unit: map['unit'] as String?,
         amount: amount,
-        frequency: freq,
-        moment: 1, // bạn có thể map thêm từ usageTime
-        unit: 'viên',//parseUnit(map['amount']),
-        morning: morning,
-        afternoon: afternoon,
-        midDay: midDay,
-        night: night,
+
+        note: map['instruction'] as String?,
       );
     }).toList();
   }
 
-  static int parseFrequency(dynamic raw) {
-    if (raw == null) return 1;
+  static int? parseMoment(String? usageTime) {
+    if (usageTime == null) return null;
 
-    // Nếu đã là số
-    if (raw is int) return raw;
-
-    // Nếu là string
-    if (raw is String) {
-      final value = raw.trim().toLowerCase();
-
-      // String là số: "3"
-      final numValue = int.tryParse(value);
-      if (numValue != null) return numValue;
-
-      // String là chữ
-      switch (value) {
-        case 'sáng':
-          return 1;
-        case 'trưa':
-          return 3; // hoặc 2 tuỳ business
-        case 'chiều':
-          return 2;
-        case 'tối':
-          return 4;
-      }
+    switch (usageTime.toLowerCase()) {
+      case 'trước ăn':
+        return 1;
+      case 'sau ăn':
+        return 2;
+      case 'trong khi ăn':
+        return 3;
+      default:
+        return null;
     }
-
-    return 1; // default fallback
-  }
-
-  static String? parseUnit(String amount) {
-    if (amount.isEmpty) return null;
-
-    // Tách ra bằng regex: số + chữ
-    final regex = RegExp(r'([\d.,]+)\s*(\D+)');
-    final match = regex.firstMatch(amount.trim());
-
-    if (match != null) {
-      return match.group(2)?.trim(); // nhóm 2 là phần chữ (unit)
-    }
-    return null;
   }
 }
 
