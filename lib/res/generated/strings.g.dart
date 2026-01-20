@@ -1446,4 +1446,6 @@ class Strings {
   String get examination => 'examination';
   String get choose_input_method => 'choose_input_method';
   String get centre_name => 'centre_name';
+  String get given_access_gallery_description => 'given_access_gallery_description';
+  String get manage => 'manage';
 }
