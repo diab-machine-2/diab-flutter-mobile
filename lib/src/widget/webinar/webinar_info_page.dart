@@ -26,6 +26,9 @@ import 'package:medical/src/model/response/user_info_response.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/booking_doctor/booking_doctor_page.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:add_2_calendar_new/add_2_calendar_new.dart';
 
 class WebinarInfoPage extends StatefulWidget {
   final String id;
@@ -95,14 +98,19 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
   }
 
   Future<void> _onRegister() async {
-    if (_webinar == null || _registering) return;
+    final webinar = _webinar;
+    if (webinar == null || _registering) return;
     setState(() {
       _registering = true;
     });
     BotToast.showLoading();
     try {
-      await _repository.registerLearningPostEvent(_webinar!.id ?? '');
+      // await _repository.registerLearningPostEvent(webinar.id ?? '');
       Message.showToastMessage(context, 'Đăng ký tham gia thành công');
+
+      // After successful registration, add this event to device calendar
+      await _addEventToCalendar(webinar);
+
       // Reload data to update isJoin status
       _loadData();
     } catch (e) {
@@ -117,6 +125,47 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
           _registering = false;
         });
       }
+    }
+  }
+
+  Future<void> _addEventToCalendar(LearningPostModel webinar) async {
+    final start = _getEventDateTime(webinar);
+    if (start == null) {
+      return;
+    }
+
+    final end =
+        _getEventEndDateTime(webinar) ?? start.add(const Duration(hours: 1));
+
+    final isOfflineEvent = webinar.eventType == true;
+    final location =
+        isOfflineEvent ? (webinar.eventAddress ?? '') : 'Sự kiện trực tuyến';
+
+    String description = webinar.content ?? '';
+    
+    // If it's an online event, add the zoom link to the description
+    if (!isOfflineEvent && webinar.link != null && webinar.link!.isNotEmpty) {
+      if (description.isNotEmpty) {
+        description += '\n\n';
+      }
+      description += 'Link tham gia: ${webinar.link}';
+    }
+
+    final event = Event(
+      title: webinar.title,
+      description:
+          description.isNotEmpty ? description : 'Sự kiện từ ứng dụng DiaB',
+      location: location.isNotEmpty ? location : null,
+      startDate: start,
+      endDate: end,
+    );
+
+    try {
+      await Add2Calendar.addEvent2Cal(event);
+    } catch (e, s) {
+      // Log calendar errors but don't block registration flow
+      // ignore: avoid_print
+      print('[Webinar] Failed to add event to calendar: $e\n$s');
     }
   }
 
@@ -163,6 +212,38 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
         onComplete: (_, __) {},
       ),
     );
+  }
+
+  Future<void> _onShareWebinar() async {
+    final webinar = _webinar;
+    if (webinar == null) return;
+
+    try {
+      BotToast.showLoading();
+      final shareLink =
+          await BranchioLinkConfig.instance.createShareWebinarLink(
+        webinar: webinar,
+      );
+      final user = AppSettings.userInfo!;
+      final box = context.findRenderObject() as RenderBox?;
+      final sharePositionOrigin = box != null
+          ? (box.localToGlobal(Offset.zero) & box.size) as Rect?
+          : null;
+      await Share.share(
+        '${user.fullName} đã chia sẻ cho bạn sự kiện ${webinar.title} từ ứng dụng DiaB - ứng dụng tự quản lý bệnh đái tháo đường và kết nối với chuyên gia.\n$shareLink',
+        subject: 'DIAB | Ứng dụng giúp quản lý đường huyết hiệu quả',
+        sharePositionOrigin: sharePositionOrigin,
+      );
+    } catch (e) {
+      Message.showToastMessage(
+        context,
+        NetworkExceptions.getErrorMessage(
+          NetworkExceptions.getDioException(e),
+        ),
+      );
+    } finally {
+      BotToast.closeAllLoading();
+    }
   }
 
   String _formatEventDate(LearningPostModel model) {
@@ -787,7 +868,33 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                             decoration: const BoxDecoration(
                               color: Colors.white,
                             ),
-                            child: actionButton,
+                            child: Row(
+                              children: [
+                                // Share button
+                                InkWell(
+                                  onTap: _onShareWebinar,
+                                  child: Container(
+                                    width: 72,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: R.color.backgroundColorNew,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Center(
+                                      child: SvgPicture.asset(
+                                        R.icons.ic_share,
+                                        width: 20,
+                                        height: 20,
+                                        color: R.color.greenGradientBottom,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                // Action button (expanded to fill remaining space)
+                                Expanded(child: actionButton),
+                              ],
+                            ),
                           ),
                         );
                       },
