@@ -105,7 +105,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     });
     BotToast.showLoading();
     try {
-      // await _repository.registerLearningPostEvent(webinar.id ?? '');
+      await _repository.registerLearningPostEvent(webinar.id ?? '');
       Message.showToastMessage(context, 'Đăng ký tham gia thành công');
 
       // After successful registration, add this event to device calendar
