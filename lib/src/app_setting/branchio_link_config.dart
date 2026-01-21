@@ -18,6 +18,9 @@ import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/service/zoom_service.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/model/repository/weight_repository.dart';
+import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
 import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -456,7 +459,7 @@ class BranchioLinkConfig {
         'args': {'type': 'input', 'id': null}
       },
       'can-nang': {
-        'route': NavigatorName.add_bmi,
+        'route': NavigatorName.bmiInputPage,
         'args': {'type': 'input'}
       }
     };
@@ -469,11 +472,19 @@ class BranchioLinkConfig {
         return;
       }
 
+      // Prepare arguments
+      Map<String, dynamic> args =
+          Map<String, dynamic>.from(routeInfo['args'] ?? {});
+      if (routeInfo['route'] == NavigatorName.bmiInputPage) {
+        // Provide a BmiBloc instance for the bmi input flow
+        args[AddBmiPage.bmiBlocKey] = BmiBloc(WeightRepository.instance);
+      }
+
       // For all other measurements, navigate directly
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
           routeInfo['route'] as String,
           (route) => route.settings.name == NavigatorName.tabbar,
-          arguments: routeInfo['args']);
+          arguments: args);
     } else {
       print('Unknown measurement screen value: $screenValue');
     }
@@ -644,7 +655,6 @@ class BranchioLinkConfig {
 
     final startDate = DateTime.now().add(Duration(days: 0));
     final endDate = DateTime.now().add(Duration(days: 21));
-    int bookingQuantity = 0;
 
     final request = CalendarFilter(
       accountPatientId: AppSettings.userInfo!.accountId,
@@ -653,67 +663,83 @@ class BranchioLinkConfig {
       toDate: endDate,
       calendarType: _interviewType ?? 30,
     );
+
     final ApiResult<List<CreateCalendarResponse>> apiResult =
         await AppRepository().getMyCalendar(request);
-    apiResult.when(success: (List<CreateCalendarResponse> response) {
-      if (response.length > 0) {
-        bookingQuantity = response.length;
-        if (bookingQuantity >= 1) {
-          bool isCalendarPage = _isCurrentRoute(NavigatorName.calendar);
-          if (isCalendarPage) {
-            navigatorKey.currentState
-                ?.pushReplacementNamed(NavigatorName.calendar, arguments: {
-              "pickSlot": response.firstWhere(
-                  (element) => element.isDeleted == false,
-                  orElse: null),
-              "courseId": _courseId,
-              "endTime": _endTime ?? '',
-              "bookingQuantity": bookingQuantity,
-              "interviewType": _interviewType ?? 30,
-            });
-          } else {
-            navigatorKey.currentState
-                ?.pushNamed(NavigatorName.calendar, arguments: {
-              "pickSlot": response.firstWhere(
-                  (element) => element.isDeleted == false,
-                  orElse: null),
-              "courseId": _courseId,
-              "endTime": _endTime ?? '',
-              "bookingQuantity": bookingQuantity,
-              "interviewType": _interviewType ?? 30,
-            });
-          }
-          _resetDataLink();
+
+    apiResult.when(
+      success: (List<CreateCalendarResponse> response) {
+        log('[tryNavigateBooking] Calendar response: $response');
+
+        // If no slots returned, navigate to booking page
+        if (response.isEmpty) {
+          _navigateToCalendarBooking();
           return;
         }
-        _resetDataLink();
-        return;
-      }
-    }, failure: (NetworkExceptions error) {
-      // emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
-      return;
-    });
 
-    if (bookingQuantity == 0) {
-      bool isCalendarBookingPage =
-          _isCurrentRoute(NavigatorName.calendar_booking);
-      if (isCalendarBookingPage) {
-        navigatorKey.currentState
-            ?.pushReplacementNamed(NavigatorName.calendar_booking, arguments: {
-          'courseId': _courseId,
-          'endTime': _endTime,
-          'interviewType': _interviewType
-        });
-      } else {
-        navigatorKey.currentState?.pushNamed(NavigatorName.calendar_booking,
-            arguments: {
-              'courseId': _courseId,
-              'endTime': _endTime,
-              'interviewType': _interviewType
-            });
-      }
-      _resetDataLink();
+        // Filter to get non-deleted slots
+        final nonDeletedSlots =
+            response.where((element) => element.isDeleted == false).toList();
+
+        // If all slots are deleted, navigate to booking page (same as no slots)
+        if (nonDeletedSlots.isEmpty) {
+          _navigateToCalendarBooking();
+          return;
+        }
+
+        // We have non-deleted slots, navigate to calendar page
+        final pickSlot = nonDeletedSlots.first;
+        final bookingQuantity = response.length;
+        _navigateToCalendar(pickSlot, bookingQuantity);
+      },
+      failure: (NetworkExceptions error) {
+        // emit(CalendarBookingFailure("Lỗi hệ thống trong quá trình tạo lịch"));
+        return;
+      },
+    );
+  }
+
+  /// Navigate to calendar page with selected slot
+  void _navigateToCalendar(
+      CreateCalendarResponse pickSlot, int bookingQuantity) {
+    final arguments = {
+      "pickSlot": pickSlot,
+      "courseId": _courseId,
+      "endTime": _endTime ?? '',
+      "bookingQuantity": bookingQuantity,
+      "interviewType": _interviewType ?? 30,
+    };
+
+    final isCalendarPage = _isCurrentRoute(NavigatorName.calendar);
+    if (isCalendarPage) {
+      navigatorKey.currentState
+          ?.pushReplacementNamed(NavigatorName.calendar, arguments: arguments);
+    } else {
+      navigatorKey.currentState
+          ?.pushNamed(NavigatorName.calendar, arguments: arguments);
     }
+    _resetDataLink();
+  }
+
+  /// Navigate to calendar booking page
+  void _navigateToCalendarBooking() {
+    final arguments = {
+      'courseId': _courseId,
+      'endTime': _endTime,
+      'interviewType': _interviewType
+    };
+
+    final isCalendarBookingPage =
+        _isCurrentRoute(NavigatorName.calendar_booking);
+    if (isCalendarBookingPage) {
+      navigatorKey.currentState?.pushReplacementNamed(
+          NavigatorName.calendar_booking,
+          arguments: arguments);
+    } else {
+      navigatorKey.currentState
+          ?.pushNamed(NavigatorName.calendar_booking, arguments: arguments);
+    }
+    _resetDataLink();
   }
 
   void removeLessonId() {

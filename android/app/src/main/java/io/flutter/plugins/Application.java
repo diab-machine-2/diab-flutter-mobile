@@ -1,16 +1,11 @@
 package com.vbhc.diab;
 
 import io.flutter.app.FlutterApplication;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
-import io.flutter.plugins.GeneratedPluginRegistrant;
-import io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingBackgroundService;
-import io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingPlugin;
 import com.zing.zalo.zalosdk.oauth.ZaloSDKApplication;
 
 import io.branch.referral.Branch;
 
-public class Application extends FlutterApplication implements PluginRegistrantCallback {
+public class Application extends FlutterApplication {
   @Override
   public void onCreate() {
     super.onCreate();
@@ -19,11 +14,6 @@ public class Application extends FlutterApplication implements PluginRegistrantC
       // Branch object initialization
       Branch.getAutoInstance(this);
       ZaloSDKApplication.wrap(this);
- //   FlutterFirebaseMessagingBackgroundService.setPluginRegistrant(this);
-  }
-
-  @Override
-  public void registerWith(PluginRegistry registry) {
- //   FlutterFirebaseMessagingPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebasemessaging.FirebaseMessagingPlugin"));
+      // Note: Flutter v2 embedding auto-registers plugins, no manual registration needed
   }
 }

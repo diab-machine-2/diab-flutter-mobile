@@ -11,6 +11,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
@@ -37,7 +38,7 @@ class AddFoodController extends StatefulWidget {
   final String type;
   final String? id;
   final String? timeframeId;
-  AddFoodController({required this.type, this.id,this.timeframeId});
+  AddFoodController({required this.type, this.id, this.timeframeId});
 
   @override
   _AddFoodControllerState createState() => _AddFoodControllerState();
@@ -130,8 +131,10 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     }
     final timeFrames = await FoodClient().fetchFoodTimeFrame(time: time);
     if (widget.timeframeId != null) {
-      if (timeFrames.length > 0 && timeFrames.any((e) => e.id == widget.timeframeId)) {
-        selectedTimeFrame = timeFrames.firstWhere((e) => e.id == widget.timeframeId);
+      if (timeFrames.length > 0 &&
+          timeFrames.any((e) => e.id == widget.timeframeId)) {
+        selectedTimeFrame =
+            timeFrames.firstWhere((e) => e.id == widget.timeframeId);
       }
     }
     if (selectedTimeFrame == null) {
@@ -255,7 +258,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.end,
                                           children: [
-                                            Text(formatNumber(totalKcal),
+                                            Text(totalKcal.round().toString(),
                                                 style: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 24,
@@ -520,8 +523,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                     Text(
                                                                         selectedFoods[index].code ==
                                                                                 'OtherUneditable'
-                                                                            ? '${R.string.da_an.tr()} ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal'
-                                                                            : '${R.string.da_an.tr()} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${formatNumber((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0))} kcal',
+                                                                            ? '${R.string.da_an.tr()} ${((selectedFoods[index].quantity ?? 0) * (selectedFoods[index].calorie ?? 0)).round()} kcal'
+                                                                            : '${R.string.da_an.tr()} ${roundAsFixed((selectedFoods[index].portion ?? 0) * (selectedFoods[index].quantity ?? 0))} ${selectedFoods[index].unit}, ${((selectedFoods[index].portion ?? 0) * (selectedFoods[index].calorie ?? 0)).round()} kcal',
                                                                         style: TextStyle(
                                                                             color:
                                                                                 R.color.textDark,
@@ -698,7 +701,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                         children: [
                                                           Positioned.fill(
                                                             child: files[index]
-                                                                    is PickedFile
+                                                                    is XFile
                                                                 ? Image.file(
                                                                     File(files[
                                                                             index]
@@ -708,8 +711,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                   )
                                                                 : NetWorkImageWidget(
                                                                     imageUrl:
-                                                                        files[index]
-                                                                            .url,
+                                                                        (files[index] as ImagesModel).url ??
+                                                                            '',
                                                                     fit: BoxFit
                                                                         .cover),
                                                           ),
@@ -721,13 +724,13 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
                                                                 setState(() {
                                                                   if (files[
                                                                           index]
-                                                                      is PickedFile) {
+                                                                      is XFile) {
                                                                     files.removeAt(
                                                                         index);
                                                                   } else {
                                                                     removeIDs.add(
-                                                                        files[index]
-                                                                            .id);
+                                                                        (files[index] as ImagesModel).id ??
+                                                                            '');
                                                                     files.removeAt(
                                                                         index);
                                                                   }
@@ -872,7 +875,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     } else {
       totalKcal = 0;
       selectedFoods.forEach((element) {
-        totalKcal += (element.calorie ?? 0) * (element.quantity ?? 0);
+        totalKcal += (element.calorie ?? 0) * (element.portion ?? 0);
       });
     }
   }
@@ -936,7 +939,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     try {
       List<String> paths = [];
       for (var file in files) {
-        if (file is PickedFile) {
+        if (file is XFile) {
           paths.add(file.path);
         }
       }
@@ -954,6 +957,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
+        NavigationUtil.navigatePage(
+            context, FoodDetailTabbarController(initialTabIndex: 1));
       }
 
       BotToast.closeAllLoading();
@@ -1004,7 +1009,9 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     try {
       List<String> paths = [];
       for (var file in files) {
-        paths.add(file.path);
+        if (file is XFile) {
+          paths.add(file.path);
+        }
       }
       final result = await FoodClient().postIndexFood(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
@@ -1015,7 +1022,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               : selectedFoods,
           paths);
       if (result == true) {
-        // await TrackingManager.analytics.logEvent(
+        // await TrackingManager.logEvent(
         //   name: 'kpi_add_success',
         //   parameters: {
         //     "screen_name": 'kpi_nutrition_add',
@@ -1028,7 +1035,8 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         PhoneValidationManager.setShouldShowPhoneValidation();
         Navigator.pop(context);
         if (widget.type == 'input') {
-          NavigationUtil.navigatePage(context, FoodDetailTabbarController());
+          NavigationUtil.navigatePage(
+              context, FoodDetailTabbarController(initialTabIndex: 1));
         }
       }
       print("[KPI] close all loading.");

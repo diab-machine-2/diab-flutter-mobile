@@ -253,14 +253,10 @@ class Const {
   static const REVENUE_CAT_APPLE_API_KEY = 'appl_jhEfUPvFQLrrFcRgbsKzNPsZUXr';
   static const REGION_ALLOW_CONNECT_DEVICE = ["VN", "KR"];
 
-  static const bmiThreshold = <double>[
-    18.5,
-    23,
-    25,
-    30
-  ];
+  static const bmiThreshold = <double>[18.5, 23, 25, 30];
 
   static const hasInputedWaist = "has_inputed_waist";
   static const hasWeightRecord = "has_weight_record";
   static const shouldTutorial = "shouldTutorial";
+  static const hasNewWeightRecordInFirst = "has_new_weight_record_in_first";
 }

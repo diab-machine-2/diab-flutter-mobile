@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -70,8 +71,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
   void updateFilesAndNote(List<dynamic> files, String note) {
     _files.clear();
     // Convert files to ImageWithSource, keep the same initial source setting flag
-    _files.addAll(
-        files.map((file) => ImageWithSource(file, widget.initialFilesFromCamera)));
+    _files.addAll(files
+        .map((file) => ImageWithSource(file, widget.initialFilesFromCamera)));
     widget.controllerNote?.text = note;
     _currentLength = note.length;
     setState(() {});
@@ -97,10 +98,12 @@ class SectionAddNoteState extends State<SectionAddNote> {
               child: Text(
                 widget.noteTitle!,
                 style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: R.font.sfpro,
                   color: R.color.textDark,
                   height: 21 / 15,
+                  letterSpacing: 0.4,
                 ),
               ),
             ),
@@ -161,6 +164,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
+                  fontFamily: R.font.sfpro,
                   color: R.color.primaryGreyColor,
                 ),
               ),
@@ -326,7 +330,7 @@ class SectionAddNoteState extends State<SectionAddNote> {
     try {
       // Check camera permission first
       final permissionStatus = await Permission.camera.status;
-      
+
       if (!permissionStatus.isGranted) {
         final newStatus = await Permission.camera.request();
         if (!newStatus.isGranted) {
@@ -351,11 +355,13 @@ class SectionAddNoteState extends State<SectionAddNote> {
       }
     } catch (e) {
       // Handle specific camera errors
-      if (e.toString().contains('camera') || e.toString().contains('permission')) {
+      if (e.toString().contains('camera') ||
+          e.toString().contains('permission')) {
         _showAlertDialog(context);
       } else {
         // For other errors, show a generic error
-        _showGenericErrorDialog(context, 'Không thể mở camera. Vui lòng thử lại.');
+        _showGenericErrorDialog(
+            context, 'Không thể mở camera. Vui lòng thử lại.');
       }
     }
   }
@@ -364,15 +370,26 @@ class SectionAddNoteState extends State<SectionAddNote> {
     try {
       // Check storage permission for gallery access on Android
       if (Platform.isAndroid) {
-        final permission = await Permission.photos.status;
-        if (!permission.isGranted) {
-          final newPermission = await Permission.photos.request();
-          if (!newPermission.isGranted) {
-            _showGalleryPermissionDialog(context);
-            return;
-          }
+      // For Android 13+ use photos, for <=12 use storage
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final sdkInt = androidInfo.version.sdkInt;
+
+      Permission permissionToRequest;
+      if (sdkInt >= 33) {
+        permissionToRequest = Permission.photos;      // READ_MEDIA_IMAGES
+      } else {
+        permissionToRequest = Permission.storage;     // READ_EXTERNAL_STORAGE
+      }
+
+      final status = await permissionToRequest.status;
+      if (!status.isGranted) {
+        final newStatus = await permissionToRequest.request();
+        if (!newStatus.isGranted) {
+          _showGalleryPermissionDialog(context);
+          return;
         }
       }
+    }
 
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
@@ -382,10 +399,12 @@ class SectionAddNoteState extends State<SectionAddNote> {
         setState(() {});
       }
     } catch (e) {
-      if (e.toString().contains('permission') || e.toString().contains('storage')) {
+      if (e.toString().contains('permission') ||
+          e.toString().contains('storage')) {
         _showGalleryPermissionDialog(context);
       } else {
-        _showGenericErrorDialog(context, 'Không thể mở thư viện ảnh. Vui lòng thử lại.');
+        _showGenericErrorDialog(
+            context, 'Không thể mở thư viện ảnh. Vui lòng thử lại.');
       }
     }
   }
@@ -407,7 +426,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
     AlertDialog alert = AlertDialog(
       title: Text('Cần quyền truy cập thư viện'),
-      content: Text('Ứng dụng cần quyền truy cập thư viện ảnh để chọn ảnh. Vui lòng cấp quyền để tiếp tục.'),
+      content: Text(
+          'Ứng dụng cần quyền truy cập thư viện ảnh để chọn ảnh. Vui lòng cấp quyền để tiếp tục.'),
       actions: [
         cancelButton,
         continueButton,
@@ -469,7 +489,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
 
     AlertDialog alert = AlertDialog(
       title: Text('Quyền truy cập bị từ chối'),
-      content: Text('Quyền truy cập camera đã bị từ chối vĩnh viễn. Vui lòng vào Cài đặt để cấp quyền cho ứng dụng.'),
+      content: Text(
+          'Quyền truy cập camera đã bị từ chối vĩnh viễn. Vui lòng vào Cài đặt để cấp quyền cho ứng dụng.'),
       actions: [
         cancelButton,
         continueButton,

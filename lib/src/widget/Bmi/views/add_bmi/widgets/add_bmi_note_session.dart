@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,7 +71,8 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
       child: TextField(
         decoration: InputDecoration(
           hintText: R.string.nhap_ghi_chu_cua_ban.tr(),
-          hintStyle: R.style.normalTextStyle.copyWith(color: AppColors.neutral4),
+          hintStyle:
+              R.style.normalTextStyle.copyWith(color: AppColors.neutral4),
           focusedBorder: _border,
           enabledBorder: _border,
           suffixIcon: GestureDetector(
@@ -82,20 +82,46 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
               color: R.color.mainColor,
             ),
           ),
-          counterText: "${_controller.text.length} / $maxLength",
-          counterStyle:
-              R.style.smallTextStyle.copyWith(color: AppColors.neutral4),
         ),
         minLines: 1,
         maxLines: null,
+        maxLength: maxLength,
         style: R.style.normalTextStyle,
         controller: _controller,
         onChanged: (value) => _bmiInputBloc.note = value,
+        buildCounter: (
+          BuildContext context, {
+          required int currentLength,
+          required bool isFocused,
+          required int? maxLength,
+        }) {
+          return Text(
+            '$currentLength / $maxLength',
+            style: R.style.smallTextStyle.copyWith(color: AppColors.neutral4),
+          );
+        },
       ),
     );
   }
 
   void _pickImages() async {
+    const int maxImages = 5;
+    final int currentImageCount = _bmiInputBloc.noteImages.length +
+        _bmiInputBloc.noteImagesFromRecord.length;
+
+    if (currentImageCount >= maxImages) {
+      // Show a message that max images reached
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(R.string.max_image_select.tr()),
+          ),
+        );
+      }
+      return;
+    }
+
+    final int remainingSlots = maxImages - currentImageCount;
     final ImagePicker _picker = ImagePicker();
     final List<XFile> images = await _picker.pickMultiImage(
       // maxWidth: 1024,
@@ -103,6 +129,23 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
       imageQuality: 70,
     );
 
-    _bmiInputBloc.addImages(images.map((e) => e.path).toList());
+    if (images.isEmpty) return;
+
+    // Limit the images to the remaining slots
+    final List<String> imagePaths =
+        images.take(remainingSlots).map((e) => e.path).toList();
+
+    _bmiInputBloc.addImages(imagePaths);
+
+    // Show a message if user selected more than allowed
+    if (images.length > remainingSlots && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            R.string.max_image_select.tr(),
+          ),
+        ),
+      );
+    }
   }
 }

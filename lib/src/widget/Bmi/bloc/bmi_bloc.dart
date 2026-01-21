@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,6 +62,10 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   // BmiGetWeightListResponse? _historicalWeightResponse;
   List<BmiGetWeightRecord> _historicalWeightList = [];
+  int _currentPage = 1;
+  bool _hasMorePages = true;
+  bool _isLoadingMore = false;
+  int _currentPageSize = 500; // Track current page size for pagination
 
   late DateTime _currentTime;
 
@@ -71,6 +74,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   BmiDateFilterType _periodType = BmiDateFilterType.aMonth;
   BmiDateFilterType get periodType => _periodType;
+  BmiDateFilterType? _previousPeriodType;
 
   BmiWeightStatistical? _weightStatistical;
   BmiStatistical? _bmiStatistical;
@@ -106,19 +110,21 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   double? get avgBmi => _bmiStatistical?.value;
   double? get highestBmi {
-    if (height != null && height! > 0) {
-      double result = highestWeight / pow(height! / 100, 2);
-      return double.parse(result.toStringAsFixed(1));
-    }
-    return null;
+    return bmiStatistical?.valueMax;
+    // if (height != null && height! > 0) {
+    //   double result = highestWeight / pow(height! / 100, 2);
+    //   return double.parse(result.toStringAsFixed(1));
+    // }
+    // return null;
   }
 
   double? get lowestBmi {
-    if (height != null && height! > 0) {
-      double result = lowestWeight / pow(height! / 100, 2);
-      return double.parse(result.toStringAsFixed(1));
-    }
-    return null;
+    return bmiStatistical?.valueMin;
+    // if (height != null && height! > 0) {
+    //   double result = lowestWeight / pow(height! / 100, 2);
+    //   return double.parse(result.toStringAsFixed(1));
+    // }
+    // return null;
   }
 
   BmiWeightStatistical? get weightStatistical => _weightStatistical;
@@ -148,27 +154,72 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(BmiDataChangeEvent(BmiDataChangeEvent.weightGoalChanged, value));
   }
 
-  bool _hasNewData = false;
-  bool get hasNewData => _hasNewData;
-  set hasNewData(bool value) {
-    _hasNewData = value;
-    add(BmiDataChangeEvent(BmiDataChangeEvent.hasDataChanged, value));
+  bool? get hasNewData {
+    try {
+      return preferences.getBool(Const.hasNewWeightRecordInFirst);
+    } on Error catch (e) {
+      // Handle LateInitializationError - preferences not initialized yet
+      if (e.toString().contains('has not been initialized')) {
+        return null;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  set hasNewData(bool? value) {
+    if (value == null) return;
+    try {
+      if ((hasNewData == null && value == true) ||
+          (hasNewData == true && value == false)) {
+        preferences.setBool(Const.hasNewWeightRecordInFirst, value);
+        add(BmiDataChangeEvent(BmiDataChangeEvent.hasDataChanged, value));
+      }
+    } on Error {
+      // Handle LateInitializationError - preferences not initialized yet
+      // Silently ignore if preferences not ready
+    } catch (_) {
+      // Ignore other errors
+    }
   }
 
   late bool _hasHealthAppPermission;
   bool get hasHealthAppPermission => _hasHealthAppPermission;
 
   bool _hasStatisticalData = false;
-  bool get hasStatisticalData =>
-      preferences.getBool(Const.hasWeightRecord) ?? false;
+  bool get hasStatisticalData {
+    try {
+      return preferences.getBool(Const.hasWeightRecord) ?? false;
+    } on Error catch (e) {
+      // Handle LateInitializationError or other errors
+      // preferences not initialized yet, return cached value or false
+      if (e.toString().contains('has not been initialized')) {
+        return _hasStatisticalData;
+      }
+      return false;
+    } catch (e) {
+      // Other exceptions, return false as fallback
+      return false;
+    }
+  }
 
   BmiGetWeightRecord? get selectedPointChart => _selectedPointChart;
   int? get selectedIndexPointChart => _selectedIndexPointChart;
-  bool get isLastSelectedPoint => selectedIndexPointChart == 0;
+  bool get isLastSelectedPoint => _selectedIndexPointChart == 0;
 
   bool _hasModifiedData = false;
   bool get hasModifiedData => _hasModifiedData;
   set hasModifiedData(bool value) => _hasModifiedData = value;
+
+  bool get canNextPoint =>
+      _selectedPointChart != null &&
+      _selectedIndexPointChart != null &&
+      _selectedIndexPointChart! > 0;
+  bool get canPreviousPoint =>
+      _selectedPointChart != null &&
+      _selectedIndexPointChart != null &&
+      _selectedIndexPointChart! < _historicalWeightList.length - 1;
 
   void _onGetInstruction(
     BmiInstructionFetchingEvent event,
@@ -196,9 +247,9 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   ) async {
     emit(BmiGetWeightThresholdState(Resource.loading()));
     final response = await _weightRepository.getWeightThreshold(
-      // date: _currentTime.millisecondsSinceEpoch,
-      // height: height,
-    );
+        // date: _currentTime.millisecondsSinceEpoch,
+        // height: height,
+        );
 
     response.when(
       success: (data) {
@@ -209,7 +260,6 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
         emit(BmiGetWeightThresholdState(Resource.error(e)));
       },
     );
-    
   }
 
   void _onDataChanged(
@@ -421,7 +471,19 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     BmiGetWeightRecordsEvent event,
     Emitter<BmiState> emit,
   ) async {
-    emit(BmiGetWeightIndexListState(Resource.loading()));
+    final page = event.page ?? 1;
+    final isLoadMore = page > 1;
+
+    if (isLoadMore) {
+      if (_isLoadingMore || !_hasMorePages) {
+        return;
+      }
+      _isLoadingMore = true;
+    } else {
+      emit(BmiGetWeightIndexListState(Resource.loading()));
+      _currentPage = 1;
+      _hasMorePages = true;
+    }
 
     // final String raw =
     //     await rootBundle.loadString('assets/dummy/weight_list.json');
@@ -433,19 +495,42 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     // _historicalWeightList = result;
     // return;
 
+    final pageSize = event.size ?? _currentPageSize;
+    if (!isLoadMore) {
+      _currentPageSize = pageSize; // Store page size for load more operations
+    }
+
     final response = await _weightRepository.getWeightIndexList(
       currentTime: _currentTime.millisecondsSinceEpoch,
       periodFilterType: _periodType.requestValue,
+      page: page,
+      size: pageSize,
     );
-    response.when(
-        success: (data) {
-          _historicalWeightList = data.data ?? [];
-          _selectedPointChart = _historicalWeightList.firstOrNull;
-          _selectedIndexPointChart = 0;
-          emit(BmiGetWeightIndexListState(Resource.success(data)));
-        },
-        failure: (error) =>
-            emit(BmiGetWeightIndexListState(Resource.error(error))));
+    response.when(success: (data) {
+      if (isLoadMore) {
+        // Append new data when loading more
+        _historicalWeightList.addAll(data.data ?? []);
+      } else {
+        // Replace data when refreshing or initial load
+        _historicalWeightList = data.data ?? [];
+      }
+
+      // Update pagination state
+      _currentPage = page;
+      _hasMorePages = data.meta?.canNext ?? false;
+      _isLoadingMore = false;
+
+      if (_selectedPointChart == null ||
+          !_historicalWeightList.contains(_selectedPointChart)) {
+        _selectedPointChart = _historicalWeightList.firstOrNull;
+        _selectedIndexPointChart = 0;
+      }
+
+      emit(BmiGetWeightIndexListState(Resource.success(data)));
+    }, failure: (error) {
+      _isLoadingMore = false;
+      emit(BmiGetWeightIndexListState(Resource.error(error)));
+    });
   }
 
   void _onUpdateWeightGoal(
@@ -478,7 +563,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     add(const BmiGetWeightStatisticalEvent());
     add(const BmiGetWaistStatisticalEvent());
 
-    add(const BmiGetWeightRecordsEvent());
+    add(const BmiGetWeightRecordsEvent(page: 1, size: 500));
 
     Future.delayed(Duration(milliseconds: 1000)).then((value) {
       add(const BmiGetAIAnalysicEvent());
@@ -489,7 +574,7 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   void refresh() {
     add(BmiGetWeightStatisticalEvent());
     add(BmiGetWaistStatisticalEvent());
-    add(const BmiCheckStatisticalDataExistedEvent());
+    // add(const BmiCheckStatisticalDataExistedEvent());
 
     Future.delayed(Duration(milliseconds: 1000)).then((value) {
       add(BmiGetAIAnalysicEvent());
@@ -509,17 +594,38 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
       add(BmiGetBmiStatisticalEvent());
       // add(BmiGetWeightStatisticalEvent());
       // add(BmiGetWaistStatisticalEvent());
-      add(BmiGetWeightRecordsEvent());
+      add(const BmiGetWeightRecordsEvent(page: 1, size: 500));
       add(BmiGetAIAnalysicEvent());
     } else {
       //load detail
-      add(BmiGetWeightRecordsEvent());
+      add(const BmiGetWeightRecordsEvent(page: 1, size: 10));
+    }
+  }
+
+  void savePeriodTypeForStatisticalView() {
+    _previousPeriodType = _periodType;
+  }
+
+  void restorePeriodTypeAndRefetch() {
+    if (_previousPeriodType != null && _previousPeriodType != _periodType) {
+      changePeriodTime(_previousPeriodType!, isStatisticalView: true);
+      _previousPeriodType = null;
     }
   }
 
   void fetchHistoricalWeight() {
-    add(BmiGetWeightRecordsEvent());
+    add(const BmiGetWeightRecordsEvent(page: 1, size: 10));
   }
+
+  void loadMoreHistoricalWeight() {
+    if (!_isLoadingMore && _hasMorePages) {
+      add(BmiGetWeightRecordsEvent(
+          page: _currentPage + 1, size: _currentPageSize));
+    }
+  }
+
+  bool get hasMoreHistoricalWeight => _hasMorePages;
+  bool get isLoadingMoreHistoricalWeight => _isLoadingMore;
 
   void getAIAnalysicWeightRecord(String recordId) {
     add(BmiGetAIIndexAnalysicEvent(recordId));
@@ -551,6 +657,11 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
     selectPointChart(_selectedIndexPointChart! - 1);
   }
 
+  void clearPoint() {
+    _selectedIndexPointChart = null;
+    _selectedPointChart = null;
+  }
+
   Map<DateTime, List<BmiGetWeightRecord>> getGroupedWeightRecords() {
     Map<DateTime, List<BmiGetWeightRecord>> result = {};
 
@@ -560,8 +671,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
       result.update(
         date,
-        (value) => [item],
-        ifAbsent: () => [item],
+        (value) => [...value, item], // Add to existing list
+        ifAbsent: () => [item], // Create new list
       );
     }
 

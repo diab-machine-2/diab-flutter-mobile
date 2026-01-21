@@ -10,8 +10,8 @@ import 'package:medical/src/model/response/list_roadmap_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,8 +41,8 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
       create: (context) => _cubit,
       child: Scaffold(
         body: CommonPage(
-          // TODO(Tuyen): Change background
-          background: R.drawable.bg_lesson_detail,
+          appbarColor: R.color.greenGradientBottom,
+          textColor: Colors.white,
           title: R.string.select_road_map.tr(),
           bottomSafeArea: true,
           child: BlocConsumer<SelectRoadMapCubit, SelectRoadMapState>(
@@ -64,19 +64,13 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                 onRefresh: () async {
                   _cubit.getRoadAppRoadMap();
                 },
-                child: ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                  itemCount: _cubit.roadMapList.length,
-                  itemBuilder: (context, index) {
-                    return _buildRoadMap(_cubit.roadMapList[index]);
-                  },
-                  separatorBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      height: 1,
-                      color: R.color.grayBorder,
-                    );
-                  },
+                child: Container(
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+                    children: _cubit.roadMapList
+                        .map((item) => _buildRoadMap(item))
+                        .toList(),
+                  ),
                 ),
               );
             },
@@ -88,111 +82,136 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
 
   Widget _buildRoadMap(ListRoadmapResponseData? itemData) {
     if (itemData == null) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          clipBehavior: Clip.hardEdge,
-          height: 171.5,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: NetWorkImageWidget(
-            imageUrl: itemData.image?.url,
-          ),
+    final bool isJoined = itemData.joined == true;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(16),
         ),
-        const SizedBox(height: 12),
-        Text(
-          itemData.name ?? '',
-          style: TextStyle(
-            color: R.color.textDark,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          itemData.description ?? '',
-          style: TextStyle(
-            color: R.color.grey_1,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              itemData.exerciseIntensity?.name ?? '',
-              style: TextStyle(
-                color: itemData.exerciseIntensity?.color ?? R.color.textDark,
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
+            // Image at top
+            Container(
+              clipBehavior: Clip.hardEdge,
+              height: 171.5,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: NetWorkImageWidget(
+                imageUrl: itemData.image?.url,
               ),
             ),
-            if (itemData.joined == true)
-              InkWell(
-                onTap: () {
-                  NavigationUtil.pop(context);
-                },
-                child: Container(
-                  height: 24,
-                  alignment: Alignment.center,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: R.color.green,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    R.string.joining.tr(),
+            GapH(16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Intensity label (red)
+                if (itemData.exerciseIntensity?.name != null)
+                  Text(
+                    itemData.exerciseIntensity?.name ?? '',
                     style: TextStyle(
-                      color: R.color.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                      color: R.color.blood_pressure_color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
+                GapH(4),
+                // Title
+                Text(
+                  itemData.name ?? '',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              )
-            else
-              SizedBox(
-                width: 120,
-                child: ButtonWidget(
-                  title: R.string.join.tr(),
-                  height: 32,
-                  textSize: 14,
-                  onPressed: () {
-                    MotionListTracking.clickJoinRoadMap(
-                      objectId: '${itemData.id}',
-                      objectTitle: '${itemData.name}',
-                    );
-                    showDialog(
-                      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-                      context: context,
-                      builder: (_) => NoticeChangePage(
-                          isShowTextHtml: true,
-                          htmlText:
-                              '''<p><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn đang học ${_cubit.formatRoadmapName(_cubit.currentRoadMap?.name ?? '')}, bạn c&oacute; chắc muốn đổi lộ tr&igrave;nh kh&aacute;c kh&ocirc;ng?</span></p>''',
-                          description: R.string.ask_for_change_roadmap
-                              .tr(args: [_cubit.currentRoadMap?.name ?? '']),
-                          positiveButtonTitle: R.string.confirm.tr(),
-                          onClick: () {
-                            MotionListTracking.clickConfirmJoinRoadMap(
+                GapH(8),
+                // Description
+                if (itemData.description != null &&
+                    itemData.description!.isNotEmpty)
+                  Text(
+                    itemData.description ?? '',
+                    style: TextStyle(
+                      color: R.color.captionColorGray,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                GapH(16),
+                // Action button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: isJoined
+                        ? () {
+                            NavigationUtil.pop(context);
+                          }
+                        : () {
+                            MotionListTracking.clickJoinRoadMap(
                               objectId: '${itemData.id}',
                               objectTitle: '${itemData.name}',
                             );
-                            _cubit.changeRoadMap(itemData);
+                            showDialog(
+                              barrierColor:
+                                  R.color.color0xff003F38.withOpacity(0.5),
+                              context: context,
+                              builder: (_) => NoticeChangePage(
+                                  isShowTextHtml: false,
+                                  title: R.string.change_roadmap.tr(),
+                                  htmlText:
+                                      '''<p><span style="font-family: Arial, Helvetica, sans-serif; font-size: 16px;">Bạn đang tham gia ${_cubit.formatRoadmapName(_cubit.currentRoadMap?.name ?? '')}, bạn c&oacute; chắc muốn đổi lộ tr&igrave;nh kh&aacute;c kh&ocirc;ng?</span></p>''',
+                                  description: R.string.ask_for_change_roadmap
+                                      .tr(args: [
+                                    _cubit.currentRoadMap?.name ?? ''
+                                  ]),
+                                  negativeButtonTitle: R.string.lan_sau.tr(),
+                                  onClick: () {
+                                    MotionListTracking.clickConfirmJoinRoadMap(
+                                      objectId: '${itemData.id}',
+                                      objectTitle: '${itemData.name}',
+                                    );
+                                    _cubit.changeRoadMap(itemData);
+                                  },
+                                  gradientColor: false),
+                            );
                           },
-                          gradientColor: true),
-                    );
-                  },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          isJoined ? R.string.joining.tr() : R.string.join.tr(),
+                          style: TextStyle(
+                            color:
+                                isJoined ? R.color.grayCaption : R.color.main_1,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_forward_outlined,
+                          size: 18,
+                          color:
+                              isJoined ? R.color.grayCaption : R.color.main_1,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              )
+              ],
+            ),
           ],
         ),
-      ],
+      ),
     );
   }
 
@@ -242,14 +261,12 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                             '''<div><span style="font-family: Arial, Helvetica, sans-serif; font-size: 15px;">Bạn đ&atilde; chọn ${_cubit.formatRoadmapName(itemData?.name ?? '')}. Lộ tr&igrave;nh bao gồm ${(itemData?.exerciseMovementCount ?? 0).toString()} b&agrave;i học.</span></div>''',
                         style: {
                           "body": Style(
-                              padding: EdgeInsets.zero,
-                              margin: EdgeInsets.zero),
+                              padding: HtmlPaddings.zero, margin: Margins.zero),
                         },
-                        onLinkTap: (url, context, attributes, element) async {
-                          await canLaunch(url!)
-                              ? await launch(url,
-                                  forceSafariVC: false, forceWebView: false)
-                              : throw 'Could not launch $url';
+                        onLinkTap: (url, attributes, element) {
+                          if (url == null) return;
+                          launchUrl(Uri.parse(url),
+                              mode: LaunchMode.externalApplication);
                         },
                       ),
                       // Text(

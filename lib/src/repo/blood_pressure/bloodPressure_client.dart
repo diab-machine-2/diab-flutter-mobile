@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
@@ -240,6 +241,8 @@ class BloodPressureClient extends FetchClient {
       'reason': reason,
       'note': note,
     };
+
+    log('Blood pressure input params: $params');
 
     final response = await super.postHttp(
         path: '/App/BloodPressure/Input', params: params, files: files);

@@ -24,7 +24,8 @@ import '../../my_plan_screens/activity_tab/activity_tab/models/schedule_type.dar
 import 'daily_nutrition.dart';
 
 class DailyNutritionCubit extends Cubit<DailyNutritionState> {
-  DailyNutritionCubit(this.repository, this.goalId) : super(const DailyNutritionInitial());
+  DailyNutritionCubit(this.repository, this.goalId)
+      : super(const DailyNutritionInitial());
 
   final AppRepository repository;
   final FoodClient foodClient = FoodClient();
@@ -162,8 +163,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       selectedFoods = model!.foods;
     } else {
       addTotalCalo = true;
-      totalKcalText = ((model!.foods[index].portion ?? 0) *
-              (model!.foods[index].calorie ?? 0))
+      totalKcalText = ((model!.foods[index].portion ?? 1) *
+              (model!.foods[index].calorie ?? 1))
           .round()
           .toString();
     }
@@ -208,9 +209,9 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
             ) ??
             [];
 
-        for(var dayFood in response.listdayfood ?? []){
-          for(var timeGroup in dayFood.timeGroups ?? []){
-            for(var defaultFood in timeGroup.defaultFood ?? []){
+        for (var dayFood in response.listdayfood ?? []) {
+          for (var timeGroup in dayFood.timeGroups ?? []) {
+            for (var defaultFood in timeGroup.defaultFood ?? []) {
               listFoodMenu.add(defaultFood);
             }
           }
@@ -249,6 +250,14 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.changeFood(request);
     apiResult.when(success: (CommonResponse response) async {
+      // Update the food in selectedFoods before calculating calories
+      final int index = selectedFoods.indexWhere(
+        (food) =>
+            food.id == newFoodModel.id && food.mealId == newFoodModel.mealId,
+      );
+      if (index != -1) {
+        selectedFoods[index] = newFoodModel;
+      }
       calculatorCalo();
       emit(const DailyNutritionSuccess());
     }, failure: (NetworkExceptions error) {
@@ -330,7 +339,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
           paths);
       if (result == true) {
         //  if(goalId != null && goalId?.isNotEmpty == true){
-          await HomeClient().completeSmartGoal(selectedDate, goalId ?? '', 1, ScheduleType.food.typeIndex);
+        await HomeClient().completeSmartGoal(
+            selectedDate, goalId ?? '', 1, ScheduleType.food.typeIndex);
         //  }
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
 
@@ -356,10 +366,17 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     try {
       final List<String> paths = [];
       for (final file in files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }
+      // Swap portion and quantity for all selectedFoods
+      final List<FoodModel> swappedFoods = selectedFoods.map((food) {
+        return food.copyWith(
+          portion: food.quantity,
+          quantity: food.portion,
+        );
+      }).toList();
       final bool result = await FoodClient().updateIndexFood(
           id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
@@ -367,7 +384,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
           notes,
           addTotalCalo
               ? [FoodModel(id: otherFoodId, portion: parsedTotalKcal)]
-              : selectedFoods,
+              : swappedFoods,
           removeIDs,
           paths);
       if (result == true) {

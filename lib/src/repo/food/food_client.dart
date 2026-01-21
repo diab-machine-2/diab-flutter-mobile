@@ -246,6 +246,7 @@ class FoodClient extends FetchClient {
         params['foods[$i].id'] = foods[i].id ?? '';
         params['foods[$i].portion'] =
             foods[i].portion != null ? foods[i].portion.toString() : '1';
+        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '';
       }
       final response = await super
           .postHttp(path: '/App/Diet/Input', params: params, files: files);
@@ -270,12 +271,17 @@ class FoodClient extends FetchClient {
         'note': note,
         'IsGptResult': 'true',
       };
+
       for (int i = 0; i < foods.length; i++) {
-        params['foods[$i].id'] = foods[i].id ?? '';
+        final totalCalories = foods[i].calorie != null
+            ? foods[i].calorie!.toDouble() * (foods[i].portion ?? 0).toDouble()
+            : 0.0;
+        final isGptResult = (foods[i].id == null || foods[i].id!.isEmpty) ? 'true' : 'false';
+        params['foods[$i].id'] = foods[i].id ?? '00000000-0000-0000-0000-000000000000';
         params['foods[$i].name'] = foods[i].name ?? '';
-        params['foods[$i].portion'] = foods[i].portion?.toString() ?? '';
+        params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
         params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
-        params['foods[$i].calorie'] = foods[i].calorie?.toString() ?? '';
+        params['foods[$i].calorie'] = totalCalories.round().toString();
         params['foods[$i].glucose'] = foods[i].glucose?.toString() ?? '';
         params['foods[$i].lipid'] = foods[i].lipid?.toString() ?? '';
         params['foods[$i].protein'] = foods[i].protein?.toString() ?? '';
@@ -284,17 +290,18 @@ class FoodClient extends FetchClient {
         params['foods[$i].text'] = foods[i].text ?? '';
         params['foods[$i].description'] = foods[i].description ?? '';
         params['foods[$i].foodCategoryId'] = foods[i].foodCategoryId ?? '';
-        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '';
+        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '1';
         params['foods[$i].mealId'] = foods[i].mealId ?? '';
         params['foods[$i].timeCode'] = foods[i].timeCode?.toString() ?? '';
         params['foods[$i].foodMenuCode'] = foods[i].foodMenuCode ?? '';
         // Handle image object - you might need to send image ID or URL
         params['foods[$i].imageId'] = foods[i].image?.id ?? '';
         params['foods[$i].imageUrl'] = foods[i].imageUrl ?? '';
+        params['foods[$i].IsGptResult'] = isGptResult;
       }
       final response = await super
           .postHttp(path: '/App/Diet/InputAI', params: params, files: files);
-      log('params: $params');
+      log('input AI nutrition params: $params');
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
@@ -327,7 +334,8 @@ class FoodClient extends FetchClient {
       };
       for (int i = 0; i < foods.length; i++) {
         params['foods[$i].id'] = foods[i].id ?? '';
-        params['foods[$i].portion'] = foods[i].portion.toString();
+        params['foods[$i].portion'] =
+            foods[i].portion != null ? foods[i].quantity.toString() : '1';
       }
       final response = await super
           .putHttp(path: '/App/Diet/Input', params: params, files: files);

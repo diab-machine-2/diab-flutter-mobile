@@ -53,6 +53,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
     totalKcal = 0;
     foods.forEach((element) {
       final double calorie = (element.calorie ?? 0).toDouble();
+      final double quantity = (element.quantity ?? 0).toDouble();
       final double portion = (element.portion ?? 0).toDouble();
       totalKcal += calorie * portion;
     });
@@ -177,8 +178,8 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                                         Text(
                                             foods[index].code ==
                                                     'OtherUneditable'
-                                                ? '${R.string.da_an.tr()} ${formatNumber(((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0)).toDouble())} kcal'
-                                                : '${R.string.da_an.tr()} ${roundAsFixed(((foods[index].portion ?? 0) * (foods[index].quantity ?? 0)).toDouble())} ${foods[index].unit ?? ''}, ${formatNumber(((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0)).toDouble())} kcal',
+                                                ? '${R.string.da_an.tr()} ${((foods[index].quantity ?? 0) * (foods[index].calorie ?? 0)).round()} kcal'
+                                                : '${R.string.da_an.tr()} ${roundAsFixed((foods[index].portion ?? 0) * (foods[index].quantity ?? 0))} ${foods[index].unit ?? ''}, ${((foods[index].portion ?? 0) * (foods[index].calorie ?? 0)).round()} kcal',
                                             style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontWeight: FontWeight.w400))

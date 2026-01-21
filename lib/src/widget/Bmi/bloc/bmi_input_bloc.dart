@@ -6,10 +6,12 @@ import 'package:medical/src/model/request/revise_weight_record_request.dart';
 import 'package:medical/src/model/request/submit_weight_record_request.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/model/response/calculate_bmi_response.dart';
+import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 
 class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
@@ -95,6 +97,10 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
 
   String? _currentRecordId;
 
+  String? _goalId;
+  String? get goalId => _goalId;
+  set goalId(String? value) => _goalId = value;
+
   List<String> _removalNoteImages = [];
   List<String> get removalNoteImages => _removalNoteImages;
 
@@ -170,8 +176,17 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
     final result = await _weightRepository.submitWeightRecord(event.request);
     result.when(
       success: (data) => {
-          PhoneValidationManager.setShouldShowPhoneValidation(),
-          emit(BmiInputSubmitedState(Resource.success(data.data))),
+        PhoneValidationManager.setShouldShowPhoneValidation(),
+        if (_goalId != null && _goalId!.isNotEmpty)
+          {
+            HomeClient().completeSmartGoal(
+              DateTime.fromMillisecondsSinceEpoch(event.request.date),
+              _goalId!,
+              1,
+              ScheduleType.weight.typeIndex,
+            )
+          },
+        emit(BmiInputSubmitedState(Resource.success(data.data))),
       },
       failure: (error) => emit(BmiInputSubmitedState(Resource.error(error))),
     );
@@ -210,7 +225,17 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   //
 
   void addImages(List<String> paths) {
-    _noteImages.addAll(paths);
+    const int maxImages = 5;
+    final int currentTotalImages = _noteImages.length + _noteImagesFromRecord.length;
+    final int remainingSlots = maxImages - currentTotalImages;
+    
+    if (remainingSlots <= 0) {
+      return; // Already at max capacity
+    }
+    
+    // Only add images up to the remaining slots
+    final List<String> imagesToAdd = paths.take(remainingSlots).toList();
+    _noteImages.addAll(imagesToAdd);
     add(BmiInputDataChangeEvent(
       BmiInputDataChangeEvent.noteImagesChanged,
       _noteImages,
@@ -241,6 +266,8 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   void validate(bool hasInputedWaist) {
     if (_weight <= 0) {
       error("Vui lòng nhập cân nặng");
+    } else if (_waist != 0 && (_waist < 1 || _waist > 999)) {
+      error("Vui lòng nhập vòng eo hợp lệ");
     } else if (!hasInputedWaist) {
       add(BmiWaistValidatingEvent());
     } else {
@@ -313,6 +340,10 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
     add(BmiInputDataChangeEvent(
       BmiInputDataChangeEvent.noteImagesFromRecordChanged,
       _noteImagesFromRecord,
+    ));
+    add(BmiInputDataChangeEvent(
+      BmiInputDataChangeEvent.inputTimeChanged,
+      _currentInputTime,
     ));
   }
 }

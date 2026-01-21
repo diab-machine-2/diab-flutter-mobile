@@ -4,7 +4,6 @@ import 'dart:io' show Platform;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -67,7 +66,7 @@ class _LoginControllerState extends State<LoginController> {
     AppSettings.currentScreenName = 'login';
     // phoneFocusNode.addListener(() async {
     //   if (phoneFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'login',
@@ -77,7 +76,7 @@ class _LoginControllerState extends State<LoginController> {
     //     );
     //   } else {
     //     bool isValid = phone.length == 9 || phone.length == 10;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'login',
@@ -91,7 +90,7 @@ class _LoginControllerState extends State<LoginController> {
     // });
     // passwordFocusNode.addListener(() async {
     //   if (passwordFocusNode.hasFocus) {
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_focus',
     //       parameters: {
     //         "screen_name": 'login',
@@ -101,7 +100,7 @@ class _LoginControllerState extends State<LoginController> {
     //     );
     //   } else {
     //     bool isValid = password.length >= 6;
-    //     await TrackingManager.analytics.logEvent(
+    //     await TrackingManager.logEvent(
     //       name: 'text_field_input',
     //       parameters: {
     //         "screen_name": 'login',

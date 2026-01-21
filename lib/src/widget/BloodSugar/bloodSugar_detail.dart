@@ -48,9 +48,8 @@ class BloodSugarDetailControllerState
   @override
   void initState() {
     super.initState();
-    periodFilterType =
-        BloodSugarDetailTabbarController.of(context)?.periodFilterType ??
-            widget.initPeriodFilterType;
+    periodFilterType =BloodSugarDetailTabbarController.of(context)?.periodFilterType ??
+        widget.initPeriodFilterType;
     glucoseID = BloodSugarDetailTabbarController.of(context)?.glucoseID ??
         widget.glucoseID;
     initializeDateFormatting();

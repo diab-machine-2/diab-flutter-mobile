@@ -32,38 +32,36 @@ class BmiInputImagesListView extends StatelessWidget {
               _bmiInputBloc.noteImagesFromRecord.isEmpty)
             return const SizedBox();
 
+          // Combine both lists into a single ListView for proper horizontal scrolling
+          final int recordImagesCount =
+              _bmiInputBloc.noteImagesFromRecord.length;
+          final int newImagesCount = _bmiInputBloc.noteImages.length;
+          final int totalItems = recordImagesCount + newImagesCount;
+
           return SizedBox(
             height: _imgThumbnailSize,
-            child: Row(
-              children: [
-                if (_bmiInputBloc.noteImagesFromRecord.isNotEmpty)
-                  ListView.separated(
-                    itemBuilder: (context, index) => _BmiUrlImageThumbnail(
-                      url: _bmiInputBloc.noteImagesFromRecord[index].url ?? "",
-                      onRemove: () {
-                        _bmiInputBloc.removeRecordImage(
-                            _bmiInputBloc.noteImagesFromRecord[index]);
-                      },
-                    ),
-                    separatorBuilder: (context, index) => const SizedBox(
-                      width: 12,
-                    ),
-                    itemCount: _bmiInputBloc.noteImagesFromRecord.length,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                  ),
-                ListView.separated(
-                  itemBuilder: (context, index) => _BmiImageThumbnail(
-                    path: _bmiInputBloc.noteImages[index],
-                  ),
-                  separatorBuilder: (context, index) => const SizedBox(
-                    width: 12,
-                  ),
-                  itemCount: _bmiInputBloc.noteImages.length,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                ),
-              ],
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: totalItems,
+              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                if (index < recordImagesCount) {
+                  // Show record images first
+                  return _BmiUrlImageThumbnail(
+                    url: _bmiInputBloc.noteImagesFromRecord[index].url ?? "",
+                    onRemove: () {
+                      _bmiInputBloc.removeRecordImage(
+                          _bmiInputBloc.noteImagesFromRecord[index]);
+                    },
+                  );
+                } else {
+                  // Then show new images
+                  final newImageIndex = index - recordImagesCount;
+                  return _BmiImageThumbnail(
+                    path: _bmiInputBloc.noteImages[newImageIndex],
+                  );
+                }
+              },
             ),
           );
         });

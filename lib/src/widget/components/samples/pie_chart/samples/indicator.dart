@@ -124,6 +124,7 @@ class CircleIndicator extends StatelessWidget {
                 fontSize: fontsize,
                 height: 18 / fontsize,
                 color: R.color.textDark,
+                fontFamily: R.font.sfpro,
               ),
             )
           ],

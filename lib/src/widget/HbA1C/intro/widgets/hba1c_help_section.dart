@@ -1,13 +1,85 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_functions.dart';
-import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
-import 'package:medical/src/widget/HbA1C/hba1c_navigation_helper.dart';
+import 'package:medical/res/colors.dart';
+import 'package:medical/res/dimens.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 
-class HbA1cHelpSection extends StatelessWidget {
+class HbA1cHelpSection extends StatefulWidget {
   const HbA1cHelpSection({Key? key}) : super(key: key);
+
+  @override
+  State<HbA1cHelpSection> createState() => _HbA1cHelpSectionState();
+}
+
+class _HbA1cHelpSectionState extends State<HbA1cHelpSection> {
+  final List<LessonModel> _lessons = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLessons();
+  }
+
+  void _loadLessons() async {
+    try {
+      setState(() => _isLoading = true);
+      _lessons.clear();
+      final lessons = await HbA1CClient().fetchHbA1CLessons();
+      if (mounted) {
+        setState(() {
+          _lessons.addAll(lessons);
+          _isLoading = false;
+        });
+      }
+    } catch (e, s) {
+      print('❌ Error loading HbA1C help lessons: $e');
+      TrackingManager.recordError(e, s);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _navigateToLessonDetail(LessonModel lesson) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: lesson.id,
+      objectIndex: null,
+      objectTitle: lesson.name,
+    );
+
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: lesson.type,
+        lessonId: lesson.id,
+        onComplete: (_, __) {},
+      ),
+    );
+  }
+
+  String? _getImageUrl(LessonModel lesson) {
+    // First check if url exists and is not empty
+    if (lesson.image?.url != null && lesson.image!.url!.isNotEmpty) {
+      return lesson.image!.url;
+    }
+
+    // If url is empty, try to construct URL using image id
+    if (lesson.image?.id != null && lesson.image!.id!.isNotEmpty) {
+      final baseURL = FetchClient.baseURL;
+      return Uri.https(baseURL, '/App/Image/${lesson.image!.id}').toString();
+    }
+
+    // If still empty, return null
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,124 +102,83 @@ class HbA1cHelpSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        _buildHelpGrid(context),
+        _isLoading
+            ? _buildLoadingState()
+            : _lessons.isEmpty
+                ? const SizedBox()
+                : _buildLessonsGrid(),
       ],
     );
   }
 
-  Widget _buildHelpGrid(BuildContext context) {
-    final helpItems = [
-      {
-        'title': 'Ghi lại HbA1c trên ứng dụng DiaB',
-        'image': R.drawable.im_hba1c_supports_1,
-        'onTap': () async => await showHbA1cInputMethodModal(context),
-      },
-      {
-        'title': 'Kết nối thiết bị theo dõi sức khỏe',
-        'image': R.drawable.im_hba1c_supports_2,
-        'onTap': () {
-          RequestHealthConnect.showModal(
-            context,
-            callback: () => Navigator.pop(context),
-          );
-        },
-      },
-      {
-        'title': 'Theo dõi chỉ số trên biểu đồ',
-        'image': R.drawable.im_hba1c_supports_3,
-        'onTap': () => HbA1cNavigationHelper.navigateToHbA1C(context),
-      },
-      {
-        'title': 'Thiết lập nhắc đo HbA1c',
-        'image': R.drawable.im_hba1c_supports_4,
-        'onTap': () {
-          Navigator.pushNamed(context, NavigatorName.reminder);
-        },
-      },
-    ];
-
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(child: _buildHelpItem(helpItems[0])),
-            const SizedBox(width: 8),
-            Expanded(child: _buildHelpItem(helpItems[1])),
-          ],
+  Widget _buildLoadingState() {
+    return Container(
+      height: 312, // 2 rows * (152 + 8)
+      child: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(R.color.mainColor),
         ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(child: _buildHelpItem(helpItems[2])),
-            const SizedBox(width: 8),
-            Expanded(child: _buildHelpItem(helpItems[3])),
-          ],
-        ),
-      ],
+      ),
     );
   }
 
-  Widget _buildHelpItem(Map<String, dynamic> item) {
-    String title = item['title'] as String;
-    String imagePath = item['image'] as String;
-    VoidCallback onTap = item['onTap'] as VoidCallback;
+  Widget _buildLessonsGrid() {
+    return GridView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1 / 1,
+      ),
+      itemBuilder: (context, index) => _buildLessonItem(_lessons[index]),
+      itemCount: _lessons.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+    );
+  }
 
+  Widget _buildLessonItem(LessonModel lesson) {
     return InkWell(
-      onTap: onTap,
+      onTap: () => _navigateToLessonDetail(lesson),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        height: 152.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          // border: Border.all(color: R.color.grayComponentBorder),
-        ),
+        decoration: R.decorationStyle.mediumRadiusCardStyles,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: 72,
-              height: 72,
+            Expanded(
               child: ClipRRect(
-                child: Image.asset(
-                  imagePath,
-                  width: 72,
-                  height: 72,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 72,
-                      height: 72,
-                      child: Icon(
-                        Icons.image,
-                        size: 32,
-                      ),
-                    );
-                  },
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(AppDimens.mediumRadius),
+                  topRight: Radius.circular(AppDimens.mediumRadius),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: _getImageUrl(lesson) ?? "",
+                  errorWidget: (context, url, error) => Container(
+                    color: AppColors.neutral5,
+                    child: Icon(
+                      Icons.image_not_supported_rounded,
+                      size: 56,
+                      color: AppColors.neutral4,
+                    ),
+                  ),
+                  fit: BoxFit.cover,
+                  width: double.maxFinite,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: Container(
-                width: 146,
-                height: 44,
-                alignment: Alignment.center,
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                lesson.name,
+                style: TextStyle(
+                    fontSize: 12,
                     fontWeight: FontWeight.w400,
-                    letterSpacing: 0.4,
-                    fontFamily: R.font.sfpro,
-                    color: R.color.hba1c_text_color,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                    color: R.color.textDark),
+                textAlign: TextAlign.center,
               ),
+            ),
+            const SizedBox(
+              height: 4,
             ),
           ],
         ),

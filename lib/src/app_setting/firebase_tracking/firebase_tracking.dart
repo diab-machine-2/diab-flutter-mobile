@@ -12,7 +12,7 @@ class FirebaseTracking {
       objectValue =
           convertToUTC(sickYear.millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy');
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'register_information',
@@ -28,7 +28,7 @@ class FirebaseTracking {
       objectValue =
           convertToUTC(sickYear.millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy');
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_selected',
       parameters: {
         "screen_name": 'register_information',
@@ -44,7 +44,7 @@ class FirebaseTracking {
     if (diabetesStatus != null) {
       objectValue = diabetesStatus.value!;
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'register_information',
@@ -60,7 +60,7 @@ class FirebaseTracking {
     if (diabetesStatus != null) {
       objectValue = diabetesStatus.value!;
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_selected',
       parameters: {
         "screen_name": 'register_information',
@@ -77,7 +77,7 @@ class FirebaseTracking {
       objectValue =
           convertToUTC(date.millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy');
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'register_information',
@@ -93,7 +93,7 @@ class FirebaseTracking {
       objectValue =
           convertToUTC(date.millisecondsSinceEpoch ~/ 1000, 'dd/MM/yyyy');
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'register_information',

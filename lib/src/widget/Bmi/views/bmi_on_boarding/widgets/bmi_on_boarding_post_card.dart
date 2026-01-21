@@ -24,7 +24,7 @@ class BmiOnBoardingPostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BmiBloc _bmiBloc = context.read();
-    
+
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -43,7 +43,9 @@ class BmiOnBoardingPostCard extends StatelessWidget {
                     topLeft: Radius.circular(AppDimens.mediumRadius),
                     topRight: Radius.circular(AppDimens.mediumRadius)),
                 child: CachedNetworkImage(
-                  imageUrl: _bmiBloc.getImageUrl(lesson.image?.url) ?? "",
+                  imageUrl: (lesson.image?.url ?? "").isNotEmpty
+                      ? lesson.image?.url ?? ""
+                      : _bmiBloc.getImageUrl(lesson.image?.id) ?? "",
                   errorWidget: (context, url, error) => Container(
                     color: AppColors.neutral5,
                     child: Icon(

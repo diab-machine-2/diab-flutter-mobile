@@ -69,15 +69,14 @@ class _NotificationDetailControllerState
                                               color: R.color.black)),
                                       const SizedBox(height: 8),
                                       Html(
-                                          data: notification?.body ?? '',
-                                          onLinkTap: (url, context, attributes,
-                                              element) async {
-                                            await canLaunch(url!)
-                                                ? await launch(url,
-                                                    forceSafariVC: false,
-                                                    forceWebView: false)
-                                                : throw 'Could not launch $url';
-                                          })
+                                        data: notification?.body ?? '',
+                                        onLinkTap: (url, attributes, element) {
+                                          if (url == null) return;
+                                          launchUrl(Uri.parse(url),
+                                              mode: LaunchMode
+                                                  .externalApplication);
+                                        },
+                                      )
                                     ]),
                               )
                             ]),

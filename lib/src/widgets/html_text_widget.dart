@@ -25,13 +25,10 @@ class WidgetHtmlText extends StatelessWidget {
               textStyle != null ? textStyle!.fontWeight : FontWeight.w400,
         ),
       },
-      onLinkTap: (String? url, RenderContext context,
-          Map<String, String> attributes, element) async {
+      onLinkTap: (String? url, Map<String, String> attributes, element) {
         if (url != null) {
           Uri link = Uri.parse(url);
-          if (await canLaunchUrl(link)) {
-            await launchUrl(link);
-          }
+          launchUrl(link);
         }
       },
     );

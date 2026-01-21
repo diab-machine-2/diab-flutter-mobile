@@ -13,16 +13,16 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 typedef FoodItemCallback = Function(FoodModel, int);
 
 class FoodItem extends StatelessWidget {
-  const FoodItem(
-      {required this.model,
-      required this.selectedModel,
-      required this.index,
-      this.isSearch = false,
-      this.isCategory = false,
-      this.categoryId,
-      required this.callback,
-      required this.kcalLeft,
-      });
+  const FoodItem({
+    required this.model,
+    required this.selectedModel,
+    required this.index,
+    this.isSearch = false,
+    this.isCategory = false,
+    this.categoryId,
+    required this.callback,
+    required this.kcalLeft,
+  });
 
   final FoodModel model;
   final FoodModel? selectedModel;
@@ -81,7 +81,7 @@ class FoodItem extends StatelessWidget {
                           child: Text(
                               selectedModel!.code == 'OtherUneditable'
                                   ? '${R.string.da_an.tr()} ${formatNumber((selectedModel?.quantity ?? 0) * (selectedModel?.calorie ?? 0))} kcal'
-                                  : '${R.string.da_an.tr()} ${roundAsFixed(selectedModel?.portion ?? 0)} ${selectedModel?.unit}, ${formatNumber((selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0) )} ${R.string.kcal.tr()}',
+                                  : '${R.string.da_an.tr()} ${roundAsFixed((selectedModel?.portion ?? 0) * (selectedModel?.quantity ?? 0))} ${selectedModel?.unit ?? ''}, ${((selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0)).round()} kcal',
                               style: TextStyle(
                                   color: R.color.black,
                                   fontWeight: FontWeight.w400)),
@@ -115,14 +115,13 @@ class FoodItem extends StatelessWidget {
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),
       context: context,
       builder: (_) => FoodChooseQuantity(
-          model: model,
-          selectedModel: selectedModel,
-          categoryId: categoryId,
-          callback: (value) {},
-          kcalLeft: kcalLeft,
-          ),
+        model: model,
+        selectedModel: selectedModel,
+        categoryId: categoryId,
+        callback: (value) {},
+        kcalLeft: kcalLeft,
+      ),
     );
-    
   }
 
   likeFood(BuildContext context) async {

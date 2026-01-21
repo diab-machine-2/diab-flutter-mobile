@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/dimens.dart';
-import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/bmi_input_text_field.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/widgets/weight_input_text_field.dart';
 import 'package:medical/src/widgets/button/outlined_rounded_button.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
 
@@ -76,7 +76,7 @@ class _BmiGoalWeightInputDialogViewState
               const SizedBox(
                 height: 12,
               ),
-              BmiInputTextField(
+              WeightInputTextField(
                 hintText: "50",
                 suffixText: "kg",
                 controller: _controller,

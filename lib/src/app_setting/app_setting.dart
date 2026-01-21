@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -494,6 +493,7 @@ class AppSettings {
             .pushReplacementNamed(NavigatorName.step_list);
       }
       userInfo = null;
+      appPreference.setData(Const.hasInputedWaist, false);
       await FetchClient().checkNetwork();
       await RevenueCatService.logout();
       await LoginClient().logout();
@@ -512,8 +512,6 @@ class AppSettings {
       CalendarBookingCubit.updateCount = 0;
       final GoogleSignIn _googleSignIn = GoogleSignIn();
       _googleSignIn.signOut();
-      final facebookLogin = FacebookLogin();
-      facebookLogin.logOut();
       await clearZaloGroup();
       return true;
     } catch (_) {

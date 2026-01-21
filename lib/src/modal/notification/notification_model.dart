@@ -53,11 +53,27 @@ class NotificationModel {
       hyperText: notification['hyperText'],
       hyperLink: notification['hyperLink'],
       data: dataNoti == null ? null : NotificationData.fromJson(dataNoti),
-      notificationType: notification['data'] is Map
-          ? notification['data']['notificationType'] != null
-              ? notification['data']['notificationType']
-              : notification['notificationType']
-          : notification['notificationType'],
+      notificationType: () {
+        dynamic type;
+        if (notification['data'] is Map) {
+          final dataMap = notification['data'] as Map;
+          // Check if data is empty Map
+          if (dataMap.isEmpty) {
+            type = null;
+          } else {
+            type =
+                dataMap['notificationType'] ?? notification['notificationType'];
+          }
+        } else {
+          type = notification['notificationType'];
+        }
+        // Default to "4" if null or empty
+        if (type == null) {
+          return "4";
+        }
+        final typeString = type.toString();
+        return (typeString.isEmpty) ? "4" : typeString;
+      }(),
     );
   }
 
@@ -70,7 +86,7 @@ class NotificationData {
   final String? communicationId;
   final String? remindId;
   final String? calendarId;
-  final String notificationType;
+  final String? notificationType;
   final String? notificationId;
   final String? referalCode;
   final String? surveyId;
@@ -86,6 +102,16 @@ class NotificationData {
 
   @override
   factory NotificationData.fromJson(dynamic json) {
+    // Check if json is an empty Map
+    final isEmptyMap = json is Map && json.isEmpty;
+    // Get notificationType, default to "4" if null, empty, or data is empty Map
+    final notificationTypeRaw = json['notificationType'];
+    final notificationTypeValue = isEmptyMap ||
+            notificationTypeRaw == null ||
+            (notificationTypeRaw is String && notificationTypeRaw.isEmpty)
+        ? "4"
+        : notificationTypeRaw.toString();
+
     return NotificationData(
         notificationId: json['notificationId'],
         communicationId: json['communicationId'],
@@ -93,7 +119,7 @@ class NotificationData {
         calendarId: json['calendarId'],
         referalCode: json['referalCode'],
         surveyId: json['surveyId'],
-        notificationType: json['notificationType']);
+        notificationType: notificationTypeValue);
   }
 
   static List<NotificationData> toList(List<dynamic> items) {

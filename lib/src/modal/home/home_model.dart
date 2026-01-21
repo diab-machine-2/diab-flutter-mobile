@@ -17,6 +17,9 @@ class HomeModel {
   final ProcessCardModel? processCard;
   final PackageAccountHomeModel? packageAccount;
   final BmiCardModel? bmiCard;
+  final TranServicePackage? tranServicePackage;
+  final String? tranServicePackageName;
+  final String? roadMapName;
 
   List<HomeMeasurementInlineData>? inlineMeasurements;
   List<HomeMeasurementData>? measurements;
@@ -36,10 +39,13 @@ class HomeModel {
     required this.processCard,
     required this.packageAccount,
     required this.bmiCard,
+    this.tranServicePackage,
+    this.tranServicePackageName,
     this.inlineMeasurements,
     this.measurements,
     this.activities,
     this.reminders,
+    this.roadMapName,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -74,6 +80,10 @@ class HomeModel {
       bmiCard: json['bmiCard'] == null
           ? null
           : BmiCardModel.fromJson(json['bmiCard']),
+      tranServicePackage: json['tranServicePackage'] == null
+          ? null
+          : TranServicePackage.fromJson(json['tranServicePackage']),
+      tranServicePackageName: json['tranServicePackageName'],
       inlineMeasurements: json['inlineMeasurements'] == null
           ? null
           : (json['inlineMeasurements'] as List)
@@ -98,6 +108,7 @@ class HomeModel {
               .map((item) =>
                   HomeReminderData.fromJson(item as Map<String, dynamic>))
               .toList(),
+      roadMapName: json['roadMapName'] ?? '',
     );
   }
 
@@ -114,10 +125,13 @@ class HomeModel {
       'processCard': processCard?.toJson(),
       'packageAccount': packageAccount?.toJson(),
       'bmiCard': bmiCard?.toJson(),
+      'tranServicePackage': tranServicePackage?.toJson(),
+      'tranServicePackageName': tranServicePackageName,
       'inlineMeasurements': inlineMeasurements?.map((e) => e.toJson()).toList(),
       'measurements': measurements?.map((e) => e.toJson()).toList(),
       'activities': activities?.map((e) => e.toJson()).toList(),
       'reminders': reminders?.map((e) => e.toJson()).toList(),
+      'roadMapName': roadMapName,
     };
   }
 
@@ -577,5 +591,81 @@ class BmiCardModel {
 
   static List<BmiCardModel> toList(List<dynamic> items) {
     return items.map((item) => BmiCardModel.fromJson(item)).toList();
+  }
+}
+
+class TranServicePackage {
+  final String? id;
+  final String? code;
+  final int? isDeleted;
+  final int? createDatetime;
+  final int? updateDatetime;
+  final String? creatorId;
+  final String? updaterId;
+  final String? name;
+  final int? level;
+  final double? money;
+  final int? numberProgram;
+  final int? totalWeek;
+  final int? status;
+  final String? accountId;
+
+  TranServicePackage({
+    this.id,
+    this.code,
+    this.isDeleted,
+    this.createDatetime,
+    this.updateDatetime,
+    this.creatorId,
+    this.updaterId,
+    this.name,
+    this.level,
+    this.money,
+    this.numberProgram,
+    this.totalWeek,
+    this.status,
+    this.accountId,
+  });
+
+  factory TranServicePackage.fromJson(Map<String, dynamic> json) {
+    return TranServicePackage(
+      id: json['id'],
+      code: json['code'],
+      isDeleted: json['isDeleted'],
+      createDatetime: json['createDatetime'],
+      updateDatetime: json['updateDatetime'],
+      creatorId: json['creatorId'],
+      updaterId: json['updaterId'],
+      name: json['name'],
+      level: json['level'],
+      money: json['money']?.toDouble(),
+      numberProgram: json['numberProgram'],
+      totalWeek: json['totalWeek'],
+      status: json['status'],
+      accountId: json['accountId'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'code': code,
+      'isDeleted': isDeleted,
+      'createDatetime': createDatetime,
+      'updateDatetime': updateDatetime,
+      'creatorId': creatorId,
+      'updaterId': updaterId,
+      'name': name,
+      'level': level,
+      'money': money,
+      'numberProgram': numberProgram,
+      'totalWeek': totalWeek,
+      'status': status,
+      'accountId': accountId,
+    };
+  }
+
+  static List<TranServicePackage> toList(List<dynamic> items) {
+    return items.map((item) => TranServicePackage.fromJson(item)).toList();
   }
 }

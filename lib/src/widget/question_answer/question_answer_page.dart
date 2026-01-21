@@ -162,7 +162,7 @@ class _QuestionAnswerPageState extends State<QuestionAnswerPage> with Observer {
         componentName = "my_qna";
         break;
     }
-    await TrackingManager.analytics.logEvent(
+    await TrackingManager.logEvent(
       name: 'component_clicked',
       parameters: {
         "screen_name": 'qna_home',

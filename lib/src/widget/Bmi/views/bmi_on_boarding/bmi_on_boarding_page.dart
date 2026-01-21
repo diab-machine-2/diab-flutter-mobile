@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +28,6 @@ import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/less
 import 'package:medical/src/widget/nipro/health_app/widgets/request_health_connect.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widgets/button/primary_rounded_button.dart';
-import 'package:medical/src/widgets/custom_dialog.dart';
 
 // import 'widgets/bloodpresure_lesson_section.dart';
 
@@ -60,6 +60,12 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
     _bmiBloc = context.read<BmiBloc>();
     _bmiBloc.init();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bmiBloc.clearPoint();
+    super.dispose();
   }
 
   void _navigateToInputSelection() async {
@@ -164,15 +170,15 @@ class _BmiOnBoardingPageState extends State<BmiOnBoardingPage> {
   void _handleListener(BuildContext context, BmiState state) {
     if (state is BmiGetWeightStatisticalState) {
       if (state.data.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
       }
     } else if (state is BmiUpdatedWeightGoalState) {
       if (state.result.isLoading) {
-        CustomDialog.showLoadingDialog(context);
+        BotToast.showLoading();
       } else {
-        CustomDialog.hideLoadingDialog(context);
+        BotToast.closeAllLoading();
       }
     }
   }
@@ -402,8 +408,6 @@ class _StatisticalDataViewButton extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        _bmiBloc.fetchHistoricalWeight();
-
         Navigator.pushNamed(
           context,
           NavigatorName.bmiHistoricalPage,
@@ -429,7 +433,7 @@ class _StatisticalDataViewButton extends StatelessWidget {
                   (current is BmiDataChangedState &&
                       current.event == BmiDataChangeEvent.hasDataChanged),
               builder: (context, state) {
-                if (_bmiBloc.hasNewData)
+                if (_bmiBloc.hasNewData == true)
                   return Container(
                     height: 12,
                     width: 12,
@@ -487,7 +491,7 @@ class _StatisticalDataViewButton extends StatelessWidget {
 //       screenName: "kpi_body_weight_add",
 //       screenClass: "AddBmiController",
 //     );
-//     // await TrackingManager.analytics.logEvent(
+//     // await TrackingManager.logEvent(
 //     //   name: 'kpi_add_begin',
 //     //   parameters: {
 //     //     "screen_name": 'kpi_body_weight_add',

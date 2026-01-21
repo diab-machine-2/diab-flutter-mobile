@@ -53,8 +53,14 @@ class FoodModel {
       id: json['id'],
       name: json['name'],
       code: json['code'],
-      portion: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
-      unit: json['unit'],
+      quantity: json['portion'] == null ? 1 : json['portion'].toDouble() ?? 1,
+      unit: json['unit'] != null && json['unit'].toString().isNotEmpty
+          ? (() {
+              final unitStr = json['unit'].toString();
+              return unitStr[0].toUpperCase() +
+                  (unitStr.length > 1 ? unitStr.substring(1) : '');
+            })()
+          : json['unit'],
       calorie: json['calorie'] == null
           ? (json['caloValue'] == null
               ? (json['caloriesPerUnit'] == null
@@ -71,7 +77,7 @@ class FoodModel {
       text: json['text'],
       description: json['description'],
       foodCategoryId: json['foodCategoryId'],
-      quantity:
+      portion:
           json['inputPortion'] == null ? 1 : json['inputPortion'].toDouble(),
       mealId: json['mealId'],
       imageUrl: json['imageUrl'],

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -24,8 +25,9 @@ class CalendarController extends StatefulWidget {
   final String endTime;
   final int bookingQuantity;
   final int interviewType;
+  final bool fromActivityTab;
   CalendarController(this.pickSlot, this.courseId, this.endTime,
-      this.bookingQuantity, this.interviewType);
+      this.bookingQuantity, this.interviewType, {this.fromActivityTab = false});
 
   @override
   _CalendarControllerState createState() => _CalendarControllerState();
@@ -58,9 +60,20 @@ class _CalendarControllerState extends State<CalendarController> {
     return WillPopScope(
       onWillPop: () async {
         print('[ONBOARDING] on pop scope calendar page');
-        if (Navigator.of(context).canPop()) {
-          print('[ONBOARDING] pop scope calendar page');
-          Navigator.of(context).pop();
+        if (widget.fromActivityTab) {
+          // Navigate back to activity tab
+          Navigator.of(context, rootNavigator: true)
+              .popUntil((route) =>
+                  route.isFirst ||
+                  route.settings.name == NavigatorName.tabbar);
+          Observable.instance.notifyObservers([],
+              notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+          return false;
+        } else {
+          if (Navigator.of(context).canPop()) {
+            print('[ONBOARDING] pop scope calendar page');
+            Navigator.of(context).pop();
+          }
         }
         // await Navigator.pushNamed(context, NavigatorName.calendar_booking,
         //     arguments: {
@@ -159,8 +172,18 @@ class _CalendarControllerState extends State<CalendarController> {
                           CalendarBookingCubit.myCalendar = null;
                           CalendarBookingCubit.updateCount = 0;
 
-                          if (Navigator.of(context).canPop()) {
-                            Navigator.of(context).pop();
+                          if (widget.fromActivityTab) {
+                            // Navigate back to activity tab
+                            Navigator.of(context, rootNavigator: true)
+                                .popUntil((route) =>
+                                    route.isFirst ||
+                                    route.settings.name == NavigatorName.tabbar);
+                            Observable.instance.notifyObservers([],
+                                notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+                          } else {
+                            if (Navigator.of(context).canPop()) {
+                              Navigator.of(context).pop();
+                            }
                           }
                         },
                       ),
@@ -228,6 +251,7 @@ class _CalendarControllerState extends State<CalendarController> {
                               'courseId': widget.courseId,
                               'endTime': widget.endTime,
                               'interviewType': widget.interviewType,
+                              'fromActivityTab': widget.fromActivityTab,
                             });
                       }),
                       child: Container(
@@ -390,20 +414,34 @@ class _CalendarControllerState extends State<CalendarController> {
               ),
               Row(
                 children: [
-                  Image.network(
-                    widget.pickSlot.coachAvatar.isEmpty
-                        ? Const.DEFAULT_BG_COACH
-                        : widget.pickSlot.coachAvatar,
-                    height: 118,
-                    width: 98,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.network(
-                        Const.DEFAULT_BG_COACH,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.pickSlot.coachAvatar.isEmpty
+                          ? Const.DEFAULT_BG_COACH
+                          : widget.pickSlot.coachAvatar,
+                      height: 118,
+                      width: 98,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
                         height: 118,
                         width: 98,
-                      );
-                    },
+                        color: Colors.grey[300],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => CachedNetworkImage(
+                        imageUrl: Const.DEFAULT_BG_COACH,
+                        height: 118,
+                        width: 98,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
+                  GapW(16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

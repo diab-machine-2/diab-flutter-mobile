@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +18,7 @@ import 'src/utils/app_log.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:flutter/foundation.dart';
 
 class SimpleBlocObserver extends BlocObserver {
   @override
@@ -65,6 +65,10 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  if (kDebugMode) {
+    HttpClient.enableTimelineLogging = true;
+  }
+
   // config health
   Health().configure();
 
@@ -104,16 +108,33 @@ Future<void> main() async {
   //   DeviceOrientation.portraitUp,
   // ]);
   //await initializeDateFormatting('vi_VN');
-  await TrackingManager.initializeFlutterFire();
-  TrackingManager.initializeMixpanel();
+  try {
+    await TrackingManager.initializeFlutterFire();
+  } catch (e, s) {
+    debugPrint('TrackingManager.initializeFlutterFire failed: $e\n$s');
+  }
+
+  try {
+    await TrackingManager.initializeMixpanel();
+  } catch (e, s) {
+    debugPrint('TrackingManager.initializeMixpanel failed: $e\n$s');
+  }
   // final window = widgetsBinding.window;
   // await _ensureScreenSize(window);
   await EasyLocalization.ensureInitialized();
-  await Firebase.initializeApp();
+  // Note: Firebase.initializeApp() is already called in initializeFlutterFire()
 
-  await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
+  try {
+    await FlutterBranchSdk.init(enableLogging: false, disableTracking: false);
+  } catch (e) {
+    debugPrint('FlutterBranchSdk.init failed: $e');
+  }
 
-  await RevenueCatService.initialize();
+  try {
+    await RevenueCatService.initialize();
+  } catch (e) {
+    debugPrint('RevenueCatService.initialize failed: $e');
+  }
 
   // tz.initializeTimeZones();
   // final timeZoneName = await FlutterTimezone.getLocalTimezone();

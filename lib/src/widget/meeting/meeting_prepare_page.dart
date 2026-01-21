@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -75,7 +76,8 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
                 child: Text('OCR'),
-                onPressed: () => Navigator.pushNamed(context, NavigatorName.test_ocr),
+                onPressed: () =>
+                    Navigator.pushNamed(context, NavigatorName.test_ocr),
               ),
             ),
           ],
@@ -177,28 +179,87 @@ class _MeetingPreparePageState extends State<MeetingPreparePage> {
       );
 
       final zoom = ZoomView();
-      final results = await zoom.initZoom(zoomOptions);
-      print('---------- pip pip success initialize zoom sdk');
-      if (results[0] == 0) {
-        zoom.onMeetingStatus().listen((status) {
-          if (kDebugMode) {
-            print("[Meeting Status Stream] : " + status[0] + " - " + status[1]);
-          }
-          if (_isMeetingEnded(status[0])) {
-            _unInitialize();
+
+      // Add timeout and better error handling for method channel calls
+      List<dynamic> results;
+      try {
+        results = await zoom.initZoom(zoomOptions).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
             if (kDebugMode) {
-              print("[Meeting Status] :- Ended");
+              print("[Zoom Init] Timeout after 10 seconds");
             }
-          }
-        });
+            throw TimeoutException('Zoom SDK initialization timed out');
+          },
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          print("[Init Zoom Error] : $e");
+        }
+        TrackingManager.recordError(e, null);
+        rethrow;
+      }
+
+      print('---------- pip pip success initialize zoom sdk');
+
+      // Check if results is valid and initialization succeeded
+      if (results.isNotEmpty && results[0] == 0) {
+        // Set up meeting status listener with error handling
+        zoom.onMeetingStatus().listen(
+          (status) {
+            if (kDebugMode) {
+              print("[Meeting Status Stream] : " +
+                  (status.isNotEmpty ? status[0] : "unknown") +
+                  " - " +
+                  (status.length > 1 ? status[1] : "no message"));
+            }
+            if (status.isNotEmpty && _isMeetingEnded(status[0])) {
+              _unInitialize();
+              if (kDebugMode) {
+                print("[Meeting Status] :- Ended");
+              }
+            }
+          },
+          onError: (error) {
+            if (kDebugMode) {
+              print("[Meeting Status Stream Error] : $error");
+            }
+            TrackingManager.recordError(error, null);
+          },
+        );
+
         if (kDebugMode) {
           print("listen on event channel");
         }
-        zoom.joinMeeting(meetingOptions).then((joinMeetingResult) {});
+
+        // Join meeting with timeout and error handling
+        try {
+          final joinMeetingResult =
+              await zoom.joinMeeting(meetingOptions).timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              if (kDebugMode) {
+                print("[Zoom Join] Timeout after 15 seconds");
+              }
+              throw TimeoutException('Join meeting timed out');
+            },
+          );
+          if (kDebugMode) {
+            print("[Join Meeting Result] : $joinMeetingResult");
+          }
+        } catch (error) {
+          if (kDebugMode) {
+            print("[Join Meeting Error] : $error");
+          }
+          TrackingManager.recordError(error, null);
+          BotToast.showText(text: "Lỗi kết nối cuộc họp");
+          rethrow;
+        }
       } else {
         if (kDebugMode) {
           print("[Error] : $results");
         }
+        throw Exception("Zoom SDK initialization failed: $results");
       }
 
       // bool authenticated = await _channel.invokeMethod("initZoom", {

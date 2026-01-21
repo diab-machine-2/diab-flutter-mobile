@@ -23,12 +23,14 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:medical/src/widgets/common_page.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../widgets/btn_add_photo.dart';
 import '../search_food_controller.dart';
 import '../widget/food_info.dart';
+import '../food_detail_tabbar.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionPage extends StatefulWidget {
@@ -92,7 +94,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
       screenName: "kpi_nutrition_add",
       screenClass: "DailyNutritionPage",
     );
-    // await TrackingManager.analytics.logEvent(
+    // await TrackingManager.logEvent(
     //   name: 'kpi_add_begin',
     //   parameters: {
     //     "screen_name": 'kpi_nutrition_add',
@@ -132,7 +134,15 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   Message.showToastMessage(context, state.error);
                 }
                 if (state is DailyNutritionSubmitSuccess) {
-                  NavigationUtil.pop(context);
+                  // Use pushReplacement directly since navigatePage uses pushReplacement
+                  // No need to pop first as replacement will handle it
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      }
+                    }
+                  });
                 }
                 if (state is DailyNutritionFillData) {
                   _controllerNote.text = _cubit.notes;
@@ -146,7 +156,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                   BotToast.closeAllLoading();
                 }
                 return CommonPage(
-                  title: R.string.cap_nhat_chi_so_dinh_duong.tr(),
+                  title: widget.type == 'update'
+                      ? R.string.cap_nhat_chi_so_dinh_duong.tr()
+                      : R.string.nhap_chi_so_dinh_duong.tr(),
                   background: R.drawable.bg_splash,
                   onTapBack: _showDialogSave,
                   appBarAction: GestureDetector(
@@ -217,8 +229,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                                 CrossAxisAlignment.end,
                                             children: [
                                               Text(
-                                                formatNumber(
-                                                    _cubit.totalKcalNumber),
+                                                _cubit.totalKcalNumber
+                                                    .round()
+                                                    .toString(),
                                                 style: TextStyle(
                                                   color: R.color.black,
                                                   fontSize: 24,
@@ -427,14 +440,17 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                                             itemBuilder: (BuildContext context,
                                                 int index) {
                                               final String quantity =
-                                                  '${roundAsFixed(_cubit.selectedFoods[index].portion ?? 0)}';
-                                              final String kcal = formatNumber(
-                                                  (_cubit.selectedFoods[index]
+                                                  '${roundAsFixed((_cubit.selectedFoods[index].portion ?? 0) * (_cubit.selectedFoods[index].quantity ?? 0))}';
+                                              final String kcal = ((_cubit
+                                                              .selectedFoods[
+                                                                  index]
                                                               .portion ??
                                                           0) *
                                                       _cubit
                                                           .selectedFoods[index]
-                                                          .calorie!);
+                                                          .calorie!)
+                                                  .round()
+                                                  .toString();
                                               final String detail =
                                                   '${R.string.da_an.tr()} $quantity ${_cubit.selectedFoods[index].unit}, $kcal ${R.string.kcal.tr()}';
                                               return GestureDetector(
@@ -803,51 +819,56 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    _showDialogDelete(context);
-                                  },
-                                  child: Container(
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      _showDialogDelete(context);
+                                    },
+                                    child: Container(
+                                        height: 48,
+                                        // width: 164,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(200),
+                                            border: Border.all(
+                                                color: R.color.red, width: 2)),
+                                        child: Center(
+                                          child: Text(R.string.xoa_du_lieu.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.red,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600)),
+                                        )),
+                                  ),
+                                ),
+                                GapW(8),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      FocusScope.of(context).unfocus();
+                                      _cubit.editData(widget.id);
+                                    },
+                                    child: Container(
                                       height: 48,
-                                      width: 164,
+                                      // width: 154,
                                       decoration: BoxDecoration(
+                                          color: R.color.mainColor,
                                           borderRadius:
                                               BorderRadius.circular(200),
-                                          border: Border.all(
-                                              color: R.color.red, width: 2)),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.centerRight,
+                                              colors: [
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
+                                              ])),
                                       child: Center(
-                                        child: Text(R.string.xoa_du_lieu.tr(),
+                                        child: Text(R.string.save.tr(),
                                             style: TextStyle(
-                                                color: R.color.red,
+                                                color: R.color.white,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600)),
-                                      )),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    FocusScope.of(context).unfocus();
-                                    _cubit.editData(widget.id);
-                                  },
-                                  child: Container(
-                                    height: 48,
-                                    width: 164,
-                                    decoration: BoxDecoration(
-                                        color: R.color.mainColor,
-                                        borderRadius:
-                                            BorderRadius.circular(200),
-                                        gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              R.color.greenGradientTop,
-                                              R.color.greenGradientBottom
-                                            ])),
-                                    child: Center(
-                                      child: Text(R.string.save.tr(),
-                                          style: TextStyle(
-                                              color: R.color.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1178,13 +1199,20 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
           _cubit.removeIDs.isEmpty &&
           date.millisecondsSinceEpoch ==
               _cubit.selectedDate.millisecondsSinceEpoch) {
-        Navigator.pop(context);
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
         return;
       }
     } else if (note.isEmpty &&
         _cubit.selectedFoods.isEmpty &&
         _cubit.files.isEmpty) {
-      Navigator.pop(context);
+      // Navigate directly using pushReplacement
+      // NavigationUtil.navigatePage(
+      //     context, FoodDetailTabbarController(initialTabIndex: 1));
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
       return;
     }
     showDialog(
@@ -1245,8 +1273,15 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
+                              Navigator.pop(context); // Close dialog
+                              // Navigate directly using pushReplacement
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (mounted) {
+                                  if (Navigator.canPop(context)) {
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              });
                             },
                             child: Container(
                               height: 43,

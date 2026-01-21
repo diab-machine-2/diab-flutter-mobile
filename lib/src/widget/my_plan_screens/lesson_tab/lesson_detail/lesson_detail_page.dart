@@ -61,19 +61,25 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   @override
   Future<void> dispose() async {
-    debugPrint('[VIDEO] LessonDetailPage.dispose start for lessonId=${_cubit.lessonDetail?.id} title=${_cubit.lessonDetail?.name}');
-    
+    debugPrint(
+        '[VIDEO] LessonDetailPage.dispose start for lessonId=${_cubit.lessonDetail?.id} title=${_cubit.lessonDetail?.name}');
+
     // Immediately dispose video and audio to prevent background audio
     debugPrint('[VIDEO] Immediately disposing lesson media managers');
     _cubit.videoManager?.disposeAllVideo();
     _cubit.audioManager?.disposeAllAudio();
-    
-    await LessonDetailTracking.lessonDetailScrolling(
-      percentComplete: percentComplete,
-      objectId: _cubit.lessonDetail!.id!,
-      objectTitle: _cubit.lessonDetail!.name!,
-    );
-    
+
+    // Schedule async tracking after disposal (only if lessonDetail is available)
+    if (_cubit.lessonDetail?.id != null && _cubit.lessonDetail?.name != null) {
+      LessonDetailTracking.lessonDetailScrolling(
+        percentComplete: percentComplete,
+        objectId: _cubit.lessonDetail!.id!,
+        objectTitle: _cubit.lessonDetail!.name!,
+      ).catchError((e) {
+        debugPrint('[VIDEO] Error in lessonDetailScrolling: $e');
+      });
+    }
+
     debugPrint('[VIDEO] LessonDetailPage.dispose done');
     super.dispose();
   }
@@ -141,29 +147,40 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         builder: (context, state) {
           return WillPopScope(
             onWillPop: () async {
-              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - pausing and disposing video and audio');
+              debugPrint(
+                  '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] System back button pressed - pausing and disposing video and audio');
               // Immediately pause video and audio before disposal
               if (_cubit.videoManager != null) {
                 try {
                   _cubit.videoManager?.controller.then((controller) {
                     if (controller != null) {
-                      controller.pause();
-                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on system back press');
+                      try {
+                        controller.pause();
+                        debugPrint(
+                            '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on system back press');
+                      } catch (e) {
+                        debugPrint(
+                            '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller: $e');
+                      }
                     }
+                  }).catchError((e) {
+                    debugPrint(
+                        '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error getting video controller: $e');
                   });
                 } catch (e) {
-                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on system back press: $e');
+                  debugPrint(
+                      '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error accessing video manager: $e');
                 }
-                _cubit.videoManager?.disposeAllVideo();
               }
               if (_cubit.audioManager != null) {
                 try {
                   _cubit.audioManager?.controller?.pause();
-                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on system back press');
+                  debugPrint(
+                      '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on system back press');
                 } catch (e) {
-                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on system back press: $e');
+                  debugPrint(
+                      '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller: $e');
                 }
-                _cubit.audioManager?.disposeAllAudio();
               }
               return true;
             },
@@ -179,7 +196,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                         ? _cubit.currentSectionDetail
                         : null,
                     onDone: (isPassed) async {
-                      _cubit.onChangeSection(context, _cubit.currentSection + 1);
+                      _cubit.onChangeSection(
+                          context, _cubit.currentSection + 1);
                     },
                     onComplete: () {
                       widget.onComplete(
@@ -189,365 +207,404 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                     smartGoal: widget.smartGoal,
                   )
                 : Scaffold(
-                  body: Stack(
-                    children: [
-                      BackgroundPage(
-                        background: R.drawable.bg_lesson_detail,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SafeArea(
-                              bottom: false,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 18, horizontal: 16),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Row(
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () async {
-                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - disposing video and audio');
-                                              // Immediately dispose video to prevent background audio
-                                              _cubit.videoManager?.disposeAllVideo();
-                                              _cubit.audioManager?.disposeAllAudio();
-                                              
-                                              await TrackingManager.analytics
-                                                  .logEvent(
-                                                name: 'component_clicked',
-                                                parameters: {
-                                                  "screen_name":
-                                                      'lesson_detail',
-                                                  "component_name":
-                                                      'close_lesson',
-                                                  'object_id':
-                                                      _cubit.lessonDetail?.id,
-                                                  'object_title':
-                                                      _cubit.lessonDetail?.name,
-                                                },
-                                              );
-                                              
-                                              // Immediately pause video and audio before navigation
-                                              debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - pausing and disposing video and audio');
-                                              if (_cubit.videoManager != null) {
-                                                try {
-                                                  _cubit.videoManager?.controller.then((controller) {
-                                                    if (controller != null) {
-                                                      controller.pause();
-                                                      debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on back press');
-                                                    }
-                                                  });
-                                                } catch (e) {
-                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller on back press: $e');
+                    body: Stack(
+                      children: [
+                        BackgroundPage(
+                          background: R.drawable.bg_lesson_detail,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SafeArea(
+                                bottom: false,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 18, horizontal: 16),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                debugPrint(
+                                                    '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - pausing video and audio');
+
+                                                // Pause video and audio before navigation (don't dispose here - let dispose() handle it)
+                                                if (_cubit.videoManager !=
+                                                    null) {
+                                                  try {
+                                                    _cubit.videoManager
+                                                        ?.controller
+                                                        .then((controller) {
+                                                      if (controller != null) {
+                                                        try {
+                                                          controller.pause();
+                                                          debugPrint(
+                                                              '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on back press');
+                                                        } catch (e) {
+                                                          debugPrint(
+                                                              '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller: $e');
+                                                        }
+                                                      }
+                                                    }).catchError((e) {
+                                                      debugPrint(
+                                                          '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error getting video controller: $e');
+                                                    });
+                                                  } catch (e) {
+                                                    debugPrint(
+                                                        '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error accessing video manager: $e');
+                                                  }
                                                 }
-                                                _cubit.videoManager?.disposeAllVideo();
-                                              }
-                                              if (_cubit.audioManager != null) {
-                                                try {
-                                                  _cubit.audioManager?.controller?.pause();
-                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on back press');
-                                                } catch (e) {
-                                                  debugPrint('[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller on back press: $e');
+
+                                                if (_cubit.audioManager !=
+                                                    null) {
+                                                  try {
+                                                    _cubit.audioManager
+                                                        ?.controller
+                                                        ?.pause();
+                                                    debugPrint(
+                                                        '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on back press');
+                                                  } catch (e) {
+                                                    debugPrint(
+                                                        '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller: $e');
+                                                  }
                                                 }
-                                                _cubit.audioManager?.disposeAllAudio();
-                                              }
-                                              NavigationUtil.pop(context);
-                                            },
-                                            child: Icon(
-                                              Icons.clear_rounded,
-                                              size: 26,
-                                              color: R.color.grey_2,
+
+                                                // Schedule tracking asynchronously (non-blocking)
+                                                TrackingManager.analytics
+                                                    .logEvent(
+                                                  name: 'component_clicked',
+                                                  parameters: {
+                                                    "screen_name":
+                                                        'lesson_detail',
+                                                    "component_name":
+                                                        'close_lesson',
+                                                    'object_id': _cubit
+                                                            .lessonDetail?.id ??
+                                                        '',
+                                                    'object_title': _cubit
+                                                            .lessonDetail
+                                                            ?.name ??
+                                                        '',
+                                                  },
+                                                ).catchError((e) {
+                                                  debugPrint(
+                                                      '[VIDEO] Error in tracking: $e');
+                                                });
+
+                                                NavigationUtil.pop(context);
+                                              },
+                                              child: Icon(
+                                                Icons.clear_rounded,
+                                                size: 26,
+                                                color: R.color.grey_2,
+                                              ),
                                             ),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              R.string.section_position.tr(
+                                                  args: [
+                                                    _cubit.sectionPosition
+                                                  ]),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: R.color.textDark,
+                                                  fontWeight: FontWeight.w400),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (_cubit.currentSectionDetail != null)
+                                        ShareLessonButton(
+                                          lessonDescription:
+                                              _cubit.lessonDescription,
+                                          featureImage: _cubit.featureImage,
+                                          lesson: _cubit.currentSectionDetail!,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  _cubit.currentSectionDetail?.name ?? '',
+                                  style: TextStyle(
+                                    color: R.color.textDark,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Column(children: [
+                                  SizedBox(
+                                    height: 16,
+                                  ),
+                                  if (AppSettings.isOwnPackage)
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        SizedBox(width: 2),
+                                        Image.network(
+                                          height: 40,
+                                          AppSettings.userInfo?.ownPackage
+                                                  ?.graphic ??
+                                              "",
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                            return SizedBox();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                ]),
+                              ),
+                              const SizedBox(height: 14),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child:
+                                      NotificationListener<ScrollNotification>(
+                                    onNotification: (scrollNotification) {
+                                      int currentPosition =
+                                          (scrollNotification.metrics.pixels /
+                                                  scrollNotification
+                                                      .metrics.maxScrollExtent *
+                                                  100)
+                                              .round();
+                                      if (currentPosition >= percentComplete) {
+                                        percentComplete = currentPosition;
+                                        print(
+                                            'currentPosition: $percentComplete');
+                                      }
+                                      return true;
+                                    },
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (_cubit.currentSectionDetail
+                                                  ?.videoAddressLink !=
+                                              null)
+                                            _buildTitleWidget(
+                                              child: VideoWidget(
+                                                isYouTubeLink: isYouTubeLink(
+                                                    _cubit.currentSectionDetail
+                                                        ?.videoAddressLink),
+                                                url: _cubit
+                                                    .currentSectionDetail!
+                                                    .videoAddressLink!,
+                                                callbackEventListener:
+                                                    (event, videoDuration) {
+                                                  LessonDetailTracking
+                                                      .videoPlayerLesson(
+                                                    videoDuration:
+                                                        videoDuration,
+                                                    objectTitle: _cubit
+                                                        .lessonDetail!.name!,
+                                                    objectId: _cubit
+                                                        .lessonDetail!.id!,
+                                                    eventType: event,
+                                                  );
+                                                },
+                                                onPlay: () async =>
+                                                    _onTrackingVideoPlay(),
+                                                onComplete: () {
+                                                  LessonDetailTracking
+                                                      .completed50PercentVideo(
+                                                    objectId:
+                                                        _cubit.lessonDetail?.id,
+                                                    objectTitle: _cubit
+                                                        .lessonDetail?.name,
+                                                  );
+                                                  _cubit.complete();
+                                                  _onTrackingVideoComplete();
+                                                },
+                                                callbackByPercentVideo: () {
+                                                  LessonDetailTracking
+                                                      .completed50PercentVideo(
+                                                    objectId:
+                                                        _cubit.lessonDetail?.id,
+                                                    objectTitle: _cubit
+                                                        .lessonDetail?.name,
+                                                  );
+                                                  widget.onComplete(
+                                                      _cubit.lessonDetail!.id!,
+                                                      _cubit.percentComplete);
+                                                  _cubit.complete();
+                                                },
+                                                percentCallbackDefault: 0.5,
+                                                setVideoManager:
+                                                    (videoManager) {
+                                                  _cubit.setVideoManager(
+                                                      videoManager);
+                                                },
+                                                videoTitle: _cubit
+                                                    .currentSectionDetail?.name,
+                                                videoThumbnail: _cubit
+                                                    .lessonDetail?.image?.url,
+                                              ),
+                                              title: _cubit.currentSectionDetail
+                                                  ?.videoDescription,
+                                            ),
+                                          SizedBox(height: 8),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 12),
+                                            child: WidgetHtmlText(_cubit
+                                                    .currentSectionDetail
+                                                    ?.firstContent ??
+                                                ''),
                                           ),
-                                          SizedBox(width: 5),
-                                          Text(
-                                            R.string.section_position.tr(
-                                                args: [_cubit.sectionPosition]),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: R.color.textDark,
-                                                fontWeight: FontWeight.w400),
-                                          ),
+                                          if (_cubit.currentSectionDetail?.image
+                                                  ?.url?.isNotEmpty ==
+                                              true)
+                                            Container(
+                                              alignment: Alignment.center,
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 24),
+                                              child: _buildTitleWidget(
+                                                child: CachedNetworkImage(
+                                                    // height: 90,
+                                                    imageUrl: _cubit
+                                                        .currentSectionDetail!
+                                                        .image!
+                                                        .url!),
+                                                title: _cubit
+                                                    .currentSectionDetail
+                                                    ?.imageTitle,
+                                              ),
+                                            ),
+                                          if (_cubit.currentSectionDetail
+                                                  ?.secondContent?.isNotEmpty ==
+                                              true)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 24),
+                                              child: WidgetHtmlText(_cubit
+                                                  .currentSectionDetail!
+                                                  .secondContent!),
+                                            ),
+                                          if (_cubit.audioManager?.controller !=
+                                              null)
+                                            _buildTitleWidget(
+                                                child: StreamBuilder<AudioData>(
+                                                    stream: _cubit
+                                                        .audioManager
+                                                        ?.controller!
+                                                        .onChanged
+                                                        .stream,
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      return _buildAudioController(
+                                                        audioData:
+                                                            snapshot.data,
+                                                        seektoPosition:
+                                                            (newPosition) {
+                                                          _cubit.audioManager
+                                                              ?.controller!
+                                                              .seekTo(
+                                                                  newPosition);
+                                                        },
+                                                        onTogglePlay: () {
+                                                          _cubit.audioManager
+                                                              ?.controller!
+                                                              .togglePlay();
+                                                        },
+                                                      );
+                                                    }),
+                                                title: _cubit
+                                                    .currentSectionDetail
+                                                    ?.audioDescription),
+                                          const SizedBox(height: 20),
                                         ],
                                       ),
                                     ),
-                                    if (_cubit.currentSectionDetail != null)
-                                      ShareLessonButton(
-                                        lessonDescription:
-                                            _cubit.lessonDescription,
-                                        featureImage: _cubit.featureImage,
-                                        lesson: _cubit.currentSectionDetail!,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(
-                                _cubit.currentSectionDetail?.name ?? '',
-                                style: TextStyle(
-                                  color: R.color.textDark,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(children: [
-                                SizedBox(
-                                  height: 16,
-                                ),
-                                if (AppSettings.isOwnPackage)
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(width: 2),
-                                      Image.network(
-                                        height: 40,
-                                        AppSettings.userInfo?.ownPackage
-                                                ?.graphic ??
-                                            "",
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return SizedBox();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                              ]),
-                            ),
-                            const SizedBox(height: 14),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: NotificationListener<ScrollNotification>(
-                                  onNotification: (scrollNotification) {
-                                    int currentPosition =
-                                        (scrollNotification.metrics.pixels /
-                                                scrollNotification
-                                                    .metrics.maxScrollExtent *
-                                                100)
-                                            .round();
-                                    if (currentPosition >= percentComplete) {
-                                      percentComplete = currentPosition;
-                                      print(
-                                          'currentPosition: $percentComplete');
-                                    }
-                                    return true;
-                                  },
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (_cubit.currentSectionDetail
-                                                ?.videoAddressLink !=
-                                            null)
-                                          _buildTitleWidget(
-                                            child: VideoWidget(
-                                              isYouTubeLink: isYouTubeLink(
-                                                  _cubit.currentSectionDetail
-                                                      ?.videoAddressLink),
-                                              url: _cubit.currentSectionDetail!
-                                                  .videoAddressLink!,
-                                              callbackEventListener:
-                                                  (event, videoDuration) {
-                                                LessonDetailTracking
-                                                    .videoPlayerLesson(
-                                                  videoDuration: videoDuration,
-                                                  objectTitle: _cubit
-                                                      .lessonDetail!.name!,
-                                                  objectId:
-                                                      _cubit.lessonDetail!.id!,
-                                                  eventType: event,
-                                                );
-                                              },
-                                              onPlay: () async =>
-                                                  _onTrackingVideoPlay(),
-                                              onComplete: () {
-                                                LessonDetailTracking
-                                                    .completed50PercentVideo(
-                                                  objectId:
-                                                      _cubit.lessonDetail?.id,
-                                                  objectTitle:
-                                                      _cubit.lessonDetail?.name,
-                                                );
-                                                _cubit.complete();
-                                                _onTrackingVideoComplete();
-                                              },
-                                              callbackByPercentVideo: () {
-                                                LessonDetailTracking
-                                                    .completed50PercentVideo(
-                                                  objectId:
-                                                      _cubit.lessonDetail?.id,
-                                                  objectTitle:
-                                                      _cubit.lessonDetail?.name,
-                                                );
-                                                widget.onComplete(
-                                                    _cubit.lessonDetail!.id!,
-                                                    _cubit.percentComplete);
-                                                _cubit.complete();
-                                              },
-                                              percentCallbackDefault: 0.5,
-                                              setVideoManager: (videoManager) {
-                                                _cubit.setVideoManager(
-                                                    videoManager);
-                                              },
-                                              videoTitle: _cubit
-                                                  .currentSectionDetail?.name,
-                                              videoThumbnail: _cubit
-                                                  .lessonDetail?.image?.url,
-                                            ),
-                                            title: _cubit.currentSectionDetail
-                                                ?.videoDescription,
-                                          ),
-                                        SizedBox(height: 8),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 12),
-                                          child: WidgetHtmlText(_cubit
-                                                  .currentSectionDetail
-                                                  ?.firstContent ??
-                                              ''),
-                                        ),
-                                        if (_cubit.currentSectionDetail?.image
-                                                ?.url?.isNotEmpty ==
-                                            true)
-                                          Container(
-                                            alignment: Alignment.center,
-                                            padding: const EdgeInsets.only(
-                                                bottom: 24),
-                                            child: _buildTitleWidget(
-                                              child: CachedNetworkImage(
-                                                  // height: 90,
-                                                  imageUrl: _cubit
-                                                      .currentSectionDetail!
-                                                      .image!
-                                                      .url!),
-                                              title: _cubit.currentSectionDetail
-                                                  ?.imageTitle,
-                                            ),
-                                          ),
-                                        if (_cubit.currentSectionDetail
-                                                ?.secondContent?.isNotEmpty ==
-                                            true)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 24),
-                                            child: WidgetHtmlText(_cubit
-                                                .currentSectionDetail!
-                                                .secondContent!),
-                                          ),
-                                        if (_cubit.audioManager?.controller !=
-                                            null)
-                                          _buildTitleWidget(
-                                              child: StreamBuilder<AudioData>(
-                                                  stream: _cubit
-                                                      .audioManager
-                                                      ?.controller!
-                                                      .onChanged
-                                                      .stream,
-                                                  builder: (context, snapshot) {
-                                                    return _buildAudioController(
-                                                      audioData: snapshot.data,
-                                                      seektoPosition:
-                                                          (newPosition) {
-                                                        _cubit.audioManager
-                                                            ?.controller!
-                                                            .seekTo(
-                                                                newPosition);
-                                                      },
-                                                      onTogglePlay: () {
-                                                        _cubit.audioManager
-                                                            ?.controller!
-                                                            .togglePlay();
-                                                      },
-                                                    );
-                                                  }),
-                                              title: _cubit.currentSectionDetail
-                                                  ?.audioDescription),
-                                        const SizedBox(height: 20),
-                                      ],
-                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            CustomBottomBarWidget(
-                              isPreviousButtonActive: _cubit.isFirstSection,
-                              onTapPrevious: () async {
-                                await TrackingManager.analytics.logEvent(
-                                  name: 'cta_button_clicked',
-                                  parameters: {
-                                    "screen_name": 'lesson_detail',
-                                    "component_name": 'cta_previous_lesson',
-                                    'object_id': _cubit.lessonDetail?.id,
-                                    'object_title': _cubit.lessonDetail?.name,
-                                  },
-                                );
-                                _cubit.onChangeSection(
-                                    context, _cubit.currentSection - 1);
-                              },
-                              isNextButtonActive: (!_cubit.isLastSection &&
-                                  (_cubit.currentSectionDetail?.isComplete ??
-                                      false)),
-                              onTapNext: () async {
-                                await TrackingManager.analytics.logEvent(
-                                  name: 'cta_button_clicked',
-                                  parameters: {
-                                    "screen_name": 'lesson_detail',
-                                    "component_name": 'cta_next_lesson',
-                                    'object_id': _cubit.lessonDetail?.id,
-                                    'object_title': _cubit.lessonDetail?.name,
-                                  },
-                                );
-                                _cubit.onChangeSection(
-                                    context, _cubit.currentSection + 1,
-                                    smartGoal: widget.smartGoal);
-                              },
-                              currentPositionTitle: _cubit.sectionPosition,
-                              onTapCenter: () {
-                                showLessonCategoryList();
-                              },
-                              isCompleted: _cubit.canComplete,
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (AppSettings.isOwnPackage)
-                        Positioned(
-                          child: Container(
-                            child: Opacity(
-                              opacity: 0.15,
-                              child: Transform.scale(
-                                scale: 2.5,
-                                child: Image.network(
-                                  AppSettings.userInfo!.ownPackage!.logo ?? "",
-                                ),
+                              CustomBottomBarWidget(
+                                isPreviousButtonActive: _cubit.isFirstSection,
+                                onTapPrevious: () async {
+                                  await TrackingManager.logEvent(
+                                    name: 'cta_button_clicked',
+                                    parameters: {
+                                      "screen_name": 'lesson_detail',
+                                      "component_name": 'cta_previous_lesson',
+                                      'object_id':
+                                          _cubit.lessonDetail?.id ?? '',
+                                      'object_title':
+                                          _cubit.lessonDetail?.name ?? '',
+                                    },
+                                  );
+                                  _cubit.onChangeSection(
+                                      context, _cubit.currentSection - 1);
+                                },
+                                isNextButtonActive: (!_cubit.isLastSection &&
+                                    (_cubit.currentSectionDetail?.isComplete ??
+                                        false)),
+                                onTapNext: () async {
+                                  await TrackingManager.logEvent(
+                                    name: 'cta_button_clicked',
+                                    parameters: {
+                                      "screen_name": 'lesson_detail',
+                                      "component_name": 'cta_next_lesson',
+                                      'object_id':
+                                          _cubit.lessonDetail?.id ?? '',
+                                      'object_title':
+                                          _cubit.lessonDetail?.name ?? '',
+                                    },
+                                  );
+                                  _cubit.onChangeSection(
+                                      context, _cubit.currentSection + 1,
+                                      smartGoal: widget.smartGoal);
+                                },
+                                currentPositionTitle: _cubit.sectionPosition,
+                                onTapCenter: () {
+                                  showLessonCategoryList();
+                                },
+                                isCompleted: _cubit.canComplete,
                               ),
-                            ),
+                            ],
                           ),
-                          top: MediaQuery.of(context).size.height * 0.55,
-                          left: MediaQuery.of(context).size.width * 0.5 - 50,
                         ),
-                    ],
+                        if (AppSettings.isOwnPackage)
+                          Positioned(
+                            child: Container(
+                              child: Opacity(
+                                opacity: 0.15,
+                                child: Transform.scale(
+                                  scale: 2.5,
+                                  child: Image.network(
+                                    AppSettings.userInfo!.ownPackage!.logo ??
+                                        "",
+                                  ),
+                                ),
+                              ),
+                            ),
+                            top: MediaQuery.of(context).size.height * 0.55,
+                            left: MediaQuery.of(context).size.width * 0.5 - 50,
+                          ),
+                      ],
+                    ),
                   ),
-                ),
           );
         },
       ),

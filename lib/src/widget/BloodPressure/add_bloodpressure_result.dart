@@ -24,18 +24,33 @@ class PageAddBloodPressureResult extends StatefulWidget {
   final BloodPressureResultDto data;
 
   @override
-  State<PageAddBloodPressureResult> createState() => _PageAddBloodPressureResultState();
+  State<PageAddBloodPressureResult> createState() =>
+      _PageAddBloodPressureResultState();
 }
 
 class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     with WidgetsBindingObserver {
   // bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
   String? _aiResult;
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
 
   List<dynamic> _files = [];
   late TextEditingController _controllerNote;
   bool _isKeyboardVisible = false;
+
+  // Linear gradient for buttons: linear-gradient(139deg, #0FB4A5 -7.19%, #008479 68.38%, #008479 99.99%)
+  // 139 degrees in CSS = approximately -0.7547, 0.6561 in Flutter Alignment coordinates
+  static const LinearGradient _buttonGradient = LinearGradient(
+    begin: Alignment(-0.7547, 0.6561), // 139 degrees from CSS
+    end: Alignment(0.7547, -0.6561), // Opposite direction
+    colors: [
+      Color(0xFF0FB4A5), // #0FB4A5
+      Color(0xFF008479), // #008479
+      Color(0xFF008479), // #008479
+    ],
+    stops: [0.0, 0.6838, 1.0], // -7.19% -> 0.0, 68.38% -> 0.6838, 99.99% -> 1.0
+  );
 
   @override
   void initState() {
@@ -66,8 +81,8 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     final data = widget.data;
     _files = data.files ?? [];
 
-    bool shouldFetchNewData =
-        (data.isFetchAnalysis ?? false) || ((data.healthRecommendation?.isEmpty) ?? true);
+    bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
+        ((data.healthRecommendation?.isEmpty) ?? true);
 
     final aiResult = shouldFetchNewData
         ? await BloodPressureClient()
@@ -90,7 +105,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
       List<String> paths = [];
       final data = _sectionAddNoteKey.currentState!.getNote();
       for (var file in data.files) {
-        if (file is PickedFile) {
+        if (file is PickedFile || file is XFile) {
           paths.add(file.path);
         }
       }
@@ -135,7 +150,8 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   }
 
   void _doGuide() async {
-    Navigator.of(context).pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
+    Navigator.of(context)
+        .pushNamed(NavigatorName.blood_pressure_intro_2nd_page);
   }
 
   void _doBack() {
@@ -168,7 +184,8 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                         bottom: _isKeyboardVisible ? 68 : 0,
                       ),
                       child: SingleChildScrollView(
-                        padding: EdgeInsets.only(bottom: _isKeyboardVisible ? 30 : 80),
+                        padding: EdgeInsets.only(
+                            bottom: _isKeyboardVisible ? 30 : 80),
                         child: _bloodpressureResultSection(),
                       ),
                     ),
@@ -187,8 +204,17 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                   right: 16,
                   top: 12,
                 ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: Offset(0, 0),
+                    ),
+                  ],
+                ),
                 child: _bottomSection(),
-                color: Colors.white,
               ),
             ),
           ],
@@ -198,12 +224,18 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   }
 
   Widget _appBarSection() {
-    String formattedDateTime = DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
+    String formattedDateTime =
+        DateFormat('HH:mm - dd/MM/yyyy').format(widget.data.dateTime);
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
       title: Text(
         formattedDateTime,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: R.color.white),
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: R.color.white,
+          fontFamily: R.font.sfpro,
+        ),
       ),
       leadingIcon: IconButton(
         splashColor: R.color.transparent,
@@ -223,7 +255,11 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Text(
                   R.string.huong_dan.tr(),
-                  style: TextStyle(color: R.color.white, fontSize: 15),
+                  style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 15,
+                    fontFamily: R.font.sfpro,
+                  ),
                 ),
               ),
             ),
@@ -270,23 +306,27 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(width: 16),
-                    Image.asset(R.drawable.ic_bloodpressure_pulse, width: 20, height: 20),
+                    Image.asset(R.drawable.ic_bloodpressure_pulse,
+                        width: 20, height: 20),
                     const SizedBox(width: 8),
                     Text.rich(
                       TextSpan(
-                        text: '${widget.data.pulse!.round()}',
+                        text: '${widget.data.pulse!.round()} ',
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: R.color.textDark,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF111515),
+                          fontFamily: R.font.sfpro,
                         ),
                         children: [
                           TextSpan(
-                            text: ' nhịp/phút',
+                            text: 'lần/phút',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
-                              color: R.color.primaryGreyColor,
+                              color: Color(0xFF636A6B),
+                              fontFamily: R.font.sfpro,
+                              letterSpacing: 0.4,
                             ),
                           ),
                         ],
@@ -297,9 +337,10 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                     Text(
                       widget.data.pulseRateStatus!,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF636A6B),
+                        fontFamily: R.font.sfpro,
                       ),
                     ),
                     SizedBox(width: 16),
@@ -333,9 +374,17 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF042B28).withOpacity(0.08),
+            blurRadius: 8,
+            offset: Offset(1, 2),
+          ),
+        ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // result
           Row(
@@ -346,7 +395,9 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
+                  color: Color(0xFF111515),
+                  fontFamily: R.font.sfpro,
+                  letterSpacing: 0.036,
                 ),
               ),
               const SizedBox(width: 6),
@@ -357,7 +408,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
               // ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           if (_aiResult == null)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
@@ -370,6 +421,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
                 color: Color(0xFFC82221),
+                fontFamily: R.font.sfpro,
               ),
             )
           else ...[
@@ -378,11 +430,13 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
+                color: Color(0xFF111515),
                 height: 1.46,
+                fontFamily: R.font.sfpro,
+                letterSpacing: 0.4,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             // elevated button, ic_zalo and text, full width
             AIHelpButton(rangeType: widget.data.rangeType),
           ],
@@ -396,6 +450,13 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF042B28).withOpacity(0.08),
+            blurRadius: 8,
+            offset: Offset(1, 2),
+          ),
+        ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       child: Column(
@@ -406,8 +467,9 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
-              color: R.color.textDark,
+              color: Color(0xFF111515),
               height: 21 / 15,
+              fontFamily: R.font.sfpro,
             ),
           ),
           const SizedBox(height: 8, width: double.infinity),
@@ -416,8 +478,9 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
-              color: R.color.color0xff111515,
+              color: Color(0xFF111515),
               height: 16 / 12,
+              fontFamily: R.font.sfpro,
             ),
           ),
         ],
@@ -438,48 +501,58 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
   }
 
   Widget _bottomSection() {
-    return ElevatedButton(
-      onPressed: _doComplete,
-      child: Text(
-        R.string.completed.tr(),
-        style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: R.color.greenGradientBottom,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: _doShare,
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: R.color.greenGradientBottom),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              minimumSize: Size(double.infinity, 42),
+            ),
+            child: Text(
+              R.string.share.tr(),
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                fontFamily: R.font.sfpro,
+                letterSpacing: 0.4,
+              ),
+            ),
+          ),
         ),
-      ),
+        const SizedBox(width: 11),
+        Expanded(
+          child: InkWell(
+            onTap: _doComplete,
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              height: 42,
+              decoration: BoxDecoration(
+                gradient: _buttonGradient,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Text(
+                  R.string.completed.tr(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
-    // return Row(
-    //   children: [
-    //     Expanded(
-    //       child: ElevatedButton(
-    //         onPressed: _doShare,
-    //         child: Text(R.string.share.tr(), style: TextStyle(color: R.color.textDark)),
-    //         style: ElevatedButton.styleFrom(
-    //           backgroundColor: Colors.white,
-    //           shape: RoundedRectangleBorder(
-    //             borderRadius: BorderRadius.circular(24),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //     const SizedBox(width: 16),
-    //     Expanded(
-    //       child: ElevatedButton(
-    //         onPressed: _doComplete,
-    //         child: Text(R.string.completed.tr(), style: TextStyle(color: Colors.white)),
-    //         style: ElevatedButton.styleFrom(
-    //           backgroundColor: R.color.mainColor,
-    //           shape: RoundedRectangleBorder(
-    //             borderRadius: BorderRadius.circular(24),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
   }
 }
 
@@ -551,7 +624,8 @@ class _SegmentedCircularGauge extends StatelessWidget {
             maximum: renderMaxValue,
             showLabels: false,
             showTicks: false,
-            radiusFactor: 1.0, // Make gauge slightly smaller to fit within container
+            radiusFactor:
+                1.0, // Make gauge slightly smaller to fit within container
             axisLineStyle: AxisLineStyle(
               thickness: 0,
               thicknessUnit: GaugeSizeUnit.logicalPixel,
@@ -576,7 +650,10 @@ class _SegmentedCircularGauge extends StatelessWidget {
                       timeFrame,
                       style: TextStyle(
                         fontSize: 15,
-                        color: Colors.grey.shade600,
+                        color: Color(0xFF636A6B),
+                        fontFamily: R.font.sfpro,
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 0.4,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -591,17 +668,20 @@ class _SegmentedCircularGauge extends StatelessWidget {
                           fontSize: 24,
                           color: rangeColor,
                           fontWeight: FontWeight.bold,
+                          fontFamily: R.font.sfpro,
                         ),
                       ),
                     ),
                     SizedBox(height: 16),
                     Text.rich(
                       TextSpan(
-                        text: '${roundNumber(systolic)}/${roundNumber(diastolic)}',
+                        text:
+                            '${roundNumber(systolic)}/${roundNumber(diastolic)}',
                         style: TextStyle(
                           fontSize: 15,
                           color: Color(0xFF111515),
                           fontWeight: FontWeight.bold,
+                          fontFamily: R.font.sfpro,
                         ),
                         children: [
                           TextSpan(
@@ -609,6 +689,9 @@ class _SegmentedCircularGauge extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 15,
                               color: Color(0xFF636A6B),
+                              fontWeight: FontWeight.w400,
+                              fontFamily: R.font.sfpro,
+                              letterSpacing: 0.4,
                             ),
                           ),
                         ],

@@ -7,7 +7,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/bloodPressure/bloodPressure_bloc.dart';
+import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure_trend.dart';
+import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -17,15 +19,18 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 typedef BloodPressureChartCallback = void Function(
     BloodPressureRangeType rangeType);
+typedef BloodPressureDataCallback = void Function(bool hasData);
 
 class BloodPressureChart extends StatefulWidget {
   BloodPressureChart({
     Key? key,
     required this.initPeriodFilterType,
     required this.bloodPressureChartCallback,
+    this.onDataLoaded,
   }) : super(key: key);
   final int initPeriodFilterType;
   final BloodPressureChartCallback bloodPressureChartCallback;
+  final BloodPressureDataCallback? onDataLoaded;
   @override
   BloodPressureChartState createState() => BloodPressureChartState();
 }
@@ -44,6 +49,28 @@ class BloodPressureChartState extends State<BloodPressureChart>
   int _periodFilterType = 1;
   late BuildContext currentContext;
   int? previousDate = 0;
+  DateTime? _lastTapTime;
+  int? _lastTappedIndex;
+  Timer? _scrollDelayTimer; // Timer to delay scroll for double tap detection
+  int?
+      _pendingScrollIndex; // Track which index is pending scroll (for double tap detection)
+  int?
+      _pendingNavigateIndex; // Track which index is pending navigation after scroll completes
+
+  // Cached focused node info for mapping across different timelines
+  int? _cachedFocusDate; // Timestamp in seconds
+  String? _cachedFocusTimeFrame;
+  double? _cachedFocusSystolic;
+  double? _cachedFocusDiastolic;
+
+  // Tracking variables for scroll logic (similar to HbA1C)
+  double _lastViewWidth = 0;
+  double _lastEffectivePointWidth = 0;
+  int _lastTotalPoints = 0;
+  bool _initialScrollApplied = false;
+  int? _lastTrendsLength; // Track trends length to detect changes
+  int? _lastPeriodFilterType; // Track period filter to detect changes
+  bool _shouldScrollToFocus = false; // Flag to force scroll to focused point
 
   final double _mediumLow = 90;
   final double _mediumHigh = 140;
@@ -51,7 +78,14 @@ class BloodPressureChartState extends State<BloodPressureChart>
   @override
   void initState() {
     _periodFilterType = widget.initPeriodFilterType;
+    _lastPeriodFilterType = widget.initPeriodFilterType;
     super.initState();
+    // Reset flags to ensure first load will focus on latest point and scroll to it
+    _initialScrollApplied = false;
+    _lastTrendsLength = null;
+    _focusIndex = -1;
+    _shouldScrollToFocus =
+        true; // Set flag to ensure scroll happens on first load
     _registerEmptyNavigation();
   }
 
@@ -59,6 +93,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
   void dispose() {
     _scrollController.dispose();
     _subscription?.cancel();
+    _scrollDelayTimer?.cancel();
     _bloodPressureBloc.close();
     super.dispose();
   }
@@ -86,9 +121,30 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   void reloadData(int periodFilter, [bool isNew = false]) {
     _registerEmptyNavigation();
+
+    // Check if period filter changed
+    final bool periodFilterChanged =
+        _lastPeriodFilterType != null && _lastPeriodFilterType != periodFilter;
+
     if (isNew) {
+      // When isNew = true, reset everything to focus on latest point
       _focusIndex = -1;
+      _lastTrendsLength = null;
+      _initialScrollApplied = false;
+      _shouldScrollToFocus = true;
+      // Clear cached focus info
+      _cacheFocusedNode(null);
+    } else if (periodFilterChanged) {
+      // When period filter changes, keep focus index if valid but reset scroll flag
+      // This ensures the focused point will be scrolled into view
+      _initialScrollApplied = false;
+      _shouldScrollToFocus = true;
+      // Don't reset _lastTrendsLength here - we want to keep it to detect if focus index is still valid
+      // The scroll will be triggered by resetting _initialScrollApplied and setting _shouldScrollToFocus
+      // Also, we'll detect period filter change in build method to trigger scroll
     }
+
+    _lastPeriodFilterType = periodFilter;
     _periodFilterType = periodFilter;
     _refresh();
   }
@@ -110,6 +166,232 @@ class BloodPressureChartState extends State<BloodPressureChart>
         });
   }
 
+  void _handleTapEvent(FlTapUpEvent event, LineTouchResponse? lineTouch,
+      List<SubTrendItemModel> trends) {
+    if (lineTouch?.lineBarSpots == null || lineTouch!.lineBarSpots!.isEmpty) {
+      return;
+    }
+
+    final touchedSpot = lineTouch.lineBarSpots!.first;
+    final tappedIndex = touchedSpot.spotIndex;
+
+    if (tappedIndex < 0 || tappedIndex >= trends.length) {
+      return;
+    }
+
+    final now = DateTime.now();
+
+    // Detect double tap - check if tapping the same dot within 500ms
+    if (_lastTappedIndex == tappedIndex &&
+        _lastTapTime != null &&
+        now.difference(_lastTapTime!).inMilliseconds < 500) {
+      // Double tap detected on the same dot - scroll first, then navigate
+
+      // Don't cancel scroll - let it complete, then navigate
+      // Set flag to navigate after scroll completes
+      _pendingNavigateIndex = tappedIndex;
+
+      // Cancel any pending scroll delay timer
+      _scrollDelayTimer?.cancel();
+      _scrollDelayTimer = null;
+
+      // Set pending scroll index and navigation index
+      _pendingScrollIndex = tappedIndex;
+      _pendingNavigateIndex = tappedIndex;
+
+      // If scroll is already in progress for this index, the onComplete callback will handle navigation
+      // Otherwise, trigger scroll immediately (no delay for double tap)
+      if (_lastTotalPoints > 0 &&
+          _lastViewWidth > 0 &&
+          _lastEffectivePointWidth > 0) {
+        _scrollToSelectedPoint(
+          totalPoints: _lastTotalPoints,
+          viewWidth: _lastViewWidth,
+          effectivePointWidth: _lastEffectivePointWidth,
+          onComplete: () {
+            // Navigate after scroll completes
+            if (_pendingNavigateIndex != null && mounted) {
+              final navigateIndex = _pendingNavigateIndex!;
+              _pendingNavigateIndex = null;
+              _openDetailScreen(trends, navigateIndex);
+            }
+          },
+        );
+      } else {
+        // If scroll can't be triggered, navigate immediately
+        _pendingNavigateIndex = null;
+        _openDetailScreen(trends, tappedIndex);
+      }
+
+      // Reset tracking after double tap
+      _lastTappedIndex = null;
+      _lastTapTime = null;
+    } else {
+      // Single tap - update focus immediately but delay scroll slightly to detect double tap
+      previousDate = 0;
+      if (!mounted) return;
+
+      setState(() {
+        _focusIndex = tappedIndex;
+        // Cache the focused node info for mapping across timelines
+        _cacheFocusedNode(trends[_focusIndex]);
+      });
+
+      // Update callback with the selected point's range type
+      final rangeType =
+          BloodPressureRangeType.fromTitle(trends[_focusIndex].type ?? '');
+      widget.bloodPressureChartCallback(rangeType);
+
+      // Cancel any previous scroll delay timer
+      _scrollDelayTimer?.cancel();
+
+      // Clear any pending navigation
+      _pendingNavigateIndex = null;
+
+      // Set pending scroll index to track this tap
+      _pendingScrollIndex = tappedIndex;
+
+      // Delay scroll slightly to allow double tap detection (100ms delay for faster, smoother response)
+      // If double tap happens within this time, scroll will still execute but navigate after
+      _scrollDelayTimer = Timer(const Duration(milliseconds: 100), () {
+        if (!mounted) return;
+
+        // Only scroll if this is still a single tap (pendingScrollIndex matches and wasn't cleared)
+        // and no navigation is pending (double tap not detected)
+        if (_pendingScrollIndex == tappedIndex &&
+            _scrollDelayTimer != null &&
+            _pendingNavigateIndex == null) {
+          if (_lastTotalPoints > 0 &&
+              _lastViewWidth > 0 &&
+              _lastEffectivePointWidth > 0) {
+            _scrollToSelectedPoint(
+              totalPoints: _lastTotalPoints,
+              viewWidth: _lastViewWidth,
+              effectivePointWidth: _lastEffectivePointWidth,
+            );
+          }
+        }
+        _scrollDelayTimer = null;
+        // Don't clear _pendingScrollIndex here - it will be cleared after scroll completes
+      });
+
+      // Update tracking for next potential double tap
+      _lastTappedIndex = tappedIndex;
+      _lastTapTime = now;
+    }
+  }
+
+  void _openDetailScreen(List<SubTrendItemModel> trends, int index) async {
+    if (index < 0 || index >= trends.length) return;
+
+    final selectedTrend = trends[index];
+
+    // If id is available, navigate directly
+    if (selectedTrend.id != null && selectedTrend.id!.isNotEmpty) {
+      Navigator.pushNamed(
+        currentContext,
+        NavigatorName.add_blood_pressure,
+        arguments: {'type': 'update', 'id': selectedTrend.id},
+      );
+      return;
+    }
+
+    // If no id, fetch from listing API to get the id
+    if (selectedTrend.date != null && selectedTrend.timeFrameName != null) {
+      try {
+        final client = BloodPressureClient();
+        final dataModel = await client.fetchBloodPressureInput(
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+          _periodFilterType.toString(),
+          null,
+          1,
+          size: '100',
+        );
+
+        final matchingItem = _findMatchingItem(dataModel.inputs, selectedTrend);
+
+        if (matchingItem?.id != null && matchingItem!.id!.isNotEmpty) {
+          Navigator.pushNamed(
+            currentContext,
+            NavigatorName.add_blood_pressure,
+            arguments: {'type': 'update', 'id': matchingItem.id},
+          );
+          return;
+        }
+      } catch (e) {
+        // Fall through to listing screen on error
+      }
+    }
+
+    // Fallback: navigate to listing screen
+    Navigator.pushNamed(
+      currentContext,
+      NavigatorName.detail_bloodpressure_listing,
+      arguments: {
+        'initPeriodFilterType': _periodFilterType,
+      },
+    );
+  }
+
+  BloodPressureModel? _findMatchingItem(
+      List<BloodPressureModel> items, SubTrendItemModel selectedTrend) {
+    final trendDate = DateTime.fromMillisecondsSinceEpoch(
+      selectedTrend.date! * 1000,
+      isUtc: true,
+    );
+
+    for (final item in items) {
+      final itemDate = DateTime.fromMillisecondsSinceEpoch(
+        item.date! * 1000,
+        isUtc: true,
+      );
+
+      final timeDiff =
+          (trendDate.millisecondsSinceEpoch - itemDate.millisecondsSinceEpoch)
+              .abs();
+      final exactTimeMatch = timeDiff < 60000; // 1 minute tolerance
+      final sameDay = trendDate.year == itemDate.year &&
+          trendDate.month == itemDate.month &&
+          trendDate.day == itemDate.day;
+
+      final isSyncedData =
+          (item.reason != null && item.reason!.contains("Đồng bộ")) ||
+              ((item.timeFrameId == null || item.timeFrameId!.isEmpty) &&
+                  (item.timeFrame == "Bất kì" ||
+                      item.timeFrame == null ||
+                      item.timeFrame!.isEmpty));
+
+      final itemTimeFrame = item.timeFrame ?? "";
+      final trendTimeFrame = selectedTrend.timeFrameName ?? "";
+      final sameTimeFrame = isSyncedData
+          ? (trendTimeFrame == "Bất kì" ||
+              itemTimeFrame == "Bất kì" ||
+              itemTimeFrame.isEmpty ||
+              trendTimeFrame.isEmpty ||
+              itemTimeFrame == trendTimeFrame)
+          : itemTimeFrame == trendTimeFrame;
+
+      final sameSystolic = item.systolic != null &&
+          selectedTrend.systolic != null &&
+          (item.systolic!.round() == selectedTrend.systolic!.round());
+      final sameDiastolic = item.diastolic != null &&
+          selectedTrend.diastolic != null &&
+          (item.diastolic!.round() == selectedTrend.diastolic!.round());
+
+      final isMatch = isSyncedData
+          ? (sameDay && sameSystolic && sameDiastolic && sameTimeFrame)
+          : ((exactTimeMatch || sameDay) &&
+              sameTimeFrame &&
+              sameSystolic &&
+              sameDiastolic);
+
+      if (isMatch) {
+        return item;
+      }
+    }
+    return null;
+  }
+
   List<SubTrendItemModel> _getTrends(BloodPressureTrendModel model) {
     // Get the trends list from the current state
     List<SubTrendItemModel> trends = [];
@@ -126,58 +408,244 @@ class BloodPressureChartState extends State<BloodPressureChart>
     return trends;
   }
 
-  void _scrollToFocusIndex() {
-    // REF: [_buildChart]
-    double paddingOutSideBoth = 12 * 2;
-    double leftTitleWidth = 50;
-    double leftTitleMargin = 2;
-    double chartWidth = MediaQuery.of(context).size.width -
-        paddingOutSideBoth -
-        leftTitleWidth -
-        leftTitleMargin;
-    final width = chartWidth / 18;
-    final itemWidth = width + 12; // same as used in chart
+  /// Cache the currently focused node information
+  void _cacheFocusedNode(SubTrendItemModel? node) {
+    if (node == null) {
+      _cachedFocusDate = null;
+      _cachedFocusTimeFrame = null;
+      _cachedFocusSystolic = null;
+      _cachedFocusDiastolic = null;
+      return;
+    }
+    _cachedFocusDate = node.date;
+    _cachedFocusTimeFrame = node.timeFrameName;
+    _cachedFocusSystolic = node.systolic;
+    _cachedFocusDiastolic = node.diastolic;
+  }
 
-    // Get the trends list from the current state
-    final BloodPressureState state =
-        BlocProvider.of<BloodPressureBloc>(currentContext).state;
-    List<SubTrendItemModel> trends = [];
-    if (state is BloodPressureTrendLoaded) {
-      trends = _getTrends(state.model);
+  /// Find the index of a node matching the cached focus info in the new trends list
+  /// Returns -1 if not found
+  int _findMatchingNodeIndex(List<SubTrendItemModel> trends) {
+    if (_cachedFocusDate == null || _cachedFocusTimeFrame == null) {
+      return -1;
     }
 
-    // Handle different scrolling behavior based on whether the list is reversed
-    if (trends.length > 1) {
-      // Chart is reversed when trends.length > 1
-      // When reversed, we need to calculate from the right edge
-      final totalWidth = ((trends.length < 5 ? 5 : trends.length) * itemWidth);
-      final rightEdgeOffset = totalWidth - (_focusIndex + 1) * itemWidth;
-      final targetOffset = rightEdgeOffset + (itemWidth / 2) - (chartWidth / 2);
+    // First, try exact match: same date, timeFrame, and values
+    for (int i = 0; i < trends.length; i++) {
+      final trend = trends[i];
+      if (trend.date == _cachedFocusDate &&
+          trend.timeFrameName == _cachedFocusTimeFrame) {
+        // Check if values match (with tolerance for floating point)
+        final systolicMatch = _cachedFocusSystolic != null &&
+            trend.systolic != null &&
+            (_cachedFocusSystolic!.round() == trend.systolic!.round());
+        final diastolicMatch = _cachedFocusDiastolic != null &&
+            trend.diastolic != null &&
+            (_cachedFocusDiastolic!.round() == trend.diastolic!.round());
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
+        if (systolicMatch && diastolicMatch) {
+          return i;
         }
-      });
-    } else {
-      // Normal left-to-right scrolling
-      final targetOffset =
-          (_focusIndex * itemWidth) - (chartWidth / 2) + (itemWidth / 2);
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        }
-      });
+      }
     }
+
+    // If exact match not found, try matching by date and timeFrame only
+    for (int i = 0; i < trends.length; i++) {
+      final trend = trends[i];
+      if (trend.date == _cachedFocusDate &&
+          trend.timeFrameName == _cachedFocusTimeFrame) {
+        return i;
+      }
+    }
+
+    // If still not found, try to find the closest node by date
+    int? closestIndex;
+    int? minTimeDiff;
+    final cachedDateTime = DateTime.fromMillisecondsSinceEpoch(
+      _cachedFocusDate! * 1000,
+      isUtc: true,
+    );
+
+    for (int i = 0; i < trends.length; i++) {
+      final trend = trends[i];
+      if (trend.date == null) continue;
+
+      final trendDateTime = DateTime.fromMillisecondsSinceEpoch(
+        trend.date! * 1000,
+        isUtc: true,
+      );
+
+      final timeDiff = (cachedDateTime.millisecondsSinceEpoch -
+              trendDateTime.millisecondsSinceEpoch)
+          .abs();
+
+      if (minTimeDiff == null || timeDiff < minTimeDiff) {
+        minTimeDiff = timeDiff;
+        closestIndex = i;
+      }
+    }
+
+    // If we found a close match (within 1 hour), use it
+    if (closestIndex != null && minTimeDiff != null && minTimeDiff < 3600000) {
+      return closestIndex;
+    }
+
+    return -1;
+  }
+
+  void _ensureSelectedPointVisible({
+    required List<SubTrendItemModel> trends,
+    required int totalPoints,
+    required double viewWidth,
+    required double effectivePointWidth,
+    int retry = 0,
+  }) {
+    // Basic validation
+    if (totalPoints <= 0) return;
+    if (!viewWidth.isFinite || viewWidth <= 0) return;
+
+    // If scroll already applied and we don't need to force scroll, skip
+    if (_initialScrollApplied && !_shouldScrollToFocus) {
+      return;
+    }
+
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) {
+      _initialScrollApplied = true;
+      _shouldScrollToFocus = false; // Reset flag even on max retry
+      return;
+    }
+
+    // Don't set _initialScrollApplied here - set it after successful scroll
+    // This allows retry if scroll controller is not ready
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      // Check if scroll controller is ready with proper dimensions
+      // If not ready, retry after a delay
+      if (!_scrollController.hasClients ||
+          !_scrollController.position.hasContentDimensions) {
+        _initialScrollApplied = false; // Reset to allow retry
+        // Retry after a short delay (reduced for faster response)
+        Future.delayed(const Duration(milliseconds: 30), () {
+          if (mounted) {
+            _ensureSelectedPointVisible(
+              trends: trends,
+              totalPoints: totalPoints,
+              viewWidth: viewWidth,
+              effectivePointWidth: effectivePointWidth,
+              retry: retry + 1,
+            );
+          }
+        });
+        return;
+      }
+
+      // Determine selected index: use _focusIndex if valid, otherwise default to last point (latest data)
+      final int selectedIndex = _focusIndex >= 0 && _focusIndex < trends.length
+          ? _focusIndex
+          : (trends.length > 0 ? trends.length - 1 : 0);
+
+      // Calculate the target position to center the selected point
+      final double targetCenter =
+          selectedIndex * effectivePointWidth + (effectivePointWidth / 2);
+      final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
+      final double maxScrollExtent = _scrollController.position.maxScrollExtent;
+      final double desiredOffset =
+          rawOffset.clamp(0.0, maxScrollExtent).toDouble();
+
+      // Check if the point is at the beginning (first few points visible)
+      if (desiredOffset <= 0.0 || selectedIndex < 3) {
+        // Point is at the beginning, just jump to start without animation
+        _scrollController.jumpTo(0.0);
+        // Set flag after successful scroll
+        _initialScrollApplied = true;
+        _shouldScrollToFocus = false;
+      } else {
+        // Point is not at the beginning, animate smoothly to center it
+        // Use faster, smoother animation (150ms) for better UX
+        _scrollController
+            .animateTo(
+          desiredOffset,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+        )
+            .then((_) {
+          // Set flag after animation completes
+          if (mounted) {
+            _initialScrollApplied = true;
+            _shouldScrollToFocus = false;
+          }
+        });
+      }
+    });
+  }
+
+  void _scrollToSelectedPoint({
+    required int totalPoints,
+    required double viewWidth,
+    required double effectivePointWidth,
+    int retry = 0,
+    VoidCallback? onComplete,
+  }) {
+    if (!_scrollController.hasClients) return;
+    if (totalPoints <= 0) return;
+    if (!viewWidth.isFinite || viewWidth <= 0) return;
+
+    // Maximum retry count to avoid infinite loops
+    if (retry > 20) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+
+      // Check if scroll controller is ready with proper dimensions
+      if (!_scrollController.position.hasContentDimensions) {
+        // Retry after a short delay (reduced for faster response)
+        Future.delayed(const Duration(milliseconds: 30), () {
+          _scrollToSelectedPoint(
+            totalPoints: totalPoints,
+            viewWidth: viewWidth,
+            effectivePointWidth: effectivePointWidth,
+            retry: retry + 1,
+            onComplete: onComplete,
+          );
+        });
+        return;
+      }
+
+      final int selectedIndex = _focusIndex >= 0 && _focusIndex < totalPoints
+          ? _focusIndex
+          : (totalPoints > 0 ? totalPoints - 1 : 0);
+
+      // Calculate position to center the selected point
+      final double targetCenter =
+          selectedIndex * effectivePointWidth + (effectivePointWidth / 2);
+      final double rawOffset = targetCenter - (viewWidth / 2);
+
+      // Get maxScrollExtent AFTER ensuring hasContentDimensions
+      final double maxScrollExtent = _scrollController.position.maxScrollExtent;
+      final double desiredOffset =
+          rawOffset.clamp(0.0, maxScrollExtent).toDouble();
+
+      // Animate to the desired position with faster, smoother animation (150ms)
+      _scrollController
+          .animateTo(
+        desiredOffset,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+      )
+          .then((_) {
+        // Clear pending scroll index after scroll completes
+        _pendingScrollIndex = null;
+        // Call onComplete callback if provided
+        if (onComplete != null && mounted) {
+          onComplete();
+        }
+      });
+    });
   }
 
   @override
@@ -209,13 +677,110 @@ class BloodPressureChartState extends State<BloodPressureChart>
               trends = _getTrends(model);
             }
 
-            if (_focusIndex == -1 || _focusIndex >= trends.length) {
-              _focusIndex = (trends.length - 1);
-              final rangeType = BloodPressureRangeType.fromTitle(
-                  trends[_focusIndex].type ?? '');
-              Future.delayed(Duration(milliseconds: 200)).then((value) {
-                widget.bloodPressureChartCallback(rangeType);
+            // Notify parent about data availability
+            final bool hasData = trends.isNotEmpty;
+            if (widget.onDataLoaded != null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  widget.onDataLoaded!(hasData);
+                }
               });
+            }
+
+            if (trends.isNotEmpty) {
+              // Check if trends length changed (new data loaded) or first time loading
+              final bool isFirstLoad = _lastTrendsLength == null;
+              final bool trendsChanged = _lastTrendsLength != null &&
+                  _lastTrendsLength != trends.length;
+
+              // Determine focus index:
+              // - If focus index is invalid or first load, focus on latest point
+              // - When period filter changes, try to find matching node in new timeline
+              // - If no match found, focus on latest point
+              bool focusIndexChanged = false;
+              BloodPressureRangeType? rangeTypeToCallback;
+
+              if (_focusIndex == -1 ||
+                  _focusIndex >= trends.length ||
+                  isFirstLoad) {
+                // Set focus to latest point (last index) - this is the newest data point
+                final int latestIndex = trends.length - 1;
+                if (latestIndex >= 0 && latestIndex < trends.length) {
+                  final int oldFocusIndex = _focusIndex;
+                  _focusIndex = latestIndex;
+                  focusIndexChanged = oldFocusIndex != _focusIndex;
+                  // Cache the focused node info
+                  _cacheFocusedNode(trends[_focusIndex]);
+                  rangeTypeToCallback = BloodPressureRangeType.fromTitle(
+                      trends[_focusIndex].type ?? '');
+                }
+              } else if (_shouldScrollToFocus && _cachedFocusDate != null) {
+                // Period filter changed - try to find matching node in new timeline
+                final int matchingIndex = _findMatchingNodeIndex(trends);
+                if (matchingIndex >= 0 && matchingIndex < trends.length) {
+                  // Found matching node - use it
+                  final int oldFocusIndex = _focusIndex;
+                  _focusIndex = matchingIndex;
+                  focusIndexChanged = oldFocusIndex != _focusIndex;
+                  // Update cache with the matched node
+                  _cacheFocusedNode(trends[_focusIndex]);
+                  rangeTypeToCallback = BloodPressureRangeType.fromTitle(
+                      trends[_focusIndex].type ?? '');
+                } else {
+                  // No matching node found - focus on latest point
+                  final int latestIndex = trends.length - 1;
+                  if (latestIndex >= 0 && latestIndex < trends.length) {
+                    final int oldFocusIndex = _focusIndex;
+                    _focusIndex = latestIndex;
+                    focusIndexChanged = oldFocusIndex != _focusIndex;
+                    // Cache the new focused node
+                    _cacheFocusedNode(trends[_focusIndex]);
+                    rangeTypeToCallback = BloodPressureRangeType.fromTitle(
+                        trends[_focusIndex].type ?? '');
+                  }
+                }
+              } else {
+                // Focus index is valid and no period filter change - ensure callback is called
+                if (_focusIndex >= 0 && _focusIndex < trends.length) {
+                  rangeTypeToCallback = BloodPressureRangeType.fromTitle(
+                      trends[_focusIndex].type ?? '');
+                  // When _shouldScrollToFocus is true, we need to scroll to the focused point
+                  if (_shouldScrollToFocus) {
+                    focusIndexChanged = true;
+                  }
+                }
+              }
+
+              // Call callback after build completes to avoid setState during build
+              if (rangeTypeToCallback != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    widget.bloodPressureChartCallback(rangeTypeToCallback!);
+                  }
+                });
+              }
+
+              // Always reset scroll flag when we need to scroll
+              // This includes: first load, trends changed, explicit flag set, or focus index changed
+              if (isFirstLoad ||
+                  trendsChanged ||
+                  _shouldScrollToFocus ||
+                  focusIndexChanged) {
+                _initialScrollApplied = false;
+                // Keep _shouldScrollToFocus true until scroll is actually applied
+                // Don't reset it here - it will be reset in _ensureSelectedPointVisible after scroll completes
+                if (isFirstLoad || trendsChanged) {
+                  _lastTrendsLength = trends.length;
+                }
+              }
+            } else {
+              // Reset focus index when trends is empty
+              _focusIndex = -1;
+              _lastTrendsLength = 0;
+              _initialScrollApplied =
+                  false; // Reset scroll flag for empty trends
+              // Clear cached focus info
+              _cacheFocusedNode(null);
             }
           }
 
@@ -330,7 +895,9 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
+                          fontFamily: R.font.sfpro,
                           color: Color(0xFF636A6B),
+                          letterSpacing: 0.4,
                         ),
                       ),
                       Container(
@@ -347,28 +914,12 @@ class BloodPressureChartState extends State<BloodPressureChart>
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
+                          fontFamily: R.font.sfpro,
                           color: Color(0xFF636A6B),
+                          letterSpacing: 0.4,
                         ),
                       ),
                     ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                InkWell(
-                  onTap: _viewHistory,
-                  child: SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: R.color.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: R.color.color0xffE5E5E5),
-                      ),
-                      child: Center(
-                          child: Icon(Icons.history,
-                              color: R.color.textDark, size: 20)),
-                    ),
                   ),
                 ),
               ],
@@ -376,20 +927,33 @@ class BloodPressureChartState extends State<BloodPressureChart>
             const SizedBox(height: 4),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(width: 12),
                 InkWell(
                   onTap: _focusIndex > 0
                       ? () {
+                          // Move to previous node
                           setState(() {
                             _focusIndex = max(0, _focusIndex - 1);
+                            // Cache the focused node info for mapping across timelines
+                            _cacheFocusedNode(trends[_focusIndex]);
                           });
+
+                          // Update callback with the selected point's range type
                           final rangeType = BloodPressureRangeType.fromTitle(
                               trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
-                          if (_focusIndex > 0) {
-                            _scrollToFocusIndex();
+
+                          // Always scroll to center the selected point when using prev button
+                          if (_lastTotalPoints > 0 &&
+                              _lastViewWidth > 0 &&
+                              _lastEffectivePointWidth > 0) {
+                            _scrollToSelectedPoint(
+                              totalPoints: _lastTotalPoints,
+                              viewWidth: _lastViewWidth,
+                              effectivePointWidth: _lastEffectivePointWidth,
+                            );
                           }
                         }
                       : null,
@@ -414,19 +978,25 @@ class BloodPressureChartState extends State<BloodPressureChart>
                   ),
                 ),
                 const SizedBox(width: 16),
-                ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: 200),
-                  child: Text(
-                    selectedType,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: selectedColor.isNotEmpty
-                          ? Color(int.parse(
-                              '0xff${selectedColor.split('#').join()}'))
-                          : null,
-                      height: 36 / 24,
+                GestureDetector(
+                  onTap: _focusIndex != -1 && _focusIndex < trends.length
+                      ? () => _openDetailScreen(trends, _focusIndex)
+                      : null,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: 200),
+                    child: Text(
+                      selectedType,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: R.font.sfpro,
+                        color: selectedColor.isNotEmpty
+                            ? Color(int.parse(
+                                '0xff${selectedColor.split('#').join()}'))
+                            : R.color.color0xff111515,
+                        height: 1.5,
+                      ),
                     ),
                   ),
                 ),
@@ -434,15 +1004,28 @@ class BloodPressureChartState extends State<BloodPressureChart>
                 InkWell(
                   onTap: _focusIndex < trends.length - 1
                       ? () {
+                          // Move to next node
                           setState(() {
                             _focusIndex =
                                 min(trends.length - 1, _focusIndex + 1);
+                            // Cache the focused node info for mapping across timelines
+                            _cacheFocusedNode(trends[_focusIndex]);
                           });
+
+                          // Update callback with the selected point's range type
                           final rangeType = BloodPressureRangeType.fromTitle(
                               trends[_focusIndex].type ?? '');
                           widget.bloodPressureChartCallback(rangeType);
-                          if (_focusIndex < trends.length - 1) {
-                            _scrollToFocusIndex();
+
+                          // Always scroll to center the selected point when using next button
+                          if (_lastTotalPoints > 0 &&
+                              _lastViewWidth > 0 &&
+                              _lastEffectivePointWidth > 0) {
+                            _scrollToSelectedPoint(
+                              totalPoints: _lastTotalPoints,
+                              viewWidth: _lastViewWidth,
+                              effectivePointWidth: _lastEffectivePointWidth,
+                            );
                           }
                         }
                       : null,
@@ -470,35 +1053,43 @@ class BloodPressureChartState extends State<BloodPressureChart>
               ],
             ),
             const SizedBox(height: 2),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  selectedTimeFrame,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF636A6B),
+            GestureDetector(
+              onTap: _focusIndex != -1 && _focusIndex < trends.length
+                  ? () => _openDetailScreen(trends, _focusIndex)
+                  : null,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    selectedTimeFrame,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: R.font.sfpro,
+                      color: Color(0xFF636A6B),
+                    ),
                   ),
-                ),
-                Container(
-                  width: 4,
-                  height: 4,
-                  margin: EdgeInsets.only(left: 4, right: 4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFBFC6C6),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    margin: EdgeInsets.only(left: 4, right: 4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFBFC6C6),
+                    ),
                   ),
-                ),
-                Text(
-                  '$selectedSystolic/$selectedDiastolic mmHg',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF111515),
+                  Text(
+                    '$selectedSystolic/$selectedDiastolic mmHg',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: R.font.sfpro,
+                      color: Color(0xFF111515),
+                      letterSpacing: 0.4,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -508,36 +1099,18 @@ class BloodPressureChartState extends State<BloodPressureChart>
 
   Widget _buildChart(
       BloodPressureTrendModel model, List<SubTrendItemModel> trends) {
-    double paddingOutSideBoth = 12 * 2;
+    const int maxVisiblePoints =
+        11; // Maximum points to show without scrolling (changed from 12)
+    const double scrollVisiblePointCount =
+        5.5; // Points visible when scrolling (half of 11)
+    const double chartHeight = 120;
     double leftTitleWidth = 50;
     double leftTitleMargin = 2;
-    double chartWidth = MediaQuery.of(context).size.width -
-        paddingOutSideBoth -
-        leftTitleWidth -
-        leftTitleMargin;
-    // Calculate width to show 11 points on the page
-    final width = chartWidth / 18;
 
-    // less no.trends need to scale width to fill screen
-    final minWidth = chartWidth;
-    double calculatedWidth = (trends.length * (width + 12)).toDouble();
-    if (calculatedWidth < minWidth) {
-      calculatedWidth = minWidth;
-    }
-
-    // double minY = trends
-    //     .map<double>((e) => (e.diastolic! < e.systolic! ? e.diastolic! : e.systolic!))
-    //     .reduce(min);
-    // minY = (minY * (trends.length == 1 ? 0.5 : 0.8)).roundToDouble();
-    // double maxY = trends
-    //     .map<double>((e) => (e.diastolic! > e.systolic! ? e.diastolic! : e.systolic!))
-    //     .reduce(max);
-    // maxY = (maxY * (trends.length == 1 ? 1.5 : 1.2)).roundToDouble();
-    // final jumpValue = (maxY - minY) / 4;
-    // List<int> leftTitleValues =
-    //     List.generate(5, (index) => (jumpValue * index + minY).round()).reversed.toList();
+    // Fixed minY and maxY for consistent chart display
     double minY = 0;
     double maxY = 100;
+    final int totalPoints = trends.length;
 
     return Column(
       children: [
@@ -546,18 +1119,31 @@ class BloodPressureChartState extends State<BloodPressureChart>
           children: [
             Container(
               width: leftTitleWidth,
-              height: 120,
+              height: chartHeight,
               padding: EdgeInsets.only(top: 8, bottom: 8),
               child: Column(
                 children: [
                   Spacer(flex: 1),
-                  Text(_mediumHigh.round().toString(),
-                      style: TextStyle(color: R.color.black, fontSize: 14)),
+                  Text(
+                    _mediumHigh.round().toString(),
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: R.font.sfpro,
+                    ),
+                  ),
                   Spacer(flex: 1),
-                  Text(_mediumLow.round().toString(),
-                      style: TextStyle(color: R.color.black, fontSize: 14)),
+                  Text(
+                    _mediumLow.round().toString(),
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: R.font.sfpro,
+                    ),
+                  ),
                   Spacer(flex: 2),
-                  // Icon(Icons.heat_pump_rounded, size: 20),
                   Image.asset(R.drawable.ic_bloodpressure_pulse,
                       width: 20, height: 20),
                 ],
@@ -565,158 +1151,304 @@ class BloodPressureChartState extends State<BloodPressureChart>
             ),
             SizedBox(width: leftTitleMargin),
             Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                reverse: trends.length > 1,
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  width: calculatedWidth,
-                  height: 120,
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: LineChart(
-                    LineChartData(
-                      lineTouchData: LineTouchData(
-                          getTouchLineStart: (barData, index) =>
-                              -double.infinity,
-                          getTouchLineEnd: (barData, index) => double.infinity,
-                          getTouchedSpotIndicator: (LineChartBarData barData,
-                              List<int> spotIndexes) {
-                            return spotIndexes.map((index) {
-                              return TouchedSpotIndicatorData(
-                                FlLine(color: R.color.black, strokeWidth: 0.5),
-                                FlDotData(show: false),
-                              );
-                            }).toList();
-                          },
-                          touchTooltipData: LineTouchTooltipData(
-                            showOnTopOfTheChartBoxArea: true,
-                            fitInsideVertically: true,
-                            fitInsideHorizontally: true,
-                            tooltipBgColor:
-                                toColor(model.colors!.first).withOpacity(0.2),
-                            tooltipRoundedRadius: 8,
-                            getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                              return lineBarsSpot.map((lineBarSpot) {
-                                if (lineBarSpot.barIndex == 0) {
-                                  if (lineBarSpot.spotIndex < 0 ||
-                                      lineBarSpot.spotIndex >= trends.length ||
-                                      trends[lineBarSpot.spotIndex].systolic ==
-                                          null ||
-                                      trends[lineBarSpot.spotIndex].diastolic ==
-                                          null) {
-                                    return LineTooltipItem(
-                                      '0/0',
-                                      TextStyle(
-                                          color: toColor(model.colors!.first),
-                                          fontWeight: FontWeight.bold),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final double viewWidth = constraints.maxWidth;
+                  if (!viewWidth.isFinite || viewWidth <= 0) {
+                    return const SizedBox.shrink();
+                  }
+
+                  // If totalPoints <= 11: show all points without scroll
+                  // If totalPoints > 11: show 5.5 points visible and enable scroll
+                  final bool enableScroll = totalPoints > maxVisiblePoints;
+
+                  final double chartWidth = enableScroll
+                      ? (viewWidth / scrollVisiblePointCount) * totalPoints
+                      : viewWidth;
+                  final double effectivePointWidth =
+                      totalPoints == 0 ? 0 : chartWidth / totalPoints;
+
+                  // Save values for use in scroll functions
+                  _lastViewWidth = viewWidth;
+                  _lastEffectivePointWidth = effectivePointWidth;
+                  _lastTotalPoints = totalPoints;
+
+                  if (enableScroll) {
+                    // Ensure focus index is set correctly before scrolling
+                    // This is important for first load when entering dashboard
+                    if ((_focusIndex == -1 || _focusIndex >= trends.length) &&
+                        trends.isNotEmpty) {
+                      _focusIndex = trends.length - 1;
+                      // Update callback with latest point when setting focus
+                      // Use post frame callback to avoid setState during build
+                      if (_focusIndex >= 0 && _focusIndex < trends.length) {
+                        final rangeType = BloodPressureRangeType.fromTitle(
+                            trends[_focusIndex].type ?? '');
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) {
+                            widget.bloodPressureChartCallback(rangeType);
+                          }
+                        });
+                      }
+                      // Reset scroll flags to ensure scroll happens
+                      _initialScrollApplied = false;
+                      _shouldScrollToFocus = true;
+                    }
+
+                    // Always try to ensure selected point is visible and centered
+                    // This will scroll to focused point on first load and when period filter changes
+                    // Call if we haven't applied scroll yet OR if we need to force scroll
+                    // Also check if focus index is valid before scrolling
+                    if ((!_initialScrollApplied || _shouldScrollToFocus) &&
+                        _focusIndex >= 0 &&
+                        _focusIndex < trends.length) {
+                      // Use post frame callback to ensure chart is fully built before scrolling
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted &&
+                            (_shouldScrollToFocus || !_initialScrollApplied) &&
+                            _focusIndex >= 0 &&
+                            _focusIndex < trends.length) {
+                          _ensureSelectedPointVisible(
+                            trends: trends,
+                            totalPoints: totalPoints,
+                            viewWidth: viewWidth,
+                            effectivePointWidth: effectivePointWidth,
+                          );
+                        }
+                      });
+                    }
+                  } else {
+                    // When scroll is not needed, ensure we're at the start
+                    if (_scrollController.hasClients &&
+                        _scrollController.position.pixels != 0.0) {
+                      _scrollController.jumpTo(0.0);
+                    }
+                    _initialScrollApplied = true;
+                    _shouldScrollToFocus =
+                        false; // Reset flag when scroll not needed
+                  }
+
+                  return SingleChildScrollView(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    physics: enableScroll
+                        ? const BouncingScrollPhysics()
+                        : const NeverScrollableScrollPhysics(),
+                    child: SizedBox(
+                      width: enableScroll ? chartWidth : viewWidth,
+                      child: Container(
+                        height: chartHeight,
+                        padding: EdgeInsets.only(top: 8, bottom: 8),
+                        child: LineChart(
+                          LineChartData(
+                            lineTouchData: LineTouchData(
+                                getTouchLineStart: (barData, index) =>
+                                    -double.infinity,
+                                getTouchLineEnd: (barData, index) =>
+                                    double.infinity,
+                                getTouchedSpotIndicator:
+                                    (LineChartBarData barData,
+                                        List<int> spotIndexes) {
+                                  return spotIndexes.map((index) {
+                                    // Get the color of the touched point
+                                    Color dotColor = R.color.black;
+                                    if (index >= 0 && index < trends.length) {
+                                      final trend = trends[index];
+                                      if (trend.color != null &&
+                                          trend.color!.isNotEmpty) {
+                                        dotColor = toColor(trend.color);
+                                      }
+                                    }
+
+                                    return TouchedSpotIndicatorData(
+                                      FlLine(
+                                        color: dotColor,
+                                        strokeWidth: 0.5,
+                                      ),
+                                      FlDotData(
+                                        show: true,
+                                        getDotPainter:
+                                            (spot, percent, barData, index) =>
+                                                FlDotCirclePainter(
+                                          radius: 3,
+                                          color: dotColor,
+                                          strokeWidth: 6,
+                                          strokeColor:
+                                              dotColor.withOpacity(0.3),
+                                        ),
+                                      ),
                                     );
+                                  }).toList();
+                                },
+                                touchTooltipData: LineTouchTooltipData(
+                                  showOnTopOfTheChartBoxArea: true,
+                                  fitInsideVertically: true,
+                                  fitInsideHorizontally: true,
+                                  getTooltipColor: (LineBarSpot touchedSpot) =>
+                                      Colors.transparent,
+                                  tooltipRoundedRadius: 8,
+                                  getTooltipItems:
+                                      (List<LineBarSpot> lineBarsSpot) {
+                                    return lineBarsSpot.map((lineBarSpot) {
+                                      if (lineBarSpot.barIndex == 0) {
+                                        if (lineBarSpot.spotIndex < 0 ||
+                                            lineBarSpot.spotIndex >=
+                                                trends.length ||
+                                            trends[lineBarSpot.spotIndex]
+                                                    .systolic ==
+                                                null ||
+                                            trends[lineBarSpot.spotIndex]
+                                                    .diastolic ==
+                                                null) {
+                                          return LineTooltipItem(
+                                            '0/0',
+                                            TextStyle(
+                                              color:
+                                                  toColor(model.colors!.first),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                              fontFamily: R.font.sfpro,
+                                            ),
+                                          );
+                                        }
+                                        final trend =
+                                            trends[lineBarSpot.spotIndex];
+                                        return LineTooltipItem(
+                                          trend.systolic!.round().toString() +
+                                              '/' +
+                                              trend.diastolic!
+                                                  .round()
+                                                  .toString(),
+                                          TextStyle(
+                                            color: toColor(trend.color),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            fontFamily: R.font.sfpro,
+                                          ),
+                                        );
+                                      }
+                                      return null;
+                                    }).toList();
+                                  },
+                                ),
+                                touchCallback: (FlTouchEvent event,
+                                    LineTouchResponse? lineTouch) {
+                                  if (event is FlTapUpEvent) {
+                                    _handleTapEvent(event, lineTouch, trends);
+                                  } else if (event is! FlLongPressEnd &&
+                                      event is! FlPanEndEvent) {
+                                    // Pan/hover event - update focus but don't reset double-tap tracking
+                                    previousDate = 0;
+                                    final value = lineTouch?.lineBarSpots?[0].x;
+                                    if (value != null) {
+                                      final panIndex = value.toInt();
+                                      if (panIndex >= 0 &&
+                                          panIndex < trends.length) {
+                                        setState(() {
+                                          _focusIndex = panIndex;
+                                          // Cache the focused node info for mapping across timelines
+                                          _cacheFocusedNode(
+                                              trends[_focusIndex]);
+                                        });
+                                        final rangeType =
+                                            BloodPressureRangeType.fromTitle(
+                                                trends[_focusIndex].type ?? '');
+                                        widget.bloodPressureChartCallback(
+                                            rangeType);
+                                      }
+                                    }
+                                  } else {
+                                    // Long press end or pan end - reset focus but keep double-tap tracking
+                                    previousDate = 0;
+                                    _focusIndex = -1;
+                                    // Clear cached focus info
+                                    _cacheFocusedNode(null);
                                   }
-                                  final trend = trends[lineBarSpot.spotIndex];
-                                  return LineTooltipItem(
-                                    trend.systolic!.round().toString() +
-                                        '/' +
-                                        trend.diastolic!.round().toString(),
-                                    TextStyle(
-                                        color: toColor(trend.color),
-                                        fontWeight: FontWeight.bold),
-                                  );
-                                }
-                              }).toList();
-                            },
+                                }),
+                            gridData: FlGridData(show: false),
+                            titlesData: FlTitlesData(
+                              rightTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              topTitles: AxisTitles(
+                                sideTitles: SideTitles(showTitles: false),
+                              ),
+                              bottomTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: true,
+                                  reservedSize: 16,
+                                  interval: 1,
+                                  getTitlesWidget:
+                                      (double value, TitleMeta meta) {
+                                    // padding left
+                                    if (value <= -0.5 ||
+                                        value >= (trends.length - 0.5)) {
+                                      return const Text('');
+                                    }
+                                    int index = value.toInt();
+                                    if (index < 0 ||
+                                        index >= trends.length ||
+                                        trends[index].pulseRate == null ||
+                                        trends[index].pulseRate == 0) {
+                                      return const Text('--');
+                                    }
+                                    // return heart rate value
+                                    return Text(
+                                      trends[index]
+                                          .pulseRate!
+                                          .round()
+                                          .toString(),
+                                      style: TextStyle(
+                                          color: _focusIndex == value.toInt()
+                                              ? R.color.color0xff111515
+                                              : R.color.color0xff636A6B,
+                                          fontSize: 12,
+                                          fontWeight:
+                                              _focusIndex == value.toInt()
+                                                  ? FontWeight.w700
+                                                  : FontWeight.normal,
+                                          fontFamily: R.font.sfpro,
+                                          height: 1.5),
+                                    );
+                                  },
+                                ),
+                              ),
+                              leftTitles: AxisTitles(
+                                sideTitles: SideTitles(
+                                  showTitles: false,
+                                  reservedSize: 50,
+                                ),
+                              ),
+                            ),
+                            borderData: FlBorderData(show: false),
+                            minX: -0.5,
+                            maxX: trends.length.toDouble() - 0.5,
+                            maxY: maxY,
+                            minY: minY,
+                            lineBarsData: _linesBarData(trends),
+                            extraLinesData: ExtraLinesData(
+                              horizontalLines: [
+                                HorizontalLine(
+                                  y: _customYTransform(_mediumLow),
+                                  color: R.color.color0xff636A6B,
+                                  dashArray: [8, 4],
+                                  strokeWidth: 1,
+                                ),
+                                HorizontalLine(
+                                  y: _customYTransform(_mediumHigh),
+                                  color: R.color.color0xff636A6B,
+                                  dashArray: [8, 4],
+                                  strokeWidth: 1,
+                                ),
+                              ],
+                            ),
                           ),
-                          touchCallback: (FlTouchEvent event,
-                              LineTouchResponse? lineTouch) {
-                            previousDate = 0;
-                            if (event is! FlLongPressEnd &&
-                                event is! FlPanEndEvent) {
-                              final value = lineTouch?.lineBarSpots?[0].x;
-                              if (value != null) {
-                                setState(() {
-                                  _focusIndex = value.toInt();
-                                });
-                                final rangeType =
-                                    BloodPressureRangeType.fromTitle(
-                                        trends[_focusIndex].type ?? '');
-                                widget.bloodPressureChartCallback(rangeType);
-                              }
-                            } else {
-                              _focusIndex = -1;
-                            }
-                          }),
-                      gridData: FlGridData(show: false),
-                      titlesData: FlTitlesData(
-                        rightTitles: SideTitles(showTitles: false),
-                        topTitles: SideTitles(showTitles: false),
-                        bottomTitles: SideTitles(
-                          showTitles: true,
-                          margin: 16,
-                          reservedSize: 16,
-                          interval: 1,
-                          getTextStyles: (context, value) {
-                            return TextStyle(
-                                color: _focusIndex == value.toInt()
-                                    ? R.color.black
-                                    : R.color.color0xffC0C2C5,
-                                fontSize: 14,
-                                fontWeight: FontWeight.normal);
-                          },
-                          getTitles: (double value) {
-                            // padding left
-                            if (value <= -0.5 || value >= (trends.length - 0.5))
-                              return '';
-                            int index = value.toInt();
-                            if (index < 0 ||
-                                index >= trends.length ||
-                                trends[index].pulseRate == null ||
-                                trends[index].pulseRate == 0) {
-                              return '--';
-                            }
-                            // return heart rate value
-                            return trends[index].pulseRate!.round().toString();
-                          },
+                          duration: const Duration(milliseconds: 250),
                         ),
-                        leftTitles: SideTitles(
-                          showTitles: false,
-                          reservedSize: 36,
-                          interval: 10,
-                          getTitles: (double value) {
-                            // map [_customYTransform]
-                            if (value == _customYTransform(90)) {
-                              return '90';
-                            }
-                            if (value == _customYTransform(140)) {
-                              return '140';
-                            }
-                            return '';
-                          },
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      minX: -0.5,
-                      maxX: trends.length.toDouble() - 0.5,
-                      maxY: maxY,
-                      minY: minY,
-                      lineBarsData: _linesBarData(trends),
-                      extraLinesData: ExtraLinesData(
-                        horizontalLines: [
-                          HorizontalLine(
-                            y: _customYTransform(_mediumLow),
-                            color: R.color.color0xff636A6B,
-                            dashArray: [8, 4],
-                            strokeWidth: 1,
-                          ),
-                          HorizontalLine(
-                            y: _customYTransform(_mediumHigh),
-                            color: R.color.color0xff636A6B,
-                            dashArray: [8, 4],
-                            strokeWidth: 1,
-                          ),
-                        ],
                       ),
                     ),
-                    swapAnimationDuration: Duration(milliseconds: 250),
-                  ),
-                ),
+                  );
+                },
               ),
             )
           ],
@@ -729,25 +1461,43 @@ class BloodPressureChartState extends State<BloodPressureChart>
           children: [
             Container(
               width: 23,
-              height: 1,
+              height: 2,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(1),
                 color: Color(0xFF008479),
               ),
             ),
             SizedBox(width: 8),
-            Text('Tâm thu', style: TextStyle(fontSize: 14)),
+            Text(
+              'Tâm thu',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                fontFamily: 'Nunito',
+                color: R.color.color0xff111515,
+                height: 1.29,
+              ),
+            ),
             SizedBox(width: 48),
             Container(
               width: 23,
-              height: 1,
+              height: 2,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(1),
                 color: Color(0xFF95682E),
               ),
             ),
             SizedBox(width: 8),
-            Text('Tâm trương', style: TextStyle(fontSize: 14)),
+            Text(
+              'Tâm trương',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                fontFamily: 'Nunito',
+                color: R.color.color0xff111515,
+                height: 1.29,
+              ),
+            ),
           ],
         ),
       ],
@@ -767,7 +1517,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
-        colors: [Color(0xFF008479)],
+        color: Color(0xFF008479),
         barWidth: 1,
         isStrokeCapRound: true,
         dotData: FlDotData(
@@ -775,12 +1525,13 @@ class BloodPressureChartState extends State<BloodPressureChart>
             checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
               final color = toColor(trends[index].color);
+              final bool isSelected = _focusIndex == index;
               return FlDotCirclePainter(
-                radius: 4,
+                radius: 3,
                 color: color,
-                strokeWidth: index == _focusIndex ? 12 : 0,
+                strokeWidth: isSelected ? 6 : 0,
                 strokeColor:
-                    index == _focusIndex ? color.withOpacity(0.5) : null,
+                    isSelected ? color.withOpacity(0.3) : Colors.transparent,
               );
             }),
         belowBarData: BarAreaData(show: false),
@@ -792,7 +1543,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
           return FlSpot((index).toDouble(), _customYTransform(value));
         }),
         isCurved: false,
-        colors: [Color(0xFF95682E)],
+        color: Color(0xFF95682E),
         barWidth: 1,
         isStrokeCapRound: true,
         dotData: FlDotData(
@@ -800,12 +1551,13 @@ class BloodPressureChartState extends State<BloodPressureChart>
             checkToShowDot: (spot, barData) => true,
             getDotPainter: (spot, percent, barData, index) {
               final color = toColor(trends[index].color);
+              final bool isSelected = _focusIndex == index;
               return FlDotCirclePainter(
-                radius: 4,
+                radius: 3,
                 color: color,
-                strokeWidth: index == _focusIndex ? 12 : 0,
+                strokeWidth: isSelected ? 6 : 0,
                 strokeColor:
-                    index == _focusIndex ? color.withOpacity(0.5) : null,
+                    isSelected ? color.withOpacity(0.3) : Colors.transparent,
               );
             }),
         belowBarData: BarAreaData(show: false),
