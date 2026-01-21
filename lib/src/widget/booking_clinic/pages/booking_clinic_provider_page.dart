@@ -113,7 +113,7 @@ class _BookingClinicProvidersPageState
         lat: lat,
         lng: lng,
         name: widget.examinationType != null
-            ? R.string.examination.tr() + " ${widget.examinationType}"
+            ? "${widget.examinationType}"
             : '',
       );
 

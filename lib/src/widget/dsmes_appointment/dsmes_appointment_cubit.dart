@@ -68,6 +68,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
   Future<void> initDsmesBooking({bool isExamination = false}) async {
     // Prepare Docosan user and device location
+    await _initDeviceLocation();
     final isExist = await isExistDocosanUser();
     if (isExist) {
       final phoneNumber = AppSettings.userInfo?.phoneNumber;
@@ -76,8 +77,6 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       }
       await registerDocosanUser(
           phoneNumber: Utils.formatPhoneNumber(phoneNumber));
-
-      await _initDeviceLocation();
 
       if (!isExamination) {
         await fetchDsmesAppointmentList(showLoading: false);
