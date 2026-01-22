@@ -722,6 +722,8 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         if (file is PickedFile || file is XFile) {
           paths.add(file.path);
+        } else if (file is File) {
+          paths.add(file.path);
         }
       }
       final result = await GlucoseClient().putIndexGlucose(

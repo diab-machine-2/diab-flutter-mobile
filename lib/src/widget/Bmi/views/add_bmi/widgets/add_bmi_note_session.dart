@@ -125,8 +125,8 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
     final int remainingSlots = maxImages - currentImageCount;
     final ImagePicker _picker = ImagePicker();
     final List<XFile> images = await _picker.pickMultiImage(
-      // maxWidth: 1024,
-      // maxHeight: 1024,
+      maxWidth: 512,
+      maxHeight: 512,
       imageQuality: 70,
     );
 
