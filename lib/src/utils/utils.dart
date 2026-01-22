@@ -685,8 +685,8 @@ class Utils {
       final Uint8List? compressedBytes =
           await FlutterImageCompress.compressWithFile(
         originalPath,
-        minWidth: 1920, // Keep high resolution
-        minHeight: 1920,
+        minWidth: 480, // Keep high resolution
+        minHeight: 480,
         quality: 85,
         format: CompressFormat.jpeg,
       );
