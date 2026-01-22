@@ -788,6 +788,9 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         paths.add(file.path);
       }
+      // Convert images to JPEG format (handles HEIC/HEIF from iOS)
+      final convertedPaths = await Utils.convertImagesToJpeg(paths);
+      
       final result = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
@@ -795,7 +798,7 @@ class _AddBloodSugarControllerNewState
           null,
           note,
           fromNipro,
-          paths);
+          convertedPaths);
       if (result?.id.isNotEmpty == true) {
         await TrackingManager.trackEvent(
           'glucose_add',
