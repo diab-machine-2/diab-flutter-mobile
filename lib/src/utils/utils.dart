@@ -674,14 +674,12 @@ class Utils {
         return originalPath;
       }
 
-      // Check if file is already JPEG by extension
-      final String extension = p.extension(originalPath).toLowerCase();
-      if (extension == '.jpg' || extension == '.jpeg') {
-        return originalPath;
-      }
+      // Always compress/resize images for uploads to ensure consistent file sizes
+      // This prevents large JPEG files (e.g., from iOS image picker) from being uploaded
+      // without compression, which can cause file size issues.
 
       // Step 1: Use platform codecs (flutter_image_compress) to ensure
-      // HEIC/HEIF/LIVE inputs become JPEG bytes.
+      // HEIC/HEIF/LIVE inputs become JPEG bytes and compress existing JPEGs.
       final Uint8List? compressedBytes =
           await FlutterImageCompress.compressWithFile(
         originalPath,
@@ -741,7 +739,8 @@ class Utils {
   ///
   /// [imagePaths] - List of paths to image files
   /// Returns a list of converted JPEG file paths
-  static Future<List<String>> convertImagesToJpeg(List<String> imagePaths) async {
+  static Future<List<String>> convertImagesToJpeg(
+      List<String> imagePaths) async {
     final List<String> convertedPaths = [];
     for (final path in imagePaths) {
       final convertedPath = await convertImageToJpeg(path);

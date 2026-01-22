@@ -98,19 +98,25 @@ class WeightRepository {
     try {
       // Create MultipartFile with explicit content type to ensure iOS HEIC images work correctly
       // Images are already converted to JPEG format by Utils.convertImageToJpeg
-      final List<MultipartFile>? multipartFiles = request.images?.map((e) {
-        final String fileName = p.basename(e);
-        final String extension = p.extension(e).toLowerCase();
-        final String finalFileName = (extension == '.jpg' || extension == '.jpeg')
-            ? fileName
-            : '${p.basenameWithoutExtension(e)}.jpg';
-        
-        return MultipartFile.fromFileSync(
-          e,
-          filename: finalFileName,
-          contentType: MediaType('image', 'jpeg'),
-        );
-      }).toList();
+      // Use async fromFile instead of fromFileSync to properly read file bytes and avoid size issues
+      final List<MultipartFile>? multipartFiles = request.images != null
+          ? await Future.wait(
+              request.images!.map((e) async {
+                final String fileName = p.basename(e);
+                final String extension = p.extension(e).toLowerCase();
+                final String finalFileName =
+                    (extension == '.jpg' || extension == '.jpeg')
+                        ? fileName
+                        : '${p.basenameWithoutExtension(e)}.jpg';
+
+                return await MultipartFile.fromFile(
+                  e,
+                  filename: finalFileName,
+                  contentType: MediaType('image', 'jpeg'),
+                );
+              }),
+            )
+          : null;
 
       final SubmitWeightRecordResponse response =
           await appClient.submitWeightRecord(
@@ -132,19 +138,25 @@ class WeightRepository {
     try {
       // Create MultipartFile with explicit content type to ensure iOS HEIC images work correctly
       // Images are already converted to JPEG format by Utils.convertImageToJpeg
-      final List<MultipartFile>? multipartFiles = request.images?.map((e) {
-        final String fileName = p.basename(e);
-        final String extension = p.extension(e).toLowerCase();
-        final String finalFileName = (extension == '.jpg' || extension == '.jpeg')
-            ? fileName
-            : '${p.basenameWithoutExtension(e)}.jpg';
-        
-        return MultipartFile.fromFileSync(
-          e,
-          filename: finalFileName,
-          contentType: MediaType('image', 'jpeg'),
-        );
-      }).toList();
+      // Use async fromFile instead of fromFileSync to properly read file bytes and avoid size issues
+      final List<MultipartFile>? multipartFiles = request.images != null
+          ? await Future.wait(
+              request.images!.map((e) async {
+                final String fileName = p.basename(e);
+                final String extension = p.extension(e).toLowerCase();
+                final String finalFileName =
+                    (extension == '.jpg' || extension == '.jpeg')
+                        ? fileName
+                        : '${p.basenameWithoutExtension(e)}.jpg';
+
+                return await MultipartFile.fromFile(
+                  e,
+                  filename: finalFileName,
+                  contentType: MediaType('image', 'jpeg'),
+                );
+              }),
+            )
+          : null;
 
       final SubmitWeightRecordResponse response =
           await appClient.reviseWeightRecord(
