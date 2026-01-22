@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart' as p;
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/revise_weight_record_request.dart';
 import 'package:medical/src/model/request/submit_weight_record_request.dart';
@@ -104,6 +106,28 @@ class WeightRepository {
         'note': request.note,
       };
       log('Weight input params: $params');
+      // Create MultipartFile with explicit content type to ensure iOS HEIC images work correctly
+      // Images are already converted to JPEG format by Utils.convertImageToJpeg
+      // Use async fromFile instead of fromFileSync to properly read file bytes and avoid size issues
+      final List<MultipartFile>? multipartFiles = request.images != null
+          ? await Future.wait(
+              request.images!.map((e) async {
+                final String fileName = p.basename(e);
+                final String extension = p.extension(e).toLowerCase();
+                final String finalFileName =
+                    (extension == '.jpg' || extension == '.jpeg')
+                        ? fileName
+                        : '${p.basenameWithoutExtension(e)}.jpg';
+
+                return await MultipartFile.fromFile(
+                  e,
+                  filename: finalFileName,
+                  contentType: MediaType('image', 'jpeg'),
+                );
+              }),
+            )
+          : null;
+
       final SubmitWeightRecordResponse response =
           await appClient.submitWeightRecord(
         date: request.date ~/ 1000,
@@ -111,8 +135,7 @@ class WeightRepository {
         height: request.height,
         waist: request.waist,
         note: request.note,
-        images:
-            request.images?.map((e) => MultipartFile.fromFileSync(e)).toList(),
+        images: multipartFiles,
       );
       return ApiResult.success(data: response);
     } catch (e) {
@@ -123,6 +146,28 @@ class WeightRepository {
   Future<ApiResult<SubmitWeightRecordResponse>> reviseWeightRecord(
       ReviseWeightRecordRequest request) async {
     try {
+      // Create MultipartFile with explicit content type to ensure iOS HEIC images work correctly
+      // Images are already converted to JPEG format by Utils.convertImageToJpeg
+      // Use async fromFile instead of fromFileSync to properly read file bytes and avoid size issues
+      final List<MultipartFile>? multipartFiles = request.images != null
+          ? await Future.wait(
+              request.images!.map((e) async {
+                final String fileName = p.basename(e);
+                final String extension = p.extension(e).toLowerCase();
+                final String finalFileName =
+                    (extension == '.jpg' || extension == '.jpeg')
+                        ? fileName
+                        : '${p.basenameWithoutExtension(e)}.jpg';
+
+                return await MultipartFile.fromFile(
+                  e,
+                  filename: finalFileName,
+                  contentType: MediaType('image', 'jpeg'),
+                );
+              }),
+            )
+          : null;
+
       final SubmitWeightRecordResponse response =
           await appClient.reviseWeightRecord(
         id: request.id,
@@ -132,8 +177,7 @@ class WeightRepository {
         waist: request.waist,
         note: request.note,
         removalImageIds: request.removalImageIds,
-        images:
-            request.images?.map((e) => MultipartFile.fromFileSync(e)).toList(),
+        images: multipartFiles,
       );
       return ApiResult.success(data: response);
     } catch (e) {

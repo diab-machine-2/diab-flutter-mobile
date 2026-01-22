@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -376,8 +377,11 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
         if (files.length < widget.maxMedia) {
+          // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+          final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
+          final convertedFile = XFile(convertedPath);
           setState(() {
-            files.add(pickedFile);
+            files.add(convertedFile);
           });
           widget.onChangedMediaUrls(files);
         } else {
@@ -396,9 +400,12 @@ class _ExercisesNoteWithMediaState extends State<ExercisesNoteWithMedia> {
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
         if (files.length < widget.maxMedia) {
+          // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+          final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
+          final convertedFile = XFile(convertedPath);
           await Future.delayed(Duration.zero);
           setState(() {
-            files.add(pickedFile);
+            files.add(convertedFile);
           });
           widget.onChangedMediaUrls(files);
         } else {

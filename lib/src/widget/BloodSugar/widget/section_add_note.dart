@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -350,7 +351,10 @@ class SectionAddNoteState extends State<SectionAddNote> {
           source: ImageSource.camera,
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
-        _files.add(ImageWithSource(pickedFile, true)); // Mark as from camera
+        // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+        final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
+        final convertedFile = XFile(convertedPath);
+        _files.add(ImageWithSource(convertedFile, true)); // Mark as from camera
         setState(() {});
       }
     } catch (e) {
@@ -395,7 +399,10 @@ class SectionAddNoteState extends State<SectionAddNote> {
       final pickedFile = await picker.pickImage(
           maxWidth: 512, maxHeight: 512, source: ImageSource.gallery);
       if (pickedFile != null) {
-        _files.add(ImageWithSource(pickedFile, false)); // Mark as from gallery
+        // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+        final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
+        final convertedFile = XFile(convertedPath);
+        _files.add(ImageWithSource(convertedFile, false)); // Mark as from gallery
         setState(() {});
       }
     } catch (e) {

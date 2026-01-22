@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -61,8 +59,7 @@ class _BmiImageThumbnail extends StatelessWidget {
           image: DecorationImage(
               image: Image.file(File(path)).image, fit: BoxFit.cover),
           borderRadius: BorderRadius.circular(AppDimens.smallRadius)),
-      margin:
-          const EdgeInsets.fromLTRB(0, removeIcon / 3, removeIcon / 3, 0),
+      margin: const EdgeInsets.fromLTRB(0, removeIcon / 3, removeIcon / 3, 0),
     );
   }
 }

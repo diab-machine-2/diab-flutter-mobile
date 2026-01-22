@@ -13,6 +13,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_intensity_response.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_note_with_media.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
@@ -911,10 +912,25 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         //   }
         // }
 
-        // Chuẩn bị dữ liệu
+        // Chuẩn bị dữ liệu - convert local XFile images to JPEG format
         List<String> paths = [];
         for (var file in files) {
-          paths.add(file.path);
+          if (file is XFile) {
+            // Convert local file to JPEG format (handles HEIC/HEIF from iOS)
+            final convertedPath = await Utils.convertImageToJpeg(file.path);
+            paths.add(convertedPath);
+          } else if (file is ImagesUrlModel) {
+            // Server file - skip, these are already uploaded
+            // The API should handle existing file IDs separately
+            continue;
+          } else if (file is Map<String, dynamic> && file.containsKey('url')) {
+            // Server file in map format - skip
+            continue;
+          } else if (file is String) {
+            // String path - convert to JPEG if it's a local file
+            final convertedPath = await Utils.convertImageToJpeg(file);
+            paths.add(convertedPath);
+          }
         }
 
         // Use repository to handle both API call and file upload
