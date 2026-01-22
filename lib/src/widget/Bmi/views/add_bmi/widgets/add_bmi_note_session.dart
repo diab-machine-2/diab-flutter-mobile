@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
@@ -124,16 +125,21 @@ class _NoteInputTextFieldState extends State<_NoteInputTextField> {
     final int remainingSlots = maxImages - currentImageCount;
     final ImagePicker _picker = ImagePicker();
     final List<XFile> images = await _picker.pickMultiImage(
-      // maxWidth: 1024,
-      // maxHeight: 1024,
+      maxWidth: 512,
+      maxHeight: 512,
       imageQuality: 70,
     );
 
     if (images.isEmpty) return;
 
-    // Limit the images to the remaining slots
-    final List<String> imagePaths =
-        images.take(remainingSlots).map((e) => e.path).toList();
+    // Limit the images to the remaining slots and convert to JPEG format
+    final List<XFile> imagesToProcess = images.take(remainingSlots).toList();
+    final List<String> imagePaths = [];
+    for (final image in imagesToProcess) {
+      // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+      final convertedPath = await Utils.convertImageToJpeg(image.path);
+      imagePaths.add(convertedPath);
+    }
 
     _bmiInputBloc.addImages(imagePaths);
 
