@@ -722,6 +722,8 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         if (file is PickedFile || file is XFile) {
           paths.add(file.path);
+        } else if (file is File) {
+          paths.add(file.path);
         }
       }
       final result = await GlucoseClient().putIndexGlucose(
@@ -788,6 +790,9 @@ class _AddBloodSugarControllerNewState
       for (var file in files) {
         paths.add(file.path);
       }
+      // Convert images to JPEG format (handles HEIC/HEIF from iOS)
+      final convertedPaths = await Utils.convertImagesToJpeg(paths);
+      
       final result = await GlucoseClient().postIndexGlucose(
           selectedTimeFrame!.id,
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
@@ -795,7 +800,7 @@ class _AddBloodSugarControllerNewState
           null,
           note,
           fromNipro,
-          paths);
+          convertedPaths);
       if (result?.id.isNotEmpty == true) {
         await TrackingManager.trackEvent(
           'glucose_add',
