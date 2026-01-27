@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 
 class DsmesAppointment {
@@ -58,6 +60,8 @@ class DsmesAppointment {
   final PatientInfo patientInfo;
   final List<SymptomAttachment> symptomAttachment;
   final List<ServiceItem> services;
+  final bool? isTest;
+  final String? homeAddress;
 
   DsmesAppointment({
     required this.id,
@@ -117,6 +121,8 @@ class DsmesAppointment {
     required this.patientInfo,
     required this.symptomAttachment,
     required this.services,
+    this.isTest,
+    this.homeAddress,
   });
 
   factory DsmesAppointment.fromJson(Map<String, dynamic> json) {
@@ -144,7 +150,7 @@ class DsmesAppointment {
       memo: json['memo'],
       isShow: json['is_show'] ?? '',
       repeatId: json['repeat_id'],
-      extraInfo: json['extra_info'] ?? '',
+      extraInfo: _extraInfoToString(json['extra_info'] ?? json['extraInfo']),
       campaignId: json['campaign_id'] ?? 0,
       promotionCode: json['promotion_code'],
       affPartner: json['aff_partner'],
@@ -194,7 +200,78 @@ class DsmesAppointment {
               ?.map((e) => ServiceItem.fromJson(e))
               .toList() ??
           [],
+      isTest: _parseIsTestFromExtraInfo(json['extra_info'] ?? json['extraInfo'], json),
+      homeAddress: _parseHomeAddressFromExtraInfo(json['extra_info'] ?? json['extraInfo'], json),
     );
+  }
+
+  /// extra_info shape differs by API:
+  /// - List API (/api/patients/my-appointment-partner): extra_info is a JSON STRING.
+  /// - Detail API (/api/patients/my-appointment-detail): extra_info is a Map (object).
+  /// We always store extraInfo as String; isTest and homeAddress are parsed from either shape.
+
+  /// Normalize extra_info to String for storage.
+  static String _extraInfoToString(dynamic extraInfo) {
+    if (extraInfo == null) return '';
+    if (extraInfo is String) return extraInfo;
+    if (extraInfo is Map) {
+      try {
+        return jsonEncode(extraInfo);
+      } catch (_) {
+        return '';
+      }
+    }
+    return '';
+  }
+
+  /// Returns a Map for extra_info from either API shape.
+  /// List API: extra_info is String -> jsonDecode(extraInfo).
+  /// Detail API: extra_info is Map -> use as-is (copy to Map<String, dynamic>).
+  static Map<String, dynamic>? _extraInfoAsMap(dynamic extraInfo) {
+    if (extraInfo == null) return null;
+    // Detail API: extra_info is already a Map
+    if (extraInfo is Map) {
+      return extraInfo is Map<String, dynamic>
+          ? extraInfo
+          : Map<String, dynamic>.from(extraInfo);
+    }
+    // List API: extra_info is a JSON string, must decode first
+    if (extraInfo is String) {
+      final s = extraInfo.trim();
+      if (s.isEmpty) return null;
+      try {
+        final decoded = jsonDecode(s);
+        if (decoded is Map) return Map<String, dynamic>.from(decoded);
+        if (decoded is String) {
+          final inner = jsonDecode(decoded);
+          if (inner is Map) return Map<String, dynamic>.from(inner);
+        }
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  static bool? _parseIsTestFromExtraInfo(dynamic extraInfo, Map<String, dynamic> json) {
+    final map = _extraInfoAsMap(extraInfo);
+    if (map != null) {
+      final v = map['isTest'];
+      if (v != null) {
+        if (v is bool) return v;
+        if (v is String) return v == 'true' || v == '1';
+      }
+    }
+    return json['isTest'] as bool?;
+  }
+
+  static String? _parseHomeAddressFromExtraInfo(dynamic extraInfo, Map<String, dynamic> json) {
+    final map = _extraInfoAsMap(extraInfo);
+    if (map != null) {
+      final v = map['homeAddress'];
+      if (v != null) return v is String ? v : v.toString();
+    }
+    return json['homeAddress'] as String?;
   }
 }
 

@@ -14,6 +14,8 @@ class CreateDsmesBookingRequest {
   final String symptom;
   final List<String> symptomAttachment;
   final PaymentInfo? paymentInfo;
+  final bool? isTest;
+  final String? homeAddress;
 
   CreateDsmesBookingRequest({
     required this.startTime,
@@ -31,6 +33,8 @@ class CreateDsmesBookingRequest {
     required this.symptom,
     required this.symptomAttachment,
     this.paymentInfo,
+    this.isTest,
+    this.homeAddress,
   });
 
   factory CreateDsmesBookingRequest.fromJson(Map<String, dynamic> json) {
@@ -50,6 +54,8 @@ class CreateDsmesBookingRequest {
       symptom: json['symptom'] as String,
       symptomAttachment: (json['symptom_attachment'] as List<String>?) ?? [],
       paymentInfo: PaymentInfo.fromJson(json['payment_info']),
+      isTest: json['isTest'] as bool?,
+      homeAddress: json['homeAddress'] as String?,
     );
   }
 
@@ -70,6 +76,8 @@ class CreateDsmesBookingRequest {
       'symptom': symptom,
       'symptom_attachment': symptomAttachment,
       'payment_info': paymentInfo?.toJson() ?? {},
+      if (isTest != null) 'isTest': isTest,
+      if (homeAddress != null) 'homeAddress': homeAddress,
     };
   }
 
@@ -89,6 +97,8 @@ class CreateDsmesBookingRequest {
     String? symptom,
     List<String>? symptomAttachment,
     PaymentInfo? paymentInfo,
+    bool? isTest,
+    String? homeAddress,
   }) {
     return CreateDsmesBookingRequest(
       startTime: startTime ?? this.startTime,
@@ -106,6 +116,8 @@ class CreateDsmesBookingRequest {
       symptom: symptom ?? this.symptom,
       symptomAttachment: symptomAttachment ?? this.symptomAttachment,
       paymentInfo: paymentInfo ?? this.paymentInfo,
+      isTest: isTest ?? this.isTest,
+      homeAddress: homeAddress ?? this.homeAddress,
     );
   }
 }

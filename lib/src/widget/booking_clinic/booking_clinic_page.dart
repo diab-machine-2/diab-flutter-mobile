@@ -231,7 +231,6 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                           action: args["action"],
                           appointmentId: args["appointmentId"],
                           bookingType: args["bookingType"],
-                          isExamination: args["isExamination"] ?? false,
                         ),
                       );
                     }
@@ -583,6 +582,9 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
         await _cubit.getClinicDetail(id: clinicId, isLoading: false);
 
     if (!detailSuccess || _cubit.selectedClinic == null) {
+      BotToast.closeAllLoading();
+      Message.showToastMessage(context, 'Không tìm thấy phòng khám');
+      Navigator.of(context, rootNavigator: true).pop();
       return;
     }
 

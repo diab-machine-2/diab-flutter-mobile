@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/address.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
@@ -29,7 +31,6 @@ class DsmesConfirmCreateInformation extends StatefulWidget {
   final String action;
   final int? appointmentId;
   final String bookingType; // 'clinic' or 'center' or 'doctor'
-  final bool isExamination;
 
   const DsmesConfirmCreateInformation({
     Key? key,
@@ -37,7 +38,6 @@ class DsmesConfirmCreateInformation extends StatefulWidget {
     this.action = 'create',
     this.appointmentId,
     this.bookingType = Const.BOOKING_TYPE_CENTER,
-    this.isExamination = false,
   }) : super(key: key);
 
   @override
@@ -106,6 +106,41 @@ class _DsmesConfirmCreateInformationState
     });
 
     files = currentCreateRequest?.symptomAttachment ?? [];
+
+    // Pre-fill homeAddress from userInfo when examination so it displays at first time
+    if (_cubit.isExamination &&
+        (currentCreateRequest?.homeAddress == null ||
+            currentCreateRequest!.homeAddress!.isEmpty)) {
+      final homeAddressFromUser = _getHomeAddressFromUserInfo();
+      if (homeAddressFromUser != null && homeAddressFromUser.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _cubit.updateCreateDsmesBookingRequestHomeExamination(
+            isTest: _cubit.isExamination,
+            homeAddress: homeAddressFromUser,
+          );
+          setState(() {});
+        });
+      }
+    }
+  }
+
+  /// Returns formatted home address from [AppSettings.userInfo], or null if not available.
+  String? _getHomeAddressFromUserInfo() {
+    final userInfo = AppSettings.userInfo;
+    if (userInfo?.address == null || userInfo!.address!.isEmpty) return null;
+    return (userInfo.address ?? '') +
+        (userInfo.address == null || userInfo.address!.isEmpty ? '' : ', ') +
+        (userInfo.ward == null ? '' : userInfo.ward!.name ?? '') +
+        (userInfo.ward == null || (userInfo.ward!.name?.isEmpty ?? true)
+            ? ''
+            : ', ') +
+        (userInfo.district == null ? '' : userInfo.district!.name ?? '') +
+        (userInfo.district == null ||
+                (userInfo.district!.name?.isEmpty ?? true)
+            ? ''
+            : ', ') +
+        (userInfo.province == null ? '' : userInfo.province!.name ?? '');
   }
 
   @override
@@ -340,6 +375,24 @@ class _DsmesConfirmCreateInformationState
     final phoneNumber =
         AppSettings.userInfo?.phoneNumber ?? phoneController.text;
 
+    // Handle home examination address when isExamination is true
+    if (_cubit.isExamination) {
+      String? homeAddress = _getHomeAddressFromUserInfo();
+
+      // If address is empty or null, show dialog to update
+      if (homeAddress == null || homeAddress.isEmpty) {
+        final updatedAddress = await _showDialogUpdateAddress();
+        if (updatedAddress == null || updatedAddress.isEmpty) {
+          return; // User cancelled or didn't provide address
+        }
+        homeAddress = updatedAddress;
+      }
+
+      // Update the request with home examination data
+      _cubit.updateCreateDsmesBookingRequestHomeExamination(
+          isTest: _cubit.isExamination, homeAddress: homeAddress);
+    }
+
     final token = await AppSettings.getDocosanToken();
     if (token.isEmpty) {
       await _cubit.registerDocosanUser(phoneNumber: phoneNumber);
@@ -511,7 +564,7 @@ class _DsmesConfirmCreateInformationState
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    color: R.color.mainColor,
+                    color: R.color.color0xff95682E,
                   ),
                 ),
               ),
@@ -606,7 +659,7 @@ class _DsmesConfirmCreateInformationState
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   R.string.consult_information.tr(),
@@ -616,34 +669,31 @@ class _DsmesConfirmCreateInformationState
                     color: R.color.color0xff141416,
                   ),
                 ),
-                // InkWell(
-                //   onTap: () {
-                //     if (isProcessing['editPatientInfo']!) return;
-                //     setState(() => isProcessing['editPatientInfo'] = true);
-                //     try {
-                //       _cubit.updateCreateDsmesBookingRequestSymptom(
-                //           symptom: symptomController.text);
-                //       _showEditRequesterInformationBottomSheet();
-                //     } finally {
-                //       setState(() => isProcessing['editPatientInfo'] = false);
-                //     }
-                //   },
-                //   child: Visibility(
-                //     visible: !isReschedule,
-                //     child: Container(
-                //       alignment: Alignment.center,
-                //       height: 20,
-                //       child: Text(
-                //         R.string.chinh_sua.tr(),
-                //         style: TextStyle(
-                //           fontSize: 12,
-                //           fontWeight: FontWeight.w500,
-                //           color: R.color.color0xff95682E,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                InkWell(
+                  onTap: () async {
+                    final updatedAddress = await _showDialogUpdateAddress();
+                    if (updatedAddress != null && updatedAddress.isNotEmpty) {
+                      setState(() {
+                        // UI will be updated automatically as it reads from _cubit.createDsmesBookingRequest!.homeAddress
+                      });
+                    }
+                  },
+                  child: Visibility(
+                    visible: !isReschedule,
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 20,
+                      child: Text(
+                        R.string.chinh_sua.tr(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff95682E,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
             GapH(16),
@@ -669,6 +719,36 @@ class _DsmesConfirmCreateInformationState
               ],
             ),
             GapH(4),
+            if (_cubit.createDsmesBookingRequest?.homeAddress?.isNotEmpty ??
+                false)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    R.string.address.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _cubit.createDsmesBookingRequest!.homeAddress!,
+                      textAlign: TextAlign.right,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -766,8 +846,8 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
                           color: R.color.color0xff95682E,
                         ),
                       ),
@@ -957,8 +1037,8 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
                           color: R.color.color0xff95682E,
                         ),
                       ),
@@ -1081,7 +1161,7 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: R.color.color0xff95682E,
                         ),
@@ -1585,6 +1665,56 @@ class _DsmesConfirmCreateInformationState
         requesterPhone = phone;
       });
     });
+  }
+
+  Future<String?> _showDialogUpdateAddress() async {
+    final UserModel userInfo = AppSettings.userInfo!;
+    final Completer<String?> completer = Completer<String?>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: AddressController(
+          address: userInfo.address,
+          province: userInfo.province,
+          district: userInfo.district,
+          ward: userInfo.ward,
+          callback: (address, province, district, ward) {
+            updateUserInfo(
+              userInfo.copyWith(
+                province: province,
+                district: district,
+                ward: ward,
+                address: address,
+              ),
+            );
+            // Format address similar to user_info.dart
+            final formattedAddress = (address ?? '') +
+                (address == null || address.isEmpty ? '' : ', ') +
+                (ward == null ? '' : ward.name ?? '') +
+                (ward == null || (ward.name?.isEmpty ?? true) ? '' : ', ') +
+                (district == null ? '' : district.name ?? '') +
+                (district == null || (district.name?.isEmpty ?? true)
+                    ? ''
+                    : ', ') +
+                (province == null ? '' : province.name ?? '');
+            _cubit.updateCreateDsmesBookingRequestHomeExamination(
+                isTest: _cubit.isExamination, homeAddress: formattedAddress);
+            // AddressController will handle Navigator.pop
+            if (!completer.isCompleted) {
+              completer.complete(formattedAddress);
+            }
+          },
+        ),
+      ),
+    ).then((_) {
+      // If dialog was dismissed without callback (e.g., by tapping outside)
+      if (!completer.isCompleted) {
+        completer.complete(null);
+      }
+    });
+
+    return completer.future;
   }
 
   void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {

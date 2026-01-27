@@ -620,6 +620,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
         patientName: name, patientPhoneNumber: phone);
   }
 
+  updateCreateDsmesBookingRequestHomeExamination(
+      {required bool isTest, required String homeAddress}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+        isTest: isTest, homeAddress: homeAddress);
+  }
+
   updateCreateDsmesBookingRequestLanguage({required String language}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
       language: language,
@@ -725,7 +731,15 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     );
   }
 
-  String getItemTitle(DsmesAppointmentMode mode) {
+  String getItemTitle(DsmesAppointmentMode mode, {DsmesAppointment? data}) {
+    // Check if isTest is true and homeAddress is not null/empty
+    if (data != null && 
+        data.isTest == true && 
+        data.homeAddress != null && 
+        data.homeAddress!.isNotEmpty) {
+      return R.string.xet_nghiem_tai_nha.tr();
+    }
+    
     switch (mode) {
       case DsmesAppointmentMode.atClinic:
         return R.string.at_clinic.tr();

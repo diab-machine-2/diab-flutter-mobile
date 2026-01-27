@@ -51,6 +51,12 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     symptomController = TextEditingController(text: widget.appointment.symptom);
   }
 
+  bool _isExamination() {
+    return widget.appointment.isTest == true &&
+        widget.appointment.homeAddress != null &&
+        widget.appointment.homeAddress!.isNotEmpty;
+  }
+
   bool _shouldShowJoinButton() {
     if (widget.appointment.status != DSMES_STATUS_APPROVE ||
         widget.appointment.mode !=
@@ -250,28 +256,30 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           bottom: 0,
           left: 0,
           right: 0,
-          child: _shouldShowJoinButton()
-              ? Container(
-                  decoration: BoxDecoration(
-                    color: R.color.white,
-                    boxShadow: [Utils.getBoxShadowDropButton()],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildPrimaryButton(
-                          R.string.join_now.tr(),
-                          () async {
-                            _handleJoinRoom();
-                          },
-                        ),
+          child: _isExamination()
+              ? const SizedBox.shrink()
+              : _shouldShowJoinButton()
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        boxShadow: [Utils.getBoxShadowDropButton()],
                       ),
-                    ],
-                  ),
-                )
-              : isCompletedAppointment()
-                  ? _builCompletedAppointmentActionButtons()
-                  : SizedBox.shrink(),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _buildPrimaryButton(
+                              R.string.join_now.tr(),
+                              () async {
+                                _handleJoinRoom();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : isCompletedAppointment()
+                      ? _builCompletedAppointmentActionButtons()
+                      : const SizedBox.shrink(),
         ),
       ],
     );
@@ -382,13 +390,24 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
         DateFormat('yyyy-MM-dd HH:mm:ss').parse(widget.appointment.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
 
-    String _getConsultTitle() => widget.bookingType == Const.BOOKING_TYPE_CENTER
-        ? widget.serviceType == DsmesAppointmentMode.atClinic.toString()
-            ? R.string.consult_at_clinic.tr()
-            : R.string.consult_online.tr()
-        : widget.serviceType == DsmesAppointmentMode.atClinic.toString()
-            ? R.string.kham_tai_phong_kham.tr()
-            : R.string.kham_tu_xa.tr();
+    // Check if isTest is true and homeAddress is not null/empty for examination at home
+    bool isExaminationAtHome = widget.appointment.isTest == true &&
+        widget.appointment.homeAddress != null &&
+        widget.appointment.homeAddress!.isNotEmpty;
+
+    String _getConsultTitle() {
+      if (isExaminationAtHome) {
+        return R.string.xet_nghiem_tai_nha.tr();
+      }
+      
+      return widget.bookingType == Const.BOOKING_TYPE_CENTER
+          ? widget.serviceType == DsmesAppointmentMode.atClinic.toString()
+              ? R.string.consult_at_clinic.tr()
+              : R.string.consult_online.tr()
+          : widget.serviceType == DsmesAppointmentMode.atClinic.toString()
+              ? R.string.kham_tai_phong_kham.tr()
+              : R.string.kham_tu_xa.tr();
+    }
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -464,7 +483,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  R.string.consult_time.tr(),
+                  isExaminationAtHome
+                      ? R.string.thoi_gian.tr()
+                      : R.string.consult_time.tr(),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -495,6 +516,39 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                 ),
               ],
             ),
+            if (isExaminationAtHome) GapH(4),
+            if (isExaminationAtHome)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Text(
+                      R.string.address.tr(),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff777E90,
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 7,
+                    child: Text(
+                      widget.appointment.homeAddress!,
+                      maxLines: 2,
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             if (widget.appointment.mode ==
                 DsmesAppointmentMode.atClinic.toString())
               GapH(4),
@@ -859,11 +913,14 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     ),
                   );
 
-                  // Navigator.of(context).pop();
-
-                  DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.popUntil((route) => route.isFirst);
+                  Navigator.of(context).pop();
+                  if (_cubit.isExamination) {
+                    Navigator.of(context, rootNavigator: true).pop();
+                  } else {
+                    DsmesNavigationMixin.getNavigationKey()
+                        .currentState
+                        ?.popUntil((route) => route.isFirst);
+                  }
 
                   if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
                     Observable.instance.notifyObservers([],
@@ -985,6 +1042,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   }
 
   _builCompletedAppointmentActionButtons() {
+    // Check if isTest is true and homeAddress is not null/empty for examination at home
+    bool isExaminationAtHome = widget.appointment.isTest == true &&
+        widget.appointment.homeAddress != null &&
+        widget.appointment.homeAddress!.isNotEmpty;
+    
     return Container(
       color: R.color.white,
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -1021,10 +1083,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               ),
             ),
           ),
-          GapW(12),
-          Flexible(
-            flex: 1,
-            child: GestureDetector(
+          if (!isExaminationAtHome) GapW(12),
+          if (!isExaminationAtHome)
+            Flexible(
+              flex: 1,
+              child: GestureDetector(
               onTap: () async {
                 final locale = context.locale.languageCode;
                 _cubit.initCreateDsmesBookingRequest(locale: locale);

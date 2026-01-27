@@ -14,6 +14,7 @@ class SearchBookingClinicListRequest {
   final String kind; // clinic, doctor
   final List<String> timeframes; // weekend, weekday, after_hours
   final List<String> clinicTypes; // clinic, hospital, public_hospital, lab
+  final int isFilterDistance;
 
   SearchBookingClinicListRequest({
     this.type = 'location',
@@ -31,6 +32,7 @@ class SearchBookingClinicListRequest {
     this.kind = 'clinic',
     this.timeframes = const [],
     this.clinicTypes = const [],
+    this.isFilterDistance = 1,
   });
 
   Map<String, dynamic> toJson() => {
@@ -49,6 +51,7 @@ class SearchBookingClinicListRequest {
         'kind': kind,
         'timeframes': timeframes,
         'clinic_types': clinicTypes,
+        'is_filter_distance': isFilterDistance,
       };
 
   SearchBookingClinicListRequest copyWith({
@@ -67,6 +70,7 @@ class SearchBookingClinicListRequest {
     String? kind,
     List<String>? timeframes,
     List<String>? clinicTypes,
+    int? isFilterDistance,
   }) {
     return SearchBookingClinicListRequest(
       type: type ?? this.type,
@@ -84,6 +88,7 @@ class SearchBookingClinicListRequest {
       kind: kind ?? this.kind,
       timeframes: timeframes ?? this.timeframes,
       clinicTypes: clinicTypes ?? this.clinicTypes,
+      isFilterDistance: isFilterDistance ?? this.isFilterDistance,
     );
   }
 }
