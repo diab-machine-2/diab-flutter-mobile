@@ -10,78 +10,84 @@ import '../app_api.dart';
 const _defaultConnectTimeout = Duration(minutes: 1);
 const _defaultReceiveTimeout = Duration(minutes: 1);
 
-/// Custom logging interceptor that handles long responses without truncation
+/// Custom logging interceptor that handles long responses without truncation.
+/// [tag] is prefixed to every log line (e.g. 'APP API' or 'DOCOSAN API') for easy filtering.
 class FullLogInterceptor extends Interceptor {
+  FullLogInterceptor({required this.tag});
+
+  final String tag;
+
+  void _log(String message) => debugPrint('[$tag] $message');
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    debugPrint('*** Request ***');
-    debugPrint('uri: ${options.uri}');
-    debugPrint('method: ${options.method}');
-    debugPrint('responseType: ${options.responseType}');
-    debugPrint('followRedirects: ${options.followRedirects}');
-    debugPrint('connectTimeout: ${options.connectTimeout}');
-    debugPrint('sendTimeout: ${options.sendTimeout}');
-    debugPrint('receiveTimeout: ${options.receiveTimeout}');
-    debugPrint(
-        'receiveDataWhenStatusError: ${options.receiveDataWhenStatusError}');
-    debugPrint('extra: ${options.extra}');
-    debugPrint('headers:');
+    _log('*** Request ***');
+    _log('uri: ${options.uri}');
+    _log('method: ${options.method}');
+    _log('responseType: ${options.responseType}');
+    _log('followRedirects: ${options.followRedirects}');
+    _log('connectTimeout: ${options.connectTimeout}');
+    _log('sendTimeout: ${options.sendTimeout}');
+    _log('receiveTimeout: ${options.receiveTimeout}');
+    _log('receiveDataWhenStatusError: ${options.receiveDataWhenStatusError}');
+    _log('extra: ${options.extra}');
+    _log('headers:');
     options.headers.forEach((key, value) {
-      debugPrint(' $key: $value');
+      _log(' $key: $value');
     });
-    debugPrint('data:');
+    _log('data:');
     if (options.data != null) {
       _printLongMessage(options.data.toString());
     } else {
-      debugPrint('null');
+      _log('null');
     }
-    debugPrint('');
+    _log('');
     handler.next(options);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    debugPrint('*** Response ***');
-    debugPrint('uri: ${response.requestOptions.uri}');
-    debugPrint('statusCode: ${response.statusCode}');
-    debugPrint('headers:');
+    _log('*** Response ***');
+    _log('uri: ${response.requestOptions.uri}');
+    _log('statusCode: ${response.statusCode}');
+    _log('headers:');
     response.headers.forEach((key, values) {
-      debugPrint(' $key: ${values.join(', ')}');
+      _log(' $key: ${values.join(', ')}');
     });
-    debugPrint('Response Text:');
-    if (response.data != null) {
-      String responseText;
-      if (response.data is String) {
-        responseText = response.data;
-      } else {
-        // Pretty print JSON
-        try {
-          responseText =
-              const JsonEncoder.withIndent('  ').convert(response.data);
-        } catch (e) {
-          responseText = response.data.toString();
-        }
-      }
-      _printLongMessage(responseText);
-    } else {
-      debugPrint('null');
-    }
-    debugPrint('');
+    // _log('Response Text:');
+    // if (response.data != null) {
+    //   String responseText;
+    //   if (response.data is String) {
+    //     responseText = response.data;
+    //   } else {
+    //     // Pretty print JSON
+    //     try {
+    //       responseText =
+    //           const JsonEncoder.withIndent('  ').convert(response.data);
+    //     } catch (e) {
+    //       responseText = response.data.toString();
+    //     }
+    //   }
+    //   _printLongMessage(responseText);
+    // } else {
+    //   _log('null');
+    // }
+    _log('');
     handler.next(response);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    debugPrint('*** Error ***');
-    debugPrint('uri: ${err.requestOptions.uri}');
-    debugPrint('error: ${err.error}');
-    debugPrint('type: ${err.type}');
+    _log('*** Error ***');
+    _log('uri: ${err.requestOptions.uri}');
+    _log('error: ${err.error}');
+    _log('type: ${err.type}');
     if (err.response != null) {
-      debugPrint('statusCode: ${err.response?.statusCode}');
-      debugPrint('response:');
+      _log('statusCode: ${err.response?.statusCode}');
+      _log('response:');
       _printLongMessage(err.response?.data?.toString() ?? 'null');
     }
-    debugPrint('');
+    _log('');
     handler.next(err);
   }
 
@@ -95,7 +101,7 @@ class FullLogInterceptor extends Interceptor {
     for (int i = 0; i < message.length; i += chunkSize) {
       final end =
           (i + chunkSize < message.length) ? i + chunkSize : message.length;
-      debugPrint(message.substring(i, end));
+      _log(message.substring(i, end));
     }
   }
 }
@@ -138,7 +144,7 @@ class AppClient {
 
     // Add custom logging interceptor to capture all API calls without truncation
     if (kDebugMode) {
-      _dio.interceptors.add(FullLogInterceptor());
+      _dio.interceptors.add(FullLogInterceptor(tag: 'APP API'));
     }
 
     _dio.interceptors
