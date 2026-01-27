@@ -240,6 +240,11 @@ class Const {
     CLINIC_TIMEFRAME_AFTER_HOURS,
   ];
 
+  // Examination flow: location and default clinic for "examination at home"
+  static const String EXAMINATION_LOCATION_HOME = 'home';
+  static const String EXAMINATION_LOCATION_CLINIC = 'clinic';
+  static const int EXAMINATION_DEFAULT_CLINIC_ID = 816;
+
   static const String BOOKING_TYPE_CENTER = 'center';
   static const String BOOKING_TYPE_CLINIC = 'clinic';
   static const String BOOKING_TYPE_DOCTOR = 'doctor';

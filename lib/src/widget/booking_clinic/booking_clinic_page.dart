@@ -576,14 +576,14 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     // examination flow and navigate to the datetime screen.
     BotToast.showLoading(allowClick: false);
 
-    final clinicId = widget.examinationClinicId ?? 816;
+    final clinicId = widget.examinationClinicId ?? Const.EXAMINATION_DEFAULT_CLINIC_ID;
 
     final detailSuccess =
         await _cubit.getClinicDetail(id: clinicId, isLoading: false);
 
     if (!detailSuccess || _cubit.selectedClinic == null) {
       BotToast.closeAllLoading();
-      Message.showToastMessage(context, 'Không tìm thấy phòng khám');
+      Message.showToastMessage(context, R.string.not_exist_clinic.tr());
       Navigator.of(context, rootNavigator: true).pop();
       return;
     }
@@ -591,7 +591,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     _cubit.setExaminationData(
       isExamination: true,
       examinationType: widget.examinationType,
-      examinationLocation: 'home',
+      examinationLocation: Const.EXAMINATION_LOCATION_HOME,
     );
 
     _cubit.initCreateDsmesBookingRequest(
@@ -618,7 +618,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     _cubit.setExaminationData(
       isExamination: true,
       examinationType: widget.examinationType,
-      examinationLocation: 'clinic',
+      examinationLocation: Const.EXAMINATION_LOCATION_CLINIC,
     );
 
     // Navigate to provider page with empty specialtyId and examinationType

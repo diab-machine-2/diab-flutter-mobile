@@ -125,6 +125,13 @@ class DsmesAppointment {
     this.homeAddress,
   });
 
+  /// True when this appointment is examination-at-home (isTest and homeAddress set).
+  /// Use this instead of repeating the condition; same meaning across list/detail.
+  bool get isExaminationAtHome =>
+      isTest == true &&
+      homeAddress != null &&
+      homeAddress!.isNotEmpty;
+
   factory DsmesAppointment.fromJson(Map<String, dynamic> json) {
     return DsmesAppointment(
       id: json['id'] ?? json['appointment_id'] ?? 0,

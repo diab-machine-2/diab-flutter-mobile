@@ -51,11 +51,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     symptomController = TextEditingController(text: widget.appointment.symptom);
   }
 
-  bool _isExamination() {
-    return widget.appointment.isTest == true &&
-        widget.appointment.homeAddress != null &&
-        widget.appointment.homeAddress!.isNotEmpty;
-  }
+  bool _isExamination() => widget.appointment.isExaminationAtHome;
 
   bool _shouldShowJoinButton() {
     if (widget.appointment.status != DSMES_STATUS_APPROVE ||
@@ -390,10 +386,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
         DateFormat('yyyy-MM-dd HH:mm:ss').parse(widget.appointment.endTime);
     final isPast = endDateTime.isBefore(DateTime.now());
 
-    // Check if isTest is true and homeAddress is not null/empty for examination at home
-    bool isExaminationAtHome = widget.appointment.isTest == true &&
-        widget.appointment.homeAddress != null &&
-        widget.appointment.homeAddress!.isNotEmpty;
+    final isExaminationAtHome = widget.appointment.isExaminationAtHome;
 
     String _getConsultTitle() {
       if (isExaminationAtHome) {
@@ -1042,11 +1035,7 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   }
 
   _builCompletedAppointmentActionButtons() {
-    // Check if isTest is true and homeAddress is not null/empty for examination at home
-    bool isExaminationAtHome = widget.appointment.isTest == true &&
-        widget.appointment.homeAddress != null &&
-        widget.appointment.homeAddress!.isNotEmpty;
-    
+    final isExaminationAtHome = widget.appointment.isExaminationAtHome;
     return Container(
       color: R.color.white,
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),

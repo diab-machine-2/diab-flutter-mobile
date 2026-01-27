@@ -54,7 +54,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   // Examination flow state
   bool isExamination = false;
   String? examinationType;
-  String? examinationLocation; // 'home' or 'clinic'
+  String? examinationLocation; // Const.EXAMINATION_LOCATION_HOME or Const.EXAMINATION_LOCATION_CLINIC
 
   int currentPage = 1;
   bool hasMore = true;
@@ -732,14 +732,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   }
 
   String getItemTitle(DsmesAppointmentMode mode, {DsmesAppointment? data}) {
-    // Check if isTest is true and homeAddress is not null/empty
-    if (data != null && 
-        data.isTest == true && 
-        data.homeAddress != null && 
-        data.homeAddress!.isNotEmpty) {
+    if (data != null && data.isExaminationAtHome) {
       return R.string.xet_nghiem_tai_nha.tr();
     }
-    
     switch (mode) {
       case DsmesAppointmentMode.atClinic:
         return R.string.at_clinic.tr();

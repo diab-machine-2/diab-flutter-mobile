@@ -32,11 +32,7 @@ class DsmesAppointmentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     DsmesAppointmentMode mode = DsmesAppointmentMode.fromString(data.mode);
 
-    // Check if isTest is true and homeAddress is not null/empty
-    bool isExaminationAtHome = data.isTest == true &&
-        data.homeAddress != null &&
-        data.homeAddress!.isNotEmpty;
-
+    final isExaminationAtHome = data.isExaminationAtHome;
     String icon = isExaminationAtHome
         ? R.drawable.ic_examination_at_home
         : (mode == DsmesAppointmentMode.atClinic
@@ -348,14 +344,10 @@ class DsmesAppointmentItem extends StatelessWidget {
     }
 
     final mode = DsmesAppointmentMode.fromString(data.mode);
-    final isExamination =
-        data.isTest == true &&
-        data.homeAddress != null &&
-        data.homeAddress!.isNotEmpty;
     if (mode == DsmesAppointmentMode.atClinic) {
       return _buildButtonAtClinic(context);
     }
-    if (isExamination) {
+    if (data.isExaminationAtHome) {
       return const SizedBox.shrink();
     }
     return _buildButtonOnline();

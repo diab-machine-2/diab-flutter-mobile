@@ -533,7 +533,7 @@ class _DsmesConfirmCreateInformationState
                   // Navigate to edit examination details
                   // At home: navigate to datetime page
                   // At clinic: navigate to provider page
-                  if (_cubit.examinationLocation == 'home') {
+                  if (_cubit.examinationLocation == Const.EXAMINATION_LOCATION_HOME) {
                     // Navigate to datetime selection page for editing
                     DsmesNavigationMixin.getNavigationKey()
                         .currentState

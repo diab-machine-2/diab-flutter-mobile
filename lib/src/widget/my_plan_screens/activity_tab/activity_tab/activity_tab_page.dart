@@ -1302,7 +1302,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       NavigatorName.booking_clinic,
       arguments: {
         'isExamination': true,
-        'examinationClinicId': 816,
+        'examinationClinicId': Const.EXAMINATION_DEFAULT_CLINIC_ID,
         'examinationType': examinationType,
       },
     );

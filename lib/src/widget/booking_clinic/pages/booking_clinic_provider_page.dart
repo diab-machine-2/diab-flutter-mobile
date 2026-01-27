@@ -110,8 +110,8 @@ class _BookingClinicProvidersPageState
         page: 1,
         specialtyId:
             widget.specialtyId == 0 ? '' : widget.specialtyId.toString(),
-        lat: "10.785163063782424",
-        lng: "106.74801307867507",
+        lat: lat,
+        lng: lng,
         name: widget.examinationType != null
             ? "${widget.examinationType}"
             : '',
@@ -565,7 +565,7 @@ class _BookingClinicProvidersPageState
                                     _cubit.setExaminationData(
                                       isExamination: true,
                                       examinationType: widget.examinationType,
-                                      examinationLocation: 'clinic',
+                                      examinationLocation: Const.EXAMINATION_LOCATION_CLINIC,
                                     );
                                   }
 
