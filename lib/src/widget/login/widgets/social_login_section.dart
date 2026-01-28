@@ -105,7 +105,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                if (true) ...[
+                if (Platform.isIOS) ...[
                   Expanded(
                     child: _SocialLoginButton(
                       icon: Image.asset(R.drawable.ic_login_apple,
