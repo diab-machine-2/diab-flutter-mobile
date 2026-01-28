@@ -1,13 +1,17 @@
 import 'dart:io';
 import 'dart:developer' as developer;
 import 'dart:typed_data';
+
 import 'package:app_settings/app_settings.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:path/path.dart' as p;
 import 'package:photo_manager/photo_manager.dart';
 
 class FoodGalleryPicker extends StatefulWidget {
@@ -619,6 +623,80 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     });
   }
 
+  /// Convert image to 480x480 JPEG, auto-cropping to center square.
+  /// This is especially important on iOS where HEIC / HEIF / Live formats
+  /// can cause downstream decoding issues.
+  Future<String> _convertToJpeg480x480(String originalPath) async {
+    try {
+      final File originalFile = File(originalPath);
+      if (!await originalFile.exists()) {
+        return originalPath;
+      }
+
+      // Step 1: Use platform codecs (flutter_image_compress) to ensure
+      // HEIC/HEIF/LIVE inputs become JPEG bytes.
+      final Uint8List? compressedBytes =
+          await FlutterImageCompress.compressWithFile(
+        originalPath,
+        minWidth: 800, // keep some resolution before manual crop
+        minHeight: 800,
+        quality: 85,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedBytes == null || compressedBytes.isEmpty) {
+        return originalPath;
+      }
+
+      // Step 2: Decode JPEG bytes with `image` package and center-crop to square,
+      // then resize to exactly 480x480.
+      final img.Image? decoded = img.decodeImage(compressedBytes);
+      if (decoded == null) {
+        return originalPath;
+      }
+
+      final int cropSize =
+          decoded.width < decoded.height ? decoded.width : decoded.height;
+      final int offsetX = (decoded.width - cropSize) ~/ 2;
+      final int offsetY = (decoded.height - cropSize) ~/ 2;
+
+      final img.Image cropped = img.copyCrop(
+        decoded,
+        x: offsetX,
+        y: offsetY,
+        width: cropSize,
+        height: cropSize,
+      );
+
+      final img.Image resized =
+          img.copyResize(cropped, width: 480, height: 480);
+
+      final List<int> jpegBytes = img.encodeJpg(resized, quality: 85);
+
+      final Directory tempDir = Directory.systemTemp;
+      final int timestamp = DateTime.now().millisecondsSinceEpoch;
+      final String baseName = p.basenameWithoutExtension(originalPath);
+      final String fileName =
+          'DiaB_Food_${timestamp}_${baseName.isEmpty ? "image" : baseName}.jpg';
+      final File outFile = File(p.join(tempDir.path, fileName));
+      await outFile.writeAsBytes(jpegBytes, flush: true);
+
+      developer.log(
+        '[CAPTURE] Converted image to JPEG 480x480: ${outFile.path}',
+        name: '[CAPTURE]',
+      );
+
+      return outFile.path;
+    } catch (e) {
+      developer.log(
+        '[CAPTURE] Error converting image to JPEG 480x480: $e',
+        name: '[CAPTURE]',
+      );
+      // On any error, fall back to the original path so flow continues.
+      return originalPath;
+    }
+  }
+
   void _confirmSelection() async {
     if (_selectedImages.isNotEmpty) {
       // Convert selected asset IDs to real file paths, robust on iOS
@@ -694,6 +772,17 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
               name: '[CAPTURE]');
           // Skip this asset if it cannot be resolved
         }
+      }
+
+      // Normalize all selected images to 480x480 JPEG to avoid issues with
+      // HEIC / HEIF / LIVE formats (especially on iOS) and reduce file size.
+      if (filePaths.isNotEmpty) {
+        final List<String> normalizedPaths = [];
+        for (final String path in filePaths) {
+          final String convertedPath = await _convertToJpeg480x480(path);
+          normalizedPaths.add(convertedPath);
+        }
+        filePaths = normalizedPaths;
       }
 
       developer.log(
