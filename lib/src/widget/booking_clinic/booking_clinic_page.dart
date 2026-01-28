@@ -39,6 +39,7 @@ class BookingClinicPage extends StatefulWidget {
   final bool isExaminationAtClinic;
   final int? examinationClinicId;
   final String? examinationType;
+  final String? smartGoalId;
 
   const BookingClinicPage({
     Key? key,
@@ -46,6 +47,7 @@ class BookingClinicPage extends StatefulWidget {
     this.isExaminationAtClinic = false,
     this.examinationClinicId,
     this.examinationType,
+    this.smartGoalId,
   }) : super(key: key);
 
   @override
@@ -592,6 +594,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
       isExamination: true,
       examinationType: widget.examinationType,
       examinationLocation: Const.EXAMINATION_LOCATION_HOME,
+      smartGoalId: widget.smartGoalId,
     );
 
     _cubit.initCreateDsmesBookingRequest(
@@ -619,6 +622,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
       isExamination: true,
       examinationType: widget.examinationType,
       examinationLocation: Const.EXAMINATION_LOCATION_CLINIC,
+      smartGoalId: widget.smartGoalId,
     );
 
     // Navigate to provider page with empty specialtyId and examinationType

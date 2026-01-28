@@ -115,6 +115,7 @@ class AppRoutes {
             isExaminationAtClinic: args?['isExaminationAtClinic'] ?? false,
             examinationClinicId: args?['examinationClinicId'],
             examinationType: args?['examinationType'],
+            smartGoalId: args?['smartGoalId'],
           );
           break;
         }

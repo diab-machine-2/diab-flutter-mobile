@@ -688,7 +688,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
             if (_isExaminationActivity(type, smartGoal)) {
               final examinationType = _extractExaminationType(smartGoal);
               await _showExaminationOptionsBottomSheet(
-                  examinationType: examinationType);
+                examinationType: examinationType,
+                smartGoalId: smartGoal?.id,
+              );
             } else {
               _onSelectGoal(
                 type,
@@ -1155,7 +1157,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   Future<void> _handleExaminationNavigation(
       BuildContext context, SmartGoalList? smartGoal) async {
     final examinationType = _extractExaminationType(smartGoal);
-    await _showExaminationOptionsBottomSheet(examinationType: examinationType);
+    await _showExaminationOptionsBottomSheet(
+      examinationType: examinationType,
+      smartGoalId: smartGoal?.id,
+    );
   }
 
   bool _isExaminationActivity(ScheduleType type, SmartGoalList? smartGoal) {
@@ -1195,8 +1200,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     return null;
   }
 
-  Future<void> _showExaminationOptionsBottomSheet(
-      {String? examinationType}) async {
+  Future<void> _showExaminationOptionsBottomSheet({
+    String? examinationType,
+    String? smartGoalId,
+  }) async {
     final result = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: false,
@@ -1256,9 +1263,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
 
     if (result == 'at_home') {
-      _startExaminationAtHomeFlow(examinationType: examinationType);
+      _startExaminationAtHomeFlow(
+        examinationType: examinationType,
+        smartGoalId: smartGoalId,
+      );
     } else if (result == 'at_clinic') {
-      _startExaminationAtClinicFlow(examinationType: examinationType);
+      _startExaminationAtClinicFlow(
+        examinationType: examinationType,
+        smartGoalId: smartGoalId,
+      );
     }
   }
 
@@ -1297,24 +1310,32 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     );
   }
 
-  void _startExaminationAtHomeFlow({String? examinationType}) {
+  void _startExaminationAtHomeFlow({
+    String? examinationType,
+    String? smartGoalId,
+  }) {
     Navigator.of(context).pushNamed(
       NavigatorName.booking_clinic,
       arguments: {
         'isExamination': true,
         'examinationClinicId': Const.EXAMINATION_DEFAULT_CLINIC_ID,
         'examinationType': examinationType,
+        'smartGoalId': smartGoalId,
       },
     );
   }
 
-  void _startExaminationAtClinicFlow({String? examinationType}) {
+  void _startExaminationAtClinicFlow({
+    String? examinationType,
+    String? smartGoalId,
+  }) {
     Navigator.of(context).pushNamed(
       NavigatorName.booking_clinic,
       arguments: {
         'isExamination': true,
         'isExaminationAtClinic': true,
         'examinationType': examinationType,
+        'smartGoalId': smartGoalId,
       },
     );
   }

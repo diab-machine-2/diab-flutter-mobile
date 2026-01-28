@@ -55,6 +55,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   bool isExamination = false;
   String? examinationType;
   String? examinationLocation; // Const.EXAMINATION_LOCATION_HOME or Const.EXAMINATION_LOCATION_CLINIC
+  String? smartGoalId;
 
   int currentPage = 1;
   bool hasMore = true;
@@ -592,16 +593,19 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     required bool isExamination,
     String? examinationType,
     String? examinationLocation,
+    String? smartGoalId,
   }) {
     this.isExamination = isExamination;
     this.examinationType = examinationType;
     this.examinationLocation = examinationLocation;
+    this.smartGoalId = smartGoalId;
   }
 
   void clearExaminationData() {
     isExamination = false;
     examinationType = null;
     examinationLocation = null;
+    smartGoalId = null;
   }
 
   setSelectedClinic(DsmesClinicModel? clinic) {
