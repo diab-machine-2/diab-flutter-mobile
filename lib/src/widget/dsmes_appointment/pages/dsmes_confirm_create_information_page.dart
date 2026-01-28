@@ -138,8 +138,7 @@ class _DsmesConfirmCreateInformationState
             ? ''
             : ', ') +
         (userInfo.district == null ? '' : userInfo.district!.name ?? '') +
-        (userInfo.district == null ||
-                (userInfo.district!.name?.isEmpty ?? true)
+        (userInfo.district == null || (userInfo.district!.name?.isEmpty ?? true)
             ? ''
             : ', ') +
         (userInfo.province == null ? '' : userInfo.province!.name ?? '');
@@ -336,7 +335,7 @@ class _DsmesConfirmCreateInformationState
       //     paymentType: 'vnpay',
       //     selectedServices:
       //         _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? []);
-       // _handleCreateBooking();
+      // _handleCreateBooking();
 
       // Calculate total price
       int totalPrice = _calculateTotalPrice();
@@ -356,7 +355,6 @@ class _DsmesConfirmCreateInformationState
         // Process payment directly
         await paymentService.openVNPaySDK();
       }
-     
     } finally {
       setState(() => isProcessing['confirmBooking'] = false);
     }
@@ -554,7 +552,8 @@ class _DsmesConfirmCreateInformationState
                   // Navigate to edit examination details
                   // At home: navigate to datetime page
                   // At clinic: navigate to provider page
-                  if (_cubit.examinationLocation == Const.EXAMINATION_LOCATION_HOME) {
+                  if (_cubit.examinationLocation ==
+                      Const.EXAMINATION_LOCATION_HOME) {
                     // Navigate to datetime selection page for editing
                     DsmesNavigationMixin.getNavigationKey()
                         .currentState
@@ -740,8 +739,9 @@ class _DsmesConfirmCreateInformationState
               ],
             ),
             GapH(4),
-            if (_cubit.createDsmesBookingRequest?.homeAddress?.isNotEmpty ??
-                false)
+            if (_cubit.examinationLocation == Const.EXAMINATION_LOCATION_HOME &&
+                (_cubit.createDsmesBookingRequest?.homeAddress?.isNotEmpty ??
+                    false))
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
