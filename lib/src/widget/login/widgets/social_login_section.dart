@@ -33,7 +33,7 @@ class _SocialLoginButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
           color: R.color.white,
           borderRadius: BorderRadius.circular(25),
@@ -109,7 +109,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                   Expanded(
                     child: _SocialLoginButton(
                       icon: Image.asset(R.drawable.ic_login_apple,
-                          width: 26, height: 26),
+                          width: 20, height: 20),
                       label: R.string.login_apple_id.tr(),
                       onTap: () async {
                         await TrackingManager.trackEvent(
@@ -131,7 +131,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                   Expanded(
                     child: _SocialLoginButton(
                       icon: Image.asset(R.drawable.ic_google,
-                          width: 26, height: 26),
+                          width: 20, height: 20),
                       label: R.string.login_gmail.tr(),
                       onTap: () async {
                         await TrackingManager.trackEvent(
@@ -150,7 +150,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                         width: 160,
                         child: _SocialLoginButton(
                           icon: Image.asset(R.drawable.ic_google,
-                              width: 26, height: 26),
+                              width: 20, height: 20),
                           label: R.string.login_gmail.tr(),
                           onTap: () async {
                             await TrackingManager.trackEvent(
