@@ -218,7 +218,8 @@ class Const {
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
   static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
   static const String ORGANIZATION_API_KEY = 'organization_api_key';
-  static const String ORGANIZATION_API_KEY_VALUE = 'diab-yb-5c3bae30-712c4ffc';
+  // static const String ORGANIZATION_API_KEY_VALUE = 'diab-yb-5c3bae30-712c4ffc'; // Production
+  static const String ORGANIZATION_API_KEY_VALUE = 'diab-heath-center-9a3cefac-136caaef'; // Dev
   static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 30; // In minutes
   static const String CLINIC_TYPE_CLINIC = 'clinic';
   static const String CLINIC_TYPE_HOSPITAL = 'hospital';
@@ -238,6 +239,11 @@ class Const {
     CLINIC_TIMEFRAME_WEEKDAY,
     CLINIC_TIMEFRAME_AFTER_HOURS,
   ];
+
+  // Examination flow: location and default clinic for "examination at home"
+  static const String EXAMINATION_LOCATION_HOME = 'home';
+  static const String EXAMINATION_LOCATION_CLINIC = 'clinic';
+  static const int EXAMINATION_DEFAULT_CLINIC_ID = 816;
 
   static const String BOOKING_TYPE_CENTER = 'center';
   static const String BOOKING_TYPE_CLINIC = 'clinic';

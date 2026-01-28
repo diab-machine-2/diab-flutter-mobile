@@ -33,9 +33,13 @@ class DsmesAppointmentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DsmesAppointmentMode mode = DsmesAppointmentMode.fromString(data.mode);
-    String icon = mode == DsmesAppointmentMode.atClinic
-        ? R.drawable.ic_at_clinic
-        : R.drawable.ic_telemedicine;
+
+    final isExaminationAtHome = data.isExaminationAtHome;
+    String icon = isExaminationAtHome
+        ? R.drawable.ic_examination_at_home
+        : (mode == DsmesAppointmentMode.atClinic
+            ? R.drawable.ic_at_clinic
+            : R.drawable.ic_telemedicine);
 
     final startDateTime =
         DateFormat('yyyy-MM-dd HH:mm:ss').parse(data.startTime);
@@ -65,6 +69,10 @@ class DsmesAppointmentItem extends StatelessWidget {
             _buildClinicInfo(data, bookingType),
             GapH(4),
             _buildDateTime(startDateTime, formattedDate, startTime, endTime),
+            if (data.homeAddress != null && data.homeAddress!.isNotEmpty) ...[
+              GapH(8),
+              _buildHomeAddress(),
+            ],
             if (displayActionButtons)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -97,7 +105,7 @@ class DsmesAppointmentItem extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    cubit.getItemTitle(mode),
+                    cubit.getItemTitle(mode, data: data),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w400,
@@ -210,6 +218,29 @@ class DsmesAppointmentItem extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.w400,
             color: R.color.color0xff111515,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHomeAddress() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GapW(48),
+        Image.asset(R.drawable.ic_map_marker, width: 20, height: 20),
+        SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            data.homeAddress ?? '',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: R.color.color0xff636A6B,
+            ),
           ),
         ),
       ],
@@ -345,9 +376,13 @@ class DsmesAppointmentItem extends StatelessWidget {
     }
 
     final mode = DsmesAppointmentMode.fromString(data.mode);
-    return mode == DsmesAppointmentMode.atClinic
-        ? _buildButtonAtClinic(context)
-        : _buildButtonOnline();
+    if (mode == DsmesAppointmentMode.atClinic) {
+      return _buildButtonAtClinic(context);
+    }
+    if (data.isExaminationAtHome) {
+      return const SizedBox.shrink();
+    }
+    return _buildButtonOnline();
   }
 
   _buildButtonAtClinic(BuildContext context) {

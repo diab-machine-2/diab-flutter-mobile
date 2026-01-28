@@ -183,7 +183,7 @@ dev_dependencies:
   retrofit_generator: 8.2.1
   build_runner: 2.4.13
   json_serializable: 6.8.0
-  device_preview: 1.1.0
+  # device_preview: 1.1.0
 
 dependency_overrides:
   js: 0.7.1

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,9 @@ import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixi
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/profile/user_info.dart';
+import 'package:medical/src/widget/profile/address.dart';
+import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
@@ -104,6 +108,41 @@ class _DsmesConfirmCreateInformationState
     });
 
     files = currentCreateRequest?.symptomAttachment ?? [];
+
+    // Pre-fill homeAddress from userInfo when examination so it displays at first time
+    if (_cubit.isExamination &&
+        (currentCreateRequest?.homeAddress == null ||
+            currentCreateRequest!.homeAddress!.isEmpty)) {
+      final homeAddressFromUser = _getHomeAddressFromUserInfo();
+      if (homeAddressFromUser != null && homeAddressFromUser.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _cubit.updateCreateDsmesBookingRequestHomeExamination(
+            isTest: _cubit.isExamination,
+            homeAddress: homeAddressFromUser,
+          );
+          setState(() {});
+        });
+      }
+    }
+  }
+
+  /// Returns formatted home address from [AppSettings.userInfo], or null if not available.
+  String? _getHomeAddressFromUserInfo() {
+    final userInfo = AppSettings.userInfo;
+    if (userInfo?.address == null || userInfo!.address!.isEmpty) return null;
+    return (userInfo.address ?? '') +
+        (userInfo.address == null || userInfo.address!.isEmpty ? '' : ', ') +
+        (userInfo.ward == null ? '' : userInfo.ward!.name ?? '') +
+        (userInfo.ward == null || (userInfo.ward!.name?.isEmpty ?? true)
+            ? ''
+            : ', ') +
+        (userInfo.district == null ? '' : userInfo.district!.name ?? '') +
+        (userInfo.district == null ||
+                (userInfo.district!.name?.isEmpty ?? true)
+            ? ''
+            : ', ') +
+        (userInfo.province == null ? '' : userInfo.province!.name ?? '');
   }
 
   @override
@@ -187,7 +226,9 @@ class _DsmesConfirmCreateInformationState
                         children: [
                           _buildPatientInformation(),
                           GapH(12),
-                          _buildConsultingInformation(),
+                          _cubit.isExamination
+                              ? _buildExaminationInformation()
+                              : _buildConsultingInformation(),
                           if (widget.serviceType ==
                               DsmesAppointmentMode.telemedicine.toString())
                             GapH(12),
@@ -290,30 +331,32 @@ class _DsmesConfirmCreateInformationState
       _cubit.updateCreateDsmesBookingRequestSymptomAttachments(
           symptomAttachments: data?.fileNetworkName ?? []);
 
-      _cubit.updateCreateDsmesBookingRequestServiceList(
-          paymentType: 'vnpay',
-          selectedServices:
-              _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? []);
+      //// By-pass payment
+      // _cubit.updateCreateDsmesBookingRequestServiceList(
+      //     paymentType: 'vnpay',
+      //     selectedServices:
+      //         _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? []);
+       // _handleCreateBooking();
 
-      // // Calculate total price
-      // int totalPrice = _calculateTotalPrice();
+      // Calculate total price
+      int totalPrice = _calculateTotalPrice();
 
-      // // Initialize VNPay service
-      // VNPayService paymentService = VNPayService(
-      //   context: context,
-      //   totalPrice: totalPrice,
-      //   bookingType: widget.bookingType,
-      //   serviceType: widget.serviceType,
-      //   cubit: _cubit,
-      // );
+      // Initialize VNPay service
+      VNPayService paymentService = VNPayService(
+        context: context,
+        totalPrice: totalPrice,
+        bookingType: widget.bookingType,
+        serviceType: widget.serviceType,
+        cubit: _cubit,
+      );
 
-      // bool initialized = await paymentService.initializePayment();
+      bool initialized = await paymentService.initializePayment();
 
-      // if (initialized) {
-      //   // Process payment directly
-      //   await paymentService.openVNPaySDK();
-      // }
-      _handleCreateBooking();
+      if (initialized) {
+        // Process payment directly
+        await paymentService.openVNPaySDK();
+      }
+     
     } finally {
       setState(() => isProcessing['confirmBooking'] = false);
     }
@@ -342,6 +385,24 @@ class _DsmesConfirmCreateInformationState
     final phoneNumber =
         AppSettings.userInfo?.phoneNumber ?? phoneController.text;
 
+    // Handle home examination address when isExamination is true
+    if (_cubit.isExamination) {
+      String? homeAddress = _getHomeAddressFromUserInfo();
+
+      // If address is empty or null, show dialog to update
+      if (homeAddress == null || homeAddress.isEmpty) {
+        final updatedAddress = await _showDialogUpdateAddress();
+        if (updatedAddress == null || updatedAddress.isEmpty) {
+          return; // User cancelled or didn't provide address
+        }
+        homeAddress = updatedAddress;
+      }
+
+      // Update the request with home examination data
+      _cubit.updateCreateDsmesBookingRequestHomeExamination(
+          isTest: _cubit.isExamination, homeAddress: homeAddress);
+    }
+
     final token = await AppSettings.getDocosanToken();
     if (token.isEmpty) {
       await _cubit.registerDocosanUser(phoneNumber: phoneNumber);
@@ -357,6 +418,17 @@ class _DsmesConfirmCreateInformationState
     }
 
     if (resp == null) return;
+
+    if (_cubit.isExamination &&
+        _cubit.smartGoalId != null &&
+        _cubit.smartGoalId!.isNotEmpty) {
+      await HomeClient().completeSmartGoal(
+        DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime),
+        _cubit.smartGoalId,
+        1,
+        ScheduleType.examination.typeIndex,
+      );
+    }
 
     final startTime = DateFormat('HH:mm')
         .format(DateFormat('yyyy-MM-dd HH:mm').parse(resp.startTime));
@@ -444,6 +516,154 @@ class _DsmesConfirmCreateInformationState
     return '$weekDay, ${DateFormat('dd/MM/yyyy').format(date)}';
   }
 
+  Widget _buildExaminationInformation() {
+    if (_cubit.createDsmesBookingRequest == null) {
+      return const SizedBox.shrink();
+    }
+
+    final isAtClinic = _cubit.examinationLocation == 'clinic';
+    final examinationTitle = isAtClinic
+        ? R.string.xet_nghiem_tai_co_so.tr()
+        : R.string.xet_nghiem_tai_nha.tr();
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          Utils.getBoxShadowDropCard(),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                examinationTitle,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.color0xff141416,
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  // Navigate to edit examination details
+                  // At home: navigate to datetime page
+                  // At clinic: navigate to provider page
+                  if (_cubit.examinationLocation == Const.EXAMINATION_LOCATION_HOME) {
+                    // Navigate to datetime selection page for editing
+                    DsmesNavigationMixin.getNavigationKey()
+                        .currentState
+                        ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                            arguments: {
+                          'serviceType': widget.serviceType,
+                          'action': widget.action,
+                          'bookingType': widget.bookingType,
+                          'isMergedSchedule': false,
+                          'isEditing': true,
+                          'previousRoute':
+                              NavigatorName.dsmes_confirm_information,
+                        });
+                  } else {
+                    // Navigate to provider page for editing clinic selection
+                    DsmesNavigationMixin.getNavigationKey()
+                        .currentState
+                        ?.pushNamed(NavigatorName.clinic_providers, arguments: {
+                      'specialtyId': 0,
+                      'examinationType': _cubit.examinationType,
+                      'isEditing': true,
+                      'previousRoute': NavigatorName.dsmes_confirm_information,
+                    });
+                  }
+                },
+                child: Text(
+                  R.string.chinh_sua.tr(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.color0xff95682E,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                R.string.appointment_time.tr(),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.color0xff636A6B,
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    getTimeRange(_cubit.createDsmesBookingRequest!.startTime,
+                        _cubit.createDsmesBookingRequest!.endTime),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                  Text(
+                    getFormattedDate(
+                        _cubit.createDsmesBookingRequest!.startTime),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.greenGradientBottom,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (isAtClinic && _cubit.selectedClinic != null) ...[
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: Text(
+                    R.string.centre_name.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    _cubit.selectedClinic!.name ?? '',
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff141416,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   _buildPatientInformation() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -460,7 +680,7 @@ class _DsmesConfirmCreateInformationState
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   R.string.consult_information.tr(),
@@ -470,34 +690,31 @@ class _DsmesConfirmCreateInformationState
                     color: R.color.color0xff141416,
                   ),
                 ),
-                // InkWell(
-                //   onTap: () {
-                //     if (isProcessing['editPatientInfo']!) return;
-                //     setState(() => isProcessing['editPatientInfo'] = true);
-                //     try {
-                //       _cubit.updateCreateDsmesBookingRequestSymptom(
-                //           symptom: symptomController.text);
-                //       _showEditRequesterInformationBottomSheet();
-                //     } finally {
-                //       setState(() => isProcessing['editPatientInfo'] = false);
-                //     }
-                //   },
-                //   child: Visibility(
-                //     visible: !isReschedule,
-                //     child: Container(
-                //       alignment: Alignment.center,
-                //       height: 20,
-                //       child: Text(
-                //         R.string.chinh_sua.tr(),
-                //         style: TextStyle(
-                //           fontSize: 12,
-                //           fontWeight: FontWeight.w500,
-                //           color: R.color.color0xff95682E,
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                InkWell(
+                  onTap: () async {
+                    final updatedAddress = await _showDialogUpdateAddress();
+                    if (updatedAddress != null && updatedAddress.isNotEmpty) {
+                      setState(() {
+                        // UI will be updated automatically as it reads from _cubit.createDsmesBookingRequest!.homeAddress
+                      });
+                    }
+                  },
+                  child: Visibility(
+                    visible: !isReschedule,
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 20,
+                      child: Text(
+                        R.string.chinh_sua.tr(),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff95682E,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
             GapH(16),
@@ -523,6 +740,36 @@ class _DsmesConfirmCreateInformationState
               ],
             ),
             GapH(4),
+            if (_cubit.createDsmesBookingRequest?.homeAddress?.isNotEmpty ??
+                false)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    R.string.address.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _cubit.createDsmesBookingRequest!.homeAddress!,
+                      textAlign: TextAlign.right,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -620,8 +867,8 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
                           color: R.color.color0xff95682E,
                         ),
                       ),
@@ -816,8 +1063,8 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
                           color: R.color.color0xff95682E,
                         ),
                       ),
@@ -941,7 +1188,7 @@ class _DsmesConfirmCreateInformationState
                       child: Text(
                         R.string.chinh_sua.tr(),
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: R.color.color0xff95682E,
                         ),
@@ -1445,6 +1692,56 @@ class _DsmesConfirmCreateInformationState
         requesterPhone = phone;
       });
     });
+  }
+
+  Future<String?> _showDialogUpdateAddress() async {
+    final UserModel userInfo = AppSettings.userInfo!;
+    final Completer<String?> completer = Completer<String?>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: AddressController(
+          address: userInfo.address,
+          province: userInfo.province,
+          district: userInfo.district,
+          ward: userInfo.ward,
+          callback: (address, province, district, ward) {
+            updateUserInfo(
+              userInfo.copyWith(
+                province: province,
+                district: district,
+                ward: ward,
+                address: address,
+              ),
+            );
+            // Format address similar to user_info.dart
+            final formattedAddress = (address ?? '') +
+                (address == null || address.isEmpty ? '' : ', ') +
+                (ward == null ? '' : ward.name ?? '') +
+                (ward == null || (ward.name?.isEmpty ?? true) ? '' : ', ') +
+                (district == null ? '' : district.name ?? '') +
+                (district == null || (district.name?.isEmpty ?? true)
+                    ? ''
+                    : ', ') +
+                (province == null ? '' : province.name ?? '');
+            _cubit.updateCreateDsmesBookingRequestHomeExamination(
+                isTest: _cubit.isExamination, homeAddress: formattedAddress);
+            // AddressController will handle Navigator.pop
+            if (!completer.isCompleted) {
+              completer.complete(formattedAddress);
+            }
+          },
+        ),
+      ),
+    ).then((_) {
+      // If dialog was dismissed without callback (e.g., by tapping outside)
+      if (!completer.isCompleted) {
+        completer.complete(null);
+      }
+    });
+
+    return completer.future;
   }
 
   void updateUserInfo(UserModel user, {bool isUpdateDiabetes = false}) async {

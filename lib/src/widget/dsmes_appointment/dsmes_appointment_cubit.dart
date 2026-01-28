@@ -56,6 +56,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   CreateDsmesBookingRequest? createDsmesBookingRequest;
   SearchBookingClinicListRequest? searchBookingClinicListRequest;
 
+  // Examination flow state
+  bool isExamination = false;
+  String? examinationType;
+  String? examinationLocation; // Const.EXAMINATION_LOCATION_HOME or Const.EXAMINATION_LOCATION_CLINIC
+  String? smartGoalId;
+
   int currentPage = 1;
   bool hasMore = true;
   bool isSpecifyClinic = false;
@@ -77,13 +83,16 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       await registerDocosanUser(
           phoneNumber: Utils.formatPhoneNumber(phoneNumber));
 
-      await _initDeviceLocation();
-
       if (isLoadAppointments) {
-        await getDsmesAppointmentList(showLoading: false);
+        await fetchDsmesAppointmentList(showLoading: false);
       }
     }
-    emit(DsmesAppointmentLoaded());
+  }
+
+  Future<void> fetchDsmesAppointmentList(
+      {int page = 1, bool isRefresh = false, bool showLoading = true}) async {
+    await getDsmesAppointmentList(
+        page: page, isRefresh: isRefresh, showLoading: showLoading);
   }
 
   Future<void> _initDeviceLocation() async {
@@ -586,7 +595,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return sortedList;
   }
 
-  initCreateDsmesBookingRequest({String locale = 'vi'}) {
+  initCreateDsmesBookingRequest(
+      {String locale = 'vi', bool clearExamination = true}) {
     createDsmesBookingRequest = CreateDsmesBookingRequest(
       startTime: '',
       endTime: '',
@@ -608,6 +618,30 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       symptomAttachment: [],
       paymentInfo: PaymentInfo(services: []),
     );
+
+    // Clear examination data for normal bookings unless explicitly preserved
+    if (clearExamination) {
+      clearExaminationData();
+    }
+  }
+
+  void setExaminationData({
+    required bool isExamination,
+    String? examinationType,
+    String? examinationLocation,
+    String? smartGoalId,
+  }) {
+    this.isExamination = isExamination;
+    this.examinationType = examinationType;
+    this.examinationLocation = examinationLocation;
+    this.smartGoalId = smartGoalId;
+  }
+
+  void clearExaminationData() {
+    isExamination = false;
+    examinationType = null;
+    examinationLocation = null;
+    smartGoalId = null;
   }
 
   setSelectedClinic(DsmesClinicModel? clinic) {
@@ -633,6 +667,12 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       {required String name, required String phone}) {
     createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
         patientName: name, patientPhoneNumber: phone);
+  }
+
+  updateCreateDsmesBookingRequestHomeExamination(
+      {required bool isTest, required String homeAddress}) {
+    createDsmesBookingRequest = createDsmesBookingRequest?.copyWith(
+        isTest: isTest, homeAddress: homeAddress);
   }
 
   updateCreateDsmesBookingRequestLanguage({required String language}) {
@@ -689,11 +729,13 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       int page = 1,
       String lat = '',
       String lng = '',
-      String kind = 'clinic'}) {
+      String kind = 'clinic',
+      String name = ''}) {
     searchBookingClinicListRequest = SearchBookingClinicListRequest(
       page: page.toString(),
       urlKeywords: [],
       specialty: specialtyId,
+      name: name,
       lat: lat,
       lng: lng,
       kind: kind,
@@ -740,7 +782,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     );
   }
 
-  String getItemTitle(DsmesAppointmentMode mode) {
+  String getItemTitle(DsmesAppointmentMode mode, {DsmesAppointment? data}) {
+    if (data != null && data.isExaminationAtHome) {
+      return R.string.xet_nghiem_tai_nha.tr();
+    }
     switch (mode) {
       case DsmesAppointmentMode.atClinic:
         return R.string.at_clinic.tr();

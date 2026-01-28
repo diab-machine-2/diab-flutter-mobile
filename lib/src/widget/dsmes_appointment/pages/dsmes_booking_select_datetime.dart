@@ -24,6 +24,8 @@ class DsmesCalendarSection extends StatefulWidget {
   final int? appointmentId;
   final bool isMergedSchedule;
   final String bookingType; // 'clinic' or 'center' or 'doctor'
+  final bool isExamination;
+  final String? examinationType;
 
   const DsmesCalendarSection({
     Key? key,
@@ -32,6 +34,8 @@ class DsmesCalendarSection extends StatefulWidget {
     this.appointmentId,
     this.isMergedSchedule = false,
     this.bookingType = Const.BOOKING_TYPE_CENTER,
+    this.isExamination = false,
+    this.examinationType,
   }) : super(key: key);
 
   @override
@@ -58,6 +62,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+
     if (_cubit.createDsmesBookingRequest != null) {
       final startTime = _cubit.createDsmesBookingRequest!.startTime;
       final endTime = _cubit.createDsmesBookingRequest!.endTime;
@@ -116,6 +121,10 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
 
       isAllowReschedule = isSelectedScheduleAvailable();
     });
+
+    // Close any global loading (e.g., from examination flow) once
+    // the datetime screen has finished loading its data.
+    BotToast.closeAllLoading();
   }
 
   bool isSelectedScheduleAvailable() {
@@ -206,11 +215,43 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.getNavigationKey()
-                            .currentState
-                            ?.pop(DsmesNavigationMixin.getNavigationKey()
+                        // Check if we're in edit mode (coming from confirm page)
+                        final route = ModalRoute.of(context)?.settings;
+                        final args = route?.arguments as Map<String, dynamic>?;
+                        final isEditing = args?['isEditing'] ?? false;
+                        final previousRoute = args?['previousRoute'] as String?;
+
+                        // If editing from confirm page, pop back to confirm
+                        if (isEditing &&
+                            previousRoute ==
+                                NavigatorName.dsmes_confirm_information) {
+                          BotToast.closeAllLoading();
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pop();
+                          return;
+                        }
+
+                        // For examination flow, check location:
+                        // - at home: go back to activity tab (root navigator)
+                        // - at clinic: go back to provider page (normal pop)
+                        if (_cubit.isExamination) {
+                          BotToast.closeAllLoading();
+                          if (_cubit.examinationLocation == Const.EXAMINATION_LOCATION_HOME) {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          } else {
+                            // At clinic: pop normally to go back to provider page
+                            DsmesNavigationMixin.getNavigationKey()
                                 .currentState
-                                ?.context);
+                                ?.pop();
+                          }
+                        } else {
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pop(DsmesNavigationMixin.getNavigationKey()
+                                  .currentState
+                                  ?.context);
+                        }
                       },
                     ),
                   ),
@@ -279,11 +320,48 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     final route = ModalRoute.of(context)?.settings;
     final args = route?.arguments as Map<String, dynamic>?;
     final isEditing = args?['isEditing'] ?? false;
+    final isExamination = _cubit.isExamination;
 
     if (widget.action == 'reschedule' || isEditing) {
       return _buildButton(R.string.tiep_tuc.tr(), () {
         _handleClinicContinueButton();
       }, isDisabled: !isAllowReschedule);
+    }
+
+    // Examination flow: single button that behaves like telemedicine booking
+    if (isExamination) {
+      return Container(
+        color: R.color.white,
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: GestureDetector(
+          onTap: () {
+            _handleBookingClinicTelemedicine();
+          },
+          child: Container(
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  R.color.greenGradientTop02,
+                  R.color.greenGradientBottom
+                ],
+              ),
+              borderRadius: BorderRadius.circular(200),
+            ),
+            child: Text(
+              R.string.submit_booking.tr(),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: R.color.white,
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     if (listServiceTypes.length == 2) {
@@ -462,6 +540,19 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       _cubit.updateCreateDsmesBookingRequestTime(
           startTime: selectedBookingSchedule!.startTime,
           endTime: selectedBookingSchedule!.endTime);
+
+      // Check if we're in edit mode (coming from confirm page)
+      final route = ModalRoute.of(context)?.settings;
+      final args = route?.arguments as Map<String, dynamic>?;
+      final isEditing = args?['isEditing'] ?? false;
+      final previousRoute = args?['previousRoute'] as String?;
+
+      // If editing from confirm page, pop back to confirm
+      if (isEditing &&
+          previousRoute == NavigatorName.dsmes_confirm_information) {
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+        return;
+      }
 
       // Normal flow
       DsmesNavigationMixin.getNavigationKey()

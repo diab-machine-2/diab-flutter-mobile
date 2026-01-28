@@ -529,7 +529,7 @@ class SmartGoalListReponse {
   }
 
   bool get isActivitiesNotCompleteInWeekCompleted {
-    if (data?.activitiesNotCompleteInWeekly?.isNotEmpty != true) return false;
+    if (data?.activitiesNotCompleteInWeekly?.isEmpty == true) return true;
     for (final SmartGoalList? data in data?.activitiesNotCompleteInWeekly ?? []) {
       if (data?.progress != 1) return false;
     }

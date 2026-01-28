@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 
+import 'app_client.dart' show FullLogInterceptor;
 import '../docosan_api.dart';
 
 const _defaultConnectTimeout = Duration(minutes: 1);
@@ -18,7 +20,7 @@ class DocosanClient {
   DocosanApi getDocosanClient() {
     _setupClient();
     return docosanClient;
-  }
+}
 
   static final DocosanClient _instance = DocosanClient._();
 
@@ -43,6 +45,10 @@ class DocosanClient {
     //     error: true,
     //     compact: true,
     //     maxWidth: 1000));
+
+    if (kDebugMode) {
+      _dio.interceptors.add(FullLogInterceptor(tag: 'DOCOSAN API'));
+    }
 
     _dio.interceptors
         .add(InterceptorsWrapper(onRequest: (options, handler) async {

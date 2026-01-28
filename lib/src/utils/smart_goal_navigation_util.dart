@@ -167,6 +167,9 @@ class SmartGoalNavigationUtil {
         await _handleInterviewNavigation(context,
             interviewType: 32, smartGoal: smartGoal);
         break;
+      case ScheduleType.examination:
+        await _handleExamination(context, smartGoal);
+        break;
     }
 
     // Call refresh callback if provided
@@ -318,6 +321,18 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handlePeripheralRecommend(BuildContext context) async {
     await Navigator.pushNamed(context, NavigatorName.connect_device_app);
+  }
+
+  static Future<void> _handleExamination(
+      BuildContext context, SmartGoalList? smartGoal) async {
+    if (_config.customExaminationHandler != null) {
+      // Call the custom examination handler if provided
+      await _config.customExaminationHandler!(context, smartGoal);
+    } else {
+      // Default behavior: could navigate to a default examination page
+      // For now, we'll just log that no handler is configured
+      log("No custom examination handler configured");
+    }
   }
 
   static Future<void> _handleInterviewNavigation(
@@ -826,6 +841,8 @@ class SmartGoalConfig {
   final bool handleLessonReload;
   final Future<void> Function(String? routeName, String? smartGoalId)?
       customGlucoseHandler;
+  final Future<void> Function(BuildContext context, SmartGoalList? smartGoal)?
+      customExaminationHandler;
   final VoidCallback? onLessonReload;
 
   SmartGoalConfig({
@@ -837,6 +854,7 @@ class SmartGoalConfig {
     this.hasInputGlucose = false,
     this.handleLessonReload = false,
     this.customGlucoseHandler,
+    this.customExaminationHandler,
     this.onLessonReload,
   });
 
@@ -850,6 +868,8 @@ class SmartGoalConfig {
     bool? handleLessonReload,
     Future<void> Function(String? routeName, String? smartGoalId)?
         customGlucoseHandler,
+    Future<void> Function(BuildContext context, SmartGoalList? smartGoal)?
+        customExaminationHandler,
     VoidCallback? onLessonReload,
   }) {
     return SmartGoalConfig(
@@ -864,6 +884,8 @@ class SmartGoalConfig {
       hasInputGlucose: hasInputGlucose ?? this.hasInputGlucose,
       handleLessonReload: handleLessonReload ?? this.handleLessonReload,
       customGlucoseHandler: customGlucoseHandler ?? this.customGlucoseHandler,
+      customExaminationHandler:
+          customExaminationHandler ?? this.customExaminationHandler,
       onLessonReload: onLessonReload ?? this.onLessonReload,
     );
   }

@@ -578,6 +578,8 @@ class Utils {
         return R.string.infographic.tr();
       case ScheduleType.quiz:
         return R.string.quiz.tr();
+      case ScheduleType.examination:
+        return R.string.examination.tr();
       default:
         return "";
     }
@@ -635,6 +637,8 @@ class Utils {
         return R.color.weight_color;
       case ScheduleType.infographic:
         return R.color.infographic_color;
+      case ScheduleType.examination:
+        return R.color.examination_color;
       default:
         return R.color.black;
     }
