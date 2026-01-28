@@ -11,6 +11,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
+import 'package:path/path.dart' as p;
 import 'package:permission_handler/permission_handler.dart';
 
 class SectionAddSymptom extends StatefulWidget {
@@ -409,16 +410,18 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
           preferredCameraDevice: CameraDevice.rear);
       if (pickedFile != null) {
         print('[SYMPTOM] ${pickedFile.path}');
-        final filePath = pickedFile.path;
-        final fileName = filePath.split('/').last;
-        final bytes = await pickedFile.readAsBytes();
+        // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+        final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
+        final convertedFile = File(convertedPath);
+        final fileName = p.basename(convertedPath);
+        final bytes = await convertedFile.readAsBytes();
 
         try {
           final imagePath =
               await _cubit.uploadSymptomImage(fileName: fileName, bytes: bytes);
           if (imagePath != null) {
             _fileNetworkName.add(imagePath);
-            _files.add(pickedFile);
+            _files.add(XFile(convertedPath));
             setState(() {});
           }
         } catch (apiError) {
@@ -444,16 +447,18 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
 
       if (pickedFile != null) {
         print('[SYMPTOM] ${pickedFile.path}');
-        final filePath = pickedFile.path;
-        final fileName = filePath.split('/').last;
-        final bytes = await pickedFile.readAsBytes();
+        // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+        final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
+        final convertedFile = File(convertedPath);
+        final fileName = p.basename(convertedPath);
+        final bytes = await convertedFile.readAsBytes();
 
         try {
           final imagePath =
               await _cubit.uploadSymptomImage(fileName: fileName, bytes: bytes);
           if (imagePath != null) {
             _fileNetworkName.add(imagePath);
-            _files.add(pickedFile);
+            _files.add(XFile(convertedPath));
             setState(() {});
           }
         } catch (apiError) {
