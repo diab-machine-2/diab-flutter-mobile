@@ -70,7 +70,7 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
     // _cubit.getDsmesAppointmentList();
-    _cubit.initDsmesBooking();
+    _cubit.initDsmesBooking(isLoadAppointments: !widget.fromWebinar);
 
     // Auto-navigate to doctor detail if pendingDoctorId is provided
     if (widget.pendingDoctorId != null) {
@@ -117,9 +117,8 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
       );
 
       if (detailSuccess && clinicDetailSuccess) {
-        BotToast.closeAllLoading();
-        // Navigate to doctor detail page
-        // Loading will be closed when detail page appears (in its initState)
+        // When fromWebinar, keep loading visible until detail page appears (it closes in initState)
+        if (!widget.fromWebinar) BotToast.closeAllLoading();
         DsmesNavigationMixin.getNavigationKey()
             .currentState
             ?.pushNamed(NavigatorName.doctor_detail, arguments: {
@@ -416,7 +415,7 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
         if (state is DsmesAppointmentFailure) {
           BotToast.closeAllLoading();
           Message.showToastMessage(context, state.error);
-        } else {
+        } else if (!widget.fromWebinar) {
           BotToast.closeAllLoading();
           _controller.refreshCompleted();
         }
@@ -427,10 +426,12 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
       ) {
         print('Building with state: $state');
         if (state is DsmesAppointmentLoading) {
-          BotToast.showLoading(allowClick: false);
+          if (!widget.fromWebinar) BotToast.showLoading(allowClick: false);
         } else {
-          BotToast.closeAllLoading();
-          _controller.refreshCompleted();
+          if (!widget.fromWebinar) {
+            BotToast.closeAllLoading();
+            _controller.refreshCompleted();
+          }
         }
         return _buildPage(context, state);
       },
