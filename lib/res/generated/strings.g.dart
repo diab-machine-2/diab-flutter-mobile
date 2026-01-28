@@ -2,8 +2,6 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-
-
 class Strings {
   String get ok => 'ok';
   String get cancel => 'cancel';
@@ -1430,4 +1428,7 @@ class Strings {
   String get yesterday => 'yesterday';
   String get given_access_gallery_description => 'given_access_gallery_description';
   String get manage => 'manage';
+  String get login_apple_id => 'login_apple_id';
+  String get login_gmail => 'login_gmail';
+  String get conversation_ai_citation => 'conversation_ai_citation';
 }
