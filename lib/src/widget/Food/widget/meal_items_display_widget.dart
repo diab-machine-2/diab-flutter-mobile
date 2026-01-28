@@ -37,6 +37,9 @@ class MealItemsDisplayWidget extends StatelessWidget {
         const SizedBox(height: 16),
         // Food items list
         ...data.foods.map((food) => _buildFoodCard(food)).toList(),
+        // Ghi chú section
+        const SizedBox(height: 24),
+        _buildNoteSection(),
       ],
     );
   }
@@ -121,6 +124,69 @@ class MealItemsDisplayWidget extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNoteSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Ghi chú',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: R.color.textDark,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Color(0xFFF5F5F5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      data.note?.isNotEmpty == true
+                          ? data.note!
+                          : 'Nhập ghi chú của bạn',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: data.note?.isNotEmpty == true
+                            ? R.color.textDark
+                            : R.color.primaryGreyColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.edit_outlined,
+                    color: Color(0xFF008479),
+                    size: 20,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${data.note?.length ?? 0}/250',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.primaryGreyColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

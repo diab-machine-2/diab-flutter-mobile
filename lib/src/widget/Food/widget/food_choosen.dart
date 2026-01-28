@@ -4,6 +4,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/widget/Food/widget/create_food_dialog.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -208,31 +209,91 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                           },
                         ),
                       ),
-                GestureDetector(
-                  onTap: () {
-                    if (widget.callback != null) {
-                      widget.callback!(foods);
-                    }
-                  },
-                  child: Container(
-                      height: 48,
-                      width: 195,
-                      decoration: BoxDecoration(
-                          color: R.color.mainColor,
-                          borderRadius: BorderRadius.circular(200),
-                          gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                R.color.greenGradientTop,
-                                R.color.greenGradientBottom
-                              ])),
-                      child: Center(
-                          child: Text(R.string.save.tr(),
-                              style: TextStyle(
+                // Hai nút: Tạo món mới và Tiếp tục
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      // Button: Tạo món mới
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            final result = await CreateFoodDialog.show(
+                              context: context,
+                            );
+
+                            if (result != null) {
+                              setState(() {
+                                foods.add(result);
+                                calculatorCalo();
+                              });
+                              // Notify observers
+                              Observable.instance.notifyObservers([],
+                                  notifyName: "add_food_to_cart",
+                                  map: {"food": result});
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                color: R.color.greenGradientBottom,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Tạo món mới',
+                                style: TextStyle(
+                                  color: R.color.greenGradientBottom,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Button: Tiếp tục (thay cho nút Lưu cũ)
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (widget.callback != null) {
+                              widget.callback!(foods);
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: R.color.mainColor,
+                              borderRadius: BorderRadius.circular(100),
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom,
+                                ],
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Tiếp tục',
+                                style: TextStyle(
                                   color: R.color.white,
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 16)))),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

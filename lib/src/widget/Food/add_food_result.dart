@@ -392,30 +392,102 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   }
 
   Widget _bottomSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: R.color.mainColor,
-        borderRadius: BorderRadius.circular(200),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.centerRight,
-          colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
-        ),
-      ),
-      child: ElevatedButton(
-        onPressed: _doComplete,
-        child: Text(R.string.completed.tr(),
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w700)),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(200),
+    return Row(
+      children: [
+        // Nút Chia sẻ (bên trái)
+        Expanded(
+          child: Container(
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(200),
+              border: Border.all(color: Color(0xFF008479), width: 1.5),
+            ),
+            child: ElevatedButton(
+              onPressed: _shareFood,
+              child: Text('Chia sẻ',
+                  style: TextStyle(
+                      color: Color(0xFF008479),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(200),
+                ),
+              ),
+            ),
           ),
         ),
+        const SizedBox(width: 12),
+        // Nút Hoàn tất (bên phải)
+        Expanded(
+          child: Container(
+            height: 48,
+            decoration: BoxDecoration(
+              color: R.color.mainColor,
+              borderRadius: BorderRadius.circular(200),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.centerRight,
+                colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+              ),
+            ),
+            child: ElevatedButton(
+              onPressed: _doComplete,
+              child: Text(R.string.completed.tr(),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(200),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Chia sẻ thông tin bữa ăn
+  void _shareFood() {
+    final data = widget.data;
+    final StringBuffer shareContent = StringBuffer();
+
+    shareContent.writeln('🍽️ Bữa ăn của tôi');
+    shareContent
+        .writeln('📅 ${DateFormat('dd/MM/yyyy HH:mm').format(data.dateTime)}');
+    shareContent.writeln('⏰ ${data.timeFrame}');
+    shareContent.writeln('');
+
+    // Thêm thông tin từng món
+    for (var food in data.foods) {
+      final portion = food.portion ?? 1;
+      final unit = food.unit ?? 'phần';
+      final calorie = ((food.calorie ?? 0) * portion).round();
+      shareContent.writeln('• ${food.name} - $portion $unit ($calorie kcal)');
+    }
+
+    shareContent.writeln('');
+    shareContent.writeln('🔥 Tổng: ${data.totalCalories.toInt()} Kcal');
+    shareContent.writeln('🎯 Mục tiêu: ${data.goalCalories.toInt()} Kcal');
+    shareContent.writeln(
+        '📊 Đánh giá: ${data.balanceStatus ?? "Chưa xác định"} (${data.score ?? 0}/10)');
+
+    // TODO: Implement share functionality with share_plus
+    // Share.share(shareContent.toString());
+
+    // Tạm thời show snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đã sao chép nội dung bữa ăn'),
+        duration: Duration(seconds: 2),
       ),
     );
   }

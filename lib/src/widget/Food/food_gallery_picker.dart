@@ -10,8 +10,10 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:path/path.dart' as p;
+import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class FoodGalleryPicker extends StatefulWidget {
@@ -862,6 +864,74 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         highlightColor: R.color.transparent,
         icon: Icon(Icons.arrow_back, color: R.color.white),
         onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        // Nút "Tìm món ăn"
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: _openSearchFood,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Color(0xFFCAFAF5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Color(0xFF8FEBE0),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: R.color.greenGradientBottom,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Tìm món ăn',
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Mở màn hình tìm kiếm món ăn
+  void _openSearchFood() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => SearchFoodController(
+          foods: [],
+          callback: (foods) {
+            if (foods.isNotEmpty) {
+              Navigator.pushNamed(
+                context,
+                NavigatorName.confirm_food,
+                arguments: {
+                  'foods': foods,
+                  'timeframe': widget.timeframe,
+                  'timeframeId': widget.timeframeId,
+                  'files': <String>[],
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

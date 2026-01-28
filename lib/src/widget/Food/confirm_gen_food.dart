@@ -10,7 +10,6 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -18,9 +17,10 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
-import 'food_detail_tabbar.dart';
+import 'food_gallery_picker.dart';
 import 'food_result.dto.dart';
 import 'search_food_controller.dart';
+import 'widget/food_edit_popup.dart';
 
 class ConfirmGeneratedFood extends StatefulWidget {
   final List<FoodModel> generatedFoods;
@@ -152,6 +152,55 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                         right: 0,
                                         child: Center(
                                             child: _dateTimePickerOverlay()),
+                                      ),
+                                      // Số ảnh (1/n) - góc trái dưới
+                                      if (widget.files.isNotEmpty)
+                                        Positioned(
+                                          left: 16,
+                                          bottom: 86,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.black.withOpacity(0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              '1/${widget.files.length}',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      // Nút "Đổi ảnh" - góc phải dưới
+                                      Positioned(
+                                        right: 16,
+                                        bottom: 86,
+                                        child: GestureDetector(
+                                          onTap: _changeImage,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 6),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            child: Text(
+                                              'Đổi ảnh',
+                                              style: TextStyle(
+                                                color: R.color.textDark,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -321,74 +370,72 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                 .map(
                   (index, food) => MapEntry(
                     index,
-                    Container(
-                      margin: EdgeInsets.only(bottom: 12),
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: R.color.color0xffF7F8F8,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  food.name ?? '',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.textDark,
+                    GestureDetector(
+                      onTap: () {
+                        _showEditFoodPopup(food, index);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: R.color.color0xffF7F8F8,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    food.name ?? '',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.textDark,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${food.unit ?? ''}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: R.color.color0xff636A6B,
+                                  SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '${food.portion?.toStringAsFixed(food.portion! % 1 == 0 ? 0 : 1) ?? "1"} ${food.unit ?? ""}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: R.color.color0xff636A6B,
+                                        ),
                                       ),
-                                    ),
-                                    Container(
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 10),
-                                      width: 6,
-                                      height: 6,
-                                      decoration: BoxDecoration(
-                                        color: R.color.color0xffD6D8E0,
-                                        shape: BoxShape.circle,
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: R.color.color0xffD6D8E0,
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      '${formatNumber((food.calorie ?? 0) * (food.portion ?? 0))} ${R.string.kcal.tr()}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: R.color.color0xff636A6B,
+                                      Text(
+                                        '${formatNumber((food.calorie ?? 0) * (food.portion ?? 0))} ${R.string.kcal.tr()}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: R.color.color0xff636A6B,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedFoods.removeAt(index);
-                              });
-                            },
-                            child: Image.asset(
-                              R.drawable.ic_food_delete,
+                            Image.asset(
+                              R.drawable.ic_food_edit,
                               width: 32,
                               height: 32,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -460,29 +507,88 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       height: 44,
       width: double.infinity,
-      constraints: BoxConstraints(
-        minHeight: 44,
-        maxHeight: 44,
-        maxWidth: 351,
-      ),
-      child: GestureDetector(
-        onTap: _haveFood ? _submitData : null,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(200),
-            color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
-          ),
-          child: Center(
-            child: Text(
-              R.string.confirm.tr(),
-              style: TextStyle(
-                color: R.color.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+      child: Row(
+        children: [
+          // Nút Chia sẻ (bên trái)
+          GestureDetector(
+            onTap: _shareFood,
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(color: Color(0xFFE0E0E0), width: 1),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.share_outlined,
+                  color: Color(0xFF008479),
+                  size: 22,
+                ),
               ),
             ),
           ),
-        ),
+          SizedBox(width: 12),
+          // Nút Hoàn tất (bên phải, chiếm phần còn lại)
+          Expanded(
+            child: GestureDetector(
+              onTap: _haveFood ? _submitData : null,
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.confirm.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Chia sẻ thông tin bữa ăn
+  void _shareFood() {
+    // Tạo nội dung chia sẻ
+    final StringBuffer shareContent = StringBuffer();
+    shareContent.writeln('🍽️ Bữa ăn của tôi');
+    shareContent
+        .writeln('📅 ${DateFormat('dd/MM/yyyy HH:mm').format(selectedDate)}');
+    shareContent.writeln('');
+
+    // Thêm thông tin từng món
+    for (var food in _selectedFoods) {
+      final portion = food.portion ?? 1;
+      final unit = food.unit ?? 'phần';
+      final calorie = ((food.calorie ?? 0) * portion).round();
+      shareContent.writeln('• ${food.name} - $portion $unit ($calorie Kcal)');
+    }
+
+    shareContent.writeln('');
+    shareContent.writeln('🔥 Tổng: ${totalKcal.round()} Kcal');
+    shareContent.writeln('🍚 Carbs: ${_calculateTotalCarbs().round()}g');
+    shareContent.writeln('🥩 Protein: ${_calculateTotalProtein().round()}g');
+    shareContent.writeln('🧈 Fat: ${_calculateTotalFat().round()}g');
+
+    // TODO: Implement share functionality
+    // Share.share(shareContent.toString());
+
+    // Tạm thời show snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Đã copy nội dung chia sẻ'),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -503,6 +609,56 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
             },
           );
         },
+      ),
+    );
+  }
+
+  /// Hiển thị popup chỉnh sửa món ăn
+  void _showEditFoodPopup(FoodModel food, int index) {
+    FoodEditPopup.show(
+      context: context,
+      food: food,
+      index: index,
+      onSave: (updatedFood, idx) {
+        setState(() {
+          _selectedFoods[idx] = updatedFood;
+        });
+      },
+      onDelete: (idx) {
+        setState(() {
+          _selectedFoods.removeAt(idx);
+        });
+      },
+    );
+  }
+
+  /// Quay về thư viện để đổi ảnh
+  void _changeImage() {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => FoodGalleryPicker(
+          timeframe: widget.timeframe,
+          timeframeId: widget.timeframeId,
+          onImagesSelected: (List<String> newFiles) {
+            if (newFiles.isNotEmpty) {
+              // Pop về màn hình capture rồi push lại confirm với ảnh mới
+              Navigator.pop(context); // Pop gallery
+              Navigator.pop(context); // Pop confirm hiện tại
+
+              // Push lại với ảnh mới - cần gọi lại AI analyze
+              Navigator.pushNamed(
+                context,
+                NavigatorName.food_image_capture,
+                arguments: {
+                  'timeframe': widget.timeframe,
+                  'timeframeId': widget.timeframeId,
+                  'selectedFiles': newFiles,
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

@@ -118,7 +118,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         _showErrorDialog('Camera permission is required to take photos');
         return;
       }
-      
+
       _requestingPermission = false;
 
       // Wait a bit before initializing camera to ensure permissions are fully processed
@@ -630,7 +630,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 Text(
                   'Ảnh',
                   style: TextStyle(
-                    color: Color(0xF636A6B),
+                    color: Color(0xFF636A6B),
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),
@@ -657,7 +657,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 Text(
                   'Xoay',
                   style: TextStyle(
-                    color: Color(0xF636A6B),
+                    color: Color(0xFF636A6B),
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),
