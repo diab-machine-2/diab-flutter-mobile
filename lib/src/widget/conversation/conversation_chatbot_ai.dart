@@ -572,11 +572,10 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                       trimExpandedText:
                           R.string.conversation_message_read_less.tr()),
                   // Draw time for each group of messages
-                  if (!nextMessageInGroup)
+                  if (!nextMessageInGroup) ...[
                     Container(
                       margin: EdgeInsets.only(top: 6),
                       child: Text(
-                        // format time HH:mm,
                         formattedDateTime,
                         textAlign: TextAlign.left,
                         style: TextStyle(
@@ -585,6 +584,50 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                             fontWeight: FontWeight.w400),
                       ),
                     ),
+                    // AI citation: dashed line + disclaimer (only for sender == ai)
+                    if (message.author.id == _bot.id) ...[
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          const dashW = 4.0;
+                          const dashSpace = 3.0;
+                          final n = ((constraints.maxWidth + dashSpace) /
+                                  (dashW + dashSpace))
+                              .floor()
+                              .clamp(0, 120);
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Row(
+                              children: List.generate(
+                                n,
+                                (i) => Padding(
+                                  padding: EdgeInsets.only(
+                                      right: i < n - 1 ? dashSpace : 0),
+                                  child: Container(
+                                    width: dashW,
+                                    height: 1,
+                                    color: R.color.captionColorGray,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          R.string.conversation_ai_citation.tr(),
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: R.color.captionColorGray,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ]),
       color: _author.id != message.author.id ||
               message.type == types.MessageType.image
