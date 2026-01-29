@@ -48,9 +48,10 @@ class _SocialLoginButton extends StatelessWidget {
               child: Text(
                 label,
                 style: TextStyle(
+                  fontFamily: 'Nunito',
                   color: R.color.textDark,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -109,7 +110,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                   Expanded(
                     child: _SocialLoginButton(
                       icon: Image.asset(R.drawable.ic_login_apple,
-                          width: 20, height: 20),
+                          width: 24, height: 24),
                       label: R.string.login_apple_id.tr(),
                       onTap: () async {
                         await TrackingManager.trackEvent(
@@ -131,7 +132,7 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                   Expanded(
                     child: _SocialLoginButton(
                       icon: Image.asset(R.drawable.ic_google,
-                          width: 20, height: 20),
+                          width: 24, height: 24),
                       label: R.string.login_gmail.tr(),
                       onTap: () async {
                         await TrackingManager.trackEvent(
@@ -147,10 +148,10 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                   Expanded(
                     child: Center(
                       child: SizedBox(
-                        width: 160,
+                        width: 180,
                         child: _SocialLoginButton(
                           icon: Image.asset(R.drawable.ic_google,
-                              width: 20, height: 20),
+                              width: 24, height: 24),
                           label: R.string.login_gmail.tr(),
                           onTap: () async {
                             await TrackingManager.trackEvent(
