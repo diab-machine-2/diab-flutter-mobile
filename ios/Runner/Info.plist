@@ -122,7 +122,7 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Cho phép DiaB sử dụng Bluetooth để kết nối với máy đo đường huyết.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Vui lòng cho phép DiaB truy cập camera của bạn</string>
+	<string>Ứng dụng cần sử dụng máy ảnh để chụp hình ảnh thực phẩm và quét các chứng từ y tế vào hồ sơ sức khỏe cá nhân. Vui lòng cấp quyền truy cập máy ảnh để chụp, tải lên hình ảnh thực phẩm và quét các chứng từ y tế vào hồ sơ sức khỏe cá nhân.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Chúng tôi sẽ đồng bộ hóa dữ liệu của bạn với ứng dụng Apple Health để cung cấp cho bạn những thông tin chi tiết tốt hơn</string>
 	<key>NSHealthUpdateUsageDescription</key>

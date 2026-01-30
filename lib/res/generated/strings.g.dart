@@ -1459,4 +1459,7 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get given_access_gallery_description => 'given_access_gallery_description';
   String get manage => 'manage';
   String get participation => 'participation';
+  String get login_apple_id => 'login_apple_id';
+  String get login_gmail => 'login_gmail';
+  String get conversation_ai_citation => 'conversation_ai_citation';
 }
