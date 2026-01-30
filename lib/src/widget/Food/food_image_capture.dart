@@ -119,21 +119,6 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         return;
       }
 
-      // Request photo library permission using photo_manager
-      final PermissionState photoPermission =
-          await PhotoManager.requestPermissionExtend();
-      final bool photoGranted = photoPermission == PermissionState.authorized ||
-          photoPermission == PermissionState.limited ||
-          photoPermission.isAuth;
-      print('Photo permission status (authorized/limited): $photoGranted');
-
-      // Fallback for older SDKs or permanently denied
-      if (!photoGranted) {
-        final bool fallbackGranted = await _requestGalleryPermission();
-        print(
-            'Fallback photo permission via permission_handler: $fallbackGranted');
-      }
-
       _requestingPermission = false;
 
       // Wait a bit before initializing camera to ensure permissions are fully processed
@@ -645,7 +630,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 Text(
                   'Ảnh',
                   style: TextStyle(
-                    color: Color(0xF636A6B),
+                    color: Color(0xFF636A6B),
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),
@@ -672,7 +657,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 Text(
                   'Xoay',
                   style: TextStyle(
-                    color: Color(0xF636A6B),
+                    color: Color(0xFF636A6B),
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),

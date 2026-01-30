@@ -2,17 +2,21 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'dart:developer' as developer;
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image/image.dart' as img;
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:url_launcher/url_launcher.dart';
 
 import 'const.dart';
@@ -245,7 +249,6 @@ class Utils {
   }
 
   static int? convertPriceToNumber(String price) {
-    if (price == null) return null;
     String newPrice = price
         .replaceAll(" ", "")
         .replaceAll("đ", "")
@@ -333,7 +336,7 @@ class Utils {
   // }
 
   static String getFileName(File file) {
-    return basename(file.path);
+    return p.basename(file.path);
   }
 
   static String base64Image(File file) {
@@ -546,17 +549,19 @@ class Utils {
       case ScheduleType.book_1_1:
       case ScheduleType.io_evaluate:
       case ScheduleType.output_assessment:
+        return R.string.event.tr();
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
+        return R.string.interview.tr();
       case ScheduleType.booking_solo:
-      case ScheduleType.book_1_n:
-        return R.string.event.tr();
+        return R.string.booking.tr();
       case ScheduleType.survey:
       case ScheduleType.update_profile:
         return R.string.survey.tr();
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
-        return R.string.knowledge.tr();
+      case ScheduleType.book_1_n:
+        return R.string.lesson.tr();
       case ScheduleType.custom:
         return R.string.target.tr();
       case ScheduleType.emotion:
@@ -571,6 +576,8 @@ class Utils {
         return R.string.can_nang.tr();
       case ScheduleType.infographic:
         return R.string.infographic.tr();
+      case ScheduleType.quiz:
+        return R.string.quiz.tr();
       default:
         return "";
     }
@@ -597,15 +604,18 @@ class Utils {
       case ScheduleType.book_1_1:
       case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
-      case ScheduleType.book_1_n:
+        return R.color.event_color;
       case ScheduleType.booking_solo:
+        return R.color.greenGradientTop02;
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
-        return R.color.event_color;
+        return R.color.interview_color;
       case ScheduleType.survey:
+      case ScheduleType.quiz:
         return R.color.survey_color;
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
+      case ScheduleType.book_1_n:
         return R.color.lesson_color;
       case ScheduleType.update_profile:
         return R.color.survey_color;
@@ -656,6 +666,94 @@ class Utils {
       return '+84$phoneNumber';
     }
     return phoneNumber;
+  }
+
+  /// Converts an image file (HEIC/HEIF/LIVE) to JPEG format.
+  /// This is necessary for iOS images which are often in HEIC format
+  /// and may cause API errors when submitted directly.
+  ///
+  /// [originalPath] - The path to the original image file
+  /// Returns the path to the converted JPEG file, or the original path if conversion fails.
+  static Future<String> convertImageToJpeg(String originalPath) async {
+    try {
+      final File originalFile = File(originalPath);
+      if (!await originalFile.exists()) {
+        return originalPath;
+      }
+
+      // Always compress/resize images for uploads to ensure consistent file sizes
+      // This prevents large JPEG files (e.g., from iOS image picker) from being uploaded
+      // without compression, which can cause file size issues.
+
+      // Step 1: Use platform codecs (flutter_image_compress) to ensure
+      // HEIC/HEIF/LIVE inputs become JPEG bytes and compress existing JPEGs.
+      final Uint8List? compressedBytes =
+          await FlutterImageCompress.compressWithFile(
+        originalPath,
+        minWidth: 800, // Keep high resolution
+        minHeight: 800,
+        quality: 85,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedBytes == null || compressedBytes.isEmpty) {
+        developer.log(
+          '[Utils] Failed to compress image, returning original path',
+          name: '[Utils]',
+        );
+        return originalPath;
+      }
+
+      // Step 2: Decode and re-encode as JPEG to ensure proper format
+      final img.Image? decoded = img.decodeImage(compressedBytes);
+      if (decoded == null) {
+        developer.log(
+          '[Utils] Failed to decode compressed image, returning original path',
+          name: '[Utils]',
+        );
+        return originalPath;
+      }
+
+      final List<int> jpegBytes = img.encodeJpg(decoded, quality: 85);
+
+      // Step 3: Save to temporary file
+      final Directory tempDir = Directory.systemTemp;
+      final int timestamp = DateTime.now().millisecondsSinceEpoch;
+      final String baseName = p.basenameWithoutExtension(originalPath);
+      final String fileName =
+          'DiaB_${timestamp}_${baseName.isEmpty ? "image" : baseName}.jpg';
+      final File outFile = File(p.join(tempDir.path, fileName));
+      await outFile.writeAsBytes(jpegBytes, flush: true);
+
+      developer.log(
+        '[Utils] Converted image to JPEG: ${outFile.path}',
+        name: '[Utils]',
+      );
+
+      return outFile.path;
+    } catch (e) {
+      developer.log(
+        '[Utils] Error converting image to JPEG: $e',
+        name: '[Utils]',
+      );
+      // On any error, fall back to the original path so flow continues.
+      return originalPath;
+    }
+  }
+
+  /// Converts a list of image file paths to JPEG format.
+  /// Useful when submitting multiple images to an API.
+  ///
+  /// [imagePaths] - List of paths to image files
+  /// Returns a list of converted JPEG file paths
+  static Future<List<String>> convertImagesToJpeg(
+      List<String> imagePaths) async {
+    final List<String> convertedPaths = [];
+    for (final path in imagePaths) {
+      final convertedPath = await convertImageToJpeg(path);
+      convertedPaths.add(convertedPath);
+    }
+    return convertedPaths;
   }
 }
 

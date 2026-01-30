@@ -58,11 +58,11 @@ extension WeekStatus on CompletionStatus {
       return _dayIconLayout(
         child: Image.asset(
           R.drawable.ic_learning,
-          width: 16,
-          height: 16,
+          width: 12,
+          height: 12,
           color: R.color.white,
         ),
-        color: R.color.green,
+        color: R.color.accentColor,
         isSelected: isSelected,
       );
     } else {
@@ -72,39 +72,42 @@ extension WeekStatus on CompletionStatus {
             child: Icon(
               Icons.check_rounded,
               color: R.color.white,
-              size: 16,
+              size: 12,
             ),
-            color: R.color.greenGradientBottom,
+            color: R.color.accentColor,
             isSelected: isSelected,
           );
         case CompletionStatus.not_completed:
           return _dayIconLayout(
-            child: Icon(
-              Icons.clear_rounded,
-              color: R.color.white,
-              size: 16,
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: R.color.white,
+                shape: BoxShape.circle,
+              ),
             ),
-            color: R.color.orange_1,
+            color: R.color.accentColor,
             isSelected: isSelected,
           );
         case CompletionStatus.studying:
           return _dayIconLayout(
             child: Image.asset(
               R.drawable.ic_learning,
-              width: 16,
-              height: 16,
+              width: 12,
+              height: 12,
               color: R.color.white,
             ),
-            color: R.color.green,
+            color: R.color.accentColor,
             isSelected: isSelected,
           );
         case CompletionStatus.not_start_yet:
           return _dayIconLayout(
             child: Container(
-              width: 16,
-              height: 16,
+              width: 12,
+              height: 12,
             ),
-            color: R.color.gray,
+            color: R.color.white,
             isSelected: isSelected,
           );
       }
@@ -159,30 +162,27 @@ extension WeekStatus on CompletionStatus {
     required Color color,
     required bool isSelected,
   }) {
-    return Stack(
-      children: [
-        Positioned(
-          top: 4,
-          left: 4,
-          child: Container(
-            padding: const EdgeInsets.all(3),
+    const double iconSize = 20;
+    return SizedBox(
+      width: iconSize,
+      height: iconSize,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: iconSize,
+            height: iconSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
-              //  color: color,
+              border: color == R.color.white
+                  ? Border.all(color: R.color.color0xffE5E5E5, width: 2)
+                  : null,
             ),
-            child: child,
+            child: Center(child: child),
           ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: R.color.transparent,
-            border: Border.all(color: isSelected ? R.color.green : R.color.transparent, width: 2),
-          ),
-          child: SizedBox(width: 26, height: 26),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

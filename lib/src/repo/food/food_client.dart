@@ -305,7 +305,7 @@ class FoodClient extends FetchClient {
       }
       final response = await super
           .postHttp(path: '/App/Diet/InputAI', params: params, files: files);
-      log('params: $params');
+      log('input AI nutrition params: $params');
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
@@ -464,6 +464,27 @@ class FoodClient extends FetchClient {
     }
   }
 
+  // lấy biểu đồ phân bổ theo nhóm thực phẩm (Tinh bột, Chất đạm, Chất béo, Rau củ, Hoa quả)
+  Future<FoodDistributeModel> fetchFoodGroupDistribute(
+      String? currentDateTime, String? periodFilterType) async {
+    try {
+      final Response response = await super
+          .fetchData(url: '/App/Admin/Diet/Statistic/distribute', params: {
+        'currentDateTime': currentDateTime,
+        'periodFilterType': periodFilterType,
+        'takeAll': 'true'
+      });
+      if (response.statusCode == 200) {
+        return FoodDistributeModel.fromJson(response.data['data']);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
   // lay danh sach cuong do van dong
 
   Future<List<ExerciseIntensityModel>> fetchIntensity() async {
@@ -531,5 +552,32 @@ class FoodClient extends FetchClient {
       return data.where((e) => e.status != 2).toList();
     }
     return null;
+  }
+
+  // Lấy AI analysis cho dinh dưỡng
+  Future<String?> fetchDietAnalysis(int periodFilterType) async {
+    try {
+      print(
+          '🔍 Fetching Diet AI Analysis with periodFilterType: $periodFilterType');
+      final Response response = await super.fetchData(
+        url: '/App/Diet/Analysis/HealthTrend',
+        params: {
+          'periodFilterType': periodFilterType.toString(),
+        },
+      );
+      print('✅ API Response Status: ${response.statusCode}');
+      print('📦 API Response Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final result = response.data['data'] as String?;
+        print('✨ AI Analysis Result: $result');
+        return result;
+      }
+      print('⚠️ Non-200 status code');
+      return null;
+    } catch (e) {
+      print('❌ fetchDietAnalysis Error: $e');
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
   }
 }

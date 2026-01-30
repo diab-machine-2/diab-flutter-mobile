@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/exercrises/excercise_rank_model.dart';
@@ -185,6 +187,7 @@ class ExercrisesClient extends FetchClient {
       if (timeFrameId != null && timeFrameId.isNotEmpty) {
         params['timeFrameId'] = timeFrameId;
       }
+      log('Exercises input params: $params');
       final response = await super
           .postHttp(path: '/App/Exercise/Input', params: params, files: files);
       if (response.statusCode == 200) {

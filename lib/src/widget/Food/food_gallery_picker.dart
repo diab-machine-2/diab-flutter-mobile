@@ -1,12 +1,19 @@
 import 'dart:io';
 import 'dart:developer' as developer;
 import 'dart:typed_data';
+
+import 'package:app_settings/app_settings.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:path/path.dart' as p;
+import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class FoodGalleryPicker extends StatefulWidget {
@@ -36,6 +43,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   List<String> _selectedImages = []; // Store photo IDs instead of file paths
   bool _isLoading = true;
   bool _hasPermission = false;
+  bool _isLimitedPermission = false; // Track if permission is limited
   final int _maxSelection = 5;
   bool _didApplyInitialSelectedPath = false;
 
@@ -87,7 +95,46 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       });
       print('Starting permission and photo loading process...');
 
-      // First try to request permission
+      // First, try to access photos directly without requesting permission
+      // This avoids triggering permission dialog if permission is already granted
+      try {
+        print(
+            'Attempting to access photos directly without requesting permission...');
+        final List<AssetPathEntity> albums =
+            await PhotoManager.getAssetPathList(
+          type: RequestType.image,
+          onlyAll: true,
+        );
+
+        if (albums.isNotEmpty) {
+          // Successfully accessed photos - permission is already granted
+          print('Successfully accessed photos without requesting permission');
+
+          // Now check permission state to determine if it's limited (without requesting)
+          // This should not trigger a dialog if permission is already granted
+          final PermissionState currentState =
+              await PhotoManager.requestPermissionExtend();
+          print('Permission state (already granted): $currentState');
+
+          if (!mounted) return;
+          final bool isLimited = currentState == PermissionState.limited;
+          setState(() {
+            _hasPermission = true;
+            _isLimitedPermission = isLimited;
+          });
+
+          _recentAlbum = albums.first;
+          await _loadPhotosPage(0, isInitialLoad: true);
+          return;
+        }
+      } catch (directAccessError) {
+        // Direct access failed - permission might not be granted
+        print(
+            'Direct access failed, need to request permission: $directAccessError');
+      }
+
+      // If direct access failed, request permission
+      print('Requesting permission...');
       final PermissionState currentState =
           await PhotoManager.requestPermissionExtend();
       print('Permission state after request: $currentState');
@@ -97,6 +144,13 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       print('Permission isLimited: ${currentState == PermissionState.limited}');
 
       if (_isDisposed || !mounted) return;
+
+      // Track if permission is limited
+      final bool isLimited = currentState == PermissionState.limited;
+      if (!mounted) return;
+      setState(() {
+        _isLimitedPermission = isLimited;
+      });
 
       // On Android 13+, sometimes permission state is incorrectly reported as denied
       // even when permission is actually granted. Let's try to access photos directly.
@@ -135,9 +189,16 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       if (albums.isNotEmpty) {
         print('Successfully accessed photos - permission is actually granted');
         if (!mounted) return;
+
+        // Check permission state again to update limited status
+        final PermissionState currentState =
+            await PhotoManager.requestPermissionExtend();
+        final bool isLimited = currentState == PermissionState.limited;
+
         setState(() {
           _hasPermission = true;
           _isLoading = false;
+          _isLimitedPermission = isLimited;
         });
         _recentAlbum = albums.first;
 
@@ -149,10 +210,15 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           // Gallery is empty - stop retrying
           print('Gallery is empty - no photos to load');
           if (!mounted) return;
+          // Check permission state to update limited status
+          final PermissionState currentState =
+              await PhotoManager.requestPermissionExtend();
+          final bool isLimited = currentState == PermissionState.limited;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
             _hasPermission = true; // Permission is granted, just no photos
+            _isLimitedPermission = isLimited;
             _hasCheckedEmptyGallery = true;
           });
           return;
@@ -209,6 +275,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           setState(() {
             _hasPermission = true;
             _isLoading = false;
+            _isLimitedPermission = currentState == PermissionState.limited;
             _hasCheckedEmptyGallery = true;
             _recentPhotos = []; // Empty list since we couldn't load photos
           });
@@ -248,6 +315,11 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           permission == PermissionState.limited ||
           permission.isAuth) {
         print('Permission granted on final attempt');
+        // Update limited permission status
+        if (!mounted) return;
+        setState(() {
+          _isLimitedPermission = permission == PermissionState.limited;
+        });
         // Reset the flag to allow one more try
         _hasCheckedEmptyGallery = false;
         await _tryLoadPhotosDirectly();
@@ -295,9 +367,14 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         final int assetCount = await _recentAlbum!.assetCountAsync;
         if (assetCount == 0) {
           if (!mounted) return;
+          // Check permission state to update limited status
+          final PermissionState currentState =
+              await PhotoManager.requestPermissionExtend();
+          final bool isLimited = currentState == PermissionState.limited;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
+            _isLimitedPermission = isLimited;
             _hasCheckedEmptyGallery = true;
           });
           return;
@@ -322,6 +399,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             _recentPhotos = [];
             _isLoading = false;
             _hasPermission = true;
+            _isLimitedPermission = currentState == PermissionState.limited;
             _hasCheckedEmptyGallery = true;
           });
         } else {
@@ -446,6 +524,49 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     }
   }
 
+  /// Handle the "Manage" button press to show system photo picker for limited access
+  /// Since the banner only shows when _isLimitedPermission is true, we can safely
+  /// call presentLimited() directly without re-checking permission
+  Future<void> _handleManageLimitedAccess() async {
+    if (_isDisposed || !mounted) return;
+
+    try {
+      // Directly present the system UI to manage selection
+      // No need to check permission again since banner only shows when limited
+      await PhotoManager.presentLimited();
+      print('PhotoManager.presentLimited() completed');
+
+      // Reload photos to reflect any new selection made by the user
+      if (mounted) {
+        print('Refreshing gallery after managing limited photos...');
+
+        // Clear thumbnail cache to force refresh
+        _thumbnailFutures.clear();
+
+        // Reload photos to reflect changes
+        await _loadRecentPhotos();
+      }
+    } catch (e) {
+      print('Error managing limited access: $e');
+
+      // On Android, presentLimited() might not work, fallback to app settings
+      if (Platform.isAndroid) {
+        print('Android: Falling back to app settings...');
+        await AppSettings.openAppSettings(type: AppSettingsType.settings);
+
+        if (mounted) {
+          _showErrorDialog(
+              'Vui lòng vào Cài đặt > Quyền > Ảnh và video để quản lý quyền truy cập ảnh.\n\n'
+              'Sau khi thay đổi, vui lòng quay lại ứng dụng và làm mới danh sách ảnh.');
+        }
+      } else {
+        if (mounted) {
+          _showErrorDialog('Lỗi khi quản lý quyền truy cập: $e');
+        }
+      }
+    }
+  }
+
   Future<void> _captureImage() async {
     try {
       final ImagePicker picker = ImagePicker();
@@ -502,6 +623,80 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             R.string.max_image_select_dynamic.tr(args: ["${_maxSelection}"]));
       }
     });
+  }
+
+  /// Convert image to 480x480 JPEG, auto-cropping to center square.
+  /// This is especially important on iOS where HEIC / HEIF / Live formats
+  /// can cause downstream decoding issues.
+  Future<String> _convertToJpeg480x480(String originalPath) async {
+    try {
+      final File originalFile = File(originalPath);
+      if (!await originalFile.exists()) {
+        return originalPath;
+      }
+
+      // Step 1: Use platform codecs (flutter_image_compress) to ensure
+      // HEIC/HEIF/LIVE inputs become JPEG bytes.
+      final Uint8List? compressedBytes =
+          await FlutterImageCompress.compressWithFile(
+        originalPath,
+        minWidth: 800, // keep some resolution before manual crop
+        minHeight: 800,
+        quality: 85,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedBytes == null || compressedBytes.isEmpty) {
+        return originalPath;
+      }
+
+      // Step 2: Decode JPEG bytes with `image` package and center-crop to square,
+      // then resize to exactly 480x480.
+      final img.Image? decoded = img.decodeImage(compressedBytes);
+      if (decoded == null) {
+        return originalPath;
+      }
+
+      final int cropSize =
+          decoded.width < decoded.height ? decoded.width : decoded.height;
+      final int offsetX = (decoded.width - cropSize) ~/ 2;
+      final int offsetY = (decoded.height - cropSize) ~/ 2;
+
+      final img.Image cropped = img.copyCrop(
+        decoded,
+        x: offsetX,
+        y: offsetY,
+        width: cropSize,
+        height: cropSize,
+      );
+
+      final img.Image resized =
+          img.copyResize(cropped, width: 480, height: 480);
+
+      final List<int> jpegBytes = img.encodeJpg(resized, quality: 85);
+
+      final Directory tempDir = Directory.systemTemp;
+      final int timestamp = DateTime.now().millisecondsSinceEpoch;
+      final String baseName = p.basenameWithoutExtension(originalPath);
+      final String fileName =
+          'DiaB_Food_${timestamp}_${baseName.isEmpty ? "image" : baseName}.jpg';
+      final File outFile = File(p.join(tempDir.path, fileName));
+      await outFile.writeAsBytes(jpegBytes, flush: true);
+
+      developer.log(
+        '[CAPTURE] Converted image to JPEG 480x480: ${outFile.path}',
+        name: '[CAPTURE]',
+      );
+
+      return outFile.path;
+    } catch (e) {
+      developer.log(
+        '[CAPTURE] Error converting image to JPEG 480x480: $e',
+        name: '[CAPTURE]',
+      );
+      // On any error, fall back to the original path so flow continues.
+      return originalPath;
+    }
   }
 
   void _confirmSelection() async {
@@ -579,6 +774,17 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
               name: '[CAPTURE]');
           // Skip this asset if it cannot be resolved
         }
+      }
+
+      // Normalize all selected images to 480x480 JPEG to avoid issues with
+      // HEIC / HEIF / LIVE formats (especially on iOS) and reduce file size.
+      if (filePaths.isNotEmpty) {
+        final List<String> normalizedPaths = [];
+        for (final String path in filePaths) {
+          final String convertedPath = await _convertToJpeg480x480(path);
+          normalizedPaths.add(convertedPath);
+        }
+        filePaths = normalizedPaths;
       }
 
       developer.log(
@@ -659,6 +865,74 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         icon: Icon(Icons.arrow_back, color: R.color.white),
         onPressed: () => Navigator.pop(context),
       ),
+      actions: [
+        // Nút "Tìm món ăn"
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: _openSearchFood,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Color(0xFFCAFAF5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Color(0xFF8FEBE0),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: R.color.greenGradientBottom,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Tìm món ăn',
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Mở màn hình tìm kiếm món ăn
+  void _openSearchFood() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => SearchFoodController(
+          foods: [],
+          callback: (foods) {
+            if (foods.isNotEmpty) {
+              Navigator.pushNamed(
+                context,
+                NavigatorName.confirm_food,
+                arguments: {
+                  'foods': foods,
+                  'timeframe': widget.timeframe,
+                  'timeframeId': widget.timeframeId,
+                  'files': <String>[],
+                },
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -676,11 +950,54 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
     return Column(
       children: [
+        // Show "Manage" button row if permission is limited
+        if (_isLimitedPermission && _hasPermission) _buildLimitedAccessBanner(),
         // Recent photos grid
         Expanded(
           child: _buildPhotosGrid(),
         ),
       ],
+    );
+  }
+
+  /// Build the "Manage" button banner for limited access
+  Widget _buildLimitedAccessBanner() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: R.color.backgroundColorNew,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              R.string.given_access_gallery_description.tr(),
+              style: TextStyle(
+                fontSize: 14,
+                color: R.color.greenGradientBottom,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          TextButton(
+            onPressed: _handleManageLimitedAccess,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              R.string.manage.tr(),
+              style: TextStyle(
+                fontSize: 15,
+                color: R.color.greenGradientBottom,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

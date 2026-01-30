@@ -2,8 +2,6 @@
 
 // ignore_for_file: non_constant_identifier_names
 
-
-
 class Strings {
   String get ok => 'ok';
   String get cancel => 'cancel';
@@ -377,6 +375,7 @@ class Strings {
   String get mon_an => 'mon_an';
   String get da_an => 'da_an';
   String get nang_luong_phan_bo => 'nang_luong_phan_bo';
+  String get phan_bo_dinh_duong => 'phan_bo_dinh_duong';
   String get chon_mon => 'chon_mon';
   String get xu_huong_dinh_duong => 'xu_huong_dinh_duong';
   String get nhap_mon_an => 'nhap_mon_an';
@@ -1375,9 +1374,11 @@ class Strings {
   String get membership_benefits => 'membership_benefits';
   String get program => 'program';
   String get premium_lesson => 'premium_lesson';
-  String get pathology_nutrition_exercise_psychology_knowledge_diverse => 'pathology_nutrition_exercise_psychology_knowledge_diverse';
+  String get pathology_nutrition_exercise_psychology_knowledge_diverse =>
+      'pathology_nutrition_exercise_psychology_knowledge_diverse';
   String get pathology_nutrition_knowledge => 'pathology_nutrition_knowledge';
-  String get personalized_healthy_lifestyle_roadmap => 'personalized_healthy_lifestyle_roadmap';
+  String get personalized_healthy_lifestyle_roadmap =>
+      'personalized_healthy_lifestyle_roadmap';
   String get healthy_lifestyle_roadmap => 'healthy_lifestyle_roadmap';
   String get use_all_advanced_features => 'use_all_advanced_features';
   String get advanced_features => 'advanced_features';
@@ -1402,16 +1403,19 @@ class Strings {
   String get class_1_obesity => 'class_1_obesity';
   String get class_2_obesity => 'class_2_obesity';
   String get weight_introducing_text => 'weight_introducing_text';
-  String get no_data_blood_sugar_trend_chart => 'no_data_blood_sugar_trend_chart';
+  String get no_data_blood_sugar_trend_chart =>
+      'no_data_blood_sugar_trend_chart';
   String get connect_from_device => 'connect_from_device';
   String get glucose_connect_device_title => 'glucose_connect_device_title';
-  String get glucose_connect_device_subtitle => 'glucose_connect_device_subtitle';
+  String get glucose_connect_device_subtitle =>
+      'glucose_connect_device_subtitle';
   String get glucose_photo_title => 'glucose_photo_title';
   String get glucose_photo_subtitle => 'glucose_photo_subtitle';
   String get glucose_manual_title => 'glucose_manual_title';
   String get glucose_manual_subtitle => 'glucose_manual_subtitle';
   String get analyzing_blood_glucose => 'analyzing_blood_glucose';
-  String get result_from_blood_glucose_device => 'result_from_blood_glucose_device';
+  String get result_from_blood_glucose_device =>
+      'result_from_blood_glucose_device';
   String get supported_devices => 'supported_devices';
   String get cap_nhat_so_dien_thoai => 'cap_nhat_so_dien_thoai';
   String get giup_bao_ve_tai_khoan => 'giup_bao_ve_tai_khoan';
@@ -1423,9 +1427,20 @@ class Strings {
   String get login_with_zalo => 'login_with_zalo';
   String get analyzing_your_meal => 'analyzing_your_meal';
   String get choose_meal_image => 'choose_meal_image';
-  String get please_select_at_least_one_image => 'please_select_at_least_one_image';
+  String get please_select_at_least_one_image =>
+      'please_select_at_least_one_image';
   String get max_image_select_dynamic => 'max_image_select_dynamic';
+  String get view_report => 'view_report';
+  String get incomplete_activities => 'incomplete_activities';
   String get unknown_meal_image => 'unknown_meal_image';
   String get no_data_within => 'no_data_within';
+  String get change => 'change';
+  String get change_roadmap => 'change_roadmap';
   String get yesterday => 'yesterday';
+  String get webinar => 'webinar';
+  String get quiz => 'quiz';
+  String get booking => 'booking';
+  String get interview => 'interview';
+  String get given_access_gallery_description => 'given_access_gallery_description';
+  String get manage => 'manage';
 }

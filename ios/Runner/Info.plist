@@ -133,6 +133,8 @@
 	<string>Cho phép diaB truy cập thư viện để gửi thông tin các chỉ số</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Cho phép diaB truy cập thư viện để lưu thông tin các chỉ số</string>
+	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
+	<true/>
    <key>NSAppleMusicUsageDescription</key>
    <string>Cho phép diaB truy cập thư viện</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

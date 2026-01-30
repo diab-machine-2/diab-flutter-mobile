@@ -11,7 +11,6 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/exercise_tab/exercise_detail/exercise_video_widget.dart';
-import 'package:medical/src/widget/my_plan_screens/my_plan/models/completion_status.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
 import '../exercise_feedback/exercise_feedback.dart';
@@ -116,26 +115,13 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                                 _cubit.resolvedVideoUrl.isNotEmpty
                             ? ExerciseVideoWidget(
                                 callbackEventListener: (event, videoDuration) {
+                                  // Only handle tracking here - completion is handled by cubit
                                   ExcerciseDetailTracking.playVideo(
                                     eventType: event,
                                     videoDuration: videoDuration,
                                     objectId: widget.exerciseData?.id,
                                     objectTitle: widget.exerciseData?.name,
                                   );
-
-                                  if (!_cubit.exerciseCompleted &&
-                                      widget.exerciseData?.completionStatus !=
-                                          CompletionStatus.completed &&
-                                      event ==
-                                          CustomPlayerEventType
-                                              .videoCompleted &&
-                                      videoDuration.inMilliseconds > 0) {
-                                    debugPrint(
-                                        '[EXERCISE] Marking exercise as completed through event listener');
-                                    _cubit.exerciseCompleted = true;
-                                    _cubit.completeExercise(
-                                        widget.exerciseData?.id ?? '');
-                                  }
                                 },
                                 url: _cubit.resolvedVideoUrl,
                                 onPlay: () {
@@ -143,16 +129,10 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
                                       '[EXERCISE] Video started playing');
                                 },
                                 onComplete: () {
-                                  debugPrint('[EXERCISE] Video completed');
-                                  if (!_cubit.exerciseCompleted &&
-                                      widget.exerciseData?.completionStatus !=
-                                          CompletionStatus.completed) {
-                                    debugPrint(
-                                        '[EXERCISE] Marking exercise as completed through onComplete');
-                                    _cubit.exerciseCompleted = true;
-                                    _cubit.completeExercise(
-                                        widget.exerciseData?.id ?? '');
-                                  }
+                                  // Completion is handled by cubit's callbackEventListener
+                                  // No need to call completeExercise here to avoid duplicates
+                                  debugPrint(
+                                      '[EXERCISE] Video completed (handled by cubit)');
                                 },
                                 percentCallbackDefault: 1.0,
                                 videoTitle: widget.exerciseData?.name ?? '',
@@ -304,6 +284,7 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
 
   Future<void> _showDonePopup(BuildContext context) async {
     Observable.instance.notifyObservers([], notifyName: "goal_calo_changed");
+    Observable.instance.notifyObservers([], notifyName: "refresh_exercise_tab");
 
     final result = await showDialog<bool>(
       barrierColor: R.color.color0xff003F38.withOpacity(0.5),

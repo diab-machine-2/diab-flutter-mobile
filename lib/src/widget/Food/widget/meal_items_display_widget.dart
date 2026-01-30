@@ -1,0 +1,192 @@
+import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/widget/Food/food_result.dto.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
+
+class MealItemsDisplayWidget extends StatelessWidget {
+  final FoodResultDto data;
+
+  const MealItemsDisplayWidget({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (data.foods.isEmpty) {
+      return SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        // Header
+        Text(
+          'Bữa ăn gồm',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: R.color.textDark,
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Top 3 images
+        if (data.images.isNotEmpty) _buildImageRow(),
+        const SizedBox(height: 16),
+        // Food items list
+        ...data.foods.map((food) => _buildFoodCard(food)).toList(),
+        // Ghi chú section
+        const SizedBox(height: 24),
+        _buildNoteSection(),
+      ],
+    );
+  }
+
+  Widget _buildImageRow() {
+    final displayImages = data.images.take(3).toList();
+
+    return Row(
+      children: displayImages.map((image) {
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: NetWorkImageWidget(
+                  imageUrl: image.url ?? '',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildFoodCard(FoodModel food) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          // Food image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: NetWorkImageWidget(
+              imageUrl: food.image?.url ?? '',
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Food details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  food.name ?? '',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: R.color.textDark,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${food.portion ?? 1} ${food.unit ?? 'đĩa'} • ${(food.calorie ?? 0).toInt()} kcals',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.primaryGreyColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Heart icon
+          Icon(
+            Icons.favorite_border,
+            color: R.color.primaryGreyColor,
+            size: 24,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNoteSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Ghi chú',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: R.color.textDark,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Color(0xFFF5F5F5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      data.note?.isNotEmpty == true
+                          ? data.note!
+                          : 'Nhập ghi chú của bạn',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: data.note?.isNotEmpty == true
+                            ? R.color.textDark
+                            : R.color.primaryGreyColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.edit_outlined,
+                    color: Color(0xFF008479),
+                    size: 20,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${data.note?.length ?? 0}/250',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.primaryGreyColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}

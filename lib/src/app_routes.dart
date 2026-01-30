@@ -30,9 +30,11 @@ import 'widget/BloodPressure/intro/bloodpressure_intro_2nd_page.dart';
 import 'widget/BloodSugar/add_bloodSugar_result.dart';
 import 'widget/BloodSugar/bloodSugar_detail.dart';
 import 'widget/BloodSugar/bloodSugar_result.dto.dart';
+import 'widget/Food/add_food_result.dart';
 import 'widget/Food/confirm_gen_food.dart';
 import 'widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'widget/Food/food_image_capture.dart';
+import 'widget/Food/food_result.dto.dart';
 import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/glucose_intro/glucose_intro_1st_page.dart';
 import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
@@ -116,6 +118,9 @@ class AppRoutes {
         page = PageAddBloodSugarResult(
             data: settings.arguments as BloodSugarResultDto);
         break;
+      case NavigatorName.add_food_result:
+        page = PageAddFoodResult(data: settings.arguments as FoodResultDto);
+        break;
       case NavigatorName.glucose_intro_1st_page:
         final data = settings.arguments as Map<String, dynamic>?;
         page = GlucoseIntro1stPage(
@@ -173,7 +178,8 @@ class AppRoutes {
           generatedFoods: (data?['foods'] ?? []) as List<FoodModel>,
           timeframe: data?['timeframe'] ?? '-',
           timeframeId: data?['timeframeId'] ?? '-',
-          files: data?['files'] != null ? List<String>.from(data!['files']) : [],
+          files:
+              data?['files'] != null ? List<String>.from(data!['files']) : [],
         );
         break;
       case NavigatorName.food_image_capture:

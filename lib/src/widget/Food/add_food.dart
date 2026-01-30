@@ -34,6 +34,9 @@ import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'food_result.dto.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+
 class AddFoodController extends StatefulWidget {
   final String type;
   final String? id;
@@ -880,6 +883,33 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     }
   }
 
+  double _calculateTotalCarbs() {
+    if (addTotalCalo) return 0;
+    double total = 0;
+    selectedFoods.forEach((element) {
+      total += (element.glucose ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalProtein() {
+    if (addTotalCalo) return 0;
+    double total = 0;
+    selectedFoods.forEach((element) {
+      total += (element.protein ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalFat() {
+    if (addTotalCalo) return 0;
+    double total = 0;
+    selectedFoods.forEach((element) {
+      total += (element.lipid ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
   deleteData() async {
     try {
       BotToast.showLoading();
@@ -1022,21 +1052,37 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               : selectedFoods,
           paths);
       if (result == true) {
-        // await TrackingManager.logEvent(
-        //   name: 'kpi_add_success',
-        //   parameters: {
-        //     "screen_name": 'kpi_nutrition_add',
-        //     'object_type': 'kpi_nutrition',
-        //     'object_title': 'Chỉ số dinh dưỡng'
-        //   },
-        // );
+        // Create FoodResultDto for result screen
+        final foodResult = FoodResultDto(
+          id: '', // API doesn't return ID, will be empty for now
+          dateTime: selectedDate,
+          timeFrame: selectedTimeFrame?.name ?? '',
+          timeFrameId: selectedTimeFrame?.id ?? '',
+          totalCalories: totalKcal,
+          goalCalories: 2000, // TODO: Get from user goal calories
+          carbs: _calculateTotalCarbs(),
+          protein: _calculateTotalProtein(),
+          fat: _calculateTotalFat(),
+          vegetables: null,
+          fruits: null,
+          foods: selectedFoods,
+          note: note,
+          images: [], // Images will be loaded in result screen if needed
+          healthRecommendation: null, // Will be fetched from API
+          isFetchAnalysis: true,
+          score: null, // TODO: Get from API
+          balanceStatus: null, // TODO: Get from API
+        );
+
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
-        // DartNotificationCenter.post(channel: 'food_change_data');
         PhoneValidationManager.setShouldShowPhoneValidation();
         Navigator.pop(context);
         if (widget.type == 'input') {
-          NavigationUtil.navigatePage(
-              context, FoodDetailTabbarController(initialTabIndex: 1));
+          Navigator.pushNamed(
+            context,
+            NavigatorName.add_food_result,
+            arguments: foodResult,
+          );
         }
       }
       print("[KPI] close all loading.");

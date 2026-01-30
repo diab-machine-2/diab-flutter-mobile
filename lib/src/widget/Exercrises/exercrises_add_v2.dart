@@ -13,10 +13,12 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/exercise_intensity_response.dart';
 import 'package:medical/src/repo/exercrises/exercrises_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_categories.dart';
 import 'package:medical/src/widget/Exercrises/exercrises_note_with_media.dart';
 import 'package:medical/src/widget/Exercrises/widget/health_connect_button.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -32,11 +34,13 @@ class ExercrisesAddV2 extends StatefulWidget {
   final bool? isUpdate;
   final String? exerciseInputId;
   final DateTime? datetime;
+  final String? goalId;
   ExercrisesAddV2({
     Key? key,
     this.isUpdate,
     this.exerciseInputId,
     this.datetime,
+    this.goalId,
   }) : super(key: key);
 
   ExercrisesAddV2State createState() => ExercrisesAddV2State();
@@ -908,10 +912,25 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
         //   }
         // }
 
-        // Chuẩn bị dữ liệu
+        // Chuẩn bị dữ liệu - convert local XFile images to JPEG format
         List<String> paths = [];
         for (var file in files) {
-          paths.add(file.path);
+          if (file is XFile) {
+            // Convert local file to JPEG format (handles HEIC/HEIF from iOS)
+            final convertedPath = await Utils.convertImageToJpeg(file.path);
+            paths.add(convertedPath);
+          } else if (file is ImagesUrlModel) {
+            // Server file - skip, these are already uploaded
+            // The API should handle existing file IDs separately
+            continue;
+          } else if (file is Map<String, dynamic> && file.containsKey('url')) {
+            // Server file in map format - skip
+            continue;
+          } else if (file is String) {
+            // String path - convert to JPEG if it's a local file
+            final convertedPath = await Utils.convertImageToJpeg(file);
+            paths.add(convertedPath);
+          }
         }
 
         // Use repository to handle both API call and file upload
@@ -927,6 +946,10 @@ class ExercrisesAddV2State extends State<ExercrisesAddV2>
           // BotToast.showText(text: 'Thêm bài tập thành công!');
           Message.showToastMessage(
               context, R.string.add_exercise_successfully.tr());
+
+          await HomeClient().completeSmartGoal(selectedDate!,
+              widget.goalId ?? '', 1, ScheduleType.exercise.typeIndex);
+              
           Observable.instance
               .notifyObservers([], notifyName: "active_change_data_v2");
 

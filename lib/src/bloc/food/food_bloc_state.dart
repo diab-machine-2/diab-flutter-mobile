@@ -63,3 +63,17 @@ class FoodStatisticDistributeLoaded extends FoodState {
 
   FoodStatisticDistributeLoaded({this.model});
 }
+
+// State cho phân bổ theo nhóm thực phẩm (Admin API)
+class FoodGroupDistributeLoaded extends FoodState {
+  final FoodDistributeModel? model;
+
+  FoodGroupDistributeLoaded({this.model});
+}
+
+// State cho AI Analysis
+class FoodDietAnalysisLoaded extends FoodState {
+  final String? dietAnalysis;
+
+  FoodDietAnalysisLoaded({this.dietAnalysis});
+}

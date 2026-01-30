@@ -9,6 +9,7 @@ import 'package:medical/src/model/response/calculate_bmi_response.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/service/resource.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_event.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_state.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
@@ -173,7 +174,18 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   ) async {
     emit(BmiInputSubmitedState(Resource.loading()));
 
-    final result = await _weightRepository.submitWeightRecord(event.request);
+    // Convert images to JPEG format (handles HEIC/HEIF from iOS)
+    List<String>? convertedImages;
+    if (event.request.images != null && event.request.images!.isNotEmpty) {
+      convertedImages = await Utils.convertImagesToJpeg(event.request.images!);
+    }
+
+    // Create new request with converted images
+    final requestWithConvertedImages = event.request.copyWith(
+      images: convertedImages,
+    );
+
+    final result = await _weightRepository.submitWeightRecord(requestWithConvertedImages);
     result.when(
       success: (data) => {
         PhoneValidationManager.setShouldShowPhoneValidation(),
@@ -198,7 +210,18 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
   ) async {
     emit(BmiInputSubmitedState(Resource.loading()));
 
-    final result = await _weightRepository.reviseWeightRecord(event.request);
+    // Convert images to JPEG format (handles HEIC/HEIF from iOS)
+    List<String>? convertedImages;
+    if (event.request.images != null && event.request.images!.isNotEmpty) {
+      convertedImages = await Utils.convertImagesToJpeg(event.request.images!);
+    }
+
+    // Create new request with converted images
+    final requestWithConvertedImages = event.request.copyWith(
+      images: convertedImages,
+    );
+
+    final result = await _weightRepository.reviseWeightRecord(requestWithConvertedImages);
     result.when(
       success: (data) =>
           emit(BmiInputSubmitedState(Resource.success(data.data))),
@@ -226,13 +249,14 @@ class BmiInputBloc extends Bloc<BmiInputEvent, BmiInputState> {
 
   void addImages(List<String> paths) {
     const int maxImages = 5;
-    final int currentTotalImages = _noteImages.length + _noteImagesFromRecord.length;
+    final int currentTotalImages =
+        _noteImages.length + _noteImagesFromRecord.length;
     final int remainingSlots = maxImages - currentTotalImages;
-    
+
     if (remainingSlots <= 0) {
       return; // Already at max capacity
     }
-    
+
     // Only add images up to the remaining slots
     final List<String> imagesToAdd = paths.take(remainingSlots).toList();
     _noteImages.addAll(imagesToAdd);

@@ -100,7 +100,7 @@ class BlockBottomSheet extends StatelessWidget {
         top: AppMediaQuery.deviceSafeAreaTop,
         left: 6,
         right: 6,
-        bottom: 15,
+        bottom: 0,
       ),
       child: Scaffold(
         resizeToAvoidBottomInset: true,
