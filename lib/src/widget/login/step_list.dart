@@ -468,9 +468,7 @@ class _StepListControllerState extends State<StepListController>
                                   ),
                                 ]),
                           ),
-                          SizedBox(
-                            height: 12,
-                          ),
+
                           SocialLoginSection(),
                           // GestureDetector(
                           //   onTap: () async {

@@ -1388,4 +1388,7 @@ quiz,Quiz,Quiz,
 booking,Đặt hẹn,Booking,
 interview,Phỏng vấn,Interview,
 given_access_gallery_description,Bạn đã cho phép Diab sử dụng một số lượng ảnh nhất định,You have given access to a select number of photos,
-manage,Quản lý,Manage
+manage,Quản lý,Manage,
+login_apple_id,Tài khoản AppleID,Apple ID account,
+login_gmail,Tài khoản Gmail,Gmail account,
+conversation_ai_citation,"Nội dung này được tạo ra bởi AI (nguồn: OpenAI), chỉ tham khảo và không thể thay thế tư vấn sức khỏe từ bác sĩ hoặc chuyên gia.","This content is created by AI (source: OpenAI), for reference only and cannot replace health advice from a doctor or specialist."
