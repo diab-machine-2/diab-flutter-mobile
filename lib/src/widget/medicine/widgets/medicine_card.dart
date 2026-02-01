@@ -120,7 +120,7 @@ class MedicineCard extends StatelessWidget {
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566),
           ),
           Text(
-            amount.toStringAsFixed(0),
+            amount.toStringAsFixed(1),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff5E6566),
           ),
