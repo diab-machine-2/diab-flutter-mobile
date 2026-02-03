@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../res/R.dart';
 import '../../modal/user/goal_info.dart';
@@ -131,10 +132,55 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
               // _buildSupportDoYouNeed(),
               SizedBox(height: 12),
               _inputTarget(),
-              Padding(
-                padding: const EdgeInsets.only(left: 5, right: 2.5),
-                child: Image.asset(
-                  R.drawable.exercise_guide_image,
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: R.color.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      R.drawable.exercise_guide_image,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                           "${R.string.reference_source.tr()}:",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: R.color.color0xffBFC6C6,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          GestureDetector(
+                            onTap: () async {
+                              final uri = Uri.parse(
+                                'https://www.betterhealth.vic.gov.au/health/healthyliving/exercise-intensity',
+                              );
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri,
+                                    mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            child: Text(
+                              'https://www.betterhealth.vic.gov.au/health/healthyliving/exercise-intensity',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: R.color.color0xffBFC6C6,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 26),
@@ -231,7 +277,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
   Widget _inputTarget() {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.fromLTRB(12, 0, 19, 6),
+      margin: EdgeInsets.fromLTRB(16, 0, 16, 6),
       padding: EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
