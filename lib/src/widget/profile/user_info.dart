@@ -541,17 +541,17 @@ class _ProfileInfoControllerState extends State<ProfileInfoController>
                                 showDialogHeight();
                               },
                             ),
-                            _buildItemProfile(
-                              icon: R.drawable.ic_user_bmi,
-                              title: user.height == null
-                                  ? R.string.not_updated_yet.tr()
-                                  : Utils.getBMI(
-                                      height: user.height ?? 0,
-                                      weight: user.weight ?? 0),
-                              subTitle: 'BMI',
-                              isTitleFromSelectedCategory: false,
-                              callback: (selectedIndexList) {},
-                            ),
+                            // _buildItemProfile(
+                            //   icon: R.drawable.ic_user_bmi,
+                            //   title: user.height == null
+                            //       ? R.string.not_updated_yet.tr()
+                            //       : Utils.getBMI(
+                            //           height: user.height ?? 0,
+                            //           weight: user.weight ?? 0),
+                            //   subTitle: 'BMI',
+                            //   isTitleFromSelectedCategory: false,
+                            //   callback: (selectedIndexList) {},
+                            // ),
                           ],
                         ),
                         if (isHasRoadMap)
