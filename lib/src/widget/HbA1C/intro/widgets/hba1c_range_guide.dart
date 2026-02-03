@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HbA1cRangeGuide extends StatelessWidget {
   const HbA1cRangeGuide({Key? key}) : super(key: key);
@@ -7,6 +9,7 @@ class HbA1cRangeGuide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       padding: EdgeInsets.zero,
       decoration: BoxDecoration(
         color: R.color.white,
@@ -38,31 +41,35 @@ class HbA1cRangeGuide extends StatelessWidget {
           ),
           _buildRangeItems(),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            padding: const EdgeInsets.fromLTRB(8, 12, 8, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Nguồn tham khảo:",
+                  "${R.string.reference_source.tr()}:",
                   style: TextStyle(
-                    fontFamily: R.font.sfpro,
                     fontSize: 14,
-                    color: const Color(0xFFBFC6C6),
-                    height: 1.4,
-                    letterSpacing: 0.2,
-                    fontWeight: FontWeight.w500,
+                    color: R.color.color0xffBFC6C6,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  "Việt P. K. B. V. Đ. H. Y. D. 1.-. C. T. C. Y. (2022, May 19). CHỈ SỐ KHỐI CƠ THỂ BMI LÀ GÌ? Ngày tham khảo April 25, 2025, từ https://umcclinic.com.vn/chi-so-khoi-co-the-bmi-la-gi",
-                  style: TextStyle(
-                    fontFamily: R.font.sfpro,
-                    fontSize: 14,
-                    color: const Color(0xFFBFC6C6),
-                    height: 1.5,
-                    letterSpacing: 0.2,
-                    fontWeight: FontWeight.w400,
+                GestureDetector(
+                  onTap: () async {
+                    final uri = Uri.parse(
+                      'https://www.betterhealth.vic.gov.au/health/healthyliving/exercise-intensity',
+                    );
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri,
+                          mode: LaunchMode.externalApplication);
+                    }
+                  },
+                  child: Text(
+                    'https://www.betterhealth.vic.gov.au/health/healthyliving/exercise-intensity',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: R.color.color0xffBFC6C6,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ],
