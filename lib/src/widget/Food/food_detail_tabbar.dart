@@ -116,8 +116,36 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   }
 
   void switchToTab(int index) {
-    if (_tabController != null && index >= 0 && index < 2) {
-      _tabController!.animateTo(index);
+    // Navigate to detail page since TabBar was removed
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(
+              backgroundColor: R.color.greenGradientBottom,
+              leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(Icons.arrow_back, color: R.color.white),
+              ),
+              leadingWidth: 30,
+              centerTitle: false,
+              title: Text(
+                'Chi tiết dinh dưỡng',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.white,
+                ),
+              ),
+            ),
+            body: FoodDetailController(
+              key: detailKey,
+              periodFilterType: periodFilterType,
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -211,40 +239,8 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          color: R.color.white,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TabBar(
-                isScrollable: true,
-                labelColor: R.color.mainColor,
-                labelStyle: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: R.color.mainColor,
-                ),
-                unselectedLabelColor: R.color.captionColorGray,
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-                tabs: [
-                  Tab(text: R.string.bieu_do.tr()),
-                  Tab(text: R.string.detail.tr()),
-                ],
-                controller: _tabController,
-                indicatorColor: R.color.mainColor,
-                indicatorWeight: 3,
-              ),
-            ],
-          ),
-        ),
         Expanded(
-          child: TabBarView(controller: _tabController, children: [
-            FoodOverviewController(key: overviewKey),
-            FoodDetailController(key: detailKey)
-          ]),
+          child: FoodOverviewController(key: overviewKey),
         ),
       ]),
       // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

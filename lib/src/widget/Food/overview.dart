@@ -11,7 +11,7 @@ import 'package:medical/src/widget/Food/widget/meal_distribution_widget.dart';
 import 'package:medical/src/widget/Food/widget/nutrient_distribution_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_trend_chart.dart';
 import 'package:medical/src/widget/Food/widget/starch_chart.dart';
-import 'package:medical/src/widget/HbA1C/widget/course_suggest.dart';
+import 'package:medical/src/widget/Food/widget/nutrition_knowledge_section.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodOverviewController extends StatefulWidget {
@@ -123,7 +123,10 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                 NutrientDistributionChart(key: nutrientDistributionKey),
                 FoodDistributionChart(key: distributionKey),
                 MealDistributionWidget(key: mealDistributionKey),
-                CourseSuggest(position: 7),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: NutritionKnowledgeSection(),
+                ),
                 SizedBox(height: 36)
               ],
             ),
@@ -163,17 +166,17 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                       clipBehavior: Clip.none,
                       children: [
                         Container(
-                          width: 48,
+                          width: 60,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: R.color.mainColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            color: Color(0xffDCFFFC),
+                            borderRadius: BorderRadius.circular(32),
                           ),
                           child: Center(
                             child: Image.asset(
                               R.drawable.ic_view_detail,
-                              width: 24,
-                              height: 24,
+                              width: 20,
+                              height: 20,
                               color: R.color.mainColor,
                             ),
                           ),

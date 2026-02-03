@@ -15,7 +15,8 @@ import '../../widgets/network_image_widget.dart';
 import 'daily_nutrition/daily_nutrition.dart';
 
 class FoodDetailController extends StatefulWidget {
-  FoodDetailController({Key? key}) : super(key: key);
+  final int? periodFilterType;
+  FoodDetailController({Key? key, this.periodFilterType}) : super(key: key);
   @override
   FoodDetailControllerState createState() => FoodDetailControllerState();
 }
@@ -37,7 +38,15 @@ class FoodDetailControllerState extends State<FoodDetailController>
 
   @override
   void initState() {
-    periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
+    // Use passed periodFilterType or get from parent controller
+    if (widget.periodFilterType != null) {
+      periodFilterType = widget.periodFilterType!;
+    } else {
+      final controller = FoodDetailTabbarController.of(context);
+      if (controller != null) {
+        periodFilterType = controller.periodFilterType;
+      }
+    }
     super.initState();
   }
 
@@ -107,8 +116,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                     : Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
-                          image:
-                              AssetImage(R.drawable.bg_detail),
+                          image: AssetImage(R.drawable.bg_detail),
                           fit: BoxFit.cover,
                         )),
                         child: LoadMore(
@@ -182,9 +190,11 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                     .spaceBetween,
                                                             children: [
                                                               Text(
-                                                                  mealItem.text!,
+                                                                  mealItem
+                                                                      .text!,
                                                                   style: TextStyle(
-                                                                      color: R.color
+                                                                      color: R
+                                                                          .color
                                                                           .black,
                                                                       fontSize:
                                                                           16,
@@ -201,16 +211,22 @@ class FoodDetailControllerState extends State<FoodDetailController>
                                                                       style: TextStyle(
                                                                           fontFamily:
                                                                               'Viga',
-                                                                          color: R.color.green,
+                                                                          color: R
+                                                                              .color
+                                                                              .green,
                                                                           fontSize:
                                                                               24,
                                                                           fontWeight:
                                                                               FontWeight.w400)),
                                                                   SizedBox(
                                                                       width: 4),
-                                                                  Text(R.string.kcal.tr(),
+                                                                  Text(
+                                                                      R.string
+                                                                          .kcal
+                                                                          .tr(),
                                                                       style: TextStyle(
-                                                                          color: R.color
+                                                                          color: R
+                                                                              .color
                                                                               .black,
                                                                           fontSize:
                                                                               14,
