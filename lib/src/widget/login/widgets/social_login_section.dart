@@ -13,7 +13,6 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
-import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class _SocialLoginButton extends StatelessWidget {
@@ -32,26 +31,25 @@ class _SocialLoginButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: R.color.white,
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.circular(26),
           border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             icon,
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
             Flexible(
               child: Text(
                 label,
                 style: TextStyle(
-                  fontFamily: 'Nunito',
-                  color: R.color.textDark,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                  color: R.color.color0xff111515,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -104,10 +102,12 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
           // const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 if (Platform.isIOS) ...[
-                  Expanded(
+                  SizedBox(
+                    width: double.infinity,
                     child: _SocialLoginButton(
                       icon: Image.asset(R.drawable.ic_login_apple,
                           width: 24, height: 24),
@@ -122,50 +122,24 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Container(
-                    width: 1,
-                    height: 30,
-                    color: const Color(0xFFE0E0E0),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _SocialLoginButton(
-                      icon: Image.asset(R.drawable.ic_google,
-                          width: 24, height: 24),
-                      label: R.string.login_gmail.tr(),
-                      onTap: () async {
-                        await TrackingManager.trackEvent(
-                          'login_select',
-                          'welcome',
-                          params: {'method': 'google'},
-                        );
-                        loginGG();
-                      },
-                    ),
-                  ),
-                ] else ...[
-                  Expanded(
-                    child: Center(
-                      child: SizedBox(
-                        width: 180,
-                        child: _SocialLoginButton(
-                          icon: Image.asset(R.drawable.ic_google,
-                              width: 24, height: 24),
-                          label: R.string.login_gmail.tr(),
-                          onTap: () async {
-                            await TrackingManager.trackEvent(
-                              'login_select',
-                              'welcome',
-                              params: {'method': 'google'},
-                            );
-                            loginGG();
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 12),
                 ],
+                SizedBox(
+                  width: double.infinity,
+                  child: _SocialLoginButton(
+                    icon: Image.asset(R.drawable.ic_google,
+                        width: 24, height: 24),
+                    label: R.string.login_gmail.tr(),
+                    onTap: () async {
+                      await TrackingManager.trackEvent(
+                        'login_select',
+                        'welcome',
+                        params: {'method': 'google'},
+                      );
+                      loginGG();
+                    },
+                  ),
+                ),
               ],
             ),
           ),
