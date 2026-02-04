@@ -56,7 +56,7 @@ class HbA1cRangeGuide extends StatelessWidget {
                 GestureDetector(
                   onTap: () async {
                     final uri = Uri.parse(
-                      'https://www.betterhealth.vic.gov.au/health/healthyliving/exercise-intensity',
+                      'https://giaan115.com/kien-thuc-y-khoa/chi-so-hba1c-nhung-dieu-ban-can-biet',
                     );
                     if (await canLaunchUrl(uri)) {
                       await launchUrl(uri,
@@ -64,7 +64,7 @@ class HbA1cRangeGuide extends StatelessWidget {
                     }
                   },
                   child: Text(
-                    'https://www.betterhealth.vic.gov.au/health/healthyliving/exercise-intensity',
+                    'https://giaan115.com/kien-thuc-y-khoa/chi-so-hba1c-nhung-dieu-ban-can-biet',
                     style: TextStyle(
                       fontSize: 14,
                       color: R.color.color0xffBFC6C6,
