@@ -1478,4 +1478,8 @@ not_find_medicine,"Không tìm thấy thuốc","Can't find this medicine",
 add,"Thêm","Add",
 stop_prescription,"Ngưng đơn thuốc","Stop prescription",
 stop_prescription_description,"Ứng dụng sẽ không gửi thông báo uống thuốc cho bạn nữa","The app will no longer send you medication reminders",
-unknown_meal_image,"Không thể xác định món ăn. Vui lòng thử lại.","Cannot identify meal from image. Please try again."
+unknown_meal_image,"Không thể xác định món ăn. Vui lòng thử lại.","Cannot identify meal from image. Please try again.",
+login_apple_id,Đăng nhập qua Apple,Sign in with Apple,
+login_gmail,Đăng nhập qua Google,Sign in with Google,
+conversation_ai_citation,"Nội dung này được tạo ra bởi AI (nguồn: OpenAI), chỉ tham khảo và không thể thay thế tư vấn sức khỏe từ bác sĩ hoặc chuyên gia.","This content is created by AI (source: OpenAI), for reference only and cannot replace health advice from a doctor or specialist.",
+reference_source,Nguồn tham khảo,Reference Source

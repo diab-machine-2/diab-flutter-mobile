@@ -13,8 +13,53 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/login/routing.dart';
-import 'package:medical/src/widgets/spacing_row.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+class _SocialLoginButton extends StatelessWidget {
+  const _SocialLoginButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final Widget icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(width: 12),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: R.color.color0xff111515,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class SocialLoginSection extends StatefulWidget {
   const SocialLoginSection({super.key});
@@ -29,93 +74,74 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
     return SafeArea(
       child: Column(
         children: [
-          SpacingRow(
-            spacing: 20,
-            children: [
-              Expanded(
-                child: Container(
-                  height: 0.3,
-                  color: Color(0xFF787A7D),
-                ),
-              ),
-              Text(
-                R.string.hoac_dang_nhap_bang.tr(),
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  height: 0.3,
-                  color: Color(0xFF787A7D),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (Platform.isIOS)
-                GestureDetector(
-                  onTap: () async {
-                    await TrackingManager.trackEvent(
-                      'login_select',
-                      'welcome',
-                      params: {
-                        'method': 'apple',
+          // SpacingRow(
+          //   spacing: 20,
+          //   children: [
+          //     Expanded(
+          //       child: Container(
+          //         height: 0.3,
+          //         color: Color(0xFF787A7D),
+          //       ),
+          //     ),
+          //     Text(
+          //       R.string.hoac_dang_nhap_bang.tr(),
+          //       style: TextStyle(
+          //         color: R.color.textDark,
+          //         fontSize: 16,
+          //         fontWeight: FontWeight.w400,
+          //       ),
+          //     ),
+          //     Expanded(
+          //       child: Container(
+          //         height: 0.3,
+          //         color: Color(0xFF787A7D),
+          //       ),
+          //     ),
+          //   ],
+          // ),
+          // const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (Platform.isIOS) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: _SocialLoginButton(
+                      icon: Image.asset(R.drawable.ic_login_apple,
+                          width: 24, height: 24),
+                      label: R.string.login_apple_id.tr(),
+                      onTap: () async {
+                        await TrackingManager.trackEvent(
+                          'login_select',
+                          'welcome',
+                          params: {'method': 'apple'},
+                        );
+                        loginApple();
                       },
-                    );
-                    loginApple();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 8),
-                    child: Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                            color: R.color.white,
-                            borderRadius: BorderRadius.circular(25)),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(R.drawable.ic_login_apple,
-                                  width: 26, height: 26),
-                            ])),
+                    ),
                   ),
-                )
-              else
-                const SizedBox(),
-              GestureDetector(
-                onTap: () async {
-                  await TrackingManager.trackEvent(
-                    'login_select',
-                    'welcome',
-                    params: {
-                      'method': 'google',
+                  const SizedBox(height: 12),
+                ],
+                SizedBox(
+                  width: double.infinity,
+                  child: _SocialLoginButton(
+                    icon: Image.asset(R.drawable.ic_google,
+                        width: 24, height: 24),
+                    label: R.string.login_gmail.tr(),
+                    onTap: () async {
+                      await TrackingManager.trackEvent(
+                        'login_select',
+                        'welcome',
+                        params: {'method': 'google'},
+                      );
+                      loginGG();
                     },
-                  );
-                  loginGG();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8, right: 8),
-                  child: Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                          color: R.color.white,
-                          borderRadius: BorderRadius.circular(25)),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(R.drawable.ic_google,
-                                width: 26, height: 26),
-                          ])),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 16)
         ],

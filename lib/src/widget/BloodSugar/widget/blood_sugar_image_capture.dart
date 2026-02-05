@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -232,8 +233,11 @@ class _BloodSugarImageCaptureState extends State<BloodSugarImageCapture>
       // Start the zoom animation
       await _startCaptureAnimation(imageFile);
 
+      // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+      final convertedPath = await Utils.convertImageToJpeg(imageFile.path);
+
       // Analyze the captured image
-      _analyzeImage(imageFile.path);
+      _analyzeImage(convertedPath);
 
       // Haptic feedback
       HapticFeedback.mediumImpact();
@@ -287,7 +291,9 @@ class _BloodSugarImageCaptureState extends State<BloodSugarImageCapture>
       );
 
       if (pickedFile != null) {
-        _analyzeImage(pickedFile.path);
+        // Convert image to JPEG format (handles HEIC/HEIF from iOS)
+        final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
+        _analyzeImage(convertedPath);
       }
     } catch (e) {
       _showGalleryPermissionDialog();
