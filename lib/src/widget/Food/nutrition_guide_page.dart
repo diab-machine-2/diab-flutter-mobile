@@ -1,10 +1,62 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/modal/food/nutrition_lesson.dart';
+import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 /// Nutrition Guide Page - Hướng dẫn dinh dưỡng
-class NutritionGuidePage extends StatelessWidget {
+class NutritionGuidePage extends StatefulWidget {
   const NutritionGuidePage({Key? key}) : super(key: key);
+
+  @override
+  State<NutritionGuidePage> createState() => _NutritionGuidePageState();
+}
+
+class _NutritionGuidePageState extends State<NutritionGuidePage> {
+  final List<NutritionLesson> _pinedLessons = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLessons();
+  }
+
+  void _loadLessons() async {
+    try {
+      _pinedLessons.clear();
+      final lessons = await FoodClient().fetchNutritionLessons();
+      if (lessons != null) {
+        setState(() {
+          _pinedLessons.addAll(lessons);
+        });
+      }
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
+    }
+  }
+
+  void _navigateToLessonDetail(String id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
+
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id,
+        onComplete: (_, __) {},
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +71,7 @@ class NutritionGuidePage extends StatelessWidget {
         leadingWidth: 30,
         centerTitle: false,
         title: Text(
-          'Hướng dẫn dinh dưỡng',
+          'Hướng dẫn',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -32,6 +84,39 @@ class NutritionGuidePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Support Section - Bạn cần hỗ trợ gì?
+            _buildSectionTitle('Bạn cần hỗ trợ gì?'),
+            const SizedBox(height: 12),
+            if (_pinedLessons.isNotEmpty) ...[
+              Row(
+                children: [
+                  Expanded(child: _buildPinnedLessonItem(_pinedLessons[0])),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _pinedLessons.length > 1
+                        ? _buildPinnedLessonItem(_pinedLessons[1])
+                        : const SizedBox(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (_pinedLessons.isNotEmpty && _pinedLessons.length > 2) ...[
+              Row(
+                children: [
+                  Expanded(child: _buildPinnedLessonItem(_pinedLessons[2])),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _pinedLessons.length > 3
+                        ? _buildPinnedLessonItem(_pinedLessons[3])
+                        : const SizedBox(),
+                  ),
+                ],
+              ),
+            ],
+
+            const SizedBox(height: 24),
+
             // Meal Scoring Image
             _buildSectionTitle('Bữa ăn của bạn bao nhiêu điểm?'),
             const SizedBox(height: 12),
@@ -60,79 +145,26 @@ class NutritionGuidePage extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Nutrition Distribution Section
-            _buildSectionTitle('Phân bổ dinh dưỡng trong 1 bữa ăn'),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xffF8F8F8),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  _buildNutritionRow('Tinh bột', '1 chén cơm'),
-                  const Divider(height: 24),
-                  _buildNutritionRow('Chất đạm', '1/2 chén'),
-                  const Divider(height: 24),
-                  _buildNutritionRow('Chất béo', '1–2 thìa dầu'),
-                  const Divider(height: 24),
-                  _buildNutritionRow('Rau củ', '1 chén'),
-                  const Divider(height: 24),
-                  _buildNutritionRow('Hoa quả', '1/2 chén'),
-                ],
+            // Nutrition Distribution Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                R.drawable.dinhduong,
+                width: double.infinity,
+                fit: BoxFit.cover,
               ),
             ),
 
             const SizedBox(height: 24),
 
-            // Daily Energy Calculation Section
-            _buildSectionTitle('Tính nhu cầu năng lượng mỗi ngày'),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildGenderCard(
-                    gender: 'Nam',
-                    formula: 'Cân nặng (kg) × 35 kcal',
-                    icon: Icons.male,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildGenderCard(
-                    gender: 'Nữ',
-                    formula: 'Cân nặng (kg) × 30 kcal',
-                    icon: Icons.female,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildWeightAdjustmentCard(
-                    label: 'Để giảm cân',
-                    value: '300–500',
-                    unit: 'kcal/ngày',
-                    color: const Color(0xffF5A623),
-                    backgroundColor: const Color(0xffFFF9E6),
-                    isDecrease: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildWeightAdjustmentCard(
-                    label: 'Để tăng cân',
-                    value: '300–500',
-                    unit: 'kcal/ngày',
-                    color: const Color(0xff008479),
-                    backgroundColor: const Color(0xffE8F5F3),
-                    isDecrease: false,
-                  ),
-                ),
-              ],
+            // Daily Energy Calculation Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                R.drawable.nhucau,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
 
             const SizedBox(height: 32),
@@ -153,132 +185,46 @@ class NutritionGuidePage extends StatelessWidget {
     );
   }
 
-  Widget _buildNutritionRow(String nutrient, String portion) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          nutrient,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Color(0xff1A1A1A),
-          ),
+  Widget _buildPinnedLessonItem(NutritionLesson lesson) {
+    String title = lesson.name;
+    String? imageUrl = lesson.imageUrl;
+    return InkWell(
+      onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        constraints: BoxConstraints(minHeight: 152.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          border: Border.all(color: R.color.grayComponentBorder),
         ),
-        Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(Icons.circle, size: 8, color: Color(0xff008479)),
-            const SizedBox(width: 8),
-            Text(
-              portion,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Color(0xff666666),
+            NetWorkImageWidget(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              width: 72,
+              height: 72,
+            ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 18 / 13,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.primaryGreyColor,
+                ),
               ),
             ),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildGenderCard({
-    required String gender,
-    required String formula,
-    required IconData icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xffE8F5F3),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 32, color: const Color(0xff008479)),
-          const SizedBox(height: 8),
-          Text(
-            gender,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: Color(0xff1A1A1A),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            formula,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: Color(0xff666666),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeightAdjustmentCard({
-    required String label,
-    required String value,
-    required String unit,
-    required Color color,
-    required Color backgroundColor,
-    required bool isDecrease,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xff1A1A1A),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(
-                isDecrease ? Icons.remove : Icons.add,
-                size: 20,
-                color: color,
-              ),
-              const SizedBox(width: 4),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: color,
-                    ),
-                  ),
-                  Text(
-                    unit,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xff666666),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
