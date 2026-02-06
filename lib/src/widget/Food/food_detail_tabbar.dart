@@ -8,6 +8,7 @@ import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/nutrition_guide_page.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
@@ -20,6 +21,7 @@ import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
+import 'nutrition_guide_page.dart';
 import 'widget/food_action_popup.dart';
 import '../BloodPressure/widget/horizontal_selector.dart';
 
@@ -200,11 +202,11 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
               onPressed: () {
-                showDialog(
-                  barrierColor: R.color.color0xff003F38.withOpacity(0.3),
-                  useSafeArea: false,
-                  context: context,
-                  builder: (_) => ActionListPanel(selectedIndex: 4),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NutritionGuidePage(),
+                  ),
                 );
               },
               child: Text(
