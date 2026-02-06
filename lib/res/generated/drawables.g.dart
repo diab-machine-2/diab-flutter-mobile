@@ -510,6 +510,8 @@ class Drawables {
   String get im_food_intro => "lib/res/drawables/food/im_food_intro.png";
   String get nuti => "lib/res/drawables/food/nuti.png";
   String get chat => "lib/res/drawables/food/chat.png";
+  String get dinhduong => "lib/res/drawables/food/dinhduong.png";
+  String get nhucau => "lib/res/drawables/food/nhucau.png";
 
   String get ic_lesson_category => "lib/res/drawables/ic_lesson_category.png";
   String get ic_lesson_like => "lib/res/drawables/ic_lesson_like.png";
