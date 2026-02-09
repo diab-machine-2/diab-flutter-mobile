@@ -10,6 +10,7 @@ import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_instruction/bmi_threshold_model.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_instruction_session.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BmiInstructionPage extends StatefulWidget {
   const BmiInstructionPage({super.key});
@@ -50,12 +51,37 @@ class _BmiInstructionPageState extends State<BmiInstructionPage> {
                     ),
                     const _ThresholdTable(),
                     Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        "Nguồn tham khảo: Việt P. K. B. V. Đ. H. Y. D. 1.-. C. T. C. Y. (2022, May 19). "
-                        "CHỈ SỐ KHỐI CƠ THỂ BMI LÀ GÌ? Ngày tham khảo April 25, 2025, "
-                        "từ https://umcclinic.com.vn/chi-so-khoi-co-the-bmi-la-gi",
-                        style: R.style.smallBodyStyle.neutral5,
+                      padding: const EdgeInsets.fromLTRB(8, 12, 8, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${R.string.reference_source.tr()}:",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: R.color.color0xffBFC6C6,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          GestureDetector(
+                            onTap: () async {
+                              final uri = Uri.parse(
+                                'https://www.diabetes.ca/resources/tools-resources/body-mass-index-(bmi)-calculator',
+                              );
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri,
+                                    mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            child: Text(
+                              'https://www.diabetes.ca/resources/tools-resources/body-mass-index-(bmi)-calculator',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: R.color.color0xffBFC6C6,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(
