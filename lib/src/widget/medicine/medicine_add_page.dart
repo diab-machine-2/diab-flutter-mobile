@@ -43,7 +43,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   final TextEditingController _noteController = TextEditingController();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   MedicineUnit _unit = MedicineUnit.pill; // viên, gói, ống, ml, khác
-  int _amount = 28;
+  int _amount = 0;
   DosageModel? _dosage;
   List<File?> _files = [];
 
@@ -91,6 +91,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       id: widget.medicineTablet?.id ?? widget.medicine?.id ?? '',
       medicationName: widget.medicineTablet?.name ?? widget.medicine?.medicationName ?? '',
     );
+    _amount = widget.medicine?.amount ?? 0;
     _quantityController.text = _amount.toStringAsFixed(0);
 
     //Mode edit

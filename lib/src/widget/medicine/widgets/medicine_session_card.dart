@@ -251,7 +251,7 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
     VoidCallback onTap,
   ) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Column(
@@ -280,25 +280,33 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
         ),
         GestureDetector(
           onTap: onTap,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                isTaken ? R.icons.ic_medicine_used : R.icons.ic_medicine_unused,
-                width: 32,
-                height: 32,
-              ),
-              Text(
-                isTaken ? R.string.used.tr() : R.string.not_used.tr(),
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 13,
-                  height: 1.5,
-                  letterSpacing: 0.4,
-                  color: isTaken ? Color(0xFF008479) : Color(0xFFBFC6C6),
+          child: SizedBox(
+            width: 72,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  isTaken ? R.icons.ic_medicine_used : R.icons.ic_medicine_unused,
+                  width: 32,
+                  height: 32,
                 ),
-              )
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  isTaken ? R.string.used.tr() : R.string.not_used.tr(),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 13,
+                    height: 1.5,
+                    letterSpacing: 0.4,
+                    color: isTaken ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                  ),
+                ),
+              ],
+            ),
           ),
         )
       ],

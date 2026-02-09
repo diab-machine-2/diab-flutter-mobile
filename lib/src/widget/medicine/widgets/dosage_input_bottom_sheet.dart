@@ -115,6 +115,34 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       if (widget.dosage?.everyOtherDayNumber != null) {
         _everyOtherDayNumber = widget.dosage!.everyOtherDayNumber;
       }
+
+      // Ensure confirm button reflects existing dosage when editing
+      final morningQuantity = double.tryParse(_quantityInMorning.text) ?? 0.0;
+      final noonQuantity = double.tryParse(_quantityInNoon.text) ?? 0.0;
+      final afternoonQuantity =
+          double.tryParse(_quantityInAfternoon.text) ?? 0.0;
+      final eveningQuantity = double.tryParse(_quantityInEvening.text) ?? 0.0;
+
+      if (_selectedFrequency == FrequencyType.everyday) {
+        _submitBtnEnabled = morningQuantity > 0.0 ||
+            noonQuantity > 0.0 ||
+            afternoonQuantity > 0.0 ||
+            eveningQuantity > 0.0;
+      } else if (_selectedFrequency == FrequencyType.weekDays) {
+        _submitBtnEnabled =
+            (_selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0) &&
+                (morningQuantity > 0.0 ||
+                    noonQuantity > 0.0 ||
+                    afternoonQuantity > 0.0 ||
+                    eveningQuantity > 0.0);
+      } else {
+        _submitBtnEnabled =
+            (_everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0) &&
+                (morningQuantity > 0.0 ||
+                    noonQuantity > 0.0 ||
+                    afternoonQuantity > 0.0 ||
+                    eveningQuantity > 0.0);
+      }
     }
     super.initState();
   }
@@ -131,17 +159,28 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     setState(() {
       final morningQuantity = double.tryParse(_quantityInMorning.text) ?? 0.0;
       final noonQuantity = double.tryParse(_quantityInNoon.text) ?? 0.0;
-      final afternoonQuantity = double.tryParse(_quantityInAfternoon.text) ?? 0.0;
+      final afternoonQuantity =
+          double.tryParse(_quantityInAfternoon.text) ?? 0.0;
       final eveningQuantity = double.tryParse(_quantityInEvening.text) ?? 0.0;
       if (_selectedFrequency == FrequencyType.everyday) {
-        _submitBtnEnabled =
-            morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0;
+        _submitBtnEnabled = morningQuantity > 0.0 ||
+            noonQuantity > 0.0 ||
+            afternoonQuantity > 0.0 ||
+            eveningQuantity > 0.0;
       } else if (_selectedFrequency == FrequencyType.weekDays) {
-        _submitBtnEnabled = (_selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0) &&
-            (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
+        _submitBtnEnabled =
+            (_selectedDayIndexes.isNotEmpty && _quantityOnDayInWeek > 0) &&
+                (morningQuantity > 0.0 ||
+                    noonQuantity > 0.0 ||
+                    afternoonQuantity > 0.0 ||
+                    eveningQuantity > 0.0);
       } else {
-        _submitBtnEnabled = (_everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0) &&
-            (morningQuantity > 0.0 || noonQuantity > 0.0 || afternoonQuantity > 0.0 || eveningQuantity > 0.0);
+        _submitBtnEnabled =
+            (_everyOtherDayNumber > 0 && _quantityOnEveryOtherDay > 0) &&
+                (morningQuantity > 0.0 ||
+                    noonQuantity > 0.0 ||
+                    afternoonQuantity > 0.0 ||
+                    eveningQuantity > 0.0);
       }
     });
   }
