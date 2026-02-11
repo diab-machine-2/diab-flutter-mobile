@@ -32,6 +32,7 @@ class DailyMedicineModel {
   final int moment;
   final double dosage;
   final String dosageUnit;
+  final String? timeSchedule;
 
   DailyMedicineModel({
     required this.id,
@@ -67,6 +68,7 @@ class DailyMedicineModel {
     required this.moment,
     required this.dosage,
     required this.dosageUnit,
+    this.timeSchedule,
   });
 
   factory DailyMedicineModel.fromJson(Map<String, dynamic> json) {
@@ -100,10 +102,11 @@ class DailyMedicineModel {
       lesson: json['lesson'],
       survey: json['survey'],
       calendar: json['calendar'],
-      prescriptionName: json['prescriptionName'] ?? '',
-      moment: json['moment'] ?? 0,
-      dosage: (json['dosage'] as num?)?.toDouble() ?? 0.0,
-      dosageUnit: json['dosageUnit'] ?? '',
+      prescriptionName: json['prescriptionName'] ?? (json['medicationInfo'] as Map<String, dynamic>?)?['prescriptionName']?.toString() ?? '',
+      moment: json['moment'] ?? (json['medicationInfo'] as Map<String, dynamic>?)?['moment'] ?? 0,
+      dosage: (json['dosage'] as num?)?.toDouble() ?? ((json['medicationInfo'] as Map<String, dynamic>?)?['dosage'] as num?)?.toDouble() ?? 0.0,
+      dosageUnit: json['dosageUnit'] ?? (json['medicationInfo'] as Map<String, dynamic>?)?['dosageUnit']?.toString() ?? '',
+      timeSchedule: json['timeSchedule']?.toString() ?? (json['medicationInfo'] as Map<String, dynamic>?)?['timeSchedule']?.toString(),
     );
   }
 
@@ -142,6 +145,7 @@ class DailyMedicineModel {
       'moment': moment,
       'dosage': dosage,
       'dosageUnit': dosageUnit,
+      'timeSchedule': timeSchedule,
     };
   }
 }

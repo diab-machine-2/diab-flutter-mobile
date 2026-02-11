@@ -16,6 +16,7 @@ import '../../utils/navigator_name.dart';
 import '../../widgets/CalendarPicker/custom_date_picker2.dart';
 import '../BloodSugar/widget/section_add_note.dart';
 import '../helper/helper.dart';
+import '../helper/show_message.dart';
 import 'medicine_add_page.dart';
 import 'widgets/medicine_card.dart';
 
@@ -212,46 +213,58 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                               textAlign: TextAlign.center, style: R.style.normalTextStyle),
                         ),
                         SizedBox(height: 16),
-                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Expanded(
-                            child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                    height: 43,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(200), color: R.color.grayBorder),
-                                    child: Center(
-                                      child: Text(R.string.van_o_lai.tr(),
-                                          style: TextStyle(
-                                              color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
-                                    ))),
-                          ),
-                          SizedBox(width: 14),
-                          Expanded(
-                            child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                  height: 43,
-                                  decoration: BoxDecoration(
-                                      color: R.color.red,
-                                      borderRadius: BorderRadius.circular(200),
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [R.color.greenGradientTop, R.color.greenGradientBottom])),
-                                  child: Center(
-                                    child: Text(R.string.confirm.tr(),
-                                        style:
-                                            TextStyle(color: R.color.white, fontSize: 16, fontWeight: FontWeight.w600)),
-                                  ),
-                                )),
-                          ),
-                        ])
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                        height: 43,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(200),
+                                            color: R.color.grayBorder),
+                                        child: Center(
+                                          child: Text(R.string.van_o_lai.tr(),
+                                              style: TextStyle(
+                                                  color: R.color.textDark,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600)),
+                                        ))),
+                              ),
+                              SizedBox(width: 14),
+                              Expanded(
+                                child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      height: 43,
+                                      decoration: BoxDecoration(
+                                          color: R.color.red,
+                                          borderRadius:
+                                              BorderRadius.circular(200),
+                                          gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.centerRight,
+                                              colors: [
+                                                R.color.greenGradientTop,
+                                                R.color.greenGradientBottom
+                                              ])),
+                                      child: Center(
+                                        child: Text(R.string.confirm.tr(),
+                                            style: TextStyle(
+                                                color: R.color.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                      ),
+                                    )),
+                              ),
+                            ])
                       ],
                     ),
                   ),
@@ -332,7 +345,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: TextField(
-              // autofocus: true,
+              autofocus: true,
               controller: _controllerPrescriptionName,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -487,7 +500,15 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           child: GestureDetector(
             onTap: () {
-              if (_controllerPrescriptionName.text.isEmpty) return;
+              if (_controllerPrescriptionName.text.trim().isEmpty) {
+                Message.showToastMessage(
+                  context,
+                  R.string.smart_goal_name_empty.tr(
+                    args: [R.string.prescription_name.tr()],
+                  ),
+                );
+                return;
+              }
 
               _prescription = _prescription.copyWith(
                 prescriptionName: _controllerPrescriptionName.text,

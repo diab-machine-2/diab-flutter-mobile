@@ -3,6 +3,21 @@ import 'package:medical/res/R.dart';
 
 import 'daily_medicine_model.dart';
 
+/// Moment label for dosage: 1 = Trước ăn, 2 = Sau ăn, 3 = Trong bữa ăn (aligned with medicine_card).
+String _momentNameFromValue(int? moment) {
+  if (moment == null) return '';
+  switch (moment) {
+    case 1:
+      return R.string.truoc_an.tr();
+    case 2:
+      return R.string.sau_an.tr();
+    case 3:
+      return R.string.during_meal.tr();
+    default:
+      return R.string.truoc_an.tr();
+  }
+}
+
 /*----------------- LỊCH DÙNG THUỐC TAB -----------------*/
 class PrescriptionsBySessionModel {
   final String id;
@@ -15,7 +30,8 @@ class PrescriptionsBySessionModel {
     required this.prescriptions,
   });
 
-  static List<PrescriptionsBySessionModel>  fromDailyList(List<DailyMedicineModel> dailyList) {
+  static List<PrescriptionsBySessionModel> fromDailyList(
+      List<DailyMedicineModel> dailyList) {
     // Nhóm theo session
     final Map<MedicineSession, List<DailyMedicineModel>> bySession = {};
 
@@ -60,22 +76,22 @@ class PrescriptionsBySessionModel {
         // Lấy prescriptionName và note từ daily (chung 1 đơn thuốc)
         final presName = presDailies.first.prescriptionName;
         final note = presDailies.first.description;
-        final time = DateTime.fromMillisecondsSinceEpoch(presDailies.first.appointmentDate * 1000);
+        final timeSchedule = presDailies.first.timeSchedule ?? '';
 
         // Convert list DailyMedicineModel -> MedicationInSession
         final medications = presDailies.map((d) {
           return MedicationInSession(
               id: d.id,
               medicineName: d.name,
-              dosage: "${d.dosage} ${d.dosageUnit} - ${d.moment == 1 ? "Trước ăn" : "Sau ăn"}",
-              isTaken: d.completedDate != null
-          );
+              dosage:
+                  "${d.dosage} ${d.dosageUnit} - ${_momentNameFromValue(d.moment)}",
+              isTaken: d.completedDate != null);
         }).toList();
 
         return PrescriptionInSessionModel(
           prescriptionId: presId,
           prescriptionName: presName,
-          time: time,
+          timeSchedule: timeSchedule,
           medications: medications,
           note: note,
         );
@@ -93,7 +109,8 @@ class PrescriptionsBySessionModel {
 class PrescriptionInSessionModel {
   final String prescriptionId;
   final String prescriptionName;
-  final DateTime time;
+  /// Time of day as "HH:mm:ss" (e.g. "09:00:00"). Use with selected date to get full [DateTime].
+  final String timeSchedule;
   final List<MedicationInSession> medications;
   final String? note;
   List<String>? photos;
@@ -101,7 +118,7 @@ class PrescriptionInSessionModel {
   PrescriptionInSessionModel({
     required this.prescriptionId,
     required this.prescriptionName,
-    required this.time,
+    required this.timeSchedule,
     required this.medications,
     this.note,
     this.photos,

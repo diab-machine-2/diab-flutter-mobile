@@ -122,6 +122,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         quantityInAfternoon: _selectedMedication.afternoon ?? 0.0,
         quantityInNight: _selectedMedication.night ?? 0.0,
         quantityForDaysInWeek: (_selectedMedication.amount ?? 0).toDouble(),
+        quantityForEveryOtherDay: (_selectedMedication.amount ?? 0).toDouble(),
         selectedDaysInWeek: !isValid
           ? []
           : (_selectedMedication.customDay ?? '').split(',').map(int.parse).toList(),
@@ -203,6 +204,11 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       if (newDosage != null && newDosage is DosageModel) {
         setState(() {
           _dosage = newDosage;
+          final q = newDosage.frequency == 2
+              ? newDosage.quantityForDaysInWeek
+              : newDosage.quantityForEveryOtherDay;
+          _amount = q.round();
+          _quantityController.text = _amount.toStringAsFixed(0);
           _submitBtnEnabled = isValid();
         });
       }

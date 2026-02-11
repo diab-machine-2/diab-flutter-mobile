@@ -79,6 +79,15 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
     prefs.setBool(Const.shouldTutorial, true);
   }
 
+  /// Converts timeSchedule "HH:mm:ss" to display "HH:mm".
+  static String _formatTimeScheduleToHhMm(String timeSchedule) {
+    final parts = timeSchedule.split(':');
+    if (parts.length >= 2) {
+      return '${parts[0]}:${parts[1]}';
+    }
+    return timeSchedule;
+  }
+
   @override
   Widget build(BuildContext context) {
     return _buildScheduleCard(
@@ -130,9 +139,7 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
         children: session.prescriptions.asMap().entries.map((entry) {
           final presIndex = entry.key;
           final pres = entry.value;
-          final formattedTime =
-              "${pres.time.hour.toString().padLeft(2, '0')}:${pres.time.minute.toString().padLeft(2, '0')}";
-
+          final formattedTime = _formatTimeScheduleToHhMm(pres.timeSchedule);
           return Container(
             color: Colors.white,
             margin: const EdgeInsets.all(0),

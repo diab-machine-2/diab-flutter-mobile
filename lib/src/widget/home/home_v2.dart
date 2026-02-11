@@ -232,13 +232,16 @@ class _HomeControllerState extends State<HomeController>
     final medicineSchedule = await medicineClient.fetchMedicineScheduleByDate(timestamp: (today.millisecondsSinceEpoch / 1000).round());
     final medicineScheduleAlert = filterDailyMedicines(medicineSchedule.daily);
     final sessions = PrescriptionsBySessionModel.fromDailyList(medicineScheduleAlert);
+    // Sắp xếp buổi theo thứ tự: Sáng, Trưa, Chiều, Tối
+    final orderedSessions = [...sessions]
+      ..sort((a, b) => a.session.index.compareTo(b.session.index));
 
-    if (sessions.isNotEmpty) {
+    if (orderedSessions.isNotEmpty) {
       final List<String> ids = medicineScheduleAlert.map((e) => e.id).toList();
       showMedicineSessionBottomSheet(
         context,
         ids: ids,
-        sessionList: sessions,
+        sessionList: orderedSessions,
       );
     }
   }
@@ -250,11 +253,15 @@ class _HomeControllerState extends State<HomeController>
     return dailyList.where((daily) {
       if (daily.completedDate != null) return false;
 
-      // convert timestamp -> DateTime
-      final appt = DateTime.fromMillisecondsSinceEpoch(daily.appointmentDate * 1000);
-      final apptDay = DateTime(appt.year, appt.month, appt.day);
+      // build DateTime từ hôm nay + timeSchedule (HH:mm:ss)
+      final timeStr = (daily.timeSchedule ?? '00:00:00');
+      final parts = timeStr.split(':');
+      final h = parts.isNotEmpty ? int.tryParse(parts[0]) ?? 0 : 0;
+      final m = parts.length > 1 ? int.tryParse(parts[1]) ?? 0 : 0;
+      final s = parts.length > 2 ? int.tryParse(parts[2]) ?? 0 : 0;
+      final appt = DateTime(today.year, today.month, today.day, h, m, s);
 
-      return apptDay == today && appt.isBefore(now);
+      return appt.isBefore(now) && appt.year == today.year && appt.month == today.month && appt.day == today.day;
     }).toList();
   }
 

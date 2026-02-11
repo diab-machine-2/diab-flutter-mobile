@@ -114,6 +114,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
 
       if (widget.dosage?.everyOtherDayNumber != null) {
         _everyOtherDayNumber = widget.dosage!.everyOtherDayNumber;
+        _quantityOnEveryOtherDay = widget.dosage!.quantityForEveryOtherDay;
       }
 
       // Ensure confirm button reflects existing dosage when editing
@@ -343,6 +344,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   _checkEnableSubmitBtnState();
                 },
                 child: AnimatedContainer(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   duration: const Duration(milliseconds: 200),
                   height: 40,
                   alignment: Alignment.center,
@@ -352,6 +354,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   ),
                   child: Text(
                     frequency.label,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
                       fontSize: 15,
@@ -575,6 +578,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
               _selectedDayIndexes.remove(i);
             }
           });
+          _checkEnableSubmitBtnState();
         },
         // Optional styling to match the image
         shape: RoundedRectangleBorder(
@@ -620,10 +624,18 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         R.string.current_medicine_quantity.tr(),
         _quantityOnDayInWeek,
         '0.0',
-        () => _updateCounter(() => _quantityOnDayInWeek++),
-        () => _updateCounter(() => _quantityOnDayInWeek--),
+        () => _updateCounter(() {
+          _quantityOnDayInWeek++;
+          _quantityOnEveryOtherDay = _quantityOnDayInWeek;
+        }),
+        () => _updateCounter(() {
+          _quantityOnDayInWeek--;
+          _quantityOnEveryOtherDay = _quantityOnDayInWeek;
+        }),
         (value) => _updateCounter(() {
-          _quantityOnDayInWeek = double.tryParse(value) ?? 0;
+          final v = double.tryParse(value) ?? 0;
+          _quantityOnDayInWeek = v;
+          _quantityOnEveryOtherDay = v;
         }),
       ),
       const SizedBox(height: 20),
@@ -721,9 +733,19 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         R.string.current_medicine_quantity.tr(),
         _quantityOnEveryOtherDay,
         '0.0',
-        () => _updateCounter(() => _quantityOnEveryOtherDay++),
-        () => _updateCounter(() => _quantityOnEveryOtherDay--),
-        (value) => _updateCounter(() => _quantityOnEveryOtherDay = double.tryParse(value) ?? 0.0),
+        () => _updateCounter(() {
+          _quantityOnEveryOtherDay++;
+          _quantityOnDayInWeek = _quantityOnEveryOtherDay;
+        }),
+        () => _updateCounter(() {
+          _quantityOnEveryOtherDay--;
+          _quantityOnDayInWeek = _quantityOnEveryOtherDay;
+        }),
+        (value) => _updateCounter(() {
+          final v = double.tryParse(value) ?? 0.0;
+          _quantityOnEveryOtherDay = v;
+          _quantityOnDayInWeek = v;
+        }),
       ),
       const SizedBox(height: 20),
       _buildSectionTitle(R.string.dosage.tr()),
@@ -909,6 +931,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 moment: _selectedMoment.index + 1,
                 frequencyName: _selectedFrequency.label,
                 frequency: _selectedFrequency.index + 1,
+                quantityForDaysInWeek: _quantityOnDayInWeek,
+                quantityForEveryOtherDay: _quantityOnEveryOtherDay,
                 quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
                 quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
                 quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
@@ -922,6 +946,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 frequency: _selectedFrequency.index + 1,
                 selectedDaysInWeek: _selectedDayIndexes,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
+                quantityForEveryOtherDay: _quantityOnEveryOtherDay,
                 quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
                 quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
                 quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
@@ -934,6 +959,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 frequencyName: _selectedFrequency.label,
                 frequency: _selectedFrequency.index + 1,
                 everyOtherDayNumber: _everyOtherDayNumber,
+                quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
                 quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
                 quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,

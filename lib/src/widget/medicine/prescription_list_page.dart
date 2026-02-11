@@ -279,7 +279,13 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
       return const Center(child: CircularProgressIndicator());
     } else if (state is FetchMedicineScheduleSuccess) {
       _sessionList = PrescriptionsBySessionModel.fromDailyList(state.medicineScheduleResult.daily);
+
+      // Sắp xếp lại thứ tự buổi: Sáng -> Trưa -> Chiều -> Tối
+      _sessionList.sort((a, b) => a.session.index.compareTo(b.session.index));
     }
+
+    // Xác định buổi cần được mở mặc định
+    final int defaultExpandedIndex = _getDefaultExpandedSessionIndex();
 
     return ListView.builder(
       itemCount: max(_sessionList.length + 1, 2),
@@ -306,7 +312,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
 
         return MedicineSessionCard(
           session: session,
-          isExpanded: false,
+          isExpanded: sessionIndex == defaultExpandedIndex,
           onTap: (prescriptionIndex, medicationIndex, isTaken) {
             _bloc.add(UseMedicineEvent(session.prescriptions[prescriptionIndex].medications[medicationIndex].id));
           },
@@ -314,6 +320,66 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
         );
       },
     );
+  }
+
+  /// Builds [DateTime] for the given date and timeSchedule string ("HH:mm:ss").
+  DateTime _dateTimeFromSelectedDateAndSchedule(DateTime date, String timeSchedule) {
+    final parts = (timeSchedule).split(':');
+    final h = parts.isNotEmpty ? (int.tryParse(parts[0]) ?? 0) : 0;
+    final m = parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0;
+    final s = parts.length > 2 ? (int.tryParse(parts[2]) ?? 0) : 0;
+    return DateTime(date.year, date.month, date.day, h, m, s);
+  }
+
+  /// Tìm buổi cần được mở mặc định:
+  /// - Ưu tiên buổi có thời gian gần nhất với hiện tại (có thể là quá khứ hoặc tương lai),
+  ///   dùng [_selectedDate] + timeSchedule và so sánh theo |now - time|.
+  /// - Nếu không có, chọn buổi có thuốc "Chưa dùng" gần nhất theo thời gian.
+  int _getDefaultExpandedSessionIndex() {
+    if (_sessionList.isEmpty) return -1;
+
+    final now = DateTime.now();
+    final selectedDate = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    int? closestSessionIndex;
+    Duration? closestDiff;
+
+    // 1. Tìm buổi có thời gian gần nhất với hiện tại (theo trị tuyệt đối của chênh lệch thời gian)
+    for (int i = 0; i < _sessionList.length; i++) {
+      final session = _sessionList[i];
+      for (final pres in session.prescriptions) {
+        final presDateTime = _dateTimeFromSelectedDateAndSchedule(selectedDate, pres.timeSchedule);
+        final diffAbs = presDateTime.difference(now).abs();
+        if (closestDiff == null || diffAbs < closestDiff) {
+          closestDiff = diffAbs;
+          closestSessionIndex = i;
+        }
+      }
+    }
+
+    if (closestSessionIndex != null) {
+      return closestSessionIndex;
+    }
+
+    // 2. Nếu không còn lịch hẹn trong tương lai,
+    //    chọn buổi có thuốc "Chưa dùng" gần nhất theo thời gian (nhỏ nhất).
+    int? closestUntakenSessionIndex;
+    DateTime? closestUntakenTime;
+
+    for (int i = 0; i < _sessionList.length; i++) {
+      final session = _sessionList[i];
+      for (final pres in session.prescriptions) {
+        final hasUntaken = pres.medications.any((m) => !m.isTaken);
+        if (!hasUntaken) continue;
+
+        final presDateTime = _dateTimeFromSelectedDateAndSchedule(selectedDate, pres.timeSchedule);
+        if (closestUntakenTime == null || presDateTime.isBefore(closestUntakenTime)) {
+          closestUntakenTime = presDateTime;
+          closestUntakenSessionIndex = i;
+        }
+      }
+    }
+
+    return closestUntakenSessionIndex ?? -1;
   }
 
   /*----------------------------ĐƠN THUỐC PAGE----------------------------*/
