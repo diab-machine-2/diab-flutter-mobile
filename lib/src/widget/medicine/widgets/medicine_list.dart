@@ -86,9 +86,9 @@ class _MedicineRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (med.amount != null)
+          if (med.remain != null || med.amount != null)
             Text(
-              "${med.amount!.toInt()} ${med.unit ?? ''}",
+              "${(med.remain ?? med.amount)!.toInt()} ${med.unit ?? ''}",
               style: TextStyle(
                 fontSize: 15,
                 color: R.color.color0xff5E6566,

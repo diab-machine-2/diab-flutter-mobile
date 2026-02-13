@@ -1,6 +1,4 @@
-import 'dose_model.dart';
 import 'image_note_model.dart';
-import 'medicine_add_model.dart';
 
 class MedicineItemModel {
   final String? id;
@@ -17,6 +15,8 @@ class MedicineItemModel {
 
   final String? unit; // viên, gói, ống, ml, khác
   final int? amount;
+  /// Remaining quantity of medicine
+  final int? remain;
 
   final String? customDay;
   final double? breakDay;
@@ -37,6 +37,7 @@ class MedicineItemModel {
     this.night,
     this.unit,
     this.amount,
+    this.remain,
     this.customDay,
     this.breakDay,
     this.note,
@@ -56,6 +57,7 @@ class MedicineItemModel {
       night: (json['night'] as num?)?.toDouble(),
       unit: json['unit'],
       amount: (json['amount'] as num?)?.toInt(),
+      remain: (json['remain'] as num?)?.toInt(),
       customDay: json['customDay'],
       breakDay: json['breakDay'],
       note: json['note'],
@@ -81,6 +83,7 @@ class MedicineItemModel {
       'night': night,
       'unit': unit,
       'amount': amount,
+      'remain': remain,
       'customDay': customDay,
       'breakDay': breakDay,
       'note': note,
@@ -102,6 +105,7 @@ class MedicineItemModel {
     double? night,
     String? unit,
     int? amount,
+    int? remain,
     String? customDay,
     double? breakDay,
     String? note,
@@ -117,6 +121,7 @@ class MedicineItemModel {
       night: night ?? this.night,
       unit: unit ?? this.unit,
       amount: amount ?? this.amount,
+      remain: remain ?? this.remain,
       customDay: customDay ?? this.customDay,
       breakDay: breakDay ?? this.breakDay,
       note: note ?? this.note,

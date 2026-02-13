@@ -82,9 +82,11 @@ class PrescriptionsBySessionModel {
         final medications = presDailies.map((d) {
           return MedicationInSession(
               id: d.id,
+              patientMedicationId: d.patientMedicationId ?? '',
               medicineName: d.name,
               dosage:
                   "${d.dosage} ${d.dosageUnit} - ${_momentNameFromValue(d.moment)}",
+              dosageValue: d.dosage,
               isTaken: d.completedDate != null);
         }).toList();
 
@@ -147,17 +149,24 @@ enum MedicineSession {
 }
 
 class MedicationInSession {
+  /// Target id for URL (e.g. /App/Target/Medication/$id).
   final String id;
+  /// From medicationInfo.patientMedicationId, for request body.
+  final String patientMedicationId;
   final String medicineName;
   // e.g. 1 viên - Sau ăn
   final String dosage;
+  /// Numeric dosage for API (e.g. Dosage in payload).
+  final double dosageValue;
   // e.g. true ->
   bool isTaken;
 
   MedicationInSession({
     required this.id,
+    required this.patientMedicationId,
     required this.medicineName,
     required this.dosage,
+    required this.dosageValue,
     required this.isTaken,
   });
 }

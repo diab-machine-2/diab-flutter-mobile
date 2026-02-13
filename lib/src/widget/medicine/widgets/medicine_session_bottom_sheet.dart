@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../res/R.dart';
-import '../../../bloc/medicine/medicine_bloc.dart';
 import '../../../modal/medicine/prescription_schedule_model.dart';
 import '../../../repo/medicine/medicine_client.dart';
 import 'medicine_session_card.dart';
@@ -20,6 +19,23 @@ class _MedicineSessionBottomSheetState extends State<MedicineSessionBottomSheet>
   final _medicineClient = MedicineClient();
   final List<String> usedIds = <String>[];
   final List<String> unusedIds = <String>[];
+
+  List<Map<String, dynamic>> _buildListPatientMedication() {
+    final List<Map<String, dynamic>> result = [];
+
+    for (final session in widget.sessionList) {
+      for (final prescription in session.prescriptions) {
+        for (final med in prescription.medications) {
+          result.add({
+            'PatientMedicationId': med.patientMedicationId,
+            'Dosage': med.dosageValue.round(),
+          });
+        }
+      }
+    }
+
+    return result;
+  }
 
   @override
   void initState() {
@@ -53,8 +69,11 @@ class _MedicineSessionBottomSheetState extends State<MedicineSessionBottomSheet>
                       session: session,
                       isExpanded: false,
                       onTap: (prescriptionIndex, medicationIndex, isTaken) async {
+                        final med = session.prescriptions[prescriptionIndex].medications[medicationIndex];
                         await _medicineClient.useMedicine(
-                            id: session.prescriptions[prescriptionIndex].medications[medicationIndex].id);
+                            id: med.id,
+                            patientMedicationId: med.patientMedicationId,
+                            dosage: med.dosageValue);
                       },
                     );
                   },
@@ -76,7 +95,10 @@ class _MedicineSessionBottomSheetState extends State<MedicineSessionBottomSheet>
       child: GestureDetector(
         onTap: () async {
           Navigator.pop(context);
-          await _medicineClient.usedAllMedicinesToday(status: 0);
+          await _medicineClient.usedAllMedicinesToday(
+            status: 0,
+            listPatientMedication: _buildListPatientMedication(),
+          );
         },
         child: Container(
           height: 48,
@@ -107,7 +129,10 @@ class _MedicineSessionBottomSheetState extends State<MedicineSessionBottomSheet>
       child: GestureDetector(
         onTap: () async {
           Navigator.pop(context);
-          await _medicineClient.usedAllMedicinesToday(status: 1);
+          await _medicineClient.usedAllMedicinesToday(
+            status: 1,
+            listPatientMedication: _buildListPatientMedication(),
+          );
         },
         child: Container(
           height: 48,

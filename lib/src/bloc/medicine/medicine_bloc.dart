@@ -140,7 +140,7 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
   Future<void> _onUseMedicine(UseMedicineEvent event, Emitter<MedicineState> emit) async {
     final client = MedicineClient();
     try {
-      final result = await client.useMedicine(id: event.id);
+      final result = await client.useMedicine(id: event.id, patientMedicationId: event.patientMedicationId, dosage: event.dosage);
       emit(UseMedicineSuccess(result));
     } catch (e) {
       emit(MedicineError(message: e.toString()));
@@ -151,9 +151,9 @@ class MedicineBloc extends Bloc<MedicineEvent, MedicineState> {
     final client = MedicineClient();
     bool result = false;
     try {
-      event.ids.forEach((id) async {
-        result = await client.useMedicine(id: id);
-      });
+      for (final id in event.ids) {
+        result = await client.useMedicine(id: id, patientMedicationId: id, dosage: 1);
+      }
 
       emit(UseMedicinesSuccess(true));
     } catch (e) {

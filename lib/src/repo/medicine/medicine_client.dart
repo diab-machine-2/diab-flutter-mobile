@@ -1,21 +1,17 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/medicine/prescription_model.dart';
 import 'package:medical/src/modal/medicine/search_medicine_result_model.dart';
-import 'package:medical/src/utils/app_log.dart';
-import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'dart:io' show File, Platform;
+import 'dart:io' show File;
 
 import '../../modal/medicine/medicine_item_model.dart';
 import '../../modal/medicine/medicine_schedule_model.dart';
-import '../../widget/home/fliter_enum.dart';
 
 class MedicineClient extends FetchClient {
   Future<SearchMedicineResultModel?> searchMedicine({required String searchText}) async {
@@ -69,6 +65,8 @@ class MedicineClient extends FetchClient {
     final Map<String, String> params = {
       'Data': jsonEncode(prescription.toJson(includePrescriptionId: false, includedMedicationId: false)),
     };
+
+    log('params: ${params}');
 
     try {
       final response = await super.postHttp4(
@@ -177,6 +175,7 @@ class MedicineClient extends FetchClient {
           url: '/App/Target/Medication',
           params: {'day': timestamp.toString()}
       );
+      log(response.data.toString());
 
       if (response.statusCode == 200) {
         return MedicineScheduleModel.fromJson(response.data['data']);
@@ -189,10 +188,14 @@ class MedicineClient extends FetchClient {
     }
   }
 
-  Future<bool> useMedicine({required String id}) async {
+  Future<bool> useMedicine({required String id, required String patientMedicationId, required double dosage}) async {
     try {
       final response = await super.putData(
         url: '/App/Target/Medication/$id',
+        params: {
+          'PatientMedicationId': patientMedicationId,
+          'Dosage': dosage.round(),
+        },
       );
 
       if (response.statusCode == 200) {
@@ -205,17 +208,26 @@ class MedicineClient extends FetchClient {
     }
   }
 
-  Future<bool> usedAllMedicinesToday({required int status}) async {
+  Future<bool> usedAllMedicinesToday({
+    required int status,
+    required List<Map<String, dynamic>> listPatientMedication,
+  }) async {
     try {
       final currentDateTime = DateTime.now();
-      final today = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
+      final today = DateTime(
+        currentDateTime.year,
+        currentDateTime.month,
+        currentDateTime.day,
+        7,
+      );
 
       final response = await super.putData(
-          url: '/App/Target/Medication/CurrentRemind',
-          params: {
-            'currentDate': (today.millisecondsSinceEpoch / 1000).round(),
-            'status': status,
-          }
+        url: '/App/Target/Medication/CurrentRemind',
+        params: {
+          'currentDate': (today.millisecondsSinceEpoch / 1000).round(),
+          'status': status,
+          'listPatientMedication': listPatientMedication,
+        },
       );
 
       if (response.statusCode == 200) {

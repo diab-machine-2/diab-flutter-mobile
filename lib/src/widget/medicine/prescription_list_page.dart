@@ -314,7 +314,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           session: session,
           isExpanded: sessionIndex == defaultExpandedIndex,
           onTap: (prescriptionIndex, medicationIndex, isTaken) {
-            _bloc.add(UseMedicineEvent(session.prescriptions[prescriptionIndex].medications[medicationIndex].id));
+            final med = session.prescriptions[prescriptionIndex].medications[medicationIndex];
+            _bloc.add(UseMedicineEvent(med.id, med.patientMedicationId, med.dosageValue));
           },
           firstMedicineKey: _shouldShowTutorial ? _firstMedicineKey : null,
         );

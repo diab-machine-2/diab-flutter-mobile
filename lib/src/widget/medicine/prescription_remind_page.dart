@@ -34,17 +34,25 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
   }
 
   void initDayTimeSchedule() {
-    if (widget.prescription.patientMedications!.any((medication) => (medication.morning ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)));
+    if (widget.prescription.patientMedications!
+        .any((medication) => (medication.morning ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(
+          dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)));
     }
-    if (widget.prescription.patientMedications!.any((medication) => (medication.midDay ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(dayTime: DayTime.noon, time: TimeOfDay(hour: 12, minute: 0)));
+    if (widget.prescription.patientMedications!
+        .any((medication) => (medication.midDay ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(
+          dayTime: DayTime.noon, time: TimeOfDay(hour: 12, minute: 0)));
     }
-    if (widget.prescription.patientMedications!.any((medication) => (medication.afternoon ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(dayTime: DayTime.afternoon, time: TimeOfDay(hour: 14, minute: 0)));
+    if (widget.prescription.patientMedications!
+        .any((medication) => (medication.afternoon ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(
+          dayTime: DayTime.afternoon, time: TimeOfDay(hour: 14, minute: 0)));
     }
-    if (widget.prescription.patientMedications!.any((medication) => (medication.night ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 0)));
+    if (widget.prescription.patientMedications!
+        .any((medication) => (medication.night ?? 0.0) != 0.0)) {
+      _schedules.add(DayTimeSchedule(
+          dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 0)));
     }
   }
 
@@ -60,7 +68,7 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
             );
             Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
               NavigatorName.tabbar,
-                  (route) => false,
+              (route) => false,
             );
             Navigator.pushNamed(context, NavigatorName.prescription);
           }
@@ -158,20 +166,27 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
   Widget _buildBody() {
     return Column(
       children: [
-        _buildReminderList(),
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-          child: Divider(color: Colors.grey, height: 1),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildReminderList(),
+                Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  child: Divider(color: Colors.grey, height: 1),
+                ),
+                _buildRemindGetMoreMedicine(),
+                Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  child: Divider(color: Colors.grey, height: 1),
+                ),
+                _buildEnableNotification(),
+              ],
+            ),
+          ),
         ),
-        _buildRemindGetMoreMedicine(),
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-          child: Divider(color: Colors.grey, height: 1),
-        ),
-        _buildEnableNotification(),
-        const Spacer(),
         _buildConfirmButton(),
       ],
     );
@@ -190,9 +205,7 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
           );
           if (picked != null) {
             _schedules[index] = schedule.copyWith(time: picked);
-            setState(() {
-
-            });
+            setState(() {});
           }
         },
       ),
@@ -341,13 +354,12 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         child: GestureDetector(
           onTap: () {
-            final reminderTimes = _schedules.map(
-                    (e) =>
-                    ReminderModel(
+            final reminderTimes = _schedules
+                .map((e) => ReminderModel(
                       type: e.dayTime.index + 1,
                       timeSchedule: formatTimeOfDay(e.time),
-                    )
-            ).toList();
+                    ))
+                .toList();
 
             final PrescriptionModel prescription = widget.prescription.copyWith(
               remainDays: remindDays,

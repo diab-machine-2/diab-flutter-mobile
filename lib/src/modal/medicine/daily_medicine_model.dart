@@ -33,6 +33,7 @@ class DailyMedicineModel {
   final double dosage;
   final String dosageUnit;
   final String? timeSchedule;
+  final String? patientMedicationId;
 
   DailyMedicineModel({
     required this.id,
@@ -69,6 +70,7 @@ class DailyMedicineModel {
     required this.dosage,
     required this.dosageUnit,
     this.timeSchedule,
+    this.patientMedicationId,
   });
 
   factory DailyMedicineModel.fromJson(Map<String, dynamic> json) {
@@ -102,11 +104,27 @@ class DailyMedicineModel {
       lesson: json['lesson'],
       survey: json['survey'],
       calendar: json['calendar'],
-      prescriptionName: json['prescriptionName'] ?? (json['medicationInfo'] as Map<String, dynamic>?)?['prescriptionName']?.toString() ?? '',
-      moment: json['moment'] ?? (json['medicationInfo'] as Map<String, dynamic>?)?['moment'] ?? 0,
-      dosage: (json['dosage'] as num?)?.toDouble() ?? ((json['medicationInfo'] as Map<String, dynamic>?)?['dosage'] as num?)?.toDouble() ?? 0.0,
-      dosageUnit: json['dosageUnit'] ?? (json['medicationInfo'] as Map<String, dynamic>?)?['dosageUnit']?.toString() ?? '',
-      timeSchedule: json['timeSchedule']?.toString() ?? (json['medicationInfo'] as Map<String, dynamic>?)?['timeSchedule']?.toString(),
+      prescriptionName: json['prescriptionName'] ??
+          (json['medicationInfo'] as Map<String, dynamic>?)?['prescriptionName']
+              ?.toString() ??
+          '',
+      moment: json['moment'] ??
+          (json['medicationInfo'] as Map<String, dynamic>?)?['moment'] ??
+          0,
+      dosage: (json['dosage'] as num?)?.toDouble() ??
+          ((json['medicationInfo'] as Map<String, dynamic>?)?['dosage'] as num?)
+              ?.toDouble() ??
+          0.0,
+      dosageUnit: json['dosageUnit'] ??
+          (json['medicationInfo'] as Map<String, dynamic>?)?['dosageUnit']
+              ?.toString() ??
+          '',
+      timeSchedule: json['timeSchedule']?.toString() ??
+          (json['medicationInfo'] as Map<String, dynamic>?)?['timeSchedule']
+              ?.toString(),
+      patientMedicationId: json['patientMedicationId']?.toString() ??
+          (json['medicationInfo'] as Map<String, dynamic>?)?['patientMedicationId']
+              ?.toString(),
     );
   }
 
@@ -146,6 +164,7 @@ class DailyMedicineModel {
       'dosage': dosage,
       'dosageUnit': dosageUnit,
       'timeSchedule': timeSchedule,
+      'patientMedicationId': patientMedicationId,
     };
   }
 }

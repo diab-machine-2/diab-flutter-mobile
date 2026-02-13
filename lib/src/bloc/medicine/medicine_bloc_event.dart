@@ -51,7 +51,9 @@ class FetchMedicineScheduleEvent extends MedicineEvent {
 
 class UseMedicineEvent extends MedicineEvent {
   final String id;
-  UseMedicineEvent(this.id);
+  final String patientMedicationId;
+  final double dosage;
+  UseMedicineEvent(this.id, this.patientMedicationId, this.dosage);
 }
 
 class UseMedicinesEvent extends MedicineEvent {
