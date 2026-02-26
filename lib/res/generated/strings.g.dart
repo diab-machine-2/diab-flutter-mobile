@@ -1401,6 +1401,7 @@ class Strings {
   String get should_not_do_3 => 'should_not_do_3';
   String get tutorial_reference  => 'tutorial_reference';
   String get add_prescription => 'add_prescription';
+  String get edit_prescription => 'edit_prescription';
   String get prescription_warning => 'prescription_warning';
   String get prescription_name=> 'prescription_name';
   String get start_date => 'start_date';

@@ -1424,6 +1424,7 @@ should_not_do_2,"Không dùng thuốc của người khác","Do not take other p
 should_not_do_3,"Không tự ý ngừng thuốc nếu không có chỉ định bác sĩ","Do not stop taking the medication without a doctor's instructions",
 tutorial_reference,"Nguồn tham khảo:\nMaine CDC (2019). Diabetes Self – Management Education and Support (DSMES)","Reference source:\nMaine CDC (2019). Diabetes Self – Management Education and Support (DSMES)",
 add_prescription,"Tạo đơn thuốc","Create prescription",
+edit_prescription,"Chỉnh sửa đơn thuốc","Edit prescription",
 prescription_warning,"Hãy đối chiếu với Đơn thuốc thực tế để đảm bảo thông tin chính xác","Please check with actual Prescription to ensure accurate information",
 prescription_name,"Tên đơn thuốc","Prescription name",
 start_date,"Ngày bắt đầu","Start day",

@@ -93,6 +93,8 @@ class MedicineClient extends FetchClient {
       'ImagesPrescriptionIds': jsonEncode(prescription.imagesPrescription)
     };
 
+    log('params: ${params}');
+
     try {
       final response = await super.patchHttp(
         path: '/App/prescriptions/${prescription.id!}',
@@ -194,7 +196,7 @@ class MedicineClient extends FetchClient {
         url: '/App/Target/Medication/$id',
         params: {
           'PatientMedicationId': patientMedicationId,
-          'Dosage': dosage.round(),
+          'Dosage': dosage,
         },
       );
 

@@ -28,7 +28,7 @@ class _MedicineSessionBottomSheetState extends State<MedicineSessionBottomSheet>
         for (final med in prescription.medications) {
           result.add({
             'PatientMedicationId': med.patientMedicationId,
-            'Dosage': med.dosageValue.round(),
+            'Dosage': med.dosageValue,
           });
         }
       }

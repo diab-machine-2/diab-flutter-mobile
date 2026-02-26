@@ -71,6 +71,9 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
     _prescription = prescription;
     _controllerPrescriptionName.text = prescription.prescriptionName ?? '';
     _controllerNote.text = prescription.note ?? '';
+    if (prescription.startDate != null) {
+      selectedDate = prescription.startDate;
+    }
 
     final images = (prescription.imagesPrescription ?? [])
         .map((note) => ImagesModel(
@@ -148,7 +151,9 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             child: Align(
               alignment: Alignment.topLeft,
               child: Text(
-                R.string.add_prescription.tr(),
+                _prescriptionMode == PrescriptionMode.edit
+                    ? R.string.edit_prescription.tr()
+                    : R.string.add_prescription.tr(),
                 style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
               ),
             ),
@@ -438,9 +443,11 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           itemCount: _medicines.length,
           padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
           itemBuilder: (context, index) {
-            return MedicineCard(
-                medicine: _medicines[index],
-                onEdit: () async {
+          return MedicineCard(
+              medicine: _medicines[index],
+              // Create: show amount (original quantity). Edit/Reuse: show remain (left after use).
+              showAmountInsteadOfRemain: _prescriptionMode == PrescriptionMode.create,
+              onEdit: () async {
                   //Chỉnh sửa thuốc
                   final result = await Navigator.pushNamed(
                     context,

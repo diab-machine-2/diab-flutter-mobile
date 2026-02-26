@@ -91,7 +91,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       id: widget.medicineTablet?.id ?? widget.medicine?.id ?? '',
       medicationName: widget.medicineTablet?.name ?? widget.medicine?.medicationName ?? '',
     );
-    _amount = widget.medicine?.amount ?? 0;
+    _amount = widget.medicine?.remain ?? widget.medicine?.amount ?? 0;
     _quantityController.text = _amount.toStringAsFixed(0);
 
     //Mode edit
@@ -100,32 +100,34 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       _nameController.text = _selectedMedication.medicationName ?? '';
       _noteController.text = _selectedMedication.note ?? '';
       _unit = MedicineUnit.fromString(_selectedMedication.unit);
-      _amount = _selectedMedication.amount ?? 5;
+      _amount = _selectedMedication.remain ?? _selectedMedication.amount ?? 0;
 
       final raw = (_selectedMedication.customDay ?? '').trim();
       final isValid = RegExp(r'^[0-9,]+$').hasMatch(raw);
       _dosage = DosageModel(
         momentName: _selectedMedication.moment == 1
-          ? R.string.truoc_an.tr()
-          : _selectedMedication.moment == 2
-            ? R.string.sau_an.tr()
-            : R.string.during_meal.tr(),
-        moment: (_selectedMedication.moment ?? 1) - 1,
+            ? R.string.truoc_an.tr()
+            : _selectedMedication.moment == 2
+                ? R.string.sau_an.tr()
+                : R.string.during_meal.tr(),
+        // Store moment as 1,2,3 to match MedicineItemModel / BE
+        moment: _selectedMedication.moment ?? 1,
         frequencyName: _selectedMedication.frequency == 1
-          ? R.string.everyday.tr()
-          : _selectedMedication.frequency == 2
-            ? R.string.ngay_trong_tuan.tr()
-            : R.string.every_other_day.tr(),
-        frequency: (_selectedMedication.frequency ?? 1) - 1,
+            ? R.string.everyday.tr()
+            : _selectedMedication.frequency == 2
+                ? R.string.ngay_trong_tuan.tr()
+                : R.string.every_other_day.tr(),
+        // Store frequency as 1,2,3 to match MedicineItemModel / BE
+        frequency: _selectedMedication.frequency ?? 1,
         quantityInMorning: _selectedMedication.morning ?? 0.0,
         quantityInNoon: _selectedMedication.midDay ?? 0.0,
         quantityInAfternoon: _selectedMedication.afternoon ?? 0.0,
         quantityInNight: _selectedMedication.night ?? 0.0,
-        quantityForDaysInWeek: (_selectedMedication.amount ?? 0).toDouble(),
-        quantityForEveryOtherDay: (_selectedMedication.amount ?? 0).toDouble(),
+        quantityForDaysInWeek: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0).toDouble(),
+        quantityForEveryOtherDay: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0).toDouble(),
         selectedDaysInWeek: !isValid
-          ? []
-          : (_selectedMedication.customDay ?? '').split(',').map(int.parse).toList(),
+            ? []
+            : (_selectedMedication.customDay ?? '').split(',').map(int.parse).toList(),
         everyOtherDayNumber: (_selectedMedication.breakDay ?? 0).toInt(),
       );
       _submitBtnEnabled = true;
@@ -145,6 +147,22 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         _sectionAddNoteKey.currentState!.updateFilesAndNote(images, _selectedMedication.note ?? '');
       });
     }
+  }
+
+  /// Sync the currently edited quantity [_amount] back into the correct field
+  /// on [_selectedMedication]:
+  /// - If this medicine already has `remain` (coming from an existing prescription),
+  ///   we are editing the remaining quantity, so update `remain`.
+  /// - Otherwise (AI/analyze or creating new prescription), we are editing the
+  ///   original quantity, so update `amount`.
+  void _syncQuantityToMedication() {
+    final bool hasRemain =
+        _selectedMedication.remain != null || widget.medicine?.remain != null;
+
+    _selectedMedication = _selectedMedication.copyWith(
+      amount: hasRemain ? null : _amount,
+      remain: hasRemain ? _amount : null,
+    );
   }
 
   String _buildFullUrl(String id) {
@@ -174,6 +192,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       _amount++;
       _quantityController.text = _amount.toStringAsFixed(0);
 
+      _syncQuantityToMedication();
+
       if (_submitBtnEnabled == false) {
         _submitBtnEnabled = isValid();
       }
@@ -185,6 +205,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       setState(() {
         _amount--;
         _quantityController.text = _amount.toStringAsFixed(0);
+        _syncQuantityToMedication();
         if (_amount == 0) {
           _submitBtnEnabled = isValid();
         }
@@ -193,22 +214,55 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   }
 
   void _showDosageBottomSheet(DosageModel? dosage) {
+    // Sync current quantity into dosage so the bottom sheet shows and returns
+    // the user's latest value (avoids overwriting _quantityController when
+    // user changed quantity then opened sheet and picked weekDays/everyOtherDay).
+    final currentAmount = _amount.toDouble();
+    final dosageToShow = dosage != null
+        ? DosageModel(
+            momentName: dosage.momentName,
+            frequencyName: dosage.frequencyName,
+            moment: dosage.moment,
+            frequency: dosage.frequency,
+            quantityInMorning: dosage.quantityInMorning,
+            quantityInNoon: dosage.quantityInNoon,
+            quantityInAfternoon: dosage.quantityInAfternoon,
+            quantityInNight: dosage.quantityInNight,
+            selectedDaysInWeek: dosage.selectedDaysInWeek,
+            quantityForDaysInWeek: currentAmount,
+            everyOtherDayNumber: dosage.everyOtherDayNumber,
+            quantityForEveryOtherDay: currentAmount,
+          )
+        : null;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => DosageInputBottomSheet(
-        dosage: dosage
+        dosage: dosageToShow,
       ),
     ).then((newDosage) {
       if (newDosage != null && newDosage is DosageModel) {
         setState(() {
           _dosage = newDosage;
-          final q = newDosage.frequency == 2
-              ? newDosage.quantityForDaysInWeek
-              : newDosage.quantityForEveryOtherDay;
-          _amount = q.round();
-          _quantityController.text = _amount.toStringAsFixed(0);
+
+          // frequency: 1 = everyday, 2 = weekdays, 3 = every other day
+          double q;
+          if (newDosage.frequency == 2) {
+            q = newDosage.quantityForDaysInWeek;
+          } else if (newDosage.frequency == 3) {
+            q = newDosage.quantityForEveryOtherDay;
+          } else {
+            // For "everyday", keep current amount unless explicitly provided elsewhere
+            q = _amount.toDouble();
+          }
+
+          if (q > 0) {
+            _amount = q.round();
+            _quantityController.text = _amount.toStringAsFixed(0);
+          }
+
           _submitBtnEnabled = isValid();
         });
       }
@@ -284,8 +338,16 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         child: ElevatedButton(
           onPressed: () {
             if (_submitBtnEnabled) {
+              // If this medicine already has a `remain` value (coming from a created
+              // prescription), we are editing the remaining quantity, so write to `remain`.
+              // Otherwise (e.g. AI analyzed / creating new prescription), we are editing
+              // the original quantity, so write to `amount`.
+              final bool hasRemain =
+                  _selectedMedication.remain != null || widget.medicine?.remain != null;
+
               _selectedMedication = _selectedMedication.copyWith(
-                amount: _amount,
+                amount: hasRemain ? null : _amount,
+                remain: hasRemain ? _amount : null,
                 note: _noteController.text,
                 moment: _dosage?.moment,
                 frequency: _dosage?.frequency,
@@ -542,6 +604,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
               onChanged: (value) {
                 setState(() {
                   _amount = int.tryParse(value) ?? 0;
+                  _syncQuantityToMedication();
                   if (_amount == 0 && _submitBtnEnabled == true) {
                     _submitBtnEnabled = false;
                   } else if (_amount > 0 && _submitBtnEnabled == false) {

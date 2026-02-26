@@ -10,12 +10,25 @@ class MedicineCard extends StatelessWidget {
   final MedicineItemModel medicine;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
+  /// When true, show [MedicineItemModel.amount] (original quantity).
+  /// When false, show [MedicineItemModel.remain] (left after use). Used for create vs edit.
+  final bool showAmountInsteadOfRemain;
 
   const MedicineCard({
     required this.medicine,
     this.onDelete,
     this.onEdit,
+    this.showAmountInsteadOfRemain = false,
   });
+
+  int get _displayQuantity {
+    final amount = medicine.amount;
+    final remain = medicine.remain;
+    if (showAmountInsteadOfRemain) {
+      return amount ?? remain ?? 0; // create: show amount
+    }
+    return remain ?? amount ?? 0; // after create (edit): show remain
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +63,7 @@ class MedicineCard extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "${medicine.amount} ${medicine.unit}  •  ${getMomentNameFromValue(medicine.moment)}  •  ${getFrequencyNameFromValue(medicine.frequency)}",
+                    "${_displayQuantity} ${medicine.unit ?? ''}  •  ${getMomentNameFromValue(medicine.moment)}  •  ${getFrequencyNameFromValue(medicine.frequency)}",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566),
                   ),
                   SizedBox(height: 12),
