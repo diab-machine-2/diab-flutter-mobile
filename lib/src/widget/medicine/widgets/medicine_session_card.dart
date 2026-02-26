@@ -29,21 +29,25 @@ class MedicineSessionCard extends StatefulWidget {
 class _MedicineSessionCardState extends State<MedicineSessionCard> {
   bool isExpanded = false;
 
+  static bool _tutorialAlreadyShown = false;
+
   @override
   void initState() {
     super.initState();
 
     isExpanded = widget.isExpanded;
 
-    // Sau khi build xong UI, nếu có key thì hiển thị tutorial
+    // Sau khi build xong UI, nếu có key thì hiển thị tutorial (chỉ một lần)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.firstMedicineKey != null) {
+      if (widget.firstMedicineKey != null && !_tutorialAlreadyShown) {
         _showTutorial();
       }
     });
   }
 
   Future<void> _showTutorial() async {
+    if (_tutorialAlreadyShown) return;
+    _tutorialAlreadyShown = true;
     final targets = [
       TargetFocus(
         identify: "firstMedicine",

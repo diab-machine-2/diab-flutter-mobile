@@ -209,8 +209,13 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           children: [
             GestureDetector(
               onTap: () {
+                final now = DateTime.now();
+                // Reset selected date to today whenever we switch back
+                // to the "schedule_use_medicine" tab.
+                _selectedDate = DateTime(now.year, now.month, now.day, 7);
+
                 _bloc.add(FetchMedicineScheduleEvent(
-                  (DateTime.now().millisecondsSinceEpoch / 1000).round(),
+                  (now.millisecondsSinceEpoch / 1000).round(),
                 ));
                 setState(() {
                   bottomIndex = 0;
@@ -317,7 +322,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
             final med = session.prescriptions[prescriptionIndex].medications[medicationIndex];
             _bloc.add(UseMedicineEvent(med.id, med.patientMedicationId, med.dosageValue));
           },
-          firstMedicineKey: _shouldShowTutorial ? _firstMedicineKey : null,
+          firstMedicineKey: (_shouldShowTutorial && sessionIndex == 0) ? _firstMedicineKey : null,
         );
       },
     );

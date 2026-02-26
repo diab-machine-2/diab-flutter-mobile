@@ -177,12 +177,12 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
                   child: Divider(color: Colors.grey, height: 1),
                 ),
                 _buildRemindGetMoreMedicine(),
-                Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                  child: Divider(color: Colors.grey, height: 1),
-                ),
-                _buildEnableNotification(),
+                // Container(
+                //   color: Colors.white,
+                //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                //   child: Divider(color: Colors.grey, height: 1),
+                // ),
+                // _buildEnableNotification(),
               ],
             ),
           ),
