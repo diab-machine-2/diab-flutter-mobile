@@ -97,7 +97,16 @@ class PrescriptionsBySessionModel {
           medications: medications,
           note: note,
         );
-      }).toList();
+      }).toList()
+        // Sort prescriptions inside a session by timeSchedule (HH:mm:ss ascending)
+        ..sort((a, b) {
+          final ta = a.timeSchedule;
+          final tb = b.timeSchedule;
+          if (ta.isEmpty && tb.isEmpty) return 0;
+          if (ta.isEmpty) return 1; // push empty/invalid to bottom
+          if (tb.isEmpty) return -1;
+          return ta.compareTo(tb);
+        });
 
       return PrescriptionsBySessionModel(
         id: session.name, // hoặc generate id riêng
