@@ -88,17 +88,19 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       _quantityInAfternoon.text = (widget.dosage?.quantityInAfternoon ?? 0).toString();
       _quantityInEvening.text = (widget.dosage?.quantityInNight ?? 0).toString();
 
-      if (widget.dosage?.frequency == 0) {
+      // frequency in DosageModel is 1,2,3 (everyday, weekdays, every other day)
+      if (widget.dosage?.frequency == 1) {
         _selectedFrequency = FrequencyType.everyday;
-      } else if (widget.dosage?.frequency == 1) {
+      } else if (widget.dosage?.frequency == 2) {
         _selectedFrequency = FrequencyType.weekDays;
       } else {
         _selectedFrequency = FrequencyType.everyOtherDay;
       }
 
-      if (widget.dosage?.moment == 0) {
+      // moment in DosageModel is 1,2,3 (before, after, during meal)
+      if (widget.dosage?.moment == 1) {
         _selectedMoment = MomentType.before_meal;
-      } else if (widget.dosage?.moment == 1) {
+      } else if (widget.dosage?.moment == 2) {
         _selectedMoment = MomentType.after_meal;
       } else {
         _selectedMoment = MomentType.during_meal;
@@ -189,6 +191,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     double maxHeight = screenHeight - 90;
 
     return DraggableScrollableSheet(
@@ -239,7 +242,11 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                       )),
                 ),
               ),
-              _buildConfirmButton(),
+              // Keep confirm button above keyboard when visible
+              Padding(
+                padding: EdgeInsets.only(bottom: keyboardHeight),
+                child: _buildConfirmButton(),
+              ),
             ],
           ),
         ),
@@ -515,6 +522,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
               );
             }),
           ],
+          onChanged: (value) {
+            _checkEnableSubmitBtnState();
+          },
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: '0.0',
@@ -928,8 +938,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
             if (FrequencyType.everyday == _selectedFrequency) {
               dosage = DosageModel(
                 momentName: _selectedMoment.label,
+                // Store as 1,2,3
                 moment: _selectedMoment.index + 1,
                 frequencyName: _selectedFrequency.label,
+                // Store as 1,2,3
                 frequency: _selectedFrequency.index + 1,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
