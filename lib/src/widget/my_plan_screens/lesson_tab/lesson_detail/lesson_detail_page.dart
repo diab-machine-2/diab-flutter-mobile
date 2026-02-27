@@ -17,8 +17,7 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/audio_player_controller.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/audio_widget.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/mini_video_bar.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/video_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
@@ -52,8 +51,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   bool _isShowModal = false;
   int percentComplete = 10;
 
-  // ── Floating mini audio bar ──
-  AudioPlayerController? _audioController;
+  // ── Floating mini video bar ──
   final GlobalKey _videoWidgetKey = GlobalKey();
   bool _showMiniBar = false;
   final ScrollController _scrollController = ScrollController();
@@ -76,7 +74,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     debugPrint('[VIDEO] Immediately disposing lesson media managers');
     _cubit.videoManager?.disposeAllVideo();
     _cubit.audioManager?.disposeAllAudio();
-    _audioController?.dispose();
     _scrollController.dispose();
 
     // Schedule async tracking after disposal (only if lessonDetail is available)
@@ -550,9 +547,17 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   ),
                                 ),
                               ),
-                              // Mini audio bar — hiện khi video bị khuất
-                              if (_showMiniBar && _audioController != null)
-                                MiniAudioBar(controller: _audioController!),
+                              // Mini video bar — hiện khi video bị khuất
+                              if (_showMiniBar && _cubit.videoManager != null)
+                                FutureBuilder(
+                                  future: _cubit.videoManager!.controller,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.data == null)
+                                      return const SizedBox.shrink();
+                                    return MiniVideoBar(
+                                        videoController: snapshot.data!);
+                                  },
+                                ),
                               CustomBottomBarWidget(
                                 isPreviousButtonActive: _cubit.isFirstSection,
                                 onTapPrevious: () async {
@@ -649,10 +654,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     }
   }
 
-  // ── Floating mini audio bar helpers ────────────────────────────────────
+  // ── Floating mini video bar helpers ────────────────────────────────────
 
   void _checkVideoVisibility() {
-    // Cần có video URL
     final hasVideo =
         _cubit.currentSectionDetail?.videoAddressLink?.isNotEmpty == true;
     if (!hasVideo) {
@@ -672,17 +676,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     final isVideoHidden = position.dy + box.size.height < 0;
 
     if (isVideoHidden != _showMiniBar) {
-      // Lazy init audio controller khi cần
-      if (isVideoHidden && _audioController == null) {
-        _audioController = AudioPlayerController();
-        _audioController!.onComplete = () {
-          _cubit.audioManager?.disposeAllAudio();
-          _cubit.sectionStatus?.isAudioCompleted = true;
-          _cubit.checkSectionComplete();
-        };
-        final videoUrl = _cubit.currentSectionDetail!.videoAddressLink!;
-        _audioController!.loadUrl(videoUrl);
-      }
       setState(() => _showMiniBar = isVideoHidden);
     }
   }
