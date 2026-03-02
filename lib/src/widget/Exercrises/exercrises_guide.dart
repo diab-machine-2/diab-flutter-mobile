@@ -151,7 +151,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                           "${R.string.reference_source.tr()}:",
+                            "${R.string.reference_source.tr()}:",
                             style: TextStyle(
                               fontSize: 14,
                               color: R.color.color0xffBFC6C6,
@@ -171,9 +171,8 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
                             child: Text(
                               'https://www.betterhealth.vic.gov.au/health/healthyliving/exercise-intensity',
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 14,
                                 color: R.color.color0xffBFC6C6,
-                                decoration: TextDecoration.underline,
                               ),
                             ),
                           ),
