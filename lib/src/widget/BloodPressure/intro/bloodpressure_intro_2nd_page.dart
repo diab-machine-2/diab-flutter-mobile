@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/colors.dart';
 import 'package:medical/res/dimens.dart';
@@ -480,15 +482,29 @@ class _BloodPressureIntro2ndPageState extends State<BloodPressureIntro2ndPage> {
           // Reference info
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'Nguồn tham khảo:\nAbout High Blood Pressure | High Blood Pressure.  (2025, January 28). CDC. Tham khảo ngày 12, tháng 3, 2025, từ https://www.cdc.gov/high-blood-pressure/about/index.html',
-              style: TextStyle(
-                fontSize: 12,
-                height: 1.5,
-                fontWeight: FontWeight.w400,
-                fontFamily: R.font.sfpro,
-                color: Color(0xFFBFC6C6),
-                letterSpacing: 0.2,
+            child: RichText(
+              textAlign: TextAlign.left,
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.5,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: R.font.sfpro,
+                  color: Color(0xFFBFC6C6),
+                  letterSpacing: 0.2,
+                ),
+                children: [
+                  const TextSpan(
+                    text:
+                        'Nguồn tham khảo:\nAbout High Blood Pressure | High Blood Pressure.  (2025, January 28). CDC. Tham khảo ngày 12, tháng 3, 2025, từ ',
+                  ),
+                  TextSpan(
+                    text: 'https://www.cdc.gov/high-blood-pressure/about/index.html',
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => launchUrl(Uri.parse(
+                          'https://www.cdc.gov/high-blood-pressure/about/index.html')),
+                  ),
+                ],
               ),
             ),
           ),

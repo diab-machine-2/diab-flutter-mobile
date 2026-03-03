@@ -1462,4 +1462,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get login_apple_id => 'login_apple_id';
   String get login_gmail => 'login_gmail';
   String get conversation_ai_citation => 'conversation_ai_citation';
+  String get reference_source => 'reference_source';
 }

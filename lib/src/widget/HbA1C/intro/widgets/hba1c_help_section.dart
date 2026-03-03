@@ -124,7 +124,7 @@ class _HbA1cHelpSectionState extends State<HbA1cHelpSection> {
 
   Widget _buildLessonsGrid() {
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 12,

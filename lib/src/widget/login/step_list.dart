@@ -317,27 +317,19 @@ class _StepListControllerState extends State<StepListController>
                         children: [
                           Container(
                             padding: const EdgeInsets.only(left: 16, right: 16),
-                            margin: EdgeInsets.only(bottom: 16),
+                            margin: EdgeInsets.only(bottom: 12),
                             child: SpacingColumn(
-                                spacing: 15,
+                                spacing: 14,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   GestureDetector(
                                     onTap: () async {
-                                      // Navigator.pushReplacementNamed(
-                                      //     context, NavigatorName.register,
-                                      //     arguments: {
-                                      //       'phone': '0909202394',
-                                      //     });
                                       await TrackingManager.trackEvent(
                                         'login_select',
                                         'welcome',
-                                        params: {
-                                          'method': 'phone',
-                                        },
+                                        params: {'method': 'phone'},
                                       );
-
                                       Navigator.pushNamed(
                                         context,
                                         NavigatorName.login,
@@ -347,7 +339,7 @@ class _StepListControllerState extends State<StepListController>
                                     child: Container(
                                       height: 52,
                                       padding:
-                                          EdgeInsets.symmetric(horizontal: 20),
+                                          EdgeInsets.symmetric(horizontal: 16),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           begin: Alignment.topCenter,
@@ -384,62 +376,23 @@ class _StepListControllerState extends State<StepListController>
                                       ),
                                     ),
                                   ),
-                                  // Expanded(
-                                  //   child: GestureDetector(
-                                  //     onTap: () async {
-                                  //       await TrackingManager.logEvent(
-                                  //         name: 'cta_button_clicked',
-                                  //         parameters: {
-                                  //           "screen_name": 'welcome',
-                                  //           'cta_button_name':
-                                  //               'cta_welcome_sign_up',
-                                  //         },
-                                  //       );
-                                  //       Navigator.pushNamed(
-                                  //         context,
-                                  //         NavigatorName.register,
-                                  //         arguments: sharedCode,
-                                  //       );
-                                  //     },
-                                  //     child: Container(
-                                  //         height: 48,
-                                  //         decoration: BoxDecoration(
-                                  //             color: R.color.mainColor,
-                                  //             borderRadius:
-                                  //                 BorderRadius.circular(200),
-                                  //             gradient: LinearGradient(
-                                  //                 begin: Alignment.topLeft,
-                                  //                 end: Alignment.centerRight,
-                                  //                 colors: [
-                                  //                   R.color.greenGradientTop,
-                                  //                   R.color.greenGradientBottom
-                                  //                 ])),
-                                  //         child: Center(
-                                  //           child: Text(R.string.tao_tai_khoan.tr(),
-                                  //               style: TextStyle(
-                                  //                   color: R.color.white,
-                                  //                   fontSize: 16,
-                                  //                   fontWeight: FontWeight.w600)),
-                                  //         )),
-                                  //   ),
-                                  // ),
-                                  // SizedBox(width: 16),
                                   Container(
                                     height: 52,
                                     padding:
-                                        EdgeInsets.symmetric(horizontal: 20),
+                                        EdgeInsets.symmetric(horizontal: 16),
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFE8F9F7),
-                                      borderRadius: BorderRadius.circular(200),
+                                      color: R.color.white,
+                                      borderRadius: BorderRadius.circular(26),
+                                      border: Border.all(
+                                          color: const Color(0xFFE0E0E0),
+                                          width: 1),
                                     ),
                                     child: GestureDetector(
                                         onTap: () async {
                                           await TrackingManager.trackEvent(
                                             'login_select',
                                             'welcome',
-                                            params: {
-                                              'method': 'zalo',
-                                            },
+                                            params: {'method': 'zalo'},
                                           );
                                           loginZalo();
                                         },
@@ -458,9 +411,9 @@ class _StepListControllerState extends State<StepListController>
                                               maxLines: 1,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                color: R.color.mainColor,
+                                                color: R.color.color0xff111515,
                                                 fontSize: 16,
-                                                fontWeight: FontWeight.w700,
+                                                fontWeight: FontWeight.w400,
                                               ),
                                             )
                                           ],
@@ -468,41 +421,7 @@ class _StepListControllerState extends State<StepListController>
                                   ),
                                 ]),
                           ),
-
                           SocialLoginSection(),
-                          // GestureDetector(
-                          //   onTap: () async {
-                          //     await TrackingManager.logEvent(
-                          //       name: 'cta_button_clicked',
-                          //       parameters: {
-                          //         "screen_name": 'welcome',
-                          //         'cta_button_name': 'cta_welcome_support',
-                          //       },
-                          //     );
-                          //     if (AppSettings.secureModel != null) {
-                          //       Navigator.pushNamed(context, NavigatorName.contact,
-                          //           arguments: {'contact': AppSettings.secureModel});
-                          //     }
-                          //   },
-                          //   child: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.center,
-                          //     children: [
-                          //       Image.asset(
-                          //         R.drawable.ic_contact,
-                          //         width: 19,
-                          //         height: 19,
-                          //       ),
-                          //       SizedBox(
-                          //         width: 8,
-                          //       ),
-                          //       Text(R.string.contact_diab_info.tr(),
-                          //           style: TextStyle(
-                          //               fontSize: 15,
-                          //               color: R.color.captionColorGray)),
-                          //     ],
-                          //   ),
-                          // ),
-                          // SizedBox(height: 12)
                         ],
                       ),
                     ],

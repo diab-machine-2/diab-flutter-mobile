@@ -14,6 +14,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -36,12 +37,16 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   String? _aiResult;
 
   bool _haveEditNote = false;
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
   late String _note = widget.data.note ?? '';
   List<String?> _removeIDs = [];
   List<dynamic> _files = [];
+  late TextEditingController _controllerNote;
 
   @override
   void initState() {
+    _controllerNote = TextEditingController(text: _note);
     _loadData();
     super.initState();
   }
@@ -72,6 +77,15 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   void _doComplete() async {
     try {
       BotToast.showLoading();
+
+      final noteData = _sectionAddNoteKey.currentState?.getNote();
+      if (noteData != null) {
+        _note = noteData.note;
+        _files = noteData.files;
+        _removeIDs = noteData.removeIDs;
+        _haveEditNote = true;
+      }
+
       if (_haveEditNote) {
         List<String> paths = [];
         for (var file in _files) {
@@ -245,8 +259,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             ),
           ),
 
-          // const SizedBox(height: 24),
-          // button add note
+          // button add note / note content
           _buildNoteOrAddNoteSection(),
 
           const SizedBox(height: 24),
@@ -306,119 +319,13 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   }
 
   Widget _buildNoteOrAddNoteSection() {
-    if (_haveNote) {
-      // Section show note
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: R.color.color0xffF2F6F9,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  R.string.ghi_chu.tr(),
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: R.color.textDark),
-                ),
-                Spacer(),
-                GestureDetector(
-                  onTap: _doEditNote,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6.0, vertical: 2.0),
-                    child: Image.asset(R.drawable.ic_pencil_create,
-                        width: 20, height: 20),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _note,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
-                height: 16 / 12,
-              ),
-            ),
-            // images
-            if (_files.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: _files.map((e) {
-                  final index = _files.indexOf(e);
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/photo_view',
-                          arguments: {'files': _files, 'index': index});
-                    },
-                    child: SizedBox(
-                      width: 56,
-                      height: 56,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        width: 56,
-                        height: 56,
-                        clipBehavior: Clip.hardEdge,
-                        child: _files[index] is PickedFile
-                            ? Image.file(
-                                File(_files[index].path),
-                                fit: BoxFit.cover,
-                              )
-                            : _files[index] is XFile
-                                ? Image.file(
-                                    File((_files[index] as XFile).path),
-                                    fit: BoxFit.cover,
-                                  )
-                                : _files[index] is File
-                                    ? Image.file(
-                                        (_files[index] as File),
-                                        fit: BoxFit.cover,
-                                      )
-                                    : NetWorkImageWidget(
-                                        imageUrl: _files[index].url,
-                                        fit: BoxFit.cover,
-                                      ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ],
-        ),
-      );
-    }
-    return ElevatedButton(
-      onPressed: _doEditNote,
-      child: Center(
-        child: Text(
-          R.string.them_ghi_chu.tr(),
-          style: TextStyle(
-              color: R.color.dark, fontSize: 13, fontWeight: FontWeight.bold),
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: R.color.color0xffF2F6F9,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        fixedSize: const Size(146, 32),
-        elevation: 0,
-      ),
+    return SectionAddNote(
+      controllerNote: _controllerNote,
+      maxMedia: 5,
+      key: _sectionAddNoteKey,
+      initialFiles: _files,
+      noteTitle: R.string.ghi_chu.tr(),
+      horizontalPadding: 12,
     );
   }
 
