@@ -55,7 +55,9 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   void initState() {
     super.initState();
     _bloc = MedicineBloc();
-    selectedDate = DateTime.now();
+    final now = DateTime.now();
+    // Chuẩn hoá selectedDate chỉ còn phần ngày (không giữ giờ/phút/giây)
+    selectedDate = DateTime(now.year, now.month, now.day);
     if (widget.prescriptionMode == null) {
       _prescriptionMode = PrescriptionMode.create;
     } else {
@@ -72,7 +74,9 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
     _controllerPrescriptionName.text = prescription.prescriptionName ?? '';
     _controllerNote.text = prescription.note ?? '';
     if (prescription.startDate != null) {
-      selectedDate = prescription.startDate;
+      // Luôn chuẩn hoá startDate chỉ theo ngày
+      final d = prescription.startDate!;
+      selectedDate = DateTime(d.year, d.month, d.day);
     }
 
     final images = (prescription.imagesPrescription ?? [])
@@ -443,11 +447,11 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           itemCount: _medicines.length,
           padding: const EdgeInsets.only(top: 12, left: 12, right: 12),
           itemBuilder: (context, index) {
-          return MedicineCard(
-              medicine: _medicines[index],
-              // Create: show amount (original quantity). Edit/Reuse: show remain (left after use).
-              showAmountInsteadOfRemain: _prescriptionMode == PrescriptionMode.create,
-              onEdit: () async {
+            return MedicineCard(
+                medicine: _medicines[index],
+                // Create/Reuse: show amount (original quantity). Edit: show remain (left after use).
+                showAmountInsteadOfRemain: _prescriptionMode == PrescriptionMode.create || _prescriptionMode == PrescriptionMode.reuse,
+                onEdit: () async {
                   //Chỉnh sửa thuốc
                   final result = await Navigator.pushNamed(
                     context,
@@ -517,10 +521,20 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 return;
               }
 
+              final DateTime rawSelectedDate = selectedDate ?? DateTime.now();
+              // Chuẩn hoá startDate thành ngày (00:00) để tránh lệch ngày do timezone
+              // Lưu startDate theo mốc 00:00:00 UTC của ngày được chọn,
+              // để khi xem timestamp sẽ đúng ngày (không bị lùi sang ngày hôm trước do múi giờ).
+              final DateTime normalizedStartDate = DateTime.utc(
+                rawSelectedDate.year,
+                rawSelectedDate.month,
+                rawSelectedDate.day,
+              );
+
               _prescription = _prescription.copyWith(
                 prescriptionName: _controllerPrescriptionName.text,
                 note: _controllerNote.text,
-                startDate: selectedDate,
+                startDate: normalizedStartDate,
                 patientMedications: _medicines,
                 status: 0,
               );
@@ -551,6 +565,31 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
               _prescription = _prescription.copyWith(
                 imagesPrescription: oldPaths,
               );
+
+              // Khi sử dụng lại đơn thuốc, reset trường remain về null cho tất cả thuốc
+              if (_prescriptionMode == PrescriptionMode.reuse && _prescription.patientMedications != null) {
+                final updatedMeds = _prescription.patientMedications!
+                    .map((m) => MedicineItemModel(
+                          id: m.id,
+                          medicationName: m.medicationName,
+                          moment: m.moment,
+                          frequency: m.frequency,
+                          morning: m.morning,
+                          afternoon: m.afternoon,
+                          midDay: m.midDay,
+                          night: m.night,
+                          unit: m.unit,
+                          amount: m.amount,
+                          remain: null,
+                          customDay: m.customDay,
+                          breakDay: m.breakDay,
+                          note: m.note,
+                          imagesPatientMedications: m.imagesPatientMedications,
+                          uploadFiles: m.uploadFiles,
+                        ))
+                    .toList();
+                _prescription = _prescription.copyWith(patientMedications: updatedMeds);
+              }
 
               if (_prescriptionMode == PrescriptionMode.reuse) {
                 _bloc.add(CreateNewPrescriptionEvent(_prescription, newPaths));
@@ -662,7 +701,11 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
     );
 
     setState(() {
-      selectedDate = (values?.isNotEmpty == true ? values!.first : null);
+      if (values?.isNotEmpty == true && values!.first != null) {
+        final picked = values.first!;
+        // Luôn chuẩn hoá ngày được chọn về 00:00 để đồng nhất
+        selectedDate = DateTime(picked.year, picked.month, picked.day);
+      }
     });
   }
 }

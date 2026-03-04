@@ -361,10 +361,17 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
                     ))
                 .toList();
 
+            // Giữ nguyên ngày bắt đầu đơn thuốc, nhưng chuẩn hoá chỉ theo ngày
+            final DateTime? startDate = widget.prescription.startDate;
+            final DateTime? normalizedStartDate = startDate == null
+                ? null
+                : DateTime.utc(startDate.year, startDate.month, startDate.day);
+
             final PrescriptionModel prescription = widget.prescription.copyWith(
               remainDays: remindDays,
               isNotify: isNotification,
               reminderTimes: reminderTimes,
+              startDate: normalizedStartDate,
             );
 
             if ((prescription.id ?? '').isEmpty) {
