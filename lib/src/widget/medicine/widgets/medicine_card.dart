@@ -21,13 +21,18 @@ class MedicineCard extends StatelessWidget {
     this.showAmountInsteadOfRemain = false,
   });
 
-  int get _displayQuantity {
-    final amount = medicine.amount;
-    final remain = medicine.remain;
-    if (showAmountInsteadOfRemain) {
-      return amount ?? remain ?? 0; // create: show amount
+  String get _displayQuantityText {
+    final double? amount = medicine.amount;
+    final double? remain = medicine.remain;
+
+    final double value = showAmountInsteadOfRemain
+        ? (amount ?? remain ?? 0)
+        : (remain ?? amount ?? 0);
+
+    if (value == value.roundToDouble()) {
+      return value.toInt().toString();
     }
-    return remain ?? amount ?? 0; // after create (edit): show remain
+    return value.toStringAsFixed(1);
   }
 
   @override
@@ -63,7 +68,7 @@ class MedicineCard extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "${_displayQuantity} ${medicine.unit ?? ''}  •  ${getMomentNameFromValue(medicine.moment)}  •  ${getFrequencyNameFromValue(medicine.frequency)}",
+                    "${_displayQuantityText} ${medicine.unit ?? ''}  •  ${getMomentNameFromValue(medicine.moment)}  •  ${getFrequencyNameFromValue(medicine.frequency)}",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566),
                   ),
                   SizedBox(height: 12),

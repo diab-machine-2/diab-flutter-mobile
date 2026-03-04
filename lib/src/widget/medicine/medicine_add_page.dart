@@ -43,7 +43,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   final TextEditingController _noteController = TextEditingController();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
   MedicineUnit _unit = MedicineUnit.pill; // viên, gói, ống, ml, khác
-  int _amount = 0;
+  double _amount = 0.0;
   DosageModel? _dosage;
   List<File?> _files = [];
 
@@ -91,8 +91,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       id: widget.medicineTablet?.id ?? widget.medicine?.id ?? '',
       medicationName: widget.medicineTablet?.name ?? widget.medicine?.medicationName ?? '',
     );
-    _amount = widget.medicine?.remain ?? widget.medicine?.amount ?? 0;
-    _quantityController.text = _amount.toStringAsFixed(0);
+    _amount = widget.medicine?.remain ?? widget.medicine?.amount ?? 0.0;
+    _quantityController.text = _amount == _amount.roundToDouble()
+        ? _amount.toInt().toString()
+        : _amount.toStringAsFixed(1);
 
     //Mode edit
     if (widget.medicine != null) {
@@ -100,7 +102,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       _nameController.text = _selectedMedication.medicationName ?? '';
       _noteController.text = _selectedMedication.note ?? '';
       _unit = MedicineUnit.fromString(_selectedMedication.unit);
-      _amount = _selectedMedication.remain ?? _selectedMedication.amount ?? 0;
+      _amount = _selectedMedication.remain ?? _selectedMedication.amount ?? 0.0;
 
       final raw = (_selectedMedication.customDay ?? '').trim();
       final isValid = RegExp(r'^[0-9,]+$').hasMatch(raw);
@@ -123,8 +125,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         quantityInNoon: _selectedMedication.midDay ?? 0.0,
         quantityInAfternoon: _selectedMedication.afternoon ?? 0.0,
         quantityInNight: _selectedMedication.night ?? 0.0,
-        quantityForDaysInWeek: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0).toDouble(),
-        quantityForEveryOtherDay: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0).toDouble(),
+        quantityForDaysInWeek: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0.0),
+        quantityForEveryOtherDay: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0.0),
         selectedDaysInWeek: !isValid
             ? []
             : (_selectedMedication.customDay ?? '').split(',').map(int.parse).toList(),
@@ -189,8 +191,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
 
   void _incrementQuantity() {
     setState(() {
-      _amount++;
-      _quantityController.text = _amount.toStringAsFixed(0);
+      _amount += 1.0;
+      _quantityController.text = _amount == _amount.roundToDouble()
+          ? _amount.toInt().toString()
+          : _amount.toStringAsFixed(1);
 
       _syncQuantityToMedication();
 
@@ -203,8 +207,11 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   void _decrementQuantity() {
     if (_amount > 0) {
       setState(() {
-        _amount--;
-        _quantityController.text = _amount.toStringAsFixed(0);
+        _amount -= 1.0;
+        if (_amount < 0) _amount = 0.0;
+        _quantityController.text = _amount == _amount.roundToDouble()
+            ? _amount.toInt().toString()
+            : _amount.toStringAsFixed(1);
         _syncQuantityToMedication();
         if (_amount == 0) {
           _submitBtnEnabled = isValid();
@@ -217,7 +224,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     // Sync current quantity into dosage so the bottom sheet shows and returns
     // the user's latest value (avoids overwriting _quantityController when
     // user changed quantity then opened sheet and picked weekDays/everyOtherDay).
-    final currentAmount = _amount.toDouble();
+    final currentAmount = _amount;
     final dosageToShow = dosage != null
         ? DosageModel(
             momentName: dosage.momentName,
@@ -255,12 +262,14 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             q = newDosage.quantityForEveryOtherDay;
           } else {
             // For "everyday", keep current amount unless explicitly provided elsewhere
-            q = _amount.toDouble();
+            q = _amount;
           }
 
           if (q > 0) {
-            _amount = q.round();
-            _quantityController.text = _amount.toStringAsFixed(0);
+            _amount = q;
+            _quantityController.text = _amount == _amount.roundToDouble()
+                ? _amount.toInt().toString()
+                : _amount.toStringAsFixed(1);
           }
 
           _submitBtnEnabled = isValid();
@@ -603,7 +612,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
               ),
               onChanged: (value) {
                 setState(() {
-                  _amount = int.tryParse(value) ?? 0;
+                  _amount = double.tryParse(value) ?? 0.0;
                   _syncQuantityToMedication();
                   if (_amount == 0 && _submitBtnEnabled == true) {
                     _submitBtnEnabled = false;

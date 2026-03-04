@@ -14,9 +14,9 @@ class MedicineItemModel {
   final double? night;
 
   final String? unit; // viên, gói, ống, ml, khác
-  final int? amount;
+  final double? amount;
   /// Remaining quantity of medicine
-  final int? remain;
+  final double? remain;
 
   final String? customDay;
   final double? breakDay;
@@ -56,8 +56,8 @@ class MedicineItemModel {
       midDay: (json['midDay'] as num?)?.toDouble(),
       night: (json['night'] as num?)?.toDouble(),
       unit: json['unit'],
-      amount: (json['amount'] as num?)?.toInt(),
-      remain: (json['remain'] as num?)?.toInt(),
+      amount: (json['amount'] as num?)?.toDouble(),
+      remain: (json['remain'] as num?)?.toDouble(),
       customDay: json['customDay'],
       breakDay: json['breakDay'],
       note: json['note'],
@@ -104,8 +104,8 @@ class MedicineItemModel {
     double? midDay,
     double? night,
     String? unit,
-    int? amount,
-    int? remain,
+    double? amount,
+    double? remain,
     String? customDay,
     double? breakDay,
     String? note,
@@ -146,7 +146,7 @@ extension MedicineItemModelMapper on MedicineItemModel {
     return items.map((e) {
       final map = e as Map<String, dynamic>;
 
-      final amount = int.tryParse(map['amount']?.toString() ?? '');
+      final amount = double.tryParse(map['amount']?.toString() ?? '');
 
       return MedicineItemModel(
         medicationName: map['name'] as String?,

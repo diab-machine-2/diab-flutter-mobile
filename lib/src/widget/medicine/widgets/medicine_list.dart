@@ -88,7 +88,7 @@ class _MedicineRow extends StatelessWidget {
           ),
           if (med.remain != null || med.amount != null)
             Text(
-              "${(med.remain ?? med.amount)!.toInt()} ${med.unit ?? ''}",
+              _formatQuantity(med.remain ?? med.amount ?? 0),
               style: TextStyle(
                 fontSize: 15,
                 color: R.color.color0xff5E6566,
@@ -98,6 +98,14 @@ class _MedicineRow extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _formatQuantity(double quantity) {
+    final unit = med.unit ?? '';
+    if (quantity == quantity.roundToDouble()) {
+      return "${quantity.toInt()} $unit";
+    }
+    return "${quantity.toStringAsFixed(1)} $unit";
   }
 }
 
