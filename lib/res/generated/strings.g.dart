@@ -1536,4 +1536,6 @@ class Strings {
   String get login_gmail => 'login_gmail';
   String get conversation_ai_citation => 'conversation_ai_citation';
   String get reference_source => 'reference_source';
+  String get change_medicine_quantity_title => 'change_medicine_quantity_title';
+  String get change_medicine_quantity_message => 'change_medicine_quantity_message';
 }

@@ -107,7 +107,11 @@ class MedicineCard extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: IconButton(
-                    icon: SvgPicture.asset(R.icons.ic_edit, width: 20),
+                    icon: SvgPicture.asset(
+                      R.icons.ic_edit,
+                      width: 20,
+                      color: R.color.greenGradientBottom,
+                    ),
                     onPressed: onEdit,
                   ),
                 ),

@@ -345,64 +345,23 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
         color: Colors.white,
         child: ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_submitBtnEnabled) {
-              // If this medicine already has a `remain` value (coming from a created
-              // prescription), we are editing the remaining quantity, so write to `remain`.
-              // Otherwise (e.g. AI analyzed / creating new prescription), we are editing
-              // the original quantity, so write to `amount`.
               final bool hasRemain =
                   _selectedMedication.remain != null || widget.medicine?.remain != null;
 
-              _selectedMedication = _selectedMedication.copyWith(
-                amount: hasRemain ? null : _amount,
-                remain: hasRemain ? _amount : null,
-                note: _noteController.text,
-                moment: _dosage?.moment,
-                frequency: _dosage?.frequency,
-                morning: _dosage?.quantityInMorning,
-                midDay: _dosage?.quantityInNoon,
-                afternoon: _dosage?.quantityInAfternoon,
-                night: _dosage?.quantityInNight,
-                customDay: _dosage?.selectedDaysInWeek.join(','),
-                breakDay: _dosage?.everyOtherDayNumber.toDouble(),
-                unit: _unit.getName(),
-              );
-
-              List<ImageNoteModel> oldPaths = <ImageNoteModel>[];
-              Map<String, String> newPaths = {};
-              if (_medicineMode == MedicineMode.create) {
-                final data = _sectionAddNoteKey.currentState!.getNote();
-                for (var file in (data.files)) {
-                  if (file is PickedFile) {
-                    final fieldName = 'ImagesPatientMedication[${widget.index} ?? 0]';
-                    newPaths[fieldName] = file.path;
-                  }
+              // If this medicine already has a `remain` value (coming from a created
+              // prescription) and we are in edit mode, confirm with the user that
+              // changing quantity will reset usage status.
+              if (hasRemain && _medicineMode == MedicineMode.edit) {
+                final bool proceed = await _showChangeQuantityConfirmDialog(context);
+                if (!proceed) {
+                  // Cancel: just close dialog and do nothing else.
+                  return;
                 }
-                _selectedMedication.uploadFiles = newPaths;
-
-                Navigator.pushNamed(
-                  context,
-                  NavigatorName.prescription_add,
-                  arguments: {'medicineItem': _selectedMedication},
-                );
-              } else {
-                final data = _sectionAddNoteKey.currentState!.getNote();
-                for (var file in (data.files)) {
-                  if (file is PickedFile) {
-                    final fieldName = 'ImagesPatientMedication[${widget.index ?? 0}]';
-                    newPaths[fieldName] = file.path;
-                  } else if (file is ImagesModel) {
-                    final id = (file.url ?? '').split('/').last.trim();
-                    oldPaths.add(
-                      ImageNoteModel(order: widget.index ?? 0, id: id),
-                    );
-                  }
-                }
-                _selectedMedication.uploadFiles = newPaths;
-
-                Navigator.pop(context, _selectedMedication);
               }
+
+              _handleSubmit(context, hasRemain);
             }
           },
           style: ElevatedButton.styleFrom(
@@ -425,6 +384,58 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         ),
       ), // end bottomNavigationBar
     );
+  }
+
+  void _handleSubmit(BuildContext context, bool hasRemain) {
+    _selectedMedication = _selectedMedication.copyWith(
+      amount: hasRemain ? null : _amount,
+      remain: hasRemain ? _amount : null,
+      note: _noteController.text,
+      moment: _dosage?.moment,
+      frequency: _dosage?.frequency,
+      morning: _dosage?.quantityInMorning,
+      midDay: _dosage?.quantityInNoon,
+      afternoon: _dosage?.quantityInAfternoon,
+      night: _dosage?.quantityInNight,
+      customDay: _dosage?.selectedDaysInWeek.join(','),
+      breakDay: _dosage?.everyOtherDayNumber.toDouble(),
+      unit: _unit.getName(),
+    );
+
+    List<ImageNoteModel> oldPaths = <ImageNoteModel>[];
+    Map<String, String> newPaths = {};
+    if (_medicineMode == MedicineMode.create) {
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in (data.files)) {
+        if (file is PickedFile) {
+          final fieldName = 'ImagesPatientMedication[${widget.index} ?? 0]';
+          newPaths[fieldName] = file.path;
+        }
+      }
+      _selectedMedication.uploadFiles = newPaths;
+
+      Navigator.pushNamed(
+        context,
+        NavigatorName.prescription_add,
+        arguments: {'medicineItem': _selectedMedication},
+      );
+    } else {
+      final data = _sectionAddNoteKey.currentState!.getNote();
+      for (var file in (data.files)) {
+        if (file is PickedFile) {
+          final fieldName = 'ImagesPatientMedication[${widget.index ?? 0}]';
+          newPaths[fieldName] = file.path;
+        } else if (file is ImagesModel) {
+          final id = (file.url ?? '').split('/').last.trim();
+          oldPaths.add(
+            ImageNoteModel(order: widget.index ?? 0, id: id),
+          );
+        }
+      }
+      _selectedMedication.uploadFiles = newPaths;
+
+      Navigator.pop(context, _selectedMedication);
+    }
   }
 
   // Prescription Card
@@ -952,6 +963,125 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         horizontalPadding: 12,
       ),
     );
+  }
+
+  Future<bool> _showChangeQuantityConfirmDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(R.drawable.ic_back_icon, width: 64, height: 64),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            'change_medicine_quantity_title'.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            'change_medicine_quantity_message'.tr(),
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context, false);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.cancel.tr(),
+                                      style: TextStyle(
+                                        color: R.color.textDark,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context, true);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    color: R.color.red,
+                                    borderRadius: BorderRadius.circular(200),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.text_continue.tr(),
+                                      style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ) ??
+        false;
   }
 
 }

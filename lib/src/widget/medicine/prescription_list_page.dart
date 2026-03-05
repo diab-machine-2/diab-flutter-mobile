@@ -32,9 +32,11 @@ class PrescriptionListPage extends StatefulWidget {
   State<PrescriptionListPage> createState() => _PrescriptionListPageState();
 }
 
-class _PrescriptionListPageState extends State<PrescriptionListPage> with SingleTickerProviderStateMixin {
+class _PrescriptionListPageState extends State<PrescriptionListPage>
+    with SingleTickerProviderStateMixin {
   late MedicineBloc _bloc;
-  List<PrescriptionsBySessionModel> _sessionList = <PrescriptionsBySessionModel>[];
+  List<PrescriptionsBySessionModel> _sessionList =
+      <PrescriptionsBySessionModel>[];
 
   late TabController _tabController;
   int bottomIndex = 1;
@@ -52,7 +54,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
 
     // Initialize with today's date.
     final currentDateTime = DateTime.now();
-    _selectedDate = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
+    _selectedDate = DateTime(
+        currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
     _tabController = TabController(length: 2, vsync: this);
     _bloc = MedicineBloc()..add(FetchPrescriptionsEvent());
     // ..add(FetchMedicineScheduleEvent(
@@ -73,18 +76,21 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
       value: _bloc,
       child: BlocListener<MedicineBloc, MedicineState>(
         listener: (context, state) {
-          if (state is FetchPrescriptionsSuccess && state.prescriptionsResult.isEmpty) {
+          if (state is FetchPrescriptionsSuccess &&
+              state.prescriptionsResult.isEmpty) {
             Navigator.of(context).pushReplacementNamed(NavigatorName.medicine);
           }
           if (state is StopPrescriptionSuccess) {
             _bloc.add(FetchPrescriptionsEvent());
           }
         },
-        child: BlocBuilder<MedicineBloc, MedicineState>(builder: (context, state) {
+        child:
+            BlocBuilder<MedicineBloc, MedicineState>(builder: (context, state) {
           // if (state is MedicineLoading) {
           //   return const Center(child: CircularProgressIndicator());
           // }
-          if (state is FetchPrescriptionsSuccess && state.prescriptionsResult.isEmpty) {
+          if (state is FetchPrescriptionsSuccess &&
+              state.prescriptionsResult.isEmpty) {
             return const SizedBox.shrink();
           }
 
@@ -97,7 +103,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                   highlightColor: R.color.transparent,
                   icon: Icon(Icons.arrow_back, color: R.color.white),
                   onPressed: () {
-                    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamedAndRemoveUntil(
                       NavigatorName.tabbar,
                       (route) => false,
                     );
@@ -107,8 +114,11 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    bottomIndex == 0 ? R.string.schedule_use_medicine.tr() : R.string.prescription.tr(),
-                    key: ValueKey(bottomIndex), // important for AnimatedSwitcher
+                    bottomIndex == 0
+                        ? R.string.schedule_use_medicine.tr()
+                        : R.string.prescription.tr(),
+                    key:
+                        ValueKey(bottomIndex), // important for AnimatedSwitcher
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -126,13 +136,17 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     onTap: () async {
                       // Time to show ripple
                       await Future.delayed(const Duration(milliseconds: 250));
-                      Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial);
+                      Navigator.of(context)
+                          .pushNamed(NavigatorName.medicine_tutorial);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Text(
                         R.string.tutorial.tr(),
-                        style: TextStyle(color: R.color.white, fontSize: 15, fontWeight: FontWeight.w400),
+                        style: TextStyle(
+                            color: R.color.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400),
                       ),
                     ),
                   ),
@@ -165,23 +179,31 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [R.color.greenGradientMid, R.color.greenGradientBottom],
+                    colors: [
+                      R.color.greenGradientMid,
+                      R.color.greenGradientBottom
+                    ],
                   ),
                 ),
               ),
             ),
-            body: bottomIndex == 0 ? _buildBodyForScheduleTab(context, state) : _buildBodyForPrescriptionTab(state),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+            body: bottomIndex == 0
+                ? _buildBodyForScheduleTab(context, state)
+                : _buildBodyForPrescriptionTab(state),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
             floatingActionButton: FloatingActionButton(
               backgroundColor: Colors.transparent,
               onPressed: () {
                 InputOptionsBottomSheet.show(
                   context,
                   onCameraTap: () {
-                    Navigator.of(context).pushNamed(NavigatorName.prescription_capture);
+                    Navigator.of(context)
+                        .pushNamed(NavigatorName.prescription_capture);
                   },
                   onHandTap: () {
-                    Navigator.of(context).pushNamed(NavigatorName.medicine_search);
+                    Navigator.of(context)
+                        .pushNamed(NavigatorName.medicine_search);
                   },
                 );
               },
@@ -229,7 +251,9 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     width: 24,
                     height: 24,
                     R.icons.ic_schedule_use_medicine,
-                    color: bottomIndex == 0 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                    color: bottomIndex == 0
+                        ? Color(0xFF008479)
+                        : Color(0xFFBFC6C6),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -237,7 +261,9 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: bottomIndex == 0 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                      color: bottomIndex == 0
+                          ? Color(0xFF008479)
+                          : Color(0xFFBFC6C6),
                     ),
                   ),
                 ],
@@ -258,7 +284,9 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     width: 24,
                     height: 24,
                     R.icons.ic_prescription,
-                    color: bottomIndex == 1 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                    color: bottomIndex == 1
+                        ? Color(0xFF008479)
+                        : Color(0xFFBFC6C6),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -266,7 +294,9 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: bottomIndex == 1 ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                      color: bottomIndex == 1
+                          ? Color(0xFF008479)
+                          : Color(0xFFBFC6C6),
                     ),
                   ),
                 ],
@@ -283,7 +313,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     if (state is MedicineLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (state is FetchMedicineScheduleSuccess) {
-      _sessionList = PrescriptionsBySessionModel.fromDailyList(state.medicineScheduleResult.daily);
+      _sessionList = PrescriptionsBySessionModel.fromDailyList(
+          state.medicineScheduleResult.daily);
 
       // Sắp xếp lại thứ tự buổi: Sáng -> Trưa -> Chiều -> Tối
       _sessionList.sort((a, b) => a.session.index.compareTo(b.session.index));
@@ -319,17 +350,22 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           session: session,
           isExpanded: sessionIndex == defaultExpandedIndex,
           onTap: (prescriptionIndex, medicationIndex, isTaken) {
-            final med = session.prescriptions[prescriptionIndex].medications[medicationIndex];
-            _bloc.add(UseMedicineEvent(med.id, med.patientMedicationId, med.dosageValue));
+            final med = session
+                .prescriptions[prescriptionIndex].medications[medicationIndex];
+            _bloc.add(UseMedicineEvent(
+                med.id, med.patientMedicationId, med.dosageValue));
           },
-          firstMedicineKey: (_shouldShowTutorial && sessionIndex == 0) ? _firstMedicineKey : null,
+          firstMedicineKey: (_shouldShowTutorial && sessionIndex == 0)
+              ? _firstMedicineKey
+              : null,
         );
       },
     );
   }
 
   /// Builds [DateTime] for the given date and timeSchedule string ("HH:mm:ss").
-  DateTime _dateTimeFromSelectedDateAndSchedule(DateTime date, String timeSchedule) {
+  DateTime _dateTimeFromSelectedDateAndSchedule(
+      DateTime date, String timeSchedule) {
     final parts = (timeSchedule).split(':');
     final h = parts.isNotEmpty ? (int.tryParse(parts[0]) ?? 0) : 0;
     final m = parts.length > 1 ? (int.tryParse(parts[1]) ?? 0) : 0;
@@ -345,7 +381,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     if (_sessionList.isEmpty) return -1;
 
     final now = DateTime.now();
-    final selectedDate = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    final selectedDate =
+        DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
     int? closestSessionIndex;
     Duration? closestDiff;
 
@@ -353,7 +390,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     for (int i = 0; i < _sessionList.length; i++) {
       final session = _sessionList[i];
       for (final pres in session.prescriptions) {
-        final presDateTime = _dateTimeFromSelectedDateAndSchedule(selectedDate, pres.timeSchedule);
+        final presDateTime = _dateTimeFromSelectedDateAndSchedule(
+            selectedDate, pres.timeSchedule);
         final diffAbs = presDateTime.difference(now).abs();
         if (closestDiff == null || diffAbs < closestDiff) {
           closestDiff = diffAbs;
@@ -377,8 +415,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
         final hasUntaken = pres.medications.any((m) => !m.isTaken);
         if (!hasUntaken) continue;
 
-        final presDateTime = _dateTimeFromSelectedDateAndSchedule(selectedDate, pres.timeSchedule);
-        if (closestUntakenTime == null || presDateTime.isBefore(closestUntakenTime)) {
+        final presDateTime = _dateTimeFromSelectedDateAndSchedule(
+            selectedDate, pres.timeSchedule);
+        if (closestUntakenTime == null ||
+            presDateTime.isBefore(closestUntakenTime)) {
           closestUntakenTime = presDateTime;
           closestUntakenSessionIndex = i;
         }
@@ -393,8 +433,12 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     if (state is MedicineLoading) {
       return const Center(child: CircularProgressIndicator());
     } else if (state is FetchPrescriptionsSuccess) {
-      final prescriptionsIsUsing = state.prescriptionsResult.where((prescription) => prescription.status == 0).toList();
-      final prescriptionsIsStop = state.prescriptionsResult.where((prescription) => prescription.status == 1).toList();
+      final prescriptionsIsUsing = state.prescriptionsResult
+          .where((prescription) => prescription.status == 0)
+          .toList();
+      final prescriptionsIsStop = state.prescriptionsResult
+          .where((prescription) => prescription.status == 1)
+          .toList();
       return TabBarView(
         controller: _tabController,
         children: [
@@ -407,7 +451,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     return Container();
   }
 
-  Widget _buildPrescriptions(List<PrescriptionModel> prescriptions, bool isUsing) {
+  Widget _buildPrescriptions(
+      List<PrescriptionModel> prescriptions, bool isUsing) {
     if (prescriptions.isEmpty) {
       return Container();
     }
@@ -422,7 +467,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
     );
   }
 
-  Widget _buildPrescription(BuildContext context, PrescriptionModel prescription, bool isUsing) {
+  Widget _buildPrescription(
+      BuildContext context, PrescriptionModel prescription, bool isUsing) {
     return Column(
       children: [
         Container(
@@ -449,7 +495,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                 ),
               ),
               Text(
-                convertDateTimeToUTC((prescription.startDate ?? DateTime.now()), 'dd/MM/yyyy'),
+                convertDateTimeToUTC(
+                    (prescription.startDate ?? DateTime.now()), 'dd/MM/yyyy'),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -478,7 +525,9 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                     const SizedBox(height: 4),
                     Divider(color: Color(0xFFDADEDF)),
                     const SizedBox(height: 8),
-                    NoteAndImagesPanel(note: prescription.note, images: prescription.imagesPrescription),
+                    NoteAndImagesPanel(
+                        note: prescription.note,
+                        images: prescription.imagesPrescription),
                     const SizedBox(height: 8),
                     isUsing
                         ? Row(
@@ -490,9 +539,11 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                     backgroundColor: Color(0xFFFFE9E9),
                                     side: const BorderSide(color: Colors.red),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30), // bo tròn nhiều
+                                      borderRadius: BorderRadius.circular(
+                                          30), // bo tròn nhiều
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
                                   ),
                                   onPressed: () {
                                     showDialog(
@@ -500,7 +551,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                       builder: (_) => StopPrescriptionDialog(
                                         onConfirm: () {
                                           Navigator.pop(context);
-                                          _bloc.add(StopPrescriptionEvent(prescription.id ?? ''));
+                                          _bloc.add(StopPrescriptionEvent(
+                                              prescription.id ?? ''));
                                           // _bloc.add(FetchPrescriptionsEvent());
                                         },
                                       ),
@@ -508,8 +560,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                   },
                                   child: Text(
                                     R.string.stop_medicine.tr(),
-                                    style:
-                                        TextStyle(color: Color(0xFF830000), fontWeight: FontWeight.bold, fontSize: 15),
+                                    style: TextStyle(
+                                        color: Color(0xFF830000),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
                                   ),
                                 ),
                               ),
@@ -520,22 +574,36 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                     foregroundColor: Colors.teal,
                                     side: const BorderSide(color: Colors.teal),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30), // bo tròn nhiều
+                                      borderRadius: BorderRadius.circular(
+                                          30), // bo tròn nhiều
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
                                   ),
                                   onPressed: () async {
-                                    await Navigator.pushNamed(context, NavigatorName.prescription_add, arguments: {
-                                      'mode': PrescriptionMode.edit,
-                                      'prescription': prescription,
-                                    });
-                                    MedicineScheduleService().refreshTodaySchedules();
+                                    final bool proceed =
+                                        await _showEditPrescriptionWarningDialog(
+                                            context);
+                                    if (!proceed) {
+                                      return;
+                                    }
+
+                                    await Navigator.pushNamed(
+                                        context, NavigatorName.prescription_add,
+                                        arguments: {
+                                          'mode': PrescriptionMode.edit,
+                                          'prescription': prescription,
+                                        });
+                                    MedicineScheduleService()
+                                        .refreshTodaySchedules();
                                     // MedicineScheduleService().showTestNotification();
                                   },
                                   child: Text(
                                     R.string.chinh_sua.tr(),
-                                    style:
-                                        TextStyle(color: Color(0xFF008479), fontWeight: FontWeight.bold, fontSize: 15),
+                                    style: TextStyle(
+                                        color: Color(0xFF008479),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
                                   ),
                                 ),
                               ),
@@ -549,9 +617,11 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                     foregroundColor: Colors.teal,
                                     side: const BorderSide(color: Colors.teal),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30), // bo tròn nhiều
+                                      borderRadius: BorderRadius.circular(
+                                          30), // bo tròn nhiều
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
                                   ),
                                   onPressed: () async {
                                     final result = await Navigator.pushNamed(
@@ -570,8 +640,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
                                   },
                                   child: Text(
                                     R.string.reuse_prescription.tr(),
-                                    style:
-                                        TextStyle(color: Color(0xFF008479), fontWeight: FontWeight.bold, fontSize: 15),
+                                    style: TextStyle(
+                                        color: Color(0xFF008479),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
                                   ),
                                 ),
                               ),
@@ -582,5 +654,123 @@ class _PrescriptionListPageState extends State<PrescriptionListPage> with Single
           ),
       ],
     );
+  }
+
+  Future<bool> _showEditPrescriptionWarningDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            'change_medicine_quantity_title'.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            'change_medicine_quantity_message'.tr(),
+                            textAlign: TextAlign.center,
+                            style: R.style.normalTextStyle,
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context, false);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.cancel.tr(),
+                                      style: TextStyle(
+                                        color: R.color.textDark,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context, true);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    color: R.color.red,
+                                    borderRadius: BorderRadius.circular(200),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.text_continue.tr(),
+                                      style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ) ??
+        false;
   }
 }

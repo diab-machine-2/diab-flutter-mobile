@@ -1484,3 +1484,5 @@ login_apple_id,Đăng nhập qua Apple,Sign in with Apple,
 login_gmail,Đăng nhập qua Google,Sign in with Google,
 conversation_ai_citation,"Nội dung này được tạo ra bởi AI (nguồn: OpenAI), chỉ tham khảo và không thể thay thế tư vấn sức khỏe từ bác sĩ hoặc chuyên gia.","This content is created by AI (source: OpenAI), for reference only and cannot replace health advice from a doctor or specialist.",
 reference_source,Nguồn tham khảo,Reference Source
+change_medicine_quantity_title,"Bạn muốn thay đổi đơn thuốc?","Do you want to change the prescription?",
+change_medicine_quantity_message,"Mọi thay đổi trong đơn thuốc sẽ đặt lại trạng thái sử dụng thuốc.","Any changes to the prescription will reset the medicine usage status."
