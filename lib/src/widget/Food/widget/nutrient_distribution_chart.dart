@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -12,7 +11,12 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
 
 class NutrientDistributionChart extends StatefulWidget {
-  NutrientDistributionChart({Key? key}) : super(key: key);
+  final Map<String, int>? nutritionPercent;
+  final Map<String, String>? nutritionColors;
+
+  NutrientDistributionChart(
+      {Key? key, this.nutritionPercent, this.nutritionColors})
+      : super(key: key);
   @override
   NutrientDistributionChartState createState() =>
       NutrientDistributionChartState();
@@ -37,7 +41,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
   }
 
   Future<bool> _refresh() async {
-    BlocProvider.of<FoodBloc>(currentContext).add(FetchStatisticDistribute(
+    BlocProvider.of<FoodBloc>(currentContext).add(FetchFoodGroupDistribute(
       currentDateTime:
           (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
@@ -46,30 +50,30 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
   }
 
   /// Lấy màu sắc dựa trên phần trăm
-  /// - <= 50%: Xanh lá nhạt
-  /// - 51-80%: Xanh lá đậm
-  /// - 81-100%: Vàng
-  /// - > 100%: Đỏ/Cam
   Color _getColorByPercent(double percent, String? colorCode) {
-    // Nếu có colorCode từ API thì ưu tiên sử dụng
     if (colorCode != null && colorCode.isNotEmpty) {
       return toColor(colorCode);
     }
-    // Fallback logic theo percent
     if (percent <= 50) {
-      return const Color(0xFF81C784); // Light green
+      return const Color(0xFF81C784);
     } else if (percent <= 80) {
-      return const Color(0xFF4CAF50); // Green
+      return const Color(0xFF4CAF50);
     } else if (percent <= 100) {
-      return const Color(0xFFFFD233); // Yellow
+      return const Color(0xFFFFD233);
     } else {
-      return const Color(0xFFEF5350); // Red
+      return const Color(0xFFEF5350);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    // If MealScore data is available, show it directly
+    if (widget.nutritionPercent != null) {
+      return _buildMealScoreChart();
+    }
+
     return BlocProvider<FoodBloc>(
         create: (context) => FoodBloc(),
         child: BlocBuilder<FoodBloc, FoodState>(
@@ -77,7 +81,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
           currentContext = context;
           FoodDistributeModel? model;
           if (state is FoodInitial) {
-            BlocProvider.of<FoodBloc>(context).add(FetchStatisticDistribute(
+            BlocProvider.of<FoodBloc>(context).add(FetchFoodGroupDistribute(
               currentDateTime:
                   (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType: periodFilterType.toString(),
@@ -87,7 +91,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
             Message.showToastMessage(context, state.message);
           }
 
-          if (state is FoodStatisticDistributeLoaded) {
+          if (state is FoodGroupDistributeLoaded) {
             model = state.model;
           }
           return model == null
@@ -126,7 +130,6 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Header with title and arrow
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -147,7 +150,6 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                                     ],
                                   ),
                                   SizedBox(height: 16),
-                                  // Nutrient progress bars using carbChart
                                   ...model.carbChart.map((item) {
                                     return _buildNutrientRow(
                                       item.text ?? '',
@@ -165,16 +167,13 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
         }));
   }
 
-  /// Build một row cho mỗi loại dinh dưỡng với thanh tiến trình
   Widget _buildNutrientRow(String name, double percent, Color color) {
-    // Giới hạn hiển thị thanh tiến trình tối đa 100% nhưng hiển thị số thực tế
     final double displayPercent = percent > 100 ? 100 : percent;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          // Tên dinh dưỡng
           SizedBox(
             width: 80,
             child: Text(
@@ -186,7 +185,6 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
               ),
             ),
           ),
-          // Thanh progress
           Expanded(
             child: Container(
               height: 20,
@@ -206,7 +204,6 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
               ),
             ),
           ),
-          // Phần trăm
           SizedBox(
             width: 50,
             child: Text(
@@ -220,6 +217,68 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMealScoreChart() {
+    final np = widget.nutritionPercent!;
+    final nc = widget.nutritionColors;
+
+    final items = [
+      {'label': 'Tinh bột', 'key': 'carb'},
+      {'label': 'Chất đạm', 'key': 'protein'},
+      {'label': 'Chất béo', 'key': 'fat'},
+      {'label': 'Rau củ', 'key': 'vegetable'},
+      {'label': 'Hoa quả', 'key': 'fruit'},
+    ];
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16, left: 16, right: 16, top: 8),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          border: Border.all(
+            color: const Color(0xFF7DD3FC),
+            width: 2,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Phân bổ dinh dưỡng',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: R.color.black,
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right,
+                  color: R.color.primaryGreyColor,
+                  size: 24,
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            ...items.map((item) {
+              final key = item['key'] as String;
+              final percent = (np[key] ?? 0).toDouble();
+              final colorCode = nc?[key];
+              return _buildNutrientRow(
+                item['label'] as String,
+                percent,
+                _getColorByPercent(percent, colorCode),
+              );
+            }).toList(),
+          ],
+        ),
       ),
     );
   }

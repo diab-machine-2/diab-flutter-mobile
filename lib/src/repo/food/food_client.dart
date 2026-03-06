@@ -205,7 +205,6 @@ class FoodClient extends FetchClient {
   //nhập chỉ số dinh duỡng
   Future<List<FoodModel>> postFoodImages(List<String> files) async {
     try {
-      // Validate input files
       if (files.isEmpty) {
         throw 'No files provided for upload';
       }
@@ -226,12 +225,41 @@ class FoodClient extends FetchClient {
         }
         return [];
       } else {
-        // Include response body in error for better debugging
         throw 'Upload failed with status ${response.statusCode}: ${response.reasonPhrase}\nResponse: $data';
       }
     } catch (e) {
       print('Error in postFoodImages: $e');
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  /// Call MealScore API to get nutrition analysis and score
+  Future<Map<String, dynamic>?> postMealScore(List<String> files) async {
+    try {
+      if (files.isEmpty) return null;
+
+      final Map<String, String> params = {};
+      final response = await super.postHttp(
+        path: '/App/Image/UploadAI/MealScore',
+        params: params,
+        files: files,
+      );
+
+      final data = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(data);
+        if (jsonData['data'] != null) {
+          return jsonData['data'] as Map<String, dynamic>;
+        }
+        return null;
+      } else {
+        print('MealScore API failed: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error in postMealScore: $e');
+      return null;
     }
   }
 

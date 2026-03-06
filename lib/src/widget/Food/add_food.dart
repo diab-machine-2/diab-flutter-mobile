@@ -1052,26 +1052,84 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               : selectedFoods,
           paths);
       if (result == true) {
+        // Call MealScore API to get nutrition analysis
+        Map<String, dynamic>? mealScoreData;
+        try {
+          mealScoreData = await FoodClient().postMealScore(paths);
+        } catch (e) {
+          print('MealScore API error (non-blocking): $e');
+        }
+
+        // Parse MealScore response
+        int? apiScore;
+        String? apiMessage;
+        String? apiRange;
+        Map<String, int>? nutritionPercent;
+        Map<String, String>? nutritionColors;
+
+        if (mealScoreData != null) {
+          apiScore = mealScoreData['totalMealScore'] as int?;
+          apiMessage = mealScoreData['messageResult'] as String?;
+          apiRange = mealScoreData['totalMealRange'] as String?;
+
+          final npData = mealScoreData['nutritionPercent'];
+          if (npData != null) {
+            nutritionPercent = {
+              'carb': (npData['carb'] as num?)?.toInt() ?? 0,
+              'protein': (npData['protein'] as num?)?.toInt() ?? 0,
+              'vegetable': (npData['vegetable'] as num?)?.toInt() ?? 0,
+              'fruit': (npData['fruit'] as num?)?.toInt() ?? 0,
+              'fat': (npData['fat'] as num?)?.toInt() ?? 0,
+            };
+            final colorsData = npData['colors'];
+            if (colorsData != null) {
+              nutritionColors = {
+                'carb': colorsData['carb']?.toString() ?? '#FFCD57',
+                'protein': colorsData['protein']?.toString() ?? '#FFCD57',
+                'vegetable': colorsData['vegetable']?.toString() ?? '#FFCD57',
+                'fruit': colorsData['fruit']?.toString() ?? '#FFCD57',
+                'fat': colorsData['fat']?.toString() ?? '#FFCD57',
+              };
+            }
+          }
+        }
+
+        String? balanceStatus;
+        if (apiRange != null) {
+          switch (apiRange) {
+            case 'excellent':
+              balanceStatus = 'Cân bằng';
+              break;
+            case 'good':
+              balanceStatus = 'Khá cân bằng';
+              break;
+            default:
+              balanceStatus = 'Chưa cân bằng';
+          }
+        }
+
         // Create FoodResultDto for result screen
         final foodResult = FoodResultDto(
-          id: '', // API doesn't return ID, will be empty for now
+          id: '',
           dateTime: selectedDate,
           timeFrame: selectedTimeFrame?.name ?? '',
           timeFrameId: selectedTimeFrame?.id ?? '',
           totalCalories: totalKcal,
-          goalCalories: 2000, // TODO: Get from user goal calories
+          goalCalories: 2000,
           carbs: _calculateTotalCarbs(),
           protein: _calculateTotalProtein(),
           fat: _calculateTotalFat(),
-          vegetables: null,
-          fruits: null,
+          vegetables: nutritionPercent?['vegetable']?.toDouble(),
+          fruits: nutritionPercent?['fruit']?.toDouble(),
           foods: selectedFoods,
           note: note,
-          images: [], // Images will be loaded in result screen if needed
-          healthRecommendation: null, // Will be fetched from API
-          isFetchAnalysis: true,
-          score: null, // TODO: Get from API
-          balanceStatus: null, // TODO: Get from API
+          images: [],
+          healthRecommendation: apiMessage,
+          isFetchAnalysis: false,
+          score: apiScore,
+          balanceStatus: balanceStatus,
+          nutritionPercent: nutritionPercent,
+          nutritionColors: nutritionColors,
         );
 
         Observable.instance.notifyObservers([], notifyName: "food_change_data");

@@ -102,10 +102,10 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: [
-                      R.color.color0xFFFDC798.withOpacity(0.3),
-                      R.color.greenbg.withOpacity(0.3),
-                      R.color.greenbg.withOpacity(0.3),
-                      R.color.color0xFFFDC798.withOpacity(0.3),
+                      R.color.color0xFFFDC798.withValues(alpha: 0.3),
+                      R.color.greenbg.withValues(alpha: 0.3),
+                      R.color.greenbg.withValues(alpha: 0.3),
+                      R.color.color0xFFFDC798.withValues(alpha: 0.3),
                     ],
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
@@ -120,7 +120,15 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                 // StarchChart(key: starchKey), // Hidden per user request
                 FoodChart(key: foodKey),
                 FoodTrendChart(key: trendKey),
-                NutrientDistributionChart(key: nutrientDistributionKey),
+                NutrientDistributionChart(
+                  key: nutrientDistributionKey,
+                  nutritionPercent: FoodDetailTabbarController.of(context)
+                      ?.widget
+                      .nutritionPercent,
+                  nutritionColors: FoodDetailTabbarController.of(context)
+                      ?.widget
+                      .nutritionColors,
+                ),
                 FoodDistributionChart(key: distributionKey),
                 MealDistributionWidget(key: mealDistributionKey),
                 Padding(
@@ -142,7 +150,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: Offset(0, -2),
                   ),

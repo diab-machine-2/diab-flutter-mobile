@@ -26,7 +26,9 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   String? _aiResult;
 
   bool _haveEditNote = false;
+  // ignore: unused_field
   late String _note = widget.data.note ?? '';
+  // ignore: unused_field
   List<dynamic> _files = [];
 
   @override
@@ -37,18 +39,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
 
   void _loadData() async {
     final data = widget.data;
-    _files = data.images ?? [];
-
-    // Tạm thời comment AI analysis vì chưa có API
-    // final aiResult = shouldFetchNewData
-    //     ? await FoodClient()
-    //         .fetchMealAnalysis(widget.data.id)
-    //         .catchError((e, s) {
-    //         TrackingManager.recordError(e, s);
-    //         return null;
-    //       })
-    //     : data.healthRecommendation;
-
+    _files = data.images;
     _aiResult = data.healthRecommendation ?? _getDefaultRecommendation();
     if (mounted) {
       setState(() {});
@@ -77,9 +68,16 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
       BotToast.closeAllLoading();
     }
 
-    // Navigate to food detail screen
+    // Navigate to food detail screen with MealScore data
+    print(
+        '[MealScore] _doComplete nutritionPercent: ${widget.data.nutritionPercent}');
+    print(
+        '[MealScore] _doComplete nutritionColors: ${widget.data.nutritionColors}');
     Navigator.pop(context);
-    Navigator.pushNamed(context, NavigatorName.detail_food);
+    Navigator.pushNamed(context, NavigatorName.detail_food, arguments: {
+      'nutritionPercent': widget.data.nutritionPercent,
+      'nutritionColors': widget.data.nutritionColors,
+    });
   }
 
   void _doBack() {
@@ -295,13 +293,47 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
     );
   }
 
+  Color _parseHexColor(String? hex, Color fallback) {
+    if (hex == null || hex.isEmpty) return fallback;
+    try {
+      final hexStr = hex.replaceAll('#', '');
+      return Color(int.parse('FF$hexStr', radix: 16));
+    } catch (_) {
+      return fallback;
+    }
+  }
+
   Widget _nutritionDistributionBars() {
+    final np = widget.data.nutritionPercent;
+    final nc = widget.data.nutritionColors;
+    final defaultColor = Color(0xFFFFA726);
+
     final items = [
-      {'label': 'Tinh bột', 'percent': 0, 'color': Color(0xFFFFA726)},
-      {'label': 'Chất đạm', 'percent': 0, 'color': Color(0xFFFFA726)},
-      {'label': 'Chất béo', 'percent': 0, 'color': Color(0xFFFFA726)},
-      {'label': 'Rau củ', 'percent': 0, 'color': Color(0xFFFFA726)},
-      {'label': 'Hoa quả', 'percent': 0, 'color': Color(0xFFFFA726)},
+      {
+        'label': 'Tinh bột',
+        'percent': np?['carb'] ?? 0,
+        'color': _parseHexColor(nc?['carb'], defaultColor)
+      },
+      {
+        'label': 'Chất đạm',
+        'percent': np?['protein'] ?? 0,
+        'color': _parseHexColor(nc?['protein'], defaultColor)
+      },
+      {
+        'label': 'Chất béo',
+        'percent': np?['fat'] ?? 0,
+        'color': _parseHexColor(nc?['fat'], defaultColor)
+      },
+      {
+        'label': 'Rau củ',
+        'percent': np?['vegetable'] ?? 0,
+        'color': _parseHexColor(nc?['vegetable'], defaultColor)
+      },
+      {
+        'label': 'Hoa quả',
+        'percent': np?['fruit'] ?? 0,
+        'color': _parseHexColor(nc?['fruit'], defaultColor)
+      },
     ];
 
     return Column(

@@ -104,7 +104,6 @@ import 'widget/meeting/meeting_prepare_page.dart';
 import 'widget/meeting/meeting_wait_room_page.dart';
 import 'widget/news_detail/presentation/news_detail_view.dart';
 import 'widget/ocr/test_ocr_camera_page.dart';
-import 'widget/ocr/test_ocr_gallery_page.dart';
 import 'widget/ocr/test_ocr_page.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
@@ -521,7 +520,15 @@ class App extends StatelessWidget {
                             id: data?['id'],
                             communicationId: data?['communicationId']));
                   case NavigatorName.detail_food:
-                    return _buildRoute(settings, FoodDetailTabbarController(),
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        FoodDetailTabbarController(
+                          nutritionPercent:
+                              data?['nutritionPercent'] as Map<String, int>?,
+                          nutritionColors:
+                              data?['nutritionColors'] as Map<String, String>?,
+                        ),
                         isPresent: false);
                   case NavigatorName.add_food:
                     final data = settings.arguments as Map<String, dynamic>?;
@@ -680,7 +687,8 @@ class App extends StatelessWidget {
                           interviewType:
                               arguments?['interviewType'] as int? ?? 30,
                           smartGoal: arguments?['smartGoal'],
-                          fromActivityTab: arguments?['fromActivityTab'] as bool? ?? false,
+                          fromActivityTab:
+                              arguments?['fromActivityTab'] as bool? ?? false,
                         ),
                       );
                     }
@@ -697,7 +705,8 @@ class App extends StatelessWidget {
                             args["endTime"],
                             args["bookingQuantity"],
                             args["interviewType"],
-                            fromActivityTab: args["fromActivityTab"] as bool? ?? false,
+                            fromActivityTab:
+                                args["fromActivityTab"] as bool? ?? false,
                           ));
                     }
 
@@ -749,7 +758,7 @@ class App extends StatelessWidget {
                       ),
                     );
                   case NavigatorName.paywall_screen:
-                    final args = settings.arguments as Map<String, dynamic>;
+                    final _ = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(
                       settings,
                       PaywallScreen(),
