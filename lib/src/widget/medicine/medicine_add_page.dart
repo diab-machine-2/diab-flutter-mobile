@@ -25,11 +25,22 @@ enum MedicineMode {
 }
 
 class MedicineAddPage extends StatefulWidget {
-  const MedicineAddPage({super.key, this.medicineMode, this.medicineTablet, this.medicine, this.index});
+  const MedicineAddPage({
+    super.key,
+    this.medicineMode,
+    this.medicineTablet,
+    this.medicine,
+    this.index,
+    this.isFromReuse = false,
+  });
   final MedicineMode? medicineMode;
   final MedicineTabletModel? medicineTablet;
   final MedicineItemModel? medicine;
   final int? index;
+  /// True when editing a medicine coming from PrescriptionMode.reuse.
+  /// In this case, we should treat the edited quantity as the original
+  /// amount (not remain), same as create mode.
+  final bool isFromReuse;
 
   @override
   State<MedicineAddPage> createState() => _MedicineAddPageState();
@@ -46,6 +57,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   double _amount = 0.0;
   DosageModel? _dosage;
   List<File?> _files = [];
+  late bool _isFromReuse;
 
   final List<MedicineUnit> _medicineUnits = [
     MedicineUnit.pill,
@@ -79,6 +91,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   @override
   void initState() {
     super.initState();
+
+    _isFromReuse = widget.isFromReuse;
 
     if (widget.medicineMode == null) {
       _medicineMode = MedicineMode.create;
@@ -158,8 +172,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   /// - Otherwise (AI/analyze or creating new prescription), we are editing the
   ///   original quantity, so update `amount`.
   void _syncQuantityToMedication() {
-    final bool hasRemain =
-        _selectedMedication.remain != null || widget.medicine?.remain != null;
+    final bool hasRemain = !_isFromReuse &&
+        (_selectedMedication.remain != null || widget.medicine?.remain != null);
 
     _selectedMedication = _selectedMedication.copyWith(
       amount: hasRemain ? null : _amount,
@@ -347,8 +361,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         child: ElevatedButton(
           onPressed: () async {
             if (_submitBtnEnabled) {
-              final bool hasRemain =
-                  _selectedMedication.remain != null || widget.medicine?.remain != null;
+              final bool hasRemain = !_isFromReuse &&
+                  (_selectedMedication.remain != null || widget.medicine?.remain != null);
 
               // If this medicine already has a `remain` value (coming from a created
               // prescription) and we are in edit mode, confirm with the user that

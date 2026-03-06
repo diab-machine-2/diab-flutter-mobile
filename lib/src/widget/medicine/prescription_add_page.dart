@@ -27,7 +27,12 @@ enum PrescriptionMode {
 }
 
 class PrescriptionAddPage extends StatefulWidget {
-  PrescriptionAddPage({super.key, this.prescriptionMode, this.medicineItem, this.prescription, this.medicineItems});
+  PrescriptionAddPage(
+      {super.key,
+      this.prescriptionMode,
+      this.medicineItem,
+      this.prescription,
+      this.medicineItems});
 
   final PrescriptionMode? prescriptionMode;
   final MedicineItemModel? medicineItem;
@@ -42,14 +47,17 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
   late MedicineBloc _bloc;
   final List<MedicineItemModel> _medicines = [];
 
-  final TextEditingController _controllerPrescriptionName = TextEditingController();
+  final TextEditingController _controllerPrescriptionName =
+      TextEditingController();
   final TextEditingController _controllerNote = TextEditingController();
-  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey = GlobalKey<SectionAddNoteState>();
+  final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
+      GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
 
   PrescriptionModel _prescription = PrescriptionModel();
   late PrescriptionMode _prescriptionMode;
   DateTime? selectedDate;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -91,7 +99,8 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
       _prescription.isExistImage = true;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _sectionAddNoteKey.currentState!.updateFilesAndNote(images, prescription.note ?? '');
+      _sectionAddNoteKey.currentState!
+          .updateFilesAndNote(images, prescription.note ?? '');
     });
 
     if (prescription.patientMedications != null) {
@@ -158,19 +167,26 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 _prescriptionMode == PrescriptionMode.edit
                     ? R.string.edit_prescription.tr()
                     : R.string.add_prescription.tr(),
-                style: TextStyle(color: R.color.white, fontSize: 20, fontWeight: FontWeight.w400),
+                style: TextStyle(
+                    color: R.color.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400),
               ),
             ),
           ),
           actions: [
             Center(
               child: InkWell(
-                onTap: () => Navigator.of(context).pushNamed(NavigatorName.medicine_tutorial),
+                onTap: () => Navigator.of(context)
+                    .pushNamed(NavigatorName.medicine_tutorial),
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Text(
                     R.string.tutorial.tr(),
-                    style: TextStyle(color: R.color.white, fontSize: 15, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                        color: R.color.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400),
                   ),
                 ),
               ),
@@ -209,17 +225,22 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(R.drawable.ic_back_icon, width: 64, height: 64),
+                        Image.asset(R.drawable.ic_back_icon,
+                            width: 64, height: 64),
                         Padding(
                           padding: const EdgeInsets.only(top: 16.0),
                           child: Text(R.string.ban_muon_quay_lai.tr(),
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w600)),
+                              style: TextStyle(
+                                  color: R.color.textDark,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 16.0),
                           child: Text(R.string.confirm_to_back.tr(),
-                              textAlign: TextAlign.center, style: R.style.normalTextStyle),
+                              textAlign: TextAlign.center,
+                              style: R.style.normalTextStyle),
                         ),
                         SizedBox(height: 16),
                         Row(
@@ -330,7 +351,10 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 Expanded(
                   child: Text(
                     R.string.prescription_warning.tr(),
-                    style: TextStyle(color: R.color.color0xff111515, fontSize: 13, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                        color: R.color.color0xff111515,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400),
                   ),
                 ),
               ],
@@ -340,7 +364,10 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               R.string.prescription_name.tr(),
-              style: TextStyle(color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: R.color.color0xff111515,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700),
             ),
           ),
           const SizedBox(height: 12),
@@ -374,7 +401,10 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               R.string.start_date.tr(),
-              style: TextStyle(color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                  color: R.color.color0xff111515,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700),
             ),
           ),
           const SizedBox(height: 12),
@@ -395,8 +425,12 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    convertDateTimeToUTC((selectedDate ?? DateTime.now()), 'dd/MM/yyyy'),
-                    style: TextStyle(color: R.color.color0xff111515, fontSize: 15, fontWeight: FontWeight.w400),
+                    convertDateTimeToUTC(
+                        (selectedDate ?? DateTime.now()), 'dd/MM/yyyy'),
+                    style: TextStyle(
+                        color: R.color.color0xff111515,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400),
                   ),
                   SvgPicture.asset(R.icons.ic_calendar, width: 20),
                 ],
@@ -434,7 +468,10 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                   const SizedBox(width: 6),
                   Text(
                     R.string.add_medicine.tr(),
-                    style: TextStyle(color: R.color.color0xff008479, fontSize: 15, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: R.color.color0xff008479,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -450,7 +487,9 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
             return MedicineCard(
                 medicine: _medicines[index],
                 // Create/Reuse: show amount (original quantity). Edit: show remain (left after use).
-                showAmountInsteadOfRemain: _prescriptionMode == PrescriptionMode.create || _prescriptionMode == PrescriptionMode.reuse,
+                showAmountInsteadOfRemain:
+                    _prescriptionMode == PrescriptionMode.create ||
+                        _prescriptionMode == PrescriptionMode.reuse,
                 onEdit: () async {
                   //Chỉnh sửa thuốc
                   final result = await Navigator.pushNamed(
@@ -460,6 +499,7 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                       'mode': MedicineMode.edit,
                       'medicine': _medicines[index],
                       'index': index,
+                      'isReuse': _prescriptionMode == PrescriptionMode.reuse,
                     },
                   );
                   if (result is MedicineItemModel) {
@@ -511,6 +551,8 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
           padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           child: GestureDetector(
             onTap: () {
+              if (_isSubmitting) return;
+
               if (_controllerPrescriptionName.text.trim().isEmpty) {
                 Message.showToastMessage(
                   context,
@@ -520,6 +562,10 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 );
                 return;
               }
+
+              setState(() {
+                _isSubmitting = true;
+              });
 
               final DateTime rawSelectedDate = selectedDate ?? DateTime.now();
               // Chuẩn hoá startDate thành ngày (00:00) để tránh lệch ngày do timezone
@@ -559,7 +605,8 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
               }
 
               _prescription.patientMedications?.forEach((medicine) {
-                if (medicine.uploadFiles != null) newPaths.addAll(medicine.uploadFiles!);
+                if (medicine.uploadFiles != null)
+                  newPaths.addAll(medicine.uploadFiles!);
               });
 
               _prescription = _prescription.copyWith(
@@ -567,7 +614,8 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
               );
 
               // Khi sử dụng lại đơn thuốc, reset trường remain về null cho tất cả thuốc
-              if (_prescriptionMode == PrescriptionMode.reuse && _prescription.patientMedications != null) {
+              if (_prescriptionMode == PrescriptionMode.reuse &&
+                  _prescription.patientMedications != null) {
                 final updatedMeds = _prescription.patientMedications!
                     .map((m) => MedicineItemModel(
                           id: m.id,
@@ -588,36 +636,63 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                           uploadFiles: m.uploadFiles,
                         ))
                     .toList();
-                _prescription = _prescription.copyWith(patientMedications: updatedMeds);
+                _prescription =
+                    _prescription.copyWith(patientMedications: updatedMeds);
               }
 
               if (_prescriptionMode == PrescriptionMode.reuse) {
                 _bloc.add(CreateNewPrescriptionEvent(_prescription, newPaths));
+                // Keep loading until navigation happens via BlocListener
               } else {
-                Navigator.pushNamed(context, NavigatorName.prescription_remind, arguments: {
-                  'prescription': _prescription,
-                  'paths': newPaths,
+                Navigator.pushNamed(context, NavigatorName.prescription_remind,
+                    arguments: {
+                      'prescription': _prescription,
+                      'paths': newPaths,
+                    }).whenComplete(() {
+                  if (mounted) {
+                    setState(() {
+                      _isSubmitting = false;
+                    });
+                  }
                 });
               }
             },
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: R.color.mainColor,
+                color: _isSubmitting ? R.color.grayBorder : R.color.mainColor,
                 borderRadius: BorderRadius.circular(200),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.centerRight,
-                  colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
-                ),
+                gradient: _isSubmitting
+                    ? null
+                    : LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          R.color.greenGradientTop,
+                          R.color.greenGradientBottom
+                        ],
+                      ),
               ),
               child: Center(
-                child: Text(
-                  _prescriptionMode == PrescriptionMode.reuse
-                      ? R.string.reuse_prescription.tr()
-                      : R.string.set_time.tr(),
-                  style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
-                ),
+                child: _isSubmitting
+                    ? SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              R.color.greenGradientBottom),
+                        ),
+                      )
+                    : Text(
+                        _prescriptionMode == PrescriptionMode.reuse
+                            ? R.string.reuse_prescription.tr()
+                            : R.string.set_time.tr(),
+                        style: TextStyle(
+                            color: R.color.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16),
+                      ),
               ),
             ),
           ),
@@ -694,7 +769,8 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
         ),
       ),
       // THÊM ĐÂY: Ràng buộc kích thước dialog để fix RenderBox
-      dialogSize: const Size(340, 480),  // Kích thước cố định, tránh infinite height
+      dialogSize:
+          const Size(340, 480), // Kích thước cố định, tránh infinite height
       borderRadius: BorderRadius.circular(16),
       value: [DateTime.now()],
       dialogBackgroundColor: Colors.white,

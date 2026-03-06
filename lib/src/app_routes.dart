@@ -313,7 +313,14 @@ class AppRoutes {
         final medicineItem = data?['medicineItem'];
         final medicine = data?['medicine'];
         final index = data?['index'];
-        page = MedicineAddPage(medicineMode: mode, medicineTablet: medicineItem, medicine: medicine, index: index);
+        final isFromReuse = data?['isReuse'] as bool? ?? false;
+        page = MedicineAddPage(
+          medicineMode: mode,
+          medicineTablet: medicineItem,
+          medicine: medicine,
+          index: index,
+          isFromReuse: isFromReuse,
+        );
         break;
       case NavigatorName.prescription_add:
         final data = settings.arguments as Map<String, dynamic>?;
