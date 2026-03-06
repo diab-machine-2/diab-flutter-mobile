@@ -335,7 +335,9 @@ class AppRoutes {
         page = PrescriptionRemindPage(prescription: prescription, paths: paths);
         break;
       case NavigatorName.prescription:
-        page = PrescriptionListPage();
+        final prescriptionData = settings.arguments as Map<String, dynamic>?;
+        final initialBottomIndex = prescriptionData?['initialBottomIndex'] as int?;
+        page = PrescriptionListPage(initialBottomIndex: initialBottomIndex);
         break;
 
       // ~ END: Lịch dùng thuốc ~

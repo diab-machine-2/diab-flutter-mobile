@@ -54,6 +54,7 @@ class BranchioLinkConfig {
   bool _hasPendingLoginDeeplink = false;
   Timer? _navigationTimer;
   String? _pendingMeasurementScreen;
+  int? _pendingMedicineTab;
 
   // Getters
   String? get referalCode => _referalCode;
@@ -230,11 +231,20 @@ class BranchioLinkConfig {
         }
       }
 
-      // Handle measurement deeplink
+      // Handle deeplinks with $screen_value (medicine tabs + measurement screens)
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$screen_value")) {
-        final inputIndexScreen = data['\$screen_value'] as String;
-        _processMeasurementDeepLink(inputIndexScreen);
+        final screenValue = data['\$screen_value'] as String;
+        // calendar-medicine -> tab 0 (schedule_use_medicine), refill-medicine -> tab 1 (prescription)
+        if (screenValue == 'calendar-medicine') {
+          _processMedicineTabDeepLink(0);
+          return;
+        }
+        if (screenValue == 'refill-medicine') {
+          _processMedicineTabDeepLink(1);
+          return;
+        }
+        _processMeasurementDeepLink(screenValue);
         return;
       }
 
@@ -500,6 +510,32 @@ class BranchioLinkConfig {
     }
   }
 
+  void _processMedicineTabDeepLink(int tabIndex) {
+    if (!AppSettings.splashScreenInitDone || AppSettings.userInfo == null) {
+      _pendingMedicineTab = tabIndex;
+      return;
+    }
+    _navigateToPrescriptionListWithTab(tabIndex);
+  }
+
+  void _navigateToPrescriptionListWithTab(int initialBottomIndex) {
+    navigatorKey.currentState?.popUntil((route) {
+      return route.settings.name == NavigatorName.tabbar;
+    });
+    navigatorKey.currentState?.pushNamed(
+      NavigatorName.prescription,
+      arguments: {'initialBottomIndex': initialBottomIndex},
+    );
+  }
+
+  void checkPendingMedicineTab() {
+    if (_pendingMedicineTab != null) {
+      final tab = _pendingMedicineTab!;
+      _pendingMedicineTab = null;
+      _navigateToPrescriptionListWithTab(tab);
+    }
+  }
+
   Future<void> executeLoginDeeplinkNavigation() async {
     print('[ROUTE] Executing login deeplink navigation');
     try {
@@ -642,6 +678,8 @@ class BranchioLinkConfig {
     _navigationTimer = Timer(Duration(seconds: 2), () {
       if (_hasPendingDeeplink) executeDeeplinkNavigation();
       checkPendingContentNavigation();
+      checkPendingMeasurementScreen();
+      checkPendingMedicineTab();
     });
   }
 

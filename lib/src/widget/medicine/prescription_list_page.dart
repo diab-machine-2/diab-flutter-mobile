@@ -26,7 +26,10 @@ import 'widgets/stop_prescription_dialog.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 
 class PrescriptionListPage extends StatefulWidget {
-  const PrescriptionListPage({super.key});
+  const PrescriptionListPage({super.key, this.initialBottomIndex});
+
+  /// When opened via deeplink: 0 = schedule (calendar-medicine), 1 = prescription (refill-medicine).
+  final int? initialBottomIndex;
 
   @override
   State<PrescriptionListPage> createState() => _PrescriptionListPageState();
@@ -39,7 +42,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage>
       <PrescriptionsBySessionModel>[];
 
   late TabController _tabController;
-  int bottomIndex = 1;
+  late int bottomIndex;
 
   final GlobalKey _firstMedicineKey = GlobalKey();
   bool _shouldShowTutorial = false;
@@ -52,15 +55,21 @@ class _PrescriptionListPageState extends State<PrescriptionListPage>
   void initState() {
     super.initState();
 
+    bottomIndex = widget.initialBottomIndex ?? 1;
+    if (bottomIndex < 0 || bottomIndex > 1) bottomIndex = 1;
+
     // Initialize with today's date.
     final currentDateTime = DateTime.now();
     _selectedDate = DateTime(
         currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
     _tabController = TabController(length: 2, vsync: this);
-    _bloc = MedicineBloc()..add(FetchPrescriptionsEvent());
-    // ..add(FetchMedicineScheduleEvent(
-    //   (DateTime.now().millisecondsSinceEpoch / 1000).round(),
-    // ));
+    _bloc = MedicineBloc();
+    if (bottomIndex == 0) {
+      _bloc.add(FetchMedicineScheduleEvent(
+          (currentDateTime.millisecondsSinceEpoch / 1000).round()));
+    } else {
+      _bloc.add(FetchPrescriptionsEvent());
+    }
     _loadTutorialFlag();
   }
 
