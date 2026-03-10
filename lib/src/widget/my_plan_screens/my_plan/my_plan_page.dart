@@ -1,5 +1,4 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -7,16 +6,12 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
-import '../exercise_tab/exercise_tab/exercise_tab.dart';
 import '../lesson_tab/lesson_tab/lesson_tab.dart';
 import 'models/plan_type.dart';
 import 'my_plan.dart';
@@ -101,10 +96,19 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
               BotToast.closeAllLoading();
             }
             return CommonPage(
-              title: R.string.my_plan.tr(),
+              title: 'Thư viện',
+              textColor: R.color.white,
               backgroundColor: R.color.backgroundColorNew,
-              appbarColor: R.color.white,
+              appbarColor: R.color.greenGradientBottom,
               hideAllBackButton: true,
+              appBarAction: IconButton(
+                splashColor: R.color.transparent,
+                highlightColor: R.color.transparent,
+                icon: Icon(Icons.search, color: R.color.white),
+                onPressed: () {
+                  // TODO: implement Library search navigation
+                },
+              ),
               child: Column(
                 children: [
                   // Container(

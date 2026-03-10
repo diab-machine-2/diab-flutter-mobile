@@ -23,6 +23,15 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   final MyPlanCubit myPlanCubit;
   int numRecordOfPage = 10;
 
+  /// Recommendation section state (\"Đề xuất\").
+  /// type mapping:
+  /// 0: Tất cả, 1: Theo dõi chỉ số, 2: Tinh thần, 3: Tâm lý hành vi,
+  /// 4: Dinh dưỡng, 5: Bệnh lý, 6: Vận động.
+  int recommendationType = 0;
+  List<MyLessonResponseData?>? recommendationLessons;
+  bool isRecommendationLoading = false;
+  bool _hasLoadedRecommendationOnce = false;
+
   final List<LessonType> lessonTypeList = [
     LessonType.route,
     LessonType.suggest
@@ -226,6 +235,31 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       // });
       emit(const LessonTabSuccess());
     }, failure: (NetworkExceptions error) {
+      emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const LessonTabInitial());
+  }
+
+  /// Load recommendation lessons for Library \"Đề xuất\" section.
+  Future<void> getRecommendationLessons({int? type}) async {
+    final int requestType = type ?? recommendationType;
+    recommendationType = requestType;
+    // Don't show inline loading spinner for the very first load,
+    // because a global BotToast loading is already visible then.
+    final bool shouldShowLoading = _hasLoadedRecommendationOnce;
+    if (shouldShowLoading) {
+      isRecommendationLoading = true;
+      emit(const LessonTabSuccess());
+    }
+    final ApiResult<MyLessonResponse> apiResult =
+        await repository.getLessonModuleType(requestType);
+    apiResult.when(success: (MyLessonResponse response) {
+      recommendationLessons = response.data ?? [];
+      _hasLoadedRecommendationOnce = true;
+      isRecommendationLoading = false;
+      emit(const LessonTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      isRecommendationLoading = false;
       emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const LessonTabInitial());

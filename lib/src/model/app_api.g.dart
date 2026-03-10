@@ -804,6 +804,39 @@ class _AppApi implements AppApi {
   }
 
   @override
+  Future<MyLessonResponse> getLessonModuleType(int type) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'type': type};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<MyLessonResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          'App/Lesson/LessonModuleType',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late MyLessonResponse _value;
+    try {
+      _value = MyLessonResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<FilterDataResponse> getFilterData() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

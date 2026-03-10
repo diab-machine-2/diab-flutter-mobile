@@ -448,6 +448,16 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<MyLessonResponse>> getLessonModuleType(int type) async {
+    try {
+      final MyLessonResponse response =
+          await appClient.getLessonModuleType(type);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<FilterDataResponse>> getFilterData() async {
     try {
       final FilterDataResponse response = await appClient.getFilterData();

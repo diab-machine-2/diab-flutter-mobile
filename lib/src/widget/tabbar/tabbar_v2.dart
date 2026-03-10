@@ -90,7 +90,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
   int _initialPage = 0;
   late int _lastIndex = _initialPage;
-  bool _initComplete = false;
   bool _pendingPhoneValidation = false;
 
   @override
@@ -137,8 +136,6 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     _checkExistZoomId();
     BranchioLinkConfig.instance.tryNavigateBooking(initial: true);
 
-    // Mark initialization as complete
-    _initComplete = true;
     print('[ROUTE] TabbarController initialization complete');
 
     // Check for lesson/activity deeplinks after initialization is complete
@@ -390,7 +387,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       BotToast.showLoading();
-      final user = await UserClient().fetchUser().then((value) {
+      await UserClient().fetchUser().then((value) {
         BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
@@ -416,7 +413,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     if (notifyName == Const.UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM) {
       NavigationUtil.popToFirst(context);
 
-      final user = await UserClient().fetchUser().then((value) {
+      await UserClient().fetchUser().then((value) {
         // Rebuild tabs with updated user info
         setState(() {
           tabs = [
@@ -432,7 +429,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
 
     if (notifyName == 'subscription_back_to_home') {
       BotToast.showLoading();
-      final user = await UserClient().fetchUser().then((value) {
+      await UserClient().fetchUser().then((value) {
         BotToast.closeAllLoading();
         // Rebuild tabs with updated user info
         setState(() {
