@@ -508,10 +508,13 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                     });
                   }
                 },
-                onDelete: () {
-                  setState(() {
-                    _medicines.removeAt(index);
-                  });
+                onDelete: () async {
+                  final shouldDelete = await _showDeleteMedicineDialog(context);
+                  if (shouldDelete) {
+                    setState(() {
+                      _medicines.removeAt(index);
+                    });
+                  }
                 });
           },
         ),
@@ -699,6 +702,116 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> _showDeleteMedicineDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) {
+            return AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            R.string.delete_medicine_dialog_title.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 32),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context, false);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.cancel.tr(),
+                                      style: TextStyle(
+                                        color: R.color.textDark,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context, true);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    color: R.color.red,
+                                    borderRadius: BorderRadius.circular(200),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        R.color.greenGradientTop,
+                                        R.color.greenGradientBottom,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.text_continue.tr(),
+                                      style: TextStyle(
+                                        color: R.color.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ) ??
+        false;
   }
 
   void _showDatePicker(BuildContext context) async {

@@ -1538,4 +1538,5 @@ class Strings {
   String get reference_source => 'reference_source';
   String get change_medicine_quantity_title => 'change_medicine_quantity_title';
   String get change_medicine_quantity_message => 'change_medicine_quantity_message';
+  String get delete_medicine_dialog_title => 'delete_medicine_dialog_title';
 }
