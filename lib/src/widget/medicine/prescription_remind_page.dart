@@ -34,26 +34,63 @@ class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
   }
 
   void initDayTimeSchedule() {
-    if (widget.prescription.patientMedications!
-        .any((medication) => (medication.morning ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(
-          dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)));
+    final reminderTimes = widget.prescription.reminderTimes;
+
+    if (reminderTimes != null && reminderTimes.isNotEmpty) {
+      // Map existing reminderTimes into DayTimeSchedule list.
+      for (final reminder in reminderTimes) {
+        // type: 1->4: sáng, trưa, chiều, tối
+        final dayTime = DayTime.values[(reminder.type - 1).clamp(0, DayTime.values.length - 1)];
+
+        final parts = reminder.timeSchedule.split(':');
+        int hour = 0;
+        int minute = 0;
+        if (parts.length >= 2) {
+          hour = int.tryParse(parts[0]) ?? 0;
+          minute = int.tryParse(parts[1]) ?? 0;
+        }
+
+        _schedules.add(
+          DayTimeSchedule(
+            dayTime: dayTime,
+            time: TimeOfDay(hour: hour, minute: minute),
+          ),
+        );
+      }
+    } else {
+      // Fallback to default times based on patientMedications dosage.
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.morning ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)));
+      }
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.midDay ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.noon, time: TimeOfDay(hour: 12, minute: 0)));
+      }
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.afternoon ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.afternoon, time: TimeOfDay(hour: 14, minute: 0)));
+      }
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.night ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 0)));
+      }
     }
-    if (widget.prescription.patientMedications!
-        .any((medication) => (medication.midDay ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(
-          dayTime: DayTime.noon, time: TimeOfDay(hour: 12, minute: 0)));
-    }
-    if (widget.prescription.patientMedications!
-        .any((medication) => (medication.afternoon ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(
-          dayTime: DayTime.afternoon, time: TimeOfDay(hour: 14, minute: 0)));
-    }
-    if (widget.prescription.patientMedications!
-        .any((medication) => (medication.night ?? 0.0) != 0.0)) {
-      _schedules.add(DayTimeSchedule(
-          dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 0)));
-    }
+
+    // Ensure schedules are always ordered: morning -> noon -> afternoon -> night.
+    final order = <DayTime, int>{
+      DayTime.morning: 0,
+      DayTime.noon: 1,
+      DayTime.afternoon: 2,
+      DayTime.night: 3,
+    };
+    _schedules.sort(
+      (a, b) => (order[a.dayTime] ?? 0).compareTo(order[b.dayTime] ?? 0),
+    );
   }
 
   @override
