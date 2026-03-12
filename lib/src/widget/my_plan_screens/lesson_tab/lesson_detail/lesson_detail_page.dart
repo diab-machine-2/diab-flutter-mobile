@@ -51,9 +51,11 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   bool _isShowModal = false;
   int percentComplete = 10;
 
-  // ── Floating mini video bar ──
+  // ── Floating mini bars ──
   final GlobalKey _videoWidgetKey = GlobalKey();
+  final GlobalKey _audioWidgetKey = GlobalKey();
   bool _showMiniBar = false;
+  bool _showMiniAudioBar = false;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -63,6 +65,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     _cubit = LessonDetailCubit(appRepository);
     _cubit.initData(widget.lessonType, widget.lessonId);
     LessonDetailTracking.firebaseSetup();
+<<<<<<< HEAD
+=======
+    _scrollController.addListener(_checkMediaVisibility);
+>>>>>>> 86abcb76 (feat: add floating mini audio bar with scroll detection synced with main audio player)
   }
 
   @override
@@ -511,35 +517,38 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             ),
                                           if (_cubit.audioManager?.controller !=
                                               null)
-                                            _buildTitleWidget(
-                                                child: StreamBuilder<AudioData>(
-                                                    stream: _cubit
-                                                        .audioManager
-                                                        ?.controller!
-                                                        .onChanged
-                                                        .stream,
-                                                    builder:
-                                                        (context, snapshot) {
-                                                      return _buildAudioController(
-                                                        audioData:
-                                                            snapshot.data,
-                                                        seektoPosition:
-                                                            (newPosition) {
-                                                          _cubit.audioManager
-                                                              ?.controller!
-                                                              .seekTo(
-                                                                  newPosition);
-                                                        },
-                                                        onTogglePlay: () {
-                                                          _cubit.audioManager
-                                                              ?.controller!
-                                                              .togglePlay();
-                                                        },
-                                                      );
-                                                    }),
-                                                title: _cubit
-                                                    .currentSectionDetail
-                                                    ?.audioDescription),
+                                            Container(
+                                              key: _audioWidgetKey,
+                                              child: _buildTitleWidget(
+                                                  child: StreamBuilder<AudioData>(
+                                                      stream: _cubit
+                                                          .audioManager
+                                                          ?.controller!
+                                                          .onChanged
+                                                          .stream,
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        return _buildAudioController(
+                                                          audioData:
+                                                              snapshot.data,
+                                                          seektoPosition:
+                                                              (newPosition) {
+                                                            _cubit.audioManager
+                                                                ?.controller!
+                                                                .seekTo(
+                                                                    newPosition);
+                                                          },
+                                                          onTogglePlay: () {
+                                                            _cubit.audioManager
+                                                                ?.controller!
+                                                                .togglePlay();
+                                                          },
+                                                        );
+                                                      }),
+                                                  title: _cubit
+                                                      .currentSectionDetail
+                                                      ?.audioDescription),
+                                            ),
                                           const SizedBox(height: 20),
                                         ],
                                       ),
@@ -558,6 +567,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         videoController: snapshot.data!);
                                   },
                                 ),
+                              // Mini audio bar — hiện khi audio bị khuất
+                              if (_showMiniAudioBar &&
+                                  _cubit.audioManager?.controller != null)
+                                _buildMiniAudioBar(),
                               CustomBottomBarWidget(
                                 isPreviousButtonActive: _cubit.isFirstSection,
                                 onTapPrevious: () async {
@@ -654,30 +667,136 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     }
   }
 
-  // ── Floating mini video bar helpers ────────────────────────────────────
+  // ── Floating mini bar helpers ─────────────────────────────────────────
 
-  void _checkVideoVisibility() {
+  void _checkMediaVisibility() {
+    bool needsSetState = false;
+
+    // ── Video ──
     final hasVideo =
         _cubit.currentSectionDetail?.videoAddressLink?.isNotEmpty == true;
     if (!hasVideo) {
-      if (_showMiniBar) setState(() => _showMiniBar = false);
-      return;
+      if (_showMiniBar) {
+        _showMiniBar = false;
+        needsSetState = true;
+      }
+    } else if (_videoWidgetKey.currentContext != null) {
+      final renderObj = _videoWidgetKey.currentContext!.findRenderObject();
+      if (renderObj != null && renderObj.attached) {
+        final RenderBox box = renderObj as RenderBox;
+        final pos = box.localToGlobal(Offset.zero);
+        final isVideoHidden = pos.dy + box.size.height < 0;
+        if (isVideoHidden != _showMiniBar) {
+          _showMiniBar = isVideoHidden;
+          needsSetState = true;
+        }
+      }
     }
 
-    if (_videoWidgetKey.currentContext == null) return;
-
-    final renderObj = _videoWidgetKey.currentContext!.findRenderObject();
-    if (renderObj == null || !renderObj.attached) return;
-
-    final RenderBox box = renderObj as RenderBox;
-    final position = box.localToGlobal(Offset.zero);
-
-    // Video bị khuất (scroll xuống) → show mini bar
-    final isVideoHidden = position.dy + box.size.height < 0;
-
-    if (isVideoHidden != _showMiniBar) {
-      setState(() => _showMiniBar = isVideoHidden);
+    // ── Audio ──
+    final hasAudio = _cubit.audioManager?.controller != null;
+    if (!hasAudio) {
+      if (_showMiniAudioBar) {
+        _showMiniAudioBar = false;
+        needsSetState = true;
+      }
+    } else if (_audioWidgetKey.currentContext != null) {
+      final renderObj = _audioWidgetKey.currentContext!.findRenderObject();
+      if (renderObj != null && renderObj.attached) {
+        final RenderBox box = renderObj as RenderBox;
+        final pos = box.localToGlobal(Offset.zero);
+        final isAudioHidden = pos.dy + box.size.height < 0;
+        if (isAudioHidden != _showMiniAudioBar) {
+          _showMiniAudioBar = isAudioHidden;
+          needsSetState = true;
+        }
+      }
     }
+
+    if (needsSetState) setState(() {});
+  }
+
+  /// Mini audio bar — dùng chung AudioController với audio chính ở trên.
+  Widget _buildMiniAudioBar() {
+    final audioCtrl = _cubit.audioManager!.controller!;
+    return StreamBuilder<AudioData>(
+      stream: audioCtrl.onChanged.stream,
+      builder: (context, snapshot) {
+        final data = snapshot.data ?? audioCtrl.audioData;
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE8F5F3),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 6,
+                offset: const Offset(0, -1),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              // Play / Pause
+              GestureDetector(
+                onTap: audioCtrl.togglePlay,
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: R.color.greenGradientBottom,
+                      width: 2,
+                    ),
+                  ),
+                  child: Icon(
+                    data.isPlaying ? Icons.pause : Icons.play_arrow,
+                    size: 18,
+                    color: R.color.greenGradientBottom,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Time
+              Text(
+                data.timeText,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: R.color.textDark,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Progress slider
+              Expanded(
+                child: SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 2.5,
+                    thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 0,
+                    ),
+                    overlayShape: SliderComponentShape.noOverlay,
+                  ),
+                  child: Slider(
+                    inactiveColor: const Color(0xFFD0D0D0),
+                    activeColor: R.color.greenGradientBottom,
+                    value: data.position,
+                    onChanged: (v) {
+                      if (data.totalTime.inMilliseconds == 0) return;
+                      final newPos = v * data.totalTime.inMilliseconds;
+                      audioCtrl.seekTo(newPos);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildTitleWidget({required Widget child, String? title}) {
