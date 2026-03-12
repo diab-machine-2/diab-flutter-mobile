@@ -98,3 +98,11 @@ class FetchDietAnalysis extends FoodEvent {
     required this.periodFilterType,
   });
 }
+
+// Event cho phân bổ dinh dưỡng (tính từ food input, style MealScore)
+class FetchNutrientDistribution extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchNutrientDistribution({this.currentDateTime, this.periodFilterType});
+}

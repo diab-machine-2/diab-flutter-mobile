@@ -70,6 +70,10 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
     if (event is FetchDietAnalysis) {
       yield* fetchDietAnalysis(event.currentDateTime, event.periodFilterType);
     }
+    if (event is FetchNutrientDistribution) {
+      yield* fetchNutrientDistribution(
+          event.currentDateTime, event.periodFilterType);
+    }
   }
 
   Stream<FoodState> fetchFoodLatest(int page) async* {
@@ -318,6 +322,74 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       );
 
       yield FoodDietAnalysisLoaded(dietAnalysis: dietAnalysis ?? '');
+    } catch (e, _) {
+      if (e is Error) {
+        yield FoodError(message: e.message);
+      } else {
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
+      }
+    }
+  }
+
+  // Handler cho phân bổ dinh dưỡng (tính từ food input, style MealScore)
+  Stream<FoodState> fetchNutrientDistribution(
+      String? currentDateTime, String? periodFilterType) async* {
+    try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
+      final client = FoodClient();
+      yield FoodLoading();
+
+      // Fetch food inputs cho period hiện tại
+      final inputData = await client.fetchInput(
+          currentDateTime ?? (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+          periodFilterType ?? '1',
+          1);
+
+      double totalCarbs = 0;
+      double totalProtein = 0;
+      double totalFat = 0;
+
+      // Aggregate từ tất cả food items
+      for (final dayItem in inputData.inputs) {
+        for (final mealItem in dayItem.mealItems) {
+          for (final foodInput in mealItem.inputs) {
+            for (final food in foodInput.foods) {
+              final portion = food.portion ?? 1;
+              totalCarbs += (food.glucose ?? 0) * portion;
+              totalProtein += (food.protein ?? 0) * portion;
+              totalFat += (food.lipid ?? 0) * portion;
+            }
+          }
+        }
+      }
+
+      // Số ngày trong period
+      int days = 7;
+      final pf = int.tryParse(periodFilterType ?? '1') ?? 1;
+      if (pf == 2) days = 14;
+      if (pf == 3) days = 30;
+
+      // RDA per day (recommended daily intake)
+      const double rdaCarbsPerDay = 130;
+      const double rdaProteinPerDay = 50;
+      const double rdaFatPerDay = 70;
+
+      // Tính % trung bình so với RDA
+      double carbPercent =
+          days > 0 ? (totalCarbs / (rdaCarbsPerDay * days)) * 100 : 0;
+      double proteinPercent =
+          days > 0 ? (totalProtein / (rdaProteinPerDay * days)) * 100 : 0;
+      double fatPercent =
+          days > 0 ? (totalFat / (rdaFatPerDay * days)) * 100 : 0;
+
+      yield FoodNutrientDistributionLoaded(nutrientPercent: {
+        'carb': carbPercent,
+        'protein': proteinPercent,
+        'fat': fatPercent,
+        'vegetable': 0,
+        'fruit': 0,
+      });
     } catch (e, _) {
       if (e is Error) {
         yield FoodError(message: e.message);

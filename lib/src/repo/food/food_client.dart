@@ -217,12 +217,18 @@ class FoodClient extends FetchClient {
       );
 
       final data = await response.stream.bytesToString();
+      print('📸 [UploadAI] Status: ${response.statusCode}');
+      print('📸 [UploadAI] Response: $data');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(data);
+        print('📸 [UploadAI] data keys: ${jsonData['data']?.keys?.toList()}');
         if (jsonData['data'] != null && jsonData['data']['items'] != null) {
-          return FoodModel.toList(jsonData['data']['items']);
+          final items = FoodModel.toList(jsonData['data']['items']);
+          print('📸 [UploadAI] Parsed ${items.length} food items');
+          return items;
         }
+        print('📸 [UploadAI] No items found in response data');
         return [];
       } else {
         throw 'Upload failed with status ${response.statusCode}: ${response.reasonPhrase}\nResponse: $data';

@@ -77,3 +77,10 @@ class FoodDietAnalysisLoaded extends FoodState {
 
   FoodDietAnalysisLoaded({this.dietAnalysis});
 }
+
+// State cho phân bổ dinh dưỡng (tính từ food input, style MealScore)
+class FoodNutrientDistributionLoaded extends FoodState {
+  final Map<String, double> nutrientPercent;
+
+  FoodNutrientDistributionLoaded({required this.nutrientPercent});
+}
