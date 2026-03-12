@@ -448,11 +448,12 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<MyLessonResponse>> getLessonModuleType(int type) async {
+  Future<ApiResult<List<LessonSectionListResponseData>>> getLessonModuleType(int type) async {
     try {
-      final MyLessonResponse response =
+      final LessonModuleTypeResponse res =
           await appClient.getLessonModuleType(type);
-      return ApiResult.success(data: response);
+      return ApiResult.success(
+          data: res.data?.whereType<LessonSectionListResponseData>().toList() ?? []);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

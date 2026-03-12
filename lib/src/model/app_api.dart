@@ -218,7 +218,8 @@ abstract class AppApi {
   );
 
   @GET("App/Lesson/LessonModuleType")
-  Future<MyLessonResponse> getLessonModuleType(@Query('type') int type);
+  Future<LessonModuleTypeResponse> getLessonModuleType(
+      @Query('type') int type);
 
   @GET("App/Lesson/PrepareSearchFormItem")
   Future<FilterDataResponse> getFilterData();

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -28,7 +29,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   /// 0: Tất cả, 1: Theo dõi chỉ số, 2: Tinh thần, 3: Tâm lý hành vi,
   /// 4: Dinh dưỡng, 5: Bệnh lý, 6: Vận động.
   int recommendationType = 0;
-  List<MyLessonResponseData?>? recommendationLessons;
+  List<LessonSectionListResponseData?>? recommendationLessons;
   bool isRecommendationLoading = false;
   bool _hasLoadedRecommendationOnce = false;
 
@@ -251,10 +252,11 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       isRecommendationLoading = true;
       emit(const LessonTabSuccess());
     }
-    final ApiResult<MyLessonResponse> apiResult =
+    final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getLessonModuleType(requestType);
-    apiResult.when(success: (MyLessonResponse response) {
-      recommendationLessons = response.data ?? [];
+    apiResult.when(success: (List<LessonSectionListResponseData> response) {
+      // API now returns a list of LessonSectionListResponseData.
+      recommendationLessons = response;
       _hasLoadedRecommendationOnce = true;
       isRecommendationLoading = false;
       emit(const LessonTabSuccess());

@@ -31,17 +31,22 @@ class ModuleLessonsPage extends StatelessWidget {
       value: cubit,
       child: Scaffold(
         appBar: AppBar(
+          leadingWidth: 36,
+          titleSpacing: 0,
           title: Text(
             moduleName,
             style: TextStyle(
-              color: R.color.textDark,
+              color: R.color.white,
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
           ),
-          centerTitle: true,
-          backgroundColor: R.color.white,
-          iconTheme: IconThemeData(color: R.color.textDark),
+          centerTitle: false,
+          backgroundColor: R.color.greenGradientBottom,
+          iconTheme: IconThemeData(
+            color: R.color.white,
+            size: 20,
+          ),
         ),
         backgroundColor: R.color.backgroundColorNew,
         body: ListView.builder(

@@ -804,12 +804,12 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<MyLessonResponse> getLessonModuleType(int type) async {
+  Future<LessonModuleTypeResponse> getLessonModuleType(int type) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'type': type};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<MyLessonResponse>(Options(
+    final _options = _setStreamType<LessonModuleTypeResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -826,9 +826,9 @@ class _AppApi implements AppApi {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late MyLessonResponse _value;
+    late LessonModuleTypeResponse _value;
     try {
-      _value = MyLessonResponse.fromJson(_result.data!);
+      _value = LessonModuleTypeResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

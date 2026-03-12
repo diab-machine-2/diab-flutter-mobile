@@ -8,12 +8,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_filter/lesson_filter.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_filter/models/filter_data.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_tab/models/lesson_type.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -165,7 +170,7 @@ class _LessonTabPageState extends State<LessonTabPage>
               //   color: R.color.white,
               //   child: Column(
               //     children: [
-              //       Row(children: [
+              //       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
               //         ...List.generate(
               //           _cubit.lessonTypeList.length,
               //           (index) {
@@ -261,7 +266,6 @@ class _LessonTabPageState extends State<LessonTabPage>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SizedBox(height: 20.h),
                                     if (_cubit.lessonsList!.isEmpty)
                                       (state is LessonTabLoading ||
                                               state is LessonTabWeekChanged)
@@ -608,10 +612,10 @@ class _LessonTabPageState extends State<LessonTabPage>
 
   /// Row style for recommendation list: module -> title -> book icon + duration + arrow.
   Widget _buildRecommendationRow({
-    required MyLessonResponseData? lessonDetail,
+    required LessonSectionListResponseData? lessonDetail,
     VoidCallback? onTap,
   }) {
-    final String module = lessonDetail?.module ?? '';
+    final String module = lessonDetail?.lessonModule?.name ?? '';
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 12),

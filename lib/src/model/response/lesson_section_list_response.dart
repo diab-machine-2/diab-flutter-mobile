@@ -2252,3 +2252,44 @@ class LessonSectionListResponse {
     return data;
   }
 }
+
+/// Wrapper for App/Lesson/LessonModuleType: same shape as MyLessonResponse
+/// but [data] is List<LessonSectionListResponseData>.
+class LessonModuleTypeResponse {
+  LessonSectionListResponseMeta? meta;
+  List<LessonSectionListResponseData?>? data;
+
+  LessonModuleTypeResponse({
+    this.meta,
+    this.data,
+  });
+
+  LessonModuleTypeResponse.fromJson(Map<String, dynamic> json) {
+    meta = (json['meta'] != null)
+        ? LessonSectionListResponseMeta.fromJson(json['meta'])
+        : null;
+    if (json['data'] != null) {
+      final v = json['data'];
+      final arr0 = <LessonSectionListResponseData>[];
+      v.forEach((v) {
+        arr0.add(LessonSectionListResponseData.fromJson(v));
+      });
+      data = arr0;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final out = <String, dynamic>{};
+    if (meta != null) {
+      out['meta'] = meta!.toJson();
+    }
+    if (data != null) {
+      final arr0 = [];
+      for (var v in data!) {
+        arr0.add(v?.toJson());
+      }
+      out['data'] = arr0;
+    }
+    return out;
+  }
+}
