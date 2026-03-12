@@ -1,135 +1,92 @@
-# medical
+# DiaB MB
 
-A new Flutter project.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Getting started
 
-A few resources to get you started if this is your first Flutter project:
+To make it easy for you to get started with GitLab, here's a list of recommended next steps.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Add your files
 
-## Flutter Version
+- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
+- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
 
-This project uses **Flutter 3.27.4** (stable channel).
-Tools • Dart 3.6.2 • DevTools 2.40.3
-
-To verify your Flutter version:
-```bash
-flutter --version
+```
+cd existing_repo
+git remote add origin https://gitlab.com/diab-group/diab-mb.git
+git branch -M main
+git push -uf origin main
 ```
 
-## Zoom Meeting SDK Setup
+## Integrate with your tools
 
-This project uses Zoom Meeting SDK for video conferencing functionality.
+- [ ] [Set up project integrations](https://gitlab.com/diab-group/diab-mb/-/settings/integrations)
 
-### SDK Versions
-- **Android**: v6.3.10.27979
-- **iOS**: v6.3.10.22850
+## Collaborate with your team
 
-### Setting Up Zoom Meeting SDK
+- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
+- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
+- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
+- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
+- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
 
-To set up the Zoom Meeting SDK in this project:
+## Test and Deploy
 
-1. **Add dependency**: First, add `flutter_zoom_meeting` as a dependency in your `pubspec.yaml` file:
-   ```yaml
-   flutter_zoom_meeting:
-     git:
-       url: https://github.com/tringuyen53/flutter_zoom_meeting_sdk.git
-       ref: 1.0.8
-   ```
+Use the built-in continuous integration in GitLab.
 
-2. **Get dependencies**: Run the following command to fetch the package:
-   ```bash
-   flutter pub get
-   ```
+- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
+- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
+- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
+- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
+- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-3. **Download SDK files**: Download the SDK files from Google Drive.
+***
 
-4. **Locate flutter_zoom_meeting package**: Find the `flutter_zoom_meeting` package path on your PC. It's typically located in:
-   - Windows: `C:\Users\<YourUsername>\AppData\Local\Pub\Cache\git\flutter_zoom_meeting_sdk-<hash>`
-   - Or `C:\Users\<YourUsername>\.pub-cache\git\flutter_zoom_meeting_sdk-<hash>`
-   - Or check your Flutter packages cache directory
+# Editing this README
 
-5. **Add Android SDK files**: Place the Android SDK files in:
-   ```
-   flutter_zoom_meeting/android/libs/
-   ```
+When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
 
-6. **Add iOS SDK files**: Place the iOS SDK files in:
-   ```
-   flutter_zoom_meeting/ios/
-   ```
+## Suggestions for a good README
+Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-**Note**: After running `pub get`, you must run the setup script to get Zoom SDK for the first time. Make sure the native SDK files match the versions specified above (Android: v6.3.10.27979, iOS: v6.3.10.22850).
+## Name
+Choose a self-explaining name for your project.
 
-## Building APK for Development
+## Description
+Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-To build an APK file for the development environment that can be shared with clients, follow these steps:
+## Badges
+On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Build runner
+## Visuals
+Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
-flutter pub run build_runner build --delete-conflicting-outputs
+## Installation
+Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-### Using Command Line
+## Usage
+Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-1. Navigate to the project root directory:
-```bash
-cd /path/to/diab-flutter-mobile
-```
+## Support
+Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-2. Clean the project (recommended before building):
-```bash
-flutter clean
-```
+## Roadmap
+If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-3. Get dependencies:
-```bash
-flutter pub get
-```
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
 
-4. Build the APK for development:
-```bash
-flutter build apk --debug
-```
-   
-   Or for a release version (optimized for performance):
-```bash
-flutter build apk --release
-```
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
 
-5. The APK file will be generated at:
-   - Debug build: `build/app/outputs/flutter-apk/app-debug.apk`
-   - Release build: `build/app/outputs/flutter-apk/app-release.apk`
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
-### Using Android Studio
+## Authors and acknowledgment
+Show your appreciation to those who have contributed to the project.
 
-1. Open the project in Android Studio
-2. Select the build variant (debug/release) from Build Variants panel
-3. Click on Build > Build Bundle(s) / APK(s) > Build APK(s)
-4. After build completes, click on "locate" in the notification to find the APK
+## License
+For open source projects, say how it is licensed.
 
-adb shell setprop debug.firebase.analytics.app com.vbhc.diab
-
-
-Case 1.1
- Cả máy đường huyết và máy điện thoại không có kết nối với nhau.
- (Đã xóa pair)
-
-Case 2.1
- Máy điện thoại xóa pair, máy đường huyết giữ thông tin pair
-
-Case 3.1
- Máy điện thoại giữ thông tin pair, máy đường huyết xóa thông tin pair
-
-Case 4.1 
-Cả 2 đang pair với nhau và send data
-
-Với case 1.1 và 4.1 thì mong muốn send data thành công
-Case 2.1 và 3.1 thì show nội dung hướng dẫn cách xử lý
+## Project status
+If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
