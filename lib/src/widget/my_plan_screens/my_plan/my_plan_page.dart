@@ -9,10 +9,12 @@ import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/common_page.dart';
 
 import '../lesson_tab/lesson_tab/lesson_tab.dart';
+import '../lesson_tab/lesson_tab/lesson_search_page.dart';
 import 'models/plan_type.dart';
 import 'my_plan.dart';
 
@@ -106,7 +108,10 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
                 highlightColor: R.color.transparent,
                 icon: Icon(Icons.search, color: R.color.white),
                 onPressed: () {
-                  // TODO: implement Library search navigation
+                  NavigationUtil.navigatePage(
+                    context,
+                    const LessonSearchPage(),
+                  );
                 },
               ),
               child: Column(

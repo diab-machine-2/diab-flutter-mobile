@@ -14,6 +14,7 @@ import '../../../../utils/const.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
+import 'lesson_search_cache.dart';
 import 'models/lesson_type.dart';
 
 class LessonTabCubit extends Cubit<LessonTabState> {
@@ -230,6 +231,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
           });
         }
       }
+      // Cache for search page so it can reuse loaded data.
+      LessonSearchCache.lessons = lessonsList;
       // emit(LessonTabScrollToLesson(response.firstLessonIndex));
       // Timer(const Duration(milliseconds: 0), () {
       //   emit(LessonTabScrollToLesson(response.firstLessonIndex));
