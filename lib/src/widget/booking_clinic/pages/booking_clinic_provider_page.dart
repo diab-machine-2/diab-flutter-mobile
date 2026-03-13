@@ -95,7 +95,14 @@ class _BookingClinicProvidersPageState
   _initData() async {
     try {
       isLoading = true;
-      final position = await AppSettings.getPositionPreferences();
+      var position = await AppSettings.getPositionPreferences();
+      if (position == null || position.isEmpty) {
+        final geolocation = await determinePosition();
+        if (geolocation != null) {
+          await AppSettings.saveLocationPreferences(geolocation);
+          position = geolocation.latitude.toString() + ',' + geolocation.longitude.toString();
+        }
+      }
 
       String lat = '';
       String lng = '';
@@ -115,9 +122,7 @@ class _BookingClinicProvidersPageState
         lat: lat,
         lng: lng,
         kind: Const.BOOKING_TYPE_CLINIC,
-        name: widget.examinationType != null
-            ? "${widget.examinationType}"
-            : '',
+        name: widget.examinationType != null ? "${widget.examinationType}" : '',
       );
 
       final request = _cubit.searchBookingClinicListRequest;
@@ -568,7 +573,8 @@ class _BookingClinicProvidersPageState
                                     _cubit.setExaminationData(
                                       isExamination: true,
                                       examinationType: widget.examinationType,
-                                      examinationLocation: Const.EXAMINATION_LOCATION_CLINIC,
+                                      examinationLocation:
+                                          Const.EXAMINATION_LOCATION_CLINIC,
                                     );
                                   }
 
