@@ -394,7 +394,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                 ),
               ),
               FractionallySizedBox(
-                widthFactor: min(percent / 100, 1.3),
+                widthFactor: min(percent / 100, 1.0),
                 child: Container(
                   height: 24,
                   decoration: BoxDecoration(
