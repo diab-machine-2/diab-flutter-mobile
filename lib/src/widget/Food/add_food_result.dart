@@ -13,6 +13,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'food_result.dto.dart';
 import 'widget/meal_items_display_widget.dart';
 import 'widget/nutrition_ai_help_button.dart';
+import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 
 class PageAddFoodResult extends StatefulWidget {
   const PageAddFoodResult({super.key, required this.data});
@@ -31,10 +32,21 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   // ignore: unused_field
   List<dynamic> _files = [];
 
+  final FocusNode _focusNode = FocusNode();
+  late TextEditingController _controllerNote;
+
   @override
   void initState() {
+    _controllerNote = TextEditingController(text: widget.data.note ?? '');
     _loadData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _controllerNote.dispose();
+    super.dispose();
   }
 
   void _loadData() async {
@@ -102,7 +114,20 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                     child: SingleChildScrollView(
                       padding: EdgeInsets.only(bottom: 100),
                       physics: const ClampingScrollPhysics(),
-                      child: _foodResultSection(),
+                      child: Column(
+                        children: [
+                          _foodResultSection(),
+                          const SizedBox(height: 16),
+                          SectionAddNote(
+                            focusNode: _focusNode,
+                            controllerNote: _controllerNote,
+                            maxMedia: 5,
+                            initialFiles: _files,
+                            noteTitle: R.string.ghi_chu.tr(),
+                            horizontalPadding: 16,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -403,20 +428,22 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                   ),
                 ),
               ),
+              Positioned(
+                right: 8,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: Text(
+                    '$percent%',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: R.color.textDark,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
             ],
-          ),
-        ),
-        const SizedBox(width: 12),
-        SizedBox(
-          width: 50,
-          child: Text(
-            '$percent%',
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 14,
-              color: percent > 100 ? Color(0xFFEF5350) : R.color.textDark,
-              fontWeight: FontWeight.w600,
-            ),
           ),
         ),
       ],

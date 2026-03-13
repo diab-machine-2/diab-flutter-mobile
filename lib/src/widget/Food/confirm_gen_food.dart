@@ -13,6 +13,7 @@ import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
@@ -804,6 +805,12 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           apiMessage = mealScoreData['messageResult'] as String?;
           apiRange = mealScoreData['totalMealRange'] as String?;
 
+          // Save latest AI suggestion to SharedPreferences for overview
+          if (apiMessage != null && apiMessage.isNotEmpty) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('latest_meal_score_suggestion', apiMessage);
+          }
+
           final npData = mealScoreData['nutritionPercent'];
           if (npData != null) {
             nutritionPercent = {
@@ -862,6 +869,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           note: note,
           images: [],
           healthRecommendation: apiMessage,
+
           isFetchAnalysis: false,
           score: apiScore,
           balanceStatus: balanceStatus,

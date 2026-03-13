@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -1071,6 +1072,12 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           apiScore = mealScoreData['totalMealScore'] as int?;
           apiMessage = mealScoreData['messageResult'] as String?;
           apiRange = mealScoreData['totalMealRange'] as String?;
+
+          // Save latest AI suggestion to SharedPreferences for overview
+          if (apiMessage != null && apiMessage.isNotEmpty) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('latest_meal_score_suggestion', apiMessage);
+          }
 
           final npData = mealScoreData['nutritionPercent'];
           if (npData != null) {
