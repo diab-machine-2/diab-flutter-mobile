@@ -776,17 +776,15 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
               final bytes = await response.fold<List<int>>([], (prev, element) => prev..addAll(element));
               await tempFile.writeAsBytes(bytes);
               mealScorePaths.add(tempFile.path);
-              developer.log('[CAPTURE] Downloaded food image for MealScore: ${tempFile.path}', name: '[CAPTURE]');
             }
           } catch (e) {
-            developer.log('[CAPTURE] Error downloading food image: $e', name: '[CAPTURE]');
+            // Silently fail - will use local calculation
           }
         }
         try {
           mealScoreData = await FoodClient().postMealScore(mealScorePaths);
-          print('[MealScore] API response: $mealScoreData');
         } catch (e) {
-          print('MealScore API error (non-blocking): $e');
+          // Non-blocking
         }
 
         // Clean up temporary files after MealScore call

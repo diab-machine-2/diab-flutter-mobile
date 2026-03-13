@@ -372,8 +372,7 @@ class FoodClient extends FetchClient {
       };
       for (int i = 0; i < foods.length; i++) {
         params['foods[$i].id'] = foods[i].id ?? '';
-        params['foods[$i].portion'] =
-            foods[i].portion != null ? foods[i].quantity.toString() : '1';
+        params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
       }
       final response = await super
           .putHttp(path: '/App/Diet/Input', params: params, files: files);
