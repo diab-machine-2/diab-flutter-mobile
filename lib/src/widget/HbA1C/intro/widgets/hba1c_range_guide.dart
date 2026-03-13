@@ -68,7 +68,6 @@ class HbA1cRangeGuide extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       color: R.color.color0xffBFC6C6,
-                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),

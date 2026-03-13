@@ -201,6 +201,9 @@ abstract class AppApi {
   @GET("App/Account/GetCurrentUserInfo")
   Future<UserInfoResponse> getCurrentUserInfo();
 
+  @POST("App/Account/AccountLoginHistory")
+  Future<void> accountLoginHistory();
+
   //Acount
   @GET("App/Account/SyncData")
   Future<void> syncIndexFromZaloToPhone(
