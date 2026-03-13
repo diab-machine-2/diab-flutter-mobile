@@ -729,19 +729,18 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           '[CAPTURE] Prepared paths count: ${paths.length}, paths: ${paths.join(", ")}',
           name: '[CAPTURE]');
 
-      if (paths.isEmpty) {
-        throw Exception(
-            'No valid file paths found. Please select at least one image.');
-      }
+      // Cho phép paths rỗng khi chọn từ thư viện (không có ảnh)
 
-      // Step 3: Validate file existence
-      for (String path in paths) {
-        final file = File(path);
-        if (!await file.exists()) {
-          developer.log('[CAPTURE] ERROR: File does not exist: $path',
-              name: '[CAPTURE]');
-          throw Exception(
-              'Image file not found: $path. Please select images again.');
+      // Step 3: Validate file existence (chỉ khi có ảnh)
+      if (paths.isNotEmpty) {
+        for (String path in paths) {
+          final file = File(path);
+          if (!await file.exists()) {
+            developer.log('[CAPTURE] ERROR: File does not exist: $path',
+                name: '[CAPTURE]');
+            throw Exception(
+                'Image file not found: $path. Please select images again.');
+          }
         }
       }
 
@@ -762,17 +761,38 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           name: '[CAPTURE]');
 
       if (result == true) {
-        // Call MealScore API BEFORE cleanup (files are needed for upload)
+        // Nếu không có ảnh (chọn từ thư viện), tải ảnh món ăn đầu tiên để gọi MealScore
         Map<String, dynamic>? mealScoreData;
+        List<String> mealScorePaths = [...paths];
+        if (mealScorePaths.isEmpty && _selectedFoods.isNotEmpty) {
+          try {
+            final imageUrl = _selectedFoods.first.image?.url;
+            if (imageUrl != null && imageUrl.isNotEmpty) {
+              final httpClient = HttpClient();
+              final request = await httpClient.getUrl(Uri.parse(imageUrl));
+              final response = await request.close();
+              final tempDir = Directory.systemTemp;
+              final tempFile = File('${tempDir.path}/meal_score_temp_${DateTime.now().millisecondsSinceEpoch}.jpg');
+              final bytes = await response.fold<List<int>>([], (prev, element) => prev..addAll(element));
+              await tempFile.writeAsBytes(bytes);
+              mealScorePaths.add(tempFile.path);
+              developer.log('[CAPTURE] Downloaded food image for MealScore: ${tempFile.path}', name: '[CAPTURE]');
+            }
+          } catch (e) {
+            developer.log('[CAPTURE] Error downloading food image: $e', name: '[CAPTURE]');
+          }
+        }
         try {
-          mealScoreData = await FoodClient().postMealScore(paths);
+          mealScoreData = await FoodClient().postMealScore(mealScorePaths);
           print('[MealScore] API response: $mealScoreData');
         } catch (e) {
           print('MealScore API error (non-blocking): $e');
         }
 
         // Clean up temporary files after MealScore call
-        await _cleanupTempFiles(paths);
+        if (paths.isNotEmpty) {
+          await _cleanupTempFiles(paths);
+        }
 
         // Parse MealScore response
         int? apiScore;

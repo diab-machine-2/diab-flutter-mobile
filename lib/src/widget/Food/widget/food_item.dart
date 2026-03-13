@@ -1,11 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/widget/Food/widget/food_choose_quantity.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -44,7 +44,8 @@ class FoodItem extends StatelessWidget {
           Navigator.pop(context);
         }
 
-        showFoodQuantity(context);
+        // Thêm trực tiếp với khẩu phần = 1, bỏ dialog chọn khẩu phần
+        _addFoodDirectly();
       },
       child: Container(
           decoration: BoxDecoration(
@@ -110,18 +111,16 @@ class FoodItem extends StatelessWidget {
     );
   }
 
-  showFoodQuantity(BuildContext context) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      builder: (_) => FoodChooseQuantity(
-        model: model,
-        selectedModel: selectedModel,
-        categoryId: categoryId,
-        callback: (value) {},
-        kcalLeft: kcalLeft,
-      ),
-    );
+  void _addFoodDirectly() {
+    Observable.instance.notifyObservers([],
+        notifyName: "add_food_to_cart",
+        map: {
+          "food": model.copyWith(
+            portion: 1,
+            quantity: model.quantity ?? 1,
+            mealId: selectedModel?.mealId ?? model.mealId,
+          ),
+        });
   }
 
   likeFood(BuildContext context) async {

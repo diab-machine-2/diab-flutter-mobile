@@ -6,8 +6,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/Food/food_gallery_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -389,10 +391,35 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     );
   }
 
-  void _manualInputSelect() {
-    // Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.pushNamed(context, NavigatorName.add_food,
-        arguments: {'type': 'input'});
+  void _manualInputSelect() async {
+    List<FoodModel>? selectedFoods;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SearchFoodController(
+          foods: [],
+          suggestKcal: null,
+          callback: (foods) {
+            selectedFoods = foods;
+          },
+        ),
+      ),
+    );
+
+    // Navigate sau khi SearchFoodController đã pop xong
+    if (selectedFoods != null && selectedFoods!.isNotEmpty && mounted) {
+      Navigator.pushNamed(
+        context,
+        NavigatorName.confirm_food,
+        arguments: {
+          'foods': selectedFoods,
+          'timeframe': widget.timeframe,
+          'timeframeId': widget.timeframeId,
+          'files': <String>[],
+        },
+      );
+    }
   }
 
   @override

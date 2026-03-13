@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
-import 'package:medical/src/widget/Food/widget/energy_chart.dart';
+import 'package:medical/src/widget/Food/widget/food_calorie_trend_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_ai_suggestion.dart';
@@ -27,7 +27,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   @override
   bool get wantKeepAlive => true;
 
-  GlobalKey<EnergyChartState> energyKey = GlobalKey();
+  GlobalKey<FoodCalorieTrendChartState> calorieTrendKey = GlobalKey();
   GlobalKey<StarchChartState> starchKey = GlobalKey();
   GlobalKey<FoodDistributionChartState> distributionKey = GlobalKey();
   GlobalKey<MealDistributionWidgetState> mealDistributionKey = GlobalKey();
@@ -65,8 +65,8 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   }
 
   reloadData(int periodFilterType) {
-    if (energyKey.currentState != null) {
-      energyKey.currentState!.reloadData(periodFilterType);
+    if (calorieTrendKey.currentState != null) {
+      calorieTrendKey.currentState!.reloadData(periodFilterType);
     }
     if (aiSuggestionKey.currentState != null) {
       aiSuggestionKey.currentState!.reloadData(periodFilterType);
@@ -114,7 +114,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
               physics: const ClampingScrollPhysics(),
               padding: EdgeInsets.only(bottom: 100), // Space for fixed button
               children: [
-                EnergyChart(key: energyKey),
+                FoodCalorieTrendChart(key: calorieTrendKey, periodFilterType: FoodDetailTabbarController.of(context)?.periodFilterType ?? 1),
                 FoodAISuggestion(
                     key: aiSuggestionKey, initialPeriodFilterType: 1),
                 // StarchChart(key: starchKey), // Hidden per user request
