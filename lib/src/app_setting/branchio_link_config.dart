@@ -519,20 +519,37 @@ class BranchioLinkConfig {
   }
 
   void _navigateToPrescriptionListWithTab(int initialBottomIndex) {
-    navigatorKey.currentState?.popUntil((route) {
-      return route.settings.name == NavigatorName.tabbar;
+    // All navigator operations here are deferred to the next frame to avoid
+    // triggering them while the navigator is locked (during builds/transitions).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = navigatorKey.currentState;
+      if (state == null) return;
+
+      state.popUntil((route) {
+        return route.settings.name == NavigatorName.tabbar;
+      });
+
+      // Defer the push to a microtask so it happens after `popUntil` completes.
+      Future.microtask(() {
+        final innerState = navigatorKey.currentState;
+        innerState?.pushNamed(
+          NavigatorName.prescription,
+          arguments: {'initialBottomIndex': initialBottomIndex},
+        );
+      });
     });
-    navigatorKey.currentState?.pushNamed(
-      NavigatorName.prescription,
-      arguments: {'initialBottomIndex': initialBottomIndex},
-    );
   }
 
   void checkPendingMedicineTab() {
     if (_pendingMedicineTab != null) {
       final tab = _pendingMedicineTab!;
       _pendingMedicineTab = null;
-      _navigateToPrescriptionListWithTab(tab);
+
+      // Defer navigation to after the current build frame to avoid
+      // `!_debugLocked` navigator assertions when called from init/build.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigateToPrescriptionListWithTab(tab);
+      });
     }
   }
 
