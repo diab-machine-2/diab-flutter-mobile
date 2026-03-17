@@ -65,10 +65,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     _cubit = LessonDetailCubit(appRepository);
     _cubit.initData(widget.lessonType, widget.lessonId);
     LessonDetailTracking.firebaseSetup();
-<<<<<<< HEAD
-=======
     _scrollController.addListener(_checkMediaVisibility);
->>>>>>> 86abcb76 (feat: add floating mini audio bar with scroll detection synced with main audio player)
   }
 
   @override
@@ -409,6 +406,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                       return true;
                                     },
                                     child: SingleChildScrollView(
+                                      controller: _scrollController,
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -416,66 +414,73 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                           if (_cubit.currentSectionDetail
                                                   ?.videoAddressLink !=
                                               null)
-                                            _buildTitleWidget(
-                                              child: VideoWidget(
-                                                isYouTubeLink: isYouTubeLink(
-                                                    _cubit.currentSectionDetail
-                                                        ?.videoAddressLink),
-                                                url: _cubit
-                                                    .currentSectionDetail!
-                                                    .videoAddressLink!,
-                                                callbackEventListener:
-                                                    (event, videoDuration) {
-                                                  LessonDetailTracking
-                                                      .videoPlayerLesson(
-                                                    videoDuration:
-                                                        videoDuration,
-                                                    objectTitle: _cubit
-                                                        .lessonDetail!.name!,
-                                                    objectId: _cubit
-                                                        .lessonDetail!.id!,
-                                                    eventType: event,
-                                                  );
-                                                },
-                                                onPlay: () async =>
-                                                    _onTrackingVideoPlay(),
-                                                onComplete: () {
-                                                  LessonDetailTracking
-                                                      .completed50PercentVideo(
-                                                    objectId:
-                                                        _cubit.lessonDetail?.id,
-                                                    objectTitle: _cubit
-                                                        .lessonDetail?.name,
-                                                  );
-                                                  _cubit.complete();
-                                                  _onTrackingVideoComplete();
-                                                },
-                                                callbackByPercentVideo: () {
-                                                  LessonDetailTracking
-                                                      .completed50PercentVideo(
-                                                    objectId:
-                                                        _cubit.lessonDetail?.id,
-                                                    objectTitle: _cubit
-                                                        .lessonDetail?.name,
-                                                  );
-                                                  widget.onComplete(
-                                                      _cubit.lessonDetail!.id!,
-                                                      _cubit.percentComplete);
-                                                  _cubit.complete();
-                                                },
-                                                percentCallbackDefault: 0.5,
-                                                setVideoManager:
-                                                    (videoManager) {
-                                                  _cubit.setVideoManager(
-                                                      videoManager);
-                                                },
-                                                videoTitle: _cubit
-                                                    .currentSectionDetail?.name,
-                                                videoThumbnail: _cubit
-                                                    .lessonDetail?.image?.url,
+                                            Container(
+                                              key: _videoWidgetKey,
+                                              child: _buildTitleWidget(
+                                                child: VideoWidget(
+                                                  isYouTubeLink: isYouTubeLink(
+                                                      _cubit
+                                                          .currentSectionDetail
+                                                          ?.videoAddressLink),
+                                                  url: _cubit
+                                                      .currentSectionDetail!
+                                                      .videoAddressLink!,
+                                                  callbackEventListener:
+                                                      (event, videoDuration) {
+                                                    LessonDetailTracking
+                                                        .videoPlayerLesson(
+                                                      videoDuration:
+                                                          videoDuration,
+                                                      objectTitle: _cubit
+                                                          .lessonDetail!.name!,
+                                                      objectId: _cubit
+                                                          .lessonDetail!.id!,
+                                                      eventType: event,
+                                                    );
+                                                  },
+                                                  onPlay: () async =>
+                                                      _onTrackingVideoPlay(),
+                                                  onComplete: () {
+                                                    LessonDetailTracking
+                                                        .completed50PercentVideo(
+                                                      objectId: _cubit
+                                                          .lessonDetail?.id,
+                                                      objectTitle: _cubit
+                                                          .lessonDetail?.name,
+                                                    );
+                                                    _cubit.complete();
+                                                    _onTrackingVideoComplete();
+                                                  },
+                                                  callbackByPercentVideo: () {
+                                                    LessonDetailTracking
+                                                        .completed50PercentVideo(
+                                                      objectId: _cubit
+                                                          .lessonDetail?.id,
+                                                      objectTitle: _cubit
+                                                          .lessonDetail?.name,
+                                                    );
+                                                    widget.onComplete(
+                                                        _cubit
+                                                            .lessonDetail!.id!,
+                                                        _cubit.percentComplete);
+                                                    _cubit.complete();
+                                                  },
+                                                  percentCallbackDefault: 0.5,
+                                                  setVideoManager:
+                                                      (videoManager) {
+                                                    _cubit.setVideoManager(
+                                                        videoManager);
+                                                  },
+                                                  videoTitle: _cubit
+                                                      .currentSectionDetail
+                                                      ?.name,
+                                                  videoThumbnail: _cubit
+                                                      .lessonDetail?.image?.url,
+                                                ),
+                                                title: _cubit
+                                                    .currentSectionDetail
+                                                    ?.videoDescription,
                                               ),
-                                              title: _cubit.currentSectionDetail
-                                                  ?.videoDescription,
                                             ),
                                           SizedBox(height: 8),
                                           Padding(
