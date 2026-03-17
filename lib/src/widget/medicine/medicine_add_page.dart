@@ -341,58 +341,71 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                   colors: [R.color.greenGradientMid, R.color.greenGradientBottom])),
         ),
       ),
-      body: Container(
-        width: double.infinity,
-        color: Color(0xFFEAF9F7),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildPrescriptionCard(),
-              _buildDescriptionCard(),
-            ],
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Container(
+          width: double.infinity,
+          color: Color(0xFFEAF9F7),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildPrescriptionCard(),
+                _buildDescriptionCard(),
+              ],
+            ),
           ),
         ),
       ),
       // Submit button
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
-        color: Colors.white,
-        child: ElevatedButton(
-          onPressed: () async {
-            if (_submitBtnEnabled) {
-              final bool hasRemain = !_isFromReuse &&
-                  (_selectedMedication.remain != null || widget.medicine?.remain != null);
-
-              // If this medicine already has a `remain` value (coming from a created
-              // prescription) and we are in edit mode, confirm with the user that
-              // changing quantity will reset usage status.
-              if (hasRemain && _medicineMode == MedicineMode.edit) {
-                final bool proceed = await _showChangeQuantityConfirmDialog(context);
-                if (!proceed) {
-                  // Cancel: just close dialog and do nothing else.
-                  return;
-                }
-              }
-
-              _handleSubmit(context, hasRemain);
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _submitBtnEnabled ? const Color(0xFF008D67) : const Color(0xFFBFC6C6),
-            minimumSize: const Size.fromHeight(50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(50),
-            ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          color: Colors.white,
+          padding: EdgeInsets.fromLTRB(
+            16,
+            24,
+            16,
+            24 + MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: Text(
-            R.string.confirm.tr(),
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              height: 1.46,
-              letterSpacing: 0.4,
-              color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
+          child: ElevatedButton(
+            onPressed: () async {
+              if (_submitBtnEnabled) {
+                final bool hasRemain = !_isFromReuse &&
+                    (_selectedMedication.remain != null || widget.medicine?.remain != null);
+
+                // If this medicine already has a `remain` value (coming from a created
+                // prescription) and we are in edit mode, confirm with the user that
+                // changing quantity will reset usage status.
+                if (hasRemain && _medicineMode == MedicineMode.edit) {
+                  final bool proceed = await _showChangeQuantityConfirmDialog(context);
+                  if (!proceed) {
+                    // Cancel: just close dialog and do nothing else.
+                    return;
+                  }
+                }
+
+                _handleSubmit(context, hasRemain);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _submitBtnEnabled ? const Color(0xFF008D67) : const Color(0xFFBFC6C6),
+              minimumSize: const Size.fromHeight(50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+            ),
+            child: Text(
+              R.string.confirm.tr(),
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+                height: 1.46,
+                letterSpacing: 0.4,
+                color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
+              ),
             ),
           ),
         ),
