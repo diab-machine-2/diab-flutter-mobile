@@ -120,6 +120,7 @@ class PrescriptionsBySessionModel {
 class PrescriptionInSessionModel {
   final String prescriptionId;
   final String prescriptionName;
+
   /// Time of day as "HH:mm:ss" (e.g. "09:00:00"). Use with selected date to get full [DateTime].
   final String timeSchedule;
   final List<MedicationInSession> medications;
@@ -160,11 +161,13 @@ enum MedicineSession {
 class MedicationInSession {
   /// Target id for URL (e.g. /App/Target/Medication/$id).
   final String id;
+
   /// From medicationInfo.patientMedicationId, for request body.
   final String patientMedicationId;
   final String medicineName;
   // e.g. 1 viên - Sau ăn
   final String dosage;
+
   /// Numeric dosage for API (e.g. Dosage in payload).
   final double dosageValue;
   // e.g. true ->
