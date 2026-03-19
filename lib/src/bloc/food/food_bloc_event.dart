@@ -106,3 +106,11 @@ class FetchNutrientDistribution extends FoodEvent {
 
   FetchNutrientDistribution({this.currentDateTime, this.periodFilterType});
 }
+
+// Event cho biểu đồ calo xu hướng (từng bữa ăn riêng biệt)
+class FetchFoodCalorieTrend extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchFoodCalorieTrend({this.currentDateTime, this.periodFilterType});
+}

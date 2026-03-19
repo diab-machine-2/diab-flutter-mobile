@@ -74,6 +74,10 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       yield* fetchNutrientDistribution(
           event.currentDateTime, event.periodFilterType);
     }
+    if (event is FetchFoodCalorieTrend) {
+      yield* fetchFoodCalorieTrend(
+          event.currentDateTime, event.periodFilterType);
+    }
   }
 
   Stream<FoodState> fetchFoodLatest(int page) async* {
@@ -390,6 +394,96 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         'vegetable': 0,
         'fruit': 0,
       });
+    } catch (e, _) {
+      if (e is Error) {
+        yield FoodError(message: e.message);
+      } else {
+        yield FoodError(message: R.string.error_can_not_connect_to_server.tr());
+      }
+    }
+  }
+
+  // Handler cho biểu đồ calo từng bữa ăn riêng biệt
+  Stream<FoodState> fetchFoodCalorieTrend(
+      String? currentDateTime, String? periodFilterType) async* {
+    try {
+      periodFilterType =
+          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
+      final client = FoodClient();
+
+      // Lấy energy goal — explicit toDouble() để tránh lỗi int/null
+      double energyGoal = (AppSettings.userInfo?.energyGoal ?? 2000).toDouble();
+      double perMealThreshold = energyGoal / 3.0;
+
+      // Fetch tất cả food input trong period
+      final inputData = await client.fetchInput(
+          currentDateTime ??
+              (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+          periodFilterType ?? '1',
+          1);
+
+      // Flatten: mỗi FoodInputModel (= 1 lần nhập bữa ăn) → 1 điểm trên chart
+      final List<FoodCalorieTrendItem> items = [];
+
+      for (final dayItem in inputData.inputs) {
+        for (final mealItem in dayItem.mealItems) {
+          for (final foodInput in mealItem.inputs) {
+            // Tính tổng calorie cho food input này
+            double totalCalorie = 0.0;
+            for (final food in foodInput.foods) {
+              final double portion = (food.portion ?? 1).toDouble();
+              final double cal = (food.calorie ?? 0).toDouble();
+              totalCalorie += cal * portion;
+            }
+            // Nếu foodInput có calorie riêng, dùng nó
+            final double? inputCal = foodInput.calorie?.toDouble();
+            if (inputCal != null && inputCal > 0) {
+              totalCalorie = inputCal;
+            }
+
+            // Xác định trạng thái cân bằng dựa trên ngưỡng mỗi bữa
+            String type;
+            String colorCode;
+            String fontColor;
+            if (totalCalorie > perMealThreshold * 1.5) {
+              type = 'Cao';
+              colorCode = '#E74C3C';
+              fontColor = '#E74C3C';
+            } else if (totalCalorie > perMealThreshold * 1.2) {
+              type = 'Hơi cao';
+              colorCode = '#F39C12';
+              fontColor = '#F39C12';
+            } else if (totalCalorie < perMealThreshold * 0.5) {
+              type = 'Thấp';
+              colorCode = '#F39C12';
+              fontColor = '#F39C12';
+            } else {
+              type = 'Cân bằng';
+              colorCode = '#008479';
+              fontColor = '#008479';
+            }
+
+            items.add(FoodCalorieTrendItem(
+              id: foodInput.id,
+              date: foodInput.date,
+              value: totalCalorie,
+              colorCode: colorCode,
+              fontColor: fontColor,
+              mealText: mealItem.text ?? foodInput.mealText ?? '',
+              type: type,
+            ));
+          }
+        }
+      }
+
+      // Sort theo date (cũ → mới)
+      items.sort((a, b) => (a.date ?? 0).compareTo(b.date ?? 0));
+
+      yield FoodCalorieTrendLoaded(
+        items: items,
+        energyGoal: energyGoal,
+        perMealThreshold: perMealThreshold,
+      );
     } catch (e, _) {
       if (e is Error) {
         yield FoodError(message: e.message);

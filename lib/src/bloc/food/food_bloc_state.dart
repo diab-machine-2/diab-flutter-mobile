@@ -84,3 +84,37 @@ class FoodNutrientDistributionLoaded extends FoodState {
 
   FoodNutrientDistributionLoaded({required this.nutrientPercent});
 }
+
+// Model cho từng điểm trên biểu đồ calo (mỗi bữa ăn = 1 điểm)
+class FoodCalorieTrendItem {
+  final String? id;
+  final int? date;
+  final double? value; // tổng calorie cho bữa ăn đó
+  final String? colorCode;
+  final String? fontColor;
+  final String? mealText; // "Sáng", "Trưa", "Tối"...
+  final String? type; // "Cân bằng", "Cao", "Thấp"
+
+  FoodCalorieTrendItem({
+    this.id,
+    this.date,
+    this.value,
+    this.colorCode,
+    this.fontColor,
+    this.mealText,
+    this.type,
+  });
+}
+
+// State cho biểu đồ calo xu hướng (từng bữa ăn riêng biệt)
+class FoodCalorieTrendLoaded extends FoodState {
+  final List<FoodCalorieTrendItem> items;
+  final double energyGoal;
+  final double perMealThreshold; // energyGoal / 3
+
+  FoodCalorieTrendLoaded({
+    required this.items,
+    required this.energyGoal,
+    required this.perMealThreshold,
+  });
+}

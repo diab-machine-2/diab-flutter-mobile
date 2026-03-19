@@ -8,8 +8,6 @@ import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_ai_suggestion.dart';
 import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/Food/widget/meal_distribution_widget.dart';
-import 'package:medical/src/widget/Food/widget/nutrient_distribution_chart.dart';
-import 'package:medical/src/widget/Food/widget/food_trend_chart.dart';
 import 'package:medical/src/widget/Food/widget/starch_chart.dart';
 import 'package:medical/src/widget/Food/widget/nutrition_knowledge_section.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,9 +29,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   GlobalKey<StarchChartState> starchKey = GlobalKey();
   GlobalKey<FoodDistributionChartState> distributionKey = GlobalKey();
   GlobalKey<MealDistributionWidgetState> mealDistributionKey = GlobalKey();
-  GlobalKey<NutrientDistributionChartState> nutrientDistributionKey =
-      GlobalKey();
-  GlobalKey<FoodTrendChartState> trendKey = GlobalKey();
+
   GlobalKey<FoodChartState> foodKey = GlobalKey();
   GlobalKey<FoodAISuggestionState> aiSuggestionKey = GlobalKey();
 
@@ -80,14 +76,8 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
     if (mealDistributionKey.currentState != null) {
       mealDistributionKey.currentState!.reloadData(periodFilterType);
     }
-    if (trendKey.currentState != null) {
-      trendKey.currentState!.reloadData(periodFilterType);
-    }
     if (foodKey.currentState != null) {
       foodKey.currentState!.reloadData(periodFilterType);
-    }
-    if (nutrientDistributionKey.currentState != null) {
-      nutrientDistributionKey.currentState!.reloadData(periodFilterType);
     }
   }
 
@@ -119,16 +109,6 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                     key: aiSuggestionKey, initialPeriodFilterType: 1),
                 // StarchChart(key: starchKey), // Hidden per user request
                 FoodChart(key: foodKey),
-                FoodTrendChart(key: trendKey),
-                NutrientDistributionChart(
-                  key: nutrientDistributionKey,
-                  nutritionPercent: FoodDetailTabbarController.of(context)
-                      ?.widget
-                      .nutritionPercent,
-                  nutritionColors: FoodDetailTabbarController.of(context)
-                      ?.widget
-                      .nutritionColors,
-                ),
                 FoodDistributionChart(key: distributionKey),
                 MealDistributionWidget(key: mealDistributionKey),
                 Padding(
