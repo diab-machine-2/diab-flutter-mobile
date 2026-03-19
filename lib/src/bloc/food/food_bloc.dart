@@ -463,10 +463,29 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
               fontColor = '#008479';
             }
 
+            // Tính điểm (0-10) dựa trên tỷ lệ calorie/threshold
+            int score;
+            double ratio = perMealThreshold > 0 ? totalCalorie / perMealThreshold : 0;
+            if (ratio <= 0) {
+              score = 0;
+            } else if (ratio <= 0.5) {
+              score = (ratio * 10).round(); // 0-5
+            } else if (ratio <= 1.0) {
+              score = 10 - ((1.0 - ratio) * 10).round(); // 5-10
+            } else if (ratio <= 1.2) {
+              score = 10 - ((ratio - 1.0) * 25).round(); // 10->5
+            } else if (ratio <= 1.5) {
+              score = (5 - ((ratio - 1.2) * 10)).round(); // 5->2
+            } else {
+              score = (2 - ((ratio - 1.5) * 4)).round().clamp(0, 2); // 2->0
+            }
+            score = score.clamp(0, 10);
+
             items.add(FoodCalorieTrendItem(
               id: foodInput.id,
               date: foodInput.date,
               value: totalCalorie,
+              score: score,
               colorCode: colorCode,
               fontColor: fontColor,
               mealText: mealItem.text ?? foodInput.mealText ?? '',

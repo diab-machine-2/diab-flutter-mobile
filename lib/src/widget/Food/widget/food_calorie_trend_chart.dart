@@ -297,6 +297,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     String selectedFontColor = '#008479';
     String selectedMealText = '';
     String selectedType = 'Cân bằng';
+    int selectedScore = 0;
 
     if (_focusIndex >= 0 && _focusIndex < trends.length) {
       final t = trends[_focusIndex];
@@ -309,6 +310,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       selectedFontColor = t.fontColor ?? '#008479';
       selectedMealText = t.mealText ?? '';
       selectedType = t.type ?? 'Cân bằng';
+      selectedScore = t.score ?? 0;
     }
 
     return Column(
@@ -352,7 +354,6 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           ],
         ),
 
-        // ── Dòng 3: Bữa ăn · Calo ──
         Padding(
           padding: const EdgeInsets.only(top: 2),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -361,6 +362,9 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: R.color.color0xff5E6566)),
               _dotWidget(),
             ],
+            Text('$selectedScore điểm',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark)),
+            _dotWidget(),
             Text('$selectedValue Kcal',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark)),
           ]),

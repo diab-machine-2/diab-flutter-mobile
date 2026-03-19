@@ -90,6 +90,7 @@ class FoodCalorieTrendItem {
   final String? id;
   final int? date;
   final double? value; // tổng calorie cho bữa ăn đó
+  final int? score; // điểm đánh giá 0-10
   final String? colorCode;
   final String? fontColor;
   final String? mealText; // "Sáng", "Trưa", "Tối"...
@@ -99,6 +100,7 @@ class FoodCalorieTrendItem {
     this.id,
     this.date,
     this.value,
+    this.score,
     this.colorCode,
     this.fontColor,
     this.mealText,
