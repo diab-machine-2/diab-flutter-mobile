@@ -95,6 +95,15 @@ class _BookingDoctorProvidersPageState
     }).toList();
   }
 
+  int _parseServiceIdToInt(String? rawId) {
+    if (rawId == null || rawId.isEmpty) return 0;
+    final direct = int.tryParse(rawId);
+    if (direct != null) return direct;
+    final parts = rawId.split('_');
+    if (parts.isEmpty) return 0;
+    return int.tryParse(parts.last) ?? 0;
+  }
+
   _initData() async {
     try {
       isLoading = true;
@@ -631,10 +640,8 @@ class _BookingDoctorProvidersPageState
                                                 // payment type will update later
                                                 selectedServices: [
                                               ServiceItem(
-                                                id: int.tryParse(
-                                                        consultService?.id ??
-                                                            '') ??
-                                                    0,
+                                                id: _parseServiceIdToInt(
+                                                    consultService?.id),
                                                 quantity: 1,
                                               )
                                             ]);

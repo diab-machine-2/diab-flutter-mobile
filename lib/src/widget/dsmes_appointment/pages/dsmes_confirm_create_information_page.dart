@@ -364,12 +364,22 @@ class _DsmesConfirmCreateInformationState
     final services = _cubit.createDsmesBookingRequest!.paymentInfo!.services;
     int totalPrice = 0;
     for (var e in services) {
-      final service = _cubit.selectedClinic?.serviceList.categories
-          .expand((category) => category.data)
-          .firstWhere((service) => service.id == e.id);
-      totalPrice += service?.fromPrice ?? 0;
+      final service = _findSelectedClinicServiceById(e.id);
+      totalPrice += ((service?.fromPrice ?? 0) as num).toInt();
     }
     return totalPrice;
+  }
+
+  dynamic _findSelectedClinicServiceById(dynamic id) {
+    if (id == null) return null;
+    final allServices = _cubit.selectedClinic?.serviceList.categories
+            .expand((category) => category.data)
+            .toList() ??
+        [];
+    for (final service in allServices) {
+      if (service.id == id) return service;
+    }
+    return null;
   }
 
   _handleCreateBooking() async {
@@ -1078,9 +1088,7 @@ class _DsmesConfirmCreateInformationState
               children: [
                 ..._cubit.createDsmesBookingRequest!.paymentInfo!.services
                     .map((e) {
-                  final service = _cubit.selectedClinic?.serviceList.categories
-                      .expand((category) => category.data)
-                      .firstWhere((service) => service.id == e.id);
+                  final service = _findSelectedClinicServiceById(e.id);
 
                   final isLastItem = e ==
                       _cubit.createDsmesBookingRequest!.paymentInfo!.services
@@ -1199,12 +1207,11 @@ class _DsmesConfirmCreateInformationState
               ],
             ),
             GapH(12),
+            if (services.isNotEmpty)
             ...services.map((e) {
-              final service = _cubit.selectedClinic?.serviceList.categories
-                  .expand((category) => category.data)
-                  .firstWhere((service) => service.id == e.id);
+              final service = _findSelectedClinicServiceById(e.id);
 
-              totalPrice += service?.fromPrice ?? 0;
+              totalPrice += ((service?.fromPrice ?? 0) as num).toInt();
 
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),

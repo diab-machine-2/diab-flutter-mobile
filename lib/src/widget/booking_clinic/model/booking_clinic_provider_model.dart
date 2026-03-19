@@ -196,13 +196,27 @@ class ClinicService {
   });
 
   factory ClinicService.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final idString = rawId == null ? '' : rawId.toString();
+    final normalizedId = _extractServiceId(idString);
+
     return ClinicService(
       name: json['name'] ?? json['vi'] ?? '',
       type: json['type'] ?? '',
-      id: json['id'] is int ? json['id'].toString() : (json['id'] ?? ''),
+      id: normalizedId,
       fromPrice: json['from_price'],
       price: json['price'],
     );
+  }
+
+  /// Some APIs return ids like "{category_id}_{service_id}".
+  /// Keep only the service_id part to make downstream int parsing stable.
+  static String _extractServiceId(String rawId) {
+    if (rawId.isEmpty) return rawId;
+    final parts = rawId.split('_');
+    if (parts.length <= 1) return rawId;
+    final lastPart = parts.last.trim();
+    return lastPart.isEmpty ? rawId : lastPart;
   }
 }
 
