@@ -3,7 +3,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/food_calorie_trend_chart.dart';
-import 'package:medical/src/widget/Food/widget/food_chart.dart';
+
 import 'package:medical/src/widget/Food/widget/food_distribution_chart.dart';
 import 'package:medical/src/widget/Food/widget/food_ai_suggestion.dart';
 import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
@@ -30,7 +30,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   GlobalKey<FoodDistributionChartState> distributionKey = GlobalKey();
   GlobalKey<MealDistributionWidgetState> mealDistributionKey = GlobalKey();
 
-  GlobalKey<FoodChartState> foodKey = GlobalKey();
+
   GlobalKey<FoodAISuggestionState> aiSuggestionKey = GlobalKey();
 
   bool _hasVisitedDetailTab = false;
@@ -76,9 +76,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
     if (mealDistributionKey.currentState != null) {
       mealDistributionKey.currentState!.reloadData(periodFilterType);
     }
-    if (foodKey.currentState != null) {
-      foodKey.currentState!.reloadData(periodFilterType);
-    }
+
   }
 
   @override
@@ -108,7 +106,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                 FoodAISuggestion(
                     key: aiSuggestionKey, initialPeriodFilterType: 1),
                 // StarchChart(key: starchKey), // Hidden per user request
-                FoodChart(key: foodKey),
+
                 FoodDistributionChart(key: distributionKey),
                 MealDistributionWidget(key: mealDistributionKey),
                 Padding(
