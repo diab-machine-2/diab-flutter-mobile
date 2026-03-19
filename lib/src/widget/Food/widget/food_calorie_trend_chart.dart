@@ -257,7 +257,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(children: [
-              Text('${_perMealThreshold.round()}\nkcal',
+              Text('${_perMealThreshold.round()}\nđiểm',
                   style: TextStyle(color: R.color.color0xffBFC6C6, fontSize: 12)),
               GapW(8),
               Expanded(
@@ -490,7 +490,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           child: Stack(children: [
             Positioned(
               top: max(0, targetPx - 8), left: 0, right: 0,
-              child: Text('${threshold.round()}\nkcal',
+              child: Text('${threshold.round()}\nđiểm',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515),
                   textAlign: TextAlign.left),
             ),
