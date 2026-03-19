@@ -231,7 +231,7 @@ class MedicineClient extends FetchClient {
         url: '/App/Target/Medication/CurrentRemind',
         params: {
           'currentDate': (today.millisecondsSinceEpoch / 1000).round(),
-          'executeDayTimes': executeDayTimes,
+          'moment': executeDayTimes,
           'prescriptionIds': prescriptionIds,
           'status': status,
           'listPatientMedication': listPatientMedication,
