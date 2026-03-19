@@ -205,33 +205,40 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
           ),
           Expanded(
             child: Container(
-              height: 24,
+              height: 26,
               decoration: BoxDecoration(
                 color: const Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(13),
               ),
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: displayPercent / 100,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(12),
+              child: Stack(
+                children: [
+                  FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: displayPercent / 100,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 12),
-          SizedBox(
-            width: 50,
-            child: Text(
-              '${percent.round()}%',
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: percent > 100 ? Color(0xFFEF5350) : R.color.black,
+                  Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Text(
+                          '${percent.round()}%',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: percent > 80 ? Colors.white : R.color.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
