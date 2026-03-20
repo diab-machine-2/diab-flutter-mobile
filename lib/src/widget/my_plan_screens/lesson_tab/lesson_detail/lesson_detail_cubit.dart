@@ -70,6 +70,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         Observable.instance
             .notifyObservers([], notifyName: "refresh_home_activity");
         Observable.instance
+            .notifyObservers([], notifyName: "refresh_lesson_tab");
+        Observable.instance
             .notifyObservers([], notifyName: "goal_calo_changed");
         emit(LessonDetailCompleted(showPopupShare: showQuizLesson == false));
         return;
