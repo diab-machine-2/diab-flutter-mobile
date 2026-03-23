@@ -1,13 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/app_sharing.dart';
-import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -224,120 +222,129 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SafeArea(
-                                bottom: false,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 18, horizontal: 16),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                debugPrint(
-                                                    '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - pausing video and audio');
-
-                                                // Pause video and audio before navigation (don't dispose here - let dispose() handle it)
-                                                if (_cubit.videoManager !=
-                                                    null) {
-                                                  try {
-                                                    _cubit.videoManager
-                                                        ?.controller
-                                                        .then((controller) {
-                                                      if (controller != null) {
-                                                        try {
-                                                          controller.pause();
-                                                          debugPrint(
-                                                              '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on back press');
-                                                        } catch (e) {
-                                                          debugPrint(
-                                                              '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller: $e');
-                                                        }
-                                                      }
-                                                    }).catchError((e) {
-                                                      debugPrint(
-                                                          '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error getting video controller: $e');
-                                                    });
-                                                  } catch (e) {
-                                                    debugPrint(
-                                                        '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error accessing video manager: $e');
-                                                  }
-                                                }
-
-                                                if (_cubit.audioManager !=
-                                                    null) {
-                                                  try {
-                                                    _cubit.audioManager
-                                                        ?.controller
-                                                        ?.pause();
-                                                    debugPrint(
-                                                        '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on back press');
-                                                  } catch (e) {
-                                                    debugPrint(
-                                                        '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller: $e');
-                                                  }
-                                                }
-
-                                                // Schedule tracking asynchronously (non-blocking)
-                                                TrackingManager.analytics
-                                                    .logEvent(
-                                                  name: 'component_clicked',
-                                                  parameters: {
-                                                    "screen_name":
-                                                        'lesson_detail',
-                                                    "component_name":
-                                                        'close_lesson',
-                                                    'object_id': _cubit
-                                                            .lessonDetail?.id ??
-                                                        '',
-                                                    'object_title': _cubit
-                                                            .lessonDetail
-                                                            ?.name ??
-                                                        '',
-                                                  },
-                                                ).catchError((e) {
-                                                  debugPrint(
-                                                      '[VIDEO] Error in tracking: $e');
-                                                });
-
-                                                NavigationUtil.pop(context);
-                                              },
-                                              child: Icon(
-                                                Icons.clear_rounded,
-                                                size: 26,
-                                                color: R.color.grey_2,
-                                              ),
-                                            ),
-                                            SizedBox(width: 5),
-                                            Text(
-                                              R.string.section_position.tr(
-                                                  args: [
-                                                    _cubit.sectionPosition
-                                                  ]),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: R.color.textDark,
-                                                  fontWeight: FontWeight.w400),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (_cubit.currentSectionDetail != null)
-                                        ShareLessonButton(
-                                          lessonDescription:
-                                              _cubit.lessonDescription,
-                                          featureImage: _cubit.featureImage,
-                                          lesson: _cubit.currentSectionDetail!,
-                                        ),
+                              DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      R.color.greenGradientTop,
+                                      R.color.greenGradientBottom,
                                     ],
+                                  ),
+                                ),
+                                child: SafeArea(
+                                  bottom: false,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 18, horizontal: 16),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            debugPrint(
+                                                '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Back button pressed - pausing video and audio');
+
+                                            // Pause video and audio before navigation (don't dispose here - let dispose() handle it)
+                                            if (_cubit.videoManager != null) {
+                                              try {
+                                                _cubit.videoManager?.controller
+                                                    .then((controller) {
+                                                  if (controller != null) {
+                                                    try {
+                                                      controller.pause();
+                                                      debugPrint(
+                                                          '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Video controller paused on back press');
+                                                    } catch (e) {
+                                                      debugPrint(
+                                                          '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing video controller: $e');
+                                                    }
+                                                  }
+                                                }).catchError((e) {
+                                                  debugPrint(
+                                                      '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error getting video controller: $e');
+                                                });
+                                              } catch (e) {
+                                                debugPrint(
+                                                    '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error accessing video manager: $e');
+                                              }
+                                            }
+
+                                            if (_cubit.audioManager != null) {
+                                              try {
+                                                _cubit.audioManager?.controller
+                                                    ?.pause();
+                                                debugPrint(
+                                                    '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Audio controller paused on back press');
+                                              } catch (e) {
+                                                debugPrint(
+                                                    '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Error pausing audio controller: $e');
+                                              }
+                                            }
+
+                                            // Schedule tracking asynchronously (non-blocking)
+                                            TrackingManager.analytics.logEvent(
+                                              name: 'component_clicked',
+                                              parameters: {
+                                                "screen_name": 'lesson_detail',
+                                                "component_name":
+                                                    'close_lesson',
+                                                'object_id':
+                                                    _cubit.lessonDetail?.id ??
+                                                        '',
+                                                'object_title':
+                                                    _cubit.lessonDetail?.name ??
+                                                        '',
+                                              },
+                                            ).catchError((e) {
+                                              debugPrint(
+                                                  '[VIDEO] Error in tracking: $e');
+                                            });
+
+                                            NavigationUtil.pop(context);
+                                          },
+                                          child: Icon(
+                                            Icons.arrow_back,
+                                            size: 26,
+                                            color: R.color.white,
+                                          ),
+                                        ),
+                                        SizedBox(width: 5),
+                                        Expanded(
+                                          child: Text(
+                                            _cubit.lessonDetail?.name ?? '',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              color: R.color.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                        if (_cubit.currentSectionDetail != null)
+                                          IconButton(
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(
+                                              minWidth: 20,
+                                              minHeight: 20,
+                                            ),
+                                            icon: Icon(
+                                              Icons.share_outlined,
+                                              size: 24,
+                                              color: R.color.white,
+                                            ),
+                                            onPressed: () => _onShareLesson(
+                                                context,
+                                                _cubit.currentSectionDetail!),
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -525,31 +532,34 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                             Container(
                                               key: _audioWidgetKey,
                                               child: _buildTitleWidget(
-                                                  child: StreamBuilder<AudioData>(
-                                                      stream: _cubit
-                                                          .audioManager
-                                                          ?.controller!
-                                                          .onChanged
-                                                          .stream,
-                                                      builder:
-                                                          (context, snapshot) {
-                                                        return _buildAudioController(
-                                                          audioData:
-                                                              snapshot.data,
-                                                          seektoPosition:
-                                                              (newPosition) {
-                                                            _cubit.audioManager
-                                                                ?.controller!
-                                                                .seekTo(
-                                                                    newPosition);
-                                                          },
-                                                          onTogglePlay: () {
-                                                            _cubit.audioManager
-                                                                ?.controller!
-                                                                .togglePlay();
-                                                          },
-                                                        );
-                                                      }),
+                                                  child:
+                                                      StreamBuilder<AudioData>(
+                                                          stream: _cubit
+                                                              .audioManager
+                                                              ?.controller!
+                                                              .onChanged
+                                                              .stream,
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            return _buildAudioController(
+                                                              audioData:
+                                                                  snapshot.data,
+                                                              seektoPosition:
+                                                                  (newPosition) {
+                                                                _cubit
+                                                                    .audioManager
+                                                                    ?.controller!
+                                                                    .seekTo(
+                                                                        newPosition);
+                                                              },
+                                                              onTogglePlay: () {
+                                                                _cubit
+                                                                    .audioManager
+                                                                    ?.controller!
+                                                                    .togglePlay();
+                                                              },
+                                                            );
+                                                          }),
                                                   title: _cubit
                                                       .currentSectionDetail
                                                       ?.audioDescription),
@@ -617,6 +627,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   showLessonCategoryList();
                                 },
                                 isCompleted: _cubit.canComplete,
+                                previousButtonTitle:
+                                    R.string.previous_lesson.tr(),
                               ),
                             ],
                           ),
@@ -822,12 +834,14 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     );
   }
 
-  _onShareLesson(BuildContext context, LessonSectionItem lesson) async {
-    String shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
-        lesson: lesson,
-        featureImage: _cubit.featureImage,
-        lessonDescription: _cubit.lessonDescription);
-    AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
+  Future<void> _onShareLesson(
+      BuildContext context, LessonSectionItem lesson) async {
+    await shareLessonSection(
+      context,
+      lesson: lesson,
+      featureImage: _cubit.featureImage,
+      lessonDescription: _cubit.lessonDescription,
+    );
   }
 
   Widget _buildAudioController({

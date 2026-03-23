@@ -931,7 +931,7 @@ text_need_2_steps_complete,Bạn cần hoàn thành lần lượt theo 2 bước
 text_notice_upgrade_premium,"Sau khi nâng cấp gói Đồng hành, bạn sẽ nhận được hướng dẫn tiếp theo để mua gói Thấu cảm.","After upgrading the companion pack, you will receive further instructions for purchasing the empathy pack.",
 back_home,Quay trở về Trang chủ,Back to homepage,
 not_found_sku,Không tìm thấy khoá học phù hợp. Vui lòng liên lạc với Hotline của chúng tôi,No matching courses found. please contact hotline,
-knowledge_test,Trắc nghiệm kiến thức,Knowledge test,
+knowledge_test,Kiểm tra kiến thức,Knowledge test,
 overview_of_diabetes,Tổng quan về bệnh đái tháo đường,Overview of diabetes,
 question_number,Câu {}:,Question {},
 what_foods_should_people,Người bị bệnh tiểu đường nên ăn thực phẩm gì?,What foods should people with diabetes eat?,
@@ -1410,4 +1410,6 @@ participation,Có sự tham gia,Participation,
 login_apple_id,Đăng nhập qua Apple,Sign in with Apple,
 login_gmail,Đăng nhập qua Google,Sign in with Google,
 conversation_ai_citation,"Nội dung này được tạo ra bởi AI (nguồn: OpenAI), chỉ tham khảo và không thể thay thế tư vấn sức khỏe từ bác sĩ hoặc chuyên gia.","This content is created by AI (source: OpenAI), for reference only and cannot replace health advice from a doctor or specialist.",
-reference_source,Nguồn tham khảo,Reference Source
+reference_source,Nguồn tham khảo,Reference Source,
+previous_lesson,Bài học trước,Previous lesson,
+redo_quiz,Làm lại,redo

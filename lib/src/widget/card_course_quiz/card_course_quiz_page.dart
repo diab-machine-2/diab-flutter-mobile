@@ -127,14 +127,39 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
             visible: _cubit.isShowAnswer,
             child: Center(
               child: GestureDetector(
-                  onTap: () {
-                    showDescriptionPopup(quizData.quiz?.explain ?? '');
-                  },
-                  child: Image.asset(
-                    R.drawable.ic_help_circle,
-                    fit: BoxFit.fill,
-                    height: 28,
-                  )),
+                onTap: () {
+                  showDescriptionPopup(quizData.quiz?.explain ?? '');
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: R.color.backgroundColorNew,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: R.color.mainColor, width: 2),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.help_outline_outlined,
+                        size: 24,
+                        color: R.color.mainColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        R.string.explain.tr(),
+                        style: TextStyle(
+                          color: R.color.mainColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          height: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
         ],

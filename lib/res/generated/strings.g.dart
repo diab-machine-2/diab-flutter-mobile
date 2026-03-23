@@ -1463,4 +1463,6 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get login_gmail => 'login_gmail';
   String get conversation_ai_citation => 'conversation_ai_citation';
   String get reference_source => 'reference_source';
+  String get previous_lesson => 'previous_lesson';
+  String get redo_quiz => 'redo_quiz';
 }
