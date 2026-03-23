@@ -7,9 +7,11 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_tab/lesson_tab_cubit.dart';
 import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
+import 'lesson_search_page.dart';
 import '../lesson_detail/lesson_detail.dart';
 
 /// Detail screen for a module: app bar with back + module name, list of lessons.
@@ -47,6 +49,19 @@ class ModuleLessonsPage extends StatelessWidget {
             color: R.color.white,
             size: 20,
           ),
+          actions: [
+            IconButton(
+              splashColor: R.color.transparent,
+              highlightColor: R.color.transparent,
+              icon: Icon(Icons.search, color: R.color.white),
+              onPressed: () {
+                NavigationUtil.navigatePage(
+                  context,
+                  const LessonSearchPage(),
+                );
+              },
+            ),
+          ],
         ),
         backgroundColor: R.color.backgroundColorNew,
         body: ListView.builder(
@@ -54,9 +69,21 @@ class ModuleLessonsPage extends StatelessWidget {
           itemCount: lessons.length,
           itemBuilder: (context, index) {
             final lesson = lessons[index];
-            return _ModuleLessonRow(
-              lesson: lesson,
-              cubit: cubit,
+            return Column(
+              children: [
+                _ModuleLessonRow(
+                  lesson: lesson,
+                  cubit: cubit,
+                ),
+                if (index != lessons.length - 1)
+                  const Divider(
+                    height: 1,
+                    thickness: 2,
+                    color: Color(0xFFEAEDEE),
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+              ],
             );
           },
         ),
@@ -110,7 +137,7 @@ class _ModuleLessonRow extends StatelessWidget {
         }
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         height: 87,
         alignment: Alignment.center,
         color: R.color.transparent,
@@ -128,18 +155,30 @@ class _ModuleLessonRow extends StatelessWidget {
             const SizedBox(width: 14),
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (lesson?.module?.isNotEmpty == true)
-                    Text(
-                      lesson?.module ?? '',
-                      style: TextStyle(
-                        color: R.color.greenGradientBottom,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            lesson?.module ?? '',
+                            style: TextStyle(
+                              color: R.color.greenGradientBottom,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          size: 20,
+                          color: R.color.greenGradientBottom,
+                        ),
+                      ],
                     ),
+                  GapH(4),
                   Text(
                     lesson?.name ?? '',
                     style: TextStyle(
@@ -150,6 +189,7 @@ class _ModuleLessonRow extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  GapH(4),
                   LessonStatusWidget(
                     learningStatus: lesson?.learningStatus,
                     progress: lesson?.percentComplete,
@@ -163,4 +203,3 @@ class _ModuleLessonRow extends StatelessWidget {
     );
   }
 }
-

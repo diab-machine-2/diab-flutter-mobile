@@ -121,6 +121,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       bool showCurrentWeek = true,
       int? currentWeek,
       int currentPage = 1}) async {
+    // Emit a loading state immediately so the UI doesn't render an empty
+    // placeholder while async user info + API calls are still in progress.
+    if (!isRefresh) {
+      if (currentPage == 1) {
+        emit(LessonTabLoading());
+      } else {
+        emit(const LessonTabLoadMore());
+      }
+    }
+
     if (myPlanCubit.userInfo == null || AppSettings.isReloadCurrentUserInfo) {
       await myPlanCubit.getCurrentUserInfo();
     }
@@ -135,14 +145,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       }
     }
 
-    await Future.delayed(Duration(milliseconds: 10));
-    if (!isRefresh) {
-      if (currentPage == 1) {
-        emit(LessonTabLoading());
-      } else
-        emit(const LessonTabLoadMore());
-    }
-    ;
     await getLessonWeekStates(isRefresh: isRefresh);
 
     if (currentWeek != null) {

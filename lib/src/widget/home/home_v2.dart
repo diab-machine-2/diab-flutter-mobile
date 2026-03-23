@@ -128,6 +128,7 @@ class _HomeControllerState extends State<HomeController>
       customGlucoseHandler: (routeName, smartGoalId) async {
         await _showGlucoseAddBottomSheet(routeName, smartGoalId: smartGoalId);
       },
+      customExaminationHandler: SmartGoalNavigationUtil.defaultExaminationHandler,
     ));
   }
 

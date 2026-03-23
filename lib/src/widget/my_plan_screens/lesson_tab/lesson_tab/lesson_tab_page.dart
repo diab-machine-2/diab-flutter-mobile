@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
-import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -16,11 +15,9 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_filter/lesson_filter.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_filter/models/filter_data.dart';
-import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_tab/models/lesson_type.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
+import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -52,10 +49,13 @@ class _LessonTabPageState extends State<LessonTabPage>
   final RefreshController _controller = RefreshController();
   final ScrollController _lessonScrollController = ScrollController();
   final ScrollController _weekScrollController = ScrollController();
+  final GlobalKey _lessonTabBottomLoadingKey = GlobalKey();
+  final GlobalKey _recommendationLoadingKey = GlobalKey();
 
   int currentPageRoad = 1;
   int currentPageSuggest = 1;
   bool isLoading = false;
+  bool _didShowInitialBotToast = false;
 
   @override
   void initState() {
@@ -64,9 +64,17 @@ class _LessonTabPageState extends State<LessonTabPage>
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
-    _cubit.getInitData();
-    // Load recommendations for \"Đề xuất\" (default type = 0 - Tất cả).
-    _cubit.getRecommendationLessons(type: 0);
+    // Trigger loads after the first frame so BlocConsumer listeners are mounted.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Ensure the first navigation always shows bot loading.
+      if (!_didShowInitialBotToast) {
+        _didShowInitialBotToast = true;
+        BotToast.showLoading();
+      }
+      _cubit.getInitData();
+      // Load recommendations for "Đề xuất" (default type = 0 - Tất cả).
+      _cubit.getRecommendationLessons(type: 0);
+    });
 
     _lessonScrollController.addListener(() {
       if (_lessonScrollController.position.pixels ==
@@ -98,6 +106,9 @@ class _LessonTabPageState extends State<LessonTabPage>
 
     if (notifyName == 'refresh_lesson_tab') {
       await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+      // Re-load recommendations so learning status in the list is updated
+      // right after completing a lesson.
+      await _cubit.getRecommendationLessons(type: _cubit.recommendationType);
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
       if (_cubit.lessonsList == null) {
@@ -120,6 +131,26 @@ class _LessonTabPageState extends State<LessonTabPage>
     }
   }
 
+  void _scrollToWidget(GlobalKey key) {
+    final currentContext = key.currentContext;
+    if (currentContext != null) {
+      Scrollable.ensureVisible(
+        currentContext,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+      return;
+    }
+    if (_lessonScrollController.hasClients) {
+      final max = _lessonScrollController.position.maxScrollExtent;
+      _lessonScrollController.animateTo(
+        max,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -129,16 +160,27 @@ class _LessonTabPageState extends State<LessonTabPage>
         listener: (context, state) {
           if (state is LessonTabSuccess) {
             _checkExistLessonId();
+            if (_cubit.isRecommendationLoading) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _scrollToWidget(_recommendationLoadingKey);
+              });
+            }
           }
           if (state is LessonTabLoadMore) {
             setState(() {
               isLoading = true;
             });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToWidget(_lessonTabBottomLoadingKey);
+            });
           } else if (state is LessonTabLoading) {
-            BotToast.showLoading();
+            if (!_didShowInitialBotToast) {
+              BotToast.showLoading();
+            }
           } else {
             if (state is! LessonTabWeekChanged) {
               BotToast.closeAllLoading();
+              _didShowInitialBotToast = false;
               setState(() {
                 isLoading = false;
               });
@@ -267,37 +309,31 @@ class _LessonTabPageState extends State<LessonTabPage>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (_cubit.lessonsList!.isEmpty)
-                                      (state is LessonTabLoading ||
-                                              state is LessonTabWeekChanged)
-                                          ? Container()
-                                          : _buildEmptyLessonList()
+                                      (state is LessonTabLoading)
+                                          ? SizedBox(
+                                              height: 220.h,
+                                              width: double.infinity,
+                                              child: Center(
+                                                child: CircularProgressIndicator(
+                                                  color: R
+                                                      .color
+                                                      .greenGradientBottom,
+                                                ),
+                                              ),
+                                            )
+                                          : (state is LessonTabWeekChanged)
+                                              ? Container()
+                                              : _buildEmptyLessonList()
                                     else
                                       _buildGroupedLessonList(),
                                     _buildRecommendationSection(),
-                                    SizedBox(height: 24.h),
+                                    Container(
+                                        height: 24.h, color: R.color.white),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                          if (isLoading)
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              child: SafeArea(
-                                top: false,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 110,
-                                  color: R.color.transparent,
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                              ),
-                            ),
                         ],
                       ),
               ),
@@ -491,15 +527,18 @@ class _LessonTabPageState extends State<LessonTabPage>
             ),
           ),
           if (_cubit.isRecommendationLoading)
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 130,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              color: Colors.transparent,
-              child: Align(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(
-                  color: R.color.greenGradientBottom,
+            KeyedSubtree(
+              key: _recommendationLoadingKey,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 130,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                color: Colors.transparent,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(
+                    color: R.color.greenGradientBottom,
+                  ),
                 ),
               ),
             )
@@ -664,19 +703,8 @@ class _LessonTabPageState extends State<LessonTabPage>
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.menu_book_outlined,
-                          size: 14, color: R.color.captionColorGray),
-                      const SizedBox(width: 4),
-                      Text(
-                        '07 phút',
-                        style: TextStyle(
-                          color: R.color.captionColorGray,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  LessonStatusWidget(
+                    learningStatus: lessonDetail?.learningStatus,
                   ),
                 ],
               ),
@@ -748,19 +776,9 @@ class _LessonTabPageState extends State<LessonTabPage>
               ),
             ),
             const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(Icons.menu_book_outlined,
-                    size: 16, color: R.color.captionColorGray),
-                const SizedBox(width: 4),
-                Text(
-                  '07 phút',
-                  style: TextStyle(
-                    color: R.color.color0xff5E6566,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+            LessonStatusWidget(
+              learningStatus: lessonDetail?.learningStatus,
+              progress: lessonDetail?.percentComplete,
             ),
           ],
         ),

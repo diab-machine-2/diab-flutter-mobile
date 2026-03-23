@@ -19,7 +19,7 @@ class LessonStatusWidget extends StatelessWidget {
         children: [
           Icon(
             Icons.check_circle_rounded,
-            size: 20.w,
+            size: 16.w,
             color: R.color.greenGradientBottom,
           ),
           SizedBox(width: 8.w),
@@ -69,8 +69,8 @@ class LessonStatusWidget extends StatelessWidget {
       return Row(
         children: [
           Container(
-            width: 18,
-            height: 18,
+            width: 16,
+            height: 16,
             child: Image.asset(R.drawable.ic_lesson_not_learn),
           ),
           const SizedBox(width: 8),

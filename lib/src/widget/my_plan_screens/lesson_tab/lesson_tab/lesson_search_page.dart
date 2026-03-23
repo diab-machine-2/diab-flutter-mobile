@@ -150,7 +150,7 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
 
     setState(() {
       _isSearching = false;
-      _showEmptyState = true;
+      _showEmptyState = false; // Match the "cleared text" behavior.
       _searchResults.clear();
     });
     FocusScope.of(context).unfocus();
