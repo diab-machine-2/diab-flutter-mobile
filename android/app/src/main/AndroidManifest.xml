@@ -92,26 +92,57 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <!-- Intention to show Permissions screen for Health Connect API -->
-            <intent-filter>
-                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-            </intent-filter>
-
-            <!-- Intention to show Permissions screen for Health Connect API -->
-            <intent-filter>
-                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-            </intent-filter>
-
-            <!-- VNPay deep link intent-filter -->
+            <!-- Deep Links -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="diabvnpay" />
+                <data android:scheme="http" />
+                <data android:scheme="https" android:host="diab.com.vn" />
             </intent-filter>
 
-            <!-- Deep Links, Branch, App Links etc. (kept as you had) -->
-            <!-- ... (all your existing intent-filter sections unchanged) ... -->
+            <!-- Branch URI Scheme -->
+            <intent-filter>
+                <!-- REPLACE `android:scheme` with your Android URI scheme if needed -->
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="branchdiab" />
+            </intent-filter>
+
+            <!-- App Links -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="diab.com.vn" />
+                <data android:scheme="https" android:host="meet.diab.com.vn" />
+            </intent-filter>
+
+            <!-- Branch App Links - Live App -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="app.diab.com.vn" />
+                <data android:scheme="https" android:host="diabvn.app.link" />
+                <data android:scheme="https" android:host="diabvn-alternate.app.link" />
+            </intent-filter>
+
+            <!-- Intention to show Permissions screen for Health Connect API -->
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+
+            <!-- VNPay deep link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="diabvnpay"
+                    android:host="sdk" />
+            </intent-filter>
 
         </activity>
 
