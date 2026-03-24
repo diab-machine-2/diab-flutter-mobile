@@ -1,5 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -19,6 +20,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/notice_change/notice_change_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GoalSettingController extends StatefulWidget {
   final SmartGoalList? smartGoal;
@@ -204,7 +206,55 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                             onSelectedChanged: (value) {
                               goalWaist = value.toDouble();
                             },
-                          )
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: RichText(
+                            textAlign: TextAlign.left,
+                            text: TextSpan(
+                              style: TextStyle(
+                                fontSize: 13,
+                                height: 1.5,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: R.font.sfpro,
+                                color: const Color(0xFFBFC6C6),
+                                letterSpacing: 0.2,
+                              ),
+                              children: [
+                                const TextSpan(text: 'Nguồn tham khảo:\n'),
+                                TextSpan(
+                                  text:
+                                      'https://pmc.ncbi.nlm.nih.gov/articles/PMC8802999/',
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => launchUrl(Uri.parse(
+                                        'https://pmc.ncbi.nlm.nih.gov/articles/PMC8802999/')),
+                                ),
+                                const TextSpan(text: '\n'),
+                                TextSpan(
+                                  text: 'https://doi.org/10.2337/dc18-S004',
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => launchUrl(Uri.parse(
+                                        'https://doi.org/10.2337/dc18-S004')),
+                                ),
+                                const TextSpan(text: '\n'),
+                                TextSpan(
+                                  text: 'https://doi.org/10.2337/dc14-S014',
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => launchUrl(Uri.parse(
+                                        'https://doi.org/10.2337/dc14-S014')),
+                                ),
+                                const TextSpan(text: '\n'),
+                                TextSpan(
+                                  text:
+                                      'https://www.diabetes.ca/resources/tools-resources/body-mass-index-(bmi)-calculator',
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => launchUrl(Uri.parse(
+                                        'https://www.diabetes.ca/resources/tools-resources/body-mass-index-(bmi)-calculator')),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ]),
                 ),
                 GestureDetector(
