@@ -441,6 +441,14 @@ class Utils {
     }
   }
 
+  static String getOrganizationApiKey() {
+    if (AppSettings.environment == "product") {
+      return Const.ORGANIZATION_API_KEY_VALUE_PRODUCT;
+    } else {
+      return Const.ORGANIZATION_API_KEY_VALUE_DEV;
+    }
+  }
+
   static String getDocosanDomain() {
     if (AppSettings.environment == "product") {
       return Const.HOST_DOCOSAN_DOMAIN;

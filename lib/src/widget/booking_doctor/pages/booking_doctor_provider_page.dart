@@ -44,7 +44,6 @@ class _BookingDoctorProvidersPageState
     'viewInfo': false,
     'bookingClinic': false,
   };
-  bool isLoading = false;
   final RefreshController _refreshController = RefreshController();
   int _selectedIndex = 0;
 
@@ -106,7 +105,6 @@ class _BookingDoctorProvidersPageState
 
   _initData() async {
     try {
-      isLoading = true;
       final position = await AppSettings.getPositionPreferences();
 
       String lat = '';
@@ -133,9 +131,6 @@ class _BookingDoctorProvidersPageState
 
       final request = _cubit.searchBookingClinicListRequest;
       if (request == null) {
-        setState(() {
-          isLoading = false;
-        });
         return;
       }
 
@@ -146,10 +141,6 @@ class _BookingDoctorProvidersPageState
           bookingType: Const.BOOKING_TYPE_DOCTOR);
     } catch (e) {
       // Log error if needed
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
@@ -230,15 +221,13 @@ class _BookingDoctorProvidersPageState
         // _buildHeaderWidget(),
 
         Expanded(
-          child: isLoading
-              ? Container()
-              : _cubit.listBookingClinicProvider.isEmpty
-                  ? BookingClinicEmptyWidget(
-                      imagePath: R.drawable.bg_empty_clinic,
-                      title: R.string.empty_clinic_content.tr(),
-                      subtitle: "",
-                    )
-                  : SmartRefresher(
+          child: _cubit.listBookingClinicProvider.isEmpty
+              ? BookingClinicEmptyWidget(
+                  imagePath: R.drawable.bg_empty_clinic,
+                  title: R.string.empty_clinic_content.tr(),
+                  subtitle: "",
+                )
+              : SmartRefresher(
                       controller: _refreshController,
                       enablePullUp: _cubit.clinicProviderHasMore,
                       enablePullDown: false,
@@ -888,6 +877,7 @@ class _BookingDoctorProvidersPageState
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    GapH(16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -895,6 +885,7 @@ class _BookingDoctorProvidersPageState
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
                       childAspectRatio: 5 / 1,
+                      padding: EdgeInsets.zero,
                       children: [
                         ...getDefaultCities().map((e) =>
                             _buildFilterItem(e.nameVi, e.slug, 'district')),
@@ -935,6 +926,7 @@ class _BookingDoctorProvidersPageState
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    GapH(16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -942,6 +934,7 @@ class _BookingDoctorProvidersPageState
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
                       childAspectRatio: 5 / 1,
+                      padding: EdgeInsets.zero,
                       children: [
                         ...Const.CLINIC_TYPES.map((type) {
                           return _buildFilterItem(
@@ -958,6 +951,7 @@ class _BookingDoctorProvidersPageState
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    GapH(16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -965,6 +959,7 @@ class _BookingDoctorProvidersPageState
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
                       childAspectRatio: 5 / 1,
+                      padding: EdgeInsets.zero,
                       children: [
                         ...Const.CLINIC_TIMEFRAMES.map((timeframe) {
                           return _buildFilterItem(
@@ -986,6 +981,8 @@ class _BookingDoctorProvidersPageState
                         ),
                       ),
                     if (widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
+                    GapH(16),
+                    if (widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
                       GridView.count(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -993,6 +990,7 @@ class _BookingDoctorProvidersPageState
                         mainAxisSpacing: 12,
                         crossAxisSpacing: 12,
                         childAspectRatio: 5 / 1,
+                        padding: EdgeInsets.zero,
                         children: [
                           ...DsmesAppointmentMode.values.map((serviceType) {
                             return _buildFilterItem(

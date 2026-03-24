@@ -69,6 +69,7 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
+    _warmupLocation();
     // _cubit.getDsmesAppointmentList();
     _cubit.initDsmesBooking(isLoadAppointments: !widget.fromWebinar);
 
@@ -77,6 +78,20 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _navigateToDoctorDetail();
       });
+    }
+  }
+
+  Future<void> _warmupLocation() async {
+    final cancel = BotToast.showLoading(allowClick: false);
+    try {
+      await resolveBookingProvidersPosition().timeout(
+        const Duration(seconds: 6),
+        onTimeout: () => null,
+      );
+    } catch (_) {
+      // Best-effort warmup only.
+    } finally {
+      cancel();
     }
   }
 

@@ -41,7 +41,6 @@ class _BookingClinicProvidersPageState
     'viewInfo': false,
     'bookingClinic': false,
   };
-  bool isLoading = false;
   final RefreshController _refreshController = RefreshController();
   int _selectedIndex = 0;
 
@@ -94,15 +93,7 @@ class _BookingClinicProvidersPageState
 
   _initData() async {
     try {
-      isLoading = true;
-      var position = await AppSettings.getPositionPreferences();
-      if (position == null || position.isEmpty) {
-        final geolocation = await determinePosition();
-        if (geolocation != null) {
-          await AppSettings.saveLocationPreferences(geolocation);
-          position = geolocation.latitude.toString() + ',' + geolocation.longitude.toString();
-        }
-      }
+      final position = await AppSettings.getPositionPreferences();
 
       String lat = '';
       String lng = '';
@@ -127,9 +118,6 @@ class _BookingClinicProvidersPageState
 
       final request = _cubit.searchBookingClinicListRequest;
       if (request == null) {
-        setState(() {
-          isLoading = false;
-        });
         return;
       }
 
@@ -149,9 +137,6 @@ class _BookingClinicProvidersPageState
     } catch (e) {
       // Log error if needed
     } finally {
-      setState(() {
-        isLoading = false;
-      });
       if (widget.examinationType != null) {
         BotToast.closeAllLoading();
       }
@@ -255,18 +240,13 @@ class _BookingClinicProvidersPageState
         // _buildHeaderWidget(),
 
         Expanded(
-          // For initial loading we rely on BotToast (triggered by searchBookingClinicList
-          // with showLoading: true). To avoid duplicate indicators, keep the
-          // content area empty while loading.
-          child: isLoading
-              ? Container()
-              : _cubit.listBookingClinicProvider.isEmpty
-                  ? BookingClinicEmptyWidget(
-                      imagePath: R.drawable.bg_empty_clinic,
-                      title: R.string.empty_clinic_content.tr(),
-                      subtitle: "",
-                    )
-                  : SmartRefresher(
+          child: _cubit.listBookingClinicProvider.isEmpty
+              ? BookingClinicEmptyWidget(
+                  imagePath: R.drawable.bg_empty_clinic,
+                  title: R.string.empty_clinic_content.tr(),
+                  subtitle: "",
+                )
+              : SmartRefresher(
                       controller: _refreshController,
                       enablePullUp: _cubit.clinicProviderHasMore,
                       enablePullDown: false,
