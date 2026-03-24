@@ -441,6 +441,14 @@ class Utils {
     }
   }
 
+  static String getOrganizationApiKey() {
+    if (AppSettings.environment == "product") {
+      return Const.ORGANIZATION_API_KEY_VALUE_PRODUCT;
+    } else {
+      return Const.ORGANIZATION_API_KEY_VALUE_DEV;
+    }
+  }
+
   static String getDocosanDomain() {
     if (AppSettings.environment == "product") {
       return Const.HOST_DOCOSAN_DOMAIN;
@@ -578,6 +586,8 @@ class Utils {
         return R.string.infographic.tr();
       case ScheduleType.quiz:
         return R.string.quiz.tr();
+      case ScheduleType.examination:
+        return R.string.examination.tr();
       default:
         return "";
     }
@@ -635,6 +645,8 @@ class Utils {
         return R.color.weight_color;
       case ScheduleType.infographic:
         return R.color.infographic_color;
+      case ScheduleType.examination:
+        return R.color.examination_color;
       default:
         return R.color.black;
     }
@@ -666,6 +678,36 @@ class Utils {
       return '+84$phoneNumber';
     }
     return phoneNumber;
+  }
+
+  static String getLanguageName(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.string.vietnamese.tr(),
+      'en': R.string.english.tr(),
+      'fr': R.string.french.tr(),
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
+
+  static String getLanguageFlag(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.icons.ic_flag_vn,
+      'en': R.icons.ic_flag_en,
+      'fr': R.icons.ic_flag_fr,
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
+
+    static bool get isSandboxVnPay {
+    if (AppSettings.environment == "product") {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /// Converts an image file (HEIC/HEIF/LIVE) to JPEG format.

@@ -27,7 +27,8 @@ class DsmesClinicModel {
   final Map<String, Map<String, int>> schedule;
   final String aptInterval;
   final List<ExtraAvatar> extraAvatar;
-  final List<ServiceAvailable> svAvailable; // 'at_clinic', 'telemedicine', 'at_home'
+  final List<ServiceAvailable>
+      svAvailable; // 'at_clinic', 'telemedicine', 'at_home'
   final String profileType; // 'booking' or 'premium'
 
   DsmesClinicModel({
@@ -95,7 +96,9 @@ class DsmesClinicModel {
           [],
       clinicId: json['clinic_id'] ?? 0,
       serviceType: json['service_type'] ?? [],
-      serviceList: ServiceList.fromJson(json['service_list'] ?? {}),
+      serviceList: ServiceList.fromJson(
+        json['service_list'] is List ? {} : (json['service_list'] ?? {}),
+      ),
       schedule: _parseSchedule(
           json['schedule'] is List ? {} : json['schedule'] ?? {}),
       aptInterval: json['apt_interval'] ?? '',
@@ -333,7 +336,7 @@ class ServiceData {
       unit: json['unit'] ?? '',
       currencyUnit: json['currency_unit'] ?? '',
       description: json['description'] ?? '',
-      isPayment: json['is_payment'] ?? 0,
+      isPayment: int.tryParse(json['is_payable']?.toString() ?? '0') ?? 0,
       value: json['value'] ?? '',
     );
   }

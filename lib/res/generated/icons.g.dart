@@ -42,5 +42,7 @@ class Icons {
   String get ic_medicine_unused => "lib/res/icons/ic_medicine_unused.svg";
   String get ic_medicine_used => "lib/res/icons/ic_medicine_used.svg";
   String get ic_error => "lib/res/icons/ic_error.svg";
+  String get ic_flag_fr => "lib/res/icons/ic_flag_fr.svg";
+  String get ic_policy => "lib/res/icons/ic_policy.svg";
   String get ic_edit => "lib/res/icons/ic_edit.svg";
 }

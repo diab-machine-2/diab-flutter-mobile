@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const locations = [
   {'code': 'hcm', 'name_vi': 'Tp Hồ Chí Minh', 'name_en': 'Ho Chi Minh City'},
@@ -178,6 +178,20 @@ String getClinicServiceTypeDisplay(DsmesAppointmentMode value) {
       return R.string.kham_tai_phong_kham.tr();
     default:
       return '';
+  }
+}
+
+/// Stored `"lat,lng"` from preferences, or one GPS read (saved on success).
+/// Returns `null` if nothing is stored and GPS fails or is denied.
+Future<String?> resolveBookingProvidersPosition() async {
+  final stored = await AppSettings.getPositionPreferences();
+  if (stored != null && stored.isNotEmpty) return stored;
+  try {
+    final geolocation = await determinePosition();
+    await AppSettings.saveLocationPreferences(geolocation);
+    return '${geolocation.latitude},${geolocation.longitude}';
+  } catch (_) {
+    return null;
   }
 }
 

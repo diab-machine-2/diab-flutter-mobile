@@ -1348,10 +1348,18 @@ class Strings {
   String get subscription_title_1 => 'subscription_title_1';
   String get subscription_title_2 => 'subscription_title_2';
   String get subscription_subtitle => 'subscription_subtitle';
-  String get tiet_kiem_nhat => 'tiet_kiem_nhat';
+String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get begin_program => 'begin_program';
   String get loading_subscription_packages => 'loading_subscription_packages';
   String get basic_program_confirm => 'basic_program_confirm';
+  String get chon_bac_si => 'chon_bac_si';
+  String get introduce => 'introduce';
+  String get doctor_good_at => 'doctor_good_at';
+  String get dao_tao => 'dao_tao';
+  String get language => 'language';
+  String get vietnamese => 'vietnamese';
+  String get english => 'english';
+  String get doctor_name => 'doctor_name';
   String get screening_interview => 'screening_interview';
   String get evaluate_interview => 'evaluate_interview';
   String get booking_screening_interview => 'booking_screening_interview';
@@ -1464,6 +1472,7 @@ class Strings {
   String get result_from_blood_glucose_device =>
       'result_from_blood_glucose_device';
   String get supported_devices => 'supported_devices';
+  String get french => 'french';
   String get cap_nhat_so_dien_thoai => 'cap_nhat_so_dien_thoai';
   String get giup_bao_ve_tai_khoan => 'giup_bao_ve_tai_khoan';
   String get cap_nhat_ngay => 'cap_nhat_ngay';
@@ -1472,6 +1481,7 @@ class Strings {
   String get ban_muon_dong_bo_so_dien_thoai => 'ban_muon_dong_bo_so_dien_thoai';
   String get login_with_phone => 'login_with_phone';
   String get login_with_zalo => 'login_with_zalo';
+  String get exchange_return_policy => 'exchange_return_policy';
   String get analyzing_your_meal => 'analyzing_your_meal';
   String get choose_meal_image => 'choose_meal_image';
   String get please_select_at_least_one_image =>
@@ -1530,8 +1540,15 @@ class Strings {
   String get quiz => 'quiz';
   String get booking => 'booking';
   String get interview => 'interview';
+  String get appointment_time => 'appointment_time';
+  String get xet_nghiem_tai_nha => 'xet_nghiem_tai_nha';
+  String get xet_nghiem_tai_co_so => 'xet_nghiem_tai_co_so';
+  String get examination => 'examination';
+  String get choose_input_method => 'choose_input_method';
+  String get centre_name => 'centre_name';
   String get given_access_gallery_description => 'given_access_gallery_description';
   String get manage => 'manage';
+  String get participation => 'participation';
   String get login_apple_id => 'login_apple_id';
   String get login_gmail => 'login_gmail';
   String get conversation_ai_citation => 'conversation_ai_citation';

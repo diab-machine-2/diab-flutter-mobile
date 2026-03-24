@@ -203,4 +203,5 @@ class Colors {
   Color get color0xff830000 => Color(0xff830000);
   Color get color0xffDADEDF => Color(0xffDADEDF);
   Color get interview_color => Color(0xffFFCD57);
+  Color get examination_color => Color(0xffF86F6F);
 }

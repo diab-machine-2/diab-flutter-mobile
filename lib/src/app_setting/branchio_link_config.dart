@@ -148,6 +148,24 @@ class BranchioLinkConfig {
         return;
       }
 
+      // Handle webinar deeplink
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$webinarId")) {
+        final webinarId = data['\$webinarId'] as String;
+        if (data.containsKey("\$referralCode")) {
+          _referalCode = data['\$referralCode'] as String;
+        }
+        print('[ROUTE] Webinar deeplink detected: $webinarId');
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          Navigator.pushNamed(
+            navigatorKey.currentState!.context,
+            NavigatorName.webinar_info,
+            arguments: {'id': webinarId},
+          );
+        }
+        return;
+      }
+
       // Handle subscription deeplink
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$subscription")) {
@@ -434,6 +452,44 @@ class BranchioLinkConfig {
       return response.result;
     } else {
       throw Exception('Failed to create news link: ${response.errorMessage}');
+    }
+  }
+
+  Future<String> createShareWebinarLink({
+    required LearningPostModel webinar,
+  }) async {
+    final user = AppSettings.userInfo!;
+    String webinarImage = webinar.imageBannerUrl?.url ??
+        webinar.imageUrl.url ??
+        'https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png';
+    String webinarTitle = webinar.title;
+    String webinarDescription = webinar.content ?? 'Sự kiện từ ứng dụng DiaB';
+
+    final BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: 'webinar/${webinar.id}',
+      title: webinarTitle,
+      contentDescription: webinarDescription,
+      imageUrl: webinarImage,
+      contentMetadata: BranchContentMetaData()
+        ..addCustomMetadata('\$webinarId', webinar.id ?? '')
+        ..addCustomMetadata('\$referralCode', user.shareRefCode ?? ''),
+    );
+
+    final BranchLinkProperties linkProperties = BranchLinkProperties(
+      feature: 'webinar_share',
+      channel: 'app_share',
+      campaign: 'webinar_share',
+    );
+
+    final BranchResponse response = await FlutterBranchSdk.getShortUrl(
+      buo: buo,
+      linkProperties: linkProperties,
+    );
+
+    if (response.success) {
+      return response.result;
+    } else {
+      throw Exception('Failed to create webinar link: ${response.errorMessage}');
     }
   }
 

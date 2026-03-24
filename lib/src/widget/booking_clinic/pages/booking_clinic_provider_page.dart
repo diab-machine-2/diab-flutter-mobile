@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,9 +19,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BookingClinicProvidersPage extends StatefulWidget {
   final int specialtyId;
+  final String bookingType;
+  final String? examinationType;
   const BookingClinicProvidersPage({
     Key? key,
     required this.specialtyId,
+    this.bookingType = Const.BOOKING_TYPE_CLINIC,
+    this.examinationType,
   }) : super(key: key);
 
   @override
@@ -36,7 +41,6 @@ class _BookingClinicProvidersPageState
     'viewInfo': false,
     'bookingClinic': false,
   };
-  bool isLoading = false;
   final RefreshController _refreshController = RefreshController();
   int _selectedIndex = 0;
 
@@ -89,7 +93,6 @@ class _BookingClinicProvidersPageState
 
   _initData() async {
     try {
-      isLoading = true;
       final position = await AppSettings.getPositionPreferences();
 
       String lat = '';
@@ -105,27 +108,38 @@ class _BookingClinicProvidersPageState
 
       _cubit.initSearchBookingClinicListRequest(
         page: 1,
-        specialtyId: widget.specialtyId.toString(),
+        specialtyId:
+            widget.specialtyId == 0 ? '' : widget.specialtyId.toString(),
         lat: lat,
         lng: lng,
+        kind: Const.BOOKING_TYPE_CLINIC,
+        name: widget.examinationType != null ? "${widget.examinationType}" : '',
       );
 
       final request = _cubit.searchBookingClinicListRequest;
       if (request == null) {
-        setState(() {
-          isLoading = false;
-        });
         return;
       }
 
+      // For normal booking flow, rely on global BlocConsumer in BookingClinicPage
+      // to show BotToast loading. For examination flow, manage BotToast here
+      // because the global listener is disabled when isExamination = true.
+      final isExaminationFlow = widget.examinationType != null;
+      if (isExaminationFlow) {
+        BotToast.showLoading(allowClick: false);
+      }
+
       await _cubit.searchBookingClinicList(
-          request: request, isRefresh: true, showLoading: true);
+        request: request,
+        isRefresh: true,
+        showLoading: !isExaminationFlow,
+      );
     } catch (e) {
       // Log error if needed
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (widget.examinationType != null) {
+        BotToast.closeAllLoading();
+      }
     }
   }
 
@@ -196,7 +210,29 @@ class _BookingClinicProvidersPageState
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
+                // Check if we're in edit mode (coming from confirm page)
+                final route = ModalRoute.of(context)?.settings;
+                final args = route?.arguments as Map<String, dynamic>?;
+                final isEditing = args?['isEditing'] ?? false;
+                final previousRoute = args?['previousRoute'] as String?;
+
+                // If editing from confirm page, pop back to confirm
+                if (isEditing &&
+                    previousRoute == NavigatorName.dsmes_confirm_information) {
+                  DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+                  return;
+                }
+
+                // For examination flow, close the whole booking container and
+                // return to the activity tab (root navigator). For normal flow,
+                // just pop within the DSMES navigator.
+                if (widget.examinationType != null) {
+                  Navigator.of(context, rootNavigator: true).pop();
+                } else {
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pop(context);
+                }
               },
             ),
           ),
@@ -204,15 +240,13 @@ class _BookingClinicProvidersPageState
         // _buildHeaderWidget(),
 
         Expanded(
-          child: isLoading
-              ? Container()
-              : _cubit.listBookingClinicProvider.isEmpty
-                  ? BookingClinicEmptyWidget(
-                      imagePath: R.drawable.bg_empty_clinic,
-                      title: R.string.empty_clinic_content.tr(),
-                      subtitle: "",
-                    )
-                  : SmartRefresher(
+          child: _cubit.listBookingClinicProvider.isEmpty
+              ? BookingClinicEmptyWidget(
+                  imagePath: R.drawable.bg_empty_clinic,
+                  title: R.string.empty_clinic_content.tr(),
+                  subtitle: "",
+                )
+              : SmartRefresher(
                       controller: _refreshController,
                       enablePullUp: _cubit.clinicProviderHasMore,
                       enablePullDown: false,
@@ -333,7 +367,8 @@ class _BookingClinicProvidersPageState
     final detailSuccess = await _cubit.getClinicDetail(id: data.id);
     final rateSuccess = await _cubit.getClinicRate(id: data.id);
     if (detailSuccess && rateSuccess) {
-      DsmesNavigationMixin.getNavigationKey().currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
         'clinicId': data.id,
         'bookingType': Const.BOOKING_TYPE_CLINIC
@@ -422,7 +457,7 @@ class _BookingClinicProvidersPageState
                   runSpacing: 6,
                   children: data.specialty.take(3).map((e) {
                     return Container(
-                        height: 21,
+                        // height: 21,
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
@@ -492,27 +527,82 @@ class _BookingClinicProvidersPageState
                               onTap: () async {
                                 if (isProcessing['bookingClinic']!) return;
                                 isProcessing['bookingClinic'] = true;
+
+                                // Show loading for examination flow
+                                if (widget.examinationType != null) {
+                                  BotToast.showLoading(allowClick: false);
+                                }
+
                                 try {
                                   final detailSuccess =
-                                      await _cubit.getClinicDetail(id: data.id);
+                                      await _cubit.getClinicDetail(
+                                          id: data.id,
+                                          isLoading:
+                                              widget.examinationType == null);
 
                                   if (!detailSuccess ||
                                       _cubit.selectedClinic == null) {
+                                    if (widget.examinationType != null) {
+                                      BotToast.closeAllLoading();
+                                    }
+                                    return;
+                                  }
+
+                                  // Set examination data if it's an examination flow
+                                  if (widget.examinationType != null) {
+                                    _cubit.setExaminationData(
+                                      isExamination: true,
+                                      examinationType: widget.examinationType,
+                                      examinationLocation:
+                                          Const.EXAMINATION_LOCATION_CLINIC,
+                                    );
+                                  }
+
+                                  // Check if we're in edit mode (coming from confirm page)
+                                  final route =
+                                      ModalRoute.of(context)?.settings;
+                                  final args =
+                                      route?.arguments as Map<String, dynamic>?;
+                                  final isEditing = args?['isEditing'] ?? false;
+                                  final previousRoute =
+                                      args?['previousRoute'] as String?;
+
+                                  // If editing from confirm page, pop back to confirm
+                                  if (isEditing &&
+                                      previousRoute ==
+                                          NavigatorName
+                                              .dsmes_confirm_information) {
+                                    DsmesNavigationMixin.getNavigationKey()
+                                        .currentState
+                                        ?.pop();
                                     return;
                                   }
 
                                   _cubit.initCreateDsmesBookingRequest(
-                                      locale: context.locale.languageCode);
-                                  await DsmesNavigationMixin
-                                      .getNavigationKey().currentState
+                                      locale: context.locale.languageCode,
+                                      clearExamination:
+                                          widget.examinationType == null);
+
+                                  // Delay navigation slightly to ensure nested navigator is ready
+                                  if (widget.examinationType != null) {
+                                    await Future.delayed(
+                                        Duration(milliseconds: 100));
+                                  }
+
+                                  // Navigate to datetime selection (same flow for both examination and normal booking)
+                                  await DsmesNavigationMixin.getNavigationKey()
+                                      .currentState
                                       ?.pushNamed(
                                           NavigatorName
                                               .dsmes_booking_select_date,
                                           arguments: {
-                                        // 'serviceType': widget.serviceType,
+                                        'serviceType': DsmesAppointmentMode
+                                            .telemedicine
+                                            .toString(),
                                         'action': 'create',
                                         'bookingType':
                                             Const.BOOKING_TYPE_CLINIC,
+                                        'isMergedSchedule': false,
                                       });
                                 } finally {
                                   isProcessing['bookingClinic'] = false;

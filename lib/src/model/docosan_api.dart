@@ -4,6 +4,7 @@ import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/model/request/get_booking_clinic_list_request.dart';
 import 'package:medical/src/model/request/get_dsmes_appointment_request.dart';
+import 'package:medical/src/model/response/booking_doctor_detail_response.dart';
 import 'package:medical/src/model/response/clinic_specialty_list_response.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/create_dsmes_offline_booking_response.dart';
@@ -78,4 +79,18 @@ abstract class DocosanApi {
   @POST("api/seo-static-link-multi")
   Future<SearchListClinicResponse> searchBookingClinicList(
       @Body() SearchBookingClinicListRequest request);
+
+  @GET("api/partner-doctor")
+  Future<BookingDoctorDetailResponse> getDoctorDetail(
+    @Query('id') int? id,
+  );
+
+  @POST("api/doctors/rate")
+  Future<DsmesClinicRatingResponse> getDoctorRate(
+    @Query('doctor_id') int? doctorId,
+  );
+
+  @POST("api/partner-get-doctor-list")
+  Future<SearchListClinicResponse> searchBookinDoctorList(
+    @Body() SearchBookingClinicListRequest request);
 }
