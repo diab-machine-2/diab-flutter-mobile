@@ -1,11 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import '../../../../res/R.dart';
 import '../../../modal/medicine/prescription_schedule_model.dart';
-import '../../../utils/const.dart';
 
 class MedicineSessionCard extends StatefulWidget {
   const MedicineSessionCard({
@@ -29,58 +26,11 @@ class MedicineSessionCard extends StatefulWidget {
 class _MedicineSessionCardState extends State<MedicineSessionCard> {
   bool isExpanded = false;
 
-  static bool _tutorialAlreadyShown = false;
-
   @override
   void initState() {
     super.initState();
 
     isExpanded = widget.isExpanded;
-
-    // Sau khi build xong UI, nếu có key thì hiển thị tutorial (chỉ một lần)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.firstMedicineKey != null && !_tutorialAlreadyShown) {
-        _showTutorial();
-      }
-    });
-  }
-
-  Future<void> _showTutorial() async {
-    if (_tutorialAlreadyShown) return;
-    _tutorialAlreadyShown = true;
-    final targets = [
-      TargetFocus(
-        identify: "firstMedicine",
-        keyTarget: widget.firstMedicineKey!,
-        contents: [
-          TargetContent(
-            align: ContentAlign.bottom,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: const Text(
-                "Nhấn chọn nếu bạn đã dùng thuốc này",
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-          ),
-        ],
-      ),
-    ];
-
-    TutorialCoachMark(
-      targets: targets,
-      colorShadow: Colors.black.withOpacity(0.7),
-      onFinish: _onTutorialComplete,
-      onSkip: () {
-        _onTutorialComplete();
-        return true;
-      },
-    ).show(context: context);
-  }
-
-  Future<void> _onTutorialComplete() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool(Const.shouldTutorial, true);
   }
 
   /// Converts timeSchedule "HH:mm:ss" to display "HH:mm".
