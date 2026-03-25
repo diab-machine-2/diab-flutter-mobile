@@ -1409,7 +1409,7 @@ examination,"Xét nghiệm",Examination,
 choose_input_method,"Chọn cách nhập",Choose input method,
 centre_name,Tên cơ sở,Centre name,
 given_access_gallery_description,Bạn đã cho phép Diab sử dụng một số lượng ảnh nhất định,You have given access to a select number of photos,
-manage,Quản lý,Manage
+manage,Quản lý,Manage,
 max_image_select_dynamic,Chỉ được chọn tối đa {} ảnh,Only up to {} photos can be selected
 advanced_features,tính năng cao cấp,advanced features
 schedule_medicine,"Lịch dùng thuốc","Schedule use medicine",

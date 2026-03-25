@@ -13,6 +13,7 @@ import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_
 import 'package:medical/src/widget/booking_clinic/pages/empty_clinic_provider_page.dart';
 import 'package:medical/src/widget/booking_doctor/widgets/rating_heart_widget.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -45,7 +46,6 @@ class _BookingDoctorProvidersPageState
     'bookingClinic': false,
   };
   final RefreshController _refreshController = RefreshController();
-  int _selectedIndex = 0;
 
   Set<String> selectedDistricts = {};
   Set<String> selectedTypes = {};
@@ -221,46 +221,52 @@ class _BookingDoctorProvidersPageState
         // _buildHeaderWidget(),
 
         Expanded(
-          child: _cubit.listBookingClinicProvider.isEmpty
-              ? BookingClinicEmptyWidget(
+          child: BlocBuilder<DsmesAppointmentCubit, DsmesAppointmentState>(
+            builder: (context, state) {
+              if (state is DsmesAppointmentLoading &&
+                  _cubit.listBookingClinicProvider.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              if (_cubit.listBookingClinicProvider.isEmpty) {
+                return BookingClinicEmptyWidget(
                   imagePath: R.drawable.bg_empty_clinic,
                   title: R.string.empty_clinic_content.tr(),
                   subtitle: "",
-                )
-              : SmartRefresher(
-                      controller: _refreshController,
-                      enablePullUp: _cubit.clinicProviderHasMore,
-                      enablePullDown: false,
-                      footer: _cubit.clinicProviderHasMore
-                          ? ClassicFooter(
-                              loadingText: "Đang tải",
-                              canLoadingText:
-                                  R.string.pull_up_to_load_more.tr(),
-                            )
-                          : null,
-                      onLoading: () async {
-                        await _cubit.searchBookingClinicList(
-                            request: _cubit.searchBookingClinicListRequest!
-                                .copyWith(
-                                    page: _cubit.clinicProviderCurrentPage + 1),
-                            showLoading: false,
-                            bookingType: Const.BOOKING_TYPE_DOCTOR);
-                        _refreshController.loadComplete();
-                        setState(() {});
-                      },
-                      child: ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                        itemCount: _cubit.listBookingClinicProvider.length,
-                        separatorBuilder: (context, index) {
-                          return GapH(12);
-                        },
-                        itemBuilder: (context, index) {
-                          BookingClinicProvider data =
-                              _cubit.listBookingClinicProvider[index];
-                          return _buildDoctorItem(data);
-                        },
-                      ),
-                    ),
+                );
+              }
+              return SmartRefresher(
+                controller: _refreshController,
+                enablePullUp: _cubit.clinicProviderHasMore,
+                enablePullDown: false,
+                footer: _cubit.clinicProviderHasMore
+                    ? ClassicFooter(
+                        loadingText: "Đang tải",
+                        canLoadingText: R.string.pull_up_to_load_more.tr(),
+                      )
+                    : null,
+                onLoading: () async {
+                  await _cubit.searchBookingClinicList(
+                      request: _cubit.searchBookingClinicListRequest!.copyWith(
+                          page: _cubit.clinicProviderCurrentPage + 1),
+                      showLoading: false,
+                      bookingType: Const.BOOKING_TYPE_DOCTOR);
+                  _refreshController.loadComplete();
+                },
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                  itemCount: _cubit.listBookingClinicProvider.length,
+                  separatorBuilder: (context, index) {
+                    return GapH(12);
+                  },
+                  itemBuilder: (context, index) {
+                    BookingClinicProvider data =
+                        _cubit.listBookingClinicProvider[index];
+                    return _buildDoctorItem(data);
+                  },
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -696,130 +702,6 @@ class _BookingDoctorProvidersPageState
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  _buildHeaderWidget() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 0;
-                  });
-                },
-                child: Column(
-                  children: [
-                    Text(
-                      R.string.all.tr(),
-                      style: TextStyle(
-                        color: _selectedIndex == 0
-                            ? R.color.greenGradientBottom
-                            : R.color.color0xff111515,
-                        fontSize: 15,
-                        fontWeight: _selectedIndex == 0
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      width: 40,
-                      color: _selectedIndex == 0
-                          ? R.color.greenGradientBottom
-                          : R.color.transparent,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 24),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                },
-                child: Column(
-                  children: [
-                    Text(
-                      R.string.da_kham.tr(),
-                      style: TextStyle(
-                        color: _selectedIndex == 1
-                            ? R.color.greenGradientBottom
-                            : R.color.color0xff111515,
-                        fontSize: 15,
-                        fontWeight: _selectedIndex == 1
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      width: 60,
-                      color: _selectedIndex == 1
-                          ? R.color.greenGradientBottom
-                          : R.color.transparent,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Builder(
-            builder: (context) {
-              final isFiltered = selectedDistricts.isNotEmpty ||
-                  (selectedTypes.length == 1 && !selectedTypes.contains('')) ||
-                  (selectedTimeframes.length == 1 &&
-                      !selectedTimeframes.contains('')) ||
-                  (selectedServiceTypes.length == 1 &&
-                      !selectedServiceTypes.contains(''));
-              return GestureDetector(
-                onTap: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 30,
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: isFiltered ? EdgeInsets.only(right: 10) : null,
-                        child: Text(
-                          R.string.loc.tr(),
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: R.color.color0xff95682E,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (isFiltered)
-                      Positioned(
-                        top: 2,
-                        right: 1,
-                        child: Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          )
-        ],
       ),
     );
   }
