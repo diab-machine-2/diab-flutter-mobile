@@ -6,7 +6,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/login/login_model.dart';
 import 'package:medical/src/modal/register/register_model.dart';
-import 'package:medical/src/model/service/app_client.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
@@ -28,12 +27,6 @@ class LoginClient extends FetchClient {
         // Log bearer token after successful login
         log('Bearer ${loginModel.access_token}');
         Console.log('Bearer Token', loginModel.access_token);
-
-        try {
-          await AppClient().getAppClient().accountLoginHistory();
-        } catch (e) {
-          log('AccountLoginHistory error: $e');
-        }
 
         return loginModel;
       } else {
