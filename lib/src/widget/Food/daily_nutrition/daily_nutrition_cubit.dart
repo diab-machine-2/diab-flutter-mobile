@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -409,6 +410,17 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       final result = await FoodClient().deleteInputFood(id);
       if (result == true) {
         emit(DailyNutritionFailure(R.string.xoa_thanh_cong.tr()));
+        // Clear saved nutrition data from SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('latest_nutrition_percent');
+        await prefs.remove('latest_nutrition_colors');
+        // Set kcal to 0 (not remove) so home page overrides stale backend API value
+        final todayKey = DateTime.now().toIso8601String().substring(0, 10);
+        await prefs.setDouble('latest_meal_kcal', 0);
+        await prefs.setString('latest_meal_kcal_date', todayKey);
+        await prefs.remove('latest_meal_score');
+        await prefs.remove('latest_meal_range');
+        await prefs.remove('latest_meal_score_suggestion');
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         emit(const DailyNutritionSubmitSuccess());
       }

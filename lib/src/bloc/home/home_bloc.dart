@@ -117,7 +117,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _hasWeightRecord =
             home.weightCard?.weight != null && home.weightCard?.weight != 0.0;
         home.inlineMeasurements = _castInlineMeasurements(home);
-        home.measurements = _castMeasurements(home);
+        home.measurements = await _castMeasurements(home);
         // at this point, home will lost "activities" data
         HomeLoaded currentState =
             (_cached?.copyWith(model: home) ?? HomeLoaded(model: home))
@@ -627,7 +627,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ];
   }
 
-  List<HomeMeasurementData>? _castMeasurements(HomeModel? model) {
+  Future<List<HomeMeasurementData>?> _castMeasurements(HomeModel? model) async {
     // Glucose
     final haveGlucose =
         model?.glucoseIndex.index != null && model!.glucoseIndex.index! > 0;
@@ -651,47 +651,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // Blood Pressure
-    // Check if there's real data: similar to HbA1C, check createDateTime
-    // Backend may return default values (e.g., 120/90) even when there's no actual data
-    // createDateTime will be null or 0 when there's no data
     final hasValidDateTime = model?.bloodPressureIndex.createDateTime != null &&
         model!.bloodPressureIndex.createDateTime! > 0;
 
-    // Debug log to check actual values
     print('🔍 Blood Pressure Data Check:');
     print('  systolic: ${model?.bloodPressureIndex.systolic}');
     print('  diastolic: ${model?.bloodPressureIndex.diastolic}');
     print('  createDateTime: ${model?.bloodPressureIndex.createDateTime}');
     print('  hasValidDateTime: $hasValidDateTime');
 
-    // Check if values are default values (120/90) - these are common default values
-    // Backend may return these default values even when there's no actual data
-    // We need to exclude these default values to prevent showing fake data
     final systolic = model?.bloodPressureIndex.systolic;
     final diastolic = model?.bloodPressureIndex.diastolic;
 
-    // Check if values match the common default pattern (120/90)
-    // Use tolerance for double comparison
     final isDefaultValue = (systolic != null && diastolic != null) &&
         ((systolic == 120.0 || systolic == 120) &&
             (diastolic == 90.0 || diastolic == 90));
 
     print('  isDefaultValue: $isDefaultValue');
 
-    // Only consider it valid data if:
-    // 1. Both systolic and diastolic exist and > 0
-    // 2. createDateTime is valid (not null and > 0)
-    // 3. Values are NOT the default values (120/90) - exclude default values even if createDateTime is valid
-    //    This is because backend may return default values with valid createDateTime when there's no real data
     final haveBloodPressure = systolic != null &&
         systolic > 0 &&
         diastolic != null &&
         diastolic > 0 &&
-        hasValidDateTime && // Only show data if createDateTime is valid
-        !isDefaultValue; // Exclude default values (120/90) even if createDateTime is valid
-    // Note: We exclude default values because backend may return them with valid createDateTime
-    // when there's no actual user data. If user really has 120/90, they would have entered it,
-    // and it would have a different createDateTime or be stored differently.
+        hasValidDateTime &&
+        !isDefaultValue;
 
     print('  haveBloodPressure: $haveBloodPressure');
     final bloodPressure = HomeMeasurementData(
@@ -709,7 +692,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               : _noValueColor,
       value2: haveBloodPressure
           ? roundNumber(model.bloodPressureIndex.diastolic!)
-          : null, // Set to null when no data instead of "--"
+          : null,
       value2Color:
           haveBloodPressure && model.bloodPressureIndex.colorDiastolic != null
               ? _convertHexStringToInt(model.bloodPressureIndex.colorDiastolic!)
@@ -743,23 +726,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // Nutrition (Food)
-    final haveNutrition = model?.energyCard?.consumedEnergy != null &&
-        model!.energyCard!.consumedEnergy! > 0;
+    // Check both API value and saved value from SharedPreferences
+    double apiEnergy = model?.energyCard?.consumedEnergy ?? 0;
+    final prefs = await SharedPreferences.getInstance();
+    final todayKey = DateTime.now().toIso8601String().substring(0, 10);
+    final savedDate = prefs.getString('latest_meal_kcal_date');
+    // When saved data is from today, ALWAYS use it (it's more up-to-date than stale API)
+    // This handles both: adding meals (accumulated total) and deleting all food (0)
+    final double displayEnergy;
+    if (savedDate == todayKey) {
+      displayEnergy = prefs.getDouble('latest_meal_kcal') ?? 0;
+    } else {
+      displayEnergy = apiEnergy;
+    }
+    final haveNutrition = displayEnergy > 0;
     final nutrition = HomeMeasurementData(
       title: "Dinh Dưỡng",
       titleColor: haveNutrition ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveNutrition
           ? R.drawable.ic_home_measurement_nutrition
           : R.drawable.ic_home_measurement_nutrition_inactive,
-      value1:
-          haveNutrition ? roundNumber(model.energyCard!.consumedEnergy!) : "--",
+      value1: haveNutrition ? roundNumber(displayEnergy) : "--",
       value1Color: haveNutrition ? _haveValueTitleColor : _noValueColor,
       value2: null,
       value2Color: null,
       unit: model?.energyCard?.unit ?? "kcal",
       navigatorName:
-          haveNutrition ? NavigatorName.detail_food : NavigatorName.add_food,
-      args: haveNutrition ? null : {'type': 'input'},
+          haveNutrition ? NavigatorName.detail_food : NavigatorName.nutrient_intro_1st_page,
+      args: haveNutrition ? null : null,
     );
 
     // Emotion

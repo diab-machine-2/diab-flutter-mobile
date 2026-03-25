@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 
@@ -806,8 +807,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           apiRange = mealScoreData['totalMealRange'] as String?;
 
           // Save latest AI suggestion to SharedPreferences for overview
+          final prefs = await SharedPreferences.getInstance();
           if (apiMessage != null && apiMessage.isNotEmpty) {
-            final prefs = await SharedPreferences.getInstance();
             await prefs.setString('latest_meal_score_suggestion', apiMessage);
           }
 
@@ -830,6 +831,30 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                 'fat': colorsData['fat']?.toString() ?? '#FFCD57',
               };
             }
+          }
+
+          // Save nutritionPercent & nutritionColors to SharedPreferences
+          if (nutritionPercent != null) {
+            await prefs.setString('latest_nutrition_percent', jsonEncode(nutritionPercent));
+          }
+          if (nutritionColors != null) {
+            await prefs.setString('latest_nutrition_colors', jsonEncode(nutritionColors));
+          }
+          // Save daily accumulated kcal total
+          final todayKey = DateTime.now().toIso8601String().substring(0, 10);
+          final savedDate = prefs.getString('latest_meal_kcal_date');
+          double existingKcal = 0;
+          if (savedDate == todayKey) {
+            existingKcal = prefs.getDouble('latest_meal_kcal') ?? 0;
+          }
+          await prefs.setDouble('latest_meal_kcal', existingKcal + totalKcal);
+          await prefs.setString('latest_meal_kcal_date', todayKey);
+          // Save MealScore score & balance status for calorie trend chart
+          if (apiScore != null) {
+            await prefs.setInt('latest_meal_score', apiScore);
+          }
+          if (apiRange != null) {
+            await prefs.setString('latest_meal_range', apiRange);
           }
         }
 
