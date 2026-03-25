@@ -245,31 +245,12 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   Widget _buildEmptyState() {
     return Container(
       height: 150,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Chưa có dữ liệu dinh dưỡng trong ${getLabel()}',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark),
-          ),
-          GapH(36),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(children: [
-              Text('${_perMealThreshold.round()}\nđiểm',
-                  style: TextStyle(color: R.color.color0xffBFC6C6, fontSize: 12)),
-              GapW(8),
-              Expanded(
-                child: CustomPaint(
-                  size: Size(double.infinity, 1),
-                  painter: DashLinePainter(
-                    color: R.color.color0xffBFC6C6, strokeWidth: 1, dashWidth: 8, dashSpace: 4),
-                ),
-              ),
-            ]),
-          ),
-        ],
+      child: Center(
+        child: Text(
+          'Chưa có dữ liệu dinh dưỡng trong ${getLabel()}',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark),
+        ),
       ),
     );
   }
@@ -376,7 +357,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         Container(
           height: 88,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _buildChart(trends, padding: 32),
+          child: _buildChart(trends, padding: 32, selectedScore: selectedScore),
         ),
       ],
     );
@@ -444,7 +425,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   }
 
   // ── Chart build ─────────────────────────────────────────
-  Widget _buildChart(List<FoodCalorieTrendItem> trends, {double padding = 0}) {
+  Widget _buildChart(List<FoodCalorieTrendItem> trends, {double padding = 0, int selectedScore = 0}) {
     if (trends.isEmpty) return SizedBox.shrink();
 
     final values = trends.map<double>((e) => (e.value ?? 0).toDouble()).toList();
@@ -478,6 +459,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
     return LayoutBuilder(builder: (context, constraints) {
       final chartH = constraints.maxHeight - 16;
+      // Position score label aligned with the dashed threshold line
       final targetPx = 8 + (maxY - threshold) / (maxY - minY) * chartH;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -488,13 +470,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       });
 
       return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Y-axis label
+        // Y-axis label — show selected score, aligned with data point
         Container(
           width: 55, height: constraints.maxHeight,
           child: Stack(children: [
             Positioned(
-              top: max(0, targetPx - 8), left: 0, right: 0,
-              child: Text('${threshold.round()}\nđiểm',
+              top: max(0, min(targetPx - 8, constraints.maxHeight - 20)), left: 0, right: 0,
+              child: Text('${selectedScore}điểm',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515),
                   textAlign: TextAlign.left),
             ),

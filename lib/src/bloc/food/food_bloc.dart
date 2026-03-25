@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
@@ -497,6 +498,50 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
 
       // Sort theo date (cũ → mới)
       items.sort((a, b) => (a.date ?? 0).compareTo(b.date ?? 0));
+
+      // Override latest meal's score/status with saved MealScore API data
+      if (items.isNotEmpty) {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          final savedScore = prefs.getInt('latest_meal_score');
+          final savedRange = prefs.getString('latest_meal_range');
+          if (savedScore != null && savedRange != null) {
+            // Determine balance status and colors from API range
+            String savedType;
+            String savedColorCode;
+            String savedFontColor;
+            switch (savedRange) {
+              case 'excellent':
+                savedType = 'Cân bằng';
+                savedColorCode = '#008479';
+                savedFontColor = '#008479';
+                break;
+              case 'good':
+                savedType = 'Khá cân bằng';
+                savedColorCode = '#008479';
+                savedFontColor = '#008479';
+                break;
+              default:
+                savedType = 'Chưa cân bằng';
+                savedColorCode = '#F39C12';
+                savedFontColor = '#F39C12';
+            }
+            final lastItem = items.last;
+            items[items.length - 1] = FoodCalorieTrendItem(
+              id: lastItem.id,
+              date: lastItem.date,
+              value: lastItem.value,
+              score: savedScore,
+              colorCode: savedColorCode,
+              fontColor: savedFontColor,
+              mealText: lastItem.mealText,
+              type: savedType,
+            );
+          }
+        } catch (_) {
+          // Silently ignore - use local calculation as fallback
+        }
+      }
 
       yield FoodCalorieTrendLoaded(
         items: items,
