@@ -89,6 +89,13 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       return;
     }
 
+    // Match next-button rule: cannot jump forward from the section picker until current is complete.
+    if (isFromList &&
+        newSection > currentSection &&
+        currentSectionDetail?.isComplete != true) {
+      return;
+    }
+
     currentSection = newSection;
     percentComplete = ((currentSection + 1) / sectionList.length).round() * 100;
 

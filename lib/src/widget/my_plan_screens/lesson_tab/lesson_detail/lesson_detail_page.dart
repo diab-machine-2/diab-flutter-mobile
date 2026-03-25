@@ -19,6 +19,7 @@ import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widg
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/video_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 
 import '../course_quiz/course_quiz.dart';
@@ -348,6 +349,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                   ),
                                 ),
                               ),
+                              const GapH(16),
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 16),
@@ -364,9 +366,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 16),
                                 child: Column(children: [
-                                  SizedBox(
-                                    height: 16,
-                                  ),
                                   if (AppSettings.isOwnPackage)
                                     Row(
                                       mainAxisAlignment:
@@ -890,6 +889,13 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         return BottomSheetWidget(
           sectionList: _cubit.sectionList,
           currentSection: _cubit.currentSection,
+          canNavigateForward: _cubit.currentSectionDetail?.isComplete ?? false,
+          onBlockedForwardNavigation: () {
+            Message.showToastMessage(
+              context,
+              R.string.lesson_locked_warning.tr(),
+            );
+          },
           onChangeSection: (int newSectionIndex) async {
             _cubit.videoManager?.disposeAllVideo();
             await Future.delayed(const Duration(milliseconds: 200));
