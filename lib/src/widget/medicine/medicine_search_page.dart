@@ -8,9 +8,7 @@ import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
 import '../../modal/medicine/medicine_item_model.dart';
 import '../../modal/medicine/medicine_tablet_model.dart';
-import '../../model/response/filter_data_response.dart';
 import '../../utils/navigator_name.dart';
-import '../helper/tracking_manager.dart';
 
 class MedicineSearchPage extends StatefulWidget {
   const MedicineSearchPage({super.key, this.medicineMode, required this.index});
@@ -204,8 +202,7 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
 
     return Expanded(
       child: ListView.separated(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.only(left: 10, right: 10, bottom: 8, top: 10),
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
@@ -223,16 +220,21 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            item.name,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: R.color.color0xff111515,
+          Expanded(
+            child: Text(
+              item.name,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                color: R.color.color0xff111515,
+              ),
             ),
           ),
+          const SizedBox(width: 10),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
@@ -261,7 +263,7 @@ class _MedicineSearchPageState extends State<MedicineSearchPage> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w400,
-                      color: R.color.color0xff008479,
+                      color: const Color(0xff008479),
                     ),
                   ),
                   const SizedBox(width: 4),

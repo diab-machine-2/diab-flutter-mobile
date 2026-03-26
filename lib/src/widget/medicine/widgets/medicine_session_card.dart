@@ -165,10 +165,10 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
   }
 
   List<Widget> _buildListOfMedicine(
-      int prescriptionIndex,
-      List<MedicationInSession> medicationList,
-      Function(int, int, bool) onTap,
-      ) {
+    int prescriptionIndex,
+    List<MedicationInSession> medicationList,
+    Function(int, int, bool) onTap,
+  ) {
     List<Widget> widgets = [];
 
     for (var i = 0; i < medicationList.length; i++) {
@@ -186,7 +186,7 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
             medication.medicineName,
             medication.dosage,
             medication.isTaken,
-                () {
+            () {
               onTap(prescriptionIndex, i, !medication.isTaken);
               setState(() {
                 medication.isTaken = !medication.isTaken;
@@ -204,7 +204,6 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
     return widgets;
   }
 
-
   Widget _buildMedicineItem(
     String title,
     String subtitle,
@@ -212,22 +211,32 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
     VoidCallback onTap,
   ) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(title,
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Text(
+                  title,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
                     height: 1.46,
                     color: Color(0xFF111515),
-                  )),
+                  ),
+                ),
+              ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 13,
@@ -239,16 +248,20 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
             ],
           ),
         ),
+        const SizedBox(width: 12),
         GestureDetector(
           onTap: onTap,
+          behavior: HitTestBehavior.opaque,
           child: SizedBox(
-            width: 72,
+            width: 84,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SvgPicture.asset(
-                  isTaken ? R.icons.ic_medicine_used : R.icons.ic_medicine_unused,
+                  isTaken
+                      ? R.icons.ic_medicine_used
+                      : R.icons.ic_medicine_unused,
                   width: 32,
                   height: 32,
                 ),
@@ -256,20 +269,22 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
                 Text(
                   isTaken ? R.string.used.tr() : R.string.not_used.tr(),
                   textAlign: TextAlign.center,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 13,
                     height: 1.5,
                     letterSpacing: 0.4,
-                    color: isTaken ? Color(0xFF008479) : Color(0xFFBFC6C6),
+                    color: isTaken
+                        ? const Color(0xFF008479)
+                        : const Color(0xFFBFC6C6),
                   ),
                 ),
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }
