@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../res/R.dart';
 import '../../../modal/medicine/dose_model.dart';
-import '../../../modal/medicine/medicine_add_model.dart';
 
 enum FrequencyType { everyday, weekDays, everyOtherDay }
 
@@ -39,8 +38,13 @@ extension MomentTypeExt on MomentType {
 }
 
 class DosageInputBottomSheet extends StatefulWidget {
-  const DosageInputBottomSheet({Key? key, this.dosage}) : super(key: key);
+  const DosageInputBottomSheet({Key? key, this.dosage, this.maxTotalQuantity})
+      : super(key: key);
   final DosageModel? dosage;
+
+  /// Maximum allowed total dosage across all dose rows
+  /// (morning + noon + afternoon + night). When null or <= 0, unlimited.
+  final double? maxTotalQuantity;
 
   @override
   _DosageInputBottomSheetState createState() => _DosageInputBottomSheetState();
@@ -53,7 +57,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   // Mỗi ngày states
   TextEditingController _quantityInMorning = TextEditingController(text: "0.0");
   TextEditingController _quantityInNoon = TextEditingController(text: "0.0");
-  TextEditingController _quantityInAfternoon = TextEditingController(text: "0.0");
+  TextEditingController _quantityInAfternoon =
+      TextEditingController(text: "0.0");
   TextEditingController _quantityInEvening = TextEditingController(text: "0.0");
 
   // Ngày trong tuần states
@@ -80,13 +85,149 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   // Confirm Button
   bool _submitBtnEnabled = false;
 
+  final Map<TextEditingController, String> _lastValidDoseText = {};
+  bool _warningDialogShowing = false;
+
+  double get _maxTotalQuantity {
+    final v = widget.maxTotalQuantity;
+    if (v == null || v <= 0) return double.infinity;
+    return v;
+  }
+
+  double _parseDoseText(String text) {
+    return double.tryParse(text.replaceAll(',', '.')) ?? 0.0;
+  }
+
+  double _currentDoseTotal(
+      {TextEditingController? overrideController, double? overrideValue}) {
+    double val(TextEditingController c) => (overrideController == c)
+        ? (overrideValue ?? 0.0)
+        : _parseDoseText(c.text);
+
+    return val(_quantityInMorning) +
+        val(_quantityInNoon) +
+        val(_quantityInAfternoon) +
+        val(_quantityInEvening);
+  }
+
+  bool _wouldExceedMaxTotal(
+      TextEditingController controller, double nextValue) {
+    final nextTotal = _currentDoseTotal(
+        overrideController: controller, overrideValue: nextValue);
+    return nextTotal > _maxTotalQuantity + 1e-9;
+  }
+
+  Future<void> _showExceedMaxWarning() async {
+    if (_warningDialogShowing) return;
+    _warningDialogShowing = true;
+    try {
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) {
+          return Container(
+            child: AlertDialog(
+              contentPadding: EdgeInsets.all(0),
+              content: Stack(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(R.drawable.ic_dialog_failed,
+                            width: 64, height: 64),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: Text(
+                            R.string.exceed_medicine_warning.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(ctx);
+                                  },
+                                  child: Container(
+                                    height: 43,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(200),
+                                      color: R.color.grayBorder,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        R.string.close.tr(),
+                                        style: TextStyle(
+                                          color: R.color.textDark,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: R.font.sfpro,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                        icon: Icon(Icons.close,
+                            color: R.color.color0xffBEC0C8),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                        }),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } finally {
+      _warningDialogShowing = false;
+    }
+  }
+
+  void _revertDose(TextEditingController controller) {
+    final fallback = _lastValidDoseText[controller] ?? '0.0';
+    if (controller.text == fallback) return;
+    setState(() {
+      controller.text = fallback;
+      _checkEnableSubmitBtnState();
+    });
+  }
+
+  void _acceptDose(TextEditingController controller, String text) {
+    _lastValidDoseText[controller] = text;
+  }
+
   @override
   void initState() {
     if (widget.dosage != null) {
-      _quantityInMorning.text = (widget.dosage?.quantityInMorning ?? 0).toString();
+      _quantityInMorning.text =
+          (widget.dosage?.quantityInMorning ?? 0).toString();
       _quantityInNoon.text = (widget.dosage?.quantityInNoon ?? 0).toString();
-      _quantityInAfternoon.text = (widget.dosage?.quantityInAfternoon ?? 0).toString();
-      _quantityInEvening.text = (widget.dosage?.quantityInNight ?? 0).toString();
+      _quantityInAfternoon.text =
+          (widget.dosage?.quantityInAfternoon ?? 0).toString();
+      _quantityInEvening.text =
+          (widget.dosage?.quantityInNight ?? 0).toString();
 
       // frequency in DosageModel is 1,2,3 (everyday, weekdays, every other day)
       if (widget.dosage?.frequency == 1) {
@@ -147,6 +288,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                     eveningQuantity > 0.0);
       }
     }
+    _lastValidDoseText[_quantityInMorning] = _quantityInMorning.text;
+    _lastValidDoseText[_quantityInNoon] = _quantityInNoon.text;
+    _lastValidDoseText[_quantityInAfternoon] = _quantityInAfternoon.text;
+    _lastValidDoseText[_quantityInEvening] = _quantityInEvening.text;
     super.initState();
   }
 
@@ -194,63 +339,79 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     double maxHeight = screenHeight - 90;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.5,
-      minChildSize: 0.5,
-      maxChildSize: maxHeight / screenHeight,
-      builder: (context, scrollController) => Container(
-        width: double.infinity,
-        child: ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildHeader(),
-                          Container(
-                            color: Colors.white,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 16),
-                                _buildSectionTitle(R.string.time_of_use.tr()),
-                                _buildMomentSelector(),
-                                const SizedBox(height: 16),
-                                _buildSectionTitle(R.string.frequency_of_use.tr()),
-                                _buildFrequencySelector(),
-                                const SizedBox(height: 16),
-                                if (_selectedFrequency == FrequencyType.everyday)
-                                  ..._buildEveryDayController()
-                                else if (_selectedFrequency == FrequencyType.weekDays)
-                                  ..._buildDayInWeekController()
-                                else
-                                  ..._buildEveryOtherDayController(),
-                                const SizedBox(height: 24),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )),
-                ),
-              ),
-              // Keep confirm button above keyboard when visible
-              Padding(
-                padding: EdgeInsets.only(bottom: keyboardHeight),
-                child: _buildConfirmButton(),
-              ),
-            ],
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(context).pop(),
+            child: const SizedBox.shrink(),
           ),
         ),
-      ),
+        DraggableScrollableSheet(
+          initialChildSize: 0.5,
+          minChildSize: 0.5,
+          maxChildSize: maxHeight / screenHeight,
+          builder: (context, scrollController) => Container(
+            width: double.infinity,
+            child: ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(20)),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildHeader(),
+                              Container(
+                                color: Colors.white,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 16),
+                                    _buildSectionTitle(
+                                        R.string.time_of_use.tr()),
+                                    _buildMomentSelector(),
+                                    const SizedBox(height: 16),
+                                    _buildSectionTitle(
+                                        R.string.frequency_of_use.tr()),
+                                    _buildFrequencySelector(),
+                                    const SizedBox(height: 16),
+                                    if (_selectedFrequency ==
+                                        FrequencyType.everyday)
+                                      ..._buildEveryDayController()
+                                    else if (_selectedFrequency ==
+                                        FrequencyType.weekDays)
+                                      ..._buildDayInWeekController()
+                                    else
+                                      ..._buildEveryOtherDayController(),
+                                    const SizedBox(height: 24),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ),
+                  // Keep confirm button above keyboard when visible
+                  Padding(
+                    padding: EdgeInsets.only(bottom: keyboardHeight),
+                    child: _buildConfirmButton(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -258,7 +419,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     return Container(
         width: double.infinity,
         height: 56,
-        padding: const EdgeInsets.fromLTRB(0, 15, 0, 17),
+        padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
         decoration: BoxDecoration(
           color: const Color(0xFFEAF9F7),
           borderRadius: BorderRadius.only(
@@ -312,13 +473,15 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   height: 40,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF008D67) : Colors.grey[200],
+                    color:
+                        isSelected ? const Color(0xFF008D67) : Colors.grey[200],
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     moment.label,
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w400,
                       fontSize: 15,
                       color: isSelected ? Colors.white : Color(0xFF5E6566),
                     ),
@@ -356,14 +519,16 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   height: 40,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF008D67) : Colors.grey[200],
+                    color:
+                        isSelected ? const Color(0xFF008D67) : Colors.grey[200],
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     frequency.label,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w400,
                       fontSize: 15,
                       color: isSelected ? Colors.white : Color(0xFF5E6566),
                     ),
@@ -447,8 +612,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     return double.tryParse(controller.text) ?? 0.0;
   }
 
-  Widget _buildDosageRow(
-      String title, String iconRes, TextEditingController controller, Function(String) onValueChange) {
+  Widget _buildDosageRow(String title, String iconRes,
+      TextEditingController controller, Function(String) onValueChange) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Row(
@@ -476,25 +641,27 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     );
   }
 
-  List<Widget> _buildDosageCounter(TextEditingController controller, Function(String) onValueChange) {
+  List<Widget> _buildDosageCounter(
+      TextEditingController controller, Function(String) onValueChange) {
     return [
       GestureDetector(
         onTap: () {
-          double parseValue = double.tryParse(controller.text) ?? 0.0;
-          if (parseValue >= 1.0) {
-            setState(() {
-              onValueChange((parseValue - 1.0).toString());
-            });
-          } else {
-            onValueChange('0.0');
-          }
+          final parseValue = _parseDoseText(controller.text);
+          final nextValue =
+              (parseValue - 1.0) >= 0.0 ? (parseValue - 1.0) : 0.0;
+          final nextText = nextValue.toString();
+          _acceptDose(controller, nextText);
+          setState(() {
+            onValueChange(nextText);
+          });
         },
         child: Container(
           width: 34,
           height: 32,
           decoration: BoxDecoration(
             color: Color(0xFFF4F7F7),
-            borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
+            borderRadius: BorderRadius.horizontal(
+                left: Radius.circular(4), right: Radius.zero),
           ),
           alignment: Alignment.center,
           child: SvgPicture.asset(
@@ -525,6 +692,28 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
           onChanged: (value) {
             _checkEnableSubmitBtnState();
           },
+          onSubmitted: (_) {
+            final next = _parseDoseText(controller.text);
+            if (_wouldExceedMaxTotal(controller, next)) {
+              _showExceedMaxWarning();
+              _revertDose(controller);
+              return;
+            }
+            _acceptDose(controller, controller.text);
+            _checkEnableSubmitBtnState();
+          },
+          onEditingComplete: () {
+            final next = _parseDoseText(controller.text);
+            if (_wouldExceedMaxTotal(controller, next)) {
+              _showExceedMaxWarning();
+              _revertDose(controller);
+              FocusScope.of(context).unfocus();
+              return;
+            }
+            _acceptDose(controller, controller.text);
+            _checkEnableSubmitBtnState();
+            FocusScope.of(context).unfocus();
+          },
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: '0.0',
@@ -541,15 +730,25 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       ),
       GestureDetector(
         onTap: () {
-          double parseValue = double.tryParse(controller.text) ?? 0.0;
-          onValueChange((parseValue + 1.0).toString());
+          final parseValue = _parseDoseText(controller.text);
+          final nextValue = parseValue + 1.0;
+          if (_wouldExceedMaxTotal(controller, nextValue)) {
+            _showExceedMaxWarning();
+            return;
+          }
+          final nextText = nextValue.toString();
+          _acceptDose(controller, nextText);
+          setState(() {
+            onValueChange(nextText);
+          });
         },
         child: Container(
           width: 34,
           height: 32,
           decoration: BoxDecoration(
             color: Color(0xFFF4F7F7),
-            borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+            borderRadius: BorderRadius.horizontal(
+                left: Radius.zero, right: Radius.circular(4)),
           ),
           alignment: Alignment.center,
           child: SvgPicture.asset(
@@ -594,7 +793,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
           side: BorderSide(
-            color: isSelected ? Colors.teal : Colors.grey, // Teal border when selected, grey when not
+            color: isSelected
+                ? Colors.teal
+                : Colors.grey, // Teal border when selected, grey when not
             width: 1.0,
           ),
         ),
@@ -723,7 +924,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         (value) => _updateCounter(() {
           int validValue;
           if (value.endsWith('.')) {
-            validValue = int.tryParse(value.substring(0, value.length - 1)) ?? 0;
+            validValue =
+                int.tryParse(value.substring(0, value.length - 1)) ?? 0;
           } else {
             validValue = int.tryParse(value) ?? 0;
           }
@@ -857,7 +1059,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 height: 32,
                 decoration: BoxDecoration(
                   color: Color(0xFFF4F7F7),
-                  borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
+                  borderRadius: BorderRadius.horizontal(
+                      left: Radius.circular(4), right: Radius.zero),
                 ),
                 alignment: Alignment.center,
                 child: SvgPicture.asset(
@@ -873,7 +1076,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 height: 36,
                 alignment: Alignment.center,
                 child: TextField(
-                  controller: TextEditingController(text: value.toStringAsFixed(0)),
+                  controller:
+                      TextEditingController(text: value.toStringAsFixed(0)),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
@@ -894,7 +1098,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 height: 32,
                 decoration: BoxDecoration(
                   color: Color(0xFFF4F7F7),
-                  borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+                  borderRadius: BorderRadius.horizontal(
+                      left: Radius.zero, right: Radius.circular(4)),
                 ),
                 alignment: Alignment.center,
                 child: SvgPicture.asset(
@@ -945,10 +1150,13 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 frequency: _selectedFrequency.index + 1,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+                quantityInMorning:
+                    double.tryParse(_quantityInMorning.text) ?? 0.0,
                 quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+                quantityInAfternoon:
+                    double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+                quantityInNight:
+                    double.tryParse(_quantityInEvening.text) ?? 0.0,
               );
             } else if (FrequencyType.weekDays == _selectedFrequency) {
               dosage = DosageModel(
@@ -959,10 +1167,13 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 selectedDaysInWeek: _selectedDayIndexes,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+                quantityInMorning:
+                    double.tryParse(_quantityInMorning.text) ?? 0.0,
                 quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+                quantityInAfternoon:
+                    double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+                quantityInNight:
+                    double.tryParse(_quantityInEvening.text) ?? 0.0,
               );
             } else {
               dosage = DosageModel(
@@ -973,10 +1184,13 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 everyOtherDayNumber: _everyOtherDayNumber,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-                quantityInMorning: double.tryParse(_quantityInMorning.text) ?? 0.0,
+                quantityInMorning:
+                    double.tryParse(_quantityInMorning.text) ?? 0.0,
                 quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-                quantityInAfternoon: double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-                quantityInNight: double.tryParse(_quantityInEvening.text) ?? 0.0,
+                quantityInAfternoon:
+                    double.tryParse(_quantityInAfternoon.text) ?? 0.0,
+                quantityInNight:
+                    double.tryParse(_quantityInEvening.text) ?? 0.0,
               );
             }
             Navigator.of(context).pop(dosage);
@@ -985,7 +1199,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
             width: double.infinity,
             height: 44,
             decoration: BoxDecoration(
-              color: _submitBtnEnabled ? const Color(0xFF008D67) : Color(0xFFBFC6C6),
+              color: _submitBtnEnabled
+                  ? const Color(0xFF008D67)
+                  : Color(0xFFBFC6C6),
               borderRadius: BorderRadius.circular(50),
             ),
             child: Center(

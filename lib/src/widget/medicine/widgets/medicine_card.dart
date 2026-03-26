@@ -144,7 +144,15 @@ class MedicineCard extends StatelessWidget {
           Text(
             amount.toStringAsFixed(1),
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: R.color.color0xff5E6566),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            softWrap: false,
+            style: TextStyle(
+              fontSize: 15,
+              height: 1,
+              fontWeight: FontWeight.bold,
+              color: R.color.color0xff5E6566,
+            ),
           ),
         ],
       ),

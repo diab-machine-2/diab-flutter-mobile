@@ -1556,4 +1556,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get change_medicine_quantity_title => 'change_medicine_quantity_title';
   String get change_medicine_quantity_message => 'change_medicine_quantity_message';
   String get delete_medicine_dialog_title => 'delete_medicine_dialog_title';
+  String get exceed_medicine_warning => 'exceed_medicine_warning';
 }

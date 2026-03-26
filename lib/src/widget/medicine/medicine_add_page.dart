@@ -256,12 +256,15 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
           )
         : null;
 
+    final maxTotalQuantity = double.tryParse(_quantityController.text.replaceAll(',', '.')) ?? _amount;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => DosageInputBottomSheet(
         dosage: dosageToShow,
+        maxTotalQuantity: maxTotalQuantity,
       ),
     ).then((newDosage) {
       if (newDosage != null && newDosage is DosageModel) {
