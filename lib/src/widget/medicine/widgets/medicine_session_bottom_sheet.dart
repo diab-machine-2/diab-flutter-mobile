@@ -23,6 +23,17 @@ class _MedicineSessionBottomSheetState
   final List<String> usedIds = <String>[];
   final List<String> unusedIds = <String>[];
 
+  bool _isSessionAllMedicinesTaken(PrescriptionsBySessionModel session) {
+    var hasAnyMedicine = false;
+    for (final prescription in session.prescriptions) {
+      for (final medication in prescription.medications) {
+        hasAnyMedicine = true;
+        if (medication.isTaken != true) return false;
+      }
+    }
+    return hasAnyMedicine;
+  }
+
   int _executeDayTimeFromSession(MedicineSession session) {
     switch (session) {
       case MedicineSession.MORNING:
@@ -100,7 +111,7 @@ class _MedicineSessionBottomSheetState
 
                     return MedicineSessionCard(
                       session: session,
-                      isExpanded: false,
+                      isExpanded: !_isSessionAllMedicinesTaken(session),
                       onTap:
                           (prescriptionIndex, medicationIndex, isTaken) async {
                         final med = session.prescriptions[prescriptionIndex]
