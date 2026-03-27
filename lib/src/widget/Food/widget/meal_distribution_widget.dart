@@ -176,18 +176,15 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                   Builder(builder: (context) {
                                     final data = model!.energyChart;
                                     int balancedCount = 0;
-                                    int unbalancedCount = 0;
                                     int actualMealCount = 0;
 
                                     data.forEach((element) {
                                       // Only count meals with actual data
                                       if ((element.value ?? 0) > 0) {
                                         actualMealCount++;
-                                        // Use colorCode to determine balanced status to match Meal Analysis
-                                        if (element.colorCode?.toUpperCase() == '#008479' || element.colorCode?.toLowerCase() == '#008479') {
+                                        // A meal is considered "balanced" in distribution if it contains >= 15% of total energy
+                                        if (element.percentValue != null && element.percentValue! >= 15) {
                                           balancedCount++;
-                                        } else {
-                                          unbalancedCount++;
                                         }
                                       }
                                     });
@@ -199,22 +196,6 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                         : 0;
                                     int unbalancedPercent =
                                         100 - balancedPercent;
-
-                                    // Debug log
-                                    print('🍽️ Meal Distribution Debug:');
-                                    print('  Total meals: ${data.length}');
-                                    print(
-                                        '  Actual meals (value > 0): $actualMealCount');
-                                    print(
-                                        '  Balanced (from API): $balancedCount');
-                                    print(
-                                        '  Unbalanced (from API): $unbalancedCount');
-                                    print('  Balanced %: $balancedPercent');
-                                    print('  Unbalanced %: $unbalancedPercent');
-                                    data.forEach((e) {
-                                      print(
-                                          '    - ${e.text}: ${e.value} Kcal, ${e.percentValue}%');
-                                    });
 
                                     return Container(
                                       height: 36,

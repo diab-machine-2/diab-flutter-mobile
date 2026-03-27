@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/modal/food/nutrition_lesson.dart';
@@ -266,7 +265,7 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
       onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        height: 152.h,
+        height: 164,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -283,14 +282,18 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
               height: 72,
             ),
             const SizedBox(height: 8),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                height: 20 / 14,
-                fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
+            Expanded(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 20 / 14,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.primaryGreyColor,
+                ),
               ),
             ),
           ],
