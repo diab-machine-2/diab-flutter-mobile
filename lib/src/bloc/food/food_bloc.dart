@@ -16,6 +16,7 @@ import 'package:medical/src/widget/home/fliter_enum.dart';
 import 'package:meta/meta.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/src/widget/Food/utils/meal_score_calculator.dart';
 
 part 'food_bloc_event.dart';
 part 'food_bloc_state.dart';
@@ -431,10 +432,15 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           for (final foodInput in mealItem.inputs) {
             // Tính tổng calorie cho food input này
             double totalCalorie = 0.0;
+            double totalCarbs = 0.0;
+            double totalProtein = 0.0;
+            double totalFat = 0.0;
             for (final food in foodInput.foods) {
               final double portion = (food.portion ?? 1).toDouble();
-              final double cal = (food.calorie ?? 0).toDouble();
-              totalCalorie += cal * portion;
+              totalCalorie += (food.calorie ?? 0).toDouble() * portion;
+              totalCarbs += (food.glucose ?? 0).toDouble() * portion;
+              totalProtein += (food.protein ?? 0).toDouble() * portion;
+              totalFat += (food.lipid ?? 0).toDouble() * portion;
             }
             // Nếu foodInput có calorie riêng, dùng nó
             final double? inputCal = foodInput.calorie?.toDouble();
@@ -442,45 +448,29 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
               totalCalorie = inputCal;
             }
 
-            // Xác định trạng thái cân bằng dựa trên ngưỡng mỗi bữa
-            String type;
+            int score = MealScoreCalculator.calculateScore(
+              totalCalories: totalCalorie,
+              goalCalories: perMealThreshold,
+              carbs: totalCarbs,
+              protein: totalProtein,
+              fat: totalFat,
+            );
+
+            String status = MealScoreCalculator.getBalanceStatus(score);
+            String type = status;
             String colorCode;
             String fontColor;
-            if (totalCalorie > perMealThreshold * 1.5) {
-              type = 'Cao';
-              colorCode = '#E74C3C';
-              fontColor = '#E74C3C';
-            } else if (totalCalorie > perMealThreshold * 1.2) {
-              type = 'Hơi cao';
-              colorCode = '#F39C12';
-              fontColor = '#F39C12';
-            } else if (totalCalorie < perMealThreshold * 0.5) {
-              type = 'Thấp';
-              colorCode = '#F39C12';
-              fontColor = '#F39C12';
-            } else {
-              type = 'Cân bằng';
+
+            if (status == 'Cân bằng') {
               colorCode = '#008479';
               fontColor = '#008479';
-            }
-
-            // Tính điểm (0-10) dựa trên tỷ lệ calorie/threshold
-            int score;
-            double ratio = perMealThreshold > 0 ? totalCalorie / perMealThreshold : 0;
-            if (ratio <= 0) {
-              score = 0;
-            } else if (ratio <= 0.5) {
-              score = (ratio * 10).round(); // 0-5
-            } else if (ratio <= 1.0) {
-              score = 10 - ((1.0 - ratio) * 10).round(); // 5-10
-            } else if (ratio <= 1.2) {
-              score = 10 - ((ratio - 1.0) * 25).round(); // 10->5
-            } else if (ratio <= 1.5) {
-              score = (5 - ((ratio - 1.2) * 10)).round(); // 5->2
+            } else if (status == 'Khá cân bằng') {
+              colorCode = '#008479';
+              fontColor = '#008479';
             } else {
-              score = (2 - ((ratio - 1.5) * 4)).round().clamp(0, 2); // 2->0
+              colorCode = '#FDB913';
+              fontColor = '#FDB913';
             }
-            score = score.clamp(0, 10);
 
             items.add(FoodCalorieTrendItem(
               id: foodInput.id,

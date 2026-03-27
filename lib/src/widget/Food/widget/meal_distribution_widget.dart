@@ -183,7 +183,8 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                       // Only count meals with actual data
                                       if ((element.value ?? 0) > 0) {
                                         actualMealCount++;
-                                        if ((element.percentValue ?? 0) >= 15) {
+                                        // Use colorCode to determine balanced status to match Meal Analysis
+                                        if (element.colorCode?.toUpperCase() == '#008479' || element.colorCode?.toLowerCase() == '#008479') {
                                           balancedCount++;
                                         } else {
                                           unbalancedCount++;
@@ -205,9 +206,9 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                     print(
                                         '  Actual meals (value > 0): $actualMealCount');
                                     print(
-                                        '  Balanced (>= 15%): $balancedCount');
+                                        '  Balanced (from API): $balancedCount');
                                     print(
-                                        '  Unbalanced (< 15%): $unbalancedCount');
+                                        '  Unbalanced (from API): $unbalancedCount');
                                     print('  Balanced %: $balancedPercent');
                                     print('  Unbalanced %: $unbalancedPercent');
                                     data.forEach((e) {
@@ -276,20 +277,20 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                       Row(
                                         children: [
                                           Container(
-                                            width: 16,
-                                            height: 16,
+                                            width: 24,
+                                            height: 14,
                                             decoration: BoxDecoration(
                                               color: Color(0xFFFDB913),
-                                              shape: BoxShape.circle,
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                           ),
                                           SizedBox(width: 8),
                                           Text(
                                             'Chưa cân bằng',
                                             style: TextStyle(
-                                              fontSize: 14,
+                                              fontSize: 15,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.black,
+                                              color: Color(0xFF5E6566),
                                             ),
                                           ),
                                         ],
@@ -297,20 +298,20 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                       Row(
                                         children: [
                                           Container(
-                                            width: 16,
-                                            height: 16,
+                                            width: 24,
+                                            height: 14,
                                             decoration: BoxDecoration(
                                               color: Color(0xFF4CAF50),
-                                              shape: BoxShape.circle,
+                                              borderRadius: BorderRadius.circular(4),
                                             ),
                                           ),
                                           SizedBox(width: 8),
                                           Text(
                                             'Cân bằng',
                                             style: TextStyle(
-                                              fontSize: 14,
+                                              fontSize: 15,
                                               fontWeight: FontWeight.w400,
-                                              color: R.color.black,
+                                              color: Color(0xFF5E6566),
                                             ),
                                           ),
                                         ],

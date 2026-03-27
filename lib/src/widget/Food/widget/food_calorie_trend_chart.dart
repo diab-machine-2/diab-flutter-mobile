@@ -335,6 +335,9 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       selectedValue = formatNumber(t.value ?? 0);
       selectedFontColor = t.fontColor ?? '#008479';
       selectedMealText = t.mealText ?? '';
+      if (selectedMealText.isNotEmpty && !selectedMealText.toLowerCase().startsWith('bữa')) {
+        selectedMealText = 'Bữa ${selectedMealText.toLowerCase()}';
+      }
       selectedType = t.type ?? 'Cân bằng';
       selectedScore = t.score ?? 0;
     }
@@ -496,11 +499,12 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
     double pointSpacing = shouldScroll
         ? max(minSp, maxSp - (trends.length - _breakingTypeNumber) * 2.5)
-        : screenWidth / max(1, (trends.length - 1));
+        : screenWidth / max(5, (trends.length - 1));
 
     double chartWidth = shouldScroll ? pointSpacing * (trends.length - 1) : screenWidth;
-    double minX = trends.length == 1 ? -1 : 0;
-    double maxX = trends.length == 1 ? 1 : trends.length.toDouble() - 1;
+    double minX = 0;
+    // ensure at least 5 intervals on screen so lines between points are never too long
+    double maxX = shouldScroll ? trends.length.toDouble() - 1 : max(5.0, trends.length.toDouble() - 1);
 
     return LayoutBuilder(builder: (context, constraints) {
       final chartH = constraints.maxHeight - 16;
@@ -559,7 +563,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
         extraLinesData: ExtraLinesData(extraLinesOnTop: true, horizontalLines: [
-          HorizontalLine(y: threshold, color: R.color.color0xff636A6B, strokeWidth: 1, dashArray: [8, 4]),
+          HorizontalLine(y: threshold, color: R.color.color0xff636A6B, strokeWidth: 1, dashArray: [4, 6]),
         ]),
         lineTouchData: LineTouchData(
           getTouchedSpotIndicator: (barData, indexes) => indexes.map((index) {
