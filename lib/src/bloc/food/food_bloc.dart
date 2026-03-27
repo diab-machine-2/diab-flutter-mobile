@@ -350,7 +350,8 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       final inputData = await client.fetchInput(
           currentDateTime ?? (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
           periodFilterType ?? '1',
-          1);
+          1,
+          size: 100);
 
       double totalCarbs = 0;
       double totalProtein = 0;
@@ -375,6 +376,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       final pf = int.tryParse(periodFilterType ?? '1') ?? 1;
       if (pf == 2) days = 14;
       if (pf == 3) days = 30;
+      if (pf == 4) days = 90;
 
       // RDA per day (recommended daily intake)
       const double rdaCarbsPerDay = 130;
@@ -422,7 +424,8 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           currentDateTime ??
               (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
           periodFilterType ?? '1',
-          1);
+          1,
+          size: 100);
 
       // Flatten: mỗi FoodInputModel (= 1 lần nhập bữa ăn) → 1 điểm trên chart
       final List<FoodCalorieTrendItem> items = [];

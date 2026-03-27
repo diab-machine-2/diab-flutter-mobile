@@ -40,14 +40,15 @@ class FoodClient extends FetchClient {
 
   // lấy danh sách input thức ăn
   Future<FoodInputDataModel> fetchInput(
-      String currentDateTime, String periodFilterType, int page) async {
+      String currentDateTime, String periodFilterType, int page,
+      {int size = 10}) async {
     try {
       final Response response =
           await super.fetchData(url: '/App/Diet/Input', params: {
         'currentDateTime': currentDateTime,
         'periodFilterType': periodFilterType,
         'page': '$page',
-        'size': '10'
+        'size': '$size'
       });
       if (response.statusCode == 200) {
         return FoodInputDataModel(
@@ -309,9 +310,6 @@ class FoodClient extends FetchClient {
       };
 
       for (int i = 0; i < foods.length; i++) {
-        final totalCalories = foods[i].calorie != null
-            ? foods[i].calorie!.toDouble() * (foods[i].portion ?? 0).toDouble()
-            : 0.0;
         final isGptResult =
             (foods[i].id == null || foods[i].id!.isEmpty) ? 'true' : 'false';
         params['foods[$i].id'] =
@@ -319,7 +317,7 @@ class FoodClient extends FetchClient {
         params['foods[$i].name'] = foods[i].name ?? '';
         params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
         params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
-        params['foods[$i].calorie'] = totalCalories.round().toString();
+        params['foods[$i].calorie'] = foods[i].calorie?.round().toString() ?? '';
         params['foods[$i].glucose'] = foods[i].glucose?.toString() ?? '';
         params['foods[$i].lipid'] = foods[i].lipid?.toString() ?? '';
         params['foods[$i].protein'] = foods[i].protein?.toString() ?? '';
