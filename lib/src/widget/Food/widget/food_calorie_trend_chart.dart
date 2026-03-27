@@ -60,28 +60,34 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   // ── Scroll ──────────────────────────────────────────────
   void _scrollToSelected({bool animated = true, int retry = 0}) {
     if (!_shouldAutoScroll || !mounted) return;
-    if (retry > 20) { _shouldAutoScroll = false; return; }
+    if (retry > 20) {
+      _shouldAutoScroll = false;
+      return;
+    }
 
     final bool shouldScroll = trends.length >= _breakingTypeNumber;
     const double maxSpacing = 12.0;
     const double minSpacing = 12.0;
     final screenWidth = MediaQuery.of(context).size.width - 32;
     double pointSpacing = shouldScroll
-        ? max(minSpacing, maxSpacing - (trends.length - _breakingTypeNumber) * 2.5)
+        ? max(minSpacing,
+            maxSpacing - (trends.length - _breakingTypeNumber) * 2.5)
         : screenWidth / max(1, (trends.length - 1));
 
     if (_scrollController.hasClients &&
         _scrollController.position.hasContentDimensions &&
-        _focusIndex >= 0 && _focusIndex < trends.length) {
+        _focusIndex >= 0 &&
+        _focusIndex < trends.length) {
       _shouldAutoScroll = false;
       final double pos = (_focusIndex * pointSpacing) - 100;
       if (animated) {
         _scrollController.animateTo(
-          pos.clamp(0.0, _scrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+            pos.clamp(0.0, _scrollController.position.maxScrollExtent),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut);
       } else {
-        _scrollController.jumpTo(
-          pos.clamp(0.0, _scrollController.position.maxScrollExtent));
+        _scrollController
+            .jumpTo(pos.clamp(0.0, _scrollController.position.maxScrollExtent));
       }
     } else {
       Future.delayed(const Duration(milliseconds: 50), () {
@@ -104,9 +110,12 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
     int matchedIndex = -1;
 
-    final bool wasLast = _previousTrends.isNotEmpty && _focusIndex == _previousTrends.length - 1;
-    final bool hasNewTail = _previousTrends.isNotEmpty && trends.isNotEmpty &&
-        (_previousTrends.last.id != trends.last.id || _previousTrends.last.date != trends.last.date);
+    final bool wasLast =
+        _previousTrends.isNotEmpty && _focusIndex == _previousTrends.length - 1;
+    final bool hasNewTail = _previousTrends.isNotEmpty &&
+        trends.isNotEmpty &&
+        (_previousTrends.last.id != trends.last.id ||
+            _previousTrends.last.date != trends.last.date);
     if (wasLast && hasNewTail) matchedIndex = trends.length - 1;
 
     if (matchedIndex == -1 && _selectedId != null) {
@@ -131,7 +140,10 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     _selectedId = trends[_focusIndex].id;
     _previousTrends = List.from(trends);
 
-    if (mounted) setState(() { _shouldAutoScroll = true; });
+    if (mounted)
+      setState(() {
+        _shouldAutoScroll = true;
+      });
   }
 
   // ── Lifecycle ───────────────────────────────────────────
@@ -160,7 +172,10 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   }
 
   @override
-  void dispose() { _scrollController.dispose(); super.dispose(); }
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   // ── Build ───────────────────────────────────────────────
   @override
@@ -175,7 +190,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchFoodCalorieTrend(
-              currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+              currentDateTime:
+                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType: periodFilterType.toString(),
             ));
           }
@@ -198,7 +214,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           }
 
           if (state is! FoodCalorieTrendLoaded) {
-            return Container(height: 300, child: Center(child: CircularProgressIndicator()));
+            return Container(
+                height: 300, child: Center(child: CircularProgressIndicator()));
           }
 
           return VisibilityDetector(
@@ -238,11 +255,20 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   Widget _buildEmptyState() {
     String periodText = '';
     switch (periodFilterType) {
-      case 1: periodText = '7'; break;
-      case 2: periodText = '14'; break;
-      case 3: periodText = '30'; break;
-      case 4: periodText = '90'; break;
-      default: periodText = '7';
+      case 1:
+        periodText = '7';
+        break;
+      case 2:
+        periodText = '14';
+        break;
+      case 3:
+        periodText = '30';
+        break;
+      case 4:
+        periodText = '90';
+        break;
+      default:
+        periodText = '7';
     }
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -283,7 +309,10 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: Text('8điểm',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515)),
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff111515)),
                 ),
               ),
               // Dashed line fills rest
@@ -328,14 +357,16 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     if (_focusIndex >= 0 && _focusIndex < trends.length) {
       final t = trends[_focusIndex];
       if (t.date != null) {
-        final dt = DateTime.fromMillisecondsSinceEpoch(t.date! * 1000, isUtc: true);
+        final dt =
+            DateTime.fromMillisecondsSinceEpoch(t.date! * 1000, isUtc: true);
         selectedDate = DateFormat('dd/MM').format(dt);
         selectedTime = DateFormat('HH:mm').format(dt);
       }
       selectedValue = formatNumber(t.value ?? 0);
       selectedFontColor = t.fontColor ?? '#008479';
       selectedMealText = t.mealText ?? '';
-      if (selectedMealText.isNotEmpty && !selectedMealText.toLowerCase().startsWith('bữa')) {
+      if (selectedMealText.isNotEmpty &&
+          !selectedMealText.toLowerCase().startsWith('bữa')) {
         selectedMealText = 'Bữa ${selectedMealText.toLowerCase()}';
       }
       selectedType = t.type ?? 'Cân bằng';
@@ -349,11 +380,20 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         Row(mainAxisSize: MainAxisSize.min, children: [
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(color: R.color.white, borderRadius: BorderRadius.circular(19)),
+            decoration: BoxDecoration(
+                color: R.color.white, borderRadius: BorderRadius.circular(19)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Text(selectedTime, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark)),
+              Text(selectedTime,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark)),
               _dotWidget(),
-              Text(selectedDate, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark)),
+              Text(selectedDate,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark)),
             ]),
           ),
         ]),
@@ -378,7 +418,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                 ),
               ),
             ),
-            _arrowButton(Icons.chevron_right, _focusIndex < trends.length - 1, () => _goNextNode(trends.length)),
+            _arrowButton(Icons.chevron_right, _focusIndex < trends.length - 1,
+                () => _goNextNode(trends.length)),
             const SizedBox(width: 16),
           ],
         ),
@@ -388,14 +429,23 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             if (selectedMealText.isNotEmpty) ...[
               Text(selectedMealText,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: R.color.color0xff5E6566)),
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: R.color.color0xff5E6566)),
               _dotWidget(),
             ],
             Text('$selectedScore điểm',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark)),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.textDark)),
             _dotWidget(),
             Text('$selectedValue Kcal',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark)),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.textDark)),
           ]),
         ),
 
@@ -425,13 +475,16 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     return InkWell(
       onTap: enabled ? onTap : null,
       child: Container(
-        width: 32, height: 32,
+        width: 32,
+        height: 32,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: R.color.color0xffE5E5E5, width: 1),
           color: Colors.white,
         ),
-        child: Icon(icon, size: 20, color: enabled ? R.color.textDark : R.color.color0xffE5E5E5),
+        child: Icon(icon,
+            size: 20,
+            color: enabled ? R.color.textDark : R.color.color0xffE5E5E5),
       ),
     );
   }
@@ -466,32 +519,27 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
   Widget _dotWidget() {
     return Container(
-      width: 4, height: 4,
+      width: 4,
+      height: 4,
       margin: EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(shape: BoxShape.circle, color: Color(0xFFBFC6C6)),
+      decoration:
+          BoxDecoration(shape: BoxShape.circle, color: Color(0xFFBFC6C6)),
     );
   }
 
   // ── Chart build ─────────────────────────────────────────
-  Widget _buildChart(List<FoodCalorieTrendItem> trends, {double padding = 0, int selectedScore = 0}) {
+  Widget _buildChart(List<FoodCalorieTrendItem> trends,
+      {double padding = 0, int selectedScore = 0}) {
     if (trends.isEmpty) return SizedBox.shrink();
 
-    final values = trends.map<double>((e) => (e.value ?? 0).toDouble()).toList();
-    double dataMin = values.reduce(min);
-    double dataMax = values.reduce(max);
+    final values = trends.map<double>((e) => (e.score ?? 0).toDouble()).toList();
 
-    // Threshold = ngưỡng mỗi bữa (TDEE / 3)
-    double threshold = _perMealThreshold;
+    // Threshold = mức điểm chuẩn
+    double threshold = 8.0;
 
-    // Y-axis range phải bao gồm cả data VÀ threshold
-    double minY = min(dataMin, threshold) * 0.8;
-    double maxY = max(dataMax, threshold) * 1.2;
-    if (minY < 0) minY = 0;
-    // Tránh minY == maxY
-    if ((maxY - minY) < 50) {
-      minY = max(0, minY - 50);
-      maxY = maxY + 50;
-    }
+    // Y-axis range (0-10)
+    double minY = 0.0;
+    double maxY = 10.0;
 
     final screenWidth = MediaQuery.of(context).size.width - padding;
     final bool shouldScroll = trends.length >= _breakingTypeNumber;
@@ -501,10 +549,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         ? max(minSp, maxSp - (trends.length - _breakingTypeNumber) * 2.5)
         : screenWidth / max(5, (trends.length - 1));
 
-    double chartWidth = shouldScroll ? pointSpacing * (trends.length - 1) : screenWidth;
+    double chartWidth =
+        shouldScroll ? pointSpacing * (trends.length - 1) : screenWidth;
     double minX = 0;
     // ensure at least 5 intervals on screen so lines between points are never too long
-    double maxX = shouldScroll ? trends.length.toDouble() - 1 : max(5.0, trends.length.toDouble() - 1);
+    double maxX = shouldScroll
+        ? trends.length.toDouble() - 1
+        : max(5.0, trends.length.toDouble() - 1);
 
     return LayoutBuilder(builder: (context, constraints) {
       final chartH = constraints.maxHeight - 16;
@@ -513,19 +564,26 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!_isChartReady && mounted) {
-          setState(() { _isChartReady = true; });
-          if (_focusIndex >= 0 && _focusIndex < trends.length && _shouldAutoScroll) _scrollToSelected();
+          setState(() {
+            _isChartReady = true;
+          });
+          if (_focusIndex >= 0 &&
+              _focusIndex < trends.length &&
+              _shouldAutoScroll) _scrollToSelected();
         }
       });
 
       return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Y-axis label — show selected calorie goal, aligned with threshold line
+        // Y-axis label — show selected score, aligned with data point
         Container(
-          width: 55, height: constraints.maxHeight,
+          width: 55,
+          height: constraints.maxHeight,
           child: Stack(children: [
             Positioned(
-              top: max(0, min(targetPx - 8, constraints.maxHeight - 20)), left: 0, right: 0,
-              child: Text('Mục tiêu\n${threshold.toInt()} Kcal',
+              top: max(0, min(targetPx - 8, constraints.maxHeight - 20)),
+              left: 0,
+              right: 0,
+              child: Text('Mức tốt\n${threshold.toInt()} điểm',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515, height: 1.2),
                   textAlign: TextAlign.left),
             ),
@@ -538,13 +596,16 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                   scrollDirection: Axis.horizontal,
                   controller: _scrollController,
                   child: Container(
-                    width: chartWidth, height: constraints.maxHeight,
+                    width: chartWidth,
+                    height: constraints.maxHeight,
                     padding: const EdgeInsets.all(8),
-                    child: _lineChart(trends, minX, maxX, minY, maxY, threshold),
+                    child:
+                        _lineChart(trends, minX, maxX, minY, maxY, threshold),
                   ),
                 )
               : Container(
-                  width: chartWidth, height: constraints.maxHeight,
+                  width: chartWidth,
+                  height: constraints.maxHeight,
                   padding: const EdgeInsets.all(8),
                   child: _lineChart(trends, minX, maxX, minY, maxY, threshold),
                 ),
@@ -553,24 +614,33 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     });
   }
 
-  Widget _lineChart(List<FoodCalorieTrendItem> trends,
-      double minX, double maxX, double minY, double maxY, double threshold) {
+  Widget _lineChart(List<FoodCalorieTrendItem> trends, double minX, double maxX,
+      double minY, double maxY, double threshold) {
     return LineChart(
       LineChartData(
-        minX: minX, maxX: maxX, minY: minY, maxY: maxY,
+        minX: minX,
+        maxX: maxX,
+        minY: minY,
+        maxY: maxY,
         lineBarsData: _linesBarData(trends),
         titlesData: FlTitlesData(show: false),
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
         extraLinesData: ExtraLinesData(extraLinesOnTop: true, horizontalLines: [
-          HorizontalLine(y: threshold, color: R.color.color0xff636A6B, strokeWidth: 1, dashArray: [4, 6]),
+          HorizontalLine(
+              y: threshold,
+              color: R.color.color0xff636A6B,
+              strokeWidth: 1,
+              dashArray: [4, 6]),
         ]),
         lineTouchData: LineTouchData(
           getTouchedSpotIndicator: (barData, indexes) => indexes.map((index) {
             return TouchedSpotIndicatorData(
               FlLine(color: Colors.transparent, strokeWidth: 0),
-              FlDotData(show: true,
-                getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
+              FlDotData(
+                show: true,
+                getDotPainter: (spot, percent, barData, index) =>
+                    FlDotCirclePainter(
                   radius: 6.5,
                   color: Color(0xFF4CAF50),
                   strokeWidth: 18,
@@ -588,7 +658,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             tooltipPadding: const EdgeInsets.only(bottom: 50),
             getTooltipItems: (spots) => spots.map((spot) {
               return LineTooltipItem(
-                '${formatNumber(spot.y)} kcal',
+                '${spot.y.toInt()} điểm\n${formatNumber(trends[spot.spotIndex].value ?? 0)} kcal',
                 TextStyle(color: toColor(trends[spot.spotIndex].colorCode), fontWeight: FontWeight.bold),
               );
             }).toList(),
@@ -603,15 +673,19 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   }
 
   // ── Touch ───────────────────────────────────────────────
-  void _touchCallback(FlTapUpEvent event, LineTouchResponse? lineTouch, List<FoodCalorieTrendItem> trends) {
+  void _touchCallback(FlTapUpEvent event, LineTouchResponse? lineTouch,
+      List<FoodCalorieTrendItem> trends) {
     if (!mounted) return;
     final now = DateTime.now();
 
-    if (_lastTapTime != null && now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
-      if (lineTouch?.lineBarSpots != null && lineTouch!.lineBarSpots!.isNotEmpty) {
+    if (_lastTapTime != null &&
+        now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
+      if (lineTouch?.lineBarSpots != null &&
+          lineTouch!.lineBarSpots!.isNotEmpty) {
         final touchedSpot = lineTouch.lineBarSpots!.first;
         if (touchedSpot.spotIndex == _focusIndex) {
-          NavigationUtil.navigatePage(context, DailyNutritionPage(type: 'input', id: null));
+          NavigationUtil.navigatePage(
+              context, DailyNutritionPage(type: 'input', id: null));
         }
       }
     } else {
@@ -642,7 +716,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     if (trends.isEmpty) return [];
     return [
       LineChartBarData(
-        spots: List.generate(trends.length, (i) => FlSpot(i.toDouble(), (trends[i].value ?? 0).toDouble())),
+        spots: List.generate(trends.length,
+            (i) => FlSpot(i.toDouble(), (trends[i].score ?? 0).toDouble())),
         isCurved: false,
         color: Color(0xFF4CAF50),
         barWidth: 2.5,
@@ -687,7 +762,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     periodFilterType = periodFilter;
     if (!mounted) return;
     BlocProvider.of<FoodBloc>(currentContext).add(FetchFoodCalorieTrend(
-      currentDateTime: (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+      currentDateTime:
+          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
       periodFilterType: periodFilterType.toString(),
     ));
   }
