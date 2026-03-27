@@ -188,8 +188,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                     top: 0,
                     right: 0,
                     child: IconButton(
-                        icon: Icon(Icons.close,
-                            color: R.color.color0xffBEC0C8),
+                        icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
                         onPressed: () {
                           Navigator.pop(ctx);
                         }),
@@ -216,6 +215,40 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
 
   void _acceptDose(TextEditingController controller, String text) {
     _lastValidDoseText[controller] = text;
+  }
+
+  bool _validateBeforeSubmit() {
+    if (_currentDoseTotal() <= _maxTotalQuantity + 1e-9) {
+      return true;
+    }
+
+    final doseControllers = <TextEditingController>[
+      _quantityInMorning,
+      _quantityInNoon,
+      _quantityInAfternoon,
+      _quantityInEvening,
+    ];
+
+    // Revert controllers that have unaccepted text first (typed by keyboard).
+    for (final controller in doseControllers) {
+      final lastValid = _lastValidDoseText[controller] ?? '0.0';
+      if (controller.text != lastValid) {
+        _revertDose(controller);
+      }
+    }
+
+    // If still invalid, keep reverting until valid (fallback safety).
+    if (_currentDoseTotal() > _maxTotalQuantity + 1e-9) {
+      for (final controller in doseControllers) {
+        _revertDose(controller);
+        if (_currentDoseTotal() <= _maxTotalQuantity + 1e-9) {
+          break;
+        }
+      }
+    }
+
+    _showExceedMaxWarning();
+    return false;
   }
 
   @override
@@ -1137,8 +1170,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       ]),
       child: GestureDetector(
           onTap: () {
-            print(
-                "Bottom sheet - morning controller ${_quantityInMorning.text} - parse: ${double.tryParse(_quantityInMorning.text)}");
+            FocusScope.of(context).unfocus();
+            if (!_submitBtnEnabled) return;
+            if (!_validateBeforeSubmit()) return;
             DosageModel dosage;
             if (FrequencyType.everyday == _selectedFrequency) {
               dosage = DosageModel(
@@ -1150,13 +1184,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 frequency: _selectedFrequency.index + 1,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-                quantityInMorning:
-                    double.tryParse(_quantityInMorning.text) ?? 0.0,
-                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-                quantityInAfternoon:
-                    double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-                quantityInNight:
-                    double.tryParse(_quantityInEvening.text) ?? 0.0,
+                quantityInMorning: _parseDoseText(_quantityInMorning.text),
+                quantityInNoon: _parseDoseText(_quantityInNoon.text),
+                quantityInAfternoon: _parseDoseText(_quantityInAfternoon.text),
+                quantityInNight: _parseDoseText(_quantityInEvening.text),
               );
             } else if (FrequencyType.weekDays == _selectedFrequency) {
               dosage = DosageModel(
@@ -1167,13 +1198,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 selectedDaysInWeek: _selectedDayIndexes,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-                quantityInMorning:
-                    double.tryParse(_quantityInMorning.text) ?? 0.0,
-                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-                quantityInAfternoon:
-                    double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-                quantityInNight:
-                    double.tryParse(_quantityInEvening.text) ?? 0.0,
+                quantityInMorning: _parseDoseText(_quantityInMorning.text),
+                quantityInNoon: _parseDoseText(_quantityInNoon.text),
+                quantityInAfternoon: _parseDoseText(_quantityInAfternoon.text),
+                quantityInNight: _parseDoseText(_quantityInEvening.text),
               );
             } else {
               dosage = DosageModel(
@@ -1184,13 +1212,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 everyOtherDayNumber: _everyOtherDayNumber,
                 quantityForDaysInWeek: _quantityOnDayInWeek,
                 quantityForEveryOtherDay: _quantityOnEveryOtherDay,
-                quantityInMorning:
-                    double.tryParse(_quantityInMorning.text) ?? 0.0,
-                quantityInNoon: double.tryParse(_quantityInNoon.text) ?? 0.0,
-                quantityInAfternoon:
-                    double.tryParse(_quantityInAfternoon.text) ?? 0.0,
-                quantityInNight:
-                    double.tryParse(_quantityInEvening.text) ?? 0.0,
+                quantityInMorning: _parseDoseText(_quantityInMorning.text),
+                quantityInNoon: _parseDoseText(_quantityInNoon.text),
+                quantityInAfternoon: _parseDoseText(_quantityInAfternoon.text),
+                quantityInNight: _parseDoseText(_quantityInEvening.text),
               );
             }
             Navigator.of(context).pop(dosage);
