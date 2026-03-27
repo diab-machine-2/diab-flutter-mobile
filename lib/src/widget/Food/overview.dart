@@ -35,12 +35,19 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   GlobalKey<FoodAISuggestionState> aiSuggestionKey = GlobalKey();
 
   bool _hasVisitedDetailTab = false;
+  final ValueNotifier<bool> _hasFoodData = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
     KpiNutritionTracking.firebaseSetup();
     _checkDetailTabVisitStatus();
+  }
+
+  @override
+  void dispose() {
+    _hasFoodData.dispose();
+    super.dispose();
   }
 
   void _checkDetailTabVisitStatus() async {
@@ -105,22 +112,55 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
               physics: const ClampingScrollPhysics(),
               padding: EdgeInsets.only(bottom: 100), // Space for fixed button
               children: [
-                FoodCalorieTrendChart(key: calorieTrendKey, periodFilterType: FoodDetailTabbarController.of(context)?.periodFilterType ?? 1),
-                FoodAISuggestion(
-                    key: aiSuggestionKey, initialPeriodFilterType: 1),
-                NutrientDistributionChart(
-                  key: nutrientDistributionKey,
-                  nutritionPercent: FoodDetailTabbarController.of(context)
-                      ?.widget
-                      .nutritionPercent,
-                  nutritionColors: FoodDetailTabbarController.of(context)
-                      ?.widget
-                      .nutritionColors,
+                Padding(
+                  padding: const EdgeInsets.only(top: 0, left: 16, right: 16),
+                  child: Column(
+                    children: [
+                      FoodCalorieTrendChart(
+                        key: calorieTrendKey,
+                        periodFilterType: FoodDetailTabbarController.of(context)?.periodFilterType ?? 1,
+                        onDataLoaded: (hasData) => _hasFoodData.value = hasData,
+                      ),
+                      ValueListenableBuilder<bool>(
+                        valueListenable: _hasFoodData,
+                        builder: (context, hasData, _) {
+                          if (!hasData) return SizedBox.shrink();
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(16),
+                                bottomRight: Radius.circular(16),
+                              ),
+                            ),
+                            child: FoodAISuggestion(
+                                key: aiSuggestionKey, initialPeriodFilterType: 1),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                // StarchChart(key: starchKey), // Hidden per user request
-
-                FoodDistributionChart(key: distributionKey),
-                MealDistributionWidget(key: mealDistributionKey),
+                ValueListenableBuilder<bool>(
+                  valueListenable: _hasFoodData,
+                  builder: (context, hasData, _) {
+                    if (!hasData) return SizedBox.shrink();
+                    return Column(children: [
+                      NutrientDistributionChart(
+                        key: nutrientDistributionKey,
+                        nutritionPercent: FoodDetailTabbarController.of(context)
+                            ?.widget
+                            .nutritionPercent,
+                        nutritionColors: FoodDetailTabbarController.of(context)
+                            ?.widget
+                            .nutritionColors,
+                      ),
+                      FoodDistributionChart(key: distributionKey),
+                      MealDistributionWidget(key: mealDistributionKey),
+                    ]);
+                  },
+                ),
+                SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: NutritionKnowledgeSection(),

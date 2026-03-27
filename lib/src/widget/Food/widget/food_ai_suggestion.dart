@@ -69,12 +69,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
-      margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,

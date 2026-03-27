@@ -109,8 +109,8 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
   Widget build(BuildContext context) {
     super.build(context);
 
-    // ALWAYS verify food data exists via API first
-    // SharedPreferences/navigation data only shown if API confirms food exists
+    // Prefer AI-analyzed data (navigation args or saved) over API data
+    // API data is used as fallback when no AI data is available
     return BlocProvider<FoodBloc>(
         create: (context) => FoodBloc(),
         child: BlocBuilder<FoodBloc, FoodState>(
@@ -132,28 +132,25 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
             nutrientData = state.nutrientPercent;
           }
 
+          // Priority 1: Navigation args (just analyzed a meal) - freshest data
+          if (widget.nutritionPercent != null && !_forceReload) {
+            return _buildMealScoreChart();
+          }
+          // Priority 2: SharedPreferences (persisted AI analysis)
+          if (_loadedSavedData && _savedNutritionPercent != null) {
+            return _buildSavedNutritionChart();
+          }
+          // Priority 3: API-calculated nutrient data
           if (nutrientData == null) {
             return Container(
                 height: 300,
                 child: Center(child: CircularProgressIndicator()));
           }
-
           // Check if all values are 0 (no food data) → hide chart completely
           final allZero = nutrientData.values.every((v) => v == 0);
           if (allZero) {
             return SizedBox.shrink();
           }
-
-          // Food exists! Prefer AI-analyzed data over API-calculated data
-          // 1. From navigation args (just analyzed a meal)
-          if (widget.nutritionPercent != null && !_forceReload) {
-            return _buildMealScoreChart();
-          }
-          // 2. From SharedPreferences (persisted AI analysis)
-          if (_loadedSavedData && _savedNutritionPercent != null) {
-            return _buildSavedNutritionChart();
-          }
-          // 3. Fallback to API-calculated nutrient data
           return _buildNutrientBars(nutrientData);
         }));
   }

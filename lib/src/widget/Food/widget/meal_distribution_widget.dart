@@ -130,7 +130,7 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Color(0xFFF5F5F5)),
+                                  color: Colors.white),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -147,12 +147,26 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                           color: R.color.black,
                                         ),
                                       ),
-                                      Text(
-                                        '$mealCount bữa ăn',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                          color: R.color.primaryGreyColor,
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: '$mealCount',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700,
+                                                color: R.color.black,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: ' bữa ăn',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                color: R.color.primaryGreyColor,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -202,43 +216,47 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                     });
 
                                     return Container(
-                                      height: 40,
+                                      height: 36,
                                       child: Row(
                                         children: [
-                                          // Unbalanced portion - Yellow (bad)
+                                          // Unbalanced portion - Yellow
                                           if (unbalancedPercent > 0)
                                             Expanded(
                                               flex: unbalancedPercent,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  color: Color(
-                                                      0xFFFDB913), // Yellow - chưa cân bằng
+                                                  color: Color(0xFFFDB913),
+                                                  borderRadius: BorderRadius.circular(10),
                                                 ),
-                                                alignment: Alignment.center,
+                                                alignment: Alignment.centerLeft,
+                                                padding: EdgeInsets.symmetric(horizontal: 14),
                                                 child: Text(
                                                   '$unbalancedPercent%',
                                                   style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 15,
                                                     fontWeight: FontWeight.w700,
                                                     color: Colors.white,
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          // Balanced portion - Green (good)
+                                          if (unbalancedPercent > 0 && balancedPercent > 0)
+                                            SizedBox(width: 3),
+                                          // Balanced portion - Green
                                           if (balancedPercent > 0)
                                             Expanded(
                                               flex: balancedPercent,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  color: Color(
-                                                      0xFF4CAF50), // Green - cân bằng
+                                                  color: Color(0xFF4CAF50),
+                                                  borderRadius: BorderRadius.circular(10),
                                                 ),
                                                 alignment: Alignment.center,
+                                                padding: EdgeInsets.symmetric(horizontal: 8),
                                                 child: Text(
                                                   '$balancedPercent%',
                                                   style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 15,
                                                     fontWeight: FontWeight.w700,
                                                     color: Colors.white,
                                                   ),
@@ -299,207 +317,124 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 16),
-                                  Divider(height: 1, color: Colors.grey[300]),
-                                  SizedBox(height: 16),
-                                  // Target Kcal with border
-                                  Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: Colors.grey[300]!,
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Mục tiêu Kcal',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400,
-                                            color: R.color.primaryGreyColor,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          '${totalEnergy.toInt()} Kcal',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w700,
-                                            color: R.color.mainColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(height: 16),
-                                  // Sample Menu Button
-                                  InkWell(
-                                    onTap: () async {
-                                      // Check if user has sample menu already
-                                      final repository = AppRepository();
-                                      final result =
-                                          await repository.getCurrentUserInfo();
-
-                                      result.when(
-                                        success: (userInfoResponse) {
-                                          if (userInfoResponse
-                                                  .data?.hasFoodMenu ==
-                                              true) {
-                                            // User has sample menu → Go directly to FoodMenuPage
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    FoodMenuPage(),
-                                              ),
-                                            );
-                                          } else {
-                                            // User doesn't have sample menu → Show intro page
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    IntroSampleMenuPage(),
-                                              ),
-                                            );
-                                          }
-                                        },
-                                        failure: (error) {
-                                          // On error, default to intro page
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  IntroSampleMenuPage(),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                            color: Colors.grey[300]!),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Image.asset(
-                                            R.drawable.im_food_intro,
-                                            width: 48,
-                                            height: 48,
-                                          ),
-                                          SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              'Thực đơn mẫu',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                                color: R.color.black,
-                                              ),
-                                            ),
-                                          ),
-                                          Icon(
-                                            Icons.chevron_right,
-                                            color: R.color.black,
-                                            size: 24,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  // SizedBox(height: 12),
-                                  // // Input Meal Section (icon + button) - Hidden because of fixed bottom button
-                                  // Row(
-                                  //   crossAxisAlignment:
-                                  //       CrossAxisAlignment.center,
-                                  //   children: [
-                                  //     // Icon with notification badge
-                                  //     Stack(
-                                  //       clipBehavior: Clip.none,
-                                  //       children: [
-                                  //         Container(
-                                  //           width: 48,
-                                  //           height: 48,
-                                  //           decoration: BoxDecoration(
-                                  //             color: R.color.mainColor
-                                  //                 .withOpacity(0.1),
-                                  //             borderRadius:
-                                  //                 BorderRadius.circular(12),
-                                  //           ),
-                                  //           child: Center(
-                                  //             child: Image.asset(
-                                  //               R.drawable.ic_view_detail,
-                                  //               width: 24,
-                                  //               height: 24,
-                                  //               color: R.color.mainColor,
-                                  //             ),
-                                  //           ),
-                                  //         ),
-                                  //         // Red notification dot
-                                  //         if (!_hasVisitedMealInput)
-                                  //           Positioned(
-                                  //             top: -2,
-                                  //             right: -2,
-                                  //             child: Container(
-                                  //               width: 12,
-                                  //               height: 12,
-                                  //               decoration: BoxDecoration(
-                                  //                 color: Colors.red,
-                                  //                 shape: BoxShape.circle,
-                                  //                 border: Border.all(
-                                  //                   color: Colors.white,
-                                  //                   width: 2,
-                                  //                 ),
-                                  //               ),
-                                  //             ),
-                                  //           ),
-                                  //       ],
-                                  //     ),
-                                  //     SizedBox(width: 12),
-                                  //     // Large Button
-                                  //     Expanded(
-                                  //       child: ElevatedButton(
-                                  //         onPressed: () {
-                                  //           _markMealInputAsVisited();
-                                  //           // TODO: Navigate to add meal
-                                  //         },
-                                  //         style: ElevatedButton.styleFrom(
-                                  //           backgroundColor: R.color.mainColor,
-                                  //           shape: RoundedRectangleBorder(
-                                  //             borderRadius:
-                                  //                 BorderRadius.circular(100),
-                                  //           ),
-                                  //           padding: EdgeInsets.symmetric(
-                                  //               vertical: 18),
-                                  //           elevation: 0,
-                                  //         ),
-                                  //         child: Text(
-                                  //           'Nhập bữa ăn',
-                                  //           style: TextStyle(
-                                  //             fontSize: 16,
-                                  //             fontWeight: FontWeight.w700,
-                                  //             color: Colors.white,
-                                  //           ),
-                                  //         ),
-                                  //       ),
-                                  //     ),
-                                  //   ],
-                                  // ),
                                 ],
                               ),
                             ),
+                      // Mục tiêu Kcal - separate card
+                      SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Mục tiêu Kcal',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: R.color.primaryGreyColor,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    '${totalEnergy.toInt()} Kcal',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.mainColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.edit_outlined,
+                              color: Colors.grey[400],
+                              size: 22,
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Thực đơn mẫu - separate card
+                      SizedBox(height: 12),
+                      InkWell(
+                        onTap: () async {
+                          final repository = AppRepository();
+                          final result =
+                              await repository.getCurrentUserInfo();
+                          result.when(
+                            success: (userInfoResponse) {
+                              if (userInfoResponse.data?.hasFoodMenu ==
+                                  true) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FoodMenuPage(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        IntroSampleMenuPage(),
+                                  ),
+                                );
+                              }
+                            },
+                            failure: (error) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      IntroSampleMenuPage(),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                R.drawable.im_food_intro,
+                                width: 48,
+                                height: 48,
+                              ),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Thực đơn mẫu',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    color: R.color.black,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: R.color.black,
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 );

@@ -19,9 +19,11 @@ class FoodCalorieTrendChart extends StatefulWidget {
   FoodCalorieTrendChart({
     Key? key,
     required this.periodFilterType,
+    this.onDataLoaded,
   }) : super(key: key);
 
   final int periodFilterType;
+  final void Function(bool hasData)? onDataLoaded;
 
   @override
   FoodCalorieTrendChartState createState() => FoodCalorieTrendChartState();
@@ -61,8 +63,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     if (retry > 20) { _shouldAutoScroll = false; return; }
 
     final bool shouldScroll = trends.length >= _breakingTypeNumber;
-    const double maxSpacing = 60.0;
-    const double minSpacing = 25.0;
+    const double maxSpacing = 12.0;
+    const double minSpacing = 12.0;
     final screenWidth = MediaQuery.of(context).size.width - 32;
     double pointSpacing = shouldScroll
         ? max(minSpacing, maxSpacing - (trends.length - _breakingTypeNumber) * 2.5)
@@ -188,7 +190,10 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             _perMealThreshold = state.perMealThreshold;
             final newTrends = state.items;
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) _updateFocusIndexWithFallback(newTrends);
+              if (mounted) {
+                _updateFocusIndexWithFallback(newTrends);
+                widget.onDataLoaded?.call(newTrends.isNotEmpty);
+              }
             });
           }
 
@@ -208,27 +213,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                 });
               }
             },
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [R.color.white, R.color.white.withAlpha(0)],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  stops: const [0.6, 1.0],
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 16),
-                  _sectionTrending(),
-                  const SizedBox(height: 16),
-                ],
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 16),
+                _sectionTrending(),
+                const SizedBox(height: 16),
+              ],
             ),
           );
         },
@@ -242,16 +233,70 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     return _sectionTrendingLess(trends);
   }
 
+  bool get hasData => trends.isNotEmpty;
+
   Widget _buildEmptyState() {
-    return Container(
-      height: 150,
-      child: Center(
-        child: Text(
-          'Chưa có dữ liệu dinh dưỡng trong ${getLabel()}',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: R.color.textDark),
+    String periodText = '';
+    switch (periodFilterType) {
+      case 1: periodText = '7'; break;
+      case 2: periodText = '14'; break;
+      case 3: periodText = '30'; break;
+      case 4: periodText = '90'; break;
+      default: periodText = '7';
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Arrows + empty text
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(width: 16),
+            _arrowButton(Icons.chevron_left, false, () {}),
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Không có dữ liệu\ntrong $periodText ngày gần nhất',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: R.color.textDark,
+                  ),
+                ),
+              ),
+            ),
+            _arrowButton(Icons.chevron_right, false, () {}),
+            const SizedBox(width: 16),
+          ],
         ),
-      ),
+        const SizedBox(height: 40),
+        // Score label + dashed line — same layout as real chart
+        SizedBox(
+          height: 30,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Y-axis column — same width as real chart
+              SizedBox(
+                width: 55 + 16, // 55px column + left padding
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Text('8điểm',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515)),
+                ),
+              ),
+              // Dashed line fills rest
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: DashLine(color: R.color.color0xff636A6B),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -447,7 +492,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
     final screenWidth = MediaQuery.of(context).size.width - padding;
     final bool shouldScroll = trends.length >= _breakingTypeNumber;
-    const double maxSp = 60.0, minSp = 25.0;
+    const double maxSp = 12.0, minSp = 12.0;
 
     double pointSpacing = shouldScroll
         ? max(minSp, maxSp - (trends.length - _breakingTypeNumber) * 2.5)
@@ -517,17 +562,15 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           HorizontalLine(y: threshold, color: R.color.color0xff636A6B, strokeWidth: 1, dashArray: [8, 4]),
         ]),
         lineTouchData: LineTouchData(
-          getTouchLineStart: (_, __) => -double.infinity,
-          getTouchLineEnd: (_, __) => double.infinity,
           getTouchedSpotIndicator: (barData, indexes) => indexes.map((index) {
             return TouchedSpotIndicatorData(
-              FlLine(color: toColor(trends[index].colorCode), strokeWidth: 0.5),
+              FlLine(color: Colors.transparent, strokeWidth: 0),
               FlDotData(show: true,
                 getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
                   radius: 6.5,
-                  color: toColor(trends[index].colorCode),
+                  color: Color(0xFF4CAF50),
                   strokeWidth: 18,
-                  strokeColor: toColor(trends[index].colorCode).withValues(alpha: 0.3),
+                  strokeColor: Color(0xFF4CAF50).withValues(alpha: 0.3),
                 ),
               ),
             );
@@ -597,19 +640,24 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       LineChartBarData(
         spots: List.generate(trends.length, (i) => FlSpot(i.toDouble(), (trends[i].value ?? 0).toDouble())),
         isCurved: false,
-        color: Color(0xFF008479),
-        barWidth: 1.5,
+        color: Color(0xFF4CAF50),
+        barWidth: 2.5,
         isStrokeCapRound: false,
         dotData: FlDotData(
           show: true,
           checkToShowDot: (_, __) => true,
           getDotPainter: (spot, percent, barData, index) {
+            final isSelected = index == _focusIndex;
+            // Green for balanced, yellow for unbalanced
+            final dotColor = (trends[index].colorCode == '#008479')
+                ? Color(0xFF4CAF50)
+                : Color(0xFFFDB913);
             return FlDotCirclePainter(
-              radius: 3,
-              color: toColor(trends[index].colorCode),
-              strokeWidth: index == _focusIndex ? 6 : 0,
-              strokeColor: index == _focusIndex
-                  ? toColor(trends[index].colorCode).withValues(alpha: 0.3)
+              radius: isSelected ? 5 : 3.5,
+              color: dotColor,
+              strokeWidth: isSelected ? 8 : 0,
+              strokeColor: isSelected
+                  ? dotColor.withValues(alpha: 0.3)
                   : Colors.transparent,
             );
           },
