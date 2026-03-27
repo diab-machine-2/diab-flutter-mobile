@@ -97,7 +97,7 @@ class MedicineClient extends FetchClient {
       'ImagesPrescriptionIds': jsonEncode(prescription.imagesPrescription)
     };
 
-    log('params: ${params}');
+    log('params: ${jsonEncode(params)}');
 
     try {
       final response = await super.patchHttp(

@@ -105,7 +105,7 @@ class InputOptionItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
-        height: 126,
+        constraints: const BoxConstraints(minHeight: 134),
         decoration: BoxDecoration(
           color: const Color(0xffF4F7F7),
           borderRadius: BorderRadius.circular(12),
@@ -116,10 +116,13 @@ class InputOptionItem extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -127,6 +130,8 @@ class InputOptionItem extends StatelessWidget {
                       )),
                   const SizedBox(height: 4),
                   Text(description,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w400,

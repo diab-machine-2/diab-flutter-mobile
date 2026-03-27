@@ -55,8 +55,8 @@ class _PrescriptionListPageState extends State<PrescriptionListPage>
   void initState() {
     super.initState();
 
-    bottomIndex = widget.initialBottomIndex ?? 1;
-    if (bottomIndex < 0 || bottomIndex > 1) bottomIndex = 1;
+    bottomIndex = widget.initialBottomIndex ?? 0;
+    if (bottomIndex < 0 || bottomIndex > 1) bottomIndex = 0;
 
     // Initialize with today's date.
     final currentDateTime = DateTime.now();
