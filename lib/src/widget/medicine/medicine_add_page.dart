@@ -37,6 +37,7 @@ class MedicineAddPage extends StatefulWidget {
   final MedicineTabletModel? medicineTablet;
   final MedicineItemModel? medicine;
   final int? index;
+
   /// True when editing a medicine coming from PrescriptionMode.reuse.
   /// In this case, we should treat the edited quantity as the original
   /// amount (not remain), same as create mode.
@@ -80,8 +81,10 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   bool _submitBtnEnabled = false;
 
   bool isValid() {
-    if ((_dosage?.quantityInMorning ?? 0) == 0 && (_dosage?.quantityInNoon ?? 0) == 0
-        && (_dosage?.quantityInAfternoon ?? 0) == 0 && (_dosage?.quantityInNight ?? 0) == 0) return false;
+    if ((_dosage?.quantityInMorning ?? 0) == 0 &&
+        (_dosage?.quantityInNoon ?? 0) == 0 &&
+        (_dosage?.quantityInAfternoon ?? 0) == 0 &&
+        (_dosage?.quantityInNight ?? 0) == 0) return false;
     // if (_frequency == 2 && _customDay.isEmpty) return false;
     // if (_frequency == 3 && _breakDay <= 0) return false;
 
@@ -103,7 +106,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
     //Mode create
     _selectedMedication = MedicineItemModel(
       id: widget.medicineTablet?.id ?? widget.medicine?.id ?? '',
-      medicationName: widget.medicineTablet?.name ?? widget.medicine?.medicationName ?? '',
+      medicationName:
+          widget.medicineTablet?.name ?? widget.medicine?.medicationName ?? '',
     );
     _amount = widget.medicine?.remain ?? widget.medicine?.amount ?? 0.0;
     _quantityController.text = _amount == _amount.roundToDouble()
@@ -139,20 +143,25 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         quantityInNoon: _selectedMedication.midDay ?? 0.0,
         quantityInAfternoon: _selectedMedication.afternoon ?? 0.0,
         quantityInNight: _selectedMedication.night ?? 0.0,
-        quantityForDaysInWeek: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0.0),
-        quantityForEveryOtherDay: (_selectedMedication.remain ?? _selectedMedication.amount ?? 0.0),
+        quantityForDaysInWeek:
+            (_selectedMedication.remain ?? _selectedMedication.amount ?? 0.0),
+        quantityForEveryOtherDay:
+            (_selectedMedication.remain ?? _selectedMedication.amount ?? 0.0),
         selectedDaysInWeek: !isValid
             ? []
-            : (_selectedMedication.customDay ?? '').split(',').map(int.parse).toList(),
+            : (_selectedMedication.customDay ?? '')
+                .split(',')
+                .map(int.parse)
+                .toList(),
         everyOtherDayNumber: (_selectedMedication.breakDay ?? 0).toInt(),
       );
       _submitBtnEnabled = true;
 
       final images = (_selectedMedication.imagesPatientMedications ?? [])
           .map((note) => ImagesModel(
-        id: note.id,
-        url: _buildFullUrl(note.id),
-      ))
+                id: note.id,
+                url: _buildFullUrl(note.id),
+              ))
           .toList();
       if (images.isEmpty) {
         _selectedMedication.isExistImage = false;
@@ -160,7 +169,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         _selectedMedication.isExistImage = true;
       }
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _sectionAddNoteKey.currentState!.updateFilesAndNote(images, _selectedMedication.note ?? '');
+        _sectionAddNoteKey.currentState!
+            .updateFilesAndNote(images, _selectedMedication.note ?? '');
       });
     }
   }
@@ -254,7 +264,13 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             everyOtherDayNumber: dosage.everyOtherDayNumber,
             quantityForEveryOtherDay: currentAmount,
           )
-        : null;
+        : DosageModel(
+            // Default values for add mew medicine
+            momentName: R.string.truoc_an.tr(),
+            frequencyName: R.string.everyday.tr(),
+            quantityForDaysInWeek: currentAmount,
+            quantityForEveryOtherDay: currentAmount,
+          );
 
     final maxTotalQuantity = double.tryParse(_quantityController.text.replaceAll(',', '.')) ?? _amount;
 
@@ -427,7 +443,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
       midDay: _dosage?.quantityInNoon,
       afternoon: _dosage?.quantityInAfternoon,
       night: _dosage?.quantityInNight,
-      customDay: _dosage?.selectedDaysInWeek.join(','),
+      customDay:
+          _dosage?.selectedDaysInWeek.map(_normalizeWeekDayValue).join(','),
       breakDay: _dosage?.everyOtherDayNumber.toDouble(),
       unit: _unit.getName(),
     );
@@ -466,6 +483,11 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
 
       Navigator.pop(context, _selectedMedication);
     }
+  }
+
+  int _normalizeWeekDayValue(int value) {
+    if (value < 0) return 0;
+    return value % 7;
   }
 
   // Prescription Card
@@ -508,9 +530,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                 const SizedBox(height: 20.0),
                 _buildDosageSection(),
               ],
-            )
-        )
-    );
+            )));
   }
 
   Widget _buildSectionTitle(String title) {
@@ -539,13 +559,11 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         decoration: InputDecoration(
           filled: false,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: BorderSide(
-              width: 1,
-              color: const Color(0xFFDADEDF),
-              style: BorderStyle.solid
-            )
-          ),
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                  width: 1,
+                  color: const Color(0xFFDADEDF),
+                  style: BorderStyle.solid)),
         ),
         onChanged: (value) {
           // _prescription.prescriptionName = value;
@@ -569,8 +587,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
             padding: (index == 0)
                 ? const EdgeInsets.only(left: 12.0, right: 1.5)
                 : (index == _medicineUnits.length - 1)
-                ? const EdgeInsets.only(left: 1.5, right: 12.0)
-                : const EdgeInsets.symmetric(horizontal: 1.5),
+                    ? const EdgeInsets.only(left: 1.5, right: 12.0)
+                    : const EdgeInsets.symmetric(horizontal: 1.5),
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -608,83 +626,84 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   // Quantity
   Widget _buildQuantitySelector() {
     return SizedBox(
-      width: double.infinity,
-      height: 36,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            // Số thuốc hiện có
-            child: _buildSectionTitle(R.string.current_medicine_quantity.tr())
-          ),
-          GestureDetector(
-            onTap: _decrementQuantity,
-            child: Container(
-              width: 34,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Color(0xFFF4F7F7),
-                borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
-              ),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                width: 10,
-                height: 2,
-                R.icons.ic_minus,
-              ),
-            ),
-          ),
-          Container(
-            width: 60,
-            height: 36,
-            alignment: Alignment.center,
-            child: TextField(
-              controller: _quantityController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-              ],
-              textAlign: TextAlign.center,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: '0.0',
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _amount = double.tryParse(value) ?? 0.0;
-                  _syncQuantityToMedication();
-                  if (_amount == 0 && _submitBtnEnabled == true) {
-                    _submitBtnEnabled = false;
-                  } else if (_amount > 0 && _submitBtnEnabled == false) {
-                    _submitBtnEnabled = true;
-                  }
-                });
-              },
-            )
-          ),
-          GestureDetector(
-            onTap: _incrementQuantity,
-            child: Container(
-              width: 34,
-              height: 32,
-              decoration: BoxDecoration(
-                color: Color(0xFFF4F7F7),
-                borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
-              ),
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                R.icons.ic_plus,
-                width: 14,
-                height: 14,
+        width: double.infinity,
+        height: 36,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+                // Số thuốc hiện có
+                child: _buildSectionTitle(
+                    R.string.current_medicine_quantity.tr())),
+            GestureDetector(
+              onTap: _decrementQuantity,
+              child: Container(
+                width: 34,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Color(0xFFF4F7F7),
+                  borderRadius: BorderRadius.horizontal(
+                      left: Radius.circular(4), right: Radius.zero),
+                ),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  width: 10,
+                  height: 2,
+                  R.icons.ic_minus,
+                ),
               ),
             ),
-          ),
-          SizedBox(width: 12.0),
-        ],
-      )
-    );
+            Container(
+                width: 60,
+                height: 36,
+                alignment: Alignment.center,
+                child: TextField(
+                  controller: _quantityController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                  ],
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: '0.0',
+                    contentPadding: EdgeInsets.zero,
+                    isDense: true,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _amount = double.tryParse(value) ?? 0.0;
+                      _syncQuantityToMedication();
+                      if (_amount == 0 && _submitBtnEnabled == true) {
+                        _submitBtnEnabled = false;
+                      } else if (_amount > 0 && _submitBtnEnabled == false) {
+                        _submitBtnEnabled = true;
+                      }
+                    });
+                  },
+                )),
+            GestureDetector(
+              onTap: _incrementQuantity,
+              child: Container(
+                width: 34,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Color(0xFFF4F7F7),
+                  borderRadius: BorderRadius.horizontal(
+                      left: Radius.zero, right: Radius.circular(4)),
+                ),
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  R.icons.ic_plus,
+                  width: 14,
+                  height: 14,
+                ),
+              ),
+            ),
+            SizedBox(width: 12.0),
+          ],
+        ));
   }
 
   // Dosage - Liều dùng
@@ -744,49 +763,46 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         else
           Padding(
             padding: EdgeInsets.fromLTRB(12, 4, 12, 0),
-            child: Row(
-                children: [
-                  SvgPicture.asset(
-                    R.icons.ic_information,
-                    width: 14,
-                    height: 14,
-                    semanticsLabel: 'caution',
-                  ),
-                  SizedBox(width: 3),
-                  Text(
-                    R.string.please_input_dosage.tr(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      height: 1.50,
-                      letterSpacing: 0.2,
-                      color: Color(0xFFAF0000),
-                    ),
-                  ),
-                ]
-            ),
+            child: Row(children: [
+              SvgPicture.asset(
+                R.icons.ic_information,
+                width: 14,
+                height: 14,
+                semanticsLabel: 'caution',
+              ),
+              SizedBox(width: 3),
+              Text(
+                R.string.please_input_dosage.tr(),
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  height: 1.50,
+                  letterSpacing: 0.2,
+                  color: Color(0xFFAF0000),
+                ),
+              ),
+            ]),
           ),
         SizedBox(height: 16),
       ],
     );
   }
 
-  List<Widget> _buildDosageContentItems(List<DosageModel> dosages, MedicineUnit medicineUnit) {
+  List<Widget> _buildDosageContentItems(
+      List<DosageModel> dosages, MedicineUnit medicineUnit) {
     List<Widget> widgets = [];
 
     for (final dosage in dosages) {
       // if (dosage.frequency == 0) {
-        widgets.addAll(
-          _buildEveryDayDosage(
-            dosage.momentName,
-            dosage.quantityInMorning,
-            dosage.quantityInNoon,
-            dosage.quantityInAfternoon,
-            dosage.quantityInNight,
-            dosage.frequencyName,
-            medicineUnit.getName(),
-          )
-        );
+      widgets.addAll(_buildEveryDayDosage(
+        dosage.momentName,
+        dosage.quantityInMorning,
+        dosage.quantityInNoon,
+        dosage.quantityInAfternoon,
+        dosage.quantityInNight,
+        dosage.frequencyName,
+        medicineUnit.getName(),
+      ));
       // } else if (dosage.frequency == 1) {
       //   widgets.addAll(
       //     _buildDayInWeekDosage(
@@ -822,52 +838,44 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
   ) {
     List<Widget> dosageWidgets = [];
     if (quantityInMorning > 0) {
-      dosageWidgets.add(
-          _buildDosageRowItemForEveryDay(
-            R.icons.ic_morning,
-            R.string.the_morning.tr(),
-            timeOfUse,
-            quantityInMorning,
-            frequencyName,
-            medicineUnit,
-          )
-      );
+      dosageWidgets.add(_buildDosageRowItemForEveryDay(
+        R.icons.ic_morning,
+        R.string.the_morning.tr(),
+        timeOfUse,
+        quantityInMorning,
+        frequencyName,
+        medicineUnit,
+      ));
     }
     if (quantityInNoon > 0) {
-      dosageWidgets.add(
-          _buildDosageRowItemForEveryDay(
-            R.icons.ic_noon,
-            R.string.the_noon.tr(),
-            timeOfUse,
-            quantityInNoon,
-            frequencyName,
-            medicineUnit,
-          )
-      );
+      dosageWidgets.add(_buildDosageRowItemForEveryDay(
+        R.icons.ic_noon,
+        R.string.the_noon.tr(),
+        timeOfUse,
+        quantityInNoon,
+        frequencyName,
+        medicineUnit,
+      ));
     }
     if (quantityInAfternoon > 0) {
-      dosageWidgets.add(
-          _buildDosageRowItemForEveryDay(
-            R.icons.ic_afternoon,
-            R.string.the_afternoon.tr(),
-            timeOfUse,
-            quantityInAfternoon,
-            frequencyName,
-            medicineUnit,
-          )
-      );
+      dosageWidgets.add(_buildDosageRowItemForEveryDay(
+        R.icons.ic_afternoon,
+        R.string.the_afternoon.tr(),
+        timeOfUse,
+        quantityInAfternoon,
+        frequencyName,
+        medicineUnit,
+      ));
     }
     if (quantityInNight > 0) {
-      dosageWidgets.add(
-          _buildDosageRowItemForEveryDay(
-            R.icons.ic_night,
-            R.string.the_night.tr(),
-            timeOfUse,
-            quantityInNight,
-            frequencyName,
-            medicineUnit,
-          )
-      );
+      dosageWidgets.add(_buildDosageRowItemForEveryDay(
+        R.icons.ic_night,
+        R.string.the_night.tr(),
+        timeOfUse,
+        quantityInNight,
+        frequencyName,
+        medicineUnit,
+      ));
     }
     return dosageWidgets;
   }
@@ -877,53 +885,54 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
    * @param timeOfUse: "Trước ăn", "Sau ăn", "Trong khi ăn"
    */
   Widget _buildDosageRowItemForEveryDay(
-      String iconRes,
-      String timeOfDay,
-      String timeOfUse,
-      double quantity,
-      String frequencyName,
-      String medicineUnit,
+    String iconRes,
+    String timeOfDay,
+    String timeOfUse,
+    double quantity,
+    String frequencyName,
+    String medicineUnit,
   ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-      child: Row(
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SvgPicture.asset(
+          iconRes,
+          height: 24,
+          width: 24,
+          semanticsLabel: timeOfDay,
+        ),
+        SizedBox(width: 8),
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset(
-              iconRes,
-              height: 24,
-              width: 24,
-              semanticsLabel: timeOfDay,
+            Text(
+              timeOfDay,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 15,
+                height: 1.46,
+                letterSpacing: 0.4,
+                color: Color(0xFF111515),
+              ),
             ),
-            SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  timeOfDay,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 15,
-                    height: 1.46,
-                    letterSpacing: 0.4,
-                    color: Color(0xFF111515),
-                  ),
-                ),
-                SizedBox(height: 4),
-                _buildDosageContent(timeOfUse, timeOfDay, quantity, frequencyName, medicineUnit)
-              ],
-            ),
-          ]
-      ),
+            SizedBox(height: 4),
+            _buildDosageContent(
+                timeOfUse, timeOfDay, quantity, frequencyName, medicineUnit)
+          ],
+        ),
+      ]),
     );
   }
 
-  Widget _buildDosageContent(String timeOfUse, String timeFrequency, double quantity, String frequencyName, String unit) {
+  Widget _buildDosageContent(String timeOfUse, String timeFrequency,
+      double quantity, String frequencyName, String unit) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          quantity == quantity.truncateToDouble() ? "${quantity.toInt()} $unit" : "$quantity $unit",
+          quantity == quantity.truncateToDouble()
+              ? "${quantity.toInt()} $unit"
+              : "$quantity $unit",
           style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 15,
@@ -1009,7 +1018,8 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset(R.drawable.ic_back_icon, width: 64, height: 64),
+                        Image.asset(R.drawable.ic_back_icon,
+                            width: 64, height: 64),
                         Padding(
                           padding: const EdgeInsets.only(top: 16.0),
                           child: Text(
@@ -1113,5 +1123,4 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
         ) ??
         false;
   }
-
 }

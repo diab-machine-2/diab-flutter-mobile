@@ -797,7 +797,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
   List<Widget> _buildDayInWeekController() {
     List<Widget> chips = [];
     for (int i = 0; i < _weekDays.length; i++) {
-      final bool isSelected = _selectedDayIndexes.contains(i);
+      final weekDayValue = _weekDayValueFromUiIndex(i);
+      final bool isSelected = _selectedDayIndexes.contains(weekDayValue);
       final day = _weekDays[i];
       final chip = ChoiceChip(
         label: Text(
@@ -815,9 +816,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         onSelected: (bool selected) {
           setState(() {
             if (selected) {
-              _selectedDayIndexes.add(i);
+              _selectedDayIndexes.add(weekDayValue);
             } else {
-              _selectedDayIndexes.remove(i);
+              _selectedDayIndexes.remove(weekDayValue);
             }
           });
           _checkEnableSubmitBtnState();
@@ -944,6 +945,13 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         ),
       const SizedBox(height: 20),
     ];
+  }
+
+  // Backend weekday mapping:
+  // 0 = Sunday, 1 = Monday (T2), ..., 6 = Saturday (T7)
+  int _weekDayValueFromUiIndex(int uiIndex) {
+    if (uiIndex == 6) return 0;
+    return uiIndex + 1;
   }
 
   List<Widget> _buildEveryOtherDayController() {
