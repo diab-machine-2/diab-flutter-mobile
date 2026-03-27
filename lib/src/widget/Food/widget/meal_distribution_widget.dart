@@ -90,6 +90,7 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
           FoodDistributeModel? model;
           double totalEnergy = 0;
           int mealCount = 0;
+          int balancedMealCount = 0;
 
           if (state is FoodInitial) {
             BlocProvider.of<FoodBloc>(context).add(FetchStatisticDistribute(
@@ -105,8 +106,13 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
           if (state is FoodStatisticDistributeLoaded) {
             model = state.model;
             final data = model!.energyChart;
-            // Count only meals with actual data
-            mealCount = data.where((item) => (item.value ?? 0) > 0).length;
+            mealCount = state.totalMealCount ?? 0;
+            balancedMealCount = state.balancedCount ?? 0;
+
+            if (mealCount == 0) {
+              // Fallback if raw input count fails
+              mealCount = data.where((item) => (item.value ?? 0) > 0).length;
+            }
 
             totalEnergy = 0;
             data.forEach((element) {
@@ -174,28 +180,10 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                   SizedBox(height: 16),
                                   // Horizontal bar chart
                                   Builder(builder: (context) {
-                                    final data = model!.energyChart;
-                                    int balancedCount = 0;
-                                    int actualMealCount = 0;
-
-                                    data.forEach((element) {
-                                      // Only count meals with actual data
-                                      if ((element.value ?? 0) > 0) {
-                                        actualMealCount++;
-                                        // A meal is considered "balanced" in distribution if it contains >= 15% of total energy
-                                        if (element.percentValue != null && element.percentValue! >= 15) {
-                                          balancedCount++;
-                                        }
-                                      }
-                                    });
-
-                                    int balancedPercent = actualMealCount > 0
-                                        ? ((balancedCount / actualMealCount) *
-                                                100)
-                                            .round()
+                                    int balancedPercent = mealCount > 0
+                                        ? ((balancedMealCount / mealCount) * 100).round()
                                         : 0;
-                                    int unbalancedPercent =
-                                        100 - balancedPercent;
+                                    int unbalancedPercent = 100 - balancedPercent;
 
                                     return Container(
                                       height: 36,

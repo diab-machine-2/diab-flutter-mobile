@@ -53,8 +53,6 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   bool _shouldAutoScroll = true;
   bool _didInitPeriod = false;
 
-  double _perMealThreshold = 667;
-
   final ScrollController _scrollController = ScrollController();
 
   // ── Scroll ──────────────────────────────────────────────
@@ -203,7 +201,6 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           }
 
           if (state is FoodCalorieTrendLoaded) {
-            _perMealThreshold = state.perMealThreshold;
             final newTrends = state.items;
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) {
@@ -531,8 +528,6 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   Widget _buildChart(List<FoodCalorieTrendItem> trends,
       {double padding = 0, int selectedScore = 0}) {
     if (trends.isEmpty) return SizedBox.shrink();
-
-    final values = trends.map<double>((e) => (e.score ?? 0).toDouble()).toList();
 
     // Threshold = mức điểm chuẩn
     double threshold = 8.0;

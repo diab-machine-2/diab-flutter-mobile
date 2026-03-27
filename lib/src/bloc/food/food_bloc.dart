@@ -284,9 +284,68 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
+
+      int balancedCount = 0;
+      int totalMealCount = 0;
+
+      try {
+        final inputData = await client.fetchInput(
+            currentDateTime ??
+                (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+            periodFilterType,
+            1,
+            size: 100);
+
+        double energyGoal =
+            (AppSettings.userInfo?.energyGoal ?? 2000).toDouble();
+        double perMealThreshold = energyGoal / 3.0;
+
+        for (final dayItem in inputData.inputs) {
+          for (final mealItem in dayItem.mealItems) {
+            for (final foodInput in mealItem.inputs) {
+              totalMealCount++;
+
+              double totalCalorie = 0.0;
+              double totalCarbs = 0.0;
+              double totalProtein = 0.0;
+              double totalFat = 0.0;
+              for (final food in foodInput.foods) {
+                final double portion = (food.portion ?? 1).toDouble();
+                totalCalorie += (food.calorie ?? 0).toDouble() * portion;
+                totalCarbs += (food.glucose ?? 0).toDouble() * portion;
+                totalProtein += (food.protein ?? 0).toDouble() * portion;
+                totalFat += (food.lipid ?? 0).toDouble() * portion;
+              }
+
+              final double? inputCal = foodInput.calorie?.toDouble();
+              if (inputCal != null && inputCal > 0) {
+                totalCalorie = inputCal;
+              }
+
+              int score = MealScoreCalculator.calculateScore(
+                totalCalories: totalCalorie,
+                goalCalories: perMealThreshold,
+                carbs: totalCarbs,
+                protein: totalProtein,
+                fat: totalFat,
+              );
+
+              if (score >= 8) {
+                balancedCount++;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // Silently fallback if input counting fails, distribution will just show 0
+      }
+
       yield FoodStatisticDistributeLoaded(
-          model: await client.fetchStatisticDistribute(
-              currentDateTime, periodFilterType));
+        model: await client.fetchStatisticDistribute(
+            currentDateTime, periodFilterType),
+        balancedCount: balancedCount,
+        totalMealCount: totalMealCount,
+      );
     } catch (e, _) {
       if (e is Error) {
         yield FoodError(message: e.message);

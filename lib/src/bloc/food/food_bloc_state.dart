@@ -60,8 +60,10 @@ class FoodStatisticTrendLoaded extends FoodState {
 
 class FoodStatisticDistributeLoaded extends FoodState {
   final FoodDistributeModel? model;
+  final int? balancedCount;
+  final int? totalMealCount;
 
-  FoodStatisticDistributeLoaded({this.model});
+  FoodStatisticDistributeLoaded({this.model, this.balancedCount, this.totalMealCount});
 }
 
 // State cho phân bổ theo nhóm thực phẩm (Admin API)
