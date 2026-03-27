@@ -519,14 +519,14 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       });
 
       return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Y-axis label — show selected score, aligned with data point
+        // Y-axis label — show selected calorie goal, aligned with threshold line
         Container(
           width: 55, height: constraints.maxHeight,
           child: Stack(children: [
             Positioned(
               top: max(0, min(targetPx - 8, constraints.maxHeight - 20)), left: 0, right: 0,
-              child: Text('${selectedScore}điểm',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515),
+              child: Text('Mục tiêu\n${threshold.toInt()} Kcal',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515, height: 1.2),
                   textAlign: TextAlign.left),
             ),
           ]),
