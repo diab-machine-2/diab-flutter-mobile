@@ -176,8 +176,13 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
 
       widgets.add(
         Padding(
-          key: i == 0 && widget.firstMedicineKey != null
-              ? widget.firstMedicineKey // 👈 gắn key cho item đầu tiên
+          // One GlobalKey per tree: only the first med of the *first* prescription
+          // may use [firstMedicineKey] (tutorial). Using i==0 alone duplicates the
+          // key when a session has multiple prescriptions → "Multiple widgets used the same GlobalKey".
+          key: prescriptionIndex == 0 &&
+                  i == 0 &&
+                  widget.firstMedicineKey != null
+              ? widget.firstMedicineKey
               : null,
           padding: i == 0
               ? const EdgeInsets.fromLTRB(0, 12, 0, 16)
