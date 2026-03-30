@@ -869,19 +869,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         R.string.current_medicine_quantity.tr(),
         _quantityOnDayInWeek,
         '0.0',
-        () => _updateCounter(() {
-          _quantityOnDayInWeek++;
-          _quantityOnEveryOtherDay = _quantityOnDayInWeek;
-        }),
-        () => _updateCounter(() {
-          _quantityOnDayInWeek--;
-          _quantityOnEveryOtherDay = _quantityOnDayInWeek;
-        }),
-        (value) => _updateCounter(() {
-          final v = double.tryParse(value) ?? 0;
-          _quantityOnDayInWeek = v;
-          _quantityOnEveryOtherDay = v;
-        }),
+        () {},
+        () {},
+        (_) {},
+        readOnly: true,
       ),
       const SizedBox(height: 20),
       _buildSectionTitle(R.string.dosage.tr()),
@@ -986,19 +977,10 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
         R.string.current_medicine_quantity.tr(),
         _quantityOnEveryOtherDay,
         '0.0',
-        () => _updateCounter(() {
-          _quantityOnEveryOtherDay++;
-          _quantityOnDayInWeek = _quantityOnEveryOtherDay;
-        }),
-        () => _updateCounter(() {
-          _quantityOnEveryOtherDay--;
-          _quantityOnDayInWeek = _quantityOnEveryOtherDay;
-        }),
-        (value) => _updateCounter(() {
-          final v = double.tryParse(value) ?? 0.0;
-          _quantityOnEveryOtherDay = v;
-          _quantityOnDayInWeek = v;
-        }),
+        () {},
+        () {},
+        (_) {},
+        readOnly: true,
       ),
       const SizedBox(height: 20),
       _buildSectionTitle(R.string.dosage.tr()),
@@ -1070,8 +1052,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
     String hint,
     VoidCallback onIncrement,
     VoidCallback onDecrement,
-    Function(String) onValueChange,
-  ) {
+    Function(String) onValueChange, {
+    bool readOnly = false,
+  }) {
     return Container(
         margin: EdgeInsets.symmetric(horizontal: 12.0),
         padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 14.0),
@@ -1093,21 +1076,24 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
               ),
             ),
             const Spacer(),
-            GestureDetector(
-              onTap: onDecrement,
-              child: Container(
-                width: 34,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Color(0xFFF4F7F7),
-                  borderRadius: BorderRadius.horizontal(
-                      left: Radius.circular(4), right: Radius.zero),
-                ),
-                alignment: Alignment.center,
-                child: SvgPicture.asset(
-                  R.icons.ic_minus,
-                  width: 10,
-                  height: 2,
+            Visibility(
+              visible: !readOnly,
+              child: GestureDetector(
+                onTap: onDecrement,
+                child: Container(
+                  width: 34,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF4F7F7),
+                    borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(4), right: Radius.zero),
+                  ),
+                  alignment: Alignment.center,
+                  child: SvgPicture.asset(
+                    R.icons.ic_minus,
+                    width: 10,
+                    height: 2,
+                  ),
                 ),
               ),
             ),
@@ -1117,6 +1103,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                 height: 36,
                 alignment: Alignment.center,
                 child: TextField(
+                  readOnly: readOnly,
                   controller:
                       TextEditingController(text: value.toStringAsFixed(0)),
                   keyboardType: TextInputType.number,
@@ -1132,21 +1119,24 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   },
                 )),
             // Increment button
-            GestureDetector(
-              onTap: onIncrement,
-              child: Container(
-                width: 34,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: Color(0xFFF4F7F7),
-                  borderRadius: BorderRadius.horizontal(
-                      left: Radius.zero, right: Radius.circular(4)),
-                ),
-                alignment: Alignment.center,
-                child: SvgPicture.asset(
-                  R.icons.ic_plus,
-                  width: 12,
-                  height: 12,
+            Visibility(
+              visible: !readOnly,
+              child: GestureDetector(
+                onTap: onIncrement,
+                child: Container(
+                  width: 34,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF4F7F7),
+                    borderRadius: BorderRadius.horizontal(
+                        left: Radius.zero, right: Radius.circular(4)),
+                  ),
+                  alignment: Alignment.center,
+                  child: SvgPicture.asset(
+                    R.icons.ic_plus,
+                    width: 12,
+                    height: 12,
+                  ),
                 ),
               ),
             )
