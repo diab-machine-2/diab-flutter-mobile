@@ -1,6 +1,8 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
@@ -40,6 +42,7 @@ class BookingDoctorProvidersPage extends StatefulWidget {
 class _BookingDoctorProvidersPageState
     extends State<BookingDoctorProvidersPage> {
   late DsmesAppointmentCubit _cubit;
+  bool _isFirstLoading = true;
   Map<String, bool> isProcessing = {
     'clinicDetail': false,
     'viewInfo': false,
@@ -104,6 +107,7 @@ class _BookingDoctorProvidersPageState
   }
 
   _initData() async {
+    final cancel = BotToast.showLoading(allowClick: false);
     try {
       final position = await AppSettings.getPositionPreferences();
 
@@ -120,7 +124,8 @@ class _BookingDoctorProvidersPageState
 
       _cubit.initSearchBookingClinicListRequest(
         page: 1,
-        specialtyId: widget.specialtyId.toString(),
+        specialtyId:
+            widget.specialtyId == 0 ? '' : widget.specialtyId.toString(),
         lat: lat,
         lng: lng,
         kind: Const.BOOKING_TYPE_DOCTOR,
@@ -137,10 +142,17 @@ class _BookingDoctorProvidersPageState
       await _cubit.searchBookingClinicList(
           request: request,
           isRefresh: true,
-          showLoading: true,
+          showLoading: false,
           bookingType: Const.BOOKING_TYPE_DOCTOR);
     } catch (e) {
       // Log error if needed
+    } finally {
+      cancel();
+      if (mounted) {
+        setState(() {
+          _isFirstLoading = false;
+        });
+      }
     }
   }
 
@@ -156,8 +168,12 @@ class _BookingDoctorProvidersPageState
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
-        return false;
+        final nav = DsmesNavigationMixin.getNavigationKey().currentState;
+        if (nav != null && nav.canPop()) {
+          nav.pop();
+          return false;
+        }
+        return true;
       },
       child: Scaffold(
         endDrawerEnableOpenDragGesture: false,
@@ -201,7 +217,59 @@ class _BookingDoctorProvidersPageState
                   color: R.color.white),
             ),
             actions: [
-              _buildFilterButton(),
+              GestureDetector(
+                onTap: () async {
+                  _cubit.clearAppointments();
+
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_history,
+                          arguments: {
+                        'bookingType': Const.BOOKING_TYPE_DOCTOR,
+                      });
+                },
+                child: Container(
+                  width: 90,
+                  height: 33,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                  margin: const EdgeInsets.fromLTRB(0, 12, 16, 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: R.color.color0xffECFFFD,
+                    border: Border.all(
+                      color: R.color.color0xffA4E3DD,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        R.icons.ic_clock,
+                        width: 16,
+                        height: 16,
+                        color: R.color.color0xff239A90,
+                        fit: BoxFit.scaleDown,
+                      ),
+                      GapW(4),
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            R.string.consulting_history.tr(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: R.color.color0xff239A90,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
             leadingIcon: IconButton(
               splashColor: Colors.transparent,
@@ -211,9 +279,7 @@ class _BookingDoctorProvidersPageState
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.getNavigationKey()
-                    .currentState
-                    ?.pop(context);
+                Navigator.of(context, rootNavigator: true).pop();
               },
             ),
           ),
@@ -223,6 +289,9 @@ class _BookingDoctorProvidersPageState
         Expanded(
           child: BlocBuilder<DsmesAppointmentCubit, DsmesAppointmentState>(
             builder: (context, state) {
+              if (_isFirstLoading) {
+                return const SizedBox.shrink();
+              }
               if (state is DsmesAppointmentLoading &&
                   _cubit.listBookingClinicProvider.isEmpty) {
                 return const SizedBox.shrink();
