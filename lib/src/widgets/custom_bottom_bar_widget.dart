@@ -48,7 +48,7 @@ class CustomBottomBarWidget extends StatelessWidget {
       color: R.color.white,
       padding: EdgeInsets.fromLTRB(
         16,
-        14,
+        8,
         16,
         MediaQuery.of(context).padding.bottom + 10,
       ),
@@ -57,7 +57,7 @@ class CustomBottomBarWidget extends StatelessWidget {
         children: [
           // Row for buttons
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Previous button
               _buildPreviousButton(),
@@ -92,15 +92,15 @@ class CustomBottomBarWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (logoUrl.isNotEmpty)
-              Image.network(
-                logoUrl,
-                height: 50,
-                errorBuilder: (context, error, stackTrace) {
-                  return const SizedBox(height: 50);
-                },
-              ),
-            if (logoUrl.isNotEmpty) const SizedBox(height: 10),
+            // if (logoUrl.isNotEmpty)
+            //   Image.network(
+            //     logoUrl,
+            //     height: 30,
+            //     errorBuilder: (context, error, stackTrace) {
+            //       return const SizedBox(height: 50);
+            //     },
+            //   ),
+            // if (logoUrl.isNotEmpty) const SizedBox(height: 10),
             _DonutStepProgress(
               currentPositionTitle: currentPositionTitle,
               labelStyle: TextStyle(

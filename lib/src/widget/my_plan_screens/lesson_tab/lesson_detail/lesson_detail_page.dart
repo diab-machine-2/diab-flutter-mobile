@@ -1,7 +1,9 @@
+import 'dart:developer';
+
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_observer/Observable.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -12,10 +14,12 @@ import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/mini_video_bar.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/lesson_completed_review_page.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/video_widget.dart';
 import 'package:medical/src/widgets/background_page.dart';
 import 'package:medical/src/widgets/custom_bottom_bar_widget.dart';
@@ -25,7 +29,6 @@ import 'package:medical/src/widgets/html_text_widget.dart';
 import '../course_quiz/course_quiz.dart';
 import 'lesson_detail.dart';
 import 'models/audio_data.dart';
-import 'widgets/bottom_sheet_share_lesson.dart';
 import 'widgets/bottom_sheet_widget.dart';
 import 'widgets/share_lesson_button.dart';
 
@@ -56,6 +59,50 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   bool _showMiniBar = false;
   bool _showMiniAudioBar = false;
   final ScrollController _scrollController = ScrollController();
+  int? _submittedRating;
+  String? _submittedNote;
+  List<String> _ratingReasonsByScore(int score) {
+    switch (score) {
+      case 1:
+        return [
+          R.string.lesson_reason_hard_to_understand.tr(),
+          R.string.lesson_reason_low_quality_video.tr(),
+          R.string.lesson_reason_insufficient_references.tr(),
+          R.string.lesson_reason_unclear_images.tr(),
+        ];
+      case 2:
+        return [
+          R.string.lesson_reason_not_fit_needs.tr(),
+          R.string.lesson_reason_low_quality_video.tr(),
+          R.string.lesson_reason_not_practical_examples.tr(),
+          R.string.lesson_reason_unclear_images.tr(),
+        ];
+      case 3:
+        return [
+          R.string.lesson_reason_temporary_ok.tr(),
+          R.string.lesson_reason_need_more_examples.tr(),
+          R.string.lesson_reason_need_shorter_presentation.tr(),
+          R.string.lesson_reason_need_more_illustrations.tr(),
+        ];
+      case 4:
+      case 5:
+        return [
+          R.string.lesson_reason_useful_content.tr(),
+          R.string.lesson_reason_high_quality_video.tr(),
+          R.string.lesson_reason_sufficient_references.tr(),
+          R.string.lesson_reason_beautiful_images.tr(),
+        ];
+      default:
+        return const [];
+    }
+  }
+
+  String _ratingLabel(int rating) {
+    if (rating >= 4) return R.string.lesson_rating_very_useful.tr();
+    if (rating == 3) return R.string.lesson_rating_normal.tr();
+    if (rating > 0) return R.string.lesson_rating_not_useful.tr();
+    return '';
+  }
 
   @override
   void initState() {
@@ -137,19 +184,27 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 objectId: _cubit.lessonDetail?.id,
                 objectTitle: _cubit.lessonDetail?.name,
               );
-              BottomSheetShareLesson.showDialogShareLesson(
+              final int rating = _submittedRating ?? _cubit.review?.rating ?? 0;
+              final String note = _submittedNote ?? _cubit.review?.note ?? '';
+              final dynamic result = await NavigationUtil.navigatePage(
                 context,
-                onShare: () =>
-                    _onShareLesson(context, _cubit.currentSectionDetail!),
-                onCancel: () async {
-                  if (widget.smartGoal?.id != null) {
-                    await HomeClient().completeSmartGoal(DateTime.now(),
-                        widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
-                  }
-                  NavigationUtil.pop(context, result: 0);
-                  BotToast.closeAllLoading();
-                },
+                LessonCompletedReviewPage(
+                  moduleName: _cubit.lessonDetail?.lessonModule?.name ?? '',
+                  title: _cubit.lessonDetail?.name ?? '',
+                  description: _cubit.lessonDetail?.description ?? '',
+                  imageUrl: _cubit.lessonDetail?.image?.url ?? '',
+                  rating: rating,
+                  note: note,
+                  onShare: () =>
+                      _onShareLesson(context, _cubit.currentSectionDetail!),
+                ),
               );
+              if (widget.smartGoal?.id != null) {
+                await HomeClient().completeSmartGoal(DateTime.now(),
+                    widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
+              }
+              NavigationUtil.pop(context, result: result ?? 1);
+              BotToast.closeAllLoading();
             }
           }
         },
@@ -605,22 +660,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                 isNextButtonActive: (!_cubit.isLastSection &&
                                     (_cubit.currentSectionDetail?.isComplete ??
                                         false)),
-                                onTapNext: () async {
-                                  await TrackingManager.logEvent(
-                                    name: 'cta_button_clicked',
-                                    parameters: {
-                                      "screen_name": 'lesson_detail',
-                                      "component_name": 'cta_next_lesson',
-                                      'object_id':
-                                          _cubit.lessonDetail?.id ?? '',
-                                      'object_title':
-                                          _cubit.lessonDetail?.name ?? '',
-                                    },
-                                  );
-                                  _cubit.onChangeSection(
-                                      context, _cubit.currentSection + 1,
-                                      smartGoal: widget.smartGoal);
-                                },
+                                onTapNext: _handleNextOrComplete,
                                 currentPositionTitle: _cubit.sectionPosition,
                                 onTapCenter: () {
                                   showLessonCategoryList();
@@ -658,6 +698,274 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     );
   }
 
+  Future<void> _handleNextOrComplete() async {
+    await TrackingManager.logEvent(
+      name: 'cta_button_clicked',
+      parameters: {
+        "screen_name": 'lesson_detail',
+        "component_name": 'cta_next_lesson',
+        'object_id': _cubit.lessonDetail?.id ?? '',
+        'object_title': _cubit.lessonDetail?.name ?? '',
+      },
+    );
+
+    if (_cubit.canComplete == true) {
+      final bool canContinue = await _showLessonRatingBottomSheet();
+      if (!canContinue) return;
+    }
+
+    _cubit.onChangeSection(
+      context,
+      _cubit.currentSection + 1,
+      smartGoal: widget.smartGoal,
+    );
+  }
+
+  Future<bool> _showLessonRatingBottomSheet() async {
+    if (_cubit.reviewed || _cubit.isEnabledRating != true) {
+      // return true;
+      log('[RATING] reviewed: ${_cubit.reviewed}');
+      log('[RATING] isEnabledRating: ${_cubit.isEnabledRating}');
+    }
+
+    int rating = 0;
+    final Set<String> selectedReasons = <String>{};
+    final bool? result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final List<String> reasons = _ratingReasonsByScore(rating);
+            final bool canSubmit = rating > 0 && selectedReasons.isNotEmpty;
+            final String ratingText = _ratingLabel(rating);
+            return Container(
+              decoration: BoxDecoration(
+                color: R.color.white,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 16, 0, 12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: InkWell(
+                          onTap: () => Navigator.of(sheetContext).pop(false),
+                          child: Icon(Icons.close, color: R.color.textDark),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      R.string.lesson_rating_question.tr(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        final int value = index + 1;
+                        final bool isActive = value <= rating;
+                        return InkWell(
+                          onTap: () {
+                            setModalState(() {
+                              rating = value;
+                              selectedReasons.clear();
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Icon(
+                              Icons.favorite,
+                              size: 30,
+                              color: isActive
+                                  ? const Color(0xFFD9A93B)
+                                  : const Color(0xFFD6DBDE),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                    if (ratingText.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        ratingText,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: R.color.textDark,
+                        ),
+                      ),
+                    ],
+                    if (reasons.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Text(
+                          R.string.lesson_share_feeling.tr(),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: R.color.color0xff5E6566,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: reasons.map((reason) {
+                            final bool selected =
+                                selectedReasons.contains(reason);
+                            return InkWell(
+                              onTap: () {
+                                setModalState(() {
+                                  if (selected) {
+                                    selectedReasons.remove(reason);
+                                  } else {
+                                    selectedReasons.add(reason);
+                                  }
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: selected
+                                      ? R.color.mainColor
+                                      : R.color.color0xffF4F7F7,
+                                ),
+                                child: Text(
+                                  reason,
+                                  style: TextStyle(
+                                    color: selected
+                                        ? R.color.white
+                                        : R.color.color0xff5E6566,
+                                    fontSize: 13,
+                                    fontWeight:selected ? FontWeight.w700 : FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: R.color.white,
+                        boxShadow: [Utils.getBoxShadowDropButton()],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 44,
+                              child: ElevatedButton(
+                                onPressed: () =>
+                                    Navigator.of(sheetContext).pop(true),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: R.color.color0xffDCFFFC,
+                                  foregroundColor: R.color.mainColor,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(22),
+                                  ),
+                                ),
+                                child: Text(
+                                  R.string.skip.tr(),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: SizedBox(
+                              height: 44,
+                              child: ElevatedButton(
+                                onPressed: canSubmit
+                                    ? () async {
+                                        final String? error =
+                                            await _cubit.sendLessonFeedback(
+                                          rating: rating,
+                                          note: selectedReasons.join(','),
+                                        );
+                                        if (!context.mounted) return;
+                                        if (error != null) {
+                                          Message.showToastMessage(
+                                              context, error);
+                                          return;
+                                        }
+                                      _submittedRating = rating;
+                                      _submittedNote = selectedReasons.join(',');
+                                        Navigator.of(sheetContext).pop(true);
+                                      }
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: R.color.mainColor,
+                                  foregroundColor: R.color.white,
+                                  disabledBackgroundColor:
+                                      const Color(0xFFEAEDEE),
+                                  disabledForegroundColor:
+                                      R.color.color0xff5E6566,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(22),
+                                  ),
+                                ),
+                                child: Text(
+                                  R.string.lesson_rate_action.tr(),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).padding.bottom),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    return result ?? false;
+  }
+
   _onTrackingVideoPlay() {
     LessonDetailTracking.playVideo(
       objectId: '${_cubit.lessonDetail?.id}',
@@ -669,14 +977,21 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     Observable.instance
         .notifyObservers([], notifyName: "refresh_home_activity");
     if (_cubit.sectionList.length == 1 && _isShowModal == false) {
-      BottomSheetShareLesson.showDialogShareLesson(
+      NavigationUtil.navigatePage(
         context,
-        onShare: () => _onShareLesson(context, _cubit.currentSectionDetail!),
-        onCancel: () {
-          NavigationUtil.pop(context, result: 0);
-          BotToast.closeAllLoading();
-        },
-      );
+        LessonCompletedReviewPage(
+          moduleName: _cubit.lessonDetail?.lessonModule?.name ?? '',
+          title: _cubit.lessonDetail?.name ?? '',
+          description: _cubit.lessonDetail?.description ?? '',
+          imageUrl: _cubit.lessonDetail?.image?.url ?? '',
+          rating: _submittedRating ?? _cubit.review?.rating ?? 0,
+          note: _submittedNote ?? _cubit.review?.note ?? '',
+          onShare: () => _onShareLesson(context, _cubit.currentSectionDetail!),
+        ),
+      ).then((_) {
+        NavigationUtil.pop(context, result: 1);
+        BotToast.closeAllLoading();
+      });
       setState(() {
         _isShowModal = true;
       });

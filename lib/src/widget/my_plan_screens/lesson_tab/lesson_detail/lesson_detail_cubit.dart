@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -277,5 +278,23 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       currentSectionDetail?.isComplete = true;
     });
     emit(const LessonDetailInitial());
+  }
+
+  Future<String?> sendLessonFeedback({
+    required int rating,
+    required String note,
+  }) async {
+    final SendFeedbackCourseRequest request = SendFeedbackCourseRequest(
+      lessonId: lessonId,
+      rating: rating,
+      note: note,
+    );
+    final ApiResult<CommonResponse> apiResult =
+        await repository.sendFeedbackCourse(lessonId, request);
+    return apiResult.when(
+      success: (_) => null,
+      failure: (NetworkExceptions error) =>
+          NetworkExceptions.getErrorMessage(error),
+    );
   }
 }
