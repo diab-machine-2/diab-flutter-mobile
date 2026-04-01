@@ -153,11 +153,17 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   Future<void> loadDetail(String? id) async {
     emit(const DailyNutritionLoading());
     model = await FoodClient().fetchDetailInput(id);
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+    // Support both old (date as unix) and new (createDatetime as ISO)
+    if (model!.date != null) {
+      selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+    }
     notes = model!.note ?? '';
     files.addAll(model!.images);
-    selectedTimeFrame =
-        TimeFrameModel(id: model!.mealId, code: '', name: model!.mealText);
+    // Support both old (mealId/mealText) and new (timeFrameId/timeFrameName)
+    selectedTimeFrame = TimeFrameModel(
+        id: model!.timeFrameId ?? model!.mealId,
+        code: '',
+        name: model!.timeFrameName ?? model!.mealText);
     final int index =
         model!.foods.indexWhere((element) => element.id == otherFoodId);
     if (index == -1) {
