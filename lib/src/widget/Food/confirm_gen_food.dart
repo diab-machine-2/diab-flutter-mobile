@@ -666,6 +666,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   }
 
   // Logic lib/src/widget/Food/add_food.dart function [_submitData]
+  // Updated to use new /App/Nutrition/Input API with MealScore data
   void _submitData() async {
     BotToast.showLoading();
 
@@ -673,7 +674,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       List<String> paths = [];
 
       // Step 1: Get note data with error handling
-      developer.log('[CAPTURE] Starting _submitData', name: '[CAPTURE]');
+      developer.log('[CAPTURE] Starting _submitData (new Nutrition API)', name: '[CAPTURE]');
 
       if (_sectionAddNoteKey.currentState == null) {
         throw Exception('SectionAddNoteState is null. Cannot get note data.');
@@ -688,7 +689,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       if (data.files.isEmpty) {
         developer.log('[CAPTURE] WARNING: data.files is empty',
             name: '[CAPTURE]');
-        // Use widget.files as fallback
         for (var filePath in widget.files) {
           if (filePath.isNotEmpty) {
             paths.add(filePath);
@@ -701,12 +701,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         for (var file in data.files) {
           try {
             if (file is String) {
-              // If the file is a path, add it directly
               if (file.isNotEmpty) {
                 paths.add(file);
               }
             } else if (file is File) {
-              // If the file is a File object, convert it to a path
               if (await file.exists()) {
                 paths.add(file.path);
               } else {
@@ -722,7 +720,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           } catch (e) {
             developer.log('[CAPTURE] Error processing file: $e',
                 name: '[CAPTURE]');
-            // Continue with other files
           }
         }
       }
@@ -730,8 +727,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       developer.log(
           '[CAPTURE] Prepared paths count: ${paths.length}, paths: ${paths.join(", ")}',
           name: '[CAPTURE]');
-
-      // Cho phép paths rỗng khi chọn từ thư viện (không có ảnh)
 
       // Step 3: Validate file existence (chỉ khi có ảnh)
       if (paths.isNotEmpty) {
@@ -751,50 +746,60 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           '[CAPTURE] Calling API with note length: ${note.length}, foods: ${_selectedFoods.length}, paths: ${paths.length}',
           name: '[CAPTURE]');
 
-      // Step 4: Call API
+      // Step 4: Get MealScore data FIRST (from images)
+      // The MealScore data is needed to save with the Nutrition Input
+      Map<String, dynamic>? mealScoreData;
+      List<String> mealScorePaths = [...paths];
+
+      // If no image paths (selected from library), download first food image for MealScore
+      if (mealScorePaths.isEmpty && _selectedFoods.isNotEmpty) {
+        try {
+          final imageUrl = _selectedFoods.first.image?.url;
+          if (imageUrl != null && imageUrl.isNotEmpty) {
+            final httpClient = HttpClient();
+            final request = await httpClient.getUrl(Uri.parse(imageUrl));
+            final response = await request.close();
+            final tempDir = Directory.systemTemp;
+            final tempFile = File('${tempDir.path}/meal_score_temp_${DateTime.now().millisecondsSinceEpoch}.jpg');
+            final bytes = await response.fold<List<int>>([], (prev, element) => prev..addAll(element));
+            await tempFile.writeAsBytes(bytes);
+            mealScorePaths.add(tempFile.path);
+          }
+        } catch (e) {
+          developer.log('[CAPTURE] Could not download food image for MealScore: $e', name: '[CAPTURE]');
+        }
+      }
+
+      // Call MealScore API to get nutrition analysis
+      if (mealScorePaths.isNotEmpty) {
+        try {
+          mealScoreData = await FoodClient().postMealScore(mealScorePaths);
+          developer.log('[CAPTURE] MealScore data received: ${mealScoreData?.keys}', name: '[CAPTURE]');
+        } catch (e) {
+          developer.log('[CAPTURE] MealScore call failed (non-blocking): $e', name: '[CAPTURE]');
+        }
+      }
+
+      // Step 5: Call postIndexFoodAI with MealScore data included
+      // NEW: sends all data in a single JSON POST to /App/Nutrition/Input
       final result = await FoodClient().postIndexFoodAI(
           (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
           widget.timeframeId,
           note,
           _selectedFoods,
-          paths);
+          paths,
+          mealScoreData: mealScoreData);
 
       developer.log('[CAPTURE] API call completed, result: $result',
           name: '[CAPTURE]');
 
       if (result == true) {
-        // Nếu không có ảnh (chọn từ thư viện), tải ảnh món ăn đầu tiên để gọi MealScore
-        Map<String, dynamic>? mealScoreData;
-        List<String> mealScorePaths = [...paths];
-        if (mealScorePaths.isEmpty && _selectedFoods.isNotEmpty) {
-          try {
-            final imageUrl = _selectedFoods.first.image?.url;
-            if (imageUrl != null && imageUrl.isNotEmpty) {
-              final httpClient = HttpClient();
-              final request = await httpClient.getUrl(Uri.parse(imageUrl));
-              final response = await request.close();
-              final tempDir = Directory.systemTemp;
-              final tempFile = File('${tempDir.path}/meal_score_temp_${DateTime.now().millisecondsSinceEpoch}.jpg');
-              final bytes = await response.fold<List<int>>([], (prev, element) => prev..addAll(element));
-              await tempFile.writeAsBytes(bytes);
-              mealScorePaths.add(tempFile.path);
-            }
-          } catch (e) {
-            // Silently fail - will use local calculation
-          }
-        }
-        try {
-          mealScoreData = await FoodClient().postMealScore(mealScorePaths);
-        } catch (e) {
-          // Non-blocking
-        }
-
-        // Clean up temporary files after MealScore call
+        // Clean up temporary files
         if (paths.isNotEmpty) {
           await _cleanupTempFiles(paths);
         }
 
-        // Parse MealScore response
+        // Parse MealScore response for result screen
         int? apiScore;
         String? apiMessage;
         String? apiRange;
@@ -802,9 +807,11 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         Map<String, String>? nutritionColors;
 
         if (mealScoreData != null) {
-          apiScore = mealScoreData['totalMealScore'] as int?;
-          apiMessage = mealScoreData['messageResult'] as String?;
-          apiRange = mealScoreData['totalMealRange'] as String?;
+          apiScore = (mealScoreData['totalMealScore'] as num?)?.toInt();
+          // New API uses 'aiAdvice' instead of 'messageResult'
+          apiMessage = (mealScoreData['aiAdvice'] ?? mealScoreData['messageResult']) as String?;
+          // New API uses 'scoreRange' instead of 'totalMealRange'
+          apiRange = (mealScoreData['scoreRange'] ?? mealScoreData['totalMealRange']) as String?;
 
           // Save latest AI suggestion to SharedPreferences for overview
           final prefs = await SharedPreferences.getInstance();
@@ -812,14 +819,24 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
             await prefs.setString('latest_meal_score_suggestion', apiMessage);
           }
 
+          // Parse nutrition percent from new fields
+          nutritionPercent = {
+            'carb': (mealScoreData['carbPercent'] as num?)?.toInt() ?? 0,
+            'protein': (mealScoreData['proteinPercent'] as num?)?.toInt() ?? 0,
+            'vegetable': (mealScoreData['vegetablePercent'] as num?)?.toInt() ?? 0,
+            'fruit': (mealScoreData['fruitPercent'] as num?)?.toInt() ?? 0,
+            'fat': (mealScoreData['fatPercent'] as num?)?.toInt() ?? 0,
+          };
+
+          // Fallback to old nutritionPercent format
           final npData = mealScoreData['nutritionPercent'];
           if (npData != null) {
             nutritionPercent = {
-              'carb': (npData['carb'] as num?)?.toInt() ?? 0,
-              'protein': (npData['protein'] as num?)?.toInt() ?? 0,
-              'vegetable': (npData['vegetable'] as num?)?.toInt() ?? 0,
-              'fruit': (npData['fruit'] as num?)?.toInt() ?? 0,
-              'fat': (npData['fat'] as num?)?.toInt() ?? 0,
+              'carb': (npData['carb'] as num?)?.toInt() ?? nutritionPercent['carb'] ?? 0,
+              'protein': (npData['protein'] as num?)?.toInt() ?? nutritionPercent['protein'] ?? 0,
+              'vegetable': (npData['vegetable'] as num?)?.toInt() ?? nutritionPercent['vegetable'] ?? 0,
+              'fruit': (npData['fruit'] as num?)?.toInt() ?? nutritionPercent['fruit'] ?? 0,
+              'fat': (npData['fat'] as num?)?.toInt() ?? nutritionPercent['fat'] ?? 0,
             };
             final colorsData = npData['colors'];
             if (colorsData != null) {
@@ -834,9 +851,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           }
 
           // Save nutritionPercent & nutritionColors to SharedPreferences
-          if (nutritionPercent != null) {
-            await prefs.setString('latest_nutrition_percent', jsonEncode(nutritionPercent));
-          }
+          await prefs.setString('latest_nutrition_percent', jsonEncode(nutritionPercent));
           if (nutritionColors != null) {
             await prefs.setString('latest_nutrition_colors', jsonEncode(nutritionColors));
           }
@@ -865,8 +880,17 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
             case 'excellent':
               balanceStatus = 'Cân bằng';
               break;
+            case 'balanced':
+              balanceStatus = 'Cân bằng';
+              break;
             case 'good':
               balanceStatus = 'Khá cân bằng';
+              break;
+            case 'fair':
+              balanceStatus = 'Trung bình';
+              break;
+            case 'poor':
+              balanceStatus = 'Chưa cân bằng';
               break;
             default:
               balanceStatus = 'Chưa cân bằng';
@@ -879,12 +903,12 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         double totalFat = _calculateTotalFat();
 
         final foodResult = FoodResultDto(
-          id: '', // API doesn't return ID
+          id: '',
           dateTime: selectedDate,
           timeFrame: widget.timeframe,
           timeFrameId: widget.timeframeId,
           totalCalories: totalKcal,
-          goalCalories: 2000, // TODO: Get from user goal calories
+          goalCalories: 2000,
           carbs: totalCarbs,
           protein: totalProtein,
           fat: totalFat,
@@ -894,7 +918,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           note: note,
           images: [],
           healthRecommendation: apiMessage,
-
           isFetchAnalysis: false,
           score: apiScore,
           balanceStatus: balanceStatus,
@@ -929,7 +952,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         errorMessage = e.toString();
       }
 
-      // Show user-friendly error message
       Message.showToastMessage(context, errorMessage);
     }
   }

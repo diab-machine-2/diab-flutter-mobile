@@ -199,4 +199,13 @@ class Colors {
   Color get color0xff830000 => Color(0xff830000);
   Color get color0xffDADEDF => Color(0xffDADEDF);
   Color get interview_color => Color(0xffFFCD57);
+  Color get goodGreen => Color(0xff23C559);
+  Color get warningYellow => Color(0xffFFCD57);
+  Color get dangerRed => Color(0xffF86F6F);
+  Color get neutralBg1 => Color(0xffF4F7F7);
+  Color get energyMorning => Color(0xff008479);
+  Color get energyNoon => Color(0xff0FB4A5);
+  Color get energyEvening => Color(0xffFF9841);
+  Color get energySnack => Color(0xffF9BA1A);
+  Color get energyLateNight => Color(0xffF86F6F);
 }

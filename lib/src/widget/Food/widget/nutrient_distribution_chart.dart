@@ -95,13 +95,13 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
       return toColor(colorCode);
     }
     if (percent <= 50) {
-      return const Color(0xFF81C784);
+      return R.color.goodGreen;
     } else if (percent <= 80) {
-      return const Color(0xFF4CAF50);
+      return R.color.goodGreen;
     } else if (percent <= 100) {
-      return const Color(0xFFFFD233);
+      return R.color.warningYellow;
     } else {
-      return const Color(0xFFEF5350);
+      return R.color.dangerRed;
     }
   }
 
@@ -183,8 +183,8 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                   'Phân bổ dinh dưỡng',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.black,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff111515,
                   ),
                 ),
                 Icon(
@@ -218,7 +218,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
       child: Row(
         children: [
           SizedBox(
-            width: 80,
+            width: 96,
             child: Text(
               name,
               style: TextStyle(
@@ -230,10 +230,10 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
           ),
           Expanded(
             child: Container(
-              height: 26,
+              height: 24,
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.circular(13),
+                color: R.color.neutralBg1,
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Stack(
                 children: [
@@ -243,7 +243,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                     child: Container(
                       decoration: BoxDecoration(
                         color: color,
-                        borderRadius: BorderRadius.circular(13),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
@@ -302,8 +302,8 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                   'Phân bổ dinh dưỡng',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.black,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff111515,
                   ),
                 ),
                 Icon(
@@ -361,8 +361,8 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
                   'Phân bổ dinh dưỡng',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: R.color.black,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.color0xff111515,
                   ),
                 ),
                 Icon(

@@ -186,7 +186,7 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                     int unbalancedPercent = 100 - balancedPercent;
 
                                     return Container(
-                                      height: 36,
+                                      height: 24,
                                       child: Row(
                                         children: [
                                           // Unbalanced portion - Yellow
@@ -195,8 +195,8 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                               flex: unbalancedPercent,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  color: Color(0xFFFDB913),
-                                                  borderRadius: BorderRadius.circular(10),
+                                                  color: R.color.warningYellow,
+                                                  borderRadius: BorderRadius.circular(4),
                                                 ),
                                                 alignment: Alignment.centerLeft,
                                                 padding: EdgeInsets.symmetric(horizontal: 14),
@@ -204,8 +204,8 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                                   '$unbalancedPercent%',
                                                   style: TextStyle(
                                                     fontSize: 15,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: Colors.white,
+                                                      fontWeight: FontWeight.w700,
+                                                      color: R.color.color0xff95682E,
                                                   ),
                                                 ),
                                               ),
@@ -218,8 +218,8 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                               flex: balancedPercent,
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                  color: Color(0xFF4CAF50),
-                                                  borderRadius: BorderRadius.circular(10),
+                                                  color: R.color.goodGreen,
+                                                  borderRadius: BorderRadius.circular(4),
                                                 ),
                                                 alignment: Alignment.center,
                                                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -246,18 +246,18 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                       Row(
                                         children: [
                                           Container(
-                                            width: 24,
-                                            height: 14,
+                                            width: 18,
+                                            height: 12,
                                             decoration: BoxDecoration(
-                                              color: Color(0xFFFDB913),
-                                              borderRadius: BorderRadius.circular(4),
+                                              color: R.color.warningYellow,
+                                              borderRadius: BorderRadius.circular(2),
                                             ),
                                           ),
                                           SizedBox(width: 8),
                                           Text(
                                             'Chưa cân bằng',
                                             style: TextStyle(
-                                              fontSize: 15,
+                                              fontSize: 13,
                                               fontWeight: FontWeight.w400,
                                               color: Color(0xFF5E6566),
                                             ),
@@ -267,18 +267,18 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                       Row(
                                         children: [
                                           Container(
-                                            width: 24,
-                                            height: 14,
+                                            width: 18,
+                                            height: 12,
                                             decoration: BoxDecoration(
-                                              color: Color(0xFF4CAF50),
-                                              borderRadius: BorderRadius.circular(4),
+                                              color: R.color.goodGreen,
+                                              borderRadius: BorderRadius.circular(2),
                                             ),
                                           ),
                                           SizedBox(width: 8),
                                           Text(
                                             'Cân bằng',
                                             style: TextStyle(
-                                              fontSize: 15,
+                                              fontSize: 13,
                                               fontWeight: FontWeight.w400,
                                               color: Color(0xFF5E6566),
                                             ),
@@ -298,6 +298,13 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromRGBO(1, 105, 97, 0.08),
+                              offset: const Offset(1, 2),
+                              blurRadius: 8,
+                            ),
+                          ],
                         ),
                         child: Row(
                           children: [
@@ -314,12 +321,26 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                                     ),
                                   ),
                                   SizedBox(height: 4),
-                                  Text(
-                                    '${totalEnergy.toInt()} Kcal',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700,
-                                      color: R.color.mainColor,
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: '${totalEnergy.toInt()}',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            color: R.color.mainColor,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' Kcal',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                            color: R.color.mainColor,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -377,22 +398,29 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromRGBO(1, 105, 97, 0.08),
+                                offset: const Offset(1, 2),
+                                blurRadius: 8,
+                              ),
+                            ],
                           ),
                           child: Row(
                             children: [
                               Image.asset(
                                 R.drawable.im_food_intro,
-                                width: 48,
-                                height: 48,
+                                width: 40,
+                                height: 40,
                               ),
                               SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   'Thực đơn mẫu',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w400,
-                                    color: R.color.black,
+                                    color: R.color.color0xff111515,
                                   ),
                                 ),
                               ),

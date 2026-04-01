@@ -110,8 +110,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
     _controllerNote.text = model?.note ?? "";
     files.addAll(model?.images ?? []);
-    selectedTimeFrame =
-        TimeFrameModel(id: model?.mealId, code: '', name: model?.mealText);
+    // Support both old (mealId/mealText) and new (timeFrameId/timeFrameName)
+    selectedTimeFrame = TimeFrameModel(
+        id: model?.timeFrameId ?? model?.mealId,
+        code: '',
+        name: model?.timeFrameName ?? model?.mealText);
     final index =
         model!.foods.indexWhere((element) => element.id == otherFoodId);
     if (index == -1) {

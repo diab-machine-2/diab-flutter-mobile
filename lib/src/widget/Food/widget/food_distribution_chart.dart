@@ -102,7 +102,14 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                               padding: EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(16),
-                                  color: Color(0xFFF5F5F5)),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromRGBO(1, 105, 97, 0.08),
+                                      offset: const Offset(1, 2),
+                                      blurRadius: 8,
+                                    ),
+                                  ]),
                               child: Column(
                                 children: [
                                   // Header with title and arrow
@@ -179,25 +186,35 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                     }),
                                                   ),
                                                 ),
-                                                // Center content - meal count only
+                                                // Center content - percentage + meal count
                                                 Column(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Text(
+                                                      '${total.round()}%',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: R.color
+                                                            .primaryGreyColor,
+                                                      ),
+                                                    ),
+                                                    Text(
                                                       '$actualMealCount',
                                                       style: TextStyle(
-                                                        fontSize: 32,
+                                                        fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.w700,
                                                         color: R.color.black,
                                                       ),
                                                     ),
-                                                    SizedBox(height: 4),
+                                                    SizedBox(height: 2),
                                                     Text(
                                                       'Bữa ăn',
                                                       style: TextStyle(
-                                                        fontSize: 14,
+                                                        fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         color: R.color

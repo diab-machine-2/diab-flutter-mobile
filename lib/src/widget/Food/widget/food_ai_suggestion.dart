@@ -70,7 +70,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
   Widget build(BuildContext context) {
     super.build(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,11 +79,11 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                'Gợi ý trợ lý sống khỏe',
+                'Gợi ý từ Trợ lý Sống khoẻ',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
+                  color: R.color.color0xff111515,
                 ),
               ),
               const SizedBox(width: 6),
@@ -111,7 +111,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
-                color: R.color.primaryGreyColor,
+                color: R.color.color0xff111515,
                 height: 1.46,
               ),
             ),

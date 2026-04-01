@@ -637,9 +637,9 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                 getDotPainter: (spot, percent, barData, index) =>
                     FlDotCirclePainter(
                   radius: 6.5,
-                  color: Color(0xFF4CAF50),
+                  color: R.color.goodGreen,
                   strokeWidth: 18,
-                  strokeColor: Color(0xFF4CAF50).withValues(alpha: 0.3),
+                  strokeColor: R.color.goodGreen.withValues(alpha: 0.3),
                 ),
               ),
             );
@@ -714,7 +714,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         spots: List.generate(trends.length,
             (i) => FlSpot(i.toDouble(), (trends[i].score ?? 0).toDouble())),
         isCurved: false,
-        color: Color(0xFF4CAF50),
+        color: R.color.goodGreen,
         barWidth: 2.5,
         isStrokeCapRound: false,
         dotData: FlDotData(
@@ -724,8 +724,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             final isSelected = index == _focusIndex;
             // Green for balanced, yellow for unbalanced
             final dotColor = (trends[index].colorCode == '#008479')
-                ? Color(0xFF4CAF50)
-                : Color(0xFFFDB913);
+                ? R.color.goodGreen
+                : R.color.warningYellow;
             return FlDotCirclePainter(
               radius: isSelected ? 5 : 3.5,
               color: dotColor,
@@ -740,8 +740,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           show: true,
           gradient: LinearGradient(
             colors: [
-              R.color.greenGradientMid.withValues(alpha: 0.2),
-              R.color.greenGradientMid.withValues(alpha: 0.0),
+              R.color.goodGreen.withValues(alpha: 0.2),
+              R.color.goodGreen.withValues(alpha: 0.0),
             ],
             stops: const [0.5, 1.0],
             begin: Alignment.topCenter,

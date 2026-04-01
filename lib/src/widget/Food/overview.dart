@@ -98,16 +98,8 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
           // Scrollable content
           Container(
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [
-                      R.color.color0xFFFDC798.withValues(alpha: 0.3),
-                      R.color.greenbg.withValues(alpha: 0.3),
-                      R.color.greenbg.withValues(alpha: 0.3),
-                      R.color.color0xFFFDC798.withValues(alpha: 0.3),
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                    stops: const [0.0, 0.3, 0.8, 1.0])),
+              color: R.color.backgroundColorNew,
+            ),
             child: ListView(
               physics: const ClampingScrollPhysics(),
               padding: EdgeInsets.only(bottom: 100), // Space for fixed button
@@ -180,9 +172,9 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: const Color.fromRGBO(1, 105, 97, 0.08),
                     blurRadius: 8,
-                    offset: Offset(0, -2),
+                    offset: const Offset(2, -4),
                   ),
                 ],
               ),
@@ -228,7 +220,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                               width: 12,
                               height: 12,
                               decoration: BoxDecoration(
-                                color: Colors.red,
+                                color: const Color(0xFFAF0000),
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: Colors.white,
@@ -243,24 +235,35 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                   SizedBox(width: 12),
                   // Large Button
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        FoodActionPopup.show(context, fromDashboard: true);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: R.color.mainColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFF0DAB9C), Color(0xFF01847A)],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 18),
-                        elevation: 0,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(
-                        'Nhập bữa ăn',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          FoodActionPopup.show(context, fromDashboard: true);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 18),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Nhập bữa ăn',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
