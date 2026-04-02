@@ -1,0 +1,316 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:medical/res/R.dart';
+
+class LessonCompletedReviewPage extends StatelessWidget {
+  const LessonCompletedReviewPage({
+    Key? key,
+    required this.moduleName,
+    required this.title,
+    required this.description,
+    required this.imageUrl,
+    required this.rating,
+    required this.note,
+    required this.onShare,
+  }) : super(key: key);
+
+  final String moduleName;
+  final String title;
+  final String description;
+  final String imageUrl;
+  final int rating;
+  final String note;
+  final VoidCallback onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String> noteItems = note
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final bool hasReview = rating > 0 || noteItems.isNotEmpty;
+
+    void backToLibrary() {
+      Navigator.of(context).pop(1);
+    }
+
+    return Scaffold(
+      backgroundColor: R.color.backgroundColorNew,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                R.color.greenGradientTop,
+                R.color.greenGradientBottom,
+              ],
+            ),
+          ),
+        ),
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.arrow_back, color: R.color.white, size: 24),
+              onPressed: backToLibrary,
+            ),
+            Text(
+              R.string.lesson_completed_title.tr(),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: R.color.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      color: R.color.white,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            R.string.lesson_completed_message.tr(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: R.color.textDark,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          if (imageUrl.isNotEmpty)
+                            Center(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: CachedNetworkImage(
+                                  imageUrl: imageUrl,
+                                  width: 132,
+                                  height: 86,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 10),
+                          if (moduleName.isNotEmpty)
+                            Text(
+                              moduleName,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: R.color.color0xff126B56,
+                              ),
+                            ),
+                          const SizedBox(height: 2),
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: R.color.textDark,
+                            ),
+                          ),
+                          if (description.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              description,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: R.color.textDark,
+                              ),
+                            ),
+                          ],
+                          if (hasReview) ...[
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(5, (index) {
+                                final bool isActive = (index + 1) <= rating;
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 3),
+                                  child: Icon(
+                                    Icons.favorite,
+                                    size: 24,
+                                    color: isActive
+                                        ? const Color(0xFFD9A93B)
+                                        : const Color(0xFFD6DBDE),
+                                  ),
+                                );
+                              }),
+                            ),
+                            if (rating > 0) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                rating >= 4
+                                    ? R.string.lesson_rating_useful.tr()
+                                    : rating == 3
+                                        ? R.string.lesson_rating_normal.tr()
+                                        : R.string.lesson_rating_not_useful.tr(),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: R.color.textDark,
+                                ),
+                              ),
+                            ],
+                            if (noteItems.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: noteItems
+                                    .map(
+                                      (item) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFEAF4F3),
+                                          borderRadius:
+                                              BorderRadius.circular(18),
+                                        ),
+                                        child: Text(
+                                          item,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: R.color.mainColor,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ],
+                          // const SizedBox(height: 14),
+                          // SizedBox(
+                          //   height: 46,
+                          //   child: ElevatedButton(
+                          //     onPressed: backToLibrary,
+                          //     style: ElevatedButton.styleFrom(
+                          //       backgroundColor: const Color(0xFFC6ECEA),
+                          //       foregroundColor: R.color.mainColor,
+                          //       elevation: 0,
+                          //       shape: RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.circular(24),
+                          //       ),
+                          //     ),
+                          //     child: Text(
+                          //       'Hoàn thành',
+                          //       style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w700,
+                          //         color: R.color.mainColor,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: R.color.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: R.color.textDark.withOpacity(0.06),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  )
+                ],
+              ),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                10,
+                16,
+                MediaQuery.of(context).padding.bottom + 10,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: onShare,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFC6ECEA),
+                          foregroundColor: R.color.mainColor,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(22),
+                          ),
+                        ),
+                        child: Text(
+                          R.string.share.tr(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: backToLibrary,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: R.color.mainColor,
+                          foregroundColor: R.color.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(22),
+                          ),
+                        ),
+                        child: Text(
+                          R.string.lesson_back_to_library.tr(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

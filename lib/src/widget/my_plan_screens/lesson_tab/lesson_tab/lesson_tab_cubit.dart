@@ -19,7 +19,7 @@ import 'models/lesson_type.dart';
 
 class LessonTabCubit extends Cubit<LessonTabState> {
   LessonTabCubit(this.repository, this.myPlanCubit)
-      : super(const LessonTabInitial());
+      : super(const LessonTabLoading());
 
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;

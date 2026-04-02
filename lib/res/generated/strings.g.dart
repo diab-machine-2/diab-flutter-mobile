@@ -1463,4 +1463,37 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get login_gmail => 'login_gmail';
   String get conversation_ai_citation => 'conversation_ai_citation';
   String get reference_source => 'reference_source';
+  String get previous_lesson => 'previous_lesson';
+  String get redo_quiz => 'redo_quiz';
+  String get lesson_completed_title => 'lesson_completed_title';
+  String get lesson_completed_message => 'lesson_completed_message';
+  String get lesson_rating_very_useful => 'lesson_rating_very_useful';
+  String get lesson_rating_normal => 'lesson_rating_normal';
+  String get lesson_rating_not_useful => 'lesson_rating_not_useful';
+  String get lesson_rating_useful => 'lesson_rating_useful';
+  String get lesson_rating_question => 'lesson_rating_question';
+  String get lesson_share_feeling => 'lesson_share_feeling';
+  String get lesson_rate_action => 'lesson_rate_action';
+  String get lesson_back_to_library => 'lesson_back_to_library';
+  String get lesson_reason_hard_to_understand =>
+      'lesson_reason_hard_to_understand';
+  String get lesson_reason_low_quality_video => 'lesson_reason_low_quality_video';
+  String get lesson_reason_insufficient_references =>
+      'lesson_reason_insufficient_references';
+  String get lesson_reason_unclear_images => 'lesson_reason_unclear_images';
+  String get lesson_reason_not_fit_needs => 'lesson_reason_not_fit_needs';
+  String get lesson_reason_not_practical_examples =>
+      'lesson_reason_not_practical_examples';
+  String get lesson_reason_temporary_ok => 'lesson_reason_temporary_ok';
+  String get lesson_reason_need_more_examples =>
+      'lesson_reason_need_more_examples';
+  String get lesson_reason_need_shorter_presentation =>
+      'lesson_reason_need_shorter_presentation';
+  String get lesson_reason_need_more_illustrations =>
+      'lesson_reason_need_more_illustrations';
+  String get lesson_reason_useful_content => 'lesson_reason_useful_content';
+  String get lesson_reason_high_quality_video => 'lesson_reason_high_quality_video';
+  String get lesson_reason_sufficient_references =>
+      'lesson_reason_sufficient_references';
+  String get lesson_reason_beautiful_images => 'lesson_reason_beautiful_images';
 }

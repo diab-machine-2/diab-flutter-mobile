@@ -57,6 +57,9 @@ class _LessonTabPageState extends State<LessonTabPage>
   bool isLoading = false;
   bool _didShowInitialBotToast = false;
 
+  /// True while BotToast loading overlay is shown (kept in sync with show/close calls).
+  bool _botToastLessonLoadingVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -65,15 +68,17 @@ class _LessonTabPageState extends State<LessonTabPage>
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
     // Trigger loads after the first frame so BlocConsumer listeners are mounted.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Ensure the first navigation always shows bot loading.
       if (!_didShowInitialBotToast) {
         _didShowInitialBotToast = true;
+        _setBotToastLessonLoadingVisible(true);
         BotToast.showLoading();
       }
-      _cubit.getInitData();
-      // Load recommendations for "Đề xuất" (default type = 0 - Tất cả).
-      _cubit.getRecommendationLessons(type: 0);
+      // Await main list first so getRecommendationLessons cannot emit Initial/Success
+      // while lessons are still loading (which briefly showed the empty placeholder).
+      await _cubit.getInitData();
+      await _cubit.getRecommendationLessons(type: 0);
     });
 
     _lessonScrollController.addListener(() {
@@ -113,11 +118,17 @@ class _LessonTabPageState extends State<LessonTabPage>
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
       if (_cubit.lessonsList == null) {
         await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+        _setBotToastLessonLoadingVisible(true);
         BotToast.showLoading();
       } else {
         _checkExistLessonId();
       }
     }
+  }
+
+  void _setBotToastLessonLoadingVisible(bool visible) {
+    if (_botToastLessonLoadingVisible == visible) return;
+    setState(() => _botToastLessonLoadingVisible = visible);
   }
 
   _checkExistLessonId() async {
@@ -175,11 +186,13 @@ class _LessonTabPageState extends State<LessonTabPage>
             });
           } else if (state is LessonTabLoading) {
             if (!_didShowInitialBotToast) {
+              _setBotToastLessonLoadingVisible(true);
               BotToast.showLoading();
             }
           } else {
             if (state is! LessonTabWeekChanged) {
               BotToast.closeAllLoading();
+              _setBotToastLessonLoadingVisible(false);
               _didShowInitialBotToast = false;
               setState(() {
                 isLoading = false;
@@ -314,9 +327,9 @@ class _LessonTabPageState extends State<LessonTabPage>
                                               height: 220.h,
                                               width: double.infinity,
                                               child: Center(
-                                                child: CircularProgressIndicator(
-                                                  color: R
-                                                      .color
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: R.color
                                                       .greenGradientBottom,
                                                 ),
                                               ),
@@ -326,9 +339,10 @@ class _LessonTabPageState extends State<LessonTabPage>
                                               : _buildEmptyLessonList()
                                     else
                                       _buildGroupedLessonList(),
-                                    _buildRecommendationSection(),
-                                    Container(
-                                        height: 24.h, color: R.color.white),
+                                    _buildRecommendationSection(state),
+                                    if (_cubit.lessonsList!.isNotEmpty)
+                                      Container(
+                                          height: 24.h, color: R.color.white),
                                   ],
                                 ),
                               ),
@@ -460,122 +474,126 @@ class _LessonTabPageState extends State<LessonTabPage>
   }
 
   /// \"Đề xuất\" section at bottom using recommendationLessons.
-  Widget _buildRecommendationSection() {
+  Widget _buildRecommendationSection(LessonTabState state) {
     final lessons = _cubit.recommendationLessons ?? [];
-    return Container(
-      color: R.color.white,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Đề xuất',
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 40,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _recommendationChipLabels.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final isActive = _cubit.recommendationType == index;
-                final label = _recommendationChipLabels[index] ?? '';
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      _cubit.getRecommendationLessons(type: index);
+    final bool hideRecommendationFilters =
+        state is LessonTabLoading || _botToastLessonLoadingVisible;
+    return hideRecommendationFilters
+        ? const SizedBox.shrink()
+        : Container(
+            color: R.color.white,
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    R.string.recommended.tr(),
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 40,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _recommendationChipLabels.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      final isActive = _cubit.recommendationType == index;
+                      final label = _recommendationChipLabels[index] ?? '';
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            _cubit.getRecommendationLessons(type: index);
+                          },
+                          borderRadius: BorderRadius.circular(200),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isActive
+                                  ? R.color.greenGradientBottom
+                                  : R.color.white,
+                              borderRadius: BorderRadius.circular(200),
+                              border: isActive
+                                  ? null
+                                  : Border.all(color: R.color.captionColorGray),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              label,
+                              style: TextStyle(
+                                color: isActive
+                                    ? R.color.white
+                                    : R.color.captionColorGray,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
                     },
-                    borderRadius: BorderRadius.circular(200),
+                  ),
+                ),
+                if (_cubit.isRecommendationLoading)
+                  KeyedSubtree(
+                    key: _recommendationLoadingKey,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isActive
-                            ? R.color.greenGradientBottom
-                            : R.color.white,
-                        borderRadius: BorderRadius.circular(200),
-                        border: isActive
-                            ? null
-                            : Border.all(color: R.color.captionColorGray),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        label,
-                        style: TextStyle(
-                          color: isActive
-                              ? R.color.white
-                              : R.color.captionColorGray,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                      width: MediaQuery.of(context).size.width,
+                      height: 130,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      color: Colors.transparent,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(
+                          color: R.color.greenGradientBottom,
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-          if (_cubit.isRecommendationLoading)
-            KeyedSubtree(
-              key: _recommendationLoadingKey,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 130,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                color: Colors.transparent,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(
-                    color: R.color.greenGradientBottom,
-                  ),
-                ),
-              ),
-            )
-          else
-            ...List.generate(
-              lessons.length,
-              (index) => _buildRecommendationRow(
-                lessonDetail: lessons[index],
-                onTap: () async {
-                  final lesson = lessons[index];
-                  if (lesson?.id?.isNotEmpty == true) {
-                    ActivityListTracking.clickLessonItem(
-                      objectId: lesson!.id,
-                      objectIndex: index,
-                      objectTitle: lesson.name,
-                    );
-
-                    await NavigationUtil.navigatePage(
-                      context,
-                      LessonDetailPage(
-                        lessonType: lesson.type,
-                        lessonId: lesson.id!,
-                        onComplete: (lessonId, percentComplete) {
-                          _cubit.updateStatusLesson(
-                            lessonId: lessonId,
-                            percentComplete: percentComplete,
+                  )
+                else
+                  ...List.generate(
+                    lessons.length,
+                    (index) => _buildRecommendationRow(
+                      lessonDetail: lessons[index],
+                      onTap: () async {
+                        final lesson = lessons[index];
+                        if (lesson?.id?.isNotEmpty == true) {
+                          ActivityListTracking.clickLessonItem(
+                            objectId: lesson!.id,
+                            objectIndex: index,
+                            objectTitle: lesson.name,
                           );
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
+
+                          await NavigationUtil.navigatePage(
+                            context,
+                            LessonDetailPage(
+                              lessonType: lesson.type,
+                              lessonId: lesson.id!,
+                              onComplete: (lessonId, percentComplete) {
+                                _cubit.updateStatusLesson(
+                                  lessonId: lessonId,
+                                  percentComplete: percentComplete,
+                                );
+                              },
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+              ],
             ),
-        ],
-      ),
-    );
+          );
   }
 
   void animateToIndex(int index, {bool refresh = true}) {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/button_widget.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 
 class QuizResultWidget extends StatefulWidget {
   const QuizResultWidget({
@@ -37,7 +38,9 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
   @override
   void initState() {
     super.initState();
-    rate = widget.rate != null ? widget.rate! : (widget.rightAnswer / widget.totalQuiz) * 100;
+    rate = widget.rate != null
+        ? widget.rate!
+        : (widget.rightAnswer / widget.totalQuiz) * 100;
     gotMaxRate = rate >= 100;
   }
 
@@ -87,15 +90,19 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
         const SizedBox(height: 10),
         Text(
           R.string.completed_quiz.tr(),
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: R.color.textDark, height: 1.4),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: R.color.textDark,
+              height: 1.4),
         ),
-        const SizedBox(height: 10),
         Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              text: "Bạn đã${gotMaxRate ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
+              text:
+                  "Bạn đã${gotMaxRate ? " xuất sắc" : ""} hoàn tất bài quiz và trả lời đúng ",
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 16,
@@ -130,45 +137,58 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
               R.string.challenge_yourself_again.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.w700, color: R.color.textDark, height: 1.37, letterSpacing: 0.4),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.textDark,
+                  height: 1.37,
+                  letterSpacing: 0.4),
             ),
           ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Container(
-              width: 128,
-              child: ButtonWidget(
-                height: 35,
-                title: suggestRetry ? R.string.skip.tr() : R.string.see_the_answer.tr(),
-                textSize: 14,
-                onPressed: () {
-                  NavigationUtil.pop(context);
-                  if (suggestRetry) {
-                    widget.skipCallback();
-                  } else {
+            Flexible(
+              child: Container(
+                // width: 128,
+                child: ButtonWidget(
+                  height: 44,
+                  // title: suggestRetry ? R.string.skip.tr() : R.string.see_the_answer.tr(),
+                  title: R.string.see_the_answer.tr(),
+                  textSize: 14,
+                  onPressed: () {
+                    NavigationUtil.pop(context);
+                    // if (suggestRetry) {
+                    //   widget.skipCallback();
+                    // } else {
+                    //   widget.seeResultCallback();
+                    // }
                     widget.seeResultCallback();
-                  }
-                },
-                backgroundColor: Colors.transparent,
-                borderColor: R.color.accentColor,
-                textColor: R.color.accentColor,
+                  },
+                  backgroundColor: Colors.transparent,
+                  borderColor: R.color.accentColor,
+                  textColor: R.color.accentColor,
+                ),
               ),
             ),
-            Container(
-              width: 128,
-              child: ButtonWidget(
-                height: 35,
-                title: suggestRetry ? R.string.accept.tr() : R.string.continue_learning.tr(),
-                textSize: 14,
-                onPressed: () {
-                  NavigationUtil.pop(context);
-                  if (suggestRetry) {
-                    widget.retryCallback();
-                  } else {
+            GapW(12),
+            Flexible(
+              child: Container(
+                // width: 128,
+                child: ButtonWidget(
+                  height: 44,
+                  // title: suggestRetry ? R.string.accept.tr() : R.string.continue_learning.tr(),
+                  title: R.string.continue_learning.tr(),
+                  textSize: 14,
+                  onPressed: () {
+                    NavigationUtil.pop(context);
+                    // if (suggestRetry) {
+                    //   widget.retryCallback();
+                    // } else {
+                    //   widget.continueLearnCallback();
+                    // }
                     widget.continueLearnCallback();
-                  }
-                },
+                  },
+                ),
               ),
             ),
           ],
@@ -187,7 +207,11 @@ class _QuizResultwidgetState extends State<QuizResultWidget> {
         const SizedBox(height: 10),
         Text(
           R.string.completed_quiz.tr(),
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: R.color.textDark, height: 1.4),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: R.color.textDark,
+              height: 1.4),
         ),
         const SizedBox(height: 10),
         Container(
