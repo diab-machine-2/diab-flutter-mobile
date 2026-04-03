@@ -155,7 +155,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                       show: false,
                                                     ),
                                                     sectionsSpace: 0,
-                                                    centerSpaceRadius: 50,
+                                                    centerSpaceRadius: 44, // 2*(44+40) = 168px (Figma size)
                                                     sections: List.generate(
                                                         model.energyChart
                                                             .length, (i) {
@@ -186,39 +186,29 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                                                     }),
                                                   ),
                                                 ),
-                                                // Center content - percentage + meal count
+                                                // Center content - meal count only
                                                 Column(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Text(
-                                                      '${total.round()}%',
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        color: R.color
-                                                            .primaryGreyColor,
-                                                      ),
-                                                    ),
                                                     Text(
                                                       '$actualMealCount',
                                                       style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.w700,
-                                                        color: R.color.black,
+                                                        color: Color(0xFF111515),
+                                                        letterSpacing: 0.04,
                                                       ),
                                                     ),
-                                                    SizedBox(height: 2),
                                                     Text(
                                                       'Bữa ăn',
                                                       style: TextStyle(
                                                         fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.w400,
-                                                        color: R.color
-                                                            .primaryGreyColor,
+                                                        color: Color(0xFF111515),
+                                                        letterSpacing: 0.4,
                                                       ),
                                                     ),
                                                   ],
