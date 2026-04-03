@@ -528,91 +528,81 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       final int range = int.tryParse(periodFilterType ?? '1') ?? 1;
       List<FoodCalorieTrendItem> items = [];
 
-      // ── STRATEGY 1: Summary API (trendData) ──
-      bool summarySuccess = false;
+      // ── STRATEGY 1: Input API (per-meal dots — like blood sugar chart) ──
+      bool inputSuccess = false;
       try {
-        print('[FoodCalorieTrend] Trying Summary API with range=$range');
-        final summary = await FoodClient().fetchNutritionSummary(range);
-        print('[FoodCalorieTrend] Summary API success, trendData=${summary.trendData.length}');
+        print('[FoodCalorieTrend] Trying Input API with range=$range');
+        final inputData = await FoodClient().fetchInput(
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+            range.toString(),
+            1,
+            size: 100);
 
-        for (final trend in summary.trendData) {
-          if (trend.date == null) continue;
-          int? timestamp;
-          try {
-            final dt = DateTime.parse(trend.date!);
-            timestamp = dt.millisecondsSinceEpoch ~/ 1000;
-          } catch (_) {
-            continue;
+        print('[FoodCalorieTrend] Input API success, ${inputData.inputs.length} day groups');
+
+        for (final dayItem in inputData.inputs) {
+          for (final mealItem in dayItem.mealItems) {
+            for (final foodInput in mealItem.inputs) {
+              final int score = foodInput.totalMealScore ?? 0;
+              final double totalCalorie = foodInput.totalCalories ??
+                  foodInput.calorie?.toDouble() ??
+                  0;
+              final display = (foodInput.scoreRange != null)
+                  ? _scoreRangeToDisplay(foodInput.scoreRange)
+                  : _scoreFromValue(score);
+
+              items.add(FoodCalorieTrendItem(
+                id: foodInput.id,
+                date: foodInput.date,
+                value: totalCalorie,
+                score: score,
+                colorCode: display['color']!,
+                fontColor: display['color']!,
+                mealText: mealItem.text ?? foodInput.mealText ?? '',
+                type: display['type']!,
+              ));
+            }
           }
-
-          final int score = trend.avgScore ?? 0;
-          final double calories = (trend.totalCalories ?? 0).toDouble();
-          final display = _scoreFromValue(score);
-
-          items.add(FoodCalorieTrendItem(
-            id: trend.date,
-            date: timestamp,
-            value: calories,
-            score: score,
-            colorCode: display['color']!,
-            fontColor: display['color']!,
-            mealText: '${trend.mealCount ?? 0} bữa',
-            type: display['type']!,
-          ));
         }
-        summarySuccess = true;
+        inputSuccess = items.isNotEmpty;
       } catch (e) {
-        print('[FoodCalorieTrend] Summary API failed: $e');
+        print('[FoodCalorieTrend] Input API failed: $e');
       }
-      // ── STRATEGY 2: Input API (build trend from items) ──
-      if (!summarySuccess || items.isEmpty) {
-        for (int retry = 0; retry < 3; retry++) {
-          try {
-            if (retry > 0) {
-              print('[FoodCalorieTrend] Input API retry #$retry');
-              await Future.delayed(Duration(milliseconds: 500));
-            }
-            print('[FoodCalorieTrend] Trying Input API with range=$range');
-            final inputData = await FoodClient().fetchInput(
-                (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-                range.toString(),
-                1,
-                size: 100);
 
-            print('[FoodCalorieTrend] Input API success, ${inputData.inputs.length} day groups');
-            items.clear();
+      // ── STRATEGY 2 (fallback): Summary API (per-day) ──
+      if (!inputSuccess) {
+        try {
+          print('[FoodCalorieTrend] Fallback: Trying Summary API with range=$range');
+          final summary = await FoodClient().fetchNutritionSummary(range);
+          print('[FoodCalorieTrend] Summary API success, trendData=${summary.trendData.length}');
 
-            for (final dayItem in inputData.inputs) {
-              for (final mealItem in dayItem.mealItems) {
-                for (final foodInput in mealItem.inputs) {
-                  final int score = foodInput.totalMealScore ?? 0;
-                  final double totalCalorie = foodInput.totalCalories ??
-                      foodInput.calorie?.toDouble() ??
-                      0;
-                  final display = (foodInput.scoreRange != null)
-                      ? _scoreRangeToDisplay(foodInput.scoreRange)
-                      : _scoreFromValue(score);
+          for (final trend in summary.trendData) {
+            if (trend.date == null) continue;
+            int? timestamp;
+            try {
+              final dt = DateTime.parse(trend.date!);
+              timestamp = dt.millisecondsSinceEpoch ~/ 1000;
+            } catch (_) {
+              continue;
+            }
 
-                  items.add(FoodCalorieTrendItem(
-                    id: foodInput.id,
-                    date: foodInput.date,
-                    value: totalCalorie,
-                    score: score,
-                    colorCode: display['color']!,
-                    fontColor: display['color']!,
-                    mealText: mealItem.text ?? foodInput.mealText ?? '',
-                    type: display['type']!,
-                  ));
-                }
-              }
-            }
-            break; // Success — stop retrying
-          } catch (e2) {
-            print('[FoodCalorieTrend] Input API attempt ${retry + 1} failed: $e2');
-            if (retry == 2) {
-              print('[FoodCalorieTrend] All retries exhausted');
-            }
+            final int score = trend.avgScore ?? 0;
+            final double calories = (trend.totalCalories ?? 0).toDouble();
+            final display = _scoreFromValue(score);
+
+            items.add(FoodCalorieTrendItem(
+              id: trend.date,
+              date: timestamp,
+              value: calories,
+              score: score,
+              colorCode: display['color']!,
+              fontColor: display['color']!,
+              mealText: '${trend.mealCount ?? 0} bữa',
+              type: display['type']!,
+            ));
           }
+        } catch (e) {
+          print('[FoodCalorieTrend] Summary API also failed: $e');
         }
       }
 
