@@ -363,12 +363,12 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         // Define Figma colors mapping based on ID or Name
         String ColorMap(String name, String? id) {
           final lower = name.toLowerCase();
-          if (lower.contains('sáng') || lower.contains('breakfast') || id == '1' || id == 'Bữa sáng') return '#0DAB9C';
-          if (lower.contains('trưa') || lower.contains('lunch') || id == '2' || id == 'Bữa trưa') return '#20BCC0';
-          if (lower.contains('tối') || lower.contains('dinner') || id == '3' || id == 'Bữa tối') return '#FFAC5A';
-          if (lower.contains('nhẹ') || lower.contains('snack') || id == '4' || id == 'Bữa phụ') return '#FFCD57';
-          if (lower.contains('khuya') || lower.contains('late') || id == '5') return '#F3666A';
-          return '#0DAB9C'; // Fallback to green so it never looks grey/broken
+          if (lower.contains('sáng') || lower.contains('breakfast') || id == '1' || id == 'Bữa sáng') return '#008479';
+          if (lower.contains('trưa') || lower.contains('lunch') || id == '2' || id == 'Bữa trưa') return '#0FB4A5';
+          if (lower.contains('tối') || lower.contains('dinner') || id == '3' || id == 'Bữa tối') return '#FF9841';
+          if (lower.contains('nhẹ') || lower.contains('snack') || id == '4' || id == 'Bữa phụ') return '#F9BA1A';
+          if (lower.contains('khuya') || lower.contains('late') || id == '5') return '#F86F6F';
+          return '#008479'; // Fallback to green so it never looks grey/broken
         }
 
         if (summary.energyDistribution.isNotEmpty) {
