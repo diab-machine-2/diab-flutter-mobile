@@ -376,9 +376,14 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       selectedValue = formatNumber(t.value ?? 0);
       selectedFontColor = t.fontColor ?? '#008479';
       selectedMealText = t.mealText ?? '';
-      if (selectedMealText.isNotEmpty &&
-          !selectedMealText.toLowerCase().startsWith('bữa')) {
-        selectedMealText = 'Bữa ${selectedMealText.toLowerCase()}';
+      if (selectedMealText.isNotEmpty) {
+        String lower = selectedMealText.toLowerCase();
+        if (lower.contains('sáng') || lower.contains('breakfast')) selectedMealText = 'Bữa sáng';
+        else if (lower.contains('trưa') || lower.contains('lunch')) selectedMealText = 'Bữa trưa';
+        else if (lower.contains('tối') || lower.contains('dinner')) selectedMealText = 'Bữa tối';
+        else if (lower.contains('nhẹ') || lower.contains('snack')) selectedMealText = 'Bữa nhẹ';
+        else if (lower.contains('khuya') || lower.contains('late')) selectedMealText = 'Bữa khuya';
+        else if (!lower.startsWith('bữa')) selectedMealText = 'Bữa $lower'; // Fallback
       }
       selectedType = t.type ?? 'Cân bằng';
       selectedScore = t.score ?? 0;

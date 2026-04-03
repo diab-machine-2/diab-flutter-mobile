@@ -209,8 +209,14 @@ class FoodDetailControllerState extends State<FoodDetailController>
 
     // Meal type text (Bữa sáng, Bữa trưa, etc.)
     String mealText = inputModel.timeFrameName ?? inputModel.mealText ?? '';
-    if (mealText.isNotEmpty && !mealText.toLowerCase().startsWith('bữa')) {
-      mealText = 'Bữa ${mealText.toLowerCase()}';
+    if (mealText.isNotEmpty) {
+      String lower = mealText.toLowerCase();
+      if (lower.contains('sáng') || lower.contains('breakfast')) mealText = 'Bữa sáng';
+      else if (lower.contains('trưa') || lower.contains('lunch')) mealText = 'Bữa trưa';
+      else if (lower.contains('tối') || lower.contains('dinner')) mealText = 'Bữa tối';
+      else if (lower.contains('nhẹ') || lower.contains('snack')) mealText = 'Bữa nhẹ';
+      else if (lower.contains('khuya') || lower.contains('late')) mealText = 'Bữa khuya';
+      else if (!lower.startsWith('bữa')) mealText = 'Bữa $lower';
     }
 
     // Time string
