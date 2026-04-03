@@ -171,4 +171,5 @@ class AppColors {
   static const color0xffF2F6F9 = Color(0xffF2F6F9F);
   static const gray_btn = Color(0xffE4E4E7);
   static const examination_color = Color(0xffF86F6F);
+  static const color0xffEAEDEE = Color(0xffEAEDEE);
 }

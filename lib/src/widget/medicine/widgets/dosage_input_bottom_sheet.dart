@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:medical/src/utils/utils.dart';
 
 import '../../../../res/R.dart';
 import '../../../modal/medicine/dose_model.dart';
@@ -506,8 +507,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   height: 40,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color:
-                        isSelected ? const Color(0xFF008D67) : Colors.grey[200],
+                    color: isSelected
+                        ? R.color.greenGradientBottom
+                        : R.color.color0xffF4F7F7,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -552,8 +554,9 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   height: 40,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color:
-                        isSelected ? const Color(0xFF008D67) : Colors.grey[200],
+                    color: isSelected
+                        ? R.color.greenGradientBottom
+                        : R.color.color0xffF4F7F7,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -1152,19 +1155,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
       padding: const EdgeInsets.fromLTRB(12, 16, 12, 30),
       decoration: BoxDecoration(color: Colors.white, boxShadow: [
         // Shadow on top
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.2),
-          spreadRadius: 1,
-          blurRadius: 10,
-          offset: Offset(0, -1),
-        ),
+        Utils.getBoxShadowDropButton(),
         // Glowing effect
-        BoxShadow(
-          color: Color(0xFF0DAB9C).withOpacity(0.6),
-          spreadRadius: 1,
-          blurRadius: 20,
-          offset: Offset(0, 12),
-        ),
       ]),
       child: GestureDetector(
           onTap: () {
@@ -1223,8 +1215,8 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
             height: 44,
             decoration: BoxDecoration(
               color: _submitBtnEnabled
-                  ? const Color(0xFF008D67)
-                  : Color(0xFFBFC6C6),
+                  ? R.color.greenGradientBottom
+                  : R.color.color0xffEAEDEE,
               borderRadius: BorderRadius.circular(50),
             ),
             child: Center(
@@ -1235,7 +1227,7 @@ class _DosageInputBottomSheetState extends State<DosageInputBottomSheet> {
                   fontSize: 15,
                   height: 1.46,
                   letterSpacing: 0.4,
-                  color: _submitBtnEnabled ? Colors.white : Color(0xFF5E6566),
+                  color: _submitBtnEnabled ? Colors.white : R.color.color0xff5E6566,
                 ),
               ),
             ),

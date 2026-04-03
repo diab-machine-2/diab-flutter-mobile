@@ -410,7 +410,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: _submitBtnEnabled ? const Color(0xFF008D67) : const Color(0xFFBFC6C6),
+              backgroundColor: _submitBtnEnabled ? R.color.greenGradientBottom : R.color.color0xffEAEDEE,
               minimumSize: const Size.fromHeight(50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(50),
@@ -602,7 +602,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                   duration: const Duration(milliseconds: 200),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF008D67) : Color(0xFFF4F7F7),
+                    color: isSelected ? R.color.greenGradientBottom : R.color.color0xffF7F8F8,
                     borderRadius: BorderRadius.circular(40),
                   ),
                   child: Text(
@@ -641,7 +641,7 @@ class _MedicineAddPageState extends State<MedicineAddPage> {
                 width: 34,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Color(0xFFF4F7F7),
+                  color: R.color.color0xffF7F8F8,
                   borderRadius: BorderRadius.horizontal(
                       left: Radius.circular(4), right: Radius.zero),
                 ),
