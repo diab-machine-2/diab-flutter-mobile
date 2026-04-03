@@ -363,10 +363,15 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     if (_focusIndex >= 0 && _focusIndex < trends.length) {
       final t = trends[_focusIndex];
       if (t.date != null) {
+        // Dùng local time thay vì UTC để hiển thị đúng múi giờ VN
         final dt =
-            DateTime.fromMillisecondsSinceEpoch(t.date! * 1000, isUtc: true);
+            DateTime.fromMillisecondsSinceEpoch(t.date! * 1000, isUtc: false);
         selectedDate = DateFormat('dd/MM').format(dt);
-        selectedTime = DateFormat('HH:mm').format(dt);
+        // Chỉ hiện giờ khi có mealText (data per-meal từ Input API)
+        // Summary API trả timestamp theo ngày (midnight) nên ẩn giờ
+        if (t.mealText != null && t.mealText!.isNotEmpty) {
+          selectedTime = DateFormat('HH:mm').format(dt);
+        }
       }
       selectedValue = formatNumber(t.value ?? 0);
       selectedFontColor = t.fontColor ?? '#008479';
