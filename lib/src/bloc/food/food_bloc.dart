@@ -371,22 +371,50 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           return '#008479'; // Fallback to green so it never looks grey/broken
         }
 
+        // Initialize base structure with all 5 meals to match Figma Legend
+        Map<String, double> fixedEnergyMap = {
+          'Sáng': 0,
+          'Trưa': 0,
+          'Tối': 0,
+          'Nhẹ': 0,
+          'Khuya': 0
+        };
+
         if (summary.energyDistribution.isNotEmpty) {
           for (final item in summary.energyDistribution) {
-            energyChartItems.add(EnergyItemModel(
-              text: item.timeFrameName ?? '',
-              value: (item.percent ?? 0).toDouble(),
-              percentValue: (item.percent ?? 0).toDouble(),
-              colorCode: ColorMap(item.timeFrameName ?? '', item.timeFrameId),
-            ));
+            final name = (item.timeFrameName ?? '').toLowerCase();
+            final val = (item.percent ?? 0).toDouble();
+            
+            if (name.contains('sáng') || name.contains('breakfast') || item.timeFrameId == '1') {
+              fixedEnergyMap['Sáng'] = (fixedEnergyMap['Sáng'] ?? 0) + val;
+            } else if (name.contains('trưa') || name.contains('lunch') || item.timeFrameId == '2') {
+              fixedEnergyMap['Trưa'] = (fixedEnergyMap['Trưa'] ?? 0) + val;
+            } else if (name.contains('tối') || name.contains('dinner') || item.timeFrameId == '3') {
+              fixedEnergyMap['Tối'] = (fixedEnergyMap['Tối'] ?? 0) + val;
+            } else if (name.contains('nhẹ') || name.contains('snack') || item.timeFrameId == '4') {
+              fixedEnergyMap['Nhẹ'] = (fixedEnergyMap['Nhẹ'] ?? 0) + val;
+            } else if (name.contains('khuya') || name.contains('late') || item.timeFrameId == '5') {
+              fixedEnergyMap['Khuya'] = (fixedEnergyMap['Khuya'] ?? 0) + val;
+            } else {
+              // Fallback to Sáng if unmapped
+              fixedEnergyMap['Sáng'] = (fixedEnergyMap['Sáng'] ?? 0) + val;
+            }
           }
+          
+          fixedEnergyMap.forEach((key, val) {
+            energyChartItems.add(EnergyItemModel(
+              text: key,
+              value: val,
+              percentValue: val,
+              colorCode: ColorMap(key, null),
+            ));
+          });
         } else {
           // Fallback: manually calculate from inputData if Summary API is missing
           final inputData = await client.fetchInput(
               currentDateTime ?? (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
               periodFilterType ?? '1', 1, size: 100);
 
-          Map<String, double> energyMap = {'Sáng': 0, 'Trưa': 0, 'Tối': 0, 'Nhẹ': 0, 'Khuya': 0};
           double totalE = 0;
 
           for (final dayItem in inputData.inputs) {
@@ -411,12 +439,12 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
               else if (lower.contains('nhẹ')) matchedKey = 'Nhẹ';
               else if (lower.contains('khuya')) matchedKey = 'Khuya';
               
-              energyMap[matchedKey] = energyMap[matchedKey]! + mealE;
+              fixedEnergyMap[matchedKey] = fixedEnergyMap[matchedKey]! + mealE;
               totalE += mealE;
             }
           }
 
-          energyMap.forEach((key, val) {
+          fixedEnergyMap.forEach((key, val) {
             double pct = totalE > 0 ? (val / totalE * 100.0) : 0;
             energyChartItems.add(EnergyItemModel(
               text: key,
