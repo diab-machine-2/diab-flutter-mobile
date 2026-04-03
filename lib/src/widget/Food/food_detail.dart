@@ -200,7 +200,8 @@ class FoodDetailControllerState extends State<FoodDetailController>
     final double totalKcal = inputModel.totalCalories ??
         inputModel.calorie ??
         0;
-    final bool isBalanced = inputModel.isBalanced ?? (score >= 8);
+    // Đồng bộ: điểm >= 6 được tính là Cân bằng (giống biểu đồ trend)
+    final bool isBalanced = inputModel.isBalanced ?? (score >= 6);
     final String balanceText = isBalanced ? 'Cân bằng' : 'Chưa cân bằng';
     // Figma: Cân bằng = #23C559, Chưa cân bằng = #FFCD57
     final Color balanceColor =

@@ -344,7 +344,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
                   fat: totalFat,
                 );
 
-                if (score >= 8) {
+                if (score >= 6) {
                   balancedCount++;
                 }
               }
@@ -360,15 +360,15 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         final int range = int.tryParse(periodFilterType ?? '1') ?? 1;
         final summary = await client.fetchNutritionSummary(range);
         
-        // Define Figma colors mapping
-        ColorMap(String name) {
+        // Define Figma colors mapping based on ID or Name
+        String ColorMap(String name, String? id) {
           final lower = name.toLowerCase();
-          if (lower.contains('sáng')) return '#0DAB9C';
-          if (lower.contains('trưa')) return '#20BCC0';
-          if (lower.contains('tối')) return '#FFAC5A';
-          if (lower.contains('nhẹ')) return '#FFCD57';
-          if (lower.contains('khuya')) return '#F3666A';
-          return '#BDBDBD';
+          if (lower.contains('sáng') || lower.contains('breakfast') || id == '1' || id == 'Bữa sáng') return '#0DAB9C';
+          if (lower.contains('trưa') || lower.contains('lunch') || id == '2' || id == 'Bữa trưa') return '#20BCC0';
+          if (lower.contains('tối') || lower.contains('dinner') || id == '3' || id == 'Bữa tối') return '#FFAC5A';
+          if (lower.contains('nhẹ') || lower.contains('snack') || id == '4' || id == 'Bữa phụ') return '#FFCD57';
+          if (lower.contains('khuya') || lower.contains('late') || id == '5') return '#F3666A';
+          return '#0DAB9C'; // Fallback to green so it never looks grey/broken
         }
 
         if (summary.energyDistribution.isNotEmpty) {
@@ -377,7 +377,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
               text: item.timeFrameName ?? '',
               value: (item.percent ?? 0).toDouble(),
               percentValue: (item.percent ?? 0).toDouble(),
-              colorCode: item.color ?? ColorMap(item.timeFrameName ?? ''),
+              colorCode: ColorMap(item.timeFrameName ?? '', item.timeFrameId),
             ));
           }
         } else {
@@ -422,7 +422,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
               text: key,
               value: pct,
               percentValue: pct,
-              colorCode: ColorMap(key),
+              colorCode: ColorMap(key, null),
             ));
           });
         }
