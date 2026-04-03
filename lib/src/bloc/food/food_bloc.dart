@@ -8,7 +8,7 @@ import 'package:medical/src/modal/food/food_category_model.dart';
 import 'package:medical/src/modal/food/food_data_model.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
+import 'package:medical/src/modal/food/food_statistic_diet_model.dart' hide EnergyItemModel;
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
 import 'package:medical/src/modal/food/nutrition_summary_model.dart';
@@ -354,11 +354,27 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           // Silently fallback if input counting fails
         }
       }
+      // Build energyChart from Summary API energyDistribution
+      List<EnergyItemModel> energyChartItems = [];
+      try {
+        final int range = int.tryParse(periodFilterType ?? '1') ?? 1;
+        final summary = await client.fetchNutritionSummary(range);
+        for (final item in summary.energyDistribution) {
+          energyChartItems.add(EnergyItemModel(
+            text: item.timeFrameName ?? '',
+            value: (item.percent ?? 0).toDouble(),
+            percentValue: (item.percent ?? 0).toDouble(),
+            colorCode: item.color ?? '#BDBDBD',
+          ));
+        }
+      } catch (e) {
+        print('[EnergyDistribution] Failed to load: $e');
+      }
 
       yield FoodStatisticDistributeLoaded(
-        model: const FoodDistributeModel(
+        model: FoodDistributeModel(
           legends: [],
-          energyChart: [],
+          energyChart: energyChartItems,
           carbChart: [],
         ),
         balancedCount: balancedCount,
