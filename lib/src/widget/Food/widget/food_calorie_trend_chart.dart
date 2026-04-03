@@ -390,27 +390,31 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         // ── Dòng 1: Giờ · Ngày ──
         Row(mainAxisSize: MainAxisSize.min, children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
-                color: R.color.white, borderRadius: BorderRadius.circular(19)),
+                color: Colors.white, borderRadius: BorderRadius.circular(20)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Text(selectedTime,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.textDark)),
-              _dotWidget(),
+              if (selectedTime.isNotEmpty) ...[
+                Text(selectedTime,
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: 0.4,
+                        color: Color(0xFF636A6B))),
+                _dotWidget(size: 4),
+              ],
               Text(selectedDate,
                   style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 15,
                       fontWeight: FontWeight.w400,
-                      color: R.color.textDark)),
+                      letterSpacing: 0.4,
+                      color: Color(0xFF636A6B))),
             ]),
           ),
         ]),
-        const SizedBox(height: 2),
+        const SizedBox(height: 4),
 
-        // ── Dòng 2: < Cân bằng / Cao / Thấp > ──
+        // ── Dòng 2: < Cân bằng > ──
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -424,7 +428,6 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                     color: _parseColor(selectedFontColor),
-                    height: 36 / 24,
                   ),
                 ),
               ),
@@ -434,31 +437,32 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             const SizedBox(width: 16),
           ],
         ),
+        
+        const SizedBox(height: 4),
 
-        Padding(
-          padding: const EdgeInsets.only(top: 2),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            if (selectedMealText.isNotEmpty) ...[
-              Text(selectedMealText,
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: R.color.color0xff5E6566)),
-              _dotWidget(),
-            ],
-            Text('$selectedScore điểm',
+        // ── Dòng 3: Bữa trưa • 8 điểm • 500 Kcal ──
+        Row(mainAxisSize: MainAxisSize.min, children: [
+          if (selectedMealText.isNotEmpty) ...[
+            Text(selectedMealText,
                 style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w400,
-                    color: R.color.textDark)),
-            _dotWidget(),
-            Text('$selectedValue Kcal',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: R.color.textDark)),
-          ]),
-        ),
+                    letterSpacing: 0.4,
+                    color: Color(0xFF3E3F3F))),
+            _dotWidget(size: 6),
+          ],
+          Text('$selectedScore điểm',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF636A6B))),
+          _dotWidget(size: 6),
+          Text('$selectedValue Kcal',
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF636A6B))),
+        ]),
 
         const SizedBox(height: 16),
 
@@ -483,19 +487,30 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   }
 
   Widget _arrowButton(IconData icon, bool enabled, VoidCallback onTap) {
-    return InkWell(
+    return GestureDetector(
       onTap: enabled ? onTap : null,
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: R.color.color0xffE5E5E5, width: 1),
-          color: Colors.white,
+      child: Opacity(
+        opacity: enabled ? 1.0 : 0.5,
+        child: Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Color.fromRGBO(4, 43, 40, 0.08),
+                blurRadius: 8,
+                offset: Offset(1, 2),
+              ),
+            ],
+          ),
+          child: Icon(
+            icon,
+            size: 24,
+            color: Color(0xFF111515),
+          ),
         ),
-        child: Icon(icon,
-            size: 20,
-            color: enabled ? R.color.textDark : R.color.color0xffE5E5E5),
       ),
     );
   }
@@ -528,10 +543,10 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     }
   }
 
-  Widget _dotWidget() {
+  Widget _dotWidget({double size = 4}) {
     return Container(
-      width: 4,
-      height: 4,
+      width: size,
+      height: size,
       margin: EdgeInsets.symmetric(horizontal: 4),
       decoration:
           BoxDecoration(shape: BoxShape.circle, color: Color(0xFFBFC6C6)),

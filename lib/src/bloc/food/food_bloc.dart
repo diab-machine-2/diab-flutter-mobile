@@ -614,10 +614,10 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
 
   /// Helper: map numeric score to display status and color
   static Map<String, String> _scoreFromValue(int score) {
-    if (score >= 8) return {'type': 'Cân bằng', 'color': '#008479'};
-    if (score >= 6) return {'type': 'Khá cân bằng', 'color': '#008479'};
+    if (score >= 8) return {'type': 'Cân bằng', 'color': '#23C559'}; // Sửa màu Cân bằng giống Figma
+    if (score >= 6) return {'type': 'Khá cân bằng', 'color': '#23C559'};
     if (score >= 4) return {'type': 'Trung bình', 'color': '#F39C12'};
-    return {'type': 'Chưa cân bằng', 'color': '#FDB913'};
+    return {'type': 'Chưa cân bằng', 'color': '#FFCD57'}; // Màu Vàng theo design
   }
 
   // Handler cho biểu đồ calo từng bữa ăn riêng biệt
