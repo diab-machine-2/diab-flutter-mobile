@@ -34,11 +34,12 @@ import '../food_detail_tabbar.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionPage extends StatefulWidget {
-  DailyNutritionPage({required this.type, required this.id, this.goalId});
+  DailyNutritionPage({required this.type, required this.id, this.goalId, this.initialDate});
 
   final String? type;
   final String? id;
   final String? goalId;
+  final DateTime? initialDate;
 
   @override
   _DailyNutritionPageState createState() => _DailyNutritionPageState();
@@ -59,7 +60,7 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
   void initState() {
     final AppRepository appRepository = AppRepository();
     _cubit = DailyNutritionCubit(appRepository, widget.goalId ?? '');
-    _cubit.getInitialData(type: widget.type, id: widget.id);
+    _cubit.getInitialData(type: widget.type, id: widget.id, initialDate: widget.initialDate);
     super.initState();
     firebaseSetup();
     animationFocus();

@@ -204,7 +204,7 @@ class CustomSegmentState extends State<CustomSegment> {
       scrollDirection: Axis.horizontal,
       child: Row(children: [
         SizedBox(width: 16),
-        _buildButtonTabBar(
+        _buildChip(
             title: R.string.mon_an_gan_day.tr(),
             isSelected: segmentedControlValue == 0,
             onTap: () {
@@ -213,7 +213,8 @@ class CustomSegmentState extends State<CustomSegment> {
                 segmentedControlValue = 0;
               });
             }),
-        _buildButtonTabBar(
+        SizedBox(width: 8),
+        _buildChip(
             title: R.string.mon_yeu_thich.tr(),
             isSelected: segmentedControlValue == 1,
             onTap: () {
@@ -222,7 +223,8 @@ class CustomSegmentState extends State<CustomSegment> {
                 segmentedControlValue = 1;
               });
             }),
-        _buildButtonTabBar(
+        SizedBox(width: 8),
+        _buildChip(
             title: R.string.danh_muc.tr(),
             isSelected: segmentedControlValue == 2,
             onTap: () {
@@ -236,28 +238,29 @@ class CustomSegmentState extends State<CustomSegment> {
     );
   }
 
-  Widget _buildButtonTabBar(
+  Widget _buildChip(
       {required String title,
       required bool isSelected,
       required VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 143 ,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(200),
-          color: isSelected ? R.color.blue_6 : R.color.transparent,
+          borderRadius: BorderRadius.circular(20),
+          color: isSelected ? R.color.mainColor : R.color.white,
+          border: Border.all(
+            color: isSelected ? R.color.mainColor : R.color.grayBorder,
+            width: 1,
+          ),
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: isSelected
-                ? R.color.greenGradientBottom
-                : R.color.captionColorGray,
+            color: isSelected ? R.color.white : R.color.color0xff636A6B,
             fontSize: 14,
-            fontWeight: FontWeight.w700,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

@@ -62,8 +62,9 @@ class FoodStatisticDistributeLoaded extends FoodState {
   final FoodDistributeModel? model;
   final int? balancedCount;
   final int? totalMealCount;
+  final int? targetKcal;
 
-  FoodStatisticDistributeLoaded({this.model, this.balancedCount, this.totalMealCount});
+  FoodStatisticDistributeLoaded({this.model, this.balancedCount, this.totalMealCount, this.targetKcal});
 }
 
 // State cho phân bổ theo nhóm thực phẩm (Admin API)

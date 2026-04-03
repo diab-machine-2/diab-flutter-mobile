@@ -29,6 +29,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
   final String timeframe;
   final String timeframeId;
   final List<String> files;
+  final Map<String, dynamic>? mealScoreData;
 
   const ConfirmGeneratedFood({
     Key? key,
@@ -36,6 +37,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
     required this.timeframe,
     required this.timeframeId,
     required this.files,
+    this.mealScoreData,
   }) : super(key: key);
 
   @override
@@ -746,51 +748,23 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           '[CAPTURE] Calling API with note length: ${note.length}, foods: ${_selectedFoods.length}, paths: ${paths.length}',
           name: '[CAPTURE]');
 
-      // Step 4: Get MealScore data FIRST (from images)
-      // The MealScore data is needed to save with the Nutrition Input
-      Map<String, dynamic>? mealScoreData;
-      List<String> mealScorePaths = [...paths];
+      // Step 4: Use the MealScore data passed from image capture
+      Map<String, dynamic>? mealScoreData = widget.mealScoreData;
 
-      // If no image paths (selected from library), download first food image for MealScore
-      if (mealScorePaths.isEmpty && _selectedFoods.isNotEmpty) {
-        try {
-          final imageUrl = _selectedFoods.first.image?.url;
-          if (imageUrl != null && imageUrl.isNotEmpty) {
-            final httpClient = HttpClient();
-            final request = await httpClient.getUrl(Uri.parse(imageUrl));
-            final response = await request.close();
-            final tempDir = Directory.systemTemp;
-            final tempFile = File('${tempDir.path}/meal_score_temp_${DateTime.now().millisecondsSinceEpoch}.jpg');
-            final bytes = await response.fold<List<int>>([], (prev, element) => prev..addAll(element));
-            await tempFile.writeAsBytes(bytes);
-            mealScorePaths.add(tempFile.path);
-          }
-        } catch (e) {
-          developer.log('[CAPTURE] Could not download food image for MealScore: $e', name: '[CAPTURE]');
-        }
-      }
+      // Step 5: Save the meal to DB via /App/Nutrition/Input
+      // NOTE: UploadAI/MealScore only analyzes and returns scores,
+      // it does NOT persist the meal. We must call postIndexFoodAI to save.
+      final client = FoodClient();
+      final result = await client.postIndexFoodAI(
+        selectedDate.millisecondsSinceEpoch ~/ 1000,
+        widget.timeframeId,
+        _controllerNote.text,
+        _selectedFoods,
+        paths,
+        mealScoreData: mealScoreData,
+      );
 
-      // Call MealScore API to get nutrition analysis
-      if (mealScorePaths.isNotEmpty) {
-        try {
-          mealScoreData = await FoodClient().postMealScore(mealScorePaths);
-          developer.log('[CAPTURE] MealScore data received: ${mealScoreData?.keys}', name: '[CAPTURE]');
-        } catch (e) {
-          developer.log('[CAPTURE] MealScore call failed (non-blocking): $e', name: '[CAPTURE]');
-        }
-      }
-
-      // Step 5: Call postIndexFoodAI with MealScore data included
-      // NEW: sends all data in a single JSON POST to /App/Nutrition/Input
-      final result = await FoodClient().postIndexFoodAI(
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          widget.timeframeId,
-          note,
-          _selectedFoods,
-          paths,
-          mealScoreData: mealScoreData);
-
-      developer.log('[CAPTURE] API call completed, result: $result',
+      developer.log('[CAPTURE] postIndexFoodAI result: $result',
           name: '[CAPTURE]');
 
       if (result == true) {

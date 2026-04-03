@@ -208,4 +208,5 @@ class Colors {
   Color get energyEvening => Color(0xffFF9841);
   Color get energySnack => Color(0xffF9BA1A);
   Color get energyLateNight => Color(0xffF86F6F);
+  Color get cardShadowColor => Color(0x14042B28);
 }

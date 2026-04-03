@@ -195,9 +195,14 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           }
 
           if (state is FoodError) {
+            print('[FoodCalorieTrendChart] BLoC error: ${state.message}');
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) Message.showToastMessage(context, state.message);
+              if (mounted) {
+                widget.onDataLoaded?.call(false);
+              }
             });
+            // Show empty state instead of infinite spinner
+            return _buildEmptyState();
           }
 
           if (state is FoodCalorieTrendLoaded) {
@@ -210,9 +215,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             });
           }
 
-          if (state is! FoodCalorieTrendLoaded) {
+          if (state is FoodLoading || state is FoodInitial) {
             return Container(
                 height: 300, child: Center(child: CircularProgressIndicator()));
+          }
+
+          if (state is! FoodCalorieTrendLoaded) {
+            return _buildEmptyState();
           }
 
           return VisibilityDetector(
@@ -679,8 +688,24 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           lineTouch!.lineBarSpots!.isNotEmpty) {
         final touchedSpot = lineTouch.lineBarSpots!.first;
         if (touchedSpot.spotIndex == _focusIndex) {
-          NavigationUtil.navigatePage(
-              context, DailyNutritionPage(type: 'input', id: null));
+          final trendItem = trends[_focusIndex];
+          // If the trend item has an id, open in edit mode; otherwise create mode with that date
+          if (trendItem.id != null && trendItem.id!.isNotEmpty) {
+            NavigationUtil.navigatePage(
+                context, DailyNutritionPage(type: 'update', id: trendItem.id));
+          } else {
+            // Parse the date from the trend item for the new input
+            DateTime? dotDate;
+            if (trendItem.date != null) {
+              dotDate = DateTime.fromMillisecondsSinceEpoch(
+                  trendItem.date! * 1000,
+                  isUtc: true);
+            }
+            NavigationUtil.navigatePage(
+                context,
+                DailyNutritionPage(
+                    type: 'input', id: null, initialDate: dotDate));
+          }
         }
       }
     } else {

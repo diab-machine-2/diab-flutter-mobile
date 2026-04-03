@@ -108,8 +108,12 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     refresh();
   }
 
-  Future<void> getInitialData({String? type, String? id}) async {
+  Future<void> getInitialData({String? type, String? id, DateTime? initialDate}) async {
     if (type == null || type.isEmpty) return;
+    // If an initial date is provided (e.g. from chart navigation), use it
+    if (initialDate != null) {
+      selectedDate = initialDate;
+    }
     // await getCurrentUserInfo();
     if (type == 'update') {
       loadDetail(id);

@@ -105,19 +105,14 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
 
           if (state is FoodStatisticDistributeLoaded) {
             model = state.model;
-            final data = model!.energyChart;
             mealCount = state.totalMealCount ?? 0;
             balancedMealCount = state.balancedCount ?? 0;
+            totalEnergy = (state.targetKcal ?? 2000).toDouble();
 
-            if (mealCount == 0) {
+            if (mealCount == 0 && model != null) {
               // Fallback if raw input count fails
-              mealCount = data.where((item) => (item.value ?? 0) > 0).length;
+              mealCount = model.energyChart.where((item) => (item.value ?? 0) > 0).length;
             }
-
-            totalEnergy = 0;
-            data.forEach((element) {
-              totalEnergy += element.value ?? 0;
-            });
           }
 
           return model == null

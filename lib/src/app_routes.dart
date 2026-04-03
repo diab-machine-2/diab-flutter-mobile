@@ -180,6 +180,7 @@ class AppRoutes {
           timeframeId: data?['timeframeId'] ?? '-',
           files:
               data?['files'] != null ? List<String>.from(data!['files']) : [],
+          mealScoreData: data?['mealScoreData'] as Map<String, dynamic>?,
         );
         break;
       case NavigatorName.food_image_capture:

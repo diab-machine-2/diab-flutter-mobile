@@ -177,7 +177,7 @@ class FoodInputModel {
       isBalanced: json['isBalanced'],
       timeFrameId: json['timeFrameId'],
       timeFrameName: json['timeFrameName'],
-      createDatetime: json['createDatetime'],
+      createDatetime: json['createDatetime']?.toString(),
     );
   }
 
@@ -194,13 +194,13 @@ class FoodInputModel {
       images: [],
       foods: [],
       note: null,
-      totalMealScore: json['score'],
+      totalMealScore: (json['score'] as num?)?.toInt(),
       scoreRange: json['scoreRange'],
       totalCalories: (json['calories'] as num?)?.toDouble(),
       isBalanced: json['isBalanced'],
       timeFrameId: json['timeFrameId'],
       timeFrameName: json['timeFrameName'],
-      createDatetime: json['createDatetime'],
+      createDatetime: json['createDatetime']?.toString(),
     );
   }
 

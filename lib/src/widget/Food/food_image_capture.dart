@@ -1049,7 +1049,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         }
       }
 
-      final result = await FoodClient().postFoodImages(imagePaths);
+      final mealScoreData = await FoodClient().postMealScore(imagePaths);
+      
+      List<FoodModel> result = [];
+      if (mealScoreData != null && mealScoreData['items'] != null) {
+        result = FoodModel.toList(mealScoreData['items']);
+      }
       print("API call completed with result: ${result.length} items");
 
       // Update portion of each item to 1 when uploading with AI
@@ -1121,6 +1126,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               'timeframeId': widget.timeframeId,
               'foods': updatedResult,
               'files': imagePaths,
+              'mealScoreData': mealScoreData,
             });
       } else {
         BotToast.closeAllLoading(); // Close all toasts including custom text

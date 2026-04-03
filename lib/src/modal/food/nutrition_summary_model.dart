@@ -29,9 +29,9 @@ class NutritionSummaryModel {
       dateRange: json['dateRange'] != null
           ? NutritionDateRange.fromJson(json['dateRange'])
           : null,
-      avgScore: json['avgScore'],
+      avgScore: (json['avgScore'] as num?)?.toInt(),
       avgScoreRange: json['avgScoreRange'],
-      avgCalories: json['avgCalories'],
+      avgCalories: (json['avgCalories'] as num?)?.toInt(),
       nutritionPercent: json['nutritionPercent'] != null
           ? NutritionPercent.fromJson(json['nutritionPercent'])
           : null,
@@ -43,7 +43,7 @@ class NutritionSummaryModel {
       mealDistribution: json['mealDistribution'] != null
           ? MealDistribution.fromJson(json['mealDistribution'])
           : null,
-      targetKcal: json['targetKcal'],
+      targetKcal: (json['targetKcal'] as num?)?.toInt(),
       aiAdvice: json['aiAdvice'],
       trendData: json['trendData'] != null
           ? (json['trendData'] as List)
@@ -63,9 +63,9 @@ class NutritionDateRange {
 
   factory NutritionDateRange.fromJson(Map<String, dynamic> json) {
     return NutritionDateRange(
-      from: json['from'],
-      to: json['to'],
-      label: json['label'],
+      from: json['from']?.toString(),
+      to: json['to']?.toString(),
+      label: json['label']?.toString(),
     );
   }
 }
@@ -87,11 +87,11 @@ class NutritionPercent {
 
   factory NutritionPercent.fromJson(Map<String, dynamic> json) {
     return NutritionPercent(
-      carb: json['carb'] ?? 0,
-      protein: json['protein'] ?? 0,
-      fat: json['fat'] ?? 0,
-      vegetable: json['vegetable'] ?? 0,
-      fruit: json['fruit'] ?? 0,
+      carb: (json['carb'] as num?)?.toInt() ?? 0,
+      protein: (json['protein'] as num?)?.toInt() ?? 0,
+      fat: (json['fat'] as num?)?.toInt() ?? 0,
+      vegetable: (json['vegetable'] as num?)?.toInt() ?? 0,
+      fruit: (json['fruit'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -121,7 +121,7 @@ class EnergyDistributionItem {
     return EnergyDistributionItem(
       timeFrameId: json['timeFrameId'],
       timeFrameName: json['timeFrameName'],
-      percent: json['percent'],
+      percent: (json['percent'] as num?)?.toInt(),
       color: json['color'],
     );
   }
@@ -142,10 +142,10 @@ class MealDistribution {
 
   factory MealDistribution.fromJson(Map<String, dynamic> json) {
     return MealDistribution(
-      total: json['total'] ?? 0,
-      balanced: json['balanced'] ?? 0,
-      unbalanced: json['unbalanced'] ?? 0,
-      balancedPercent: json['balancedPercent'] ?? 0,
+      total: (json['total'] as num?)?.toInt() ?? 0,
+      balanced: (json['balanced'] as num?)?.toInt() ?? 0,
+      unbalanced: (json['unbalanced'] as num?)?.toInt() ?? 0,
+      balancedPercent: (json['balancedPercent'] as num?)?.toInt() ?? 0,
     );
   }
 }
@@ -164,11 +164,23 @@ class TrendDataItem {
   });
 
   factory TrendDataItem.fromJson(Map<String, dynamic> json) {
+    // date có thể là int (unix timestamp) hoặc String (ISO date) tuỳ backend
+    String? dateStr;
+    if (json['date'] is int) {
+      // Convert unix timestamp (seconds) to ISO date string
+      dateStr = DateTime.fromMillisecondsSinceEpoch(
+        (json['date'] as int) * 1000,
+        isUtc: true,
+      ).toIso8601String();
+    } else {
+      dateStr = json['date']?.toString();
+    }
+
     return TrendDataItem(
-      date: json['date'],
-      avgScore: json['avgScore'],
-      totalCalories: json['totalCalories'],
-      mealCount: json['mealCount'],
+      date: dateStr,
+      avgScore: (json['avgScore'] as num?)?.toInt(),
+      totalCalories: (json['totalCalories'] as num?)?.toInt(),
+      mealCount: (json['mealCount'] as num?)?.toInt(),
     );
   }
 }

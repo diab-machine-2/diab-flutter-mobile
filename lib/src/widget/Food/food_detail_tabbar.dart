@@ -123,28 +123,8 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(
-              backgroundColor: R.color.greenGradientBottom,
-              leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back, color: R.color.white),
-              ),
-              leadingWidth: 30,
-              centerTitle: false,
-              title: Text(
-                'Chi tiết dinh dưỡng',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: R.color.white,
-                ),
-              ),
-            ),
-            body: FoodDetailController(
-              key: detailKey,
-              periodFilterType: periodFilterType,
-            ),
+          builder: (context) => _FoodDetailPageWrapper(
+            initialPeriodFilterType: periodFilterType,
           ),
         ),
       );
@@ -419,5 +399,104 @@ class _ActionFilterState extends State<ActionFilter> {
                 widget.callback!(index + 1);
               }
             }));
+  }
+}
+
+/// Wrapper page for standalone detail view with filter + appbar
+class _FoodDetailPageWrapper extends StatefulWidget {
+  final int initialPeriodFilterType;
+
+  const _FoodDetailPageWrapper({
+    Key? key,
+    required this.initialPeriodFilterType,
+  }) : super(key: key);
+
+  @override
+  _FoodDetailPageWrapperState createState() => _FoodDetailPageWrapperState();
+}
+
+class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper> {
+  late int _periodFilterType;
+  GlobalKey<FoodDetailControllerState> _detailKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _periodFilterType = widget.initialPeriodFilterType;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: R.color.backgroundColorNew,
+      appBar: AppBar(
+        backgroundColor: R.color.greenGradientBottom,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+        ),
+        leadingWidth: 30,
+        centerTitle: false,
+        title: Text(
+          R.string.detail.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: R.color.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NutritionGuidePage(),
+                  ),
+                );
+              },
+              child: Text(
+                R.string.huong_dan.tr(),
+                style: TextStyle(fontSize: 15, color: R.color.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: HorizontalSelector(
+              onSelected: (value) {
+                setState(() {
+                  _periodFilterType = value + 1;
+                });
+                _detailKey.currentState?.reloadData(_periodFilterType);
+              },
+              initialValue: _periodFilterType - 1,
+              values: [0, 1, 2, 3],
+              labels: [
+                R.string.filter_day.tr(args: ['7']),
+                R.string.filter_day.tr(args: ['14']),
+                R.string.filter_day.tr(args: ['30']),
+                R.string.filter_day.tr(args: ['90']),
+              ],
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: FoodDetailController(
+              key: _detailKey,
+              periodFilterType: _periodFilterType,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

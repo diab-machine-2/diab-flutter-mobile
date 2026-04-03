@@ -166,12 +166,14 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchInputFood(
       String currentDateTime, String periodFilterType, int page) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       final FoodState currenState = state;
+      
+      print('[FoodDetail] fetchInputFood range=$periodFilterType, page=$page');
       var model =
           await client.fetchInput(currentDateTime, periodFilterType, page);
+      
+      print('[FoodDetail] fetchInputFood got ${model.inputs.length} day groups');
 
       if (currenState is FoodInputLoaded) {
         if (page != 1) {
@@ -180,6 +182,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       }
       yield FoodInputLoaded(inputs: model.inputs, hasMore: model.hasMore);
     } catch (e, _) {
+      print('[FoodDetail] fetchInputFood ERROR: $e');
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {
@@ -243,8 +246,6 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchStatisticDetail(
       String? currentDateTime, String? periodFilterType) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
       yield FoodStatisticDetailLoaded(
@@ -262,8 +263,6 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchStatisticTrend(
       String? currentDateTime, String? periodFilterType) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
       yield FoodStatisticTrendLoaded(
@@ -281,21 +280,24 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchStatisticDistribute(
       String? currentDateTime, String? periodFilterType) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
 
       int balancedCount = 0;
       int totalMealCount = 0;
 
+      int targetKcal = (AppSettings.userInfo?.energyGoal ?? 2000).toInt();
       // Try new Summary API first for meal distribution
       try {
+        // API range enum: 0=today, 1=7d, 2=14d, 3=30d, 4=90d
         final int range = int.tryParse(periodFilterType ?? '1') ?? 1;
         final summary = await client.fetchNutritionSummary(range);
         if (summary.mealDistribution != null) {
           balancedCount = summary.mealDistribution!.balanced;
           totalMealCount = summary.mealDistribution!.total;
+        }
+        if (summary.targetKcal != null && summary.targetKcal! > 0) {
+          targetKcal = summary.targetKcal!;
         }
       } catch (e) {
         // Fallback to old manual calculation if Summary API not available
@@ -309,6 +311,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
 
           double energyGoal =
               (AppSettings.userInfo?.energyGoal ?? 2000).toDouble();
+          targetKcal = energyGoal.toInt();
           double perMealThreshold = energyGoal / 3.0;
 
           for (final dayItem in inputData.inputs) {
@@ -353,10 +356,14 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       }
 
       yield FoodStatisticDistributeLoaded(
-        model: await client.fetchStatisticDistribute(
-            currentDateTime, periodFilterType),
+        model: const FoodDistributeModel(
+          legends: [],
+          energyChart: [],
+          carbChart: [],
+        ),
         balancedCount: balancedCount,
         totalMealCount: totalMealCount,
+        targetKcal: targetKcal,
       );
     } catch (e, _) {
       if (e is Error) {
@@ -371,8 +378,6 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchFoodGroupDistribute(
       String? currentDateTime, String? periodFilterType) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
       yield FoodGroupDistributeLoaded(
@@ -412,13 +417,12 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
   Stream<FoodState> fetchNutrientDistribution(
       String? currentDateTime, String? periodFilterType) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
       final client = FoodClient();
       yield FoodLoading();
 
       // Try new Summary API first
       try {
+        // API range enum: 0=today, 1=7d, 2=14d, 3=30d, 4=90d
         final int range = int.tryParse(periodFilterType ?? '1') ?? 1;
         final summary = await client.fetchNutritionSummary(range);
         if (summary.nutritionPercent != null) {
@@ -505,143 +509,116 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
     }
   }
 
+  /// Helper: map numeric score to display status and color
+  static Map<String, String> _scoreFromValue(int score) {
+    if (score >= 8) return {'type': 'Cân bằng', 'color': '#008479'};
+    if (score >= 6) return {'type': 'Khá cân bằng', 'color': '#008479'};
+    if (score >= 4) return {'type': 'Trung bình', 'color': '#F39C12'};
+    return {'type': 'Chưa cân bằng', 'color': '#FDB913'};
+  }
+
   // Handler cho biểu đồ calo từng bữa ăn riêng biệt
   Stream<FoodState> fetchFoodCalorieTrend(
       String? currentDateTime, String? periodFilterType) async* {
     try {
-      periodFilterType =
-          await AppSettings.getPeriodByScreen(ScreenList.FOOD.index);
-      final client = FoodClient();
-
       double energyGoal = (AppSettings.userInfo?.energyGoal ?? 2000).toDouble();
       double perMealThreshold = energyGoal / 3.0;
 
-      // Fetch tất cả food input trong period
-      final inputData = await client.fetchInput(
-          currentDateTime ??
-              (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-          periodFilterType ?? '1',
-          1,
-          size: 100);
+      // API range enum: 0=today, 1=7d, 2=14d, 3=30d, 4=90d
+      final int range = int.tryParse(periodFilterType ?? '1') ?? 1;
+      List<FoodCalorieTrendItem> items = [];
 
-      // Flatten: mỗi FoodInputModel (= 1 lần nhập bữa ăn) → 1 điểm trên chart
-      final List<FoodCalorieTrendItem> items = [];
+      // ── STRATEGY 1: Summary API (trendData) ──
+      bool summarySuccess = false;
+      try {
+        print('[FoodCalorieTrend] Trying Summary API with range=$range');
+        final summary = await FoodClient().fetchNutritionSummary(range);
+        print('[FoodCalorieTrend] Summary API success, trendData=${summary.trendData.length}');
 
-      int days = 7;
-      final pf = int.tryParse(periodFilterType ?? '1') ?? 1;
-      if (pf == 2) days = 14;
-      if (pf == 3) days = 30;
-      if (pf == 4) days = 90;
+        for (final trend in summary.trendData) {
+          if (trend.date == null) continue;
+          int? timestamp;
+          try {
+            final dt = DateTime.parse(trend.date!);
+            timestamp = dt.millisecondsSinceEpoch ~/ 1000;
+          } catch (_) {
+            continue;
+          }
 
-      final now = DateTime.now();
-      final currentRef = currentDateTime != null 
-          ? DateTime.fromMillisecondsSinceEpoch(int.parse(currentDateTime) * 1000) 
-          : now;
-      // Start of the day, minus (days - 1)
-      final startRef = DateTime(currentRef.year, currentRef.month, currentRef.day).subtract(Duration(days: days - 1));
-      final startTimestamp = startRef.millisecondsSinceEpoch ~/ 1000;
-      final endTimestamp = currentRef.millisecondsSinceEpoch ~/ 1000;
+          final int score = trend.avgScore ?? 0;
+          final double calories = (trend.totalCalories ?? 0).toDouble();
+          final display = _scoreFromValue(score);
 
-      for (final dayItem in inputData.inputs) {
-        for (final mealItem in dayItem.mealItems) {
-          for (final foodInput in mealItem.inputs) {
-            // Apply period filter locally
-            if (foodInput.date != null && (foodInput.date! < startTimestamp || foodInput.date! > endTimestamp)) {
-              continue;
+          items.add(FoodCalorieTrendItem(
+            id: trend.date,
+            date: timestamp,
+            value: calories,
+            score: score,
+            colorCode: display['color']!,
+            fontColor: display['color']!,
+            mealText: '${trend.mealCount ?? 0} bữa',
+            type: display['type']!,
+          ));
+        }
+        summarySuccess = true;
+      } catch (e) {
+        print('[FoodCalorieTrend] Summary API failed: $e');
+      }
+      // ── STRATEGY 2: Input API (build trend from items) ──
+      if (!summarySuccess || items.isEmpty) {
+        for (int retry = 0; retry < 3; retry++) {
+          try {
+            if (retry > 0) {
+              print('[FoodCalorieTrend] Input API retry #$retry');
+              await Future.delayed(Duration(milliseconds: 500));
             }
+            print('[FoodCalorieTrend] Trying Input API with range=$range');
+            final inputData = await FoodClient().fetchInput(
+                (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+                range.toString(),
+                1,
+                size: 100);
 
-            double totalCalorie = 0.0;
-            double totalCarbs = 0.0;
-            double totalProtein = 0.0;
-            double totalFat = 0.0;
-            for (final food in foodInput.foods) {
-              final double portion = (food.portion ?? 1).toDouble();
-              totalCalorie += (food.calorie ?? 0).toDouble() * portion;
-              totalCarbs += (food.glucose ?? 0).toDouble() * portion;
-              totalProtein += (food.protein ?? 0).toDouble() * portion;
-              totalFat += (food.lipid ?? 0).toDouble() * portion;
-            }
+            print('[FoodCalorieTrend] Input API success, ${inputData.inputs.length} day groups');
+            items.clear();
 
-            final double? inputCal = foodInput.calorie?.toDouble();
-            if (inputCal != null && inputCal > 0) {
-              totalCalorie = inputCal;
-            }
+            for (final dayItem in inputData.inputs) {
+              for (final mealItem in dayItem.mealItems) {
+                for (final foodInput in mealItem.inputs) {
+                  final int score = foodInput.totalMealScore ?? 0;
+                  final double totalCalorie = foodInput.totalCalories ??
+                      foodInput.calorie?.toDouble() ??
+                      0;
+                  final display = (foodInput.scoreRange != null)
+                      ? _scoreRangeToDisplay(foodInput.scoreRange)
+                      : _scoreFromValue(score);
 
-            // Prefer API-provided totalMealScore; fallback to local calculation
-            int score;
-            String type;
-            String colorCode;
-            String fontColor;
-
-            if (foodInput.totalMealScore != null && foodInput.scoreRange != null) {
-              // New API: use server-provided score and range
-              score = foodInput.totalMealScore!;
-              final display = _scoreRangeToDisplay(foodInput.scoreRange);
-              type = display['type']!;
-              colorCode = display['color']!;
-              fontColor = display['color']!;
-            } else {
-              // Fallback: local MealScore calculation
-              score = MealScoreCalculator.calculateScore(
-                totalCalories: totalCalorie,
-                goalCalories: perMealThreshold,
-                carbs: totalCarbs,
-                protein: totalProtein,
-                fat: totalFat,
-              );
-
-              String status = MealScoreCalculator.getBalanceStatus(score);
-              type = status;
-              if (status == 'Cân bằng' || status == 'Khá cân bằng') {
-                colorCode = '#008479';
-                fontColor = '#008479';
-              } else {
-                colorCode = '#FFCD57';
-                fontColor = '#FFCD57';
+                  items.add(FoodCalorieTrendItem(
+                    id: foodInput.id,
+                    date: foodInput.date,
+                    value: totalCalorie,
+                    score: score,
+                    colorCode: display['color']!,
+                    fontColor: display['color']!,
+                    mealText: mealItem.text ?? foodInput.mealText ?? '',
+                    type: display['type']!,
+                  ));
+                }
               }
             }
-
-            items.add(FoodCalorieTrendItem(
-              id: foodInput.id,
-              date: foodInput.date,
-              value: totalCalorie,
-              score: score,
-              colorCode: colorCode,
-              fontColor: fontColor,
-              mealText: mealItem.text ?? foodInput.mealText ?? '',
-              type: type,
-            ));
+            break; // Success — stop retrying
+          } catch (e2) {
+            print('[FoodCalorieTrend] Input API attempt ${retry + 1} failed: $e2');
+            if (retry == 2) {
+              print('[FoodCalorieTrend] All retries exhausted');
+            }
           }
         }
       }
 
-      // Sort theo date (cũ → mới)
+      // Sort by date (old → new)
       items.sort((a, b) => (a.date ?? 0).compareTo(b.date ?? 0));
-
-      // Override latest meal's score/status with saved MealScore API data
-      if (items.isNotEmpty) {
-        try {
-          final prefs = await SharedPreferences.getInstance();
-          final savedScore = prefs.getInt('latest_meal_score');
-          final savedRange = prefs.getString('latest_meal_range');
-          if (savedScore != null && savedRange != null) {
-            final display = _scoreRangeToDisplay(savedRange);
-            final lastItem = items.last;
-            items[items.length - 1] = FoodCalorieTrendItem(
-              id: lastItem.id,
-              date: lastItem.date,
-              value: lastItem.value,
-              score: savedScore,
-              colorCode: display['color']!,
-              fontColor: display['color']!,
-              mealText: lastItem.mealText,
-              type: display['type']!,
-            );
-          }
-        } catch (_) {
-          // Silently ignore - use local calculation as fallback
-        }
-      }
+      print('[FoodCalorieTrend] Total items: ${items.length}');
 
       yield FoodCalorieTrendLoaded(
         items: items,
@@ -649,6 +626,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         perMealThreshold: perMealThreshold,
       );
     } catch (e, _) {
+      print('[FoodCalorieTrend] Fatal error: $e');
       if (e is Error) {
         yield FoodError(message: e.message);
       } else {

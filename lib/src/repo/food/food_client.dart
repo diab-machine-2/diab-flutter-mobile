@@ -58,8 +58,6 @@ class FoodClient extends FetchClient {
       final Response response =
           await super.fetchData(url: '/App/Nutrition/Input', params: {
         'range': periodFilterType,
-        'periodFilterType': periodFilterType,
-        'currentDateTime': currentDateTime,
         'page': page.toString(),
         'pageSize': size.toString(),
       });
@@ -377,56 +375,59 @@ class FoodClient extends FetchClient {
     Map<String, dynamic>? mealScoreData,
   }) async {
     try {
-      // Build JSON body for AI flow
-      final Map<String, dynamic> body = {
+      // Build form-data params
+      final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'isFromAI': true,
+        'date': date.toString(),
+        'isFromAI': 'true',
       };
 
       // Add MealScore data if available
       if (mealScoreData != null) {
-        body['imageUrl'] = mealScoreData['imageUrl'] ?? '';
-        body['totalMealScore'] = mealScoreData['totalMealScore'];
-        body['scoreRange'] = mealScoreData['scoreRange'] ?? '';
-        body['carbPercent'] = mealScoreData['carbPercent'] ?? 0;
-        body['proteinPercent'] = mealScoreData['proteinPercent'] ?? 0;
-        body['fatPercent'] = mealScoreData['fatPercent'] ?? 0;
-        body['vegetablePercent'] = mealScoreData['vegetablePercent'] ?? 0;
-        body['fruitPercent'] = mealScoreData['fruitPercent'] ?? 0;
-        body['aiAdvice'] = mealScoreData['aiAdvice'] ?? '';
+        params['totalMealScore'] = mealScoreData['totalMealScore']?.toString() ?? '';
+        params['scoreRange'] = mealScoreData['scoreRange']?.toString() ?? '';
+        params['carbPercent'] = mealScoreData['carbPercent']?.toString() ?? '0';
+        params['proteinPercent'] = mealScoreData['proteinPercent']?.toString() ?? '0';
+        params['fatPercent'] = mealScoreData['fatPercent']?.toString() ?? '0';
+        params['vegetablePercent'] = mealScoreData['vegetablePercent']?.toString() ?? '0';
+        params['fruitPercent'] = mealScoreData['fruitPercent']?.toString() ?? '0';
+        params['aiAdvice'] = mealScoreData['aiAdvice']?.toString() ?? '';
+        
+        // If MealScore provided an imageUrl (e.g. from previous upload), we can set it so backend knows
+        if (mealScoreData['imageUrl'] != null && mealScoreData['imageUrl'].toString().isNotEmpty) {
+          params['imageUrl'] = mealScoreData['imageUrl'].toString();
+        }
       }
 
-      // Build items array
-      final List<Map<String, dynamic>> items = [];
+      // Build items array for C# FromForm binding
       for (int i = 0; i < foods.length; i++) {
-        items.add({
-          'name': foods[i].name ?? '',
-          'unit': foods[i].unit ?? '',
-          'portion': foods[i].portion ?? 1,
-          'calorie': foods[i].calorie?.round() ?? 0,
-          'glucose': foods[i].glucose ?? 0,
-          'lipid': foods[i].lipid ?? 0,
-          'protein': foods[i].protein ?? 0,
-          'fibre': foods[i].fibre ?? 0,
-        });
+        params['items[$i].foodId'] = foods[i].id ?? '';
+        params['items[$i].name'] = foods[i].name ?? '';
+        params['items[$i].unit'] = foods[i].unit ?? '';
+        params['items[$i].portion'] = foods[i].portion?.toString() ?? '1';
+        params['items[$i].calorie'] = foods[i].calorie?.round().toString() ?? '0';
+        params['items[$i].glucose'] = foods[i].glucose?.toString() ?? '0';
+        params['items[$i].lipid'] = foods[i].lipid?.toString() ?? '0';
+        params['items[$i].protein'] = foods[i].protein?.toString() ?? '0';
+        params['items[$i].fibre'] = foods[i].fibre?.toString() ?? '0';
       }
-      body['items'] = items;
 
-      log('input AI nutrition body: $body');
+      log('input AI nutrition params: $params');
 
-      // Send as JSON
-      final Response response = await super.postUri(
-        baseOption: true,
-        url: '/App/Nutrition/Input',
-        params: body,
+      // Send as multipart/form-data
+      final response = await super.postHttp(
+        path: '/App/Nutrition/Input',
+        params: params,
+        files: files,
       );
 
-      print('Upload response status: ${response.statusCode}, data: ${response.data}');
+      final responseStr = await response.stream.bytesToString();
+      print('Upload response status: ${response.statusCode}, data: $responseStr');
       if (response.statusCode == 200) {
         return true;
       } else {
-        throw response.statusMessage ?? 'Unknown error';
+        throw response.reasonPhrase ?? 'Unknown error';
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
@@ -498,16 +499,23 @@ class FoodClient extends FetchClient {
   /// NEW endpoint: GET /App/Nutrition/Summary?range=X
   Future<NutritionSummaryModel> fetchNutritionSummary(int range) async {
     try {
+      print('🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?range=$range');
       final Response response = await super.fetchData(
           url: '/App/Nutrition/Summary',
           params: {'range': range.toString()});
+      print('✅ [NutritionSummary] Status code: ${response.statusCode}');
+      print('📦 [NutritionSummary] Response data: ${response.data}');
       if (response.statusCode == 200) {
+        print('📊 [NutritionSummary] data[\'data\'] keys: ${response.data['data']?.keys?.toList()}');
+        print('📈 [NutritionSummary] trendData: ${response.data['data']?['trendData']}');
         return NutritionSummaryModel.fromJson(response.data['data']);
       } else {
+        print('⚠️ [NutritionSummary] Non-200 status: ${response.statusCode}');
         final error = Error.fromJson(response);
         throw error;
       }
     } catch (e) {
+      print('❌ [NutritionSummary] Error: $e');
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
