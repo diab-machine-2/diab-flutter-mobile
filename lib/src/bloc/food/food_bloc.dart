@@ -359,13 +359,72 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       try {
         final int range = int.tryParse(periodFilterType ?? '1') ?? 1;
         final summary = await client.fetchNutritionSummary(range);
-        for (final item in summary.energyDistribution) {
-          energyChartItems.add(EnergyItemModel(
-            text: item.timeFrameName ?? '',
-            value: (item.percent ?? 0).toDouble(),
-            percentValue: (item.percent ?? 0).toDouble(),
-            colorCode: item.color ?? '#BDBDBD',
-          ));
+        
+        // Define Figma colors mapping
+        ColorMap(String name) {
+          final lower = name.toLowerCase();
+          if (lower.contains('sáng')) return '#0DAB9C';
+          if (lower.contains('trưa')) return '#20BCC0';
+          if (lower.contains('tối')) return '#FFAC5A';
+          if (lower.contains('nhẹ')) return '#FFCD57';
+          if (lower.contains('khuya')) return '#F3666A';
+          return '#BDBDBD';
+        }
+
+        if (summary.energyDistribution.isNotEmpty) {
+          for (final item in summary.energyDistribution) {
+            energyChartItems.add(EnergyItemModel(
+              text: item.timeFrameName ?? '',
+              value: (item.percent ?? 0).toDouble(),
+              percentValue: (item.percent ?? 0).toDouble(),
+              colorCode: item.color ?? ColorMap(item.timeFrameName ?? ''),
+            ));
+          }
+        } else {
+          // Fallback: manually calculate from inputData if Summary API is missing
+          final inputData = await client.fetchInput(
+              currentDateTime ?? (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+              periodFilterType ?? '1', 1, size: 100);
+
+          Map<String, double> energyMap = {'Sáng': 0, 'Trưa': 0, 'Tối': 0, 'Nhẹ': 0, 'Khuya': 0};
+          double totalE = 0;
+
+          for (final dayItem in inputData.inputs) {
+            for (final mealItem in dayItem.mealItems) {
+              String name = mealItem.text ?? 'Sáng';
+              double mealE = 0;
+              for (final foodInput in mealItem.inputs) {
+                double tempCal = 0;
+                for (final food in foodInput.foods) {
+                  tempCal += (food.calorie ?? 0).toDouble() * (food.portion ?? 1).toDouble();
+                }
+                if (foodInput.calorie != null && foodInput.calorie! > 0) {
+                  tempCal = foodInput.calorie!.toDouble();
+                }
+                mealE += tempCal;
+              }
+              
+              String matchedKey = 'Sáng';
+              final lower = name.toLowerCase();
+              if (lower.contains('trưa')) matchedKey = 'Trưa';
+              else if (lower.contains('tối')) matchedKey = 'Tối';
+              else if (lower.contains('nhẹ')) matchedKey = 'Nhẹ';
+              else if (lower.contains('khuya')) matchedKey = 'Khuya';
+              
+              energyMap[matchedKey] = energyMap[matchedKey]! + mealE;
+              totalE += mealE;
+            }
+          }
+
+          energyMap.forEach((key, val) {
+            double pct = totalE > 0 ? (val / totalE * 100.0) : 0;
+            energyChartItems.add(EnergyItemModel(
+              text: key,
+              value: pct,
+              percentValue: pct,
+              colorCode: ColorMap(key),
+            ));
+          });
         }
       } catch (e) {
         print('[EnergyDistribution] Failed to load: $e');
