@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/app_setting/app_sharing.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -27,10 +29,11 @@ import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/html_text_widget.dart';
 
 import '../course_quiz/course_quiz.dart';
-import 'lesson_detail.dart';
+import 'lesson_detail_cubit.dart';
+import 'lesson_detail_state.dart';
 import 'models/audio_data.dart';
-import 'widgets/bottom_sheet_widget.dart';
-import 'widgets/share_lesson_button.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/widgets/bottom_sheet_widget.dart'
+    as lesson_bottom_sheet;
 
 class LessonDetailPage extends StatefulWidget {
   final Function(String, int) onComplete;
@@ -59,8 +62,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   bool _showMiniBar = false;
   bool _showMiniAudioBar = false;
   final ScrollController _scrollController = ScrollController();
-  int? _submittedRating;
-  String? _submittedNote;
+
   List<String> _ratingReasonsByScore(int score) {
     switch (score) {
       case 1:
@@ -179,33 +181,41 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
             Message.showToastMessage(context, state.error);
           }
           if (state is LessonDetailCompleted) {
-            if (state.showPopupShare == true) {
-              LessonDetailTracking.lessonCompleted(
-                objectId: _cubit.lessonDetail?.id,
-                objectTitle: _cubit.lessonDetail?.name,
-              );
-              final int rating = _submittedRating ?? _cubit.review?.rating ?? 0;
-              final String note = _submittedNote ?? _cubit.review?.note ?? '';
-              final dynamic result = await NavigationUtil.navigatePage(
-                context,
-                LessonCompletedReviewPage(
-                  moduleName: _cubit.lessonDetail?.lessonModule?.name ?? '',
-                  title: _cubit.lessonDetail?.name ?? '',
-                  description: _cubit.lessonDetail?.description ?? '',
-                  imageUrl: _cubit.lessonDetail?.image?.url ?? '',
-                  rating: rating,
-                  note: note,
-                  onShare: () =>
-                      _onShareLesson(context, _cubit.currentSectionDetail!),
-                ),
-              );
-              if (widget.smartGoal?.id != null) {
-                await HomeClient().completeSmartGoal(DateTime.now(),
-                    widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
-              }
-              NavigationUtil.pop(context, result: result ?? 1);
+            // For quiz-only lessons we skip the rating/review screen entirely:
+            // just complete the smart goal (if any) and pop back to the caller.
+            if (state.showPopupShare != true) {
+              // Smart goal is completed in [CourseQuizPage] share-sheet onCancel before
+              // this emit. Pop modal (if still open) + lesson in one [popUntil] to tab bar.
+              NavigationUtil.popUntilTabbar(context);
               BotToast.closeAllLoading();
+              return;
             }
+
+            LessonDetailTracking.lessonCompleted(
+              objectId: _cubit.lessonDetail?.id,
+              objectTitle: _cubit.lessonDetail?.name,
+            );
+            final int rating = _cubit.review?.rating ?? 0;
+            final String note = _cubit.review?.note ?? '';
+            final dynamic result = await NavigationUtil.navigatePage(
+              context,
+              LessonCompletedReviewPage(
+                moduleName: _cubit.lessonDetail?.lessonModule?.name ?? '',
+                title: _cubit.lessonDetail?.name ?? '',
+                description: _cubit.lessonDetail?.description ?? '',
+                imageUrl: _cubit.lessonDetail?.image?.url ?? '',
+                rating: rating,
+                note: note,
+                onShare: () =>
+                    _onShareLesson(context, _cubit.currentSectionDetail!),
+              ),
+            );
+            if (widget.smartGoal?.id != null) {
+              await HomeClient().completeSmartGoal(DateTime.now(),
+                  widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
+            }
+            NavigationUtil.pop(context, result: result ?? 1);
+            BotToast.closeAllLoading();
           }
         },
         builder: (context, state) {
@@ -709,7 +719,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       },
     );
 
-    if (_cubit.canComplete == true) {
+    if (_cubit.canComplete == true &&
+        _cubit.alreadyDoneLesson == false &&
+        _cubit.reviewed == false) {
       final bool canContinue = await _showLessonRatingBottomSheet();
       if (!canContinue) return;
     }
@@ -723,6 +735,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<bool> _showLessonRatingBottomSheet() async {
     if (_cubit.reviewed || _cubit.isEnabledRating != true) {
+      // TODO: Checking if response contains lessonReview or isEnabledRating
       // return true;
       log('[RATING] reviewed: ${_cubit.reviewed}');
       log('[RATING] isEnabledRating: ${_cubit.isEnabledRating}');
@@ -862,7 +875,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         ? R.color.white
                                         : R.color.color0xff5E6566,
                                     fontSize: 13,
-                                    fontWeight:selected ? FontWeight.w700 : FontWeight.w400,
+                                    fontWeight: selected
+                                        ? FontWeight.w700
+                                        : FontWeight.w400,
                                   ),
                                 ),
                               ),
@@ -874,7 +889,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                     const SizedBox(height: 24),
                     Container(
                       width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                       decoration: BoxDecoration(
                         color: R.color.white,
                         boxShadow: [Utils.getBoxShadowDropButton()],
@@ -923,8 +939,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                               context, error);
                                           return;
                                         }
-                                      _submittedRating = rating;
-                                      _submittedNote = selectedReasons.join(',');
                                         Navigator.of(sheetContext).pop(true);
                                       }
                                     : null,
@@ -984,8 +998,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           title: _cubit.lessonDetail?.name ?? '',
           description: _cubit.lessonDetail?.description ?? '',
           imageUrl: _cubit.lessonDetail?.image?.url ?? '',
-          rating: _submittedRating ?? _cubit.review?.rating ?? 0,
-          note: _submittedNote ?? _cubit.review?.note ?? '',
+          rating: _cubit.review?.rating ?? 0,
+          note: _cubit.review?.note ?? '',
           onShare: () => _onShareLesson(context, _cubit.currentSectionDetail!),
         ),
       ).then((_) {
@@ -1150,12 +1164,15 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
 
   Future<void> _onShareLesson(
       BuildContext context, LessonSectionItem lesson) async {
-    await shareLessonSection(
-      context,
-      lesson: lesson,
-      featureImage: _cubit.featureImage,
-      lessonDescription: _cubit.lessonDescription,
-    );
+    String shareLink = lesson.linkShare ?? "";
+    if (shareLink.isEmpty) {
+      shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
+        lesson: lesson,
+        featureImage: _cubit.featureImage,
+        lessonDescription: _cubit.lessonDescription,
+      );
+    }
+    AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 
   Widget _buildAudioController({
@@ -1201,16 +1218,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(8.0)),
       ),
       builder: (BuildContext context) {
-        return BottomSheetWidget(
+        return lesson_bottom_sheet.BottomSheetWidget(
           sectionList: _cubit.sectionList,
           currentSection: _cubit.currentSection,
-          canNavigateForward: _cubit.currentSectionDetail?.isComplete ?? false,
-          onBlockedForwardNavigation: () {
-            Message.showToastMessage(
-              context,
-              R.string.lesson_locked_warning.tr(),
-            );
-          },
           onChangeSection: (int newSectionIndex) async {
             _cubit.videoManager?.disposeAllVideo();
             await Future.delayed(const Duration(milliseconds: 200));

@@ -32,7 +32,9 @@ class LessonCompletedReviewPage extends StatelessWidget {
         .toList();
     final bool hasReview = rating > 0 || noteItems.isNotEmpty;
 
-    void backToLibrary() {
+    /// Pops this screen; the underlying [LessonDetailPage] then pops, returning
+    /// to whichever tab (e.g. Program or Library) the user opened the lesson from.
+    void onBack() {
       Navigator.of(context).pop(1);
     }
 
@@ -58,7 +60,7 @@ class LessonCompletedReviewPage extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(Icons.arrow_back, color: R.color.white, size: 24),
-              onPressed: backToLibrary,
+              onPressed: onBack,
             ),
             Text(
               R.string.lesson_completed_title.tr(),
@@ -213,7 +215,7 @@ class LessonCompletedReviewPage extends StatelessWidget {
                           // SizedBox(
                           //   height: 46,
                           //   child: ElevatedButton(
-                          //     onPressed: backToLibrary,
+                          //     onPressed: onBack,
                           //     style: ElevatedButton.styleFrom(
                           //       backgroundColor: const Color(0xFFC6ECEA),
                           //       foregroundColor: R.color.mainColor,
@@ -286,7 +288,7 @@ class LessonCompletedReviewPage extends StatelessWidget {
                     child: SizedBox(
                       height: 44,
                       child: ElevatedButton(
-                        onPressed: backToLibrary,
+                        onPressed: onBack,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: R.color.mainColor,
                           foregroundColor: R.color.white,
@@ -296,7 +298,7 @@ class LessonCompletedReviewPage extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          R.string.lesson_back_to_library.tr(),
+                          R.string.back.tr(),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,

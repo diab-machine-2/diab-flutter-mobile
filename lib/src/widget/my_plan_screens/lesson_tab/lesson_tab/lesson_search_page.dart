@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widgets/lesson_status_widget.dart';
 
 import '../lesson_detail/lesson_detail.dart';
 import 'lesson_search_cache.dart';
@@ -468,22 +469,9 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
               ),
             ),
             const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(
-                  Icons.menu_book_outlined,
-                  size: 16,
-                  color: R.color.captionColorGray,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '07 phút',
-                  style: TextStyle(
-                    color: R.color.captionColorGray,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
+            LessonStatusWidget(
+              learningStatus: lesson?.learningStatus,
+              progress: lesson?.percentComplete,
             ),
           ],
         ),
@@ -544,22 +532,9 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.menu_book_outlined,
-                        size: 14,
-                        color: R.color.captionColorGray,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '07 phút',
-                        style: TextStyle(
-                          color: R.color.captionColorGray,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  LessonStatusWidget(
+                    learningStatus: lesson?.learningStatus,
+                    progress: lesson?.percentComplete,
                   ),
                 ],
               ),

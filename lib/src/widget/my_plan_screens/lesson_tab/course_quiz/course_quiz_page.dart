@@ -9,7 +9,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
@@ -28,7 +27,6 @@ import 'package:medical/src/widgets/custom_scroll_physics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../../card_course_quiz/card_course_quiz.dart';
-import '../lesson_detail/widgets/share_lesson_button.dart';
 import 'course_quiz.dart';
 import 'widgets/quiz_result_popup.dart';
 
@@ -620,11 +618,11 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
           await HomeClient().completeSmartGoal(DateTime.now(),
               widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
         }
-        NavigationUtil.pop(context);
         if (widget.onDone == null) {
-          NavigationUtil.pop(context);
+          // Legacy path: one [popUntil] to tab bar instead of chained pops.
+          NavigationUtil.popUntilTabbar(context);
           return;
-        } else {}
+        }
         widget.onDone!(_cubit.isPassed);
       },
     );

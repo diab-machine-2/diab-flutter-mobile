@@ -12,10 +12,11 @@ import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
-import 'lesson_detail.dart';
+import 'lesson_detail_state.dart';
 import 'models/audio_manager.dart';
 import 'models/section_status_data.dart';
 import 'models/video_manager.dart';
@@ -80,6 +81,12 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     }
 
     if (newSection < 0 || newSection >= sectionList.length) {
+      // If the lesson was already completed before, pressing "complete" (next on last section)
+      // should show the completed-review page instead of popping back immediately.
+      if (newSection >= sectionList.length && alreadyDoneLesson) {
+        emit(LessonDetailCompleted(showPopupShare: showQuizLesson == false));
+        return;
+      }
       if (Navigator.canPop(context)) {
         if (smartGoal?.id != null) {
           await HomeClient().completeSmartGoal(
@@ -243,8 +250,15 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       sectionList = response.data?.lessonSections ?? [];
       featureImage = response.data?.image?.url;
       lessonDescription = response.data?.description;
-      if (response.data?.lessonReviews?.isNotEmpty == true) {
-        review = response.data?.lessonReviews?.first;
+      final String? currentAccountId = AppSettings.userInfo?.accountId;
+      final reviews = response.data?.lessonReviews ?? const [];
+      if (currentAccountId != null && currentAccountId.isNotEmpty) {
+        review = reviews.cast<LessonSectionListResponseDataLessonReviews?>().firstWhere(
+              (r) => r?.accountId == currentAccountId,
+              orElse: () => null,
+            );
+      } else {
+        review = null;
       }
       isEnabledRating = response.data?.isEnabledRating;
       alreadyDoneLesson = isAllSectionCompleted;
@@ -292,7 +306,31 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.sendFeedbackCourse(lessonId, request);
     return apiResult.when(
-      success: (_) => null,
+      success: (_) {
+        // Keep local lessonReviews in sync so UI can display per-lesson review
+        // without relying on transient widget state.
+        final String? currentAccountId = AppSettings.userInfo?.accountId;
+        final LessonSectionListResponseDataLessonReviews updated =
+            LessonSectionListResponseDataLessonReviews(
+          lessonId: lessonId,
+          accountId: currentAccountId,
+          rating: rating,
+          note: note,
+        );
+        review = updated;
+        final List<LessonSectionListResponseDataLessonReviews?> existing =
+            List<LessonSectionListResponseDataLessonReviews?>.from(
+                lessonDetail?.lessonReviews ?? const []);
+        final int idx = existing.indexWhere(
+            (r) => r?.accountId != null && r?.accountId == currentAccountId);
+        if (idx >= 0) {
+          existing[idx] = updated;
+        } else {
+          existing.insert(0, updated);
+        }
+        lessonDetail?.lessonReviews = existing;
+        return null;
+      },
       failure: (NetworkExceptions error) =>
           NetworkExceptions.getErrorMessage(error),
     );

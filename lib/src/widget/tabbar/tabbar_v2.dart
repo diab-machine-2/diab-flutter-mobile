@@ -372,18 +372,10 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_TAB) {
       final targetIndex = TabBarType.library.index;
-
+      // Keep PageView and CurvedNavigationBar in sync (same as _checkExistLessonId).
+      // A delayed setPage alone could leave the body on Library while the bar still showed Program.
       _jumpTo(targetIndex);
-
-      Future.delayed(Duration(milliseconds: 100), () {
-        if (_bottomTabbarKey.currentState != null && mounted) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted && _bottomTabbarKey.currentState != null) {
-              _bottomTabbarKey.currentState!.setPage(targetIndex);
-            }
-          });
-        }
-      });
+      _bottomTabbarKey.currentState?.setPage(targetIndex);
     }
     if (notifyName == Const.UPDATE_SUBSCRIPTION) {
       BotToast.showLoading();
