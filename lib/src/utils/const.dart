@@ -5,8 +5,8 @@ class Const {
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
   static const String IS_DOMAIN_DEV = "is.dev.diab.vn";
 
-  static const String DOMAIN = "api.preprod.diab.com.vn";
-  // static const String DOMAIN = "api.diab.com.vn";
+  // static const String DOMAIN = "api.preprod.diab.com.vn";
+  static const String DOMAIN = "api.diab.com.vn";
   static const String DOMAIN_STAGING = "api.staging.diab.com.vn";
   static const String DOMAIN_DEV = "api.dev.diab.vn";
 
