@@ -92,7 +92,7 @@ class CalendarNavigationBar extends StatelessWidget {
         padding: const EdgeInsets.all(6),
         child: Icon(
           icon,
-          size: 22,
+          size: 30,
           color: isEnabled
               ? R.color.greenGradientBottom
               : R.color.captionColorGray,
@@ -113,7 +113,7 @@ class CalendarNavigationBar extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isTodayDisabled ? R.color.grayBorder : R.color.grayBorder,
+            color: isTodayDisabled ? R.color.grayBorder : R.color.greenGradientBottom,
           ),
         ),
         child: Text(

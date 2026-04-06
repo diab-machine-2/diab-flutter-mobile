@@ -202,7 +202,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               .map((e) => e!)
               .map((e) {
             final ScheduleType type =
-                ScheduleTypeExtend.getTypeFromIndex(e.type);
+                ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
+                    lessonData: e.lessonData,
+                    lessonNested: e.lesson,
+                    activityName: e.name,
+                    activityDescription: e.description);
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,
@@ -219,7 +223,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               .map((e) => e!)
               .map((e) {
             final ScheduleType type =
-                ScheduleTypeExtend.getTypeFromIndex(e.type);
+                ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
+                    lessonData: e.lessonData,
+                    lessonNested: e.lesson,
+                    activityName: e.name,
+                    activityDescription: e.description);
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,

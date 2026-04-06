@@ -103,7 +103,8 @@ class SmartGoalItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (type != ScheduleType.lesson &&
-                      type != ScheduleType.survey)
+                      type != ScheduleType.survey &&
+                      type != ScheduleType.quiz)
                     Text(
                       name.isNotEmpty ? name : type.title,
                       style: TextStyle(
@@ -112,7 +113,8 @@ class SmartGoalItem extends StatelessWidget {
                           fontWeight: FontWeight.w700),
                     ),
                   if (type == ScheduleType.lesson ||
-                      type == ScheduleType.survey)
+                      type == ScheduleType.survey ||
+                      type == ScheduleType.quiz)
                     Text(
                       frequency.isNotEmpty ? frequency : name,
                       style: TextStyle(
@@ -164,7 +166,7 @@ class SmartGoalItem extends StatelessWidget {
   }
 
   String getSubtitle(ScheduleType type) {
-    if (type == ScheduleType.lesson) {
+    if (type == ScheduleType.lesson || type == ScheduleType.quiz) {
       return subject;
     }
 

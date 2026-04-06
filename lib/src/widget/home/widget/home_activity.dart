@@ -196,7 +196,8 @@ class HomeActivity extends StatelessWidget {
                   children: [
                     Text(
                       activity.type == ScheduleType.lesson ||
-                              activity.type == ScheduleType.survey
+                              activity.type == ScheduleType.survey ||
+                              activity.type == ScheduleType.quiz
                           ? (activity.description ?? '')
                           : activity.title,
                       style: TextStyle(
@@ -238,8 +239,10 @@ class HomeActivity extends StatelessWidget {
 
   String getSubtitle(HomeActivityData activity) {
     final type = activity.type;
-    if (type == ScheduleType.lesson) {
-      return activity.smartGoal.lessonData?.lessonModule?.name ?? '';
+    if (type == ScheduleType.lesson || type == ScheduleType.quiz) {
+      return activity.smartGoal.lessonData?.lessonModule?.name ??
+          activity.smartGoal.lesson?.lessonModule?.name ??
+          '';
     }
 
     if (type == ScheduleType.survey) {

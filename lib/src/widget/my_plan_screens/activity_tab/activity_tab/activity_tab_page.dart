@@ -191,7 +191,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  color: R.color.backgroundColorNew,
+                  color: R.color.white,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -670,13 +670,18 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       ...dailyList.map((smartGoal) {
         final ScheduleType type =
             ScheduleTypeExtend.getTypeFromIndexWithLessonData(smartGoal?.type,
-                lessonData: smartGoal?.lessonData);
+                lessonData: smartGoal?.lessonData,
+                lessonNested: smartGoal?.lesson,
+                activityName: smartGoal?.name,
+                activityDescription: smartGoal?.description);
         index++;
         return SmartGoalItem(
           type: type,
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
-          subject: smartGoal?.lessonData?.lessonModule?.name ?? '',
+          subject: smartGoal?.lessonData?.lessonModule?.name ??
+              smartGoal?.lesson?.lessonModule?.name ??
+              '',
           appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
           state: smartGoal?.state ?? 0,
@@ -757,12 +762,17 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         index++;
         final ScheduleType type =
             ScheduleTypeExtend.getTypeFromIndexWithLessonData(smartGoal?.type,
-                lessonData: smartGoal?.lessonData);
+                lessonData: smartGoal?.lessonData,
+                lessonNested: smartGoal?.lesson,
+                activityName: smartGoal?.name,
+                activityDescription: smartGoal?.description);
         return SmartGoalItem(
           type: type,
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
-          subject: smartGoal?.lessonData?.lessonModule?.name ?? '',
+          subject: smartGoal?.lessonData?.lessonModule?.name ??
+              smartGoal?.lesson?.lessonModule?.name ??
+              '',
           appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
           state: smartGoal?.state ?? 0,
@@ -809,12 +819,17 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         index++;
         final ScheduleType type =
             ScheduleTypeExtend.getTypeFromIndexWithLessonData(smartGoal?.type,
-                lessonData: smartGoal?.lessonData);
+                lessonData: smartGoal?.lessonData,
+                lessonNested: smartGoal?.lesson,
+                activityName: smartGoal?.name,
+                activityDescription: smartGoal?.description);
         return SmartGoalItem(
           type: type,
           name: smartGoal?.name ?? '',
           frequency: smartGoal?.description ?? '',
-          subject: smartGoal?.lessonData?.lessonModule?.name ?? '',
+          subject: smartGoal?.lessonData?.lessonModule?.name ??
+              smartGoal?.lesson?.lessonModule?.name ??
+              '',
           appointmentDate: smartGoal?.appointmentDate,
           isDone: smartGoal?.progress == 1,
           state: smartGoal?.state ?? 0,
@@ -842,11 +857,15 @@ class _ActivityTabPageState extends State<ActivityTabPage>
         .where((e) {
       final t = e.type;
       // Include lessons (type 11) and infographics
-      // Exclude quizzes (type 11 where lesson.code contains "quiz")
+      // Exclude quizzes (type 11 resolved as quiz)
       if (t == ScheduleType.lesson.typeIndex) {
-        // Check if lesson.code contains "quiz" - if yes, it's a quiz, exclude it
-        final lessonCode = e.lesson?.code?.toLowerCase() ?? '';
-        return !lessonCode.contains('quiz');
+        final resolved =
+            ScheduleTypeExtend.getTypeFromIndexWithLessonData(t,
+                lessonData: e.lessonData,
+                lessonNested: e.lesson,
+                activityName: e.name,
+                activityDescription: e.description);
+        return resolved != ScheduleType.quiz;
       }
       return t == ScheduleType.infographic.typeIndex;
     }).toList();
@@ -929,7 +948,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     final ScheduleType type =
                         ScheduleTypeExtend.getTypeFromIndexWithLessonData(
                             smartGoal.type,
-                            lessonData: smartGoal.lessonData);
+                            lessonData: smartGoal.lessonData,
+                            lessonNested: smartGoal.lesson,
+                            activityName: smartGoal.name,
+                            activityDescription: smartGoal.description);
                     return GestureDetector(
                       onTap: isLocked
                           ? null
