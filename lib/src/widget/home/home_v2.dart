@@ -1256,7 +1256,7 @@ class _HomeControllerState extends State<HomeController>
 
     print('[ONBOARDING] _showWelcomeDialog with zaloGroup: $zaloGroup');
 
-    final _ = await NavigationUtil.navigatePage(
+    final result = await NavigationUtil.navigatePage(
       context,
       WelcomePackageScreenPage(
         icon: isRoadmap
@@ -1273,6 +1273,11 @@ class _HomeControllerState extends State<HomeController>
         zaloGroup: zaloGroup,
       ),
     );
+    if (result == false && mounted) {
+      setState(() {
+        _isDisplayedWelcome = false;
+      });
+    }
   }
 
   // Button "Thêm chỉ số"
