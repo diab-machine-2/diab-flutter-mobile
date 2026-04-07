@@ -468,7 +468,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
               pressedOpacity: 0.3,
               padding: EdgeInsets.only(left: 16, top: 0),
               child: Text(
-                R.string.ngay_sinh.tr(),
+                R.string.pick_date.tr(),
                 style: TextStyle(
                     color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.w700),
               ),

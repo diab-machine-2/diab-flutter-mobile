@@ -23,6 +23,20 @@ class WidgetHtmlText extends StatelessWidget {
           fontSize: FontSize(textStyle != null ? textStyle!.fontSize! : 16.sp),
           fontWeight:
               textStyle != null ? textStyle!.fontWeight : FontWeight.w400,
+          padding: HtmlPaddings.zero,
+          margin: Margins.zero,
+        ),
+        "p": Style(
+          padding: HtmlPaddings.zero,
+          margin: Margins.zero,
+        ),
+        "div": Style(
+          padding: HtmlPaddings.zero,
+          margin: Margins.zero,
+        ),
+        "span": Style(
+          padding: HtmlPaddings.zero,
+          margin: Margins.zero,
         ),
       },
       onLinkTap: (String? url, Map<String, String> attributes, element) {

@@ -97,6 +97,8 @@ public class MainActivity extends FlutterFragmentActivity {
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		// Handle VNPay deep link if app was launched from VNPay redirect
+		handleIntent(getIntent());
 	}
 
     @Override
@@ -166,7 +168,7 @@ public class MainActivity extends FlutterFragmentActivity {
                                 String scheme = call.argument("scheme") != null ? call.argument("scheme") : VNPAY_APP_SCHEME;
                                 Boolean isSandbox = call.argument("isSandbox") != null ? call.argument("isSandbox") : false;
                                 
-                                Log.d(TAG, "Opening VNPay SDK with URL: " + url);
+                                Log.d(TAG, "[VNPAY] Opening VNPay SDK with URL: " + url);
                                 startVNPayActivity(url, tmnCode, scheme, isSandbox);
                                 result.success(true);
                             } else {
@@ -556,7 +558,7 @@ public class MainActivity extends FlutterFragmentActivity {
         VNP_AuthenticationActivity.setSdkCompletedCallback(new VNP_SdkCompletedCallback() {
             @Override
             public void sdkAction(String action) {
-                Log.wtf("[VNPAY] SplashActivity", "action: " + action);
+                Log.d("[VNPAY] SplashActivity", "action: " + action);
                 switch (action) {
                     case "AppBackAction":
                         sendPaymentResult(action, 24, new HashMap<>()); // custom code for canceled
@@ -566,6 +568,7 @@ public class MainActivity extends FlutterFragmentActivity {
                         break;
                     case "WebBackAction":
                         sendPaymentResult(action, 24, new HashMap<>());
+                        Log.d(TAG, "[VNPAY] WebBackAction detected - waiting for redirect with parameters");
                         break;
                     case "FaildBackAction":
                         sendPaymentResult(action, 99, new HashMap<>()); // error code
@@ -581,67 +584,126 @@ public class MainActivity extends FlutterFragmentActivity {
         startActivity(intent);
     }
 
-    @Override
+   @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent); // Important: set the new intent so getIntent() returns the latest
+        handleIntent(intent);
+    }
+
+    /**
+     * Handle incoming intents (both from onCreate and onNewIntent)
+     */
+    private void handleIntent(Intent intent) {
+        if (intent == null) return;
 
         String scheme = intent.getScheme();
         String data = intent.getDataString();
 
-        Log.d(TAG, "[VNPAY] New Intent received: " + data + " with scheme: " + scheme);
+        Log.d(TAG, "[VNPAY] Intent received: " + data + " with scheme: " + scheme);
 
-        if (VNPAY_APP_SCHEME.equals(scheme)) {
-            try {
-                Uri uri = Uri.parse(data);
-                String responseCode = uri.getQueryParameter("vnp_ResponseCode") != null ? 
-                                    uri.getQueryParameter("vnp_ResponseCode") : "99";
-                String bankTranNo = uri.getQueryParameter("vnp_BankTranNo") != null ?
-                                    uri.getQueryParameter("vnp_BankTranNo") : "";
-                String amount = uri.getQueryParameter("vnp_Amount") != null ? 
-                                uri.getQueryParameter("vnp_Amount") : "0";
-                String bankCode = uri.getQueryParameter("vnp_BankCode") != null ? 
-                                uri.getQueryParameter("vnp_BankCode") : "";
-                String orderInfo = uri.getQueryParameter("vnp_OrderInfo") != null ? 
-                                uri.getQueryParameter("vnp_OrderInfo") : "";
-                String cardType = uri.getQueryParameter("vnp_CardType") != null ?
-                                uri.getQueryParameter("vnp_CardType") : "";
-                String payDate = uri.getQueryParameter("vnp_PayDate") != null ?
-                                uri.getQueryParameter("vnp_PayDate") : "";
-                String tmnCode = uri.getQueryParameter("vnp_TmnCode") != null ?
-                                uri.getQueryParameter("vnp_TmnCode") : "";
-                String transactionNo = uri.getQueryParameter("vnp_TransactionNo") != null ?
-                                uri.getQueryParameter("vnp_TransactionNo") : "";
-                String transactionStatus = uri.getQueryParameter("vnp_TransactionStatus") != null ?
-                                uri.getQueryParameter("vnp_TransactionStatus") : "";
-                String txnRef = uri.getQueryParameter("vnp_TxnRef") != null ?
-                                uri.getQueryParameter("vnp_TxnRef") : "";
+        // Handle VNPay app scheme returns
+        if (VNPAY_APP_SCHEME.equals(scheme) && data != null) {
+            handleVNPayAppSchemeReturn(data);
+        }
+    }
 
+    private void handleVNPayAppSchemeReturn(String data) {
+        try {
+            Uri uri = Uri.parse(data);
+            Log.d(TAG, "[VNPAY] handleVNPayAppSchemeReturn data:  " + data);;
+            String responseCode = uri.getQueryParameter("vnp_ResponseCode") != null ? 
+                                uri.getQueryParameter("vnp_ResponseCode") : "";
 
-                Map<String, Object> extras = new HashMap<>();
-                extras.put("vnp_ResponseCode", responseCode);
-                extras.put("vnp_BankTranNo", bankTranNo);
-                extras.put("vnp_Amount", amount);
-                extras.put("vnp_BankCode", bankCode);
-                extras.put("vnp_OrderInfo", orderInfo);
-                extras.put("vnp_CardType", cardType);
-                extras.put("vnp_PayDate", payDate);
-                extras.put("vnp_TmnCode", tmnCode);
-                extras.put("vnp_TransactionNo", transactionNo);
-                extras.put("vnp_TransactionStatus", transactionStatus);
-                extras.put("vnp_TxnRef", txnRef);
+                                
+            String txnRef = uri.getQueryParameter("vnp_TxnRef");
+            if (txnRef == null || txnRef.isEmpty()) {
+                Log.d(TAG, "[VNPAY] Ignoring scheme call without transaction reference");
+                return;
+            }
+            
+            Map<String, Object> extras = extractAllVNPayParams(uri);
+            
+            int resultCode = "00".equals(responseCode) ? 0 : 99;
+            Log.d(TAG, "[VNPAY] App scheme return data processed");
+            sendPaymentResult("ReturnFromVNPay", resultCode, extras);
+        } catch (Exception e) {
+            Log.d(TAG, "[VNPAY] Error parsing app scheme return URL: " + e.getMessage());
+            Map<String, Object> errorMap = new HashMap<>();
+            errorMap.put("error", e.getMessage() != null ? e.getMessage() : "Unknown error");
+            sendPaymentResult("ReturnFromVNPay", 99, errorMap);
+        }
+    }
 
-                int resultCode = "00".equals(responseCode) ? 0 : 99;
-                Date date = new Date();
-                //This method returns the time in millis
-                long timeMilli = date.getTime();
-                Log.d(TAG, "[VNPAY] native return data: " + timeMilli);
-                sendPaymentResult("ReturnFromVNPay", resultCode, extras);
-            } catch (Exception e) {
-                Log.d(TAG, "[VNPAY] Error parsing return URL: " + e.getMessage());
-                Map<String, Object> errorMap = new HashMap<>();
-                errorMap.put("error", e.getMessage() != null ? e.getMessage() : "Unknown error");
-                sendPaymentResult("ReturnFromVNPay", 99, errorMap);
+    // private void handleVNPayMerchantReturn(String url) {
+    //     Log.d(TAG, "[VNPAY] Handling VNPay merchant return URL: " + url);
+        
+    //     try {
+    //         Uri uri = Uri.parse(url);
+    //         String responseCode = uri.getQueryParameter("vnp_ResponseCode") != null ? 
+    //                             uri.getQueryParameter("vnp_ResponseCode") : "99";
+            
+    //         // Extract all VNPay parameters
+    //         Map<String, Object> extras = extractAllVNPayParams(uri);
+            
+    //         int resultCode;
+    //         String action;
+            
+    //         if (url.startsWith("http://success.sdk.merchantbackapp")) {
+    //             // Success case - responseCode should be "00"
+    //             resultCode = "00".equals(responseCode) ? 0 : 99;
+    //             action = "WebBackSuccess";
+    //         } else if (url.startsWith("http://cancel.sdk.merchantbackapp")) {
+    //             // Cancel case - responseCode should be "24"
+    //             resultCode = 24;
+    //             action = "WebBackCancel";
+    //         } else if (url.startsWith("http://fail.sdk.merchantbackapp")) {
+    //             // Fail case - any error code
+    //             resultCode = 99;
+    //             action = "WebBackFail";
+    //         } else {
+    //             // Default to fail
+    //             resultCode = 99;
+    //             action = "WebBackFail";
+    //         }
+            
+    //         Log.d(TAG, "[VNPAY] Processed merchant return URL - Action: " + action + 
+    //                 ", ResultCode: " + resultCode + ", ResponseCode: " + responseCode);
+            
+    //         sendPaymentResult(action, resultCode, extras);
+            
+    //     } catch (Exception e) {
+    //         Log.e(TAG, "[VNPAY] Error handling merchant return URL: " + e.getMessage());
+    //         Map<String, Object> errorMap = new HashMap<>();
+    //         errorMap.put("error", e.getMessage() != null ? e.getMessage() : "Unknown error");
+    //         sendPaymentResult("WebBackFail", 99, errorMap);
+    //     }
+    // }
+
+    private Map<String, Object> extractAllVNPayParams(Uri uri) {
+        Map<String, Object> extras = new HashMap<>();
+        
+        // Extract all VNPay parameters
+        for (String paramName : uri.getQueryParameterNames()) {
+            String paramValue = uri.getQueryParameter(paramName);
+            if (paramValue != null) {
+                extras.put(paramName, paramValue);
             }
         }
+        
+        // Ensure essential parameters are present with default values if missing
+        String[] essentialParams = {
+            "vnp_ResponseCode", "vnp_BankTranNo", "vnp_Amount", "vnp_BankCode",
+            "vnp_OrderInfo", "vnp_CardType", "vnp_PayDate", "vnp_TmnCode",
+            "vnp_TransactionNo", "vnp_TransactionStatus", "vnp_TxnRef"
+        };
+        
+        for (String param : essentialParams) {
+            if (!extras.containsKey(param)) {
+                extras.put(param, "");
+            }
+        }
+        
+        return extras;
     }
 }

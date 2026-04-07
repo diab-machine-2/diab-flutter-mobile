@@ -116,6 +116,12 @@ private let kSDKCompletedNotification = "SDK_COMPLETED"
                         extras[item.name] = item.value ?? ""
                     }
                 }
+
+                let txnRef = extras["vnp_TxnRef"] as? String ?? ""
+                if txnRef.isEmpty {
+                    print("VNPay: Ignoring scheme call without transaction reference")
+                    return true
+                }
                 
                 // Get response code to determine success
                 let responseCode = extras["vnp_ResponseCode"] as? String ?? "99"

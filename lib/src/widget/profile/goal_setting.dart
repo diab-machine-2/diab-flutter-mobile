@@ -221,7 +221,7 @@ class _GoalSettingControllerState extends State<GoalSettingController> {
                                 letterSpacing: 0.2,
                               ),
                               children: [
-                                const TextSpan(text: 'Nguồn tham khảo:\n'),
+                                TextSpan(text: '${R.string.reference_source.tr()}:\n'),
                                 TextSpan(
                                   text:
                                       'https://pmc.ncbi.nlm.nih.gov/articles/PMC8802999/',

@@ -157,6 +157,7 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
     // Check if we have any pending deeplinks to navigate to
     _checkPendingDeeplinks();
     BranchioLinkConfig.instance.checkPendingMeasurementScreen();
+    BranchioLinkConfig.instance.checkPendingMedicineTab();
   }
 
   // Check for pending deeplinks after initialization

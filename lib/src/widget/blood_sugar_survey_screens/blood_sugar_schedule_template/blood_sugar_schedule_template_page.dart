@@ -240,7 +240,7 @@ class _BloodSugarScheduleTemplatePageState extends State<BloodSugarScheduleTempl
             },
           ),
           _buildFoodItem(
-            title: R.string.the_evening.tr(),
+            title: R.string.the_night.tr(),
             isBeforeSelected: templeteDetail?.isBeforeDinner,
             isAfterSelected: templeteDetail?.isAfterDinner,
             onSelectBefore: (isSelected) {
