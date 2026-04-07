@@ -157,7 +157,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
       child: WillPopScope(
         onWillPop: () async {
           print('[ROUTE] onWillPop _currentRoute: $_currentRoute');
-          // Check if the inner navigator can handle the back button press
           final NavigatorState? navigator =
               SubscriptionNavigationMixin.navigationKey.currentState;
 
@@ -166,12 +165,19 @@ class _PaywallScreenState extends State<PaywallScreen> {
                 .notifyObservers([], notifyName: Const.NAVIGATE_TO_LESSON_TAB);
           }
 
-          if (navigator != null && navigator.canPop()) {
-            navigator.pop();
-            return false;
+          // Use maybePop (not pop) so child routes' PopScope / canPop: false is respected.
+          // canPop() + pop() bypasses PopScope and was breaking lockBackAfterPurchase.
+          if (navigator != null) {
+            final didPopInner = await navigator.maybePop();
+            if (didPopInner) {
+              return false;
+            }
+            if (navigator.canPop()) {
+              // Stack has more than one route but top refused to pop (e.g. locked program list).
+              return false;
+            }
           }
 
-          // Otherwise, handle the back button normally (return to subscription page)
           return true;
         },
         child: Scaffold(
@@ -193,9 +199,12 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       builder: (_) => _buildMainContent(),
                     );
                   case NavigatorName.package_program_list:
+                    final listArgs = settings.arguments;
+                    final lockBack = listArgs is Map &&
+                        listArgs['lockBackAfterPurchase'] == true;
                     return _buildRoute(
                       settings,
-                      ProgramsListPage(),
+                      ProgramsListPage(lockBackAfterPurchase: lockBack),
                     );
                   case NavigatorName.package_program_detail:
                     Map<String, dynamic>? args =

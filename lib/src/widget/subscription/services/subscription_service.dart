@@ -145,8 +145,10 @@ class SubscriptionService {
           print('Purchase successful, starting program');
           // Navigate to package program list
           Observable.instance.notifyObservers([], notifyName: "refresh_home");
-          SubscriptionNavigationMixin.navigationKey.currentState
-              ?.pushNamed(NavigatorName.package_program_list);
+          SubscriptionNavigationMixin.navigationKey.currentState?.pushNamed(
+            NavigatorName.package_program_list,
+            arguments: <String, dynamic>{'lockBackAfterPurchase': true},
+          );
         },
       ),
     );
