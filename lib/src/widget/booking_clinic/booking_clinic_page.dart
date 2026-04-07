@@ -33,9 +33,23 @@ import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_appointment_i
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 
 class BookingClinicPage extends StatefulWidget {
-  const BookingClinicPage({Key? key}) : super(key: key);
+  final bool isExamination;
+  final bool isExaminationAtClinic;
+  final int? examinationClinicId;
+  final String? examinationType;
+  final String? smartGoalId;
+
+  const BookingClinicPage({
+    Key? key,
+    this.isExamination = false,
+    this.isExaminationAtClinic = false,
+    this.examinationClinicId,
+    this.examinationType,
+    this.smartGoalId,
+  }) : super(key: key);
 
   @override
   _BookingClinicPageState createState() => _BookingClinicPageState();
@@ -60,8 +74,34 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
-    // _cubit.getDsmesAppointmentList();
-    _cubit.initDsmesBooking();
+    _warmupLocation();
+    // Initialize Docosan user & location
+    _cubit.initDsmesBooking(isLoadAppointments: !widget.isExamination);
+
+    if (widget.isExamination) {
+      // Delay navigation to ensure nested navigator is ready.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.isExaminationAtClinic) {
+          _startExaminationAtClinicFlow();
+        } else {
+          _startExaminationAtHomeFlow();
+        }
+      });
+    }
+  }
+
+  Future<void> _warmupLocation() async {
+    final cancel = BotToast.showLoading(allowClick: false);
+    try {
+      await resolveBookingProvidersPosition().timeout(
+        const Duration(seconds: 6),
+        onTimeout: () => null,
+      );
+    } catch (_) {
+      // Best-effort warmup only.
+    } finally {
+      cancel();
+    }
   }
 
   @override
@@ -281,6 +321,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                         settings,
                         BookingClinicProvidersPage(
                           specialtyId: args!["specialtyId"],
+                          examinationType: args["examinationType"],
                         ),
                       );
                     }
@@ -326,12 +367,16 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     return BlocConsumer<DsmesAppointmentCubit, DsmesAppointmentState>(
       listener: (context, state) {
         print('Current state: $state');
-        if (state is DsmesAppointmentFailure) {
-          BotToast.closeAllLoading();
-          Message.showToastMessage(context, state.error);
-        } else {
-          BotToast.closeAllLoading();
-          _controller.refreshCompleted();
+        // For examination flow, we manage loading manually so that it stays
+        // visible until the datetime page has finished loading.
+        if (!widget.isExamination) {
+          if (state is DsmesAppointmentFailure) {
+            BotToast.closeAllLoading();
+            Message.showToastMessage(context, state.error);
+          } else {
+            BotToast.closeAllLoading();
+            _controller.refreshCompleted();
+          }
         }
       },
       builder: (
@@ -339,11 +384,13 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
         DsmesAppointmentState state,
       ) {
         print('Building with state: $state');
-        if (state is DsmesAppointmentLoading) {
-          BotToast.showLoading(allowClick: false);
-        } else {
-          BotToast.closeAllLoading();
-          _controller.refreshCompleted();
+        if (!widget.isExamination) {
+          if (state is DsmesAppointmentLoading) {
+            BotToast.showLoading(allowClick: false);
+          } else {
+            BotToast.closeAllLoading();
+            _controller.refreshCompleted();
+          }
         }
         return _buildPage(context, state);
       },
@@ -479,7 +526,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
             controller: _controller,
             onRefresh: () async {
               final docosanToken = await AppSettings.getDocosanToken();
-              if (docosanToken == null || docosanToken.isEmpty) {
+              if (docosanToken.isEmpty) {
                 BotToast.closeAllLoading();
                 _controller.refreshCompleted();
                 return;
@@ -541,6 +588,69 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     );
   }
 
+  Future<void> _startExaminationAtHomeFlow() async {
+    // Show a global loading overlay to prevent user interaction on the
+    // intermediate booking clinic container while we prepare the
+    // examination flow and navigate to the datetime screen.
+    BotToast.showLoading(allowClick: false);
+
+    final clinicId = widget.examinationClinicId ?? Const.EXAMINATION_DEFAULT_CLINIC_ID;
+
+    final detailSuccess =
+        await _cubit.getClinicDetail(id: clinicId, isLoading: false);
+
+    if (!detailSuccess || _cubit.selectedClinic == null) {
+      BotToast.closeAllLoading();
+      Message.showToastMessage(context, R.string.not_exist_clinic.tr());
+      Navigator.of(context, rootNavigator: true).pop();
+      return;
+    }
+
+    _cubit.setExaminationData(
+      isExamination: true,
+      examinationType: widget.examinationType,
+      examinationLocation: Const.EXAMINATION_LOCATION_HOME,
+      smartGoalId: widget.smartGoalId,
+    );
+
+    _cubit.initCreateDsmesBookingRequest(
+        locale: DsmesNavigationMixin.getNavigationKey()
+                .currentContext
+                ?.locale
+                .languageCode ??
+            'vi',
+        clearExamination: false);
+
+    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+      NavigatorName.dsmes_booking_select_date,
+      arguments: {
+        'serviceType': DsmesAppointmentMode.telemedicine.toString(),
+        'action': 'create',
+        'bookingType': Const.BOOKING_TYPE_CLINIC,
+        'isMergedSchedule': false,
+      },
+    );
+  }
+
+  Future<void> _startExaminationAtClinicFlow() async {
+    // Set examination data in cubit
+    _cubit.setExaminationData(
+      isExamination: true,
+      examinationType: widget.examinationType,
+      examinationLocation: Const.EXAMINATION_LOCATION_CLINIC,
+      smartGoalId: widget.smartGoalId,
+    );
+
+    // Navigate to provider page with empty specialtyId and examinationType
+    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+      NavigatorName.clinic_providers,
+      arguments: {
+        'specialtyId': 0,
+        'examinationType': widget.examinationType,
+      },
+    );
+  }
+
   _buildDiabSpecialty() {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -567,6 +677,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                       .currentState
                       ?.pushNamed(NavigatorName.other_diseases, arguments: {
                     "specialties": specialties,
+                    "bookingType": Const.BOOKING_TYPE_CLINIC,
                   });
                 } else {
                   _cubit.clearClinicProviders();
@@ -576,6 +687,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
                       .currentState
                       ?.pushNamed(NavigatorName.clinic_providers, arguments: {
                     "specialtyId": specialty.id,
+                    "bookingType": Const.BOOKING_TYPE_CLINIC,
                   });
                 }
               },

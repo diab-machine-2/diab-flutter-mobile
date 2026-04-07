@@ -22,6 +22,8 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
   late final String resolvedVideoUrl;
 
   bool exerciseCompleted = false;
+  bool _isCompletingExercise = false;
+  final Set<String> _completedVideoCategoryIds = {};
 
   void initData(
       ExerciseMovementResponseData? exerciseData, BuildContext context) async {
@@ -48,27 +50,38 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
         );
 
         if (!exerciseCompleted &&
+            !_isCompletingExercise &&
             exerciseData.completionStatus != CompletionStatus.completed &&
             eventType == CustomPlayerEventType.videoCompleted &&
             duration.inMilliseconds > 0) {
           debugPrint(
               '[EXERCISE] Marking exercise as completed through event listener');
-          exerciseCompleted = true;
           completeExercise(exerciseData.id ?? '');
         }
       },
       onDone: () {
         if (!exerciseCompleted &&
+            !_isCompletingExercise &&
             exerciseData.completionStatus != CompletionStatus.completed) {
           debugPrint('[EXERCISE] Marking exercise as completed through onDone');
-          exerciseCompleted = true;
           completeExercise(exerciseData.id ?? '');
         }
       },
       onCompleteVideo: (exerciseCategoryId, duration) async {
         debugPrint(
             '[EXERCISE] Video completed: $exerciseCategoryId, duration: ${duration}s');
-        await completeVideo(exerciseCategoryId, duration);
+        // Only complete video once per category ID
+        if (!_completedVideoCategoryIds.contains(exerciseCategoryId) &&
+            exerciseCategoryId.isNotEmpty) {
+          _completedVideoCategoryIds.add(exerciseCategoryId);
+          // TODO: Temporarily commented out - API not found
+          // await completeVideo(exerciseCategoryId, duration);
+          debugPrint(
+              '[EXERCISE] completeVideo call commented out - would have called for category: $exerciseCategoryId');
+        } else {
+          debugPrint(
+              '[EXERCISE] Skipping duplicate completeVideo call for category: $exerciseCategoryId');
+        }
       },
       onExitFullScreen: () {
         debugPrint('[EXERCISE] Fullscreen exited via callback');
@@ -98,6 +111,21 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
   }
 
   Future<void> completeExercise(String exerciseMovementId) async {
+    // Prevent multiple simultaneous calls
+    if (_isCompletingExercise) {
+      debugPrint(
+          '[EXERCISE] Skipping duplicate completeExercise call - already in progress');
+      return;
+    }
+
+    // Check if already completed to prevent duplicate calls
+    if (exerciseCompleted) {
+      debugPrint(
+          '[EXERCISE] Skipping completeExercise call - already completed');
+      return;
+    }
+
+    _isCompletingExercise = true;
     emit(const ExerciseDetailLoading());
     final CompleteExerciseRequest request = CompleteExerciseRequest(
       exerciseMovementId: exerciseMovementId,
@@ -106,9 +134,14 @@ class ExerciseDetailCubit extends Cubit<ExerciseDetailState> {
     final ApiResult<CommonResponse> apiResult =
         await repository.completeExercise(request);
     apiResult.when(success: (CommonResponse response) {
+      exerciseCompleted = true;
       emit(const ExerciseDetailAllCompleted());
+      // Reset flag on success
+      _isCompletingExercise = false;
     }, failure: (NetworkExceptions error) {
       emit(ExerciseDetailFailure(NetworkExceptions.getErrorMessage(error)));
+      // Reset flag on failure so it can be retried
+      _isCompletingExercise = false;
     });
     emit(const ExerciseDetailInitial());
   }

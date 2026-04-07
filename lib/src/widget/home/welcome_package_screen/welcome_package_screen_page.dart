@@ -80,7 +80,7 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
 
   Widget _buildPage(BuildContext context, WelcomePackageScreenState state) {
     return WillPopScope(
-      onWillPop: () => _backPressed(),
+      onWillPop: _onHardwareBackPressed,
       child: Scaffold(
         body: Container(
           decoration: BoxDecoration(color: R.color.backgroundColorNew),
@@ -402,16 +402,16 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
 
   Future<void> _handleButtonBookingConsultPress(String url) async {
     isClickSkip = false;
-    Navigator.pop(context);
+    Navigator.pop(context, false);
     if (await canLaunch(url)) {
       FlutterBranchSdk.handleDeepLink(url);
 
-      await launch(
-        url,
-        forceSafariVC: false,
-        forceWebView: false,
-        headers: <String, String>{'my_header_key': 'my_header_value'},
-      );
+      // await launch(
+      //   url,
+      //   forceSafariVC: false,
+      //   forceWebView: false,
+      //   headers: <String, String>{'my_header_key': 'my_header_value'},
+      // );
     } else {
       throw 'Could not launch $url';
     }
@@ -470,12 +470,20 @@ class _WelcomePackageScreenPageState extends State<WelcomePackageScreenPage> {
     );
   }
 
-  Future<bool> _backPressed() async {
+  /// System back: close without persisting welcome — home can show the dialog again.
+  Future<bool> _onHardwareBackPressed() async {
+    if (!mounted) return false;
+    isClickSkip = false;
+    Navigator.pop(context, false);
+    return false;
+  }
+
+  Future<void> _backPressed() async {
     await _cubit.markDisplayedWelcome();
     isClickSkip = false;
-    Navigator.pop(context);
+    if (!mounted) return;
+    Navigator.pop(context, true);
     Observable.instance
         .notifyObservers([], notifyName: Const.UPDATE_SUBSCRIPTION);
-    return true;
   }
 }

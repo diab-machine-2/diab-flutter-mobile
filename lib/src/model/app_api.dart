@@ -36,6 +36,7 @@ import 'package:medical/src/model/response/expert_comment_list_response.dart';
 import 'package:medical/src/model/response/get_customer_receives_user_response.dart';
 import 'package:medical/src/model/response/get_subscription_banners_response.dart';
 import 'package:medical/src/model/response/get_weight_threshold_response.dart';
+import 'package:medical/src/model/response/get_vnpay_transaction_info_response.dart';
 import 'package:medical/src/model/response/learning_post_response.dart';
 import 'package:medical/src/model/response/lesson_module_response.dart';
 import 'package:medical/src/model/response/list_calendart_response.dart';
@@ -454,6 +455,20 @@ abstract class AppApi {
   Future<LearningPostListResponse> getBanners(
       {@Query('Position') int? position});
 
+  // Webinar / Events
+  @GET('/App/LearningPost/event/{id}')
+  Future<WebinarDetailResponse> getLearningPostEvent(
+    @Path('id') String id,
+  );
+
+  @GET('/App/LearningPost/events')
+  Future<List<WebinarDetailResponse>> getLearningPostEvents();
+
+  @POST('/App/LearningPost/events/register/{id}')
+  Future<void> registerLearningPostEvent(
+    @Path('id') String id,
+  );
+
   // Customer Receives
   @PUT("/App/CustomerReceives/interview/{courseId}")
   Future<void> updateDoneInterview(String courseId);
@@ -491,6 +506,10 @@ abstract class AppApi {
   //GET {{url}}/app/chat/conversations/me
   @GET('/App/Chat/conversations/me')
   Future<ConversationListResponse> getMyConversation();
+
+  @GET("App/PaymentMethodVnpay")
+  Future<GetVnpayTransactionInfoResponse> getPaymentVnpayTransactionInfo(
+      {@Query('refCode') String? txnRef});
 
   // Exercise Endpoints
   @POST("App/Exercise/Input")

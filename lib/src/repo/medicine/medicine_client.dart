@@ -1,0 +1,250 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:dio/dio.dart';
+import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/error/error_model.dart';
+import 'package:medical/src/modal/medicine/prescription_model.dart';
+import 'package:medical/src/modal/medicine/search_medicine_result_model.dart';
+import 'package:medical/src/widget/helper/http_helper.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'dart:io' show File;
+
+import '../../modal/medicine/medicine_item_model.dart';
+import '../../modal/medicine/medicine_schedule_model.dart';
+
+class MedicineClient extends FetchClient {
+  Future<SearchMedicineResultModel?> searchMedicine(
+      {required String searchText}) async {
+    final Response response = await super.fetchData(
+        url: '/App/Medications/GetListMedicine', params: {'Name': searchText});
+
+    if (response.statusCode == 200) {
+      return SearchMedicineResultModel.fromJson(response.data);
+    } else {
+      final error = Error.fromJson(response);
+      throw error;
+    }
+  }
+
+  Future<SearchMedicineResultModel?> addNewMedicine(
+      {required String medicineName}) async {
+    final Response response = await super.fetchData(
+        url: '/App/Medications/GetListMedicine',
+        params: {'Name': medicineName});
+
+    if (response.statusCode == 200) {
+      return SearchMedicineResultModel.fromJson(response.data);
+    } else {
+      final error = Error.fromJson(response);
+      throw error;
+    }
+  }
+
+  Future<List<MedicineItemModel>?> uploadPrescriptionPhoto(
+      {required File file}) async {
+    try {
+      final response = await super.postHttp(
+          path: '/App/Image/UploadAI/Medications',
+          files: [file.path],
+          params: {'filePath': file.path});
+
+      if (response.statusCode == 200) {
+        final data = await response.stream.bytesToString();
+        final jsonData = jsonDecode(data);
+        final list = MedicineItemModelMapper.fromJsonList(jsonData);
+        return list;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> createNewPrescription(
+      {required PrescriptionModel prescription,
+      required Map<String, String>? paths}) async {
+    final Map<String, String> params = {
+      'Data': jsonEncode(prescription.toJson(
+          includePrescriptionId: false, includedMedicationId: false)),
+    };
+
+    log('params: ${params}');
+
+    try {
+      final response = await super.postHttp4(
+        path: '/App/prescriptions',
+        params: params,
+        fileMap: paths,
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> updatePrescription(
+      {required PrescriptionModel prescription,
+      required Map<String, String>? paths}) async {
+    final Map<String, String> params = {
+      'Data': jsonEncode(prescription.toJson(includedMedicationId: false)),
+      'ImagesPrescriptionIds': jsonEncode(prescription.imagesPrescription)
+    };
+
+    log('params: ${jsonEncode(params)}');
+
+    try {
+      final response = await super.patchHttp(
+        path: '/App/prescriptions/${prescription.id!}',
+        params: params,
+        fileMap: paths,
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.reasonPhrase!;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> stopPrescription({required String id}) async {
+    final Map<String, dynamic> params = {
+      'status': 1,
+      'id': id,
+    };
+
+    try {
+      final response =
+          await super.putData(url: '/App/prescriptions/status', params: params);
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<List<PrescriptionModel>> fetchPrescriptions() async {
+    try {
+      final response = await super.fetchData(
+        url: '/App/prescriptions/CurrentState',
+      );
+
+      if (response.statusCode == 200) {
+        if (response.data.length == 0) return <PrescriptionModel>[];
+        return PrescriptionModel.fromJsonList(response.data);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<PrescriptionModel> fetchPrescription({required String id}) async {
+    try {
+      final response = await super.fetchData(
+          url: '/App/prescriptions/CurrentState', params: {'id': id});
+
+      if (response.statusCode == 200) {
+        return PrescriptionModel.fromJson(response.data);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<MedicineScheduleModel> fetchMedicineScheduleByDate(
+      {required int timestamp}) async {
+    try {
+      final response = await super.fetchData(
+          url: '/App/Target/Medication', params: {'day': timestamp.toString()});
+      log(response.data.toString());
+
+      if (response.statusCode == 200) {
+        return MedicineScheduleModel.fromJson(response.data['data']);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> useMedicine(
+      {required String id,
+      required String patientMedicationId,
+      required double dosage}) async {
+    try {
+      final response = await super.putData(
+        url: '/App/Target/Medication/$id',
+        params: {
+          'PatientMedicationId': patientMedicationId,
+          'Dosage': dosage,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.statusMessage!;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<bool> usedAllMedicinesToday({
+    required int status,
+    required List<Map<String, dynamic>> listPatientMedication,
+    required List<String> prescriptionIds,
+    required List<int> executeDayTimes,
+  }) async {
+    try {
+      final currentDateTime = DateTime.now();
+      final today = DateTime(
+        currentDateTime.year,
+        currentDateTime.month,
+        currentDateTime.day,
+        7,
+      );
+
+      final response = await super.putData(
+        url: '/App/Target/Medication/CurrentRemind',
+        params: {
+          'currentDate': (today.millisecondsSinceEpoch / 1000).round(),
+          'moment': executeDayTimes,
+          'prescriptionIds': prescriptionIds,
+          'status': status,
+          'listPatientMedication': listPatientMedication,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw response.statusMessage!;
+      }
+    } catch (ex) {
+      throw R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+}

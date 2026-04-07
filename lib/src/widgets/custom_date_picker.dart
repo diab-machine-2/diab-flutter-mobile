@@ -9,12 +9,16 @@ class CustomDatePicker extends StatefulWidget {
     required this.callback,
     this.minDate,
     this.maxDate,
+    this.selectedDate,
+    this.activeDates,
   });
 
   final DateTime? initDate;
   final Function(DateTime) callback;
   final DateTime? minDate;
   final DateTime? maxDate;
+  final DateTime? selectedDate;
+  final List<DateTime>? activeDates;
 
   @override
   _CustomDatePickerState createState() => _CustomDatePickerState();
@@ -75,13 +79,15 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                       ),
                     ),
                     CustomCalendarDatePicker(
-                        initialDate: widget.initDate == null
-                            ? DateTime.now()
-                            : widget.initDate!,
+                        initialDate: widget.selectedDate ??
+                            (widget.initDate == null
+                                ? DateTime.now()
+                                : widget.initDate!),
                         firstDate: widget.minDate ??
                             DateTime.parse("1969-07-20 20:18:04Z"),
                         lastDate:
                             widget.maxDate ?? DateTime.utc(275760, 09, 13),
+                        activeDates: widget.activeDates,
                         onDateChanged: (datetime) {
                           selectedDate = datetime ?? DateTime.now();
                         }),

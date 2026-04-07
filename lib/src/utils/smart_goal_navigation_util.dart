@@ -7,7 +7,6 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/complete_smart_goal_request.dart';
@@ -53,6 +52,18 @@ class SmartGoalNavigationUtil {
   /// Set configuration for goal selection behavior
   static void setConfig(SmartGoalConfig config) {
     _config = config;
+  }
+
+  /// Default examination handler used when no screen-specific handler is set.
+  /// Activity Tab can override via `SmartGoalConfig.customExaminationHandler`.
+  static Future<void> defaultExaminationHandler(
+      BuildContext context, SmartGoalList? smartGoal) async {
+    final examinationType = _extractExaminationType(smartGoal);
+    await _showExaminationOptionsBottomSheet(
+      context,
+      examinationType: examinationType,
+      smartGoalId: smartGoal?.id,
+    );
   }
 
   /// Main function to handle smart goal selection
@@ -109,10 +120,10 @@ class SmartGoalNavigationUtil {
         _showCustomGoalPopup(context, smartGoal: smartGoal);
         break;
       case ScheduleType.book_1_1:
-      case ScheduleType.book_1_n:
         _showCoachingPopup(context, smartGoal);
         break;
       case ScheduleType.survey:
+      case ScheduleType.quiz:
         _showSurveyPopup(context, survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
@@ -121,6 +132,7 @@ class SmartGoalNavigationUtil {
         break;
       case ScheduleType.lesson:
       case ScheduleType.infographic:
+      case ScheduleType.book_1_n:
         await _handleLesson(context, smartGoal);
         break;
       case ScheduleType.io_evaluate:
@@ -166,6 +178,9 @@ class SmartGoalNavigationUtil {
         await _handleInterviewNavigation(context,
             interviewType: 32, smartGoal: smartGoal);
         break;
+      case ScheduleType.examination:
+        await _handleExamination(context, smartGoal);
+        break;
     }
 
     // Call refresh callback if provided
@@ -208,7 +223,8 @@ class SmartGoalNavigationUtil {
       'goalId': smartGoal?.id,
       BmiOnBoardingPage.bmiBlocKey: context.read<BmiBloc>(),
     };
-    await Navigator.pushNamed(context, NavigatorName.bmiInputPage, arguments: args);
+    await Navigator.pushNamed(context, NavigatorName.bmiInputPage,
+        arguments: args);
   }
 
   static Future<void> _handleEmotion(
@@ -318,6 +334,162 @@ class SmartGoalNavigationUtil {
     await Navigator.pushNamed(context, NavigatorName.connect_device_app);
   }
 
+  static Future<void> _handleExamination(
+      BuildContext context, SmartGoalList? smartGoal) async {
+    if (_config.customExaminationHandler != null) {
+      // Call the custom examination handler if provided
+      await _config.customExaminationHandler!(context, smartGoal);
+    } else {
+      await defaultExaminationHandler(context, smartGoal);
+    }
+  }
+
+  static String? _extractExaminationType(SmartGoalList? smartGoal) {
+    final name = smartGoal?.name ?? '';
+    if (name.isEmpty) return null;
+
+    final examinationTypes = [
+      'Công thức máu',
+      'HbA1C',
+      'Bộ gan',
+      'Bộ thận',
+      'Bộ mỡ',
+      'Acid uric',
+      'Bộ vi chất',
+    ];
+
+    final nameLower = name.toLowerCase();
+    if (!nameLower.contains('xét nghiệm') && !nameLower.contains('xet nghiem')) {
+      return null;
+    }
+
+    for (final type in examinationTypes) {
+      if (nameLower.contains(type.toLowerCase())) return type;
+    }
+    return null;
+  }
+
+  static Future<void> _showExaminationOptionsBottomSheet(
+    BuildContext context, {
+    String? examinationType,
+    String? smartGoalId,
+  }) async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: false,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 56),
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Text(
+                    'choose_input_method'.tr(),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xff111515),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _buildExaminationOptionItem(
+                icon: 'lib/res/drawables/home/ic_examination_at_home.png',
+                title: 'xet_nghiem_tai_nha'.tr(),
+                onTap: () => Navigator.of(context).pop('at_home'),
+              ),
+              const SizedBox(height: 12),
+              _buildExaminationOptionItem(
+                icon: 'lib/res/drawables/home/ic_booking_clinic.png',
+                title: 'xet_nghiem_tai_co_so'.tr(),
+                onTap: () => Navigator.of(context).pop('at_clinic'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (result == 'at_home') {
+      Navigator.of(context).pushNamed(
+        NavigatorName.booking_clinic,
+        arguments: {
+          'isExamination': true,
+          'examinationClinicId': Const.EXAMINATION_DEFAULT_CLINIC_ID,
+          'examinationType': examinationType,
+          'smartGoalId': smartGoalId,
+        },
+      );
+    } else if (result == 'at_clinic') {
+      Navigator.of(context).pushNamed(
+        NavigatorName.booking_clinic,
+        arguments: {
+          'isExamination': true,
+          'isExaminationAtClinic': true,
+          'examinationType': examinationType,
+          'smartGoalId': smartGoalId,
+        },
+      );
+    }
+  }
+
+  static Widget _buildExaminationOptionItem({
+    required String icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: R.color.color0xffF7F8F8,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Image.asset(icon, width: 32, height: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.color0xff111515,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios,
+                size: 16, color: R.color.color0xff111515),
+          ],
+        ),
+      ),
+    );
+  }
+
   static Future<void> _handleInterviewNavigation(
     BuildContext context, {
     required int interviewType,
@@ -361,6 +533,7 @@ class SmartGoalNavigationUtil {
                 "endTime": '',
                 "bookingQuantity": bookingQuantity,
                 "interviewType": interviewType,
+                "fromActivityTab": true,
               });
               return;
             }
@@ -373,7 +546,8 @@ class SmartGoalNavigationUtil {
                   'courseId': courseId,
                   'endTime': '',
                   'interviewType': interviewType,
-                  'smartGoal': smartGoal
+                  'smartGoal': smartGoal,
+                  'fromActivityTab': true,
                 });
           }
         },
@@ -386,7 +560,8 @@ class SmartGoalNavigationUtil {
                 'courseId': courseId,
                 'endTime': '',
                 'interviewType': interviewType,
-                'smartGoal': smartGoal
+                'smartGoal': smartGoal,
+                'fromActivityTab': true,
               });
         },
       );
@@ -821,6 +996,8 @@ class SmartGoalConfig {
   final bool handleLessonReload;
   final Future<void> Function(String? routeName, String? smartGoalId)?
       customGlucoseHandler;
+  final Future<void> Function(BuildContext context, SmartGoalList? smartGoal)?
+      customExaminationHandler;
   final VoidCallback? onLessonReload;
 
   SmartGoalConfig({
@@ -832,6 +1009,7 @@ class SmartGoalConfig {
     this.hasInputGlucose = false,
     this.handleLessonReload = false,
     this.customGlucoseHandler,
+    this.customExaminationHandler,
     this.onLessonReload,
   });
 
@@ -845,6 +1023,8 @@ class SmartGoalConfig {
     bool? handleLessonReload,
     Future<void> Function(String? routeName, String? smartGoalId)?
         customGlucoseHandler,
+    Future<void> Function(BuildContext context, SmartGoalList? smartGoal)?
+        customExaminationHandler,
     VoidCallback? onLessonReload,
   }) {
     return SmartGoalConfig(
@@ -859,6 +1039,8 @@ class SmartGoalConfig {
       hasInputGlucose: hasInputGlucose ?? this.hasInputGlucose,
       handleLessonReload: handleLessonReload ?? this.handleLessonReload,
       customGlucoseHandler: customGlucoseHandler ?? this.customGlucoseHandler,
+      customExaminationHandler:
+          customExaminationHandler ?? this.customExaminationHandler,
       onLessonReload: onLessonReload ?? this.onLessonReload,
     );
   }

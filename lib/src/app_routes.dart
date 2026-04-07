@@ -5,6 +5,7 @@ import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
+import 'package:medical/src/widget/booking_doctor/booking_doctor_page.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_input_bloc.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
@@ -14,12 +15,17 @@ import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_pag
 import 'package:medical/src/widget/Bmi/views/bmi_overview.dart/bmi_overview_page.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_statistical_data/bmi_statistical_data_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_page.dart';
+import 'package:medical/src/widget/medicine/medicine_check_page.dart';
+import 'package:medical/src/widget/medicine/photo_picker_page.dart';
+import 'package:medical/src/widget/medicine/prescription_add_page.dart';
+import 'package:medical/src/widget/medicine/tutorial_page.dart';
 import 'package:medical/src/widget/meeting/meeting_prepare_page.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/create_goal/create_goal.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
 import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
+import 'package:medical/src/widget/profile/cancellation_refund_policy.dart';
 
 import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
@@ -37,6 +43,12 @@ import 'widget/food_menu_screens/food_menu/food_menu.dart';
 import 'widget/glucose_intro/glucose_intro_1st_page.dart';
 import 'widget/glucose_intro/glucose_intro_2nd_page.dart';
 import 'widget/home/schema/home_schema.dart';
+import 'widget/medicine/capture_prescription_page.dart';
+import 'widget/medicine/medicine_add_page.dart';
+import 'widget/medicine/medicine_search_page.dart';
+import 'widget/medicine/onboarding_page.dart';
+import 'widget/medicine/prescription_list_page.dart';
+import 'widget/medicine/prescription_remind_page.dart';
 import 'widget/tabbar/tabbar_v2.dart';
 
 class AppRoutes {
@@ -109,7 +121,19 @@ class AppRoutes {
         }
       case NavigatorName.booking_clinic:
         {
-          page = BookingClinicPage();
+          final args = settings.arguments as Map<String, dynamic>?;
+          page = BookingClinicPage(
+            isExamination: args?['isExamination'] ?? false,
+            isExaminationAtClinic: args?['isExaminationAtClinic'] ?? false,
+            examinationClinicId: args?['examinationClinicId'],
+            examinationType: args?['examinationType'],
+            smartGoalId: args?['smartGoalId'],
+          );
+          break;
+        }
+      case NavigatorName.booking_doctor:
+        {
+          page = BookingDoctorPage();
           break;
         }
       case NavigatorName.add_blood_sugar_result:
@@ -134,7 +158,6 @@ class AppRoutes {
         );
         break;
       case NavigatorName.blood_sugar_image_capture:
-        final data = settings.arguments as Map<String, dynamic>?;
         page = BloodSugarImageCapture();
         break;
       case NavigatorName.paywall_screen:
@@ -173,7 +196,8 @@ class AppRoutes {
           generatedFoods: (data?['foods'] ?? []) as List<FoodModel>,
           timeframe: data?['timeframe'] ?? '-',
           timeframeId: data?['timeframeId'] ?? '-',
-          files: data?['files'] != null ? List<String>.from(data!['files']) : [],
+          files:
+              data?['files'] != null ? List<String>.from(data!['files']) : [],
         );
         break;
       case NavigatorName.food_image_capture:
@@ -273,6 +297,74 @@ class AppRoutes {
           isPhoneNumberExist: data?['isPhoneNumberExist'] ?? false,
         );
         break;
+      case NavigatorName.cancellation_refund_policy:
+        page = CancellationRefundPolicyController();
+        break;
+
+      // Lịch dùng thuốc
+
+      case NavigatorName.medicine_check:
+        page = MedicineCheckPage();
+        break;
+      case NavigatorName.medicine:
+        page = OnboardingPage();
+        break;
+      case NavigatorName.medicine_tutorial:
+        page = TutorialPage();
+        break;
+      case NavigatorName.prescription_capture:
+        page = CapturePrescriptionPage();
+        break;
+      case NavigatorName.medicine_photo_picker:
+        page = PhotoPickerPage();
+        break;
+      case NavigatorName.medicine_search:
+        final data = settings.arguments as Map<String, dynamic>?;
+        final mode = data?['mode'] as MedicineMode?;
+        final index = data?['index'];
+        page = MedicineSearchPage(medicineMode: mode, index: index);
+        break;
+      case NavigatorName.medicine_add:
+        final data = settings.arguments as Map<String, dynamic>?;
+        final mode = data?['mode'] as MedicineMode?;
+        final medicineItem = data?['medicineItem'];
+        final medicine = data?['medicine'];
+        final index = data?['index'];
+        final isFromReuse = data?['isReuse'] as bool? ?? false;
+        page = MedicineAddPage(
+          medicineMode: mode,
+          medicineTablet: medicineItem,
+          medicine: medicine,
+          index: index,
+          isFromReuse: isFromReuse,
+        );
+        break;
+      case NavigatorName.prescription_add:
+        final data = settings.arguments as Map<String, dynamic>?;
+        final mode = data?['mode'] as PrescriptionMode?;
+        final medicineItem = data?['medicineItem'];
+        final medicineItems = data?['medicineItems'];
+        final prescription = data?['prescription'];
+        page = PrescriptionAddPage(
+          prescriptionMode: mode,
+          medicineItem: medicineItem,
+          medicineItems: medicineItems,
+          prescription: prescription,
+        );
+        break;
+      case NavigatorName.prescription_remind:
+        final data = settings.arguments as Map<String, dynamic>?;
+        final prescription = data?['prescription'];
+        final paths = data?['paths'];
+        page = PrescriptionRemindPage(prescription: prescription, paths: paths);
+        break;
+      case NavigatorName.prescription:
+        final prescriptionData = settings.arguments as Map<String, dynamic>?;
+        final initialBottomIndex = prescriptionData?['initialBottomIndex'] as int?;
+        page = PrescriptionListPage(initialBottomIndex: initialBottomIndex);
+        break;
+
+      // ~ END: Lịch dùng thuốc ~
 
       default:
         break;

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as p;
@@ -96,6 +98,14 @@ class WeightRepository {
   Future<ApiResult<SubmitWeightRecordResponse>> submitWeightRecord(
       SubmitWeightRecordRequest request) async {
     try {
+      final params = {
+        'date': request.date.toString(),
+        'weight': request.weight.toString(),
+        'height': request.height.toString(),
+        'waist': request.waist?.toString(),
+        'note': request.note,
+      };
+      log('Weight input params: $params');
       // Create MultipartFile with explicit content type to ensure iOS HEIC images work correctly
       // Images are already converted to JPEG format by Utils.convertImageToJpeg
       // Use async fromFile instead of fromFileSync to properly read file bytes and avoid size issues

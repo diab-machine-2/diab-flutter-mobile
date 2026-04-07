@@ -24,6 +24,8 @@ class DsmesCalendarSection extends StatefulWidget {
   final int? appointmentId;
   final bool isMergedSchedule;
   final String bookingType; // 'clinic' or 'center' or 'doctor'
+  final bool isExamination;
+  final String? examinationType;
 
   const DsmesCalendarSection({
     Key? key,
@@ -32,6 +34,8 @@ class DsmesCalendarSection extends StatefulWidget {
     this.appointmentId,
     this.isMergedSchedule = false,
     this.bookingType = Const.BOOKING_TYPE_CENTER,
+    this.isExamination = false,
+    this.examinationType,
   }) : super(key: key);
 
   @override
@@ -58,6 +62,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
+
     if (_cubit.createDsmesBookingRequest != null) {
       final startTime = _cubit.createDsmesBookingRequest!.startTime;
       final endTime = _cubit.createDsmesBookingRequest!.endTime;
@@ -110,10 +115,16 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             scheduleDateTime.minute == selectedDate!.minute;
       })
           ? selectedDate!.hour < 12
-          : DateTime.parse(schedules.first.startTime).hour < 12;
+          : schedules.isNotEmpty
+              ? DateTime.parse(schedules.first.startTime).hour < 12
+              : true;
 
       isAllowReschedule = isSelectedScheduleAvailable();
     });
+
+    // Close any global loading (e.g., from examination flow) once
+    // the datetime screen has finished loading its data.
+    BotToast.closeAllLoading();
   }
 
   bool isSelectedScheduleAvailable() {
@@ -144,6 +155,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     // return widget.isMergedSchedule == false
     //     ? _cubit.selectedClinic?.getBookingSchedules() ?? []
     //     : await _cubit.getDiabClinicsSchedule();
+    if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
+      return _cubit.selectedDoctor?.getBookingSchedules() ?? [];
+    }
     return _cubit.selectedClinic?.getBookingSchedules() ?? [];
   }
 
@@ -201,11 +215,43 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.getNavigationKey()
-                            .currentState
-                            ?.pop(DsmesNavigationMixin.getNavigationKey()
+                        // Check if we're in edit mode (coming from confirm page)
+                        final route = ModalRoute.of(context)?.settings;
+                        final args = route?.arguments as Map<String, dynamic>?;
+                        final isEditing = args?['isEditing'] ?? false;
+                        final previousRoute = args?['previousRoute'] as String?;
+
+                        // If editing from confirm page, pop back to confirm
+                        if (isEditing &&
+                            previousRoute ==
+                                NavigatorName.dsmes_confirm_information) {
+                          BotToast.closeAllLoading();
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pop();
+                          return;
+                        }
+
+                        // For examination flow, check location:
+                        // - at home: go back to activity tab (root navigator)
+                        // - at clinic: go back to provider page (normal pop)
+                        if (_cubit.isExamination) {
+                          BotToast.closeAllLoading();
+                          if (_cubit.examinationLocation == Const.EXAMINATION_LOCATION_HOME) {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          } else {
+                            // At clinic: pop normally to go back to provider page
+                            DsmesNavigationMixin.getNavigationKey()
                                 .currentState
-                                ?.context);
+                                ?.pop();
+                          }
+                        } else {
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pop(DsmesNavigationMixin.getNavigationKey()
+                                  .currentState
+                                  ?.context);
+                        }
                       },
                     ),
                   ),
@@ -235,15 +281,23 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   color: R.color.white,
                   boxShadow: [Utils.getBoxShadowDropButton()],
                 ),
-                child: widget.bookingType == Const.BOOKING_TYPE_CENTER
-                    ? _buildBookingDsmesActionButtons()
-                    : _buildBookingClinicActionButtons(),
+                child: _handleActionButton(),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  _handleActionButton() {
+    if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
+      return _buildBookingDsmesActionButtons();
+    } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
+      return _buildBookingClinicActionButtons();
+    } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
+      return _buildBookingDoctorActionButtons();
+    }
   }
 
   List<ServiceAvailable> getFilteredServiceTypes() {
@@ -266,11 +320,48 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     final route = ModalRoute.of(context)?.settings;
     final args = route?.arguments as Map<String, dynamic>?;
     final isEditing = args?['isEditing'] ?? false;
+    final isExamination = _cubit.isExamination;
 
     if (widget.action == 'reschedule' || isEditing) {
       return _buildButton(R.string.tiep_tuc.tr(), () {
         _handleClinicContinueButton();
       }, isDisabled: !isAllowReschedule);
+    }
+
+    // Examination flow: single button that behaves like telemedicine booking
+    if (isExamination) {
+      return Container(
+        color: R.color.white,
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: GestureDetector(
+          onTap: () {
+            _handleBookingClinicTelemedicine();
+          },
+          child: Container(
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  R.color.greenGradientTop02,
+                  R.color.greenGradientBottom
+                ],
+              ),
+              borderRadius: BorderRadius.circular(200),
+            ),
+            child: Text(
+              R.string.submit_booking.tr(),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: R.color.white,
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     if (listServiceTypes.length == 2) {
@@ -400,8 +491,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     }
 
     // When selected booking schedule is before active dates
-    if (DateTime.parse(selectedBookingSchedule!.startTime)
-        .isBefore(activeDates.first)) {
+    if (activeDates.isNotEmpty &&
+        DateTime.parse(selectedBookingSchedule!.startTime)
+            .isBefore(activeDates.first)) {
       Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
       return;
     }
@@ -436,8 +528,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     }
 
     // When selected booking schedule is before active dates
-    if (DateTime.parse(selectedBookingSchedule!.startTime)
-        .isBefore(activeDates.first)) {
+    if (activeDates.isNotEmpty &&
+        DateTime.parse(selectedBookingSchedule!.startTime)
+            .isBefore(activeDates.first)) {
       Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
       return;
     }
@@ -447,6 +540,19 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
       _cubit.updateCreateDsmesBookingRequestTime(
           startTime: selectedBookingSchedule!.startTime,
           endTime: selectedBookingSchedule!.endTime);
+
+      // Check if we're in edit mode (coming from confirm page)
+      final route = ModalRoute.of(context)?.settings;
+      final args = route?.arguments as Map<String, dynamic>?;
+      final isEditing = args?['isEditing'] ?? false;
+      final previousRoute = args?['previousRoute'] as String?;
+
+      // If editing from confirm page, pop back to confirm
+      if (isEditing &&
+          previousRoute == NavigatorName.dsmes_confirm_information) {
+        DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+        return;
+      }
 
       // Normal flow
       DsmesNavigationMixin.getNavigationKey()
@@ -469,8 +575,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     }
 
     // When selected booking schedule is before active dates
-    if (DateTime.parse(selectedBookingSchedule!.startTime)
-        .isBefore(activeDates.first)) {
+    if (activeDates.isNotEmpty &&
+        DateTime.parse(selectedBookingSchedule!.startTime)
+            .isBefore(activeDates.first)) {
       Message.showToastMessage(context, R.string.vui_long_chon_gio_kham.tr());
       return;
     }
@@ -563,8 +670,9 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             }
 
             // When selected booking schedule is before active dates
-            if (DateTime.parse(selectedBookingSchedule!.startTime)
-                .isBefore(activeDates.first)) {
+            if (activeDates.isNotEmpty &&
+                DateTime.parse(selectedBookingSchedule!.startTime)
+                    .isBefore(activeDates.first)) {
               Message.showToastMessage(
                   context, R.string.vui_long_chon_gio_kham.tr());
               return;
@@ -664,6 +772,93 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                       'isMergedSchedule': widget.isMergedSchedule,
                     });
               }
+            } finally {
+              setState(() => _isProcessing = false);
+            }
+          }, isDisabled: !isAllowReschedule),
+        ),
+      ],
+    );
+  }
+
+  _buildBookingDoctorActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildButton(R.string.tiep_tuc.tr(), () async {
+            if (_isProcessing) return;
+
+            if (selectedBookingSchedule == null) {
+              Message.showToastMessage(
+                  context, R.string.vui_long_chon_gio_kham.tr());
+              return;
+            }
+
+            // When selected booking schedule is before active dates
+            if (activeDates.isNotEmpty &&
+                DateTime.parse(selectedBookingSchedule!.startTime)
+                    .isBefore(activeDates.first)) {
+              Message.showToastMessage(
+                  context, R.string.vui_long_chon_gio_kham.tr());
+              return;
+            }
+
+            // Prevent user from reschedule the same time
+            if (widget.action == 'reschedule') {
+              final selectedDateTime =
+                  DateTime.parse(selectedBookingSchedule!.startTime);
+              final existingDateTime =
+                  DateTime.parse(_cubit.createDsmesBookingRequest!.startTime);
+
+              if (selectedDateTime.isSameDayWith(existingDateTime) &&
+                  selectedDateTime.hour == existingDateTime.hour &&
+                  selectedDateTime.minute == existingDateTime.minute) {
+                Message.showToastMessage(
+                    context, R.string.exist_appointment.tr());
+                return;
+              }
+            }
+
+            setState(() => _isProcessing = true);
+
+            try {
+              _cubit.updateCreateDsmesBookingRequestTime(
+                  startTime: selectedBookingSchedule!.startTime,
+                  endTime: selectedBookingSchedule!.endTime);
+
+              final route = ModalRoute.of(context)?.settings;
+              final args = route?.arguments as Map<String, dynamic>?;
+              final isEditing = args?['isEditing'] ?? false;
+
+              if (isEditing) {
+                // First pop the current select_date page
+                DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+                DsmesNavigationMixin.getNavigationKey().currentState?.popUntil(
+                    (route) =>
+                        route.settings.name ==
+                        NavigatorName.dsmes_booking_select_date);
+
+                DsmesNavigationMixin.getNavigationKey()
+                    .currentState
+                    ?.pushReplacementNamed(
+                        NavigatorName.dsmes_booking_select_date,
+                        arguments: {
+                      'serviceType': widget.serviceType,
+                      'action': widget.action,
+                      'bookingType': widget.bookingType,
+                    });
+              }
+
+              // Normal flow
+              DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+                  NavigatorName.dsmes_confirm_information,
+                  arguments: {
+                    'serviceType': widget.serviceType,
+                    'action': widget.action,
+                    'appointmentId': widget.appointmentId,
+                    'isMergedSchedule': widget.isMergedSchedule,
+                    'bookingType': widget.bookingType,
+                  });
             } finally {
               setState(() => _isProcessing = false);
             }
@@ -773,10 +968,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   selectedDate = datetime;
                   availableBookingSchedule =
                       _filterAvailableSchedules(fullSchedule, datetime);
-                  isMorningSelected =
-                      DateTime.parse(availableBookingSchedule.first.startTime)
+                  isMorningSelected = availableBookingSchedule.isNotEmpty
+                      ? DateTime.parse(availableBookingSchedule.first.startTime)
                               .hour <
-                          12;
+                          12
+                      : true;
                 });
               }
             },

@@ -20,13 +20,14 @@ class LoginClient extends FetchClient {
       Console.log('response', response.data);
       if (response.statusCode == 200) {
         final loginModel = LoginModel.fromJson(response.data);
+        log('Token: ${loginModel.access_token}');
         await AppSettings.saveToken(loginModel.access_token);
         await AppSettings.saveRefreshToken(loginModel.refresh_token);
-        
+
         // Log bearer token after successful login
         log('Bearer ${loginModel.access_token}');
         Console.log('Bearer Token', loginModel.access_token);
-        
+
         return loginModel;
       } else {
         final error = Error.fromJson1(response);

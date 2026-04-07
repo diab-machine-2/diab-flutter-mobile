@@ -218,8 +218,8 @@ class Const {
   static const int MAX_DAY_RANGE_DSMES_BOOKING = 30;
   static const String CLICKED_BRANCH_LINK = 'clicked_branch_link';
   static const String ORGANIZATION_API_KEY = 'organization_api_key';
-  static const String ORGANIZATION_API_KEY_VALUE =
-      'diab-heath-center-9a3cefac-136caaef';
+  static const String ORGANIZATION_API_KEY_VALUE_PRODUCT = 'diab-yb-5c3bae30-712c4ffc';
+  static const String ORGANIZATION_API_KEY_VALUE_DEV = 'diab-heath-center-9a3cefac-136caaef';
   static const int DSMES_BOOKING_TIME_WINDOW_RANGE = 30; // In minutes
   static const String CLINIC_TYPE_CLINIC = 'clinic';
   static const String CLINIC_TYPE_HOSPITAL = 'hospital';
@@ -231,14 +231,19 @@ class Const {
     // CLINIC_TYPE_LAB,
     CLINIC_TYPE_PUBLIC_HOSPITAL
   ];
-  static const String CLINIC_TIMEFRAME_WEEKEND = 'weekend';
-  static const String CLINIC_TIMEFRAME_WEEKDAY = 'weekday';
-  static const String CLINIC_TIMEFRAME_AFTER_HOURS = 'after_hours';
+  static const String CLINIC_TIMEFRAME_WEEKEND = 'cuoituan';
+  static const String CLINIC_TIMEFRAME_WEEKDAY = 'trongtuan';
+  static const String CLINIC_TIMEFRAME_AFTER_HOURS = 'ngoaigio';
   static const List<String> CLINIC_TIMEFRAMES = [
     CLINIC_TIMEFRAME_WEEKEND,
     CLINIC_TIMEFRAME_WEEKDAY,
     CLINIC_TIMEFRAME_AFTER_HOURS,
   ];
+
+  // Examination flow: location and default clinic for "examination at home"
+  static const String EXAMINATION_LOCATION_HOME = 'home';
+  static const String EXAMINATION_LOCATION_CLINIC = 'clinic';
+  static const int EXAMINATION_DEFAULT_CLINIC_ID = 816;
 
   static const String BOOKING_TYPE_CENTER = 'center';
   static const String BOOKING_TYPE_CLINIC = 'clinic';
@@ -257,5 +262,6 @@ class Const {
 
   static const hasInputedWaist = "has_inputed_waist";
   static const hasWeightRecord = "has_weight_record";
+  static const shouldTutorial = "shouldTutorial";
   static const hasNewWeightRecordInFirst = "has_new_weight_record_in_first";
 }

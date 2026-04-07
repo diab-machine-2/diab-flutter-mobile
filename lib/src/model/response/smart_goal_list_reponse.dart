@@ -163,6 +163,8 @@ class SmartGoalList {
   ExerciseMovementTarget? exerciseMovement;
   SurveyTarget? survey;
   CalendarTarget? calendar;
+  int? weekInTranServicePackage;
+  LessonSectionListResponseData? lesson;
 
   SmartGoalList({
     this.id,
@@ -180,6 +182,8 @@ class SmartGoalList {
     this.data,
     this.targetScheduler,
     this.calendar,
+    this.weekInTranServicePackage,
+    this.lesson,
   });
 
   double get progress {
@@ -238,6 +242,12 @@ class SmartGoalList {
     calendar = (json['calendar'] != null)
         ? CalendarTarget.fromJson(json['calendar'])
         : null;
+    weekInTranServicePackage = (json['weekInTranServicePackage'] == null)
+        ? 0
+        : json['weekInTranServicePackage']?.toInt();
+    lesson = (json['lesson'] != null)
+        ? LessonSectionListResponseData.fromJson(json['lesson'])
+        : null;
   }
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
@@ -259,6 +269,10 @@ class SmartGoalList {
     }
     if (calendar != null) {
       data['calendar'] = calendar!.toJson();
+    }
+    data['weekInTranServicePackage'] = weekInTranServicePackage ?? 0;
+    if (lesson != null) {
+      data['lesson'] = lesson!.toJson();
     }
     return data;
   }
@@ -324,10 +338,14 @@ class SmartGoalListReponseData {
 
   List<SmartGoalList?>? daily;
   List<SmartGoalList?>? weekly;
+  List<SmartGoalList?>? activitiesNotCompleteInWeekly;
+  List<SmartGoalList?>? lessonsWeekly;
 
   SmartGoalListReponseData({
     this.daily,
     this.weekly,
+    this.activitiesNotCompleteInWeekly,
+    this.lessonsWeekly,
   });
   SmartGoalListReponseData.fromJson(Map<String, dynamic> json) {
     if (json['daily'] != null) {
@@ -345,6 +363,22 @@ class SmartGoalListReponseData {
         arr0.add(SmartGoalList.fromJson(v));
       });
       weekly = arr0;
+    }
+    if (json['activitiesNotCompleteInWeekly'] != null) {
+      final v = json['activitiesNotCompleteInWeekly'];
+      final arr0 = <SmartGoalList>[];
+      v.forEach((v) {
+        arr0.add(SmartGoalList.fromJson(v));
+      });
+      activitiesNotCompleteInWeekly = arr0;
+    }
+    if (json['lessonsWeekly'] != null) {
+      final v = json['lessonsWeekly'];
+      final arr0 = <SmartGoalList>[];
+      v.forEach((v) {
+        arr0.add(SmartGoalList.fromJson(v));
+      });
+      lessonsWeekly = arr0;
     }
   }
   Map<String, dynamic> toJson() {
@@ -364,6 +398,22 @@ class SmartGoalListReponseData {
         arr0.add(v!.toJson());
       });
       data['weekly'] = arr0;
+    }
+    if (activitiesNotCompleteInWeekly != null) {
+      final v = activitiesNotCompleteInWeekly;
+      final arr0 = [];
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
+      data['activitiesNotCompleteInWeekly'] = arr0;
+    }
+    if (lessonsWeekly != null) {
+      final v = lessonsWeekly;
+      final arr0 = [];
+      v!.forEach((v) {
+        arr0.add(v!.toJson());
+      });
+      data['lessonsWeekly'] = arr0;
     }
     return data;
   }
@@ -473,6 +523,14 @@ class SmartGoalListReponse {
   bool get isDailyGoalCompleted {
     if (data?.daily?.isNotEmpty != true) return false;
     for (final SmartGoalList? data in data?.daily ?? []) {
+      if (data?.progress != 1) return false;
+    }
+    return true;
+  }
+
+  bool get isActivitiesNotCompleteInWeekCompleted {
+    if (data?.activitiesNotCompleteInWeekly?.isEmpty == true) return true;
+    for (final SmartGoalList? data in data?.activitiesNotCompleteInWeekly ?? []) {
       if (data?.progress != 1) return false;
     }
     return true;

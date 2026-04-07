@@ -1,0 +1,657 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../res/R.dart';
+import '../../bloc/medicine/medicine_bloc.dart';
+import '../../modal/medicine/prescription_model.dart';
+import '../../modal/medicine/reminder_model.dart';
+import '../../utils/navigator_name.dart';
+import '../../modal/medicine/medicine_add_model.dart';
+
+class PrescriptionRemindPage extends StatefulWidget {
+  PrescriptionRemindPage({super.key, required this.prescription, required this.paths});
+
+  final PrescriptionModel prescription;
+  final Map<String, String>? paths;
+
+  @override
+  State<PrescriptionRemindPage> createState() => _PrescriptionRemindPageState();
+}
+
+class _PrescriptionRemindPageState extends State<PrescriptionRemindPage> {
+  List<DayTimeSchedule> _schedules = [];
+  bool isNotification = true;
+  int remindDays = 5;
+
+  @override
+  void initState() {
+    initDayTimeSchedule();
+    super.initState();
+  }
+
+  void initDayTimeSchedule() {
+    final reminderTimes = widget.prescription.reminderTimes;
+
+    if (reminderTimes != null && reminderTimes.isNotEmpty) {
+      // Map existing reminderTimes into DayTimeSchedule list.
+      for (final reminder in reminderTimes) {
+        // type: 1->4: sáng, trưa, chiều, tối
+        final dayTime = DayTime.values[(reminder.type - 1).clamp(0, DayTime.values.length - 1)];
+
+        final parts = reminder.timeSchedule.split(':');
+        int hour = 0;
+        int minute = 0;
+        if (parts.length >= 2) {
+          hour = int.tryParse(parts[0]) ?? 0;
+          minute = int.tryParse(parts[1]) ?? 0;
+        }
+
+        _schedules.add(
+          DayTimeSchedule(
+            dayTime: dayTime,
+            time: TimeOfDay(hour: hour, minute: minute),
+          ),
+        );
+      }
+    } else {
+      // Fallback to default times based on patientMedications dosage.
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.morning ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.morning, time: TimeOfDay(hour: 9, minute: 0)));
+      }
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.midDay ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.noon, time: TimeOfDay(hour: 12, minute: 0)));
+      }
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.afternoon ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.afternoon, time: TimeOfDay(hour: 14, minute: 0)));
+      }
+      if (widget.prescription.patientMedications!
+          .any((medication) => (medication.night ?? 0.0) != 0.0)) {
+        _schedules.add(DayTimeSchedule(
+            dayTime: DayTime.night, time: TimeOfDay(hour: 20, minute: 0)));
+      }
+    }
+
+    // Ensure schedules are always ordered: morning -> noon -> afternoon -> night.
+    final order = <DayTime, int>{
+      DayTime.morning: 0,
+      DayTime.noon: 1,
+      DayTime.afternoon: 2,
+      DayTime.night: 3,
+    };
+    _schedules.sort(
+      (a, b) => (order[a.dayTime] ?? 0).compareTo(order[b.dayTime] ?? 0),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => MedicineBloc(),
+      child: BlocConsumer<MedicineBloc, MedicineState>(
+        listener: (context, state) {
+          if (state is UpdatePrescriptionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Cập nhật thành công!')),
+            );
+            Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+              NavigatorName.tabbar,
+              (route) => false,
+            );
+            Navigator.pushNamed(context, NavigatorName.prescription);
+          }
+
+          if (state is CreatePrescriptionSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Tạo đơn thuốc thành công!')),
+            );
+            Navigator.pushReplacementNamed(context, NavigatorName.prescription);
+          }
+
+          if (state is MedicineError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Cập nhật thất bại, vui lòng thử lại')),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: R.color.backgroundColorNew,
+            appBar: AppBar(
+              leading: IconButton(
+                splashColor: R.color.transparent,
+                highlightColor: R.color.transparent,
+                icon: Icon(Icons.arrow_back, color: R.color.white),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              title: Transform(
+                transform: Matrix4.translationValues(-20, 0.0, 0.0),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    R.string.set_time.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                Center(
+                  child: InkWell(
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(NavigatorName.medicine_tutorial),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(
+                        R.string.tutorial.tr(),
+                        style: TextStyle(
+                          color: R.color.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              backgroundColor: R.color.transparent,
+              elevation: 0.0,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      R.color.greenGradientMid,
+                      R.color.greenGradientBottom
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            body: Stack(
+              children: [
+                _buildBody(),
+                if (state is MedicineLoading)
+                  Container(
+                    color: Colors.black45,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildReminderList(),
+                Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  child: Divider(color: Colors.grey, height: 1),
+                ),
+                _buildRemindGetMoreMedicine(),
+                Container(
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  child: Divider(color: Colors.grey, height: 1),
+                ),
+                _buildEnableNotification(),
+              ],
+            ),
+          ),
+        ),
+        _buildConfirmButton(),
+      ],
+    );
+  }
+
+  Widget _buildReminderList() {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+      child: DayTimeList(
+        schedules: _schedules,
+        onPickTime: (schedule, index) async {
+          final picked = await showCustomTimePicker(
+            context: context,
+            initialTime: schedule.time,
+          );
+          if (picked != null) {
+            _schedules[index] = schedule.copyWith(time: picked);
+            setState(() {});
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildRemindGetMoreMedicine() {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                R.string.reminder_get_more_medicine.tr(),
+                style: TextStyle(color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              _buildDaysSelector(),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            R.string.reminder_get_more_medicine_description.tr(),
+            style: TextStyle(color: R.color.color0xff5E6566, fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDaysSelector() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: () {
+            if (remindDays > 1) {
+              remindDays--;
+            }
+            setState(() {});
+          },
+          child: Container(
+            width: 34,
+            height: 32,
+            decoration: BoxDecoration(
+              color: Color(0xFFF4F7F7),
+              borderRadius: BorderRadius.horizontal(left: Radius.circular(4), right: Radius.zero),
+            ),
+            alignment: Alignment.center,
+            child: SvgPicture.asset(
+              width: 10,
+              height: 2,
+              R.icons.ic_minus,
+            ),
+          ),
+        ),
+        Container(
+            width: 80,
+            height: 36,
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  remindDays.toString(),
+                  style: TextStyle(color: R.color.color0xff008479, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'ngày',
+                  style: TextStyle(color: R.color.color0xff5E6566, fontSize: 15, fontWeight: FontWeight.w400),
+                ),
+              ],
+            )),
+        GestureDetector(
+          onTap: () {
+            remindDays++;
+            setState(() {});
+          },
+          child: Container(
+            width: 34,
+            height: 32,
+            decoration: BoxDecoration(
+              color: Color(0xFFF4F7F7),
+              borderRadius: BorderRadius.horizontal(left: Radius.zero, right: Radius.circular(4)),
+            ),
+            alignment: Alignment.center,
+            child: SvgPicture.asset(
+              R.icons.ic_plus,
+              width: 14,
+              height: 14,
+            ),
+          ),
+        ),
+        SizedBox(width: 12.0),
+      ],
+    );
+  }
+
+  Widget _buildEnableNotification() {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                R.string.enable_medicine_notification.tr(),
+                style: TextStyle(color: R.color.color0xff111515, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Switch(
+                value: isNotification,
+                onChanged: (value) {
+                  setState(() {
+                    isNotification = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            R.string.enable_medicine_notification_description.tr(),
+            style: TextStyle(color: R.color.color0xff5E6566, fontSize: 12, fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return "$hour:$minute";
+  }
+
+  Widget _buildConfirmButton() {
+    return BlocBuilder<MedicineBloc, MedicineState>(builder: (context, state) {
+      return Container(
+        color: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        child: GestureDetector(
+          onTap: () {
+            final reminderTimes = _schedules
+                .map((e) => ReminderModel(
+                      type: e.dayTime.index + 1,
+                      timeSchedule: formatTimeOfDay(e.time),
+                    ))
+                .toList();
+
+            // Giữ nguyên ngày bắt đầu đơn thuốc, nhưng chuẩn hoá chỉ theo ngày
+            final DateTime? startDate = widget.prescription.startDate;
+            final DateTime? normalizedStartDate = startDate == null
+                ? null
+                : DateTime.utc(startDate.year, startDate.month, startDate.day);
+
+            final PrescriptionModel prescription = widget.prescription.copyWith(
+              remainDays: remindDays,
+              isNotify: isNotification,
+              reminderTimes: reminderTimes,
+              startDate: normalizedStartDate,
+            );
+
+            if ((prescription.id ?? '').isEmpty) {
+              context.read<MedicineBloc>().add(CreateNewPrescriptionEvent(prescription, widget.paths));
+            } else {
+              context.read<MedicineBloc>().add(UpdatePrescriptionEvent(prescription, widget.paths));
+            }
+            // Navigator.pushNamed(context, NavigatorName.prescription);
+          },
+          child: Container(
+            height: 48,
+            decoration: BoxDecoration(
+              color: R.color.mainColor,
+              borderRadius: BorderRadius.circular(200),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.centerRight,
+                colors: [R.color.greenGradientTop, R.color.greenGradientBottom],
+              ),
+            ),
+            child: Center(
+              child: Text(
+                R.string.confirm.tr(),
+                style: TextStyle(color: R.color.white, fontWeight: FontWeight.w600, fontSize: 16),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  Future<TimeOfDay?> showCustomTimePicker({required BuildContext context, required TimeOfDay initialTime}) {
+    int selectedHour = initialTime.hour;
+    int selectedMinute = initialTime.minute;
+
+    return showModalBottomSheet<TimeOfDay>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return SizedBox(
+          height: 300,
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // quan trọng
+            children: [
+              const SizedBox(height: 16),
+              Text(
+                R.string.select_hour.tr(),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Picker giờ
+                    Flexible(
+                      flex: 1,
+                      child: CupertinoPicker(
+                        itemExtent: 40,
+                        scrollController: FixedExtentScrollController(initialItem: selectedHour),
+                        onSelectedItemChanged: (value) {
+                          selectedHour = value;
+                        },
+                        children: List.generate(24, (i) => Center(child: Text(i.toString().padLeft(2, '0')))),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    // Picker phút
+                    Flexible(
+                      flex: 1,
+                      child: CupertinoPicker(
+                        itemExtent: 40,
+                        scrollController: FixedExtentScrollController(initialItem: selectedMinute),
+                        onSelectedItemChanged: (value) {
+                          selectedMinute = value;
+                        },
+                        children: List.generate(60, (i) => Center(child: Text(i.toString().padLeft(2, '0')))),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(left: 10),
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF00A78E)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24), // 👈 bo tròn mạnh
+                          ),
+                        ),
+                        child: Text(
+                          R.string.cancel.tr(),
+                          style: const TextStyle(
+                            color: Color(0xFF00A78E),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(right: 10),
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(
+                            context,
+                            TimeOfDay(hour: selectedHour, minute: selectedMinute),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00A78E),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24), // 👈 pill
+                          ),
+                        ),
+                        child: const Text(
+                          "Đồng ý",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class DayTimeHelper {
+  static String getLabel(DayTime dayTime) {
+    switch (dayTime) {
+      case DayTime.morning:
+        return R.string.the_morning.tr();
+      case DayTime.noon:
+        return R.string.the_noon.tr();
+      case DayTime.afternoon:
+        return R.string.the_afternoon.tr();
+      case DayTime.night:
+        return R.string.the_night.tr();
+    }
+  }
+
+  static Widget getIcon(DayTime dayTime) {
+    switch (dayTime) {
+      case DayTime.morning:
+        return SvgPicture.asset(
+          R.icons.ic_morning,
+          width: 24,
+        );
+      case DayTime.noon:
+        return SvgPicture.asset(
+          R.icons.ic_noon,
+          width: 24,
+        );
+      case DayTime.afternoon:
+        return SvgPicture.asset(
+          R.icons.ic_afternoon,
+          width: 24,
+        );
+      case DayTime.night:
+        return SvgPicture.asset(
+          R.icons.ic_night,
+          width: 24,
+        );
+    }
+  }
+}
+
+class DayTimeList extends StatelessWidget {
+  final List<DayTimeSchedule> schedules;
+  final void Function(DayTimeSchedule schedule, int index) onPickTime;
+
+  const DayTimeList({
+    super.key,
+    required this.schedules,
+    required this.onPickTime,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: schedules.length,
+      itemBuilder: (context, index) {
+        final schedule = schedules[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  DayTimeHelper.getIcon(schedule.dayTime),
+                  SizedBox(width: 8),
+                  Text(
+                    DayTimeHelper.getLabel(schedule.dayTime),
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  shape: StadiumBorder(),
+                  side: BorderSide(color: Colors.teal),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                ),
+                onPressed: () => onPickTime(schedule, index),
+                icon: Icon(Icons.access_time, size: 16, color: Colors.teal),
+                label: Text(
+                  schedule.time.format(context),
+                  style: TextStyle(color: Colors.teal),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
