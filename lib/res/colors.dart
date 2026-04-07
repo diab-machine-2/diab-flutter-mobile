@@ -152,8 +152,8 @@ class AppColors {
   static const infographic_color = Color(0xff23C559);
   static const color0xffB4802D = Color(0xffB4802D);
   static const color0xff5E6566 = Color(0xff5E6566);
-static const color0xffDCFFFC = Color(0xffDCFFFC);
-static const color0xff830000 = Color(0xff830000);
+  static const color0xffDCFFFC = Color(0xffDCFFFC);
+  static const color0xff830000 = Color(0xff830000);
   static const color0xffDADEDF = Color(0xffDADEDF);
   static const cardShadowColor = Color(0x14042B28);
 
@@ -168,4 +168,8 @@ static const color0xff830000 = Color(0xff830000);
   static const bmiOverThreshold1Color = Color(0xFFF86F6F);
   static const bmiOverThreshold2Color = Color(0xFFD02424);
   static const bmiOverThreshold3Color = Color(0xFFAF0000);
+  static const color0xffF2F6F9 = Color(0xffF2F6F9F);
+  static const gray_btn = Color(0xffE4E4E7);
+  static const examination_color = Color(0xffF86F6F);
+  static const color0xffEAEDEE = Color(0xffEAEDEE);
 }

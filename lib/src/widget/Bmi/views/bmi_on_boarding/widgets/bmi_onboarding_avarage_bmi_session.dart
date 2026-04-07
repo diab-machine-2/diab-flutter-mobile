@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -8,6 +9,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/widgets/bmi_threshold_bar_chart.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BmiOnboardingAvarageBmiSession extends StatelessWidget {
   const BmiOnboardingAvarageBmiSession({
@@ -110,7 +112,31 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                           )
                         ]))
                   ],
-                )
+                ),
+                const SizedBox(height: 12),
+                RichText(
+                  textAlign: TextAlign.left,
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 12,
+                      height: 1.5,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: R.font.sfpro,
+                      color: const Color(0xFFBFC6C6),
+                      letterSpacing: 0.2,
+                    ),
+                    children: [
+                      TextSpan(text: '${R.string.reference_source.tr()}: '),
+                      TextSpan(
+                        text:
+                            'https://www.diabetes.ca/resources/tools-resources/body-mass-index-(bmi)-calculator',
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => launchUrl(Uri.parse(
+                              'https://www.diabetes.ca/resources/tools-resources/body-mass-index-(bmi)-calculator')),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           );

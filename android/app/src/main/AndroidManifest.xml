@@ -7,6 +7,11 @@
         <intent>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
         </intent>
+        <!-- For opening calendar insert intent (add_2_calendar_new) -->
+        <intent>
+            <action android:name="android.intent.action.INSERT" />
+            <data android:mimeType="vnd.android.cursor.item/event" />
+        </intent>
     </queries>
 
     <!-- Permissions for new android API (Health Connect) -->
@@ -25,6 +30,10 @@
     <uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED"/>
 
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+
+    <!-- Calendar permissions for adding events without launching calendar app (add_2_calendar_new) -->
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -83,13 +92,57 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
+            <!-- Deep Links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" android:host="diab.com.vn" />
+            </intent-filter>
+
+            <!-- Branch URI Scheme -->
+            <intent-filter>
+                <!-- REPLACE `android:scheme` with your Android URI scheme if needed -->
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="branchdiab" />
+            </intent-filter>
+
+            <!-- App Links -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="diab.com.vn" />
+                <data android:scheme="https" android:host="meet.diab.com.vn" />
+            </intent-filter>
+
+            <!-- Branch App Links - Live App -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="app.diab.com.vn" />
+                <data android:scheme="https" android:host="diabvn.app.link" />
+                <data android:scheme="https" android:host="diabvn-alternate.app.link" />
+            </intent-filter>
+
             <!-- Intention to show Permissions screen for Health Connect API -->
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
 
-            <!-- Deep Links, Branch, App Links, VNPay etc. (kept as you had) -->
-            <!-- ... (all your existing intent-filter sections unchanged) ... -->
+            <!-- VNPay deep link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="diabvnpay"
+                    android:host="sdk" />
+            </intent-filter>
 
         </activity>
 

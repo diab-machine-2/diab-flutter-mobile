@@ -82,3 +82,47 @@ class LearningPostListResponse {
     return map;
   }
 }
+
+class WebinarDetailResponse {
+  LearningPostModel? data;
+
+  WebinarDetailResponse({
+    this.data,
+  });
+
+  WebinarDetailResponse.fromJson(Map<String, dynamic> json) {
+    data = LearningPostModel.fromJson(json);
+  }
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (data != null) {
+      map.addAll(data!.toJson());
+    }
+    return map;
+  }
+}
+
+class WebinarListResponse {
+  List<WebinarDetailResponse>? data;
+
+  WebinarListResponse({
+    this.data,
+  });
+
+  WebinarListResponse.fromJson(List<dynamic> json) {
+    if (json != null) {
+      data = json
+          .map((v) => WebinarDetailResponse.fromJson(v as Map<String, dynamic>))
+          .toList();
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (data != null) {
+      map['data'] = data!.map((v) => v.toJson()).toList();
+    }
+    return map;
+  }
+}

@@ -441,6 +441,14 @@ class Utils {
     }
   }
 
+  static String getOrganizationApiKey() {
+    if (AppSettings.environment == "product") {
+      return Const.ORGANIZATION_API_KEY_VALUE_PRODUCT;
+    } else {
+      return Const.ORGANIZATION_API_KEY_VALUE_DEV;
+    }
+  }
+
   static String getDocosanDomain() {
     if (AppSettings.environment == "product") {
       return Const.HOST_DOCOSAN_DOMAIN;
@@ -549,17 +557,19 @@ class Utils {
       case ScheduleType.book_1_1:
       case ScheduleType.io_evaluate:
       case ScheduleType.output_assessment:
+        return R.string.event.tr();
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
+        return R.string.interview.tr();
       case ScheduleType.booking_solo:
-      case ScheduleType.book_1_n:
-        return R.string.event.tr();
+        return R.string.booking.tr();
       case ScheduleType.survey:
       case ScheduleType.update_profile:
         return R.string.survey.tr();
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
-        return R.string.knowledge.tr();
+      case ScheduleType.book_1_n:
+        return R.string.lesson.tr();
       case ScheduleType.custom:
         return R.string.target.tr();
       case ScheduleType.emotion:
@@ -574,6 +584,10 @@ class Utils {
         return R.string.can_nang.tr();
       case ScheduleType.infographic:
         return R.string.infographic.tr();
+      case ScheduleType.quiz:
+        return R.string.quiz.tr();
+      case ScheduleType.examination:
+        return R.string.examination.tr();
       default:
         return "";
     }
@@ -600,15 +614,18 @@ class Utils {
       case ScheduleType.book_1_1:
       case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
-      case ScheduleType.book_1_n:
+        return R.color.event_color;
       case ScheduleType.booking_solo:
+        return R.color.greenGradientTop02;
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
-        return R.color.event_color;
+        return R.color.interview_color;
       case ScheduleType.survey:
+      case ScheduleType.quiz:
         return R.color.survey_color;
       case ScheduleType.lesson:
       case ScheduleType.lesson_recommend:
+      case ScheduleType.book_1_n:
         return R.color.lesson_color;
       case ScheduleType.update_profile:
         return R.color.survey_color;
@@ -628,6 +645,8 @@ class Utils {
         return R.color.weight_color;
       case ScheduleType.infographic:
         return R.color.infographic_color;
+      case ScheduleType.examination:
+        return R.color.examination_color;
       default:
         return R.color.black;
     }
@@ -659,6 +678,36 @@ class Utils {
       return '+84$phoneNumber';
     }
     return phoneNumber;
+  }
+
+  static String getLanguageName(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.string.vietnamese.tr(),
+      'en': R.string.english.tr(),
+      'fr': R.string.french.tr(),
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
+
+  static String getLanguageFlag(String code) {
+    Map<String, String> languageMap = {
+      'vi': R.icons.ic_flag_vn,
+      'en': R.icons.ic_flag_en,
+      'fr': R.icons.ic_flag_fr,
+      // Add more languages as needed
+    };
+
+    return languageMap[code] ?? code;
+  }
+
+    static bool get isSandboxVnPay {
+    if (AppSettings.environment == "product") {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /// Converts an image file (HEIC/HEIF/LIVE) to JPEG format.

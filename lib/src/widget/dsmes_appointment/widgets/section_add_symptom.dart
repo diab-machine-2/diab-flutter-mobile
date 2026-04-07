@@ -67,6 +67,22 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
 
   bool get _isAddable => _files.length < widget.maxMedia;
 
+  bool _isFileObject(dynamic file) {
+    if (file == null) return false;
+    // Check if it's XFile or PickedFile by checking for path property
+    // Using runtimeType for more reliable type checking with dynamic
+    final runtimeType = file.runtimeType.toString();
+    if (runtimeType == 'XFile' || runtimeType == 'PickedFile') {
+      return true;
+    }
+    // Fallback: check if it has a path property (for file objects)
+    try {
+      return file.path != null && file.path is String;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,7 +99,7 @@ class SectionAddSymptomState extends State<SectionAddSymptom> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                R.string.notice_symptom.tr(),
+                R.string.ghi_chu.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,

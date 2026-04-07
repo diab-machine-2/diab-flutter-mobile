@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -142,14 +143,18 @@ class _NotificationDetailControllerState
 
   Future<void> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
+      // Show immediate feedback while Branch resolves/parses deeplink.
+      final cancelLoading = BotToast.showLoading();
+      Future.delayed(const Duration(milliseconds: 500), cancelLoading);
+
       FlutterBranchSdk.handleDeepLink(url);
 
-      await launch(
-        url,
-        forceSafariVC: false,
-        forceWebView: false,
-        headers: <String, String>{'my_header_key': 'my_header_value'},
-      );
+      // await launch(
+      //   url,
+      //   forceSafariVC: false,
+      //   forceWebView: false,
+      //   headers: <String, String>{'my_header_key': 'my_header_value'},
+      // );
     } else {
       throw 'Could not launch $url';
     }

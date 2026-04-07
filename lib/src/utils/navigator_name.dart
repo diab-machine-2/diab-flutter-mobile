@@ -33,7 +33,7 @@ class NavigatorName {
   static const String detail_blood_pressure = '/detail_blood_pressure';
   static const String detail_bmi = '/detail_bmi';
   static const String bmi = '/bmi';
-  
+
   static const String add_emo = '/add_emo';
   static const String add_symbo = '/add_symbo';
   static const String add_work = '/add_work';
@@ -56,6 +56,16 @@ class NavigatorName {
   static const String contact = '/contact';
   static const String motivation = '/motivation';
   static const String reminder = '/reminder';
+  static const String medicine_check = '/medicine_check';
+  static const String medicine = '/medicine';
+  static const String medicine_tutorial = '/medicine_tutorial';
+  static const String prescription_capture = '/prescription_capture';
+  static const String medicine_photo_picker = '/medicine_photo_picker';
+  static const String medicine_search = '/medicine_find';
+  static const String medicine_add = '/medicine_add';
+  static const String prescription_add = '/prescription_add';
+  static const String prescription_remind = '/prescription_remind';
+  static const String prescription = '/prescription';
   static const String add_reminder = '/add_reminder';
   static const String schedule_glucose = '/schedule_glucose';
   static const String setting_schedule_glucose = '/setting_schedule_glucose';
@@ -124,6 +134,12 @@ class NavigatorName {
   static const String clinic_providers = '/clinic_providers';
   static const String clinic_select_service = '/clinic_select_service';
   static const String clinic_payment = '/clinic_payment';
+
+  // BOOKING DOCTOR
+  static const String booking_doctor = '/booking_doctor';
+  static const String doctor_providers = '/doctor_providers';
+  static const String doctor_detail = '/doctor_detail';
+
   // SUBSCRIPTION
   static const String subscription_page = '/subscription_page';
   static const String paywall_screen = '/paywall_screen';
@@ -136,7 +152,8 @@ class NavigatorName {
   static const String blood_pressure_intro_2nd_page =
       '/blood_pressure_intro_2nd_page';
   static const String add_bloodpressure_result = '/add_bloodpressure_result';
-  static const String detail_bloodpressure_listing = '/detail_bloodpressure_listing';
+  static const String detail_bloodpressure_listing =
+      '/detail_bloodpressure_listing';
 
   // Bmi
   static const String add_bmi = '/add_bmi';
@@ -155,8 +172,15 @@ class NavigatorName {
   static const String hba1c_intro_1st_page = '/hba1c_intro_1st_page';
   static const String hba1c_intro_2nd_page = '/hba1c_intro_2nd_page';
   static const String add_hba1c_result = '/add_hba1c_result';
-  
+
+  // Webinar
+  static const String webinar_info = '/webinar_info';
+
   // Phone Update Flow
   static const String update_phone_number = '/update_phone_number';
   static const String confirm_phone_verify_otp = '/confirm_phone_verify_otp';
+
+  // Policy Pages
+  static const String cancellation_refund_policy =
+      '/cancellation_refund_policy';
 }

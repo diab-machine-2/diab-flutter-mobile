@@ -360,6 +360,7 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
                   buildAction(
                       R.string.password.tr(), R.drawable.ic_password, 5),
                   buildAction(R.string.your_voucher.tr(), R.icons.ic_gift, 8),
+                  buildAction(R.string.exchange_return_policy.tr(), R.icons.ic_policy, 10),
                   Builder(builder: (ctx) {
                     Widget child = Padding(
                       padding: const EdgeInsets.all(15),
@@ -487,6 +488,9 @@ class _ProfileControllerState extends State<ProfileController> with Observer {
           Navigator.pushNamed(context, NavigatorName.voucher_list);
         } else if (index == 9) {
           Navigator.pushNamed(context, NavigatorName.schedule_activity);
+        } else if (index == 10) {
+          Navigator.pushNamed(
+              context, NavigatorName.cancellation_refund_policy);
         }
       },
       child: Container(

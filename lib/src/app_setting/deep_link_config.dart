@@ -25,7 +25,8 @@ class DeepLinkConfig {
           !link.contains("referralCode") &&
           !link.contains("activityId") &&
           !link.contains("lessonId") &&
-          !link.contains("calendar")) {
+          !link.contains("calendar") &&
+          !link.contains('diabvnpay')) {
         onHaveLink(getShareCodeFromUrl(link));
       }
       // else if (!link.contains("click.diab.com.vn") &&
@@ -51,7 +52,8 @@ class DeepLinkConfig {
       if (ignorePatterns) return null;
       if (!initialLink.contains("click.diab.com.vn") &&
           !initialLink.contains("referralCode") &&
-          !initialLink.contains("calendar")) {
+          !initialLink.contains("calendar") &&
+          !initialLink.contains('diabvnpay')) {
         sharedCode = getShareCodeFromUrl(initialLink);
         return sharedCode;
       }
