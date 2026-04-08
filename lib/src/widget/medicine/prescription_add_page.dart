@@ -566,6 +566,20 @@ class _PrescriptionAddPageState extends State<PrescriptionAddPage> {
                 return;
               }
 
+              final bool showAmountInsteadOfRemain =
+                  _prescriptionMode == PrescriptionMode.create ||
+                      _prescriptionMode == PrescriptionMode.reuse;
+              for (final MedicineItemModel med in _medicines) {
+                if (med.isMedicineDetailsIncomplete(
+                    showAmountInsteadOfRemain: showAmountInsteadOfRemain)) {
+                  Message.showToastMessage(
+                    context,
+                    R.string.medicine_prescription_data_incomplete.tr(),
+                  );
+                  return;
+                }
+              }
+
               setState(() {
                 _isSubmitting = true;
               });

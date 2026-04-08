@@ -12,7 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../res/R.dart';
 import '../../bloc/medicine/medicine_bloc.dart';
-import '../../modal/medicine/daily_medicine_model.dart';
 import '../../modal/medicine/prescription_model.dart';
 import '../../service/medicine_service.dart';
 import '../../utils/const.dart';
@@ -23,7 +22,6 @@ import 'widgets/input_options_bottom_sheet.dart';
 import 'widgets/medicine_list.dart';
 import 'widgets/medicine_session_card.dart';
 import 'widgets/stop_prescription_dialog.dart';
-import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 
 class PrescriptionListPage extends StatefulWidget {
   const PrescriptionListPage({super.key, this.initialBottomIndex});
@@ -65,8 +63,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage>
     _tabController = TabController(length: 2, vsync: this);
     _bloc = MedicineBloc();
     if (bottomIndex == 0) {
-      _bloc.add(FetchMedicineScheduleEvent(
-          (currentDateTime.millisecondsSinceEpoch / 1000).round()));
+      _bloc.add(FetchPrescriptionsEvent());
     } else {
       _bloc.add(FetchPrescriptionsEvent());
     }
@@ -88,6 +85,12 @@ class _PrescriptionListPageState extends State<PrescriptionListPage>
           if (state is FetchPrescriptionsSuccess &&
               state.prescriptionsResult.isEmpty) {
             Navigator.of(context).pushReplacementNamed(NavigatorName.medicine);
+          }
+          if (state is FetchPrescriptionsSuccess &&
+              state.prescriptionsResult.isNotEmpty &&
+              bottomIndex == 0) {
+            _bloc.add(FetchMedicineScheduleEvent(
+                (_selectedDate.millisecondsSinceEpoch / 1000).round()));
           }
           if (state is StopPrescriptionSuccess) {
             _bloc.add(FetchPrescriptionsEvent());
@@ -245,12 +248,10 @@ class _PrescriptionListPageState extends State<PrescriptionListPage>
                 // to the "schedule_use_medicine" tab.
                 _selectedDate = DateTime(now.year, now.month, now.day, 7);
 
-                _bloc.add(FetchMedicineScheduleEvent(
-                  (now.millisecondsSinceEpoch / 1000).round(),
-                ));
                 setState(() {
                   bottomIndex = 0;
                 });
+                _bloc.add(FetchPrescriptionsEvent());
               },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,

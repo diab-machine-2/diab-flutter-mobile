@@ -21,18 +21,90 @@ class MedicineCard extends StatelessWidget {
     this.showAmountInsteadOfRemain = false,
   });
 
-  String get _displayQuantityText {
-    final double? amount = medicine.amount;
-    final double? remain = medicine.remain;
+  double get _quantityDisplayValue => medicine.displayQuantityValue(
+        showAmountInsteadOfRemain: showAmountInsteadOfRemain,
+      );
 
-    final double value = showAmountInsteadOfRemain
-        ? (amount ?? remain ?? 0)
-        : (remain ?? amount ?? 0);
+  bool get _isMedicineDetailsIncomplete => medicine.isMedicineDetailsIncomplete(
+        showAmountInsteadOfRemain: showAmountInsteadOfRemain,
+      );
+
+  String get _displayQuantityText {
+    final double value = _quantityDisplayValue;
 
     if (value == value.roundToDouble()) {
       return value.toInt().toString();
     }
     return value.toStringAsFixed(1);
+  }
+
+  Future<void> _showIncompleteMedicineDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          content: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(R.drawable.ic_dialog_failed, width: 64, height: 64),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: Text(
+                        R.string.medicine_prescription_data_incomplete.tr(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(ctx),
+                        child: Container(
+                          height: 43,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(200),
+                            color: R.color.grayBorder,
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.close.tr(),
+                              style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: R.font.sfpro,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  icon: Icon(Icons.close, color: R.color.color0xffBEC0C8),
+                  onPressed: () => Navigator.pop(ctx),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
