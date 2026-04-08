@@ -76,6 +76,11 @@ class HomeController extends StatefulWidget {
 
 class _HomeControllerState extends State<HomeController>
     with Observer, AutomaticKeepAliveClientMixin<HomeController>, RouteAware {
+  // Session-scoped guard: show medicine session bottom sheet only once
+  // for the current authenticated user session.
+  static bool _hasShownMedicineSessionBottomSheet = false;
+  static String? _medicineSheetSessionUserKey;
+
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
   final HomeBloc _homeBloc = HomeBloc();
   final String _screenName = "home";
@@ -109,6 +114,7 @@ class _HomeControllerState extends State<HomeController>
   @override
   void initState() {
     super.initState();
+    log('[HOME_DEBUG] initState called - HomeController mounted');
     Observable.instance.addObserver(this);
 
     if (user?.isShare == true) {
@@ -119,6 +125,7 @@ class _HomeControllerState extends State<HomeController>
     _initHealthApp();
     initTarget();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      log('[HOME_DEBUG] postFrame init check started - will call checkExerciseData/checkMedicineSchedule');
       await checkExerciseData();
       await checkMedicineSchedule();
     });
@@ -139,9 +146,36 @@ class _HomeControllerState extends State<HomeController>
 
   @override
   void dispose() {
+    // Reset guard on logout flow so next login can show once again.
+    if (AppSettings.userInfo == null) {
+      _hasShownMedicineSessionBottomSheet = false;
+      _medicineSheetSessionUserKey = null;
+      log('[HOME_DEBUG] reset medicine sheet session guard (user logged out)');
+    }
     Observable.instance.removeObserver(this);
     _debouncer.dispose();
     super.dispose();
+  }
+
+  String _currentMedicineSheetUserKey() {
+    final info = AppSettings.userInfo;
+    return info?.accountId ?? info?.id ?? info?.userName ?? 'anonymous';
+  }
+
+  bool _shouldSkipMedicineSessionBottomSheetForCurrentSession() {
+    final currentUserKey = _currentMedicineSheetUserKey();
+
+    if (_medicineSheetSessionUserKey != currentUserKey) {
+      _medicineSheetSessionUserKey = currentUserKey;
+      _hasShownMedicineSessionBottomSheet = false;
+      log('[HOME_DEBUG] new user session detected for medicine sheet: $currentUserKey');
+    }
+
+    if (_hasShownMedicineSessionBottomSheet) {
+      log('[HOME_DEBUG] skip medicine session bottom sheet (already shown in this session)');
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -227,6 +261,8 @@ class _HomeControllerState extends State<HomeController>
   }
 
   Future<void> checkMedicineSchedule() async {
+    log('[HOME_DEBUG] checkMedicineSchedule called');
+    if (_shouldSkipMedicineSessionBottomSheetForCurrentSession()) return;
     final medicineClient = MedicineClient();
     final currentDateTime = DateTime.now();
     final today = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
@@ -239,6 +275,8 @@ class _HomeControllerState extends State<HomeController>
 
     if (orderedSessions.isNotEmpty) {
       final List<String> ids = medicineScheduleAlert.map((e) => e.id).toList();
+      _hasShownMedicineSessionBottomSheet = true;
+      log('[HOME_DEBUG] show medicine session bottom sheet and mark as shown');
       showMedicineSessionBottomSheet(
         context,
         ids: ids,
