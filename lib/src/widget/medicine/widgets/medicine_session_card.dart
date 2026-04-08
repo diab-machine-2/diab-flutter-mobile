@@ -225,15 +225,22 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
-                child: Text(
-                  title,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                    height: 1.46,
-                    color: Color(0xFF111515),
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                  ),
+                  child: Text(
+                    title,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      height: 1.46,
+                      color: Color(0xFF111515),
+                    ),
                   ),
                 ),
               ),

@@ -137,6 +137,26 @@ extension MedicineItemValidator on MedicineItemModel {
   }
 }
 
+/// Shared with [MedicineCard] and prescription submit validation.
+extension MedicineItemPrescriptionDetails on MedicineItemModel {
+  /// Quantity shown on the card / used for completeness (amount vs remain by mode).
+  double displayQuantityValue({required bool showAmountInsteadOfRemain}) {
+    final double? a = amount;
+    final double? r = remain;
+    return showAmountInsteadOfRemain ? (a ?? r ?? 0) : (r ?? a ?? 0);
+  }
+
+  bool isMedicineDetailsIncomplete({required bool showAmountInsteadOfRemain}) {
+    if (displayQuantityValue(showAmountInsteadOfRemain: showAmountInsteadOfRemain) <= 0) {
+      return true;
+    }
+    if (unit == null || unit!.trim().isEmpty) return true;
+    if (moment == null) return true;
+    if (frequency == null) return true;
+    return false;
+  }
+}
+
 extension MedicineItemModelMapper on MedicineItemModel {
   static List<MedicineItemModel> fromJsonList(Map<String, dynamic> json) {
     final items = json['data']?['items'] as List<dynamic>?;

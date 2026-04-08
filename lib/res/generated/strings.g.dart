@@ -1411,6 +1411,7 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get add_prescription => 'add_prescription';
   String get edit_prescription => 'edit_prescription';
   String get prescription_warning => 'prescription_warning';
+  String get medicine_prescription_data_incomplete => 'medicine_prescription_data_incomplete';
   String get prescription_name=> 'prescription_name';
   String get start_date => 'start_date';
   String get set_time => 'set_time';

@@ -1443,6 +1443,7 @@ tutorial_reference,"Nguồn tham khảo:\nMaine CDC (2019). Diabetes Self – Ma
 add_prescription,"Tạo đơn thuốc","Create prescription",
 edit_prescription,"Chỉnh sửa đơn thuốc","Edit prescription",
 prescription_warning,"Hãy đối chiếu với Đơn thuốc thực tế để đảm bảo thông tin chính xác","Please check with actual Prescription to ensure accurate information",
+medicine_prescription_data_incomplete,"Thiếu số lượng, đơn vị, thời điểm hoặc tần suất. Vui lòng chỉnh sửa đơn.","Missing quantity, unit, timing, or frequency. Please edit the prescription.",
 prescription_name,"Tên đơn thuốc","Prescription name",
 start_date,"Ngày bắt đầu","Start day",
 set_time,"Hẹn giờ","Set time",
