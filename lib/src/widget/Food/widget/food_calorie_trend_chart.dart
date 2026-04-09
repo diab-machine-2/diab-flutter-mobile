@@ -612,7 +612,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               top: max(0, min(targetPx - 8, constraints.maxHeight - 20)),
               left: 0,
               right: 0,
-              child: Text('Mức tốt\n${threshold.toInt()} điểm',
+              child: Text('${threshold.toInt()} điểm',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515, height: 1.2),
                   textAlign: TextAlign.left),
             ),
