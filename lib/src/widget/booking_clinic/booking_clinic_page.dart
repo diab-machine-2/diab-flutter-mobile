@@ -12,6 +12,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_provider_page.dart';
@@ -73,6 +74,7 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
+    _warmupLocation();
     // Initialize Docosan user & location
     _cubit.initDsmesBooking(isLoadAppointments: !widget.isExamination);
 
@@ -85,6 +87,20 @@ class _BookingClinicPageState extends State<BookingClinicPage> with Observer {
           _startExaminationAtHomeFlow();
         }
       });
+    }
+  }
+
+  Future<void> _warmupLocation() async {
+    final cancel = BotToast.showLoading(allowClick: false);
+    try {
+      await resolveBookingProvidersPosition().timeout(
+        const Duration(seconds: 6),
+        onTimeout: () => null,
+      );
+    } catch (_) {
+      // Best-effort warmup only.
+    } finally {
+      cancel();
     }
   }
 

@@ -235,6 +235,16 @@ class ClinicService {
 
     return 0;
   }
+
+  /// Some APIs return ids like "{category_id}_{service_id}".
+  /// Keep only the service_id part to make downstream int parsing stable.
+  static String _extractServiceId(String rawId) {
+    if (rawId.isEmpty) return rawId;
+    final parts = rawId.split('_');
+    if (parts.length <= 1) return rawId;
+    final lastPart = parts.last.trim();
+    return lastPart.isEmpty ? rawId : lastPart;
+  }
 }
 
 class ClinicSchedule {

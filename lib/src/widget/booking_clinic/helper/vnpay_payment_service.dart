@@ -19,7 +19,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:uuid/uuid.dart';
 
-class VNPayService {
+class VNPayService with WidgetsBindingObserver {
   static const platform = MethodChannel('paymentGateway');
 
   final BuildContext context;
@@ -32,6 +32,8 @@ class VNPayService {
   String paymentUrl = '';
   String? currentTxnRef; // Store current transaction reference
   bool isProcessingAppToApp = false; // Flag to track app-to-app payment
+  bool _isLifecycleObserverAttached = false;
+  bool _resumeHandlingInFlight = false;
 
   // Enhanced deduplication tracking
   bool hasProcessedFinalResult = false; // Flag to prevent duplicate processing
@@ -53,6 +55,43 @@ class VNPayService {
     required this.serviceType,
     required this.cubit,
   });
+
+  void _ensureLifecycleObserverAttached() {
+    if (_isLifecycleObserverAttached) return;
+    WidgetsBinding.instance.addObserver(this);
+    _isLifecycleObserverAttached = true;
+  }
+
+  void _detachLifecycleObserver() {
+    if (!_isLifecycleObserverAttached) return;
+    WidgetsBinding.instance.removeObserver(this);
+    _isLifecycleObserverAttached = false;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+
+    // If user returns to the app via Android back/recents from a bank app,
+    // VNPAY may not send a callback to Flutter. In that case, the loading
+    // shown during app-to-app flow can get stuck. Proactively close it and
+    // query the transaction status from backend.
+    if (!isProcessingAppToApp || currentTxnRef == null) return;
+    if (_resumeHandlingInFlight) return;
+    _resumeHandlingInFlight = true;
+
+    scheduleMicrotask(() async {
+      try {
+        BotToast.closeAllLoading();
+        await _handleAppToAppReturn();
+      } catch (e) {
+        BotToast.closeAllLoading();
+        print("[VNPAY] Error handling resume from bank app: $e");
+      } finally {
+        _resumeHandlingInFlight = false;
+      }
+    });
+  }
 
   Future<bool> initializePayment() async {
     // Reset all states for new payment
@@ -216,6 +255,7 @@ class VNPayService {
 
   Future<void> openVNPaySDK() async {
     try {
+      _ensureLifecycleObserverAttached();
       // Set up method call handler for payment result
       platform.setMethodCallHandler(_handlePaymentResult);
 
@@ -501,6 +541,7 @@ class VNPayService {
 
     // Close any loading indicators before showing the success dialog
     BotToast.closeAllLoading();
+    _detachLifecycleObserver();
 
     print(
         "[VNPAY] showSuccessDialog: ${DateTime.now().millisecondsSinceEpoch}");
@@ -544,6 +585,7 @@ class VNPayService {
 
     // Reset app-to-app processing flag
     isProcessingAppToApp = false;
+    _detachLifecycleObserver();
   }
 
   Future<void> _handlePaymentFailed(
@@ -554,6 +596,7 @@ class VNPayService {
 
     // Close any loading indicators before showing the failure dialog
     BotToast.closeAllLoading();
+    _detachLifecycleObserver();
 
     print(
         "[VNPAY] _showFailureDialog: ${DateTime.now().millisecondsSinceEpoch}");
@@ -933,6 +976,7 @@ class VNPayService {
   // Make sure to call this method when done with the payment service
   void dispose() {
     platform.setMethodCallHandler(null);
+    _detachLifecycleObserver();
     _resetPaymentStates();
   }
 }

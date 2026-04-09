@@ -56,6 +56,16 @@ class NavigatorName {
   static const String contact = '/contact';
   static const String motivation = '/motivation';
   static const String reminder = '/reminder';
+  static const String medicine_check = '/medicine_check';
+  static const String medicine = '/medicine';
+  static const String medicine_tutorial = '/medicine_tutorial';
+  static const String prescription_capture = '/prescription_capture';
+  static const String medicine_photo_picker = '/medicine_photo_picker';
+  static const String medicine_search = '/medicine_find';
+  static const String medicine_add = '/medicine_add';
+  static const String prescription_add = '/prescription_add';
+  static const String prescription_remind = '/prescription_remind';
+  static const String prescription = '/prescription';
   static const String add_reminder = '/add_reminder';
   static const String schedule_glucose = '/schedule_glucose';
   static const String setting_schedule_glucose = '/setting_schedule_glucose';

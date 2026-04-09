@@ -718,31 +718,6 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<void> accountLoginHistory() async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<void>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          'App/Account/AccountLoginHistory',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    await _dio.fetch<void>(_options);
-  }
-
-  @override
   Future<void> syncIndexFromZaloToPhone(
       SyncIndexFromZaloToPhoneRequest request) async {
     final _extra = <String, dynamic>{};

@@ -1,6 +1,8 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
@@ -13,6 +15,7 @@ import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_
 import 'package:medical/src/widget/booking_clinic/pages/empty_clinic_provider_page.dart';
 import 'package:medical/src/widget/booking_doctor/widgets/rating_heart_widget.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -39,14 +42,13 @@ class BookingDoctorProvidersPage extends StatefulWidget {
 class _BookingDoctorProvidersPageState
     extends State<BookingDoctorProvidersPage> {
   late DsmesAppointmentCubit _cubit;
+  bool _isFirstLoading = true;
   Map<String, bool> isProcessing = {
     'clinicDetail': false,
     'viewInfo': false,
     'bookingClinic': false,
   };
-  bool isLoading = false;
   final RefreshController _refreshController = RefreshController();
-  int _selectedIndex = 0;
 
   Set<String> selectedDistricts = {};
   Set<String> selectedTypes = {};
@@ -105,8 +107,8 @@ class _BookingDoctorProvidersPageState
   }
 
   _initData() async {
+    final cancel = BotToast.showLoading(allowClick: false);
     try {
-      isLoading = true;
       final position = await AppSettings.getPositionPreferences();
 
       String lat = '';
@@ -122,7 +124,8 @@ class _BookingDoctorProvidersPageState
 
       _cubit.initSearchBookingClinicListRequest(
         page: 1,
-        specialtyId: widget.specialtyId.toString(),
+        specialtyId:
+            widget.specialtyId == 0 ? '' : widget.specialtyId.toString(),
         lat: lat,
         lng: lng,
         kind: Const.BOOKING_TYPE_DOCTOR,
@@ -133,23 +136,23 @@ class _BookingDoctorProvidersPageState
 
       final request = _cubit.searchBookingClinicListRequest;
       if (request == null) {
-        setState(() {
-          isLoading = false;
-        });
         return;
       }
 
       await _cubit.searchBookingClinicList(
           request: request,
           isRefresh: true,
-          showLoading: true,
+          showLoading: false,
           bookingType: Const.BOOKING_TYPE_DOCTOR);
     } catch (e) {
       // Log error if needed
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      cancel();
+      if (mounted) {
+        setState(() {
+          _isFirstLoading = false;
+        });
+      }
     }
   }
 
@@ -165,8 +168,12 @@ class _BookingDoctorProvidersPageState
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
-        return false;
+        final nav = DsmesNavigationMixin.getNavigationKey().currentState;
+        if (nav != null && nav.canPop()) {
+          nav.pop();
+          return false;
+        }
+        return true;
       },
       child: Scaffold(
         endDrawerEnableOpenDragGesture: false,
@@ -210,7 +217,59 @@ class _BookingDoctorProvidersPageState
                   color: R.color.white),
             ),
             actions: [
-              _buildFilterButton(),
+              GestureDetector(
+                onTap: () async {
+                  _cubit.clearAppointments();
+
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pushNamed(NavigatorName.dsmes_booking_history,
+                          arguments: {
+                        'bookingType': Const.BOOKING_TYPE_DOCTOR,
+                      });
+                },
+                child: Container(
+                  width: 90,
+                  height: 33,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+                  margin: const EdgeInsets.fromLTRB(0, 12, 16, 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: R.color.color0xffECFFFD,
+                    border: Border.all(
+                      color: R.color.color0xffA4E3DD,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        R.icons.ic_clock,
+                        width: 16,
+                        height: 16,
+                        color: R.color.color0xff239A90,
+                        fit: BoxFit.scaleDown,
+                      ),
+                      GapW(4),
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            R.string.consulting_history.tr(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: R.color.color0xff239A90,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
             leadingIcon: IconButton(
               splashColor: Colors.transparent,
@@ -220,9 +279,7 @@ class _BookingDoctorProvidersPageState
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.getNavigationKey()
-                    .currentState
-                    ?.pop(context);
+                Navigator.of(context, rootNavigator: true).pop();
               },
             ),
           ),
@@ -230,48 +287,55 @@ class _BookingDoctorProvidersPageState
         // _buildHeaderWidget(),
 
         Expanded(
-          child: isLoading
-              ? Container()
-              : _cubit.listBookingClinicProvider.isEmpty
-                  ? BookingClinicEmptyWidget(
-                      imagePath: R.drawable.bg_empty_clinic,
-                      title: R.string.empty_clinic_content.tr(),
-                      subtitle: "",
-                    )
-                  : SmartRefresher(
-                      controller: _refreshController,
-                      enablePullUp: _cubit.clinicProviderHasMore,
-                      enablePullDown: false,
-                      footer: _cubit.clinicProviderHasMore
-                          ? ClassicFooter(
-                              loadingText: "Đang tải",
-                              canLoadingText:
-                                  R.string.pull_up_to_load_more.tr(),
-                            )
-                          : null,
-                      onLoading: () async {
-                        await _cubit.searchBookingClinicList(
-                            request: _cubit.searchBookingClinicListRequest!
-                                .copyWith(
-                                    page: _cubit.clinicProviderCurrentPage + 1),
-                            showLoading: false,
-                            bookingType: Const.BOOKING_TYPE_DOCTOR);
-                        _refreshController.loadComplete();
-                        setState(() {});
-                      },
-                      child: ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                        itemCount: _cubit.listBookingClinicProvider.length,
-                        separatorBuilder: (context, index) {
-                          return GapH(12);
-                        },
-                        itemBuilder: (context, index) {
-                          BookingClinicProvider data =
-                              _cubit.listBookingClinicProvider[index];
-                          return _buildDoctorItem(data);
-                        },
-                      ),
-                    ),
+          child: BlocBuilder<DsmesAppointmentCubit, DsmesAppointmentState>(
+            builder: (context, state) {
+              if (_isFirstLoading) {
+                return const SizedBox.shrink();
+              }
+              if (state is DsmesAppointmentLoading &&
+                  _cubit.listBookingClinicProvider.isEmpty) {
+                return const SizedBox.shrink();
+              }
+              if (_cubit.listBookingClinicProvider.isEmpty) {
+                return BookingClinicEmptyWidget(
+                  imagePath: R.drawable.bg_empty_clinic,
+                  title: R.string.empty_clinic_content.tr(),
+                  subtitle: "",
+                );
+              }
+              return SmartRefresher(
+                controller: _refreshController,
+                enablePullUp: _cubit.clinicProviderHasMore,
+                enablePullDown: false,
+                footer: _cubit.clinicProviderHasMore
+                    ? ClassicFooter(
+                        loadingText: "Đang tải",
+                        canLoadingText: R.string.pull_up_to_load_more.tr(),
+                      )
+                    : null,
+                onLoading: () async {
+                  await _cubit.searchBookingClinicList(
+                      request: _cubit.searchBookingClinicListRequest!.copyWith(
+                          page: _cubit.clinicProviderCurrentPage + 1),
+                      showLoading: false,
+                      bookingType: Const.BOOKING_TYPE_DOCTOR);
+                  _refreshController.loadComplete();
+                },
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                  itemCount: _cubit.listBookingClinicProvider.length,
+                  separatorBuilder: (context, index) {
+                    return GapH(12);
+                  },
+                  itemBuilder: (context, index) {
+                    BookingClinicProvider data =
+                        _cubit.listBookingClinicProvider[index];
+                    return _buildDoctorItem(data);
+                  },
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -711,130 +775,6 @@ class _BookingDoctorProvidersPageState
     );
   }
 
-  _buildHeaderWidget() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 0;
-                  });
-                },
-                child: Column(
-                  children: [
-                    Text(
-                      R.string.all.tr(),
-                      style: TextStyle(
-                        color: _selectedIndex == 0
-                            ? R.color.greenGradientBottom
-                            : R.color.color0xff111515,
-                        fontSize: 15,
-                        fontWeight: _selectedIndex == 0
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      width: 40,
-                      color: _selectedIndex == 0
-                          ? R.color.greenGradientBottom
-                          : R.color.transparent,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 24),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                },
-                child: Column(
-                  children: [
-                    Text(
-                      R.string.da_kham.tr(),
-                      style: TextStyle(
-                        color: _selectedIndex == 1
-                            ? R.color.greenGradientBottom
-                            : R.color.color0xff111515,
-                        fontSize: 15,
-                        fontWeight: _selectedIndex == 1
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      width: 60,
-                      color: _selectedIndex == 1
-                          ? R.color.greenGradientBottom
-                          : R.color.transparent,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Builder(
-            builder: (context) {
-              final isFiltered = selectedDistricts.isNotEmpty ||
-                  (selectedTypes.length == 1 && !selectedTypes.contains('')) ||
-                  (selectedTimeframes.length == 1 &&
-                      !selectedTimeframes.contains('')) ||
-                  (selectedServiceTypes.length == 1 &&
-                      !selectedServiceTypes.contains(''));
-              return GestureDetector(
-                onTap: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 30,
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: isFiltered ? EdgeInsets.only(right: 10) : null,
-                        child: Text(
-                          R.string.loc.tr(),
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: R.color.color0xff95682E,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (isFiltered)
-                      Positioned(
-                        top: 2,
-                        right: 1,
-                        child: Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _buildDistrictFilter() {
     return ValueListenableBuilder<bool>(
       valueListenable: _showAllCities,
@@ -888,6 +828,7 @@ class _BookingDoctorProvidersPageState
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    GapH(16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -895,6 +836,7 @@ class _BookingDoctorProvidersPageState
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
                       childAspectRatio: 5 / 1,
+                      padding: EdgeInsets.zero,
                       children: [
                         ...getDefaultCities().map((e) =>
                             _buildFilterItem(e.nameVi, e.slug, 'district')),
@@ -935,6 +877,7 @@ class _BookingDoctorProvidersPageState
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    GapH(16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -942,6 +885,7 @@ class _BookingDoctorProvidersPageState
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
                       childAspectRatio: 5 / 1,
+                      padding: EdgeInsets.zero,
                       children: [
                         ...Const.CLINIC_TYPES.map((type) {
                           return _buildFilterItem(
@@ -958,6 +902,7 @@ class _BookingDoctorProvidersPageState
                         fontWeight: FontWeight.w700,
                       ),
                     ),
+                    GapH(16),
                     GridView.count(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -965,6 +910,7 @@ class _BookingDoctorProvidersPageState
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
                       childAspectRatio: 5 / 1,
+                      padding: EdgeInsets.zero,
                       children: [
                         ...Const.CLINIC_TIMEFRAMES.map((timeframe) {
                           return _buildFilterItem(
@@ -986,6 +932,8 @@ class _BookingDoctorProvidersPageState
                         ),
                       ),
                     if (widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
+                    GapH(16),
+                    if (widget.bookingType != Const.BOOKING_TYPE_DOCTOR)
                       GridView.count(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -993,6 +941,7 @@ class _BookingDoctorProvidersPageState
                         mainAxisSpacing: 12,
                         crossAxisSpacing: 12,
                         childAspectRatio: 5 / 1,
+                        padding: EdgeInsets.zero,
                         children: [
                           ...DsmesAppointmentMode.values.map((serviceType) {
                             return _buildFilterItem(

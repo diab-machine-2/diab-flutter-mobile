@@ -100,7 +100,6 @@ import 'package:medical/src/model/response/zoom_token_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/docosan_client.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
-import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -1120,7 +1119,7 @@ class AppRepository {
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'User-Agent': 'Mobile',
-        'x-api-key': Const.ORGANIZATION_API_KEY_VALUE,
+        'x-api-key': Utils.getOrganizationApiKey(),
       },
     );
     if (response.statusCode == 200) {
@@ -1140,7 +1139,7 @@ class AppRepository {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent': 'Mobile',
-        'x-api-key': Const.ORGANIZATION_API_KEY_VALUE,
+        'x-api-key': Utils.getOrganizationApiKey(),
       },
       body: request.toJson(),
     );

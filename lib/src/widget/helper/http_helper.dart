@@ -324,6 +324,42 @@ class FetchClient {
     return response;
   }
 
+  Future<http.StreamedResponse> postHttp4({
+    bool baseIdentify = false,
+    required String path,
+    required Map<String, String> params,
+    Map<String, String>? fileMap, // fieldName → filePath
+    String? fileName,             // optional: mặc định 'images'
+  }) async {
+    final token = await AppSettings.getToken();
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
+
+    final uri = Uri.parse(
+      'https://${baseIdentify ? identifyBaseURL : baseURL}$path',
+    );
+
+    final request = http.MultipartRequest('POST', uri);
+    request.fields.addAll(params);
+
+    Console.log('token', token);
+    Console.log('uri', uri);
+    Console.logJson('Request', params);
+
+    // fileMap (dạng fieldName → filePath)
+    if (fileMap != null && fileMap.isNotEmpty) {
+      for (final entry in fileMap.entries) {
+        final field = entry.key;
+        final filePath = entry.value;
+        final file = await http.MultipartFile.fromPath(field, filePath);
+        request.files.add(file);
+      }
+    }
+
+    request.headers.addAll(headers);
+
+    return await request.send();
+  }
+
   Future<Response> putData({
     bool baseIdentify = false,
     required String url,
@@ -370,6 +406,37 @@ class FetchClient {
         data: params,
         options: option);
     return response;
+  }
+
+  Future<http.StreamedResponse> patchHttp({
+    bool baseIdentify = false,
+    required String path,
+    required Map<String, String>? fileMap, // fieldName → filePath
+    required Map<String, String> params,
+  }) async {
+    final token = await AppSettings.getToken();
+    final headers = {'Authorization': 'Bearer $token', 'User-Agent': 'Mobile'};
+
+    final request = http.MultipartRequest(
+      'PATCH',
+      Uri.parse('https://' + (baseIdentify ? identifyBaseURL : baseURL) + path),
+    );
+
+    request.fields.addAll(params);
+
+    // duyệt từng cặp key-value trong fileMap
+    if (fileMap != null) {
+      for (final entry in fileMap.entries) {
+        final fileField = entry.key; // ví dụ: ImagesPatientMedication[0]
+        final filePath = entry.value;
+        final file = await http.MultipartFile.fromPath(fileField, filePath);
+        request.files.add(file);
+      }
+    }
+
+    request.headers.addAll(headers);
+
+    return await request.send();
   }
 
   Future<Response> delete(

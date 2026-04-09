@@ -69,14 +69,31 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
+    _warmupLocation();
     // _cubit.getDsmesAppointmentList();
-    _cubit.initDsmesBooking(isLoadAppointments: !widget.fromWebinar);
+    // Requirement: don't fetch appointment list at init anymore.
+    // Keep user registration logic inside initDsmesBooking.
+    _cubit.initDsmesBooking(isLoadAppointments: false);
 
     // Auto-navigate to doctor detail if pendingDoctorId is provided
     if (widget.pendingDoctorId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _navigateToDoctorDetail();
       });
+    }
+  }
+
+  Future<void> _warmupLocation() async {
+    final cancel = BotToast.showLoading(allowClick: false);
+    try {
+      await resolveBookingProvidersPosition().timeout(
+        const Duration(seconds: 6),
+        onTimeout: () => null,
+      );
+    } catch (_) {
+      // Best-effort warmup only.
+    } finally {
+      cancel();
     }
   }
 
@@ -244,7 +261,10 @@ class _BookingDoctorPageState extends State<BookingDoctorPage> with Observer {
                 switch (settings.name) {
                   case '/':
                     return MaterialPageRoute(
-                      builder: (_) => _buildMainContent(context),
+                      builder: (_) => BookingDoctorProvidersPage(
+                        specialtyId: 0,
+                        bookingType: Const.BOOKING_TYPE_DOCTOR,
+                      ),
                     );
                   case NavigatorName.dsmes_booking_history:
                     Map<String, dynamic>? args =
