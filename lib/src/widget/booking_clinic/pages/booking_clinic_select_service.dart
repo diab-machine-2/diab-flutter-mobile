@@ -82,7 +82,7 @@ class _BookingCLinicSelectServicePageState
       final hasExaminationType =
           serviceNameLower.contains(examinationTypeLower);
 
-      if (hasExaminationKeyword && hasExaminationType) {
+      if (hasExaminationType) {
         if (selectedServices.length < maxServices) {
           selectedServices.add(service.id);
         }
@@ -105,7 +105,8 @@ class _BookingCLinicSelectServicePageState
   Widget build(BuildContext context) {
     final telemedicineCategories = widget.clinic.serviceList.categories
         .where((category) =>
-            category.type == DsmesAppointmentMode.telemedicine.toString())
+            category.type == DsmesAppointmentMode.telemedicine.toString() ||
+            category.type == DsmesAppointmentMode.atClinic.toString())
         .toList();
     return Scaffold(
       body: Container(
