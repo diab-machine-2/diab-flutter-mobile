@@ -93,7 +93,6 @@ class _BookingClinicProvidersPageState
 
   _initData() async {
     try {
-      isLoading = true;
       var position = await AppSettings.getPositionPreferences();
       if (position == null || position.isEmpty) {
         final geolocation = await determinePosition();

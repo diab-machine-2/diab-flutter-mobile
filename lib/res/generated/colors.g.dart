@@ -205,6 +205,5 @@ class Colors {
   Color get interview_color => Color(0xffFFCD57);
   Color get examination_color => Color(0xffF86F6F);
   Color get color0xffEAEDEE => Color(0xffEAEDEE);
-  Color get color0xffF4F7F7 => Color(0xffF4F7F7);
   Color get color0xff126B56 => Color(0xff126B56);
 }
