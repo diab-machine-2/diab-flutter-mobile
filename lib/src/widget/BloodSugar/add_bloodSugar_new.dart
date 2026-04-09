@@ -437,36 +437,36 @@ class _AddBloodSugarControllerNewState
                         spacing: 20,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (isPregnancy)
-                            GestureDetector(
-                              onTap: () {
-                                LevelOffDiabetesRulePicker.showModal(
-                                  context,
-                                  onSuccess: () {
-                                    isPregnancy = false;
-                                    _getGlucoseRange(selectedTimeFrame!);
-                                  },
-                                );
-                              },
-                              child: Container(
-                                color: Colors.white,
-                                child: SpacingRow(
-                                  spacing: 15,
-                                  children: [
-                                    IgnorePointer(
-                                      child: CustomCheckboxWidget(
-                                        isChecked: isChangeStatus,
-                                        onTap: () {},
-                                      ),
-                                    ),
-                                    Text(
-                                      'Tôi không còn trong thai kỳ.',
-                                      style: TextStyle(fontSize: 16),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
+                          // if (isPregnancy)
+                          //   GestureDetector(
+                          //     onTap: () {
+                          //       LevelOffDiabetesRulePicker.showModal(
+                          //         context,
+                          //         onSuccess: () {
+                          //           isPregnancy = false;
+                          //           _getGlucoseRange(selectedTimeFrame!);
+                          //         },
+                          //       );
+                          //     },
+                          //     child: Container(
+                          //       color: Colors.white,
+                          //       child: SpacingRow(
+                          //         spacing: 15,
+                          //         children: [
+                          //           IgnorePointer(
+                          //             child: CustomCheckboxWidget(
+                          //               isChecked: isChangeStatus,
+                          //               onTap: () {},
+                          //             ),
+                          //           ),
+                          //           Text(
+                          //             'Tôi không còn trong thai kỳ.',
+                          //             style: TextStyle(fontSize: 16),
+                          //           )
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ),
                           Container(
                             padding: EdgeInsets.only(
                               bottom:
