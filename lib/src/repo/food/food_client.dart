@@ -384,59 +384,57 @@ class FoodClient extends FetchClient {
       final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
       final dateStr = dt.toIso8601String();
       
-      // Build JSON params
-      final Map<String, dynamic> params = {
+      final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
         'date': dateStr,
         'createDatetime': dateStr,
-        'isFromAI': true,
+        'isFromAI': 'true',
       };
 
-      // Add MealScore data if available
       if (mealScoreData != null) {
-        params['totalMealScore'] = mealScoreData['totalMealScore'];
-        params['scoreRange'] = mealScoreData['scoreRange'];
-        params['carbPercent'] = mealScoreData['carbPercent'] ?? 0;
-        params['proteinPercent'] = mealScoreData['proteinPercent'] ?? 0;
-        params['fatPercent'] = mealScoreData['fatPercent'] ?? 0;
-        params['vegetablePercent'] = mealScoreData['vegetablePercent'] ?? 0;
-        params['fruitPercent'] = mealScoreData['fruitPercent'] ?? 0;
-        params['aiAdvice'] = mealScoreData['aiAdvice'] ?? '';
+        params['totalMealScore'] = mealScoreData['totalMealScore']?.toString() ?? '';
+        params['scoreRange'] = mealScoreData['scoreRange']?.toString() ?? '';
+        params['carbPercent'] = mealScoreData['carbPercent']?.toString() ?? '0';
+        params['proteinPercent'] = mealScoreData['proteinPercent']?.toString() ?? '0';
+        params['fatPercent'] = mealScoreData['fatPercent']?.toString() ?? '0';
+        params['vegetablePercent'] = mealScoreData['vegetablePercent']?.toString() ?? '0';
+        params['fruitPercent'] = mealScoreData['fruitPercent']?.toString() ?? '0';
+        params['aiAdvice'] = mealScoreData['aiAdvice']?.toString() ?? '';
         
-        // If MealScore provided an imageUrl (e.g. from previous upload), we can set it so backend knows
         if (mealScoreData['imageUrl'] != null && mealScoreData['imageUrl'].toString().isNotEmpty) {
-          params['imageUrl'] = mealScoreData['imageUrl'];
+          params['imageUrl'] = mealScoreData['imageUrl'].toString();
         }
       }
 
-      // Build items array for JSON JSON binding
-      params['items'] = foods.map((f) => {
-        'foodId': f.id ?? '',
-        'name': f.name ?? '',
-        'unit': f.unit ?? '',
-        'portion': f.portion ?? 1,
-        'calorie': f.calorie?.round() ?? 0,
-        'glucose': f.glucose ?? 0,
-        'lipid': f.lipid ?? 0,
-        'protein': f.protein ?? 0,
-        'fibre': f.fibre ?? 0,
-      }).toList();
+      for (int i = 0; i < foods.length; i++) {
+        final f = foods[i];
+        params['items[$i].foodId'] = f.id ?? '';
+        params['items[$i].name'] = f.name ?? '';
+        params['items[$i].unit'] = f.unit ?? '';
+        params['items[$i].portion'] = f.portion?.toString() ?? '1';
+        params['items[$i].calorie'] = f.calorie?.round().toString() ?? '0';
+        params['items[$i].glucose'] = f.glucose?.toString() ?? '0';
+        params['items[$i].lipid'] = f.lipid?.toString() ?? '0';
+        params['items[$i].protein'] = f.protein?.toString() ?? '0';
+        params['items[$i].fibre'] = f.fibre?.toString() ?? '0';
+      }
 
       log('input AI nutrition params: $params');
 
-      // Send as application/json
-      final response = await super.postUri(
-        baseOption: true,
-        url: '/App/Nutrition/Input',
+      final response = await super.postHttp(
+        path: '/App/Nutrition/Input',
         params: params,
+        files: files,
       );
 
-      print('Upload AI JSON response status: ${response.statusCode}, data: ${response.data}');
+      final data = await response.stream.bytesToString();
+      print('Upload AI response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
-        return response.data['data']?.toString();
+        final jsonResponse = jsonDecode(data);
+        return jsonResponse['data']?.toString();
       } else {
-        throw response.statusMessage ?? 'Unknown error';
+        throw response.reasonPhrase ?? 'Unknown error';
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
