@@ -506,9 +506,29 @@ class FoodClient extends FetchClient {
   // Nutrition Summary - NEW: GET /App/Nutrition/Summary
   // ============================================================
 
+  // Cache to deduplicate overlapping simultaneous requests for the same range
+  static final Map<int, Future<NutritionSummaryModel>> _summaryCacheLock = {};
+
   /// Lấy thống kê dinh dưỡng tổng hợp
   /// NEW endpoint: GET /App/Nutrition/Summary?range=X
-  Future<NutritionSummaryModel> fetchNutritionSummary(int range) async {
+  Future<NutritionSummaryModel> fetchNutritionSummary(int range) {
+    if (_summaryCacheLock.containsKey(range)) {
+      print('🚀 [NutritionSummary] Reusing identical ongoing request for range=$range');
+      return _summaryCacheLock[range]!;
+    }
+    
+    final future = _doFetchNutritionSummary(range);
+    _summaryCacheLock[range] = future;
+    
+    // Clear lock after completion so subsequent manual refreshes pull fresh data
+    future.whenComplete(() {
+      _summaryCacheLock.remove(range);
+    });
+
+    return future;
+  }
+
+  Future<NutritionSummaryModel> _doFetchNutritionSummary(int range) async {
     try {
       print('🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?range=$range');
       final Response response = await super.fetchData(
