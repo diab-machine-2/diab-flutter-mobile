@@ -511,26 +511,53 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       height: 44,
       width: double.infinity,
-      child: GestureDetector(
-        onTap: _haveFood ? _submitData : null,
-        child: Container(
-          height: 44,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(200),
-            color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
-          ),
-          child: Center(
-            child: Text(
-              'Tiếp tục',
-              style: TextStyle(
-                color: R.color.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+      child: Row(
+        children: [
+          // Nút Chia sẻ (bên trái)
+          GestureDetector(
+            onTap: _shareFood,
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                border: Border.all(color: Color(0xFFE0E0E0), width: 1),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.share_outlined,
+                  color: Color(0xFF008479),
+                  size: 22,
+                ),
               ),
             ),
           ),
-        ),
+          SizedBox(width: 12),
+          // Nút Hoàn tất (bên phải, chiếm phần còn lại)
+          Expanded(
+            child: GestureDetector(
+              onTap: _haveFood ? _submitData : null,
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.confirm.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -649,8 +676,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       List<String> paths = [];
 
       // Step 1: Get note data with error handling
-      developer.log('[CAPTURE] Starting _submitData (new Nutrition API)',
-          name: '[CAPTURE]');
+      developer.log('[CAPTURE] Starting _submitData (new Nutrition API)', name: '[CAPTURE]');
 
       if (_sectionAddNoteKey.currentState == null) {
         throw Exception('SectionAddNoteState is null. Cannot get note data.');
@@ -726,32 +752,19 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       Map<String, dynamic>? mealScoreData = widget.mealScoreData;
 
       // Step 5: Save the meal to DB via /App/Nutrition/Input
+      // NOTE: UploadAI/MealScore only analyzes and returns scores,
+      // it does NOT persist the meal. We must call postIndexFoodAI to save.
       final client = FoodClient();
-      final dateUnix = selectedDate.millisecondsSinceEpoch ~/ 1000;
-      String? result;
+      final result = await client.postIndexFoodAI(
+        selectedDate.millisecondsSinceEpoch ~/ 1000,
+        widget.timeframeId,
+        _controllerNote.text,
+        _selectedFoods,
+        paths,
+        mealScoreData: mealScoreData,
+      );
 
-      if (mealScoreData != null) {
-        // AI Flow: gửi kèm MealScore data từ UploadAI/MealScore
-        result = await client.postIndexFoodAI(
-          dateUnix,
-          widget.timeframeId,
-          _controllerNote.text,
-          _selectedFoods,
-          paths,
-          mealScoreData: mealScoreData,
-        );
-      } else {
-        // Manual Flow: chỉ gửi foodId + portion, backend tự tính điểm
-        result = await client.postIndexFood(
-          dateUnix,
-          widget.timeframeId,
-          _controllerNote.text,
-          _selectedFoods,
-          paths,
-        );
-      }
-
-      developer.log('[CAPTURE] postIndexFood result ID: $result',
+      developer.log('[CAPTURE] postIndexFoodAI result: $result',
           name: '[CAPTURE]');
       if (result != null && result.isNotEmpty) {
         // Clean up temporary files
@@ -769,11 +782,9 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         if (mealScoreData != null) {
           apiScore = (mealScoreData['totalMealScore'] as num?)?.toInt();
           // New API uses 'aiAdvice' instead of 'messageResult'
-          apiMessage = (mealScoreData['aiAdvice'] ??
-              mealScoreData['messageResult']) as String?;
+          apiMessage = (mealScoreData['aiAdvice'] ?? mealScoreData['messageResult']) as String?;
           // New API uses 'scoreRange' instead of 'totalMealRange'
-          apiRange = (mealScoreData['scoreRange'] ??
-              mealScoreData['totalMealRange']) as String?;
+          apiRange = (mealScoreData['scoreRange'] ?? mealScoreData['totalMealRange']) as String?;
 
           // Save latest AI suggestion to SharedPreferences for overview
           final prefs = await SharedPreferences.getInstance();
@@ -785,8 +796,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           nutritionPercent = {
             'carb': (mealScoreData['carbPercent'] as num?)?.toInt() ?? 0,
             'protein': (mealScoreData['proteinPercent'] as num?)?.toInt() ?? 0,
-            'vegetable':
-                (mealScoreData['vegetablePercent'] as num?)?.toInt() ?? 0,
+            'vegetable': (mealScoreData['vegetablePercent'] as num?)?.toInt() ?? 0,
             'fruit': (mealScoreData['fruitPercent'] as num?)?.toInt() ?? 0,
             'fat': (mealScoreData['fatPercent'] as num?)?.toInt() ?? 0,
           };
@@ -795,21 +805,11 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           final npData = mealScoreData['nutritionPercent'];
           if (npData != null) {
             nutritionPercent = {
-              'carb': (npData['carb'] as num?)?.toInt() ??
-                  nutritionPercent['carb'] ??
-                  0,
-              'protein': (npData['protein'] as num?)?.toInt() ??
-                  nutritionPercent['protein'] ??
-                  0,
-              'vegetable': (npData['vegetable'] as num?)?.toInt() ??
-                  nutritionPercent['vegetable'] ??
-                  0,
-              'fruit': (npData['fruit'] as num?)?.toInt() ??
-                  nutritionPercent['fruit'] ??
-                  0,
-              'fat': (npData['fat'] as num?)?.toInt() ??
-                  nutritionPercent['fat'] ??
-                  0,
+              'carb': (npData['carb'] as num?)?.toInt() ?? nutritionPercent['carb'] ?? 0,
+              'protein': (npData['protein'] as num?)?.toInt() ?? nutritionPercent['protein'] ?? 0,
+              'vegetable': (npData['vegetable'] as num?)?.toInt() ?? nutritionPercent['vegetable'] ?? 0,
+              'fruit': (npData['fruit'] as num?)?.toInt() ?? nutritionPercent['fruit'] ?? 0,
+              'fat': (npData['fat'] as num?)?.toInt() ?? nutritionPercent['fat'] ?? 0,
             };
             final colorsData = npData['colors'];
             if (colorsData != null) {
@@ -824,11 +824,9 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           }
 
           // Save nutritionPercent & nutritionColors to SharedPreferences
-          await prefs.setString(
-              'latest_nutrition_percent', jsonEncode(nutritionPercent));
+          await prefs.setString('latest_nutrition_percent', jsonEncode(nutritionPercent));
           if (nutritionColors != null) {
-            await prefs.setString(
-                'latest_nutrition_colors', jsonEncode(nutritionColors));
+            await prefs.setString('latest_nutrition_colors', jsonEncode(nutritionColors));
           }
           // Save daily accumulated kcal total
           final todayKey = DateTime.now().toIso8601String().substring(0, 10);
@@ -846,51 +844,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           if (apiRange != null) {
             await prefs.setString('latest_meal_range', apiRange);
           }
-        } else {
-          // Manual Flow: fetch detail từ backend để lấy điểm đã tính tự động
-          try {
-            final detailedInput = await client.fetchDetailInput(result);
-            apiScore = detailedInput.totalMealScore;
-            apiRange = detailedInput.scoreRange;
-            apiMessage = detailedInput.aiAdvice;
-
-            if (detailedInput.carbPercent != null) {
-              nutritionPercent = {
-                'carb': detailedInput.carbPercent ?? 0,
-                'protein': detailedInput.proteinPercent ?? 0,
-                'vegetable': detailedInput.vegetablePercent ?? 0,
-                'fruit': detailedInput.fruitPercent ?? 0,
-                'fat': detailedInput.fatPercent ?? 0,
-              };
-            }
-
-            // Save to SharedPreferences
-            final prefs = await SharedPreferences.getInstance();
-            if (apiMessage != null && apiMessage.isNotEmpty) {
-              await prefs.setString('latest_meal_score_suggestion', apiMessage);
-            }
-            if (nutritionPercent != null) {
-              await prefs.setString(
-                  'latest_nutrition_percent', jsonEncode(nutritionPercent));
-            }
-            final todayKey = DateTime.now().toIso8601String().substring(0, 10);
-            final savedDate = prefs.getString('latest_meal_kcal_date');
-            double existingKcal = 0;
-            if (savedDate == todayKey) {
-              existingKcal = prefs.getDouble('latest_meal_kcal') ?? 0;
-            }
-            await prefs.setDouble('latest_meal_kcal', existingKcal + totalKcal);
-            await prefs.setString('latest_meal_kcal_date', todayKey);
-            if (apiScore != null) {
-              await prefs.setInt('latest_meal_score', apiScore);
-            }
-            if (apiRange != null) {
-              await prefs.setString('latest_meal_range', apiRange);
-            }
-          } catch (e) {
-            developer.log('[CAPTURE] Failed to fetch detail for score: $e',
-                name: '[CAPTURE]');
-          }
         }
 
         // Get balance status from API range
@@ -898,12 +851,20 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         if (apiRange != null) {
           switch (apiRange) {
             case 'excellent':
-            case 'balanced':
-            case 'good':
               balanceStatus = 'Cân bằng';
               break;
+            case 'balanced':
+              balanceStatus = 'Cân bằng';
+              break;
+            case 'good':
+              balanceStatus = 'Khá cân bằng';
+              break;
             case 'fair':
+              balanceStatus = 'Trung bình';
+              break;
             case 'poor':
+              balanceStatus = 'Chưa cân bằng';
+              break;
             default:
               balanceStatus = 'Chưa cân bằng';
           }

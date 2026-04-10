@@ -534,37 +534,74 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
   }
 
   Widget _buildButton() {
-    return Container(
-      margin: EdgeInsets.only(top: 8, bottom: 8, left: 12, right: 12),
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      height: 44,
-      width: double.infinity,
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: _haveFood ? _submitData : null,
-              child: Container(
-                height: 44,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(200),
-                  color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
-                ),
-                child: Center(
-                  child: Text(
-                    R.string.tiep_tuc.tr(),
-                    style: TextStyle(
-                      color: R.color.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  _showDialogDelete();
+                },
+                child: Container(
+                  height: 44,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(200),
+                    border: Border.all(color: R.color.red, width: 2),
+                  ),
+                  child: Center(
+                    child: Text(
+                      R.string.xoa_du_lieu.tr(),
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+            SizedBox(width: 16),
+            Expanded(
+              child: GestureDetector(
+                onTap: _haveFood ? _submitData : null,
+                child: Container(
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: _haveFood ? R.color.mainColor : R.color.grayBorder,
+                    borderRadius: BorderRadius.circular(200),
+                    gradient: _haveFood
+                        ? LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              R.color.greenGradientTop,
+                              R.color.greenGradientBottom,
+                            ],
+                          )
+                        : null,
+                  ),
+                  child: Center(
+                    child: Text(
+                      R.string.save.tr(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -654,19 +691,130 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
     try {
       final success = await FoodClient().deleteInputFood(widget.updateMealId);
       if (success == true) {
-        Observable.instance.notifyObservers([], notifyName: "food_change_data");
         BotToast.showText(text: 'Đã xoá bữa ăn');
         Navigator.pop(context); // Trở về màn hình trước
-        
-        // Refresh API UI
-        await Future.delayed(const Duration(milliseconds: 100));
-        Observable.instance.notifyObservers([], notifyName: "food_change_data");
+
+        _notifyFoodChange();
       }
       BotToast.closeAllLoading();
     } catch (e) {
       BotToast.closeAllLoading();
       BotToast.showText(text: 'Xoá thất bại: $e');
     }
+  }
+
+  void _showDialogDelete() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: AlertDialog(
+            contentPadding: EdgeInsets.all(0),
+            content: Stack(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(R.drawable.ic_earse, width: 64, height: 64),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          R.string.ban_muon_xoa_du_lieu.tr(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          R.string.confirm_to_remove_data.tr(),
+                          textAlign: TextAlign.center,
+                          style: R.style.normalTextStyle,
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(200),
+                                    color: R.color.grayBorder,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.back.tr(),
+                                      style: TextStyle(
+                                        color: R.color.textDark,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 14),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  _deleteMeal();
+                                },
+                                child: Container(
+                                  height: 43,
+                                  decoration: BoxDecoration(
+                                    color: R.color.red,
+                                    borderRadius: BorderRadius.circular(200),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      R.string.delete.tr(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: Icon(Icons.close, color: Color(0xffBEC0C8)),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   /// Quay về thư viện để đổi ảnh
@@ -810,14 +958,11 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
           await _cleanupTempFiles(paths);
         }
 
-        // Notify and go back
-        Observable.instance.notifyObservers([], notifyName: "food_change_data");
+        // Go back then notify list to refresh
         BotToast.showText(text: 'Cập nhật thành công!');
         Navigator.pop(context);
 
-        // Refresh API Data
-        await Future.delayed(const Duration(milliseconds: 100));
-        Observable.instance.notifyObservers([], notifyName: "food_change_data");
+        _notifyFoodChange();
       }
       print("[KPI] close all loading.");
       BotToast.closeAllLoading();
@@ -840,6 +985,10 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
 
       Message.showToastMessage(context, errorMessage);
     }
+  }
+
+  void _notifyFoodChange() {
+    Observable.instance.notifyObservers([], notifyName: "food_change_data");
   }
 
   /// Clean up temporary files created on iOS (files in system temp directory)

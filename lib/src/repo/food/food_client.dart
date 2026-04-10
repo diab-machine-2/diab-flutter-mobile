@@ -57,7 +57,7 @@ class FoodClient extends FetchClient {
     try {
       final Response response =
           await super.fetchData(url: '/App/Nutrition/Input', params: {
-        'range': periodFilterType,
+        'periodFilterType': periodFilterType,
         'page': page.toString(),
         'pageSize': size.toString(),
       });
@@ -66,8 +66,7 @@ class FoodClient extends FetchClient {
         if (data != null && data['groups'] != null) {
           // New format: groups[]
           return FoodInputDataModel(
-              inputs: MealDayItemModel.toList(data['groups']),
-              hasMore: false);
+              inputs: MealDayItemModel.toList(data['groups']), hasMore: false);
         }
         // Fallback to old format
         return FoodInputDataModel(
@@ -191,8 +190,7 @@ class FoodClient extends FetchClient {
       if (foodCategoryId != null) {
         // Category search - keep old endpoint
         response = await super.fetchData(
-            url: '/App/Diet/Food',
-            params: {'foodCategoryId': foodCategoryId});
+            url: '/App/Diet/Food', params: {'foodCategoryId': foodCategoryId});
       } else {
         // Keyword search - NEW endpoint
         response = await super.fetchData(url: '/App/Food', params: {
@@ -314,6 +312,7 @@ class FoodClient extends FetchClient {
       final data = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
+        log('MealScore API response: $data');
         final jsonData = jsonDecode(data);
         if (jsonData['data'] != null) {
           return jsonData['data'] as Map<String, dynamic>;
@@ -337,17 +336,15 @@ class FoodClient extends FetchClient {
   /// NEW endpoint: POST /App/Nutrition/Input (multipart/form-data)
   /// Params: timeFrameId, note, isFromAI=false, items[X].foodId, items[X].portion
   /// Response: { "success": true, "data": "nutrition-input-guid" }
-  Future<String?> postIndexFood(int date, String? timeFrameId, String note,
+  Future<bool> postIndexFood(int date, String? timeFrameId, String note,
       List<FoodModel> foods, List<String> files) async {
     try {
-      final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'date': dateStr,
-        'createDatetime': dateStr,
+        'date': date.toString(),
         'isFromAI': 'false',
+        'createDatetime': date.toString(),
       };
       for (int i = 0; i < foods.length; i++) {
         params['items[$i].foodId'] = foods[i].id ?? '';
@@ -359,8 +356,7 @@ class FoodClient extends FetchClient {
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(data);
-        return jsonResponse['data']?.toString();
+        return true;
       } else {
         throw response.reasonPhrase!;
       }
@@ -381,61 +377,80 @@ class FoodClient extends FetchClient {
     Map<String, dynamic>? mealScoreData,
   }) async {
     try {
-      final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
-      
-      // Build JSON params
-      final Map<String, dynamic> params = {
+      // Build multipart params (all fields must be strings).
+      final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'date': dateStr,
-        'createDatetime': dateStr,
-        'isFromAI': true,
+        'date': date.toString(),
+        'isFromAI': 'true',
+        'createDatetime': date.toString(),
       };
 
       // Add MealScore data if available
       if (mealScoreData != null) {
-        params['totalMealScore'] = mealScoreData['totalMealScore'];
-        params['scoreRange'] = mealScoreData['scoreRange'];
-        params['carbPercent'] = mealScoreData['carbPercent'] ?? 0;
-        params['proteinPercent'] = mealScoreData['proteinPercent'] ?? 0;
-        params['fatPercent'] = mealScoreData['fatPercent'] ?? 0;
-        params['vegetablePercent'] = mealScoreData['vegetablePercent'] ?? 0;
-        params['fruitPercent'] = mealScoreData['fruitPercent'] ?? 0;
-        params['aiAdvice'] = mealScoreData['aiAdvice'] ?? '';
-        
-        // If MealScore provided an imageUrl (e.g. from previous upload), we can set it so backend knows
-        if (mealScoreData['imageUrl'] != null && mealScoreData['imageUrl'].toString().isNotEmpty) {
-          params['imageUrl'] = mealScoreData['imageUrl'];
+        params['totalMealScore'] =
+            (mealScoreData['totalMealScore'] ?? '').toString();
+        params['scoreRange'] = (mealScoreData['scoreRange'] ?? '').toString();
+        params['carbPercent'] = (mealScoreData['carbPercent'] ?? 0).toString();
+        params['proteinPercent'] =
+            (mealScoreData['proteinPercent'] ?? 0).toString();
+        params['fatPercent'] = (mealScoreData['fatPercent'] ?? 0).toString();
+        params['vegetablePercent'] =
+            (mealScoreData['vegetablePercent'] ?? 0).toString();
+        params['fruitPercent'] =
+            (mealScoreData['fruitPercent'] ?? 0).toString();
+        params['aiAdvice'] = (mealScoreData['aiAdvice'] ?? '').toString();
+
+        // If top-level imageUrl is missing, fallback to first imageUrl in items[].
+        dynamic imageUrl = mealScoreData['imageUrl'];
+        if ((imageUrl == null || imageUrl.toString().isEmpty) &&
+            mealScoreData['items'] is List) {
+          final List<dynamic> items = mealScoreData['items'] as List<dynamic>;
+          for (final dynamic item in items) {
+            if (item is Map &&
+                item['imageUrl'] != null &&
+                item['imageUrl'].toString().isNotEmpty) {
+              imageUrl = item['imageUrl'];
+              break;
+            }
+          }
+        }
+        if (imageUrl != null && imageUrl.toString().isNotEmpty) {
+          params['imageUrl'] = imageUrl.toString();
         }
       }
 
-      // Build items array for JSON JSON binding
-      params['items'] = foods.map((f) => {
-        'foodId': f.id ?? '',
-        'name': f.name ?? '',
-        'unit': f.unit ?? '',
-        'portion': f.portion ?? 1,
-        'calorie': f.calorie?.round() ?? 0,
-        'glucose': f.glucose ?? 0,
-        'lipid': f.lipid ?? 0,
-        'protein': f.protein ?? 0,
-        'fibre': f.fibre ?? 0,
-      }).toList();
+      // Build items fields for multipart binding
+      for (int i = 0; i < foods.length; i++) {
+        final food = foods[i];
+        params['items[$i].foodId'] = food.id ?? '';
+        params['items[$i].name'] = food.name ?? '';
+        params['items[$i].unit'] = food.unit ?? '';
+        params['items[$i].portion'] = (food.portion ?? 1).toString();
+        params['items[$i].calorie'] = (food.calorie?.round() ?? 0).toString();
+        params['items[$i].glucose'] = (food.glucose ?? 0).toString();
+        params['items[$i].lipid'] = (food.lipid ?? 0).toString();
+        params['items[$i].protein'] = (food.protein ?? 0).toString();
+        params['items[$i].fibre'] = (food.fibre ?? 0).toString();
+      }
 
-      log('input AI nutrition params: $params');
+      log('input AI nutrition params: ${jsonEncode(params)}');
 
-      // Send as application/json
-      final response = await super.postUri(
-        url: '/App/Nutrition/Input',
+      // Send as multipart/form-data
+      final response = await super.postHttp(
+        path: '/App/Nutrition/Input',
         params: params,
+        files: files,
       );
 
-      print('Upload AI JSON response status: ${response.statusCode}, data: ${response.data}');
+      final data = await response.stream.bytesToString();
+      print(
+          'Upload AI JSON response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
-        return response.data['data']?.toString();
+        final jsonData = jsonDecode(data);
+        return jsonData['data'] as String?;
       } else {
-        throw response.statusMessage ?? 'Unknown error';
+        throw response.reasonPhrase!;
       }
     } catch (e) {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
@@ -509,15 +524,17 @@ class FoodClient extends FetchClient {
   /// NEW endpoint: GET /App/Nutrition/Summary?range=X
   Future<NutritionSummaryModel> fetchNutritionSummary(int range) async {
     try {
-      print('🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?range=$range');
+      print(
+          '🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?range=$range');
       final Response response = await super.fetchData(
-          url: '/App/Nutrition/Summary',
-          params: {'range': range.toString()});
+          url: '/App/Nutrition/Summary', params: {'range': range.toString()});
       print('✅ [NutritionSummary] Status code: ${response.statusCode}');
       print('📦 [NutritionSummary] Response data: ${response.data}');
       if (response.statusCode == 200) {
-        print('📊 [NutritionSummary] data[\'data\'] keys: ${response.data['data']?.keys?.toList()}');
-        print('📈 [NutritionSummary] trendData: ${response.data['data']?['trendData']}');
+        print(
+            '📊 [NutritionSummary] data[\'data\'] keys: ${response.data['data']?.keys?.toList()}');
+        print(
+            '📈 [NutritionSummary] trendData: ${response.data['data']?['trendData']}');
         return NutritionSummaryModel.fromJson(response.data['data']);
       } else {
         print('⚠️ [NutritionSummary] Non-200 status: ${response.statusCode}');
