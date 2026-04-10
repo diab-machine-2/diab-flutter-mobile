@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/Food/widget/nutrition_ai_help_button.dart';
+import 'package:medical/src/repo/food/food_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodAISuggestion extends StatefulWidget {
@@ -42,6 +43,28 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
     setState(() {
       _aiSuggestion = null; // Show loading
     });
+    try {
+      final summary = await FoodClient().fetchNutritionSummary(periodFilterType);
+      String? advice = summary.aiAdvice;
+      
+      if (advice == null || advice.isEmpty) {
+        final prefs = await SharedPreferences.getInstance();
+        advice = prefs.getString('latest_meal_score_suggestion');
+      }
+
+      if (mounted) {
+        setState(() {
+          _aiSuggestion = (advice != null && advice.isNotEmpty)
+              ? advice
+              : _getDefaultSuggestion();
+        });
+      }
+    } catch (e) {
+      _loadFallbackAISuggestion();
+    }
+  }
+
+  void _loadFallbackAISuggestion() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final saved = prefs.getString('latest_meal_score_suggestion');

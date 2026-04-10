@@ -386,7 +386,6 @@ class FoodClient extends FetchClient {
         'createDatetime': date.toString(),
       };
 
-      // Add MealScore data if available
       if (mealScoreData != null) {
         params['totalMealScore'] =
             (mealScoreData['totalMealScore'] ?? '').toString();
@@ -472,11 +471,13 @@ class FoodClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
+      final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+      final dateStr = dt.toIso8601String();
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'date': date.toString(),
-        'createDatetime': date.toString(),
+        'date': dateStr,
+        'createDatetime': dateStr,
       };
       for (int i = 0; i < foods.length; i++) {
         params['items[$i].foodId'] = foods[i].id ?? '';
@@ -519,6 +520,9 @@ class FoodClient extends FetchClient {
   // ============================================================
   // Nutrition Summary - NEW: GET /App/Nutrition/Summary
   // ============================================================
+
+  // Cache to deduplicate overlapping simultaneous requests for the same range
+  static final Map<int, Future<NutritionSummaryModel>> _summaryCacheLock = {};
 
   /// Lấy thống kê dinh dưỡng tổng hợp
   /// NEW endpoint: GET /App/Nutrition/Summary?range=X
