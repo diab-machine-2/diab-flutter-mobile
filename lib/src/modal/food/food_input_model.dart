@@ -44,6 +44,10 @@ class MealDayItemModel {
   static int? _parseDateToTimestamp(dynamic date) {
     if (date is int) return date;
     if (date is String) {
+      final parsedInt = int.tryParse(date);
+      if (parsedInt != null) {
+        return parsedInt;
+      }
       try {
         return DateTime.parse(date).millisecondsSinceEpoch ~/ 1000;
       } catch (_) {}
@@ -208,6 +212,12 @@ class FoodInputModel {
     if (value == null) return null;
     if (value is int) return value;
     if (value is String) {
+      // First try to process as a numeric unix timestamp string
+      final parsedInt = int.tryParse(value);
+      if (parsedInt != null) {
+        return parsedInt;
+      }
+      // If it's not a number, try ISO format
       try {
         return DateTime.parse(value).millisecondsSinceEpoch ~/ 1000;
       } catch (_) {}

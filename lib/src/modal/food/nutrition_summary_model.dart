@@ -166,14 +166,26 @@ class TrendDataItem {
   factory TrendDataItem.fromJson(Map<String, dynamic> json) {
     // date có thể là int (unix timestamp) hoặc String (ISO date) tuỳ backend
     String? dateStr;
-    if (json['date'] is int) {
-      // Convert unix timestamp (seconds) to ISO date string
-      dateStr = DateTime.fromMillisecondsSinceEpoch(
-        (json['date'] as int) * 1000,
-        isUtc: true,
-      ).toIso8601String();
-    } else {
-      dateStr = json['date']?.toString();
+    if (json['date'] != null) {
+      final dynDate = json['date'];
+      if (dynDate is int) {
+        dateStr = DateTime.fromMillisecondsSinceEpoch(
+          dynDate * 1000,
+          isUtc: true,
+        ).toIso8601String();
+      } else {
+        final strDate = dynDate.toString();
+        // Check if it's a numeric unix timestamp string
+        final parsedInt = int.tryParse(strDate);
+        if (parsedInt != null) {
+          dateStr = DateTime.fromMillisecondsSinceEpoch(
+            parsedInt * 1000,
+            isUtc: true,
+          ).toIso8601String();
+        } else {
+          dateStr = strDate;
+        }
+      }
     }
 
     return TrendDataItem(

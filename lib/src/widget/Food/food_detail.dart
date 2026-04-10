@@ -12,6 +12,7 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 import 'daily_nutrition/daily_nutrition.dart';
+import 'daily_nutrition/update_meal_page_ai.dart';
 
 class FoodDetailController extends StatefulWidget {
   final int? periodFilterType;
@@ -229,7 +230,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
       onTap: () {
         NavigationUtil.navigatePage(
           context,
-          DailyNutritionPage(type: 'update', id: inputModel.id),
+          UpdateMealPageAI(updateMealId: inputModel.id ?? ''),
         );
       },
       child: Container(

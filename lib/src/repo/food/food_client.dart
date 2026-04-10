@@ -336,12 +336,17 @@ class FoodClient extends FetchClient {
   /// Manual Flow: Lưu bữa ăn (user chọn từ DB)
   /// NEW endpoint: POST /App/Nutrition/Input (multipart/form-data)
   /// Params: timeFrameId, note, isFromAI=false, items[X].foodId, items[X].portion
-  Future<bool> postIndexFood(int date, String? timeFrameId, String note,
+  /// Response: { "success": true, "data": "nutrition-input-guid" }
+  Future<String?> postIndexFood(int date, String? timeFrameId, String note,
       List<FoodModel> foods, List<String> files) async {
     try {
+      final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
+        'date': dateStr,
+        'createDatetime': dateStr,
         'isFromAI': 'false',
       };
       for (int i = 0; i < foods.length; i++) {
@@ -354,7 +359,8 @@ class FoodClient extends FetchClient {
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
-        return true;
+        final jsonResponse = jsonDecode(data);
+        return jsonResponse['data']?.toString();
       } else {
         throw response.reasonPhrase!;
       }
@@ -366,7 +372,7 @@ class FoodClient extends FetchClient {
   /// AI Flow: Lưu bữa ăn từ kết quả phân tích AI
   /// NEW endpoint: POST /App/Nutrition/Input (JSON body)
   /// Body: isFromAI=true + all MealScore fields
-  Future<bool> postIndexFoodAI(
+  Future<String?> postIndexFoodAI(
     int date,
     String? timeFrameId,
     String note,
@@ -375,11 +381,15 @@ class FoodClient extends FetchClient {
     Map<String, dynamic>? mealScoreData,
   }) async {
     try {
+      final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+      
       // Build form-data params
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'date': date.toString(),
+        'date': dateStr,
+        'createDatetime': dateStr,
         'isFromAI': 'true',
       };
 
@@ -425,7 +435,8 @@ class FoodClient extends FetchClient {
       final responseStr = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $responseStr');
       if (response.statusCode == 200) {
-        return true;
+        final jsonResponse = jsonDecode(responseStr);
+        return jsonResponse['data']?.toString();
       } else {
         throw response.reasonPhrase ?? 'Unknown error';
       }
@@ -452,6 +463,8 @@ class FoodClient extends FetchClient {
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
+        'date': date.toString(),
+        'createDatetime': date.toString(),
       };
       for (int i = 0; i < foods.length; i++) {
         params['items[$i].foodId'] = foods[i].id ?? '';
