@@ -385,8 +385,17 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         else if (lower.contains('khuya') || lower.contains('late')) selectedMealText = 'Bữa khuya';
         else if (!lower.startsWith('bữa')) selectedMealText = 'Bữa $lower'; // Fallback
       }
-      selectedType = t.type ?? 'Cân bằng';
       selectedScore = t.score ?? 0;
+      
+      // Override API's old string like "Trung bình" / "Tốt" 
+      // with the new standard "Cân bằng" / "Chưa cân bằng"
+      if (selectedScore >= 8) {
+        selectedType = 'Cân bằng';
+        selectedFontColor = '#23C559';
+      } else {
+        selectedType = 'Chưa cân bằng';
+        selectedFontColor = '#FFCD57';
+      }
     }
 
     return Column(
@@ -686,9 +695,11 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             tooltipRoundedRadius: 8,
             tooltipPadding: const EdgeInsets.only(bottom: 50),
             getTooltipItems: (spots) => spots.map((spot) {
+              final score = trends[spot.spotIndex].score ?? 0;
+              final tooltipColor = score >= 8 ? R.color.goodGreen : R.color.warningYellow;
               return LineTooltipItem(
                 '${spot.y.toInt()} điểm\n${formatNumber(trends[spot.spotIndex].value ?? 0)} kcal',
-                TextStyle(color: toColor(trends[spot.spotIndex].colorCode), fontWeight: FontWeight.bold),
+                TextStyle(color: tooltipColor, fontWeight: FontWeight.bold),
               );
             }).toList(),
           ),
@@ -772,8 +783,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           checkToShowDot: (_, __) => true,
           getDotPainter: (spot, percent, barData, index) {
             final isSelected = index == _focusIndex;
-            // Green for balanced, yellow for unbalanced
-            final dotColor = (trends[index].colorCode == '#008479')
+            // Green for balanced, yellow for unbalanced based on score
+            final dotColor = ((trends[index].score ?? 0) >= 8)
                 ? R.color.goodGreen
                 : R.color.warningYellow;
             return FlDotCirclePainter(

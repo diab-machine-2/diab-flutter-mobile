@@ -41,25 +41,25 @@ class FoodItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        if (isSearch) {
-          Navigator.pop(context);
-        }
         if (isCategory) {
           Navigator.pop(context);
         }
 
-        // Thêm trực tiếp với khẩu phần = 1, bỏ dialog chọn khẩu phần
-        _addFoodDirectly();
+        if (isSelected) {
+          _removeFoodDirectly();
+        } else {
+          _addFoodDirectly();
+        }
       },
       child: Container(
           decoration: BoxDecoration(
-              color: isSelected
+              color: (isSelected && !isSearch)
                   ? R.color.color0xFFC3E8D3
                   : R.color.transparent,
               border: Border.all(
-                  color: isSelected
+                  color: (isSelected && !isSearch)
                       ? R.color.color0xff72CB9C
-                      : R.color.transparent)),
+                      : (isSearch ? R.color.transparent : R.color.transparent))),
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(children: [
             // Food image
@@ -111,23 +111,37 @@ class FoodItem extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8),
-            // Heart icon
-            GestureDetector(
-              onTap: () {
-                final newModel = model.copyWith(
-                  mealId: selectedModel?.mealId,
-                  liked: !(model.liked ?? true),
-                );
-                callback(newModel, index);
-                likeFood(context);
-              },
-              child: Image.asset(
-                  model.liked == true
-                      ? R.drawable.ic_heart_fill
-                      : R.drawable.ic_heart_line,
+            // Checkbox or Heart icon
+            isSearch 
+              ? Container(
                   width: 24,
-                  height: 24),
-            )
+                  height: 24,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder, 
+                      width: 1.5
+                    ),
+                    color: isSelected ? R.color.greenGradientBottom : R.color.transparent,
+                  ),
+                  child: isSelected ? Icon(Icons.check, color: R.color.white, size: 18) : null,
+                )
+              : GestureDetector(
+                  onTap: () {
+                    final newModel = model.copyWith(
+                      mealId: selectedModel?.mealId,
+                      liked: !(model.liked ?? true),
+                    );
+                    callback(newModel, index);
+                    likeFood(context);
+                  },
+                  child: Image.asset(
+                      model.liked == true
+                          ? R.drawable.ic_heart_fill
+                          : R.drawable.ic_heart_line,
+                      width: 24,
+                      height: 24),
+                )
           ])),
     );
   }
@@ -170,6 +184,14 @@ class FoodItem extends StatelessWidget {
             quantity: model.quantity ?? 1,
             mealId: selectedModel?.mealId ?? model.mealId,
           ),
+        });
+  }
+
+  void _removeFoodDirectly() {
+    Observable.instance.notifyObservers([],
+        notifyName: "remove_food_from_cart",
+        map: {
+          "food": selectedModel ?? model,
         });
   }
 

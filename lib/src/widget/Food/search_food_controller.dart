@@ -5,12 +5,16 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
-import 'package:medical/src/widget/Food/widget/category_food.dart';
+import 'package:medical/src/modal/food/food_category_model.dart';
+import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/widget/Food/widget/favorite_food.dart';
 import 'package:medical/src/widget/Food/widget/food_choosen.dart';
 import 'package:medical/src/widget/Food/widget/near_food.dart';
 import 'package:medical/src/widget/Food/widget/search_food.dart';
+import 'package:medical/src/widget/Food/widget/food_list_by_category.dart';
+import 'package:medical/src/widget/Food/widget/all_food_tab.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widgets/network_image_widget.dart';
 
 typedef SearchFoodCallback = Function(List<FoodModel>);
 
@@ -30,21 +34,41 @@ class SearchFoodController extends StatefulWidget {
 }
 
 class _SearchFoodControllerState extends State<SearchFoodController>
-    with SingleTickerProviderStateMixin, Observer {
-  GlobalKey<CustomSegmentState> segmentKey = GlobalKey();
-  TabController? _tabController;
+    with Observer {
   List<FoodModel> selectedFoods = [];
+  bool isLoadingCategories = true;
+  List<FoodSubCategoryModel> dynamicCategories = [];
+  int selectedIndex = 0;
+  PageController _pageController = PageController();
+
   @override
   void initState() {
     super.initState();
     selectedFoods = [...widget.foods!];
-    _tabController = TabController(vsync: this, length: 3);
-    _tabController!.addListener(() {
-      if (_tabController!.previousIndex != _tabController!.index) {
-        segmentKey.currentState!.jumpTo(_tabController!.index);
-      }
-    });
     Observable.instance.addObserver(this);
+    _loadCategories();
+  }
+
+  void _loadCategories() async {
+    try {
+      final categories = await FoodClient().fetchCategory();
+      List<FoodSubCategoryModel> temp = [];
+      for (var cat in categories) {
+        temp.addAll(cat.subCategories);
+      }
+      if (mounted) {
+        setState(() {
+          dynamicCategories = temp;
+          isLoadingCategories = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoadingCategories = false;
+        });
+      }
+    }
   }
 
   @override
@@ -69,7 +93,65 @@ class _SearchFoodControllerState extends State<SearchFoodController>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    _pageController.dispose();
     super.dispose();
+  }
+
+  void jumpToCategory(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+    _pageController.jumpToPage(index);
+  }
+
+  Widget _buildCategoryBubble(
+      {required String title,
+      IconData? iconData,
+      String? imageUrl,
+      required bool isSelected,
+      required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 65,
+            height: 65,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: R.color.white,
+              border: isSelected
+                  ? Border.all(color: R.color.greenGradientBottom, width: 2)
+                  : Border.all(color: R.color.color0xffE5E5E5, width: 1),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: imageUrl != null && imageUrl.isNotEmpty
+                ? NetWorkImageWidget(imageUrl: imageUrl, width: 65, height: 65)
+                : Icon(iconData ?? Icons.fastfood,
+                    color: isSelected
+                        ? R.color.greenGradientBottom
+                        : R.color.primaryGreyColor,
+                    size: 30),
+          ),
+          SizedBox(height: 8),
+          Container(
+            width: 75,
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -77,30 +159,47 @@ class _SearchFoodControllerState extends State<SearchFoodController>
     return Scaffold(
       body: Stack(alignment: AlignmentDirectional.bottomCenter, children: [
         Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_splash), fit: BoxFit.cover)),
+          color: R.color.white,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Column(children: [
                   CustomAppBar(
-                      title: Text(
-                        R.string.nhap_mon_an.tr(),
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: R.color.textDark),
-                      ),
-                      backgroundColor: R.color.transparent,
-                      leadingIcon: IconButton(
-                          splashColor: R.color.transparent,
-                          highlightColor: R.color.transparent,
-                          icon: Icon(Icons.close, color: R.color.textDark),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          })),
+                    title: Text(
+                      'Tìm món ăn',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: R.color.white),
+                    ),
+                    backgroundColor: R.color.greenGradientBottom,
+                    leadingIcon: IconButton(
+                        splashColor: R.color.transparent,
+                        highlightColor: R.color.transparent,
+                        icon: Icon(Icons.arrow_back, color: R.color.white),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                    actions: [
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Text(
+                              'Hướng dẫn',
+                              style: TextStyle(
+                                color: R.color.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                   Padding(
                     padding: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
@@ -121,47 +220,102 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                           height: 48,
                           decoration: BoxDecoration(
                               color: R.color.white,
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                   color: R.color.grayComponentBorder)),
                           child: Padding(
                             padding: EdgeInsets.only(left: 16, right: 16),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(R.string.tim_kiem_mon_an.tr(),
+                                Image.asset(R.drawable.ic_search,
+                                    width: 24,
+                                    height: 24,
+                                    color: R.color.primaryGreyColor),
+                                SizedBox(width: 8),
+                                Text('Tìm món ăn',
                                     style: TextStyle(
                                         color: R.color.primaryGreyColor)),
-                                Image.asset(R.drawable.ic_search,
-                                    width: 24, height: 24)
                               ],
                             ),
                           )),
                     ),
                   ),
-                  CustomSegment(
-                      key: segmentKey,
-                      onchange: (index) {
-                        _tabController!.animateTo(index);
-                      }),
+                  isLoadingCategories
+                      ? Center(child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      ))
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(width: 16),
+                              _buildCategoryBubble(
+                                  title: 'Tất cả',
+                                  iconData: Icons.restaurant,
+                                  isSelected: selectedIndex == 0,
+                                  onTap: () => jumpToCategory(0)),
+                              SizedBox(width: 16),
+                              _buildCategoryBubble(
+                                  title: 'Yêu thích',
+                                  iconData: Icons.favorite_border,
+                                  isSelected: selectedIndex == 1,
+                                  onTap: () => jumpToCategory(1)),
+                              SizedBox(width: 16),
+                              ...dynamicCategories.asMap().entries.map((e) {
+                                int mappedIndex = e.key + 2;
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 16),
+                                  child: _buildCategoryBubble(
+                                    title: e.value.name ?? '',
+                                    imageUrl: e.value.image.url ?? '',
+                                    isSelected: selectedIndex == mappedIndex,
+                                    onTap: () => jumpToCategory(mappedIndex),
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                        ),
                   SizedBox(height: 16),
+                  
+                  // MAIN LIST AREA
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 150),
-                      child: TabBarView(controller: _tabController, children: [
-                        NearFood(
-                          foods: selectedFoods,
-                          suggestKcal: widget.suggestKcal,
-                        ),
-                        FavoriteFood(
-                          foods: selectedFoods,
-                          suggestKcal: widget.suggestKcal,
-                        ),
-                        CategoryFood(
-                          foods: selectedFoods,
-                          suggestKcal: widget.suggestKcal,
-                        )
-                      ]),
+                      child: isLoadingCategories 
+                        ? Container()
+                        : PageView.builder(
+                            physics: const NeverScrollableScrollPhysics(), // Disable swipe because we have a scrollable top bar, swiping could conflict with inner lists
+                            controller: _pageController,
+                            onPageChanged: (index) {
+                               setState(() {
+                                 selectedIndex = index;
+                               });
+                            },
+                            itemCount: 2 + dynamicCategories.length,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return AllFoodTab(
+                                  foods: selectedFoods,
+                                  suggestKcal: widget.suggestKcal,
+                                );
+                              }
+                              if (index == 1) {
+                                return FavoriteFood(
+                                  foods: selectedFoods,
+                                  suggestKcal: widget.suggestKcal,
+                                );
+                              }
+                              final category = dynamicCategories[index - 2];
+                              return FoodListByCategory(
+                                category: category,
+                                foods: selectedFoods,
+                                suggestKcal: widget.suggestKcal,
+                              );
+                            },
+                          ),
                     ),
                   )
                 ]),
@@ -176,96 +330,6 @@ class _SearchFoodControllerState extends State<SearchFoodController>
               Navigator.pop(context);
             })
       ]),
-    );
-  }
-}
-
-typedef SegmentOnchange = Function(int);
-
-class CustomSegment extends StatefulWidget {
-  CustomSegment({Key? key, this.onchange}) : super(key: key);
-  final SegmentOnchange? onchange;
-  @override
-  CustomSegmentState createState() => CustomSegmentState();
-}
-
-class CustomSegmentState extends State<CustomSegment> {
-  int segmentedControlValue = 0;
-
-  jumpTo(int index) {
-    setState(() {
-      segmentedControlValue = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(children: [
-        SizedBox(width: 16),
-        _buildChip(
-            title: R.string.mon_an_gan_day.tr(),
-            isSelected: segmentedControlValue == 0,
-            onTap: () {
-              widget.onchange!(0);
-              setState(() {
-                segmentedControlValue = 0;
-              });
-            }),
-        SizedBox(width: 8),
-        _buildChip(
-            title: R.string.mon_yeu_thich.tr(),
-            isSelected: segmentedControlValue == 1,
-            onTap: () {
-              widget.onchange!(1);
-              setState(() {
-                segmentedControlValue = 1;
-              });
-            }),
-        SizedBox(width: 8),
-        _buildChip(
-            title: R.string.danh_muc.tr(),
-            isSelected: segmentedControlValue == 2,
-            onTap: () {
-              widget.onchange!(2);
-              setState(() {
-                segmentedControlValue = 2;
-              });
-            }),
-        SizedBox(width: 16),
-      ]),
-    );
-  }
-
-  Widget _buildChip(
-      {required String title,
-      required bool isSelected,
-      required VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: isSelected ? R.color.mainColor : R.color.white,
-          border: Border.all(
-            color: isSelected ? R.color.mainColor : R.color.grayBorder,
-            width: 1,
-          ),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(
-            color: isSelected ? R.color.white : R.color.color0xff636A6B,
-            fontSize: 14,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
     );
   }
 }

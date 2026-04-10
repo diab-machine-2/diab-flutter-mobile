@@ -135,7 +135,7 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                       height: 48,
                       decoration: BoxDecoration(
                           color: R.color.white,
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: R.color.grayComponentBorder)),
                       child: Padding(
                         padding: EdgeInsets.only(left: 16, right: 8),

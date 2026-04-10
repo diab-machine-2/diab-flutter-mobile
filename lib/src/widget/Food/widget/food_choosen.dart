@@ -42,6 +42,15 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
         calculatorCalo();
       });
     }
+    if (notifyName == 'remove_food_from_cart') {
+      setState(() {
+        this.foods.removeWhere((element) => foodModel.id == element.id);
+        calculatorCalo();
+        if (this.foods.isEmpty) {
+          showAll = false;
+        }
+      });
+    }
   }
 
   @override
@@ -257,10 +266,11 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Button: Tiếp tục (thay cho nút Lưu cũ)
+                      // Button: Tiếp tục
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
+                            if (foods.isEmpty) return;
                             if (widget.callback != null) {
                               widget.callback!(foods);
                             }
@@ -268,9 +278,9 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                           child: Container(
                             height: 48,
                             decoration: BoxDecoration(
-                              color: R.color.mainColor,
+                              color: foods.isEmpty ? R.color.color0xffE5E5E5 : R.color.mainColor,
                               borderRadius: BorderRadius.circular(100),
-                              gradient: LinearGradient(
+                              gradient: foods.isEmpty ? null : LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.centerRight,
                                 colors: [
@@ -283,7 +293,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                               child: Text(
                                 'Tiếp tục',
                                 style: TextStyle(
-                                  color: R.color.white,
+                                  color: foods.isEmpty ? R.color.color0xff636A6B : R.color.white,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
                                 ),
