@@ -427,6 +427,7 @@ class FoodClient extends FetchClient {
 
       // Send as application/json
       final response = await super.postUri(
+        baseOption: true,
         url: '/App/Nutrition/Input',
         params: params,
       );
