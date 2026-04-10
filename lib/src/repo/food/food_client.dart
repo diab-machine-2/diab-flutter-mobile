@@ -341,7 +341,7 @@ class FoodClient extends FetchClient {
       List<FoodModel> foods, List<String> files) async {
     try {
       final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+      final dateStr = dt.toIso8601String();
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
@@ -382,7 +382,7 @@ class FoodClient extends FetchClient {
   }) async {
     try {
       final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-      final dateStr = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+      final dateStr = dt.toIso8601String();
       
       // Build JSON params
       final Map<String, dynamic> params = {
@@ -457,11 +457,13 @@ class FoodClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
+      final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
+      final dateStr = dt.toIso8601String();
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'date': date.toString(),
-        'createDatetime': date.toString(),
+        'date': dateStr,
+        'createDatetime': dateStr,
       };
       for (int i = 0; i < foods.length; i++) {
         params['items[$i].foodId'] = foods[i].id ?? '';
