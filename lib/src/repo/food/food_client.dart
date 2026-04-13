@@ -521,12 +521,24 @@ class FoodClient extends FetchClient {
   // Nutrition Summary - NEW: GET /App/Nutrition/Summary
   // ============================================================
 
-  // Cache to deduplicate overlapping simultaneous requests for the same range
-  static final Map<int, Future<NutritionSummaryModel>> _summaryCacheLock = {};
+  /// In-flight dedupe **only for the same [range] and same moment** (e.g. duplicate
+  /// listeners). **Changing [range] always uses a new map entry and a new HTTP GET.**
+  /// This is not a response cache: after the request finishes, the entry is removed
+  /// so the next load for that range hits the network again.
+  static final Map<int, Future<NutritionSummaryModel>> _nutritionSummaryInflight =
+      {};
 
   /// Lấy thống kê dinh dưỡng tổng hợp
   /// NEW endpoint: GET /App/Nutrition/Summary?range=X
-  Future<NutritionSummaryModel> fetchNutritionSummary(int range) async {
+  Future<NutritionSummaryModel> fetchNutritionSummary(int range) {
+    return _nutritionSummaryInflight.putIfAbsent(range, () {
+      final future = _fetchNutritionSummaryOnce(range);
+      future.whenComplete(() => _nutritionSummaryInflight.remove(range));
+      return future;
+    });
+  }
+
+  Future<NutritionSummaryModel> _fetchNutritionSummaryOnce(int range) async {
     try {
       print(
           '🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?range=$range');

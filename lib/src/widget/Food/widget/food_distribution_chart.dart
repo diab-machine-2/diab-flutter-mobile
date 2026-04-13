@@ -22,7 +22,6 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
     with AutomaticKeepAliveClientMixin<FoodDistributionChart> {
   @override
   bool get wantKeepAlive => true;
-  late BuildContext currentContext;
   int periodFilterType = 1;
   int? touchIndex;
 
@@ -34,46 +33,32 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
 
   reloadData(int periodFilter) {
     periodFilterType = periodFilter;
-    _refresh();
-  }
-
-  Future<bool> _refresh() async {
-    BlocProvider.of<FoodBloc>(currentContext).add(FetchStatisticDistribute(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-      periodFilterType: periodFilterType.toString(),
-    ));
-    return true;
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final width = MediaQuery.of(context).size.width;
-    return BlocProvider<FoodBloc>(
-        create: (context) => FoodBloc(),
-        child: BlocBuilder<FoodBloc, FoodState>(
-            builder: (BuildContext context, FoodState state) {
-          currentContext = context;
+    return BlocBuilder<FoodBloc, FoodState>(
+        builder: (BuildContext context, FoodState state) {
           FoodDistributeModel? model;
           double total = 0;
-          if (state is FoodInitial) {
-            BlocProvider.of<FoodBloc>(context).add(FetchStatisticDistribute(
-              currentDateTime:
-                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-              periodFilterType: periodFilterType.toString(),
-            ));
-          }
           if (state is FoodError) {
             Message.showToastMessage(context, state.message);
           }
 
-          if (state is FoodStatisticDistributeLoaded) {
-            model = state.model;
-            final data = model!.energyChart;
-            data.forEach((element) {
+          if (state is FoodNutritionOverviewLoaded) {
+            model = state.distributeModel;
+            for (final element in state.distributeModel.energyChart) {
               total += element.percentValue!;
-            });
+            }
+          } else if (state is FoodStatisticDistributeLoaded) {
+            model = state.model;
+            if (model != null) {
+              for (final element in model.energyChart) {
+                total += element.percentValue!;
+              }
+            }
           }
           return model == null
               ? Container(
@@ -266,6 +251,6 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
                     ],
                   ),
                 );
-        }));
+        });
   }
 }

@@ -114,3 +114,11 @@ class FetchFoodCalorieTrend extends FoodEvent {
 
   FetchFoodCalorieTrend({this.currentDateTime, this.periodFilterType});
 }
+
+/// Single nutrition summary fetch for overview (trend, distribution, meal balance, nutrients, AI).
+class FetchNutritionOverview extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchNutritionOverview({this.currentDateTime, this.periodFilterType});
+}

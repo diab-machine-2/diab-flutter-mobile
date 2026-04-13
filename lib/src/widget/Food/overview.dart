@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/food_calorie_trend_chart.dart';
@@ -26,6 +28,9 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   @override
   bool get wantKeepAlive => true;
 
+  late final FoodBloc _overviewFoodBloc = FoodBloc();
+  bool _overviewFetchSeeded = false;
+
   GlobalKey<FoodCalorieTrendChartState> calorieTrendKey = GlobalKey();
   GlobalKey<StarchChartState> starchKey = GlobalKey();
   GlobalKey<FoodDistributionChartState> distributionKey = GlobalKey();
@@ -46,8 +51,21 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
 
   @override
   void dispose() {
+    _overviewFoodBloc.close();
     _hasFoodData.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_overviewFetchSeeded) {
+      _overviewFetchSeeded = true;
+      final p = FoodDetailTabbarController.of(context)?.periodFilterType ?? 1;
+      _overviewFoodBloc.add(FetchNutritionOverview(
+        periodFilterType: p.toString(),
+      ));
+    }
   }
 
   void _checkDetailTabVisitStatus() async {
@@ -69,24 +87,17 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
   }
 
   reloadData(int periodFilterType) {
-    if (calorieTrendKey.currentState != null) {
-      calorieTrendKey.currentState!.reloadData(periodFilterType);
-    }
-    if (aiSuggestionKey.currentState != null) {
-      aiSuggestionKey.currentState!.reloadData(periodFilterType);
-    }
-    if (starchKey.currentState != null) {
-      starchKey.currentState!.reloadData(periodFilterType);
-    }
-    if (distributionKey.currentState != null) {
-      distributionKey.currentState!.reloadData(periodFilterType);
-    }
-    if (mealDistributionKey.currentState != null) {
-      mealDistributionKey.currentState!.reloadData(periodFilterType);
-    }
-    if (nutrientDistributionKey.currentState != null) {
-      nutrientDistributionKey.currentState!.reloadData(periodFilterType);
-    }
+    // Drop "has data" UI from the previous range while the new Summary loads.
+    _hasFoodData.value = false;
+    _overviewFoodBloc.add(FetchNutritionOverview(
+      periodFilterType: periodFilterType.toString(),
+    ));
+    calorieTrendKey.currentState?.reloadData(periodFilterType);
+    aiSuggestionKey.currentState?.reloadData(periodFilterType);
+    starchKey.currentState?.reloadData(periodFilterType);
+    distributionKey.currentState?.reloadData(periodFilterType);
+    mealDistributionKey.currentState?.reloadData(periodFilterType);
+    nutrientDistributionKey.currentState?.reloadData(periodFilterType);
   }
 
   @override
@@ -100,58 +111,71 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
             decoration: BoxDecoration(
               color: R.color.backgroundColorNew,
             ),
-            child: ListView(
-              physics: const ClampingScrollPhysics(),
-              padding: EdgeInsets.only(bottom: 100), // Space for fixed button
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 0, left: 16, right: 16),
-                  child: Column(
-                    children: [
-                      FoodCalorieTrendChart(
-                        key: calorieTrendKey,
-                        periodFilterType: FoodDetailTabbarController.of(context)?.periodFilterType ?? 1,
-                        onDataLoaded: (hasData) => _hasFoodData.value = hasData,
-                      ),
-                      ValueListenableBuilder<bool>(
-                        valueListenable: _hasFoodData,
-                        builder: (context, hasData, _) {
-                          if (!hasData) return SizedBox.shrink();
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(16),
-                                bottomRight: Radius.circular(16),
+            child: BlocProvider<FoodBloc>.value(
+              value: _overviewFoodBloc,
+              child: ListView(
+                physics: const ClampingScrollPhysics(),
+                padding: EdgeInsets.only(bottom: 100), // Space for fixed button
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 0, left: 16, right: 16),
+                    child: Column(
+                      children: [
+                        FoodCalorieTrendChart(
+                          key: calorieTrendKey,
+                          periodFilterType:
+                              FoodDetailTabbarController.of(context)
+                                      ?.periodFilterType ??
+                                  1,
+                          onDataLoaded: (hasData) =>
+                              _hasFoodData.value = hasData,
+                        ),
+                        ValueListenableBuilder<bool>(
+                          valueListenable: _hasFoodData,
+                          builder: (context, hasData, _) {
+                            if (!hasData) return SizedBox.shrink();
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(16),
+                                  bottomRight: Radius.circular(16),
+                                ),
                               ),
-                            ),
-                            child: FoodAISuggestion(
-                                key: aiSuggestionKey, initialPeriodFilterType: 1),
-                          );
-                        },
-                      ),
-                    ],
+                              child: FoodAISuggestion(
+                                key: aiSuggestionKey,
+                                initialPeriodFilterType:
+                                    FoodDetailTabbarController.of(context)
+                                            ?.periodFilterType ??
+                                        1,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: _hasFoodData,
-                  builder: (context, hasData, _) {
-                    if (!hasData) return SizedBox.shrink();
-                    return Column(children: [
-                      NutrientDistributionChart(
-                        key: nutrientDistributionKey,
-                        nutritionPercent: FoodDetailTabbarController.of(context)
-                            ?.widget
-                            .nutritionPercent,
-                        nutritionColors: FoodDetailTabbarController.of(context)
-                            ?.widget
-                            .nutritionColors,
-                      ),
-                      FoodDistributionChart(key: distributionKey),
-                      MealDistributionWidget(key: mealDistributionKey),
-                    ]);
-                  },
-                ),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _hasFoodData,
+                    builder: (context, hasData, _) {
+                      if (!hasData) return SizedBox.shrink();
+                      return Column(children: [
+                        NutrientDistributionChart(
+                          key: nutrientDistributionKey,
+                          nutritionPercent:
+                              FoodDetailTabbarController.of(context)
+                                  ?.widget
+                                  .nutritionPercent,
+                          nutritionColors:
+                              FoodDetailTabbarController.of(context)
+                                  ?.widget
+                                  .nutritionColors,
+                        ),
+                        FoodDistributionChart(key: distributionKey),
+                        MealDistributionWidget(key: mealDistributionKey),
+                      ]);
+                    },
+                  ),
                 SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -159,6 +183,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                 ),
                 SizedBox(height: 36)
               ],
+            ),
             ),
           ),
           // Fixed bottom button

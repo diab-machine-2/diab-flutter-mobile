@@ -11,8 +11,6 @@ import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
 import 'package:medical/src/widget/helper/helper.dart';
-import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class FoodCalorieTrendChart extends StatefulWidget {
@@ -34,7 +32,6 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   @override
   bool get wantKeepAlive => true;
 
-  late BuildContext currentContext;
   int periodFilterType = 1;
   int? previousDate = 0;
 
@@ -179,52 +176,44 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocProvider<FoodBloc>(
-      create: (context) => FoodBloc(),
-      child: BlocBuilder<FoodBloc, FoodState>(
-        builder: (BuildContext context, FoodState state) {
-          if (!mounted) return SizedBox.shrink();
-          currentContext = context;
+    return BlocBuilder<FoodBloc, FoodState>(
+      builder: (BuildContext context, FoodState state) {
+        if (!mounted) return SizedBox.shrink();
 
-          if (state is FoodInitial) {
-            BlocProvider.of<FoodBloc>(context).add(FetchFoodCalorieTrend(
-              currentDateTime:
-                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-              periodFilterType: periodFilterType.toString(),
-            ));
-          }
+        if (state is FoodError) {
+          print('[FoodCalorieTrendChart] BLoC error: ${state.message}');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              widget.onDataLoaded?.call(false);
+            }
+          });
+          return _buildEmptyState();
+        }
 
-          if (state is FoodError) {
-            print('[FoodCalorieTrendChart] BLoC error: ${state.message}');
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                widget.onDataLoaded?.call(false);
-              }
-            });
-            // Show empty state instead of infinite spinner
-            return _buildEmptyState();
-          }
+        if (state is FoodNutritionOverviewLoaded ||
+            state is FoodCalorieTrendLoaded) {
+          final newTrends = state is FoodNutritionOverviewLoaded
+              ? state.trendItems
+              : (state as FoodCalorieTrendLoaded).items;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _updateFocusIndexWithFallback(newTrends);
+              widget.onDataLoaded?.call(newTrends.isNotEmpty);
+            }
+          });
+        }
 
-          if (state is FoodCalorieTrendLoaded) {
-            final newTrends = state.items;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                _updateFocusIndexWithFallback(newTrends);
-                widget.onDataLoaded?.call(newTrends.isNotEmpty);
-              }
-            });
-          }
+        if (state is FoodLoading || state is FoodInitial) {
+          return Container(
+              height: 300, child: Center(child: CircularProgressIndicator()));
+        }
 
-          if (state is FoodLoading || state is FoodInitial) {
-            return Container(
-                height: 300, child: Center(child: CircularProgressIndicator()));
-          }
+        if (state is! FoodNutritionOverviewLoaded &&
+            state is! FoodCalorieTrendLoaded) {
+          return _buildEmptyState();
+        }
 
-          if (state is! FoodCalorieTrendLoaded) {
-            return _buildEmptyState();
-          }
-
-          return VisibilityDetector(
+        return VisibilityDetector(
             key: Key('food_calorie_trend_chart'),
             onVisibilityChanged: (info) {
               if (!mounted) return;
@@ -245,8 +234,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               ],
             ),
           );
-        },
-      ),
+      },
     );
   }
 
@@ -816,11 +804,6 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
   // ── Reload ──────────────────────────────────────────────
   void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
-    if (!mounted) return;
-    BlocProvider.of<FoodBloc>(currentContext).add(FetchFoodCalorieTrend(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-      periodFilterType: periodFilterType.toString(),
-    ));
+    if (mounted) setState(() {});
   }
 }

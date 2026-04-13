@@ -123,3 +123,32 @@ class FoodCalorieTrendLoaded extends FoodState {
     required this.perMealThreshold,
   });
 }
+
+/// One GET /App/Nutrition/Summary drives all overview charts + AI suggestion.
+/// [range] is the API `range` query param for this payload (new fetch each time the user changes period).
+class FoodNutritionOverviewLoaded extends FoodState {
+  /// Same as GET /App/Nutrition/Summary?range=[range]
+  final int range;
+  final List<FoodCalorieTrendItem> trendItems;
+  final double energyGoal;
+  final double perMealThreshold;
+  final FoodDistributeModel distributeModel;
+  final int balancedCount;
+  final int totalMealCount;
+  final int targetKcal;
+  final Map<String, double> nutrientPercent;
+  final String? aiAdvice;
+
+  FoodNutritionOverviewLoaded({
+    required this.range,
+    required this.trendItems,
+    required this.energyGoal,
+    required this.perMealThreshold,
+    required this.distributeModel,
+    required this.balancedCount,
+    required this.totalMealCount,
+    required this.targetKcal,
+    required this.nutrientPercent,
+    this.aiAdvice,
+  });
+}
