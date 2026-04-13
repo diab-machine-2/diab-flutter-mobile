@@ -28,6 +28,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
   final String timeframeId;
   final List<String> files;
   final Map<String, dynamic>? mealScoreData;
+  final bool isManualInput;
 
   const ConfirmGeneratedFood({
     Key? key,
@@ -36,6 +37,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
     required this.timeframeId,
     required this.files,
     this.mealScoreData,
+    this.isManualInput = false,
   }) : super(key: key);
 
   @override
@@ -511,28 +513,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       width: double.infinity,
       child: Row(
         children: [
-          // Nút Chia sẻ (bên trái)
-          GestureDetector(
-            onTap: _shareFood,
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                border: Border.all(color: Color(0xFFE0E0E0), width: 1),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.share_outlined,
-                  color: Color(0xFF008479),
-                  size: 22,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(width: 12),
-          // Nút Hoàn tất (bên phải, chiếm phần còn lại)
           Expanded(
             child: GestureDetector(
               onTap: _haveFood ? _submitData : null,
@@ -556,41 +536,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  /// Chia sẻ thông tin bữa ăn
-  void _shareFood() {
-    // Tạo nội dung chia sẻ
-    final StringBuffer shareContent = StringBuffer();
-    shareContent.writeln('🍽️ Bữa ăn của tôi');
-    shareContent
-        .writeln('📅 ${DateFormat('dd/MM/yyyy HH:mm').format(selectedDate)}');
-    shareContent.writeln('');
-
-    // Thêm thông tin từng món
-    for (var food in _selectedFoods) {
-      final portion = food.portion ?? 1;
-      final unit = food.unit ?? 'phần';
-      final calorie = ((food.calorie ?? 0) * portion).round();
-      shareContent.writeln('• ${food.name} - $portion $unit ($calorie Kcal)');
-    }
-
-    shareContent.writeln('');
-    shareContent.writeln('🔥 Tổng: ${totalKcal.round()} Kcal');
-    shareContent.writeln('🍚 Carbs: ${_calculateTotalCarbs().round()}g');
-    shareContent.writeln('🥩 Protein: ${_calculateTotalProtein().round()}g');
-    shareContent.writeln('🧈 Fat: ${_calculateTotalFat().round()}g');
-
-    // TODO: Implement share functionality
-    // Share.share(shareContent.toString());
-
-    // Tạm thời show snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Đã copy nội dung chia sẻ'),
-        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -749,22 +694,32 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       // Step 4: Use the MealScore data passed from image capture
       Map<String, dynamic>? mealScoreData = widget.mealScoreData;
 
-      // Step 5: Save the meal to DB via /App/Nutrition/Input
-      // NOTE: UploadAI/MealScore only analyzes and returns scores,
-      // it does NOT persist the meal. We must call postIndexFoodAI to save.
       final client = FoodClient();
-      final result = await client.postIndexFoodAI(
-        selectedDate.millisecondsSinceEpoch ~/ 1000,
-        widget.timeframeId,
-        _controllerNote.text,
-        _selectedFoods,
-        paths,
-        mealScoreData: mealScoreData,
-      );
+      // Manual flow should save with postIndexFood, AI flow keeps postIndexFoodAI.
+      final dynamic result = widget.isManualInput
+          ? await client.postIndexFood(
+              selectedDate.millisecondsSinceEpoch ~/ 1000,
+              widget.timeframeId,
+              _controllerNote.text,
+              _selectedFoods,
+              paths,
+            )
+          : await client.postIndexFoodAI(
+              selectedDate.millisecondsSinceEpoch ~/ 1000,
+              widget.timeframeId,
+              _controllerNote.text,
+              _selectedFoods,
+              paths,
+              mealScoreData: mealScoreData,
+            );
 
-      developer.log('[CAPTURE] postIndexFoodAI result: $result',
+      developer.log(
+          '[CAPTURE] ${widget.isManualInput ? "postIndexFood" : "postIndexFoodAI"} result: $result',
           name: '[CAPTURE]');
-      if (result != null && result.isNotEmpty) {
+      final bool isSubmitSuccess = widget.isManualInput
+          ? result == true
+          : (result is String && result.isNotEmpty);
+      if (isSubmitSuccess) {
         // Clean up temporary files
         if (paths.isNotEmpty) {
           await _cleanupTempFiles(paths);

@@ -417,6 +417,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           'timeframe': widget.timeframe,
           'timeframeId': widget.timeframeId,
           'files': <String>[],
+          'isManualInput': true,
         },
       );
     }
@@ -1127,6 +1128,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               'foods': updatedResult,
               'files': imagePaths,
               'mealScoreData': mealScoreData,
+              'isManualInput': false,
             });
       } else {
         BotToast.closeAllLoading(); // Close all toasts including custom text

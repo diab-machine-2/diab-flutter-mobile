@@ -181,6 +181,7 @@ class AppRoutes {
           files:
               data?['files'] != null ? List<String>.from(data!['files']) : [],
           mealScoreData: data?['mealScoreData'] as Map<String, dynamic>?,
+          isManualInput: data?['isManualInput'] == true,
         );
         break;
       case NavigatorName.food_image_capture:

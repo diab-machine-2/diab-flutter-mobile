@@ -415,7 +415,8 @@ class _FoodDetailPageWrapper extends StatefulWidget {
   _FoodDetailPageWrapperState createState() => _FoodDetailPageWrapperState();
 }
 
-class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper> {
+class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper>
+    with Observer {
   late int _periodFilterType;
   GlobalKey<FoodDetailControllerState> _detailKey = GlobalKey();
 
@@ -423,6 +424,21 @@ class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper> {
   void initState() {
     super.initState();
     _periodFilterType = widget.initialPeriodFilterType;
+    Observable.instance.addObserver(this);
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'food_change_data') {
+      _detailKey.currentState?.reloadData(_periodFilterType);
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
