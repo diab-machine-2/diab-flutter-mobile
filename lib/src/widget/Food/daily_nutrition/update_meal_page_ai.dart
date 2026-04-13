@@ -691,7 +691,6 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
     try {
       final success = await FoodClient().deleteInputFood(widget.updateMealId);
       if (success == true) {
-        BotToast.showText(text: 'Đã xoá bữa ăn');
         Navigator.pop(context); // Trở về màn hình trước
 
         _notifyFoodChange();

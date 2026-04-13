@@ -291,7 +291,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                             ),
                             child: Center(
                               child: Text(
-                                'Tiếp tục',
+                                R.string.tiep_tuc.tr(),
                                 style: TextStyle(
                                   color: foods.isEmpty ? R.color.color0xff636A6B : R.color.white,
                                   fontWeight: FontWeight.w600,

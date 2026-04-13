@@ -52,18 +52,9 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   void _loadData() async {
     final data = widget.data;
     _files = data.images;
-    _aiResult = data.healthRecommendation ?? _getDefaultRecommendation();
+    _aiResult = data.healthRecommendation;
     if (mounted) {
       setState(() {});
-    }
-  }
-
-  String _getDefaultRecommendation() {
-    // Placeholder recommendation based on balance status
-    if (widget.data.balanceStatus == 'Cân bằng') {
-      return 'Bữa ăn này khá cân bằng! Bạn đã cung cấp đủ năng lượng và dinh dưỡng cần thiết cho cơ thể. Hãy tiếp tục duy trì chế độ ăn uống lành mạnh này.';
-    } else {
-      return 'Bữa cơm này còn thiếu cân bằng. Để nhẹ người hơn, bạn có thể bỏ chút cháo, gà chiên và bi lược. Đề nghệ người hơn, bạn có thể bỏ chút phần miếng gà chiên sang gà nướng hoặc cá, và kết bữa bằng trái cây tươi. Nếu gà kèm nướng hoặc chiên không đều giúp giảm bớt mỡ mà vẫn giữ ngon.';
     }
   }
 
@@ -247,8 +238,8 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
               totalCalories: widget.data.totalCalories,
               goalCalories: widget.data.goalCalories,
               timeFrame: widget.data.timeFrame,
-              score: widget.data.score ?? 6,
-              balanceStatus: widget.data.balanceStatus ?? 'Chưa cân bằng',
+              score: widget.data.score ?? 0,
+              balanceStatus: widget.data.balanceStatus ?? '',
             ),
           ),
 
@@ -284,18 +275,15 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             ],
           ),
           const SizedBox(height: 8),
-          if (_aiResult == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: CircularProgressIndicator(),
-            )
-          else if (_aiResult!.isEmpty)
-            Text(
-              'Có lỗi xảy ra',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFFC82221),
+          if (_aiResult == null || _aiResult!.isEmpty)
+            Center(
+              child: Text(
+                'Có lỗi xảy ra',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.attentionText,
+                ),
               ),
             )
           else ...[
@@ -569,7 +557,10 @@ class _CircularNutritionGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double percent = (totalCalories / goalCalories) * 100;
+    final hasValidScore = score > 0;
+    final safeGoalCalories = goalCalories <= 0 ? 1 : goalCalories;
+    final percent = (totalCalories / safeGoalCalories) * 100;
+    final progressValue = hasValidScore ? min(percent, 100.0) : 0.0;
     Color arcColor =
         balanceStatus == 'Cân bằng' ? Color(0xFF4CAF50) : Color(0xFFFFA726);
 
@@ -591,13 +582,13 @@ class _CircularNutritionGauge extends StatelessWidget {
             ranges: <GaugeRange>[
               GaugeRange(
                 startValue: 0,
-                endValue: min(percent, 100),
+                endValue: progressValue,
                 color: arcColor,
                 startWidth: 12,
                 endWidth: 12,
               ),
               GaugeRange(
-                startValue: min(percent, 100),
+                startValue: progressValue,
                 endValue: 100,
                 color: Color(0xFFE6ECF1),
                 startWidth: 12,

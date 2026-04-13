@@ -10,7 +10,6 @@ import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/food_menu_screens/intro_sample_menu/intro_sample_menu_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MealDistributionWidget extends StatefulWidget {
   MealDistributionWidget({Key? key}) : super(key: key);
@@ -22,16 +21,13 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
     with AutomaticKeepAliveClientMixin<MealDistributionWidget>, Observer {
   @override
   bool get wantKeepAlive => true;
-  late BuildContext currentContext;
   int periodFilterType = 1;
-  bool _hasVisitedMealInput = false;
 
   @override
   void initState() {
     periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
     super.initState();
     Observable.instance.addObserver(this);
-    _checkMealInputVisitStatus();
   }
 
   @override
@@ -44,74 +40,54 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'food_change_data') {
-      _refresh();
-    }
-  }
-
-  void _checkMealInputVisitStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    _hasVisitedMealInput = prefs.getBool('has_visited_meal_input') ?? false;
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  void _markMealInputAsVisited() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('has_visited_meal_input', true);
-    _hasVisitedMealInput = true;
-    if (mounted) {
-      setState(() {});
+      if (!mounted) return;
+      try {
+        context.read<FoodBloc>().add(FetchNutritionOverview(
+              periodFilterType: periodFilterType.toString(),
+            ));
+      } catch (_) {}
     }
   }
 
   reloadData(int periodFilter) {
     periodFilterType = periodFilter;
-    _refresh();
-  }
-
-  Future<bool> _refresh() async {
-    BlocProvider.of<FoodBloc>(currentContext).add(FetchStatisticDistribute(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-      periodFilterType: periodFilterType.toString(),
-    ));
-    return true;
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return BlocProvider<FoodBloc>(
-        create: (context) => FoodBloc(),
-        child: BlocBuilder<FoodBloc, FoodState>(
-            builder: (BuildContext context, FoodState state) {
-          currentContext = context;
+    return BlocBuilder<FoodBloc, FoodState>(
+        builder: (BuildContext context, FoodState state) {
           FoodDistributeModel? model;
           double totalEnergy = 0;
           int mealCount = 0;
           int balancedMealCount = 0;
 
-          if (state is FoodInitial) {
-            BlocProvider.of<FoodBloc>(context).add(FetchStatisticDistribute(
-              currentDateTime:
-                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-              periodFilterType: periodFilterType.toString(),
-            ));
-          }
           if (state is FoodError) {
             Message.showToastMessage(context, state.message);
           }
 
-          if (state is FoodStatisticDistributeLoaded) {
+          if (state is FoodNutritionOverviewLoaded) {
+            model = state.distributeModel;
+            mealCount = state.totalMealCount;
+            balancedMealCount = state.balancedCount;
+            totalEnergy = state.targetKcal.toDouble();
+
+            if (mealCount == 0) {
+              mealCount = state.distributeModel.energyChart
+                  .where((item) => (item.value ?? 0) > 0)
+                  .length;
+            }
+          } else if (state is FoodStatisticDistributeLoaded) {
             model = state.model;
             mealCount = state.totalMealCount ?? 0;
             balancedMealCount = state.balancedCount ?? 0;
             totalEnergy = (state.targetKcal ?? 2000).toDouble();
 
             if (mealCount == 0 && model != null) {
-              // Fallback if raw input count fails
-              mealCount = model.energyChart.where((item) => (item.value ?? 0) > 0).length;
+              mealCount =
+                  model.energyChart.where((item) => (item.value ?? 0) > 0).length;
             }
           }
 
@@ -431,6 +407,6 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                     ],
                   ),
                 );
-        }));
+        });
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/Food/widget/nutrition_ai_help_button.dart';
-import 'package:medical/src/repo/food/food_client.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodAISuggestion extends StatefulWidget {
   final int initialPeriodFilterType;
@@ -23,126 +23,191 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
   bool get wantKeepAlive => true;
 
   int periodFilterType = 1;
-  String? _aiSuggestion;
 
-  String _getDefaultSuggestion() {
-    int days = 7;
-    if (periodFilterType == 2) days = 14;
-    if (periodFilterType == 3) days = 30;
-    return "Trong $days ngày qua, bạn đã duy trì chế độ ăn khá cân bằng với lượng protein và rau củ hợp lý. Tuy nhiên, lượng carbohydrate hơi cao so với khuyến nghị. Nên giảm tinh bột và tăng lượng trái cây để bổ sung vitamin và chất xơ cho cơ thể.";
+  Future<String> _resolveAdvice(FoodNutritionOverviewLoaded state) async {
+    final api = state.aiAdvice;
+    if (api != null && api.isNotEmpty) return api;
+    return '';
   }
 
   @override
   void initState() {
     super.initState();
     periodFilterType = widget.initialPeriodFilterType;
-    _loadAISuggestion();
-  }
-
-  void _loadAISuggestion() async {
-    setState(() {
-      _aiSuggestion = null; // Show loading
-    });
-    try {
-      final summary = await FoodClient().fetchNutritionSummary(periodFilterType);
-      String? advice = summary.aiAdvice;
-      
-      if (advice == null || advice.isEmpty) {
-        final prefs = await SharedPreferences.getInstance();
-        advice = prefs.getString('latest_meal_score_suggestion');
-      }
-
-      if (mounted) {
-        setState(() {
-          _aiSuggestion = (advice != null && advice.isNotEmpty)
-              ? advice
-              : _getDefaultSuggestion();
-        });
-      }
-    } catch (e) {
-      _loadFallbackAISuggestion();
-    }
-  }
-
-  void _loadFallbackAISuggestion() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final saved = prefs.getString('latest_meal_score_suggestion');
-      if (mounted) {
-        setState(() {
-          _aiSuggestion = (saved != null && saved.isNotEmpty)
-              ? saved
-              : _getDefaultSuggestion();
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _aiSuggestion = _getDefaultSuggestion();
-        });
-      }
-    }
   }
 
   void reloadData(int periodFilter) {
     periodFilterType = periodFilter;
-    _loadAISuggestion();
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                'Gợi ý từ Trợ lý Sống khoẻ',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.color0xff111515,
+    return BlocBuilder<FoodBloc, FoodState>(
+      builder: (context, state) {
+        if (state is FoodLoading || state is FoodInitial) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Gợi ý từ Trợ lý Sống khoẻ',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Image.asset(R.drawable.ic_info, width: 18, height: 18),
+                  ],
                 ),
+                const SizedBox(height: 8),
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: AILoadingTextWidget(),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (state is FoodError) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Gợi ý từ Trợ lý Sống khoẻ',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: R.color.color0xff111515,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Image.asset(R.drawable.ic_info, width: 18, height: 18),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Có lỗi xảy ra',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFFC82221),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        if (state is FoodNutritionOverviewLoaded) {
+          return FutureBuilder<String>(
+            key: ValueKey(
+                '${state.range}_${periodFilterType}_${state.aiAdvice ?? ''}_${state.nutrientPercent.hashCode}'),
+            future: _resolveAdvice(state),
+            builder: (context, snapshot) {
+              final text = snapshot.data;
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Gợi ý từ Trợ lý Sống khoẻ',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: R.color.color0xff111515,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Image.asset(R.drawable.ic_info, width: 18, height: 18),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    if (text == null)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0),
+                        child: AILoadingTextWidget(),
+                      )
+                    else if (text.isEmpty)
+                      Text(
+                        'Có lỗi xảy ra',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFFC82221),
+                        ),
+                      )
+                    else ...[
+                      Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: R.color.color0xff111515,
+                          height: 1.46,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const NutritionAIHelpButton(),
+                    ],
+                  ],
+                ),
+              );
+            },
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Gợi ý từ Trợ lý Sống khoẻ',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Image.asset(R.drawable.ic_info, width: 18, height: 18),
+                ],
               ),
-              const SizedBox(width: 6),
-              Image.asset(R.drawable.ic_info, width: 18, height: 18),
+              const SizedBox(height: 8),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: AILoadingTextWidget(),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
-          if (_aiSuggestion == null)
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: AILoadingTextWidget(),
-            )
-          else if (_aiSuggestion!.isEmpty)
-            Text(
-              'Có lỗi xảy ra',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-                color: Color(0xFFC82221),
-              ),
-            )
-          else ...[
-            Text(
-              _aiSuggestion!,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-                color: R.color.color0xff111515,
-                height: 1.46,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const NutritionAIHelpButton(),
-          ],
-        ],
-      ),
+        );
+      },
     );
   }
 }
