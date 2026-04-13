@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -793,7 +792,8 @@ class _HomeControllerState extends State<HomeController>
                               // check first time open dinh duong
                               if (routeName == NavigatorName.add_food ||
                                   routeName == NavigatorName.detail_food ||
-                                  routeName == NavigatorName.nutrient_intro_1st_page) {
+                                  routeName ==
+                                      NavigatorName.nutrient_intro_1st_page) {
                                 // Check if user has food data
                                 bool hasFoodData = await _checkHasFoodData();
 
@@ -1610,24 +1610,9 @@ class _HomeControllerState extends State<HomeController>
   /// Check if user has food/nutrition data
   Future<bool> _checkHasFoodData() async {
     try {
-      // First check SharedPreferences — most up-to-date local state
-      final prefs = await SharedPreferences.getInstance();
-      final todayKey = DateTime.now().toIso8601String().substring(0, 10);
-      final savedDate = prefs.getString('latest_meal_kcal_date');
-      if (savedDate == todayKey) {
-        final savedKcal = prefs.getDouble('latest_meal_kcal') ?? 0;
-        if (savedKcal == 0) return false;
-        if (savedKcal > 0) return true;
-      }
-
-      // Fetch FRESH data from backend (not cached)
       final homeModel = await HomeClient().fetchHomes();
-      if (homeModel != null) {
-        return homeModel.energyCard?.consumedEnergy != null &&
-            homeModel.energyCard!.consumedEnergy! > 0;
-      }
-
-      return false;
+      return homeModel.energyCard?.consumedEnergy != null &&
+          homeModel.energyCard!.consumedEnergy! > 0;
     } catch (e) {
       return false;
     }

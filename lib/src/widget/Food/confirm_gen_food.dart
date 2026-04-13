@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 
@@ -14,7 +13,6 @@ import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
@@ -786,12 +784,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           // New API uses 'scoreRange' instead of 'totalMealRange'
           apiRange = (mealScoreData['scoreRange'] ?? mealScoreData['totalMealRange']) as String?;
 
-          // Save latest AI suggestion to SharedPreferences for overview
-          final prefs = await SharedPreferences.getInstance();
-          if (apiMessage != null && apiMessage.isNotEmpty) {
-            await prefs.setString('latest_meal_score_suggestion', apiMessage);
-          }
-
           // Parse nutrition percent from new fields
           nutritionPercent = {
             'carb': (mealScoreData['carbPercent'] as num?)?.toInt() ?? 0,
@@ -823,27 +815,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
             }
           }
 
-          // Save nutritionPercent & nutritionColors to SharedPreferences
-          await prefs.setString('latest_nutrition_percent', jsonEncode(nutritionPercent));
-          if (nutritionColors != null) {
-            await prefs.setString('latest_nutrition_colors', jsonEncode(nutritionColors));
-          }
-          // Save daily accumulated kcal total
-          final todayKey = DateTime.now().toIso8601String().substring(0, 10);
-          final savedDate = prefs.getString('latest_meal_kcal_date');
-          double existingKcal = 0;
-          if (savedDate == todayKey) {
-            existingKcal = prefs.getDouble('latest_meal_kcal') ?? 0;
-          }
-          await prefs.setDouble('latest_meal_kcal', existingKcal + totalKcal);
-          await prefs.setString('latest_meal_kcal_date', todayKey);
-          // Save MealScore score & balance status for calorie trend chart
-          if (apiScore != null) {
-            await prefs.setInt('latest_meal_score', apiScore);
-          }
-          if (apiRange != null) {
-            await prefs.setString('latest_meal_range', apiRange);
-          }
         }
 
         // Get balance status from API range

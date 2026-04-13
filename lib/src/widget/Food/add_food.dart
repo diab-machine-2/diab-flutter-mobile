@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -921,17 +919,6 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       final result = await FoodClient().deleteInputFood(widget.id);
       if (result == true) {
         Message.showToastMessage(context, R.string.xoa_thanh_cong.tr());
-        // Clear saved nutrition data from SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove('latest_nutrition_percent');
-        await prefs.remove('latest_nutrition_colors');
-        // Set kcal to 0 (not remove) so home page overrides stale backend API value
-        final todayKey = DateTime.now().toIso8601String().substring(0, 10);
-        await prefs.setDouble('latest_meal_kcal', 0);
-        await prefs.setString('latest_meal_kcal_date', todayKey);
-        await prefs.remove('latest_meal_score');
-        await prefs.remove('latest_meal_range');
-        await prefs.remove('latest_meal_score_suggestion');
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         // DartNotificationCenter.post(channel: 'food_change_data');
         Navigator.pop(context);
@@ -1088,12 +1075,6 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           apiMessage = mealScoreData['messageResult'] as String?;
           apiRange = mealScoreData['totalMealRange'] as String?;
 
-          // Save latest AI suggestion to SharedPreferences for overview
-          final prefs = await SharedPreferences.getInstance();
-          if (apiMessage != null && apiMessage.isNotEmpty) {
-            await prefs.setString('latest_meal_score_suggestion', apiMessage);
-          }
-
           final npData = mealScoreData['nutritionPercent'];
           if (npData != null) {
             nutritionPercent = {
@@ -1115,29 +1096,6 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
             }
           }
 
-          // Save nutritionPercent & nutritionColors to SharedPreferences
-          if (nutritionPercent != null) {
-            await prefs.setString('latest_nutrition_percent', jsonEncode(nutritionPercent));
-          }
-          if (nutritionColors != null) {
-            await prefs.setString('latest_nutrition_colors', jsonEncode(nutritionColors));
-          }
-          // Save daily accumulated kcal total
-          final todayKey = DateTime.now().toIso8601String().substring(0, 10);
-          final savedDate = prefs.getString('latest_meal_kcal_date');
-          double existingKcal = 0;
-          if (savedDate == todayKey) {
-            existingKcal = prefs.getDouble('latest_meal_kcal') ?? 0;
-          }
-          await prefs.setDouble('latest_meal_kcal', existingKcal + totalKcal);
-          await prefs.setString('latest_meal_kcal_date', todayKey);
-          // Save MealScore score & balance status for calorie trend chart
-          if (apiScore != null) {
-            await prefs.setInt('latest_meal_score', apiScore);
-          }
-          if (apiRange != null) {
-            await prefs.setString('latest_meal_range', apiRange);
-          }
         }
 
         String? balanceStatus;

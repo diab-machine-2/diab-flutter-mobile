@@ -726,19 +726,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // Nutrition (Food)
-    // Check both API value and saved value from SharedPreferences
-    double apiEnergy = model?.energyCard?.consumedEnergy ?? 0;
-    final prefs = await SharedPreferences.getInstance();
-    final todayKey = DateTime.now().toIso8601String().substring(0, 10);
-    final savedDate = prefs.getString('latest_meal_kcal_date');
-    // When saved data is from today, ALWAYS use it (it's more up-to-date than stale API)
-    // This handles both: adding meals (accumulated total) and deleting all food (0)
-    final double displayEnergy;
-    if (savedDate == todayKey) {
-      displayEnergy = prefs.getDouble('latest_meal_kcal') ?? 0;
-    } else {
-      displayEnergy = apiEnergy;
-    }
+    final double displayEnergy = model?.energyCard?.consumedEnergy ?? 0;
     final haveNutrition = displayEnergy > 0;
     final nutrition = HomeMeasurementData(
       title: "Dinh Dưỡng",
@@ -751,8 +739,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       value2: null,
       value2Color: null,
       unit: model?.energyCard?.unit ?? "kcal",
-      navigatorName:
-          haveNutrition ? NavigatorName.detail_food : NavigatorName.nutrient_intro_1st_page,
+      navigatorName: haveNutrition
+          ? NavigatorName.detail_food
+          : NavigatorName.nutrient_intro_1st_page,
       args: haveNutrition ? null : null,
     );
 
