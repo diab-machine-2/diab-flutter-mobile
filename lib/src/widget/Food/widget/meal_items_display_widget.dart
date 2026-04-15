@@ -79,7 +79,7 @@ class MealItemsDisplayWidget extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: NetWorkImageWidget(
-              imageUrl: food.image?.url ?? '',
+              imageUrl: food.imageUrl ?? '',
               width: 60,
               height: 60,
               fit: BoxFit.cover,

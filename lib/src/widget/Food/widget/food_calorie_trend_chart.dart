@@ -214,26 +214,26 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         }
 
         return VisibilityDetector(
-            key: Key('food_calorie_trend_chart'),
-            onVisibilityChanged: (info) {
-              if (!mounted) return;
-              if (info.visibleFraction == 0) {
-                previousDate = 0;
-              } else if (info.visibleFraction > 0) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) _scrollToSelected();
-                });
-              }
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 16),
-                _sectionTrending(),
-                const SizedBox(height: 16),
-              ],
-            ),
-          );
+          key: Key('food_calorie_trend_chart'),
+          onVisibilityChanged: (info) {
+            if (!mounted) return;
+            if (info.visibleFraction == 0) {
+              previousDate = 0;
+            } else if (info.visibleFraction > 0) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _scrollToSelected();
+              });
+            }
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              _sectionTrending(),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
       },
     );
   }
@@ -366,16 +366,22 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       selectedMealText = t.mealText ?? '';
       if (selectedMealText.isNotEmpty) {
         String lower = selectedMealText.toLowerCase();
-        if (lower.contains('sáng') || lower.contains('breakfast')) selectedMealText = 'Bữa sáng';
-        else if (lower.contains('trưa') || lower.contains('lunch')) selectedMealText = 'Bữa trưa';
-        else if (lower.contains('tối') || lower.contains('dinner')) selectedMealText = 'Bữa tối';
-        else if (lower.contains('nhẹ') || lower.contains('snack')) selectedMealText = 'Bữa nhẹ';
-        else if (lower.contains('khuya') || lower.contains('late')) selectedMealText = 'Bữa khuya';
-        else if (!lower.startsWith('bữa')) selectedMealText = 'Bữa $lower'; // Fallback
+        if (lower.contains('sáng') || lower.contains('breakfast'))
+          selectedMealText = 'Bữa sáng';
+        else if (lower.contains('trưa') || lower.contains('lunch'))
+          selectedMealText = 'Bữa trưa';
+        else if (lower.contains('tối') || lower.contains('dinner'))
+          selectedMealText = 'Bữa tối';
+        else if (lower.contains('nhẹ') || lower.contains('snack'))
+          selectedMealText = 'Bữa nhẹ';
+        else if (lower.contains('khuya') || lower.contains('late'))
+          selectedMealText = 'Bữa khuya';
+        else if (!lower.startsWith('bữa'))
+          selectedMealText = 'Bữa $lower'; // Fallback
       }
       selectedScore = t.score ?? 0;
-      
-      // Override API's old string like "Trung bình" / "Tốt" 
+
+      // Override API's old string like "Trung bình" / "Tốt"
       // with the new standard "Cân bằng" / "Chưa cân bằng"
       if (selectedScore >= 8) {
         selectedType = 'Cân bằng';
@@ -416,7 +422,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
         ]),
         const SizedBox(height: 4),
 
-        // ── Dòng 2: < Cân bằng > ──
+        // ── Dòng 2: Chất lượng bữa ăn ──
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -436,13 +442,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             ),
             _arrowButton(Icons.chevron_right, _focusIndex < trends.length - 1,
                 () => _goNextNode(trends.length)),
-            const SizedBox(width: 16),
+            const SizedBox(width: 24),
           ],
         ),
-        
+
         const SizedBox(height: 4),
 
-        // ── Dòng 3: Bữa trưa • 8 điểm • 500 Kcal ──
+        // ── Dòng 3: Thông tin điểm đang chọn ──
         Row(mainAxisSize: MainAxisSize.min, children: [
           if (selectedMealText.isNotEmpty) ...[
             Text(selectedMealText,
@@ -610,7 +616,11 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               left: 0,
               right: 0,
               child: Text('${threshold.toInt()} điểm',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: R.color.color0xff111515, height: 1.2),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff111515,
+                      height: 1.2),
                   textAlign: TextAlign.left),
             ),
           ]),
@@ -632,7 +642,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               : Container(
                   width: chartWidth,
                   height: constraints.maxHeight,
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(16),
                   child: _lineChart(trends, minX, maxX, minY, maxY, threshold),
                 ),
         ),
@@ -660,6 +670,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               dashArray: [4, 6]),
         ]),
         lineTouchData: LineTouchData(
+          touchSpotThreshold: 24,
           getTouchedSpotIndicator: (barData, indexes) => indexes.map((index) {
             return TouchedSpotIndicatorData(
               FlLine(color: Colors.transparent, strokeWidth: 0),
@@ -677,16 +688,20 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           }).toList(),
           touchTooltipData: LineTouchTooltipData(
             showOnTopOfTheChartBoxArea: true,
-            fitInsideHorizontally: true,
+            fitInsideHorizontally: false,
             fitInsideVertically: true,
+            tooltipHorizontalAlignment: FLHorizontalAlignment.center,
+            tooltipHorizontalOffset: 0,
             getTooltipColor: (_) => R.color.transparent,
             tooltipRoundedRadius: 8,
-            tooltipPadding: const EdgeInsets.only(bottom: 50),
+            tooltipMargin: 12,
+            tooltipPadding: const EdgeInsets.only(bottom: 72),
             getTooltipItems: (spots) => spots.map((spot) {
               final score = trends[spot.spotIndex].score ?? 0;
-              final tooltipColor = score >= 8 ? R.color.goodGreen : R.color.warningYellow;
+              final tooltipColor =
+                  score >= 8 ? R.color.goodGreen : R.color.warningYellow;
               return LineTooltipItem(
-                '${spot.y.toInt()} điểm\n${formatNumber(trends[spot.spotIndex].value ?? 0)} kcal',
+                '${spot.y.toInt()} điểm',
                 TextStyle(color: tooltipColor, fontWeight: FontWeight.bold),
               );
             }).toList(),
