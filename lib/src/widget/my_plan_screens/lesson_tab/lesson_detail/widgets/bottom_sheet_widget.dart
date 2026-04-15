@@ -164,9 +164,9 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-            color: isSelected ? R.color.greenbg : R.color.white,
+            color: isSelected ? R.color.backgroundColorNew : R.color.white,
             border:
-                isSelected ? Border.all(color: R.color.notActiveGreen) : null,
+                isSelected ? Border.all(color: R.color.greenGradientBottom) : null,
             borderRadius: BorderRadius.circular(10)),
         child: Row(
           children: [
