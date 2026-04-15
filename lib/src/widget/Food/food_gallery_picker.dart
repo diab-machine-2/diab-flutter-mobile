@@ -44,7 +44,11 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   bool _isLoading = true;
   bool _hasPermission = false;
   bool _isLimitedPermission = false; // Track if permission is limited
-  final int _maxSelection = 5;
+  // Temporary single-select mode. Increase this value in the future to
+  // re-enable multi-select behavior without changing the selection flow.
+  static const int _selectionLimit = 1;
+  int get _maxSelection => _selectionLimit;
+  bool get _isSingleSelectionMode => _maxSelection == 1;
   bool _didApplyInitialSelectedPath = false;
 
   // Pagination variables
@@ -467,14 +471,12 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             photos.where((e) => e.id == widget.initialSelectedAssetId);
         if (matching.isNotEmpty) {
           final match = matching.first;
-          if (!_selectedImages.contains(match.id) &&
-              _selectedImages.length < _maxSelection) {
-            if (!mounted) return;
-            setState(() {
-              _selectedImages.add(match.id);
+          if (!mounted) return;
+          setState(() {
+            if (_trySelectImage(match.id)) {
               _didApplyInitialSelectedPath = true;
-            });
-          }
+            }
+          });
         }
       }
 
@@ -490,14 +492,12 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             final File? assetFile = await asset.file;
             if (assetFile != null &&
                 assetFile.path == widget.initialSelectedFilePath) {
-              if (!_selectedImages.contains(asset.id) &&
-                  _selectedImages.length < _maxSelection) {
-                if (!mounted) return;
-                setState(() {
-                  _selectedImages.add(asset.id);
+              if (!mounted) return;
+              setState(() {
+                if (_trySelectImage(asset.id)) {
                   _didApplyInitialSelectedPath = true;
-                });
-              }
+                }
+              });
               break;
             }
           }
@@ -594,10 +594,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
           if (saved != null && mounted) {
             setState(() {
-              if (!_selectedImages.contains(saved.id) &&
-                  _selectedImages.length < _maxSelection) {
-                _selectedImages.add(saved.id);
-              }
+              _trySelectImage(saved.id);
             });
           }
         } catch (e) {
@@ -616,13 +613,37 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     setState(() {
       if (_selectedImages.contains(imageId)) {
         _selectedImages.remove(imageId);
-      } else if (_selectedImages.length < _maxSelection) {
-        _selectedImages.add(imageId);
       } else {
-        _showErrorDialog(
-            R.string.max_image_select_dynamic.tr(args: ["${_maxSelection}"]));
+        _trySelectImage(
+          imageId,
+          showLimitError: !_isSingleSelectionMode,
+        );
       }
     });
+  }
+
+  bool _trySelectImage(String imageId, {bool showLimitError = false}) {
+    if (_selectedImages.contains(imageId)) {
+      return false;
+    }
+
+    // In single-select mode, selecting a new image replaces previous selection.
+    if (_isSingleSelectionMode) {
+      _selectedImages = <String>[imageId];
+      return true;
+    }
+
+    if (_selectedImages.length < _maxSelection) {
+      _selectedImages.add(imageId);
+      return true;
+    }
+
+    if (showLimitError) {
+      _showErrorDialog(
+        R.string.max_image_select_dynamic.tr(args: ["${_maxSelection}"]),
+      );
+    }
+    return false;
   }
 
   /// Convert image to 480x480 JPEG, auto-cropping to center square.

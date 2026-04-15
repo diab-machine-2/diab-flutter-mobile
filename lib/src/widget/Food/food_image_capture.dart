@@ -599,7 +599,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                     width: 24, height: 24),
                 const SizedBox(height: 4),
                 Text(
-                  'Tối đa 5 ảnh',
+                  'Tối đa 1 ảnh',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey.shade800,
