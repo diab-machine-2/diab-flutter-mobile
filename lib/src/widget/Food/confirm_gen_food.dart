@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
@@ -17,7 +18,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
-import 'food_gallery_picker.dart';
 import 'food_result.dto.dart';
 import 'search_food_controller.dart';
 import 'widget/food_edit_popup.dart';
@@ -48,6 +48,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   final TextEditingController _controllerNote = TextEditingController();
   final List<FoodModel> _selectedFoods = [];
   List<dynamic> files = [];
+  final List<String> _displayImagePaths = [];
   int maxMedia = 5;
   DateTime selectedDate = DateTime.now();
   final FocusNode _focusNode = FocusNode();
@@ -66,6 +67,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   void initState() {
     super.initState();
     _selectedFoods.addAll(widget.generatedFoods);
+    _displayImagePaths.addAll(widget.files);
     _files.addAll(widget.files.map((e) => File(e)).toList());
     try {
       developer.log(
@@ -128,9 +130,9 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                   child: Stack(
                                     children: [
                                       Positioned.fill(
-                                        child: widget.files.length > 0
+                                        child: _displayImagePaths.isNotEmpty
                                             ? Image.file(
-                                                File(widget.files.first),
+                                                File(_displayImagePaths.first),
                                                 fit: BoxFit.cover,
                                               )
                                             : SizedBox(),
@@ -158,7 +160,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                             child: _dateTimePickerOverlay()),
                                       ),
                                       // Số ảnh (1/n) - góc trái dưới
-                                      if (widget.files.isNotEmpty)
+                                      if (_displayImagePaths.isNotEmpty)
                                         Positioned(
                                           left: 16,
                                           bottom: 86,
@@ -172,7 +174,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                                   BorderRadius.circular(12),
                                             ),
                                             child: Text(
-                                              '1/${widget.files.length}',
+                                              '1/${_displayImagePaths.length}',
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13,
@@ -580,34 +582,27 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   }
 
   /// Quay về thư viện để đổi ảnh
-  void _changeImage() {
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => FoodGalleryPicker(
-          timeframe: widget.timeframe,
-          timeframeId: widget.timeframeId,
-          onImagesSelected: (List<String> newFiles) {
-            if (newFiles.isNotEmpty) {
-              // Pop về màn hình capture rồi push lại confirm với ảnh mới
-              Navigator.pop(context); // Pop gallery
-              Navigator.pop(context); // Pop confirm hiện tại
+  Future<void> _changeImage() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-              // Push lại với ảnh mới - cần gọi lại AI analyze
-              Navigator.pushNamed(
-                context,
-                NavigatorName.food_image_capture,
-                arguments: {
-                  'timeframe': widget.timeframe,
-                  'timeframeId': widget.timeframeId,
-                  'selectedFiles': newFiles,
-                },
-              );
-            }
-          },
-        ),
-      ),
-    );
+      if (image == null || image.path.isEmpty) {
+        return;
+      }
+
+      if (!mounted) return;
+      setState(() {
+        if (_displayImagePaths.isEmpty) {
+          _displayImagePaths.add(image.path);
+        } else {
+          _displayImagePaths[0] = image.path;
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      Message.showToastMessage(context, e.toString());
+    }
   }
 
   // Logic lib/src/widget/Food/add_food.dart function [_submitData]
@@ -619,7 +614,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       List<String> paths = [];
 
       // Step 1: Get note data with error handling
-      developer.log('[CAPTURE] Starting _submitData (new Nutrition API)', name: '[CAPTURE]');
+      developer.log('[CAPTURE] Starting _submitData (new Nutrition API)',
+          name: '[CAPTURE]');
 
       if (_sectionAddNoteKey.currentState == null) {
         throw Exception('SectionAddNoteState is null. Cannot get note data.');
@@ -634,13 +630,13 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       if (data.files.isEmpty) {
         developer.log('[CAPTURE] WARNING: data.files is empty',
             name: '[CAPTURE]');
-        for (var filePath in widget.files) {
+        for (var filePath in _displayImagePaths) {
           if (filePath.isNotEmpty) {
             paths.add(filePath);
           }
         }
         developer.log(
-            '[CAPTURE] Using widget.files fallback, paths count: ${paths.length}',
+            '[CAPTURE] Using display image fallback, paths count: ${paths.length}',
             name: '[CAPTURE]');
       } else {
         for (var file in data.files) {
@@ -665,6 +661,23 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           } catch (e) {
             developer.log('[CAPTURE] Error processing file: $e',
                 name: '[CAPTURE]');
+          }
+        }
+      }
+
+      if (_displayImagePaths.isNotEmpty) {
+        final String currentPrimaryImage = _displayImagePaths.first;
+        final int indexOfCurrentPrimary = paths.indexOf(currentPrimaryImage);
+        if (indexOfCurrentPrimary == -1) {
+          final String? originalPrimaryImage =
+              widget.files.isNotEmpty ? widget.files.first : null;
+          final int indexOfOriginalPrimary = originalPrimaryImage == null
+              ? -1
+              : paths.indexOf(originalPrimaryImage);
+          if (indexOfOriginalPrimary != -1) {
+            paths[indexOfOriginalPrimary] = currentPrimaryImage;
+          } else {
+            paths.insert(0, currentPrimaryImage);
           }
         }
       }
@@ -735,15 +748,18 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         if (mealScoreData != null) {
           apiScore = (mealScoreData['totalMealScore'] as num?)?.toInt();
           // New API uses 'aiAdvice' instead of 'messageResult'
-          apiMessage = (mealScoreData['aiAdvice'] ?? mealScoreData['messageResult']) as String?;
+          apiMessage = (mealScoreData['aiAdvice'] ??
+              mealScoreData['messageResult']) as String?;
           // New API uses 'scoreRange' instead of 'totalMealRange'
-          apiRange = (mealScoreData['scoreRange'] ?? mealScoreData['totalMealRange']) as String?;
+          apiRange = (mealScoreData['scoreRange'] ??
+              mealScoreData['totalMealRange']) as String?;
 
           // Parse nutrition percent from new fields
           nutritionPercent = {
             'carb': (mealScoreData['carbPercent'] as num?)?.toInt() ?? 0,
             'protein': (mealScoreData['proteinPercent'] as num?)?.toInt() ?? 0,
-            'vegetable': (mealScoreData['vegetablePercent'] as num?)?.toInt() ?? 0,
+            'vegetable':
+                (mealScoreData['vegetablePercent'] as num?)?.toInt() ?? 0,
             'fruit': (mealScoreData['fruitPercent'] as num?)?.toInt() ?? 0,
             'fat': (mealScoreData['fatPercent'] as num?)?.toInt() ?? 0,
           };
@@ -752,11 +768,21 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           final npData = mealScoreData['nutritionPercent'];
           if (npData != null) {
             nutritionPercent = {
-              'carb': (npData['carb'] as num?)?.toInt() ?? nutritionPercent['carb'] ?? 0,
-              'protein': (npData['protein'] as num?)?.toInt() ?? nutritionPercent['protein'] ?? 0,
-              'vegetable': (npData['vegetable'] as num?)?.toInt() ?? nutritionPercent['vegetable'] ?? 0,
-              'fruit': (npData['fruit'] as num?)?.toInt() ?? nutritionPercent['fruit'] ?? 0,
-              'fat': (npData['fat'] as num?)?.toInt() ?? nutritionPercent['fat'] ?? 0,
+              'carb': (npData['carb'] as num?)?.toInt() ??
+                  nutritionPercent['carb'] ??
+                  0,
+              'protein': (npData['protein'] as num?)?.toInt() ??
+                  nutritionPercent['protein'] ??
+                  0,
+              'vegetable': (npData['vegetable'] as num?)?.toInt() ??
+                  nutritionPercent['vegetable'] ??
+                  0,
+              'fruit': (npData['fruit'] as num?)?.toInt() ??
+                  nutritionPercent['fruit'] ??
+                  0,
+              'fat': (npData['fat'] as num?)?.toInt() ??
+                  nutritionPercent['fat'] ??
+                  0,
             };
             final colorsData = npData['colors'];
             if (colorsData != null) {
@@ -769,7 +795,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
               };
             }
           }
-
         }
 
         // Get balance status from API range
