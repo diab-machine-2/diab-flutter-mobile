@@ -10,6 +10,13 @@ enum VNPayHashType {
 class VNPAYFlutter {
   static final VNPAYFlutter _instance = VNPAYFlutter();
   static VNPAYFlutter get instance => _instance;
+
+  String? _lastVnpSecureHash;
+  String? get vnpSecureHash => _lastVnpSecureHash;
+
+  String? _lastTxnRef;
+  String? get txnRef => _lastTxnRef;
+
   Map<String, dynamic> _sortParams(Map<String, dynamic> params) {
     final sortedParams = <String, dynamic>{};
     final keys = params.keys.toList()..sort();
@@ -78,6 +85,10 @@ class VNPAYFlutter {
           .convert(utf8.encode(query))
           .toString();
     }
+
+    _lastVnpSecureHash = vnpSecureHash;
+    _lastTxnRef = txnRef;
+
     String paymentUrl = "$url?$query&vnp_SecureHash=$vnpSecureHash";
     return paymentUrl;
   }

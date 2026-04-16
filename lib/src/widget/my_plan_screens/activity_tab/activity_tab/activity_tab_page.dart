@@ -15,6 +15,7 @@ import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -74,6 +75,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       showBloodPressureIntro: true,
       hasInputBloodPressure: false,
       hasInputGlucose: false,
+      customExaminationHandler: _handleExaminationNavigation,
     ));
   }
 
@@ -681,10 +683,20 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           onTap: () async {
             calendarActivitySelectDay(
                 index, smartGoal?.name, smartGoal?.progress == 1);
-            _onSelectGoal(
-              type,
-              smartGoal: smartGoal,
-            );
+            // Temporary: treat selected activity as examination activity for testing purpose.
+            // In production, replace `_isExaminationActivity` with the real examination activity check.
+            if (_isExaminationActivity(type, smartGoal)) {
+              final examinationType = _extractExaminationType(smartGoal);
+              await _showExaminationOptionsBottomSheet(
+                examinationType: examinationType,
+                smartGoalId: smartGoal?.id,
+              );
+            } else {
+              _onSelectGoal(
+                type,
+                smartGoal: smartGoal,
+              );
+            }
           },
           onRemove: () {
             _cubit.deleteSmartGoal(smartGoal?.id);
@@ -1138,6 +1150,192 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       smartGoal: smartGoal,
       onRefreshData: () {
         _cubit.refreshData(isRefresh: true);
+      },
+    );
+  }
+
+  Future<void> _handleExaminationNavigation(
+      BuildContext context, SmartGoalList? smartGoal) async {
+    final examinationType = _extractExaminationType(smartGoal);
+    await _showExaminationOptionsBottomSheet(
+      examinationType: examinationType,
+      smartGoalId: smartGoal?.id,
+    );
+  }
+
+  bool _isExaminationActivity(ScheduleType type, SmartGoalList? smartGoal) {
+    return type == ScheduleType.examination;
+  }
+
+  String? _extractExaminationType(SmartGoalList? smartGoal) {
+    final name = smartGoal?.name ?? '';
+    if (name.isEmpty) return null;
+
+    // List of valid examination types
+    final examinationTypes = [
+      'Công thức máu',
+      'HbA1C',
+      'Bộ gan',
+      'Bộ thận',
+      'Bộ mỡ',
+      'Acid uric',
+      'Bộ vi chất',
+    ];
+
+    final nameLower = name.toLowerCase();
+
+    // Check if name contains "xét nghiệm" or "xet nghiem"
+    if (!nameLower.contains('xét nghiệm') &&
+        !nameLower.contains('xet nghiem')) {
+      return null;
+    }
+
+    // Extract the type by checking which examination type is in the name
+    for (final type in examinationTypes) {
+      if (nameLower.contains(type.toLowerCase())) {
+        return type;
+      }
+    }
+
+    return null;
+  }
+
+  Future<void> _showExaminationOptionsBottomSheet({
+    String? examinationType,
+    String? smartGoalId,
+  }) async {
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: false,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Container(
+          margin: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 56),
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Text(
+                    R.string.choose_input_method.tr(),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.close, color: R.color.color0xff111515),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _buildExaminationOptionItem(
+                icon: R.drawable.ic_examination_at_home,
+                title: R.string.xet_nghiem_tai_nha.tr(),
+                onTap: () => Navigator.of(context).pop('at_home'),
+              ),
+              const SizedBox(height: 12),
+              _buildExaminationOptionItem(
+                icon: R.drawable.ic_booking_clinic,
+                title: R.string.xet_nghiem_tai_co_so.tr(),
+                onTap: () => Navigator.of(context).pop('at_clinic'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (result == 'at_home') {
+      _startExaminationAtHomeFlow(
+        examinationType: examinationType,
+        smartGoalId: smartGoalId,
+      );
+    } else if (result == 'at_clinic') {
+      _startExaminationAtClinicFlow(
+        examinationType: examinationType,
+        smartGoalId: smartGoalId,
+      );
+    }
+  }
+
+  Widget _buildExaminationOptionItem({
+    required String icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: R.color.color0xffF7F8F8,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Image.asset(icon, width: 32, height: 32),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.color0xff111515,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios,
+                size: 16, color: R.color.color0xff111515),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _startExaminationAtHomeFlow({
+    String? examinationType,
+    String? smartGoalId,
+  }) {
+    Navigator.of(context).pushNamed(
+      NavigatorName.booking_clinic,
+      arguments: {
+        'isExamination': true,
+        'examinationClinicId': Const.EXAMINATION_DEFAULT_CLINIC_ID,
+        'examinationType': examinationType,
+        'smartGoalId': smartGoalId,
+      },
+    );
+  }
+
+  void _startExaminationAtClinicFlow({
+    String? examinationType,
+    String? smartGoalId,
+  }) {
+    Navigator.of(context).pushNamed(
+      NavigatorName.booking_clinic,
+      arguments: {
+        'isExamination': true,
+        'isExaminationAtClinic': true,
+        'examinationType': examinationType,
+        'smartGoalId': smartGoalId,
       },
     );
   }

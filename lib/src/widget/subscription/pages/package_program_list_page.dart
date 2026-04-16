@@ -29,7 +29,12 @@ import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 // import 'phone_validation_helper.dart';
 
 class ProgramsListPage extends StatefulWidget {
-  const ProgramsListPage({Key? key}) : super(key: key);
+  /// When true (e.g. after IAP success before choosing a program), hides the app
+  /// bar back control and blocks system back until activation flow allows leave.
+  final bool lockBackAfterPurchase;
+
+  const ProgramsListPage({Key? key, this.lockBackAfterPurchase = false})
+      : super(key: key);
 
   @override
   State<ProgramsListPage> createState() => _ProgramsListPageState();
@@ -49,33 +54,35 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: R.color.glucose_bg_color,
-      body: FutureBuilder<List<PackageProgram>>(
-        future: _programsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(R.drawable.img_activity_empty, width: 200),
-                  const SizedBox(height: 16),
-                  const Text('Không có chương trình nào'),
-                ],
-              ),
-            );
-          } else {
-            final programs = snapshot.data!;
-            return Column(
+    return PopScope(
+      canPop: !widget.lockBackAfterPurchase,
+      child: Scaffold(
+        backgroundColor: R.color.glucose_bg_color,
+        body: FutureBuilder<List<PackageProgram>>(
+          future: _programsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(R.drawable.img_activity_empty, width: 200),
+                    const SizedBox(height: 16),
+                    const Text('Không có chương trình nào'),
+                  ],
+                ),
+              );
+            } else {
+              final programs = snapshot.data!;
+              return Column(
               children: [
                 DecoratedBox(
                   decoration: BoxDecoration(
@@ -91,6 +98,7 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
                   ),
                   child: CustomAppBar(
                     backgroundColor: Colors.transparent,
+                    hideAllBackButton: widget.lockBackAfterPurchase,
                     title: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
                         textScaler: MediaQuery.of(context)
@@ -192,6 +200,7 @@ class _ProgramsListPageState extends State<ProgramsListPage> {
           }
         },
       ),
+    ),
     );
   }
 }

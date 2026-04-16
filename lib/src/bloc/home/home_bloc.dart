@@ -329,7 +329,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchBanners() async* {
     final ApiResult<LearningPostListResponse> apiResult =
-        await AppRepository().getBanners(position: 9);
+        await AppRepository().getBanners(position: 8);
     List<LearningPostModel>? bannersResp;
     apiResult.when(success: (LearningPostListResponse response) {
       bannersResp = response.data?.map((e) => e).toList();
@@ -438,9 +438,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_medicine,
-        title: "Lịch uống thuốc",
+        title: R.string.schedule_medicine.tr(),
         slug: "lich-uong-thuoc",
-        navigatorName: "medicine",
+        navigatorName: NavigatorName.medicine_check,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_reminder,
@@ -465,6 +465,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         title: "Đặt lịch khám bệnh",
         slug: "dat-lich-kham-benh",
         navigatorName: NavigatorName.booking_clinic,
+      ),
+      HomeUtilityData(
+        icon: R.drawable.ic_booking_doctor,
+        title: "Khám từ xa",
+        slug: "kham-tu-xa",
+        navigatorName: NavigatorName.booking_doctor,
       ),
     ];
 

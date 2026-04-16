@@ -78,6 +78,7 @@ class Colors {
   Color get textFieldGrey => Color(0xff8D8D8D);
   Color get buttonRoundColor => Color(0xffDBF0EE);
   Color get color0xffE5E5E5 => Color(0xffE5E5E5);
+  Color get color0xff5E6566 => Color(0xff5E6566);
   Color get color0xffD6F5F6 => Color(0xffD6F5F6);
   Color get color0xff003F38 => Color(0xff003F38);
   Color get color0xffBEC0C8 => Color(0xffBEC0C8);
@@ -92,11 +93,15 @@ class Colors {
   Color get color0xff7589a2 => Color(0xff7589a2);
   Color get color0xffFFE3E3 => Color(0xffFFE3E3);
   Color get color0xffFF8E8E => Color(0xffFF8E8E);
+  Color get color0xff9C632B => Color(0xff9C632B);
   Color get color0xff827daa => Color(0xff827daa);
   Color get color0xffF4DBBD => Color(0xffF4DBBD);
   Color get color0xffE5B440 => Color(0xffE5B440);
   Color get color0xFFC3E8D3 => Color(0xFFC3E8D3);
   Color get color0xff72CB9C => Color(0xff72CB9C);
+  Color get color0xff00830B => Color(0xff00830B);
+  Color get color0xffDCFFFC => Color(0xffDCFFFC);
+  Color get color0xff008479 => Color(0xff008479);
   Color get color0xFFFED31B => Color(0xFFFED31B);
   Color get color0xff96d7b4 => Color(0xff96d7b4);
   Color get color0xffadd89e => Color(0xffadd89e);
@@ -145,6 +150,7 @@ class Colors {
   Color get color0xff888892 => Color(0xff888892);
   Color get color0xffD4D4D8 => Color(0xffD4D4D8);
   Color get color0xffF4F4F5 => Color(0xffF4F4F5);
+  Color get color0xffF4F7F7 => Color(0xffF4F7F7);
   Color get color0xff141416 => Color(0xff141416);
   Color get color0xff777E90 => Color(0xff777E90);
   Color get color0xffFEDC89 => Color(0xffFEDC89);
@@ -194,8 +200,6 @@ class Colors {
   Color get conversation_bubble_bot_broder => Color(0xffDFE4E4);
   Color get infographic_color => Color(0xff23C559);
   Color get color0xffB4802D => Color(0xffB4802D);
-  Color get color0xff5E6566 => Color(0xff5E6566);
-  Color get color0xffDCFFFC => Color(0xffDCFFFC);
   Color get color0xff830000 => Color(0xff830000);
   Color get color0xffDADEDF => Color(0xffDADEDF);
   Color get interview_color => Color(0xffFFCD57);
@@ -209,4 +213,6 @@ class Colors {
   Color get energySnack => Color(0xffF9BA1A);
   Color get energyLateNight => Color(0xffF86F6F);
   Color get cardShadowColor => Color(0x14042B28);
+  Color get examination_color => Color(0xffF86F6F);
+  Color get color0xffEAEDEE => Color(0xffEAEDEE);
 }

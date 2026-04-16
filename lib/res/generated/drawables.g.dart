@@ -813,6 +813,14 @@ class Drawables {
   String get co_ban_bg => "lib/res/drawables/co_ban_bg.png";
   String get co_ban_badge => "lib/res/drawables/co_ban_badge.png";
   String get ic_dialog_failed => "lib/res/drawables/ic_dialog_failed.png";
+  String get ic_booking_doctor =>
+      "lib/res/drawables/home/ic_booking_doctor.png";
+  String get ic_map_pin => "lib/res/drawables/home/ic_map_pin.png";
+  String get ic_experience => "lib/res/drawables/home/ic_experience.png";
+  String get ic_introduce => "lib/res/drawables/ic_introduce.png";
+  String get ic_education => "lib/res/drawables/ic_education.png";
+  String get ic_archivement => "lib/res/drawables/ic_archivement.png";
+  String get ic_language => "lib/res/drawables/ic_language.png";
   String get ic_infographic => "lib/res/drawables/ic_infographic.png";
   String get subscription_program_full_1 =>
       "lib/res/drawables/subscription/subscription_program_full_1.png";
@@ -845,4 +853,16 @@ class Drawables {
   String get ic_phone_security => "lib/res/drawables/ic_phone_security.png";
   String get ic_phone_illustration =>
       "lib/res/drawables/ic_phone_illustration.png";
+  String get medicine_banner => "lib/res/drawables/medicine_banner.png";
+  String get ic_mobile => "lib/res/drawables/ic_mobile.png";
+  String get ic_medicine_calendar => "lib/res/drawables/ic_medicine_calendar.png";
+  String get ic_input_by_camera => "lib/res/drawables/ic_input_by_camera.png";
+  String get ic_input_by_hand => "lib/res/drawables/ic_input_by_hand.png";
+  String get ic_add => "lib/res/drawables/ic_add.png";
+  String get ic_should_do => "lib/res/drawables/ic_should_do.png";
+  String get ic_should_not_do => "lib/res/drawables/ic_should_not_do.png";
+  String get ic_add_prescription => "lib/res/drawables/ic_add_prescription.png";
+  String get ic_examination => "lib/res/drawables/ic_examination.png";
+  String get ic_examination_at_home =>
+      "lib/res/drawables/home/ic_examination_at_home.png";
 }

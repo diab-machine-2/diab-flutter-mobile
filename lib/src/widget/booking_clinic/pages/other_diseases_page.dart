@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -12,9 +13,11 @@ import 'package:medical/src/widgets/gap_widget.dart';
 
 class OtherDiseasesPage extends StatefulWidget {
   final List<ClinicSpecialty> specialties;
+  final String bookingType;
   const OtherDiseasesPage({
     Key? key,
     required this.specialties,
+    this.bookingType = Const.BOOKING_TYPE_CLINIC,
   }) : super(key: key);
 
   @override
@@ -129,7 +132,9 @@ class _OtherDiseasesPageState extends State<OtherDiseasesPage> {
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
+                DsmesNavigationMixin.getNavigationKey()
+                    .currentState
+                    ?.pop(context);
               },
             ),
           ),
@@ -154,9 +159,26 @@ class _OtherDiseasesPageState extends State<OtherDiseasesPage> {
                 return GestureDetector(
                   onTap: () {
                     _cubit.clearClinicProviders();
-                    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
-                        NavigatorName.clinic_providers,
-                        arguments: {'specialtyId': specialty.id});
+                    if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.pushNamed(NavigatorName.clinic_providers,
+                              arguments: {
+                            'specialtyId': specialty.id,
+                            "bookingType": widget.bookingType
+                          });
+                    }
+
+                    if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
+                      DsmesNavigationMixin.getNavigationKey()
+                          .currentState
+                          ?.pushNamed(NavigatorName.doctor_providers,
+                              arguments: {
+                            'specialtyId': specialty.id,
+                            'specialtyName': specialty.name,
+                            "bookingType": widget.bookingType
+                          });
+                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(

@@ -127,6 +127,18 @@ class LearningClient extends FetchClient {
     return [];
   }
 
+  // "/App/Lesson/MedicineLesson"
+  Future<List<LessonModel>> fetchMedicineLessons(
+      {int type = 1, int week = 0}) async {
+    final Response response = await super.fetchData(
+      url: '/App/Lesson/MedicineLesson',
+    );
+    if (response.statusCode == 200) {
+      return LessonModel.toList(response.data['data']);
+    }
+    return [];
+  }
+
   // "/App/Lesson/NutritionLesson" ~ "/App/Lesson/MyLessonsOptimizedAndCacheLessonPercent"
   // Type 1: Bắt buộc, Type 2: Tùy chọn, Type 3: Quiz cấp độ
   Future<List<LessonModel>> fetchNutritionIntroLessons(

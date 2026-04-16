@@ -23,6 +23,12 @@ class BookingClinicProvider {
   final int? isSale;
   final double? lat;
   final double? lng;
+  // For kind "doctor" response
+  final String? clinicName;
+  final String? clinicAddress;
+  final DoctorClinicInfo? doctorClinicInfo;
+  final Map<String, String>? graduateName;
+  final int? totalReview;
 
   BookingClinicProvider({
     required this.id,
@@ -49,6 +55,11 @@ class BookingClinicProvider {
     this.isSale,
     this.lat,
     this.lng,
+    this.clinicName,
+    this.clinicAddress,
+    this.doctorClinicInfo,
+    this.graduateName,
+    this.totalReview,
   });
 
   factory BookingClinicProvider.fromJson(Map<String, dynamic> json) {
@@ -103,6 +114,13 @@ class BookingClinicProvider {
       lng: json['lng'] is String
           ? double.tryParse(json['lng']) ?? 0.0
           : (json['lng']?.toDouble() ?? 0.0),
+      clinicName: json['clinic_name'] ?? '',
+      clinicAddress: json['clinic_address'] ?? '',
+      doctorClinicInfo: json['clinic'] is Map
+          ? DoctorClinicInfo.fromJson(json['clinic'])
+          : null,
+      graduateName: _parseGraduateName(json['graduate_name']),
+      totalReview: json['total_review'] ?? 0,
     );
   }
 
@@ -115,6 +133,23 @@ class BookingClinicProvider {
     }
     return null;
   }
+}
+
+Map<String, String>? _parseGraduateName(dynamic graduateName) {
+  if (graduateName == null) return null;
+
+  if (graduateName is String) {
+    // If it's a string, create a map with both vi and en as the same value
+    return {
+      'name_vi': graduateName,
+      'name_en': graduateName,
+    };
+  } else if (graduateName is Map) {
+    // If it's already a map, convert it
+    return Map<String, String>.from(graduateName);
+  }
+
+  return null;
 }
 
 class ServiceAvailable {
@@ -147,27 +182,41 @@ class Specialty {
 
 class ClinicService {
   final String name;
-  final String type;
+  final String? type;
   final String id;
   final int fromPrice;
   final String price;
 
   ClinicService({
     required this.name,
-    required this.type,
+    this.type,
     required this.id,
     required this.fromPrice,
     required this.price,
   });
 
   factory ClinicService.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final idString = rawId == null ? '' : rawId.toString();
+    final normalizedId = _extractServiceId(idString);
+
     return ClinicService(
-      name: json['name'],
-      type: json['type'],
-      id: json['id'],
-      fromPrice: json['from_price'] ?? 0,
+      name: json['name'] ?? json['vi'] ?? '',
+      type: json['type'] ?? '',
+      id: normalizedId,
+      fromPrice: json['from_price'],
       price: json['price'],
     );
+  }
+
+  /// Some APIs return ids like "{category_id}_{service_id}".
+  /// Keep only the service_id part to make downstream int parsing stable.
+  static String _extractServiceId(String rawId) {
+    if (rawId.isEmpty) return rawId;
+    final parts = rawId.split('_');
+    if (parts.length <= 1) return rawId;
+    final lastPart = parts.last.trim();
+    return lastPart.isEmpty ? rawId : lastPart;
   }
 }
 
@@ -224,6 +273,26 @@ class DaySchedule {
       isWork: json['is_work'],
       openTime: json['open_time'],
       closeTime: json['close_time'],
+    );
+  }
+}
+
+class DoctorClinicInfo {
+  final int id;
+  final String? name;
+  final String? address;
+
+  DoctorClinicInfo({
+    required this.id,
+    this.name,
+    this.address,
+  });
+
+  factory DoctorClinicInfo.fromJson(Map<String, dynamic> json) {
+    return DoctorClinicInfo(
+      id: json['id'],
+      name: json['name'],
+      address: json['address'],
     );
   }
 }

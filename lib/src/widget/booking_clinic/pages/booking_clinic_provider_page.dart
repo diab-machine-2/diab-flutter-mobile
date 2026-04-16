@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:medical/src/widget/booking_clinic/helper/booking_clinic_helper.d
 import 'package:medical/src/widget/booking_clinic/model/booking_clinic_provider_model.dart';
 import 'package:medical/src/widget/booking_clinic/pages/empty_clinic_provider_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
@@ -18,9 +20,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class BookingClinicProvidersPage extends StatefulWidget {
   final int specialtyId;
+  final String bookingType;
+  final String? examinationType;
   const BookingClinicProvidersPage({
     Key? key,
     required this.specialtyId,
+    this.bookingType = Const.BOOKING_TYPE_CLINIC,
+    this.examinationType,
   }) : super(key: key);
 
   @override
@@ -36,9 +42,7 @@ class _BookingClinicProvidersPageState
     'viewInfo': false,
     'bookingClinic': false,
   };
-  bool isLoading = false;
   final RefreshController _refreshController = RefreshController();
-  int _selectedIndex = 0;
 
   Set<String> selectedDistricts = {};
   Set<String> selectedTypes = {};
@@ -89,7 +93,6 @@ class _BookingClinicProvidersPageState
 
   _initData() async {
     try {
-      isLoading = true;
       final position = await AppSettings.getPositionPreferences();
 
       String lat = '';
@@ -105,27 +108,38 @@ class _BookingClinicProvidersPageState
 
       _cubit.initSearchBookingClinicListRequest(
         page: 1,
-        specialtyId: widget.specialtyId.toString(),
+        specialtyId:
+            widget.specialtyId == 0 ? '' : widget.specialtyId.toString(),
         lat: lat,
         lng: lng,
+        kind: Const.BOOKING_TYPE_CLINIC,
+        name: widget.examinationType != null ? "${widget.examinationType}" : '',
       );
 
       final request = _cubit.searchBookingClinicListRequest;
       if (request == null) {
-        setState(() {
-          isLoading = false;
-        });
         return;
       }
 
+      // For normal booking flow, rely on global BlocConsumer in BookingClinicPage
+      // to show BotToast loading. For examination flow, manage BotToast here
+      // because the global listener is disabled when isExamination = true.
+      final isExaminationFlow = widget.examinationType != null;
+      if (isExaminationFlow) {
+        BotToast.showLoading(allowClick: false);
+      }
+
       await _cubit.searchBookingClinicList(
-          request: request, isRefresh: true, showLoading: true);
+        request: request,
+        isRefresh: true,
+        showLoading: !isExaminationFlow,
+      );
     } catch (e) {
       // Log error if needed
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (widget.examinationType != null) {
+        BotToast.closeAllLoading();
+      }
     }
   }
 
@@ -196,7 +210,29 @@ class _BookingClinicProvidersPageState
                 color: R.color.white,
               ),
               onPressed: () {
-                DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
+                // Check if we're in edit mode (coming from confirm page)
+                final route = ModalRoute.of(context)?.settings;
+                final args = route?.arguments as Map<String, dynamic>?;
+                final isEditing = args?['isEditing'] ?? false;
+                final previousRoute = args?['previousRoute'] as String?;
+
+                // If editing from confirm page, pop back to confirm
+                if (isEditing &&
+                    previousRoute == NavigatorName.dsmes_confirm_information) {
+                  DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+                  return;
+                }
+
+                // For examination flow, close the whole booking container and
+                // return to the activity tab (root navigator). For normal flow,
+                // just pop within the DSMES navigator.
+                if (widget.examinationType != null) {
+                  Navigator.of(context, rootNavigator: true).pop();
+                } else {
+                  DsmesNavigationMixin.getNavigationKey()
+                      .currentState
+                      ?.pop(context);
+                }
               },
             ),
           ),
@@ -204,59 +240,65 @@ class _BookingClinicProvidersPageState
         // _buildHeaderWidget(),
 
         Expanded(
-          child: isLoading
-              ? Container()
-              : _cubit.listBookingClinicProvider.isEmpty
-                  ? BookingClinicEmptyWidget(
-                      imagePath: R.drawable.bg_empty_clinic,
-                      title: R.string.empty_clinic_content.tr(),
-                      subtitle: "",
-                    )
-                  : SmartRefresher(
-                      controller: _refreshController,
-                      enablePullUp: _cubit.clinicProviderHasMore,
-                      enablePullDown: false,
-                      footer: _cubit.clinicProviderHasMore
-                          ? ClassicFooter(
-                              loadingText: "Đang tải",
-                              canLoadingText:
-                                  R.string.pull_up_to_load_more.tr(),
-                            )
-                          : null,
-                      onLoading: () async {
-                        await _cubit.searchBookingClinicList(
-                            request: _cubit.searchBookingClinicListRequest!
-                                .copyWith(
-                                    page: _cubit.clinicProviderCurrentPage + 1),
-                            showLoading: false);
-                        _refreshController.loadComplete();
-                        setState(() {});
-                      },
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          child: Column(
-                            children: [
-                              ListView.separated(
-                                physics: NeverScrollableScrollPhysics(),
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                itemCount:
-                                    _cubit.listBookingClinicProvider.length,
-                                separatorBuilder: (context, index) => GapH(12),
-                                itemBuilder: (context, index) {
-                                  BookingClinicProvider data =
-                                      _cubit.listBookingClinicProvider[index];
-                                  return _buildClinicItem(data);
-                                },
-                              ),
-                              GapH(16),
-                            ],
-                          ),
+          child: BlocBuilder<DsmesAppointmentCubit, DsmesAppointmentState>(
+            builder: (context, state) {
+              if (state is DsmesAppointmentLoading &&
+                  _cubit.listBookingClinicProvider.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              if (_cubit.listBookingClinicProvider.isEmpty) {
+                return BookingClinicEmptyWidget(
+                  imagePath: R.drawable.bg_empty_clinic,
+                  title: R.string.empty_clinic_content.tr(),
+                  subtitle: "",
+                );
+              }
+
+              return SmartRefresher(
+                controller: _refreshController,
+                enablePullUp: _cubit.clinicProviderHasMore,
+                enablePullDown: false,
+                footer: _cubit.clinicProviderHasMore
+                    ? ClassicFooter(
+                        loadingText: "Đang tải",
+                        canLoadingText: R.string.pull_up_to_load_more.tr(),
+                      )
+                    : null,
+                onLoading: () async {
+                  await _cubit.searchBookingClinicList(
+                      request: _cubit.searchBookingClinicListRequest!
+                          .copyWith(
+                              page: _cubit.clinicProviderCurrentPage + 1),
+                      showLoading: false);
+                  _refreshController.loadComplete();
+                },
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Column(
+                      children: [
+                        ListView.separated(
+                          physics: NeverScrollableScrollPhysics(),
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          itemCount: _cubit.listBookingClinicProvider.length,
+                          separatorBuilder: (context, index) => GapH(12),
+                          itemBuilder: (context, index) {
+                            BookingClinicProvider data =
+                                _cubit.listBookingClinicProvider[index];
+                            return _buildClinicItem(data);
+                          },
                         ),
-                      ),
+                        GapH(16),
+                      ],
                     ),
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -333,7 +375,8 @@ class _BookingClinicProvidersPageState
     final detailSuccess = await _cubit.getClinicDetail(id: data.id);
     final rateSuccess = await _cubit.getClinicRate(id: data.id);
     if (detailSuccess && rateSuccess) {
-      DsmesNavigationMixin.getNavigationKey().currentState
+      DsmesNavigationMixin.getNavigationKey()
+          .currentState
           ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
         'clinicId': data.id,
         'bookingType': Const.BOOKING_TYPE_CLINIC
@@ -422,7 +465,7 @@ class _BookingClinicProvidersPageState
                   runSpacing: 6,
                   children: data.specialty.take(3).map((e) {
                     return Container(
-                        height: 21,
+                        // height: 21,
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
@@ -492,27 +535,82 @@ class _BookingClinicProvidersPageState
                               onTap: () async {
                                 if (isProcessing['bookingClinic']!) return;
                                 isProcessing['bookingClinic'] = true;
+
+                                // Show loading for examination flow
+                                if (widget.examinationType != null) {
+                                  BotToast.showLoading(allowClick: false);
+                                }
+
                                 try {
                                   final detailSuccess =
-                                      await _cubit.getClinicDetail(id: data.id);
+                                      await _cubit.getClinicDetail(
+                                          id: data.id,
+                                          isLoading:
+                                              widget.examinationType == null);
 
                                   if (!detailSuccess ||
                                       _cubit.selectedClinic == null) {
+                                    if (widget.examinationType != null) {
+                                      BotToast.closeAllLoading();
+                                    }
+                                    return;
+                                  }
+
+                                  // Set examination data if it's an examination flow
+                                  if (widget.examinationType != null) {
+                                    _cubit.setExaminationData(
+                                      isExamination: true,
+                                      examinationType: widget.examinationType,
+                                      examinationLocation:
+                                          Const.EXAMINATION_LOCATION_CLINIC,
+                                    );
+                                  }
+
+                                  // Check if we're in edit mode (coming from confirm page)
+                                  final route =
+                                      ModalRoute.of(context)?.settings;
+                                  final args =
+                                      route?.arguments as Map<String, dynamic>?;
+                                  final isEditing = args?['isEditing'] ?? false;
+                                  final previousRoute =
+                                      args?['previousRoute'] as String?;
+
+                                  // If editing from confirm page, pop back to confirm
+                                  if (isEditing &&
+                                      previousRoute ==
+                                          NavigatorName
+                                              .dsmes_confirm_information) {
+                                    DsmesNavigationMixin.getNavigationKey()
+                                        .currentState
+                                        ?.pop();
                                     return;
                                   }
 
                                   _cubit.initCreateDsmesBookingRequest(
-                                      locale: context.locale.languageCode);
-                                  await DsmesNavigationMixin
-                                      .getNavigationKey().currentState
+                                      locale: context.locale.languageCode,
+                                      clearExamination:
+                                          widget.examinationType == null);
+
+                                  // Delay navigation slightly to ensure nested navigator is ready
+                                  if (widget.examinationType != null) {
+                                    await Future.delayed(
+                                        Duration(milliseconds: 100));
+                                  }
+
+                                  // Navigate to datetime selection (same flow for both examination and normal booking)
+                                  await DsmesNavigationMixin.getNavigationKey()
+                                      .currentState
                                       ?.pushNamed(
                                           NavigatorName
                                               .dsmes_booking_select_date,
                                           arguments: {
-                                        // 'serviceType': widget.serviceType,
+                                        'serviceType': DsmesAppointmentMode
+                                            .telemedicine
+                                            .toString(),
                                         'action': 'create',
                                         'bookingType':
                                             Const.BOOKING_TYPE_CLINIC,
+                                        'isMergedSchedule': false,
                                       });
                                 } finally {
                                   isProcessing['bookingClinic'] = false;
@@ -552,130 +650,6 @@ class _BookingClinicProvidersPageState
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  _buildHeaderWidget() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 0;
-                  });
-                },
-                child: Column(
-                  children: [
-                    Text(
-                      R.string.all.tr(),
-                      style: TextStyle(
-                        color: _selectedIndex == 0
-                            ? R.color.greenGradientBottom
-                            : R.color.color0xff111515,
-                        fontSize: 15,
-                        fontWeight: _selectedIndex == 0
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      width: 40,
-                      color: _selectedIndex == 0
-                          ? R.color.greenGradientBottom
-                          : R.color.transparent,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 24),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedIndex = 1;
-                  });
-                },
-                child: Column(
-                  children: [
-                    Text(
-                      R.string.da_kham.tr(),
-                      style: TextStyle(
-                        color: _selectedIndex == 1
-                            ? R.color.greenGradientBottom
-                            : R.color.color0xff111515,
-                        fontSize: 15,
-                        fontWeight: _selectedIndex == 1
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      width: 60,
-                      color: _selectedIndex == 1
-                          ? R.color.greenGradientBottom
-                          : R.color.transparent,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Builder(
-            builder: (context) {
-              final isFiltered = selectedDistricts.isNotEmpty ||
-                  (selectedTypes.length == 1 && !selectedTypes.contains('')) ||
-                  (selectedTimeframes.length == 1 &&
-                      !selectedTimeframes.contains('')) ||
-                  (selectedServiceTypes.length == 1 &&
-                      !selectedServiceTypes.contains(''));
-              return GestureDetector(
-                onTap: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 30,
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: isFiltered ? EdgeInsets.only(right: 10) : null,
-                        child: Text(
-                          R.string.loc.tr(),
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                            color: R.color.color0xff95682E,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (isFiltered)
-                      Positioned(
-                        top: 2,
-                        right: 1,
-                        child: Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          )
-        ],
       ),
     );
   }

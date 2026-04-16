@@ -357,7 +357,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(R.string.the_evening.tr(),
+                        Text(R.string.the_night.tr(),
                             style: TextStyle(
                                 color: R.color.black,
                                 fontSize: 16,

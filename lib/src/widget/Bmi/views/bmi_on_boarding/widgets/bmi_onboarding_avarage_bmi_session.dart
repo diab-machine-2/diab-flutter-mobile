@@ -126,7 +126,7 @@ class BmiOnboardingAvarageBmiSession extends StatelessWidget {
                       letterSpacing: 0.2,
                     ),
                     children: [
-                      const TextSpan(text: 'Nguồn tham khảo: '),
+                      TextSpan(text: '${R.string.reference_source.tr()}: '),
                       TextSpan(
                         text:
                             'https://www.diabetes.ca/resources/tools-resources/body-mass-index-(bmi)-calculator',

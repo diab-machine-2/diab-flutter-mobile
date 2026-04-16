@@ -54,6 +54,7 @@ class BranchioLinkConfig {
   bool _hasPendingLoginDeeplink = false;
   Timer? _navigationTimer;
   String? _pendingMeasurementScreen;
+  int? _pendingMedicineTab;
 
   // Getters
   String? get referalCode => _referalCode;
@@ -147,6 +148,24 @@ class BranchioLinkConfig {
         return;
       }
 
+      // Handle webinar deeplink
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$webinarId")) {
+        final webinarId = data['\$webinarId'] as String;
+        if (data.containsKey("\$referralCode")) {
+          _referalCode = data['\$referralCode'] as String;
+        }
+        print('[ROUTE] Webinar deeplink detected: $webinarId');
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          Navigator.pushNamed(
+            navigatorKey.currentState!.context,
+            NavigatorName.webinar_info,
+            arguments: {'id': webinarId},
+          );
+        }
+        return;
+      }
+
       // Handle subscription deeplink
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$subscription")) {
@@ -230,11 +249,20 @@ class BranchioLinkConfig {
         }
       }
 
-      // Handle measurement deeplink
+      // Handle deeplinks with $screen_value (medicine tabs + measurement screens)
       if (data['+clicked_branch_link'] == true &&
           data.containsKey("\$screen_value")) {
-        final inputIndexScreen = data['\$screen_value'] as String;
-        _processMeasurementDeepLink(inputIndexScreen);
+        final screenValue = data['\$screen_value'] as String;
+        // calendar-medicine -> tab 0 (schedule_use_medicine), refill-medicine -> tab 1 (prescription)
+        if (screenValue == 'calendar-medicine') {
+          _processMedicineTabDeepLink(0);
+          return;
+        }
+        if (screenValue == 'refill-medicine') {
+          _processMedicineTabDeepLink(1);
+          return;
+        }
+        _processMeasurementDeepLink(screenValue);
         return;
       }
 
@@ -427,6 +455,44 @@ class BranchioLinkConfig {
     }
   }
 
+  Future<String> createShareWebinarLink({
+    required LearningPostModel webinar,
+  }) async {
+    final user = AppSettings.userInfo!;
+    String webinarImage = webinar.imageBannerUrl?.url ??
+        webinar.imageUrl.url ??
+        'https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png';
+    String webinarTitle = webinar.title;
+    String webinarDescription = webinar.content ?? 'Sự kiện từ ứng dụng DiaB';
+
+    final BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: 'webinar/${webinar.id}',
+      title: webinarTitle,
+      contentDescription: webinarDescription,
+      imageUrl: webinarImage,
+      contentMetadata: BranchContentMetaData()
+        ..addCustomMetadata('\$webinarId', webinar.id ?? '')
+        ..addCustomMetadata('\$referralCode', user.shareRefCode ?? ''),
+    );
+
+    final BranchLinkProperties linkProperties = BranchLinkProperties(
+      feature: 'webinar_share',
+      channel: 'app_share',
+      campaign: 'webinar_share',
+    );
+
+    final BranchResponse response = await FlutterBranchSdk.getShortUrl(
+      buo: buo,
+      linkProperties: linkProperties,
+    );
+
+    if (response.success) {
+      return response.result;
+    } else {
+      throw Exception('Failed to create webinar link: ${response.errorMessage}');
+    }
+  }
+
   void _processMeasurementDeepLink(String screenValue) async {
     if (!AppSettings.splashScreenInitDone || AppSettings.userInfo == null) {
       _pendingMeasurementScreen = screenValue;
@@ -497,6 +563,49 @@ class BranchioLinkConfig {
       if (screenValue.isNotEmpty) {
         _processMeasurementDeepLink(screenValue);
       }
+    }
+  }
+
+  void _processMedicineTabDeepLink(int tabIndex) {
+    if (!AppSettings.splashScreenInitDone || AppSettings.userInfo == null) {
+      _pendingMedicineTab = tabIndex;
+      return;
+    }
+    _navigateToPrescriptionListWithTab(tabIndex);
+  }
+
+  void _navigateToPrescriptionListWithTab(int initialBottomIndex) {
+    // All navigator operations here are deferred to the next frame to avoid
+    // triggering them while the navigator is locked (during builds/transitions).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = navigatorKey.currentState;
+      if (state == null) return;
+
+      state.popUntil((route) {
+        return route.settings.name == NavigatorName.tabbar;
+      });
+
+      // Defer the push to a microtask so it happens after `popUntil` completes.
+      Future.microtask(() {
+        final innerState = navigatorKey.currentState;
+        innerState?.pushNamed(
+          NavigatorName.prescription,
+          arguments: {'initialBottomIndex': initialBottomIndex},
+        );
+      });
+    });
+  }
+
+  void checkPendingMedicineTab() {
+    if (_pendingMedicineTab != null) {
+      final tab = _pendingMedicineTab!;
+      _pendingMedicineTab = null;
+
+      // Defer navigation to after the current build frame to avoid
+      // `!_debugLocked` navigator assertions when called from init/build.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigateToPrescriptionListWithTab(tab);
+      });
     }
   }
 
@@ -642,6 +751,8 @@ class BranchioLinkConfig {
     _navigationTimer = Timer(Duration(seconds: 2), () {
       if (_hasPendingDeeplink) executeDeeplinkNavigation();
       checkPendingContentNavigation();
+      checkPendingMeasurementScreen();
+      checkPendingMedicineTab();
     });
   }
 

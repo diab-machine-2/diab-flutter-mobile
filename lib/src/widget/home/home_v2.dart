@@ -17,6 +17,7 @@ import 'package:medical/src/bloc/home/home_bloc.dart';
 import 'package:medical/src/bloc/nipro/nipro_bloc.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 import 'package:medical/src/modal/home/package_account_home_model.dart';
+import 'package:medical/src/modal/medicine/prescription_schedule_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/user/user_client.dart';
@@ -41,6 +42,7 @@ import 'package:medical/src/widget/home/widget/header.dart';
 import 'package:medical/src/widget/home/widget/home_lesson.dart';
 import 'package:medical/src/widget/home/widget/home_reminder.dart';
 import 'package:medical/src/widget/home/widget/home_utilities.dart';
+import 'package:medical/src/widget/medicine/widgets/medicine_session_bottom_sheet.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widget/nipro/health_app/blocs/healthApp_bloc.dart';
@@ -52,7 +54,9 @@ import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:medical/src/widgets/share_profile_popup.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../modal/medicine/daily_medicine_model.dart';
 import '../../repo/home/home_client.dart';
+import '../../repo/medicine/medicine_client.dart';
 import '../../service/rating_service.dart';
 import 'schema/home_schema.dart';
 import 'welcome_package_screen/welcome_package_screen.dart';
@@ -72,6 +76,11 @@ class HomeController extends StatefulWidget {
 
 class _HomeControllerState extends State<HomeController>
     with Observer, AutomaticKeepAliveClientMixin<HomeController>, RouteAware {
+  // Session-scoped guard: show medicine session bottom sheet only once
+  // for the current authenticated user session.
+  static bool _hasShownMedicineSessionBottomSheet = false;
+  static String? _medicineSheetSessionUserKey;
+
   final GlobalKey<CourseSuggestState> _courseSuggestKey = GlobalKey();
   final HomeBloc _homeBloc = HomeBloc();
   final String _screenName = "home";
@@ -105,6 +114,7 @@ class _HomeControllerState extends State<HomeController>
   @override
   void initState() {
     super.initState();
+    log('[HOME_DEBUG] initState called - HomeController mounted');
     Observable.instance.addObserver(this);
 
     if (user?.isShare == true) {
@@ -114,8 +124,10 @@ class _HomeControllerState extends State<HomeController>
     _firebaseSetup();
     _initHealthApp();
     initTarget();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkExerciseData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      log('[HOME_DEBUG] postFrame init check started - will call checkExerciseData/checkMedicineSchedule');
+      await checkExerciseData();
+      await checkMedicineSchedule();
     });
 
     SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
@@ -128,14 +140,42 @@ class _HomeControllerState extends State<HomeController>
       customGlucoseHandler: (routeName, smartGoalId) async {
         await _showGlucoseAddBottomSheet(routeName, smartGoalId: smartGoalId);
       },
+      customExaminationHandler: SmartGoalNavigationUtil.defaultExaminationHandler,
     ));
   }
 
   @override
   void dispose() {
+    // Reset guard on logout flow so next login can show once again.
+    if (AppSettings.userInfo == null) {
+      _hasShownMedicineSessionBottomSheet = false;
+      _medicineSheetSessionUserKey = null;
+      log('[HOME_DEBUG] reset medicine sheet session guard (user logged out)');
+    }
     Observable.instance.removeObserver(this);
     _debouncer.dispose();
     super.dispose();
+  }
+
+  String _currentMedicineSheetUserKey() {
+    final info = AppSettings.userInfo;
+    return info?.accountId ?? info?.id ?? info?.userName ?? 'anonymous';
+  }
+
+  bool _shouldSkipMedicineSessionBottomSheetForCurrentSession() {
+    final currentUserKey = _currentMedicineSheetUserKey();
+
+    if (_medicineSheetSessionUserKey != currentUserKey) {
+      _medicineSheetSessionUserKey = currentUserKey;
+      _hasShownMedicineSessionBottomSheet = false;
+      log('[HOME_DEBUG] new user session detected for medicine sheet: $currentUserKey');
+    }
+
+    if (_hasShownMedicineSessionBottomSheet) {
+      log('[HOME_DEBUG] skip medicine session bottom sheet (already shown in this session)');
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -218,6 +258,69 @@ class _HomeControllerState extends State<HomeController>
       _hasExerciseData = isChecked;
     }
     setState(() {});
+  }
+
+  Future<void> checkMedicineSchedule() async {
+    log('[HOME_DEBUG] checkMedicineSchedule called');
+    if (_shouldSkipMedicineSessionBottomSheetForCurrentSession()) return;
+    final medicineClient = MedicineClient();
+    final currentDateTime = DateTime.now();
+    final today = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
+    final medicineSchedule = await medicineClient.fetchMedicineScheduleByDate(timestamp: (today.millisecondsSinceEpoch / 1000).round());
+    final medicineScheduleAlert = filterDailyMedicines(medicineSchedule.daily);
+    final sessions = PrescriptionsBySessionModel.fromDailyList(medicineScheduleAlert);
+    // Sắp xếp buổi theo thứ tự: Sáng, Trưa, Chiều, Tối
+    final orderedSessions = [...sessions]
+      ..sort((a, b) => a.session.index.compareTo(b.session.index));
+
+    if (orderedSessions.isNotEmpty) {
+      final List<String> ids = medicineScheduleAlert.map((e) => e.id).toList();
+      _hasShownMedicineSessionBottomSheet = true;
+      log('[HOME_DEBUG] show medicine session bottom sheet and mark as shown');
+      showMedicineSessionBottomSheet(
+        context,
+        ids: ids,
+        sessionList: orderedSessions,
+      );
+    }
+  }
+
+  List<DailyMedicineModel> filterDailyMedicines(List<DailyMedicineModel> dailyList) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    return dailyList.where((daily) {
+      if (daily.completedDate != null) return false;
+
+      // build DateTime từ hôm nay + timeSchedule (HH:mm:ss)
+      final timeStr = (daily.timeSchedule ?? '00:00:00');
+      final parts = timeStr.split(':');
+      final h = parts.isNotEmpty ? int.tryParse(parts[0]) ?? 0 : 0;
+      final m = parts.length > 1 ? int.tryParse(parts[1]) ?? 0 : 0;
+      final s = parts.length > 2 ? int.tryParse(parts[2]) ?? 0 : 0;
+      final appt = DateTime(today.year, today.month, today.day, h, m, s);
+
+      return appt.isBefore(now) && appt.year == today.year && appt.month == today.month && appt.day == today.day;
+    }).toList();
+  }
+
+
+  Future<void> showMedicineSessionBottomSheet(BuildContext context,
+      {required List<PrescriptionsBySessionModel> sessionList, required List<String> ids}) {
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      isScrollControlled: true,
+      builder: (context) {
+        return MedicineSessionBottomSheet(
+          ids: ids,
+          sessionList: sessionList,
+        );
+      },
+    );
   }
 
   void _initHealthApp() async {
@@ -722,15 +825,15 @@ class _HomeControllerState extends State<HomeController>
                   (stateLoaded?.activities ?? []).length > 3 ||
                   (stateLoaded?.reminders ?? []).length > 2;
 
-          List<String> banners = (stateLoaded?.banners ?? [])
+          final allBanners = (stateLoaded?.banners ?? [])
               .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
-              .map((banner) => banner.imageBannerUrl!.url!)
               .toList();
 
-          List<String> bannerLinks = (stateLoaded?.banners ?? [])
-              .where((banner) => banner.imageBannerUrl?.url?.isNotEmpty == true)
-              .map((banner) => banner.link ?? '')
-              .toList();
+          List<String> banners =
+              allBanners.map((banner) => banner.imageBannerUrl!.url!).toList();
+
+          List<String> bannerLinks =
+              allBanners.map((banner) => banner.link ?? '').toList();
 
           return RefreshIndicator(
             onRefresh: _pullToRefresh,
@@ -789,23 +892,12 @@ class _HomeControllerState extends State<HomeController>
                                     .blood_pressure_intro_1st_page);
                                 return;
                               }
-                              // check first time open dinh duong
+                              // Nutrition: same source as KPI ("dinh dưỡng" row)
                               if (routeName == NavigatorName.add_food ||
                                   routeName == NavigatorName.detail_food ||
                                   routeName ==
                                       NavigatorName.nutrient_intro_1st_page) {
-                                // Check if user has food data
-                                bool hasFoodData = await _checkHasFoodData();
-
-                                if (hasFoodData) {
-                                  // User has data, navigate to detail page directly
-                                  Navigator.pushNamed(
-                                      context, NavigatorName.detail_food);
-                                } else {
-                                  // User has no data, navigate to onboarding
-                                  Navigator.pushNamed(context,
-                                      NavigatorName.nutrient_intro_1st_page);
-                                }
+                                _pushNutritionEntry(context);
                                 return;
                               }
                               // case input exercise
@@ -896,17 +988,13 @@ class _HomeControllerState extends State<HomeController>
                                   initialPage: 0,
                                   padEnds: true,
                                 ),
-                                itemCount: banners.length,
+                                itemCount: allBanners.length,
                                 itemBuilder: (BuildContext context, int index,
                                         int pageViewIndex) =>
                                     ClipRRect(
                                   borderRadius: BorderRadius.circular(8.0),
                                   child: GestureDetector(
                                     onTap: () async {
-                                      if (bannerLinks[index].isEmpty) {
-                                        return;
-                                      }
-
                                       await TrackingManager.trackEvent(
                                           'home_select_banner', _screenName,
                                           params: {
@@ -915,13 +1003,34 @@ class _HomeControllerState extends State<HomeController>
                                                 '',
                                             "index": index,
                                           });
+                                      final selectedBanner = allBanners[index];
+                                      final isWebinar = (selectedBanner
+                                                  .accountId !=
+                                              null &&
+                                          selectedBanner
+                                              .accountId!.isNotEmpty &&
+                                          selectedBanner.accountId !=
+                                              '00000000-0000-0000-0000-000000000000' &&
+                                          selectedBanner.eventType != null);
 
-                                      final launchUri =
-                                          Uri.parse(bannerLinks[index]);
-                                      if (await canLaunchUrl(launchUri)) {
-                                        await launchUrl(launchUri);
+                                      if (isWebinar &&
+                                          selectedBanner.id != null) {
+                                        Navigator.pushNamed(
+                                          context,
+                                          NavigatorName.webinar_info,
+                                          arguments: {'id': selectedBanner.id},
+                                        );
                                       } else {
-                                        throw 'Could not launch banner link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
+                                        if (bannerLinks[index].isEmpty) {
+                                          return;
+                                        }
+                                        final launchUri =
+                                            Uri.parse(bannerLinks[index]);
+                                        if (await canLaunchUrl(launchUri)) {
+                                          await launchUrl(launchUri);
+                                        } else {
+                                          throw 'Could not launch banner link ${Const.ZALO_OA_TECHNICAL_SUPPORT_LINK}';
+                                        }
                                       }
                                     },
                                     child: NetWorkImageWidget(
@@ -1187,7 +1296,7 @@ class _HomeControllerState extends State<HomeController>
 
     print('[ONBOARDING] _showWelcomeDialog with zaloGroup: $zaloGroup');
 
-    final _ = await NavigationUtil.navigatePage(
+    final result = await NavigationUtil.navigatePage(
       context,
       WelcomePackageScreenPage(
         icon: isRoadmap
@@ -1204,6 +1313,11 @@ class _HomeControllerState extends State<HomeController>
         zaloGroup: zaloGroup,
       ),
     );
+    if (result == false && mounted) {
+      setState(() {
+        _isDisplayedWelcome = false;
+      });
+    }
   }
 
   // Button "Thêm chỉ số"
@@ -1232,18 +1346,9 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
-        // case dinh duong - check if user has data
+        // case dinh duong — uses home measurement state (see _haveInputFoodAlready)
         if (item.navigatorName == NavigatorName.add_food) {
-          // Check if user has food data
-          bool hasFoodData = await _checkHasFoodData();
-
-          if (hasFoodData) {
-            // User has data, navigate to detail page directly
-            Navigator.pushNamed(context, NavigatorName.detail_food);
-          } else {
-            // User has no data, navigate to onboarding
-            Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
-          }
+          _pushNutritionEntry(context);
           return;
         }
         // case HbA1C - check if user has data
@@ -1607,14 +1712,12 @@ class _HomeControllerState extends State<HomeController>
     }
   }
 
-  /// Check if user has food/nutrition data
-  Future<bool> _checkHasFoodData() async {
-    try {
-      final homeModel = await HomeClient().fetchHomes();
-      return homeModel.energyCard?.consumedEnergy != null &&
-          homeModel.energyCard!.consumedEnergy! > 0;
-    } catch (e) {
-      return false;
+  /// Opens nutrition detail or first-time intro from home KPI state.
+  void _pushNutritionEntry(BuildContext context) {
+    if (_haveInputFoodAlready) {
+      Navigator.pushNamed(context, NavigatorName.detail_food);
+    } else {
+      Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
     }
   }
 }

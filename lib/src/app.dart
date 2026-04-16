@@ -91,7 +91,7 @@ import 'package:medical/src/widget/profile/user_info.dart';
 import 'package:medical/src/widget/question_answer/make_question/make_question_page.dart';
 import 'package:medical/src/widget/question_answer/question_detail/question_detail_page.dart';
 import 'package:medical/src/widget/subscription/pages/paywall_screen.dart';
-import 'package:medical/src/widget/tabbar/tabbar.dart';
+import 'package:medical/src/widget/tabbar/tabbar_v2.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_detail/pages/voucher_detail_view.dart';
 import 'package:medical/src/widget/voucher/presentation/voucher_list/pages/voucher_list_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -107,6 +107,7 @@ import 'widget/ocr/test_ocr_camera_page.dart';
 import 'widget/ocr/test_ocr_page.dart';
 import 'widget/profile/profile_controller.dart';
 import 'widget/shared_profile/pages/share_app_detail/share_app_detail.dart';
+import 'widget/webinar/webinar_info_page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -615,6 +616,14 @@ class App extends StatelessWidget {
                     return _buildRoute(
                       settings,
                       NewsDetailView(id: data?['id']),
+                    );
+                  case NavigatorName.webinar_info:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                      settings,
+                      WebinarInfoPage(
+                        id: data?['id'],
+                      ),
                     );
                   case NavigatorName.connection_instructions:
                     final data = settings.arguments as Map<String, dynamic>?;

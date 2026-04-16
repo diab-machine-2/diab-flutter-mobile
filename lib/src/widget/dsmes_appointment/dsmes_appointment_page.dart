@@ -95,13 +95,13 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
     }
 
     // Initialize without handling deeplinks yet
-    _cubit.initDsmesBooking();
+    _cubit.initDsmesBooking(isLoadAppointments: true);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (widget.bloodPressureConsult == true) {
-      _handleBloodPressureConsult();
-    }
-  });
+      if (widget.bloodPressureConsult == true) {
+        _handleBloodPressureConsult();
+      }
+    });
   }
 
   @override

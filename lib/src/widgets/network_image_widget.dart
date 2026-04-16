@@ -27,12 +27,19 @@ class NetWorkImageWidget extends StatelessWidget {
       late final double errorIconSize;
 
       if (width == null || height == null) {
-        errorIconSize = min(constraint.maxWidth, constraint.maxHeight) * 0.5;
+        final double maxW = constraint.maxWidth.isFinite
+            ? constraint.maxWidth
+            : (width ?? 72.0);
+        final double maxH = constraint.maxHeight.isFinite
+            ? constraint.maxHeight
+            : (width ??
+                (constraint.maxWidth.isFinite ? constraint.maxWidth : 72.0));
+        errorIconSize = min(maxW, maxH) * 0.5;
       } else {
         errorIconSize = min(width!, height!) * 0.5;
       }
       return imageUrl?.isNotEmpty != true
-          ? _buildErrorWidget(errorIconSize)
+          ? _buildErrorWidget(errorIconSize, constraint)
           : CachedNetworkImage(
               width: width,
               height: height,
@@ -45,17 +52,28 @@ class NetWorkImageWidget extends StatelessWidget {
                     }
                   : null,
               errorWidget: (_, __, ___) {
-                return _buildErrorWidget(errorIconSize);
+                return _buildErrorWidget(errorIconSize, constraint);
               },
             );
     });
   }
 
-  Widget _buildErrorWidget(double errorIconSize) {
+  Widget _buildErrorWidget(double errorIconSize, BoxConstraints constraint) {
+    // Handle unbounded constraints - if height is null and maxHeight is infinite,
+    // use width for square aspect ratio, or use maxWidth if width is also null
+    final double? effectiveHeight = height ??
+        (constraint.maxHeight.isFinite
+            ? constraint.maxHeight
+            : (width ??
+                (constraint.maxWidth.isFinite ? constraint.maxWidth : null)));
+
+    final double? effectiveWidth =
+        width ?? (constraint.maxWidth.isFinite ? constraint.maxWidth : null);
+
     return Container(
       alignment: Alignment.center,
-      height: height,
-      width: width,
+      height: effectiveHeight,
+      width: effectiveWidth,
       decoration: BoxDecoration(
         color: R.color.main_6,
         borderRadius: BorderRadius.circular(6),
