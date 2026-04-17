@@ -728,7 +728,11 @@ class UserClient extends FetchClient {
           UpdateProfileRequest(patientId: patientId, accountRule: accountRule);
       if (isUpdateDiabetes) {
         request.diabetesDate = userInfo.diabetesDate;
-        request.diabetesStatus = userInfo.diabetesStatus;
+        if (selectedList.isNotEmpty) {
+          request.diabetesStatus = Utils.parseStringToInt(selectedList.first.value!);
+        } else {
+          request.diabetesStatus = userInfo.diabetesStatus;
+        }
       }
       final Response response = await super
           .putData(url: '/App/Patient/mobile/Input', params: request.toJson());
