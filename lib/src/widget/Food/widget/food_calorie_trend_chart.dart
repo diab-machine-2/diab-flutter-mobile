@@ -299,10 +299,10 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             children: [
               // Y-axis column — same width as real chart
               SizedBox(
-                width: 55 + 16, // 55px column + left padding
+                width: 55 + 8, // 55px column + left padding
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16),
-                  child: Text('8điểm',
+                  child: Text('8 điểm',
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,

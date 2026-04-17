@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Food/widget/food_calorie_trend_chart.dart';
 
@@ -192,15 +193,11 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
             right: 0,
             bottom: 0,
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromRGBO(1, 105, 97, 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(2, -4),
-                  ),
+                  Utils.getBoxShadowDropButton()
                 ],
               ),
               child: Row(
