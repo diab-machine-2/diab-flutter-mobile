@@ -33,6 +33,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   List<LessonSectionListResponseData?>? recommendationLessons;
   bool isRecommendationLoading = false;
   bool _hasLoadedRecommendationOnce = false;
+  List<LessonSectionListResponseData?>? forYouLessons;
+  bool isForYouLoading = false;
+  bool _hasLoadedForYouOnce = false;
 
   final List<LessonType> lessonTypeList = [
     LessonType.route,
@@ -267,6 +270,29 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       emit(const LessonTabSuccess());
     }, failure: (NetworkExceptions error) {
       isRecommendationLoading = false;
+      emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    emit(const LessonTabInitial());
+  }
+
+  /// Load personalized lessons for "Dành cho bạn" section.
+  Future<void> getForYouLessons() async {
+    // Don't show inline loading spinner for the very first load
+    // because global BotToast loading is already visible then.
+    final bool shouldShowLoading = _hasLoadedForYouOnce;
+    if (shouldShowLoading) {
+      isForYouLoading = true;
+      emit(const LessonTabSuccess());
+    }
+    final ApiResult<List<LessonSectionListResponseData>> apiResult =
+        await repository.getRecommendedLessons();
+    apiResult.when(success: (List<LessonSectionListResponseData> response) {
+      forYouLessons = response;
+      _hasLoadedForYouOnce = true;
+      isForYouLoading = false;
+      emit(const LessonTabSuccess());
+    }, failure: (NetworkExceptions error) {
+      isForYouLoading = false;
       emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const LessonTabInitial());

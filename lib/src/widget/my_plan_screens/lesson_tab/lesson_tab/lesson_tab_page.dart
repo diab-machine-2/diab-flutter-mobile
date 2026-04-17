@@ -78,6 +78,7 @@ class _LessonTabPageState extends State<LessonTabPage>
       // Await main list first so getRecommendationLessons cannot emit Initial/Success
       // while lessons are still loading (which briefly showed the empty placeholder).
       await _cubit.getInitData();
+      await _cubit.getForYouLessons();
       await _cubit.getRecommendationLessons(type: 0);
     });
 
@@ -111,6 +112,7 @@ class _LessonTabPageState extends State<LessonTabPage>
 
     if (notifyName == 'refresh_lesson_tab') {
       await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+      await _cubit.getForYouLessons();
       // Re-load recommendations so learning status in the list is updated
       // right after completing a lesson.
       await _cubit.getRecommendationLessons(type: _cubit.recommendationType);
@@ -321,6 +323,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    _buildForYouSection(),
                                     if (_cubit.lessonsList!.isEmpty)
                                       (state is LessonTabLoading)
                                           ? SizedBox(
@@ -470,6 +473,85 @@ class _LessonTabPageState extends State<LessonTabPage>
           ),
         );
       }).toList(),
+    );
+  }
+
+  /// "Dành cho bạn" section shown above all lesson modules.
+  Widget _buildForYouSection() {
+    final lessons = _cubit.forYouLessons ?? [];
+    if (lessons.isEmpty && !_cubit.isForYouLoading) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      color: R.color.white,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Dành cho bạn',
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (_cubit.isForYouLoading)
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 130,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: R.color.greenGradientBottom,
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              height: 250,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: lessons.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final lesson = lessons[index];
+                  return _buildForYouLessonCard(
+                    lessonDetail: lesson,
+                    onTap: () async {
+                      if (lesson?.id?.isNotEmpty == true) {
+                        ActivityListTracking.clickLessonItem(
+                          objectId: lesson!.id,
+                          objectIndex: index,
+                          objectTitle: lesson.name,
+                        );
+                        await NavigationUtil.navigatePage(
+                          context,
+                          LessonDetailPage(
+                            lessonType: lesson.type,
+                            lessonId: lesson.id!,
+                            onComplete: (lessonId, percentComplete) {
+                              _cubit.updateStatusLesson(
+                                lessonId: lessonId,
+                                percentComplete: percentComplete,
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -796,7 +878,70 @@ class _LessonTabPageState extends State<LessonTabPage>
             const SizedBox(height: 4),
             LessonStatusWidget(
               learningStatus: lessonDetail?.learningStatus,
-              progress: lessonDetail?.percentComplete,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Card for horizontal "Dành cho bạn" list.
+  Widget _buildForYouLessonCard({
+    required LessonSectionListResponseData? lessonDetail,
+    VoidCallback? onTap,
+  }) {
+    final String category = lessonDetail?.lessonModule?.name ?? '';
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 260,
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: R.color.grey_6),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                height: 132,
+                width: double.infinity,
+                child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url),
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (category.isNotEmpty)
+              Text(
+                category,
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            const SizedBox(height: 4),
+            SizedBox(
+              height: 40,
+              child: Text(
+                lessonDetail?.name ?? '',
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 4),
+            LessonStatusWidget(
+              learningStatus: lessonDetail?.learningStatus,
             ),
           ],
         ),
