@@ -417,13 +417,11 @@ class _FoodDetailPageWrapper extends StatefulWidget {
 
 class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper>
     with Observer {
-  late int _periodFilterType;
   GlobalKey<FoodDetailControllerState> _detailKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    _periodFilterType = widget.initialPeriodFilterType;
     Observable.instance.addObserver(this);
   }
 
@@ -431,7 +429,8 @@ class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper>
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
     if (notifyName == 'food_change_data') {
-      _detailKey.currentState?.reloadData(_periodFilterType);
+      _detailKey.currentState
+          ?.reloadData(widget.initialPeriodFilterType);
     }
   }
 
@@ -481,37 +480,9 @@ class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper>
           ),
         ],
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: HorizontalSelector(
-              onSelected: (value) {
-                setState(() {
-                  _periodFilterType = value + 1;
-                });
-                _detailKey.currentState?.reloadData(_periodFilterType);
-              },
-              initialValue: _periodFilterType - 1,
-              values: [0, 1, 2, 3],
-              labels: [
-                R.string.filter_day.tr(args: ['7']),
-                R.string.filter_day.tr(args: ['14']),
-                R.string.filter_day.tr(args: ['30']),
-                R.string.filter_day.tr(args: ['90']),
-              ],
-              fontSize: 15,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: FoodDetailController(
-              key: _detailKey,
-              periodFilterType: _periodFilterType,
-            ),
-          ),
-        ],
+      body: FoodDetailController(
+        key: _detailKey,
+        periodFilterType: widget.initialPeriodFilterType,
       ),
     );
   }
