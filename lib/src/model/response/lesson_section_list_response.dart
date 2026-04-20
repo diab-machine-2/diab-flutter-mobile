@@ -1712,6 +1712,7 @@ class LessonSectionListResponseData {
   String? lessonModuleId;
   String? lessonLevelId;
   int? learningStatus;
+  int? percentComplete;
   LessonSectionListResponseDataLessonModule? lessonModule;
   LessonSectionListResponseDataLessonLevel? lessonLevel;
   List<QuizLesson?>? quizLessons;
@@ -1740,6 +1741,7 @@ class LessonSectionListResponseData {
     this.lessonModuleId,
     this.lessonLevelId,
     this.learningStatus,
+    this.percentComplete,
     this.lessonModule,
     this.lessonLevel,
     this.quizLessons,
@@ -1768,6 +1770,7 @@ class LessonSectionListResponseData {
     lessonModuleId = json['lessonModuleId']?.toString();
     lessonLevelId = json['lessonLevelId']?.toString();
     learningStatus = json['learningStatus']?.toInt();
+    percentComplete = json['percentComplete']?.toInt();
     lessonModule = (json['lessonModule'] != null)
         ? LessonSectionListResponseDataLessonModule.fromJson(
             json['lessonModule'])
@@ -1866,6 +1869,7 @@ class LessonSectionListResponseData {
     data['lessonModuleId'] = lessonModuleId;
     data['lessonLevelId'] = lessonLevelId;
     data['learningStatus'] = learningStatus;
+    data['percentComplete'] = percentComplete;
     if (lessonModule != null) {
       data['lessonModule'] = lessonModule!.toJson();
     }

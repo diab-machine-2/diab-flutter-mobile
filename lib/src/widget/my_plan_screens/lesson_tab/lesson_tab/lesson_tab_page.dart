@@ -805,6 +805,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                   const SizedBox(height: 4),
                   LessonStatusWidget(
                     learningStatus: lessonDetail?.learningStatus,
+                    progress: lessonDetail?.percentComplete,
                   ),
                 ],
               ),
@@ -878,6 +879,7 @@ class _LessonTabPageState extends State<LessonTabPage>
             const SizedBox(height: 4),
             LessonStatusWidget(
               learningStatus: lessonDetail?.learningStatus,
+              progress: lessonDetail?.percentComplete,
             ),
           ],
         ),
@@ -942,6 +944,7 @@ class _LessonTabPageState extends State<LessonTabPage>
             const SizedBox(height: 4),
             LessonStatusWidget(
               learningStatus: lessonDetail?.learningStatus,
+              progress: lessonDetail?.percentComplete,
             ),
           ],
         ),
