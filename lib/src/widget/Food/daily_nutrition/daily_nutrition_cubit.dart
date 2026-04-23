@@ -347,7 +347,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
               ? [FoodModel(id: otherFoodId, portion: parsedTotalKcal)]
               : selectedFoods,
           paths);
-      if (result == true) {
+      if (result == true || result is Map<String, dynamic>) {
         //  if(goalId != null && goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(
             selectedDate, goalId ?? '', 1, ScheduleType.food.typeIndex);

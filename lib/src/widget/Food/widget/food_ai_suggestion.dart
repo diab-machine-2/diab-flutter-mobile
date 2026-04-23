@@ -117,7 +117,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
         if (state is FoodNutritionOverviewLoaded) {
           return FutureBuilder<String>(
             key: ValueKey(
-                '${state.range}_${periodFilterType}_${state.aiAdvice ?? ''}_${state.nutrientPercent.hashCode}'),
+                '${state.periodFilterType}_${periodFilterType}_${state.aiAdvice ?? ''}_${state.nutrientPercent.hashCode}'),
             future: _resolveAdvice(state),
             builder: (context, snapshot) {
               final text = snapshot.data;

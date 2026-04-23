@@ -726,11 +726,15 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
               mealScoreData: mealScoreData,
             );
 
+      if (widget.isManualInput && result is Map<String, dynamic>) {
+        mealScoreData = result;
+      }
+
       developer.log(
           '[CAPTURE] ${widget.isManualInput ? "postIndexFood" : "postIndexFoodAI"} result: $result',
           name: '[CAPTURE]');
       final bool isSubmitSuccess = widget.isManualInput
-          ? result == true
+          ? (result == true || result is Map<String, dynamic>)
           : (result is String && result.isNotEmpty);
       if (isSubmitSuccess) {
         // Clean up temporary files

@@ -421,7 +421,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         summary = await client.fetchNutritionSummary(range);
       } catch (_) {
         yield FoodNutritionOverviewLoaded(
-          range: range,
+          periodFilterType: range,
           trendItems: const [],
           energyGoal: energyGoal,
           perMealThreshold: perMealThreshold,
@@ -456,7 +456,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           summary.nutritionPercent?.toMap() ?? _emptyNutrientPercentMap();
 
       yield FoodNutritionOverviewLoaded(
-        range: range,
+        periodFilterType: range,
         trendItems: trendItems,
         energyGoal: energyGoal,
         perMealThreshold: perMealThreshold,

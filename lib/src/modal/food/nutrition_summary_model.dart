@@ -1,4 +1,4 @@
-/// Model for GET /App/Nutrition/Summary?range=X response
+/// Model for GET /App/Nutrition/Summary?periodFilterType=X response
 class NutritionSummaryModel {
   final NutritionDateRange? dateRange;
   final int? avgScore;

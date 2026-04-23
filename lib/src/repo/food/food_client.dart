@@ -336,7 +336,7 @@ class FoodClient extends FetchClient {
   /// NEW endpoint: POST /App/Nutrition/Input (multipart/form-data)
   /// Params: timeFrameId, note, isFromAI=false, items[X].foodId, items[X].portion
   /// Response: { "success": true, "data": "nutrition-input-guid" }
-  Future<bool> postIndexFood(int date, String? timeFrameId, String note,
+  Future<dynamic> postIndexFood(int date, String? timeFrameId, String note,
       List<FoodModel> foods, List<String> files) async {
     try {
       final Map<String, String> params = {
@@ -355,7 +355,13 @@ class FoodClient extends FetchClient {
           .postHttp(path: '/App/Nutrition/Input', params: params, files: files);
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
+      log('Upload response data: $jsonEncode(response.data)');
       if (response.statusCode == 200) {
+        final jsonData = jsonDecode(data);
+        final responseData = jsonData['data'];
+        if (responseData is Map<String, dynamic>) {
+          return responseData;
+        }
         return true;
       } else {
         throw response.reasonPhrase!;
@@ -521,29 +527,29 @@ class FoodClient extends FetchClient {
   // Nutrition Summary - NEW: GET /App/Nutrition/Summary
   // ============================================================
 
-  /// In-flight dedupe **only for the same [range] and same moment** (e.g. duplicate
-  /// listeners). **Changing [range] always uses a new map entry and a new HTTP GET.**
+  /// In-flight dedupe **only for the same [periodFilterType] and same moment** (e.g. duplicate
+  /// listeners). **Changing [periodFilterType] always uses a new map entry and a new HTTP GET.**
   /// This is not a response cache: after the request finishes, the entry is removed
-  /// so the next load for that range hits the network again.
+  /// so the next load for that periodFilterType hits the network again.
   static final Map<int, Future<NutritionSummaryModel>> _nutritionSummaryInflight =
       {};
 
   /// Lấy thống kê dinh dưỡng tổng hợp
-  /// NEW endpoint: GET /App/Nutrition/Summary?range=X
-  Future<NutritionSummaryModel> fetchNutritionSummary(int range) {
-    return _nutritionSummaryInflight.putIfAbsent(range, () {
-      final future = _fetchNutritionSummaryOnce(range);
-      future.whenComplete(() => _nutritionSummaryInflight.remove(range));
+  /// NEW endpoint: GET /App/Nutrition/Summary?periodFilterType=X
+  Future<NutritionSummaryModel> fetchNutritionSummary(int periodFilterType) {
+    return _nutritionSummaryInflight.putIfAbsent(periodFilterType, () {
+      final future = _fetchNutritionSummaryOnce(periodFilterType);
+      future.whenComplete(() => _nutritionSummaryInflight.remove(periodFilterType));
       return future;
     });
   }
 
-  Future<NutritionSummaryModel> _fetchNutritionSummaryOnce(int range) async {
+  Future<NutritionSummaryModel> _fetchNutritionSummaryOnce(int periodFilterType) async {
     try {
       print(
-          '🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?range=$range');
+          '🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?periodFilterType=$periodFilterType');
       final Response response = await super.fetchData(
-          url: '/App/Nutrition/Summary', params: {'range': range.toString()});
+          url: '/App/Nutrition/Summary', params: {'periodFilterType': periodFilterType.toString()});
       print('✅ [NutritionSummary] Status code: ${response.statusCode}');
       print('📦 [NutritionSummary] Response data: ${response.data}');
       if (response.statusCode == 200) {

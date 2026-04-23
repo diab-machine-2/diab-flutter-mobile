@@ -70,17 +70,19 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
     } finally {
       BotToast.closeAllLoading();
     }
-
-    // Navigate to food detail screen with MealScore data
-    print(
-        '[MealScore] _doComplete nutritionPercent: ${widget.data.nutritionPercent}');
-    print(
-        '[MealScore] _doComplete nutritionColors: ${widget.data.nutritionColors}');
-    Navigator.pop(context);
-    Navigator.pushNamed(context, NavigatorName.detail_food, arguments: {
-      'nutritionPercent': widget.data.nutritionPercent,
-      'nutritionColors': widget.data.nutritionColors,
+    // Finish the manual/capture flow and return to existing food detail screen.
+    bool foundDetailRoute = false;
+    Navigator.popUntil(context, (route) {
+      final isDetail = route.settings.name == NavigatorName.detail_food;
+      if (isDetail) {
+        foundDetailRoute = true;
+      }
+      return isDetail || route.isFirst;
     });
+
+    if (!foundDetailRoute && mounted) {
+      Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
+    }
   }
 
   void _doBack() {

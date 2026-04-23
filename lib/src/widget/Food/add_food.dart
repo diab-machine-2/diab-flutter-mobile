@@ -1054,11 +1054,13 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               ? [FoodModel(id: otherFoodId, portion: totalKcal)]
               : selectedFoods,
           paths);
-      if (result == true) {
+      if (result == true || result is Map<String, dynamic>) {
         // Call MealScore API to get nutrition analysis
         Map<String, dynamic>? mealScoreData;
         try {
-          mealScoreData = await FoodClient().postMealScore(paths);
+          mealScoreData = result is Map<String, dynamic>
+              ? result
+              : await FoodClient().postMealScore(paths);
         } catch (e) {
           print('MealScore API error (non-blocking): $e');
         }

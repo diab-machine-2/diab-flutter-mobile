@@ -125,10 +125,10 @@ class FoodCalorieTrendLoaded extends FoodState {
 }
 
 /// One GET /App/Nutrition/Summary drives all overview charts + AI suggestion.
-/// [range] is the API `range` query param for this payload (new fetch each time the user changes period).
+/// [periodFilterType] is the API `periodFilterType` query param for this payload (new fetch each time the user changes period).
 class FoodNutritionOverviewLoaded extends FoodState {
-  /// Same as GET /App/Nutrition/Summary?range=[range]
-  final int range;
+  /// Same as GET /App/Nutrition/Summary?periodFilterType=[periodFilterType]
+  final int periodFilterType;
   final List<FoodCalorieTrendItem> trendItems;
   final double energyGoal;
   final double perMealThreshold;
@@ -140,7 +140,7 @@ class FoodNutritionOverviewLoaded extends FoodState {
   final String? aiAdvice;
 
   FoodNutritionOverviewLoaded({
-    required this.range,
+    required this.periodFilterType,
     required this.trendItems,
     required this.energyGoal,
     required this.perMealThreshold,
