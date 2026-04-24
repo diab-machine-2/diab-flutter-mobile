@@ -186,8 +186,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
 
     RefreshDataOfList();
-    await getLessonsList(
-        isRefresh: isRefresh, iPagingPage: currentPage, size: numRecordOfPage);
+    await Future.wait([
+      getLessonsList(
+          isRefresh: isRefresh,
+          iPagingPage: currentPage,
+          size: numRecordOfPage),
+      getForYouLessons(emitState: false),
+      getRecommendationLessons(type: recommendationType, emitState: false),
+    ]);
+    emit(const LessonTabSuccess());
+    emit(const LessonTabInitial());
   }
 
   Future<void> getLessonsList({
@@ -250,7 +258,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   }
 
   /// Load recommendation lessons for Library \"Đề xuất\" section.
-  Future<void> getRecommendationLessons({int? type}) async {
+  Future<void> getRecommendationLessons({int? type, bool emitState = true}) async {
     final int requestType = type ?? recommendationType;
     recommendationType = requestType;
     // Don't show inline loading spinner for the very first load,
@@ -258,7 +266,9 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     final bool shouldShowLoading = _hasLoadedRecommendationOnce;
     if (shouldShowLoading) {
       isRecommendationLoading = true;
-      emit(const LessonTabSuccess());
+      if (emitState) {
+        emit(const LessonTabSuccess());
+      }
     }
     final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getLessonModuleType(requestType);
@@ -267,22 +277,30 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       recommendationLessons = response;
       _hasLoadedRecommendationOnce = true;
       isRecommendationLoading = false;
-      emit(const LessonTabSuccess());
+      if (emitState) {
+        emit(const LessonTabSuccess());
+      }
     }, failure: (NetworkExceptions error) {
       isRecommendationLoading = false;
-      emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+      if (emitState) {
+        emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+      }
     });
-    emit(const LessonTabInitial());
+    if (emitState) {
+      emit(const LessonTabInitial());
+    }
   }
 
   /// Load personalized lessons for "Dành cho bạn" section.
-  Future<void> getForYouLessons() async {
+  Future<void> getForYouLessons({bool emitState = true}) async {
     // Don't show inline loading spinner for the very first load
     // because global BotToast loading is already visible then.
     final bool shouldShowLoading = _hasLoadedForYouOnce;
     if (shouldShowLoading) {
       isForYouLoading = true;
-      emit(const LessonTabSuccess());
+      if (emitState) {
+        emit(const LessonTabSuccess());
+      }
     }
     final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getRecommendedLessons();
@@ -290,12 +308,18 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       forYouLessons = response;
       _hasLoadedForYouOnce = true;
       isForYouLoading = false;
-      emit(const LessonTabSuccess());
+      if (emitState) {
+        emit(const LessonTabSuccess());
+      }
     }, failure: (NetworkExceptions error) {
       isForYouLoading = false;
-      emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+      if (emitState) {
+        emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+      }
     });
-    emit(const LessonTabInitial());
+    if (emitState) {
+      emit(const LessonTabInitial());
+    }
   }
 
   Future<void> scrollToLesson() async {

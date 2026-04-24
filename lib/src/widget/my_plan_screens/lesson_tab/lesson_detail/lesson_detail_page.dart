@@ -15,6 +15,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -719,8 +720,10 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
       },
     );
 
-    if (_cubit.canComplete == true &&
+    if (_cubit.lessonDetail?.type != Const.LESSON_SECTION_TYPE_QUIZ &&
+        _cubit.canComplete == true &&
         _cubit.alreadyDoneLesson == false &&
+        _cubit.isEnabledRating == true &&
         _cubit.reviewed == false) {
       final bool canContinue = await _showLessonRatingBottomSheet();
       if (!canContinue) return;
