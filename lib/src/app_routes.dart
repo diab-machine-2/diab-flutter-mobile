@@ -26,6 +26,11 @@ import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 import 'package:medical/src/widget/profile/cancellation_refund_policy.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_campaign_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_form_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_result_screen.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_campaign_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_customer_model.dart';
 
 import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
@@ -365,6 +370,31 @@ class AppRoutes {
         break;
 
       // ~ END: Lịch dùng thuốc ~
+
+      // BCB Bundle Campaign
+      case NavigatorName.bcb_campaign:
+        {
+          final data = settings.arguments as Map<String, dynamic>?;
+          page = BcbCampaignScreen(accountId: data?['accountId'] ?? '');
+          break;
+        }
+      case NavigatorName.bcb_form:
+        {
+          final data = settings.arguments as Map<String, dynamic>;
+          page = BcbFormScreen(
+            campaign: data['campaign'] as BcbCampaignModel,
+            customer: data['customer'] as BcbCustomerModel,
+          );
+          break;
+        }
+      case NavigatorName.bcb_result:
+        {
+          final data = settings.arguments as Map<String, dynamic>;
+          page = BcbResultScreen(
+            customer: data['customer'] as BcbCustomerModel,
+          );
+          break;
+        }
 
       default:
         break;
