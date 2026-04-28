@@ -64,7 +64,7 @@ To set up the Zoom Meeting SDK in this project:
 
 6. **Add iOS SDK files**: Place the iOS SDK files in:
    ```
-   flutter_zoom_meeting/ios/
+   /Users/<Tên_User>/.pub-cache/git/flutter_zoom_meeting_sdk-<hash>/ios
    ```
 
 **Note**: After running `pub get`, you must run the setup script to get Zoom SDK for the first time. Make sure the native SDK files match the versions specified above (Android: v6.3.10.27979, iOS: v6.3.10.22850).
