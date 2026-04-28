@@ -59,7 +59,7 @@ class BcbCampaignClient extends FetchClient {
     try {
       final Response response = await super.postData(
         url: '/App/BcbCustomerRegistration',
-        params: registration.toJson(),
+        params: FormData.fromMap(registration.toJson()),
       );
       if (response.statusCode != 200 && response.statusCode != 201) {
         final error = Error.fromJson(response);
