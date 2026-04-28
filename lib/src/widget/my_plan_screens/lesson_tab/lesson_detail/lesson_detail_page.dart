@@ -737,11 +737,12 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
   }
 
   Future<bool> _showLessonRatingBottomSheet() async {
-    if (_cubit.reviewed || _cubit.isEnabledRating != true) {
-      // TODO: Checking if response contains lessonReview or isEnabledRating
-      // return true;
+    if (
+        // _cubit.reviewed ||
+        _cubit.isEnabledRating != true) {
       log('[RATING] reviewed: ${_cubit.reviewed}');
       log('[RATING] isEnabledRating: ${_cubit.isEnabledRating}');
+      return true;
     }
 
     int rating = 0;

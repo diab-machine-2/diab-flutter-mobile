@@ -1591,4 +1591,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get lesson_reason_sufficient_references =>
       'lesson_reason_sufficient_references';
   String get lesson_reason_beautiful_images => 'lesson_reason_beautiful_images';
+  String get lesson_for_you => 'lesson_for_you';
 }

@@ -24,6 +24,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_detail/lesson_detail.dart';
 import 'lesson_tab.dart';
+import 'module_lessons_page.dart';
 
 /// Recommendation filter chip: type index -> label.
 const Map<int, String> _recommendationChipLabels = {
@@ -484,16 +485,19 @@ class _LessonTabPageState extends State<LessonTabPage>
     }
 
     return Container(
-      color: R.color.white,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.symmetric(vertical: 16),
       padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'Dành cho bạn',
+              R.string.lesson_for_you.tr(),
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 18,
