@@ -377,7 +377,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               NetWorkImageWidget(
-                imageUrl: Utils.getImageUrl(lesson.image?.id),
+                imageUrl: lesson.image?.url ?? Utils.getImageUrl(lesson.image?.id) ?? '',
                 fit: BoxFit.cover,
                 height: 150.0,
                 width: double.infinity,

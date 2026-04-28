@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
-import 'dart:typed_data';
 import 'dart:developer' as developer;
 
 import 'package:easy_localization/easy_localization.dart';
@@ -344,9 +343,16 @@ class Utils {
     return base64Encode(imageBytes);
   }
 
-  static String? getImageUrl(String? path, {String? host}) {
-    if (isEmpty(path)) return null;
-    return (host ?? getHostUrl()) + path!;
+  static String? getImageUrl(String? imgId) {
+    if (imgId == null) {
+      return null;
+    } else if (Const.ENVIRONMENT_DEFAULT == 'product') {
+      return Uri.https(Const.DOMAIN, 'App/Image/$imgId').toString();
+    } else if (Const.ENVIRONMENT_DEFAULT == 'staging') {
+      return Uri.https(Const.DOMAIN_STAGING, 'App/Image/$imgId').toString();
+    } else {
+      return Uri.https(Const.DOMAIN_DEV, 'App/Image/$imgId').toString();
+    }
   }
 
   static Future<Map<String, dynamic>?> parseJson(String fileName) async {
