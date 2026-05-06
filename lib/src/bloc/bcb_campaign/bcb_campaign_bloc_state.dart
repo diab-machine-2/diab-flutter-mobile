@@ -1,21 +1,10 @@
 part of 'bcb_campaign_bloc.dart';
 
-@immutable
 abstract class BcbCampaignState {}
 
 class BcbCampaignInitial extends BcbCampaignState {}
 
 class BcbCampaignLoading extends BcbCampaignState {}
-
-class BcbCampaignListLoaded extends BcbCampaignState {
-  final List<BcbCampaignModel> campaigns;
-  BcbCampaignListLoaded({required this.campaigns});
-}
-
-class BcbCampaignLoaded extends BcbCampaignState {
-  final BcbCustomerModel customer;
-  BcbCampaignLoaded({required this.customer});
-}
 
 class BcbRegistrationSubmitted extends BcbCampaignState {}
 

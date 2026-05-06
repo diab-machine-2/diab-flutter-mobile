@@ -1,6 +1,7 @@
 import 'package:medical/src/model/bcb_campaign/bcb_campaign_model.dart';
-import 'package:medical/src/model/bcb_campaign/bcb_customer_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_registration_model.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 
 /// Service layer for BCB Campaign — delegates to BcbCampaignClient (Dio-based).
@@ -15,13 +16,14 @@ class BcbCampaignService {
     return _client.fetchCampaigns(accountId);
   }
 
-  /// GET App/BcbCampaignCustomer/{campaignCustomerId} — lấy thông tin KH trong chiến dịch
-  Future<BcbCustomerModel> getCustomerDetail(String campaignCustomerId) {
-    return _client.fetchCustomerDetail(campaignCustomerId);
+  /// GET App/BcbPartnerScheduleDay/BcBCampaignId?bcbCampaignId=…
+  Future<List<BcbPartnerScheduleDay>> getPartnerScheduleDays(
+      String bcbCampaignId) {
+    return _client.fetchPartnerScheduleDays(bcbCampaignId);
   }
 
-  /// POST App/BcbCustomerRegistration — KH submit form + 3 wishes
-  Future<void> submitRegistration(BcbCustomerRegistrationModel registration) {
+  /// POST App/BcbCustomerRegistration
+  Future<void> submitRegistration(BcbCampaignRegistrationModel registration) {
     return _client.submitRegistration(registration);
   }
 

@@ -2,8 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_campaign_model.dart';
-import 'package:medical/src/model/bcb_campaign/bcb_customer_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_registration_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 
@@ -34,16 +35,18 @@ class BcbCampaignClient extends FetchClient {
     }
   }
 
-  /// GET App/BcbCampaignCustomer/{campaignCustomerId} — lấy thông tin KH trong chiến dịch
-  Future<BcbCustomerModel> fetchCustomerDetail(
-      String campaignCustomerId) async {
+  /// GET App/BcbPartnerScheduleDay/BcBCampaignId?bcbCampaignId={uuid}
+  Future<List<BcbPartnerScheduleDay>> fetchPartnerScheduleDays(
+      String bcbCampaignId) async {
     try {
       final Response response = await super.fetchData(
-        url: '/App/BcbCampaignCustomer/$campaignCustomerId',
+        url: '/App/BcbPartnerScheduleDay/BcBCampaignId',
+        params: {'bcbCampaignId': bcbCampaignId},
       );
       if (response.statusCode == 200) {
-        return BcbCustomerModel.fromJson(
-            response.data['data'] as Map<String, dynamic>);
+        final body = response.data;
+        final raw = body is Map<String, dynamic> ? body['data'] : body;
+        return BcbPartnerScheduleDay.listFrom(raw);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -53,13 +56,28 @@ class BcbCampaignClient extends FetchClient {
     }
   }
 
-  /// POST App/BcbCustomerRegistration — KH submit form + 3 wishes
+  /// POST App/BcbCustomerRegistration — đăng ký với 3 slotId ưu tiên
   Future<void> submitRegistration(
-      BcbCustomerRegistrationModel registration) async {
+      BcbCampaignRegistrationModel registration) async {
     try {
+      final formData = FormData();
+      formData.fields
+          .add(MapEntry('bcbCampaignId', registration.bcbCampaignId));
+      if (registration.doctorNote != null &&
+          registration.doctorNote!.trim().isNotEmpty) {
+        formData.fields.add(MapEntry('doctorNote', registration.doctorNote!));
+      }
+      if (registration.medicalHistory != null &&
+          registration.medicalHistory!.trim().isNotEmpty) {
+        formData.fields
+            .add(MapEntry('medicalHistory', registration.medicalHistory!));
+      }
+      for (final id in registration.slotIds) {
+        formData.fields.add(MapEntry('slotIds', id));
+      }
       final Response response = await super.postData(
         url: '/App/BcbCustomerRegistration',
-        params: FormData.fromMap(registration.toJson()),
+        params: formData,
       );
       if (response.statusCode != 200 && response.statusCode != 201) {
         final error = Error.fromJson(response);

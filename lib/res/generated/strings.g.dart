@@ -1558,4 +1558,17 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get change_medicine_quantity_message => 'change_medicine_quantity_message';
   String get delete_medicine_dialog_title => 'delete_medicine_dialog_title';
   String get exceed_medicine_warning => 'exceed_medicine_warning';
+  String get bcb_recheck_information => 'bcb_recheck_information';
+  String get bcb_success_contact_subtitle => 'bcb_success_contact_subtitle';
+  String get bcb_max_3_wish_slots => 'bcb_max_3_wish_slots';
+  String get bcb_note_for_doctor => 'bcb_note_for_doctor';
+  String get bcb_note_for_doctor_hint => 'bcb_note_for_doctor_hint';
+  String get bcb_medical_condition => 'bcb_medical_condition';
+  String get bcb_medical_condition_hint => 'bcb_medical_condition_hint';
+  String get bcb_no_schedule_available => 'bcb_no_schedule_available';
+  String get bcb_slot_id_missing => 'bcb_slot_id_missing';
+  String get bcb_no_slots_morning => 'bcb_no_slots_morning';
+  String get bcb_no_slots_afternoon => 'bcb_no_slots_afternoon';
+  String get bcb_register_health_check => 'bcb_register_health_check';
+  String get bcb_health_campaign_default => 'bcb_health_campaign_default';
 }

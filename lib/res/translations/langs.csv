@@ -1506,4 +1506,17 @@ reference_source,Nguồn tham khảo,Reference Source
 change_medicine_quantity_title,"Bạn muốn thay đổi đơn thuốc?","Do you want to change the prescription?",
 change_medicine_quantity_message,"Mọi thay đổi trong đơn thuốc sẽ đặt lại trạng thái sử dụng thuốc.","Any changes to the prescription will reset the medicine usage status.",
 delete_medicine_dialog_title,"Bạn có muốn xoá thuốc này?","Would you like to delete this medicine?",
-exceed_medicine_warning,"Bạn không thể dùng quá số lượng thuốc đang có.","You cannot use more than the remaining medicines."
+exceed_medicine_warning,"Bạn không thể dùng quá số lượng thuốc đang có.","You cannot use more than the remaining medicines.",
+bcb_recheck_information,"Xem lại thông tin","Review information",
+bcb_success_contact_subtitle,"CSKH sẽ liên hệ để xác nhận thông tin trong vòng 72h","Our support team will contact you to confirm information within 72 hours.",
+bcb_max_3_wish_slots,"Bạn chỉ có thể chọn tối đa 3 khung giờ.","You can only select up to 3 time slots.",
+bcb_note_for_doctor,"Ghi chú cho bác sĩ","Note for the doctor",
+bcb_note_for_doctor_hint,"Nhập ghi chú cho bác sĩ","Enter a note for the doctor",
+bcb_medical_condition,"Bệnh lý","Medical condition",
+bcb_medical_condition_hint,"Nhập bệnh lý hiện tại","Enter current medical conditions",
+bcb_no_schedule_available,"Hiện chưa có lịch khám phù hợp. Vui lòng thử lại sau.","No suitable examination schedule is available yet. Please try again later.",
+bcb_slot_id_missing,"Thiếu mã khung giờ. Vui lòng thử lại.","Slot ID is missing. Please try again.",
+bcb_no_slots_morning,"Không có khung giờ buổi sáng cho ngày này.","There are no morning slots for this day.",
+bcb_no_slots_afternoon,"Không có khung giờ buổi chiều cho ngày này.","There are no afternoon slots for this day.",
+bcb_register_health_check,"Đăng ký khám sức khoẻ","Register for a health check",
+bcb_health_campaign_default,"Chiến dịch khám sức khoẻ","Health check campaign"

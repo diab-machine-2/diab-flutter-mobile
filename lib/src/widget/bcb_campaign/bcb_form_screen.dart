@@ -1,19 +1,23 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:medical/src/bloc/bcb_campaign/bcb_campaign_bloc.dart';
+import 'package:bot_toast/bot_toast.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_campaign_model.dart';
-import 'package:medical/src/model/bcb_campaign/bcb_customer_model.dart';
-import 'package:medical/src/widget/bcb_campaign/components/bcb_slot_picker.dart';
+import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 
-/// Phase 2 — KH điền form thông tin + chọn 3 slot ngày giờ khám mong muốn.
+/// Điền form thông tin; chọn 3 khung giờ ở [BcbSelectWishSlotsScreen].
 class BcbFormScreen extends StatefulWidget {
-  final BcbCampaignModel campaign;
-  final BcbCustomerModel customer;
+  final String bcbCampaignId;
+
+  /// Label from Branch (`\$campaignName`), e.g. campaign date text shown in app bar.
+  final String? bcbCampaignName;
 
   const BcbFormScreen({
     Key? key,
-    required this.campaign,
-    required this.customer,
+    required this.bcbCampaignId,
+    this.bcbCampaignName,
   }) : super(key: key);
 
   @override
@@ -25,237 +29,328 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
   final _doctorNoteController = TextEditingController();
   final _medicalHistoryController = TextEditingController();
 
-  final List<DateTime?> _slots = [null, null, null];
+  BcbCampaignModel? _campaign;
+  bool _loading = true;
+  bool _loadingSchedule = false;
 
-  late BcbCampaignBloc _bloc;
+  static const _radius = BorderRadius.all(Radius.circular(10));
 
   @override
   void initState() {
     super.initState();
-    _bloc = BcbCampaignBloc();
+    _loadCampaignSummary();
+  }
 
-    // Pre-fill nếu đã có dữ liệu đăng ký trước đó
-    final reg = widget.customer.registration;
-    if (reg != null) {
-      _doctorNoteController.text = reg.doctorNote ?? '';
-      _medicalHistoryController.text = reg.medicalHistory ?? '';
-      if (reg.wishes != null) {
-        for (final wish in reg.wishes!) {
-          final idx = (wish.priority ?? 1) - 1;
-          if (idx >= 0 && idx < 3) {
-            _slots[idx] = wish.examDate;
-          }
-        }
-      }
-    }
+  String _defaultCampaignTitle() => R.string.bcb_register_health_check.tr();
+
+  String _branchCampaignLabel() {
+    final n = widget.bcbCampaignName?.trim();
+    if (n != null && n.isNotEmpty) return n;
+    return _defaultCampaignTitle();
+  }
+
+  String _seedCardName() {
+    final n = widget.bcbCampaignName?.trim();
+    if (n != null && n.isNotEmpty) return n;
+    return R.string.bcb_health_campaign_default.tr();
+  }
+
+  Future<void> _loadCampaignSummary() async {
+    BcbCampaignModel summary = BcbCampaignModel(
+      id: widget.bcbCampaignId,
+      name: _seedCardName(),
+    );
+    // if (accountId != null && accountId.isNotEmpty) {
+    //   try {
+    //     final client = BcbCampaignClient();
+    //     final list = await client.fetchCampaigns(accountId);
+    //     for (final c in list) {
+    //       if (c.id == widget.bcbCampaignId) {
+    //         final apiName = c.name?.trim();
+    //         final branchName = widget.bcbCampaignName?.trim();
+    //         final resolvedName = (apiName != null && apiName.isNotEmpty)
+    //             ? apiName
+    //             : (branchName != null && branchName.isNotEmpty)
+    //                 ? branchName
+    //                 : _seedCardName();
+    //         summary = BcbCampaignModel(
+    //           id: c.id,
+    //           name: resolvedName,
+    //           partnerName: c.partnerName,
+    //           startDate: c.startDate,
+    //           status: c.status,
+    //         );
+    //         break;
+    //       }
+    //     }
+    //   } catch (_) {/* keep fallback summary */}
+    // }
+    if (!mounted) return;
+    setState(() {
+      _campaign = summary;
+      _loading = false;
+    });
   }
 
   @override
   void dispose() {
     _doctorNoteController.dispose();
     _medicalHistoryController.dispose();
-    _bloc.close();
     super.dispose();
   }
 
-  void _onSlotChanged(int index, DateTime dateTime) {
-    setState(() {
-      _slots[index] = dateTime;
-    });
-  }
-
-  bool get _allSlotsSelected => _slots.every((s) => s != null);
-
-  void _submit() {
+  Future<void> _continueToSlotSelection() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_campaign == null) return;
 
-    if (!_allSlotsSelected) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chọn đủ 3 ngày khám mong muốn.'),
-          backgroundColor: Colors.orange,
+    setState(() => _loadingSchedule = true);
+    BotToast.showLoading();
+    try {
+      final client = BcbCampaignClient();
+      final days = await client.fetchPartnerScheduleDays(widget.bcbCampaignId);
+      if (!mounted) return;
+      // final active = days
+      //     .where((d) =>
+      //         d.isActive &&
+      //         d.examDateLocal != null &&
+      //         d.slots.any((s) => s.isActive && !s.isFull))
+      // .toList();
+      final active = days;
+      active
+          .sort((a, b) => (a.examDateUnix ?? 0).compareTo(b.examDateUnix ?? 0));
+      if (active.isEmpty) {
+        BotToast.closeAllLoading();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(R.string.bcb_no_schedule_available.tr()),
+          ),
+        );
+        return;
+      }
+      BotToast.closeAllLoading();
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => BcbSelectWishSlotsScreen(
+            bcbCampaignId: widget.bcbCampaignId,
+            scheduleDays: days,
+            doctorNote: _doctorNoteController.text.trim().isEmpty
+                ? null
+                : _doctorNoteController.text.trim(),
+            medicalHistory: _medicalHistoryController.text.trim().isEmpty
+                ? null
+                : _medicalHistoryController.text.trim(),
+          ),
         ),
       );
-      return;
-    }
-
-    final wishes = List.generate(3, (i) {
-      return BcbAppointmentWishModel(
-        priority: i + 1,
-        examDate: _slots[i],
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
       );
-    });
-
-    _bloc.add(SubmitBcbRegistrationEvent(
-      campaignCustomerId: widget.customer.id ?? '',
-      doctorNote: _doctorNoteController.text.trim().isEmpty
-          ? null
-          : _doctorNoteController.text.trim(),
-      medicalHistory: _medicalHistoryController.text.trim().isEmpty
-          ? null
-          : _medicalHistoryController.text.trim(),
-      wishes: wishes,
-    ));
+    } finally {
+      BotToast.closeAllLoading();
+      if (mounted) setState(() => _loadingSchedule = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _bloc,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Đăng ký khám sức khoẻ'),
-          centerTitle: true,
+    if (_loading || _campaign == null) {
+      return Scaffold(
+        backgroundColor: R.color.backgroundColorNew,
+        body: Column(
+          children: [
+            _buildCustomAppBar(),
+            Expanded(
+              child: Center(
+                child: CircularProgressIndicator(
+                    color: R.color.greenGradientBottom),
+              ),
+            ),
+          ],
         ),
-        body: BlocListener<BcbCampaignBloc, BcbCampaignState>(
-          listener: (context, state) {
-            if (state is BcbRegistrationSubmitted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Đăng ký thành công! Chúng tôi sẽ liên hệ xác nhận lịch khám.'),
-                  backgroundColor: Colors.green,
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: R.color.backgroundColorNew,
+      body: Column(
+        children: [
+          _buildCustomAppBar(),
+          Expanded(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          R.string.bcb_note_for_doctor.tr(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff111515),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _doctorNoteController,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            hintText: R.string.bcb_note_for_doctor_hint.tr(),
+                            hintStyle: TextStyle(
+                                color: R.color.captionColorGray,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: R.font.sfpro),
+                            filled: true,
+                            fillColor: R.color.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: _radius,
+                              borderSide:
+                                  BorderSide(color: const Color(0xffE5E7EB)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: _radius,
+                              borderSide:
+                                  BorderSide(color: R.color.greenGradientBottom),
+                            ),
+                            contentPadding: const EdgeInsets.all(12),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          R.string.bcb_medical_condition.tr(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff111515),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _medicalHistoryController,
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            hintText:
+                                R.string.bcb_medical_condition_hint.tr(),
+                            hintStyle: TextStyle(
+                                color: R.color.captionColorGray,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: R.font.sfpro),
+                            filled: true,
+                            fillColor: R.color.white,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: _radius,
+                              borderSide:
+                                  BorderSide(color: const Color(0xffE5E7EB)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: _radius,
+                              borderSide:
+                                  BorderSide(color: R.color.greenGradientBottom),
+                            ),
+                            contentPadding: const EdgeInsets.all(12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              );
-              Navigator.of(context).pop(true);
-            } else if (state is BcbCampaignError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
-          child: BlocBuilder<BcbCampaignBloc, BcbCampaignState>(
-            builder: (context, state) {
-              final isLoading = state is BcbCampaignLoading;
-              return Stack(
-                children: [
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // --- Campaign info card ---
-                          _CampaignInfoCard(campaign: widget.campaign),
-                          const SizedBox(height: 20),
-
-                          // --- Doctor note ---
-                          const Text(
-                            'Ghi chú cho bác sĩ',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _doctorNoteController,
-                            maxLines: 3,
-                            decoration: InputDecoration(
-                              hintText: 'Nhập ghi chú cho bác sĩ (tuỳ chọn)',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              contentPadding: const EdgeInsets.all(12),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // --- Medical history ---
-                          const Text(
-                            'Bệnh lý',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _medicalHistoryController,
-                            maxLines: 3,
-                            decoration: InputDecoration(
-                              hintText: 'Nhập bệnh lý hiện tại (tuỳ chọn)',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              contentPadding: const EdgeInsets.all(12),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-
-                          // --- Slot picker section ---
-                          Row(
-                            children: [
-                              const Text(
-                                'Chọn 3 ngày khám mong muốn',
-                                style: TextStyle(
-                                    fontSize: 14, fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                '*',
-                                style: TextStyle(
-                                    color: Colors.red.shade600, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Chúng tôi sẽ xếp lịch dựa trên ưu tiên của bạn.',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade600),
-                          ),
-                          const SizedBox(height: 12),
-                          for (int i = 0; i < 3; i++) ...[
-                            BcbSlotPicker(
-                              priority: i + 1,
-                              selectedDateTime: _slots[i],
-                              onDateTimeSelected: (dt) =>
-                                  _onSlotChanged(i, dt),
-                            ),
-                            if (i < 2) const SizedBox(height: 10),
-                          ],
-                          const SizedBox(height: 32),
-
-                          // --- Submit button ---
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: isLoading ? null : _submit,
-                              style: ElevatedButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                              ),
-                              child: isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white),
-                                    )
-                                  : const Text(
-                                      'Đăng ký',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Material(
+                    elevation: 8,
+                    color: R.color.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: InkWell(
+                          onTap: _loadingSchedule
+                              ? null
+                              : _continueToSlotSelection,
+                          borderRadius: BorderRadius.circular(200),
+                          child: Ink(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(200),
+                              gradient: _loadingSchedule
+                                  ? null
+                                  : LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        R.color.greenGradientTop02,
+                                        R.color.greenGradientBottom,
+                                      ],
                                     ),
+                              color: _loadingSchedule
+                                  ? R.color.color0xffC2C2C2
+                                  : null,
+                            ),
+                            child: Center(
+                              child: Text(
+                                R.string.tiep_tuc.tr(),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xffFFFFFF),
+                                ),
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 24),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                  if (isLoading)
-                    const Positioned.fill(
-                      child: ColoredBox(
-                        color: Color(0x33000000),
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-                    ),
-                ],
-              );
-            },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomAppBar() {
+    return SizedBox(
+      height: kToolbarHeight + MediaQuery.of(context).padding.top,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [R.color.greenGradientTop02, R.color.greenGradientBottom],
+            stops: const [0.01, 0.99],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+        ),
+        child: CustomAppBar(
+          backgroundColor: R.color.transparent,
+          centerTitle: false,
+          title: Text(
+            _branchCampaignLabel(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: R.color.white,
+            ),
+          ),
+          leadingIcon: IconButton(
+            splashColor: R.color.transparent,
+            highlightColor: R.color.transparent,
+            icon: Icon(Icons.arrow_back, color: R.color.white),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ),
@@ -273,32 +368,44 @@ class _CampaignInfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.06),
+        color: R.color.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-            color: Theme.of(context).primaryColor.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: R.color.color0xff111515.withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            campaign.name ?? 'Chiến dịch khám sức khoẻ',
-            style: const TextStyle(
-                fontSize: 15, fontWeight: FontWeight.w700),
+            campaign.name ?? R.string.bcb_health_campaign_default.tr(),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: R.color.color0xff111515,
+            ),
           ),
           if (campaign.partnerName != null) ...[
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.business_outlined,
-                    size: 14,
-                    color: Theme.of(context).primaryColor.withOpacity(0.8)),
+                Icon(
+                  Icons.business_outlined,
+                  size: 14,
+                  color: R.color.greenGradientBottom,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   campaign.partnerName!,
                   style: TextStyle(
-                      fontSize: 13,
-                      color: Theme.of(context).primaryColor.withOpacity(0.8)),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.greenGradientBottom,
+                  ),
                 ),
               ],
             ),

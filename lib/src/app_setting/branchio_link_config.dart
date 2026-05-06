@@ -69,6 +69,8 @@ class BranchioLinkConfig {
   String? _pendingSurveyId;
   String? _pendingLessonId;
   String? _pendingLessonType;
+  String? _pendingBcbCampaignId;
+  String? _pendingBcbCampaignName;
 
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
@@ -200,6 +202,37 @@ class BranchioLinkConfig {
           if (timeSinceLastMeeting.inSeconds < 5) return;
         }
         ZoomService().launchZoomMeeting(meetingId, meetingPassword);
+        return;
+      }
+
+      // BCB campaign — `\$campaignId` / `\$bcbCampaignId` / `bcb_campaign_id`; optional `\$campaignName` (e.g. date label)
+      if (data['+clicked_branch_link'] == true &&
+          (data.containsKey('\$campaignId') )) {
+        final campaignId = data['\$campaignId']
+            ?.toString()
+            .trim() ??
+            '';
+        if (campaignId.isEmpty) return;
+        final rawName = (data['\$campaignName'] ?? data['campaign_name'])
+            ?.toString()
+            .trim();
+        final campaignName =
+            (rawName != null && rawName.isNotEmpty) ? rawName : null;
+        final args = <String, dynamic>{
+          'bcbCampaignId': campaignId,
+          if (campaignName != null) 'bcbCampaignName': campaignName,
+        };
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            navigatorKey.currentState?.pushNamed(
+              NavigatorName.bcb_form,
+              arguments: args,
+            );
+          });
+        } else {
+          _pendingBcbCampaignId = campaignId;
+          _pendingBcbCampaignName = campaignName;
+        }
         return;
       }
 
@@ -490,6 +523,51 @@ class BranchioLinkConfig {
       return response.result;
     } else {
       throw Exception('Failed to create webinar link: ${response.errorMessage}');
+    }
+  }
+
+  /// Creates a Branch short URL that opens [NavigatorName.bcb_form] with
+  /// `\$campaignId`, `\$bcbCampaignId`, and optional `\$campaignName` (aligned with [listSession]).
+  Future<String> createBcbCampaignBranchLink({
+    required String bcbCampaignId,
+    String? campaignName,
+  }) async {
+    final canonicalId =
+        'bcb_campaign/${bcbCampaignId}';
+    final meta = BranchContentMetaData()
+      ..addCustomMetadata('\$campaignId', bcbCampaignId)
+      ..addCustomMetadata('\$bcbCampaignId', bcbCampaignId);
+    final name = campaignName?.trim();
+    if (name != null && name.isNotEmpty) {
+      meta.addCustomMetadata('\$campaignName', name);
+    }
+
+    final BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: canonicalId,
+      title: 'Đăng ký chiến dịch DiaB',
+      contentDescription:
+          'Hoàn tất đăng ký chiến dịch khám sức khỏe trên ứng dụng DiaB.',
+      imageUrl:
+          'https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png',
+      contentMetadata: meta,
+    );
+
+    final BranchLinkProperties linkProperties = BranchLinkProperties(
+      feature: 'bcb_campaign',
+      channel: 'campaign',
+      campaign: 'bcb_registration',
+    );
+
+    final BranchResponse response = await FlutterBranchSdk.getShortUrl(
+      buo: buo,
+      linkProperties: linkProperties,
+    );
+
+    if (response.success) {
+      return response.result;
+    } else {
+      throw Exception(
+          'Failed to create BCB campaign link: ${response.errorMessage}');
     }
   }
 
@@ -928,6 +1006,26 @@ class BranchioLinkConfig {
       print('[ROUTE] Executing pending activity navigation: $_activityId');
       Observable.instance
           .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
+    }
+
+    if (_pendingBcbCampaignId != null &&
+        _pendingBcbCampaignId!.isNotEmpty &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      final bid = _pendingBcbCampaignId!;
+      final bName = _pendingBcbCampaignName;
+      _pendingBcbCampaignId = null;
+      _pendingBcbCampaignName = null;
+      print('[ROUTE] Executing pending BCB registration deeplink: $bid');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigatorKey.currentState?.pushNamed(
+          NavigatorName.bcb_form,
+          arguments: {
+            'bcbCampaignId': bid,
+            if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
+          },
+        );
+      });
     }
 
     if (_pendingTargetType != null &&
