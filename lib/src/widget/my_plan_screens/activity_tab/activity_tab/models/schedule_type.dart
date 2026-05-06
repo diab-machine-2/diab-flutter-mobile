@@ -66,9 +66,8 @@ extension ScheduleTypeExtend on ScheduleType {
         return R.drawable.ic_schedule_book_1_1;
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
-        return R.drawable.ic_interview;
       case ScheduleType.booking_solo:
-        return R.drawable.ic_booking_1_1;
+        return R.drawable.ic_interview;
       case ScheduleType.book_1_n:
         return R.drawable.ic_schedule_book_1_n;
       case ScheduleType.survey:

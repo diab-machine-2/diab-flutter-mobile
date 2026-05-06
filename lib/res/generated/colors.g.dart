@@ -137,7 +137,7 @@ class Colors {
   Color get nutrition_color => Color(0xff1E8F66);
   Color get knowledge_color => Color(0xff1E8F66);
   Color get question_color => Color(0xffD97708);
-  Color get lesson_color => Color(0xffD04D4C);
+  Color get lesson_color => Color(0xff008479);
   Color get ho_so_color => Color(0xffFDB913);
   Color get exercise_color => Color(0xff005484);
   Color get event_color => Color(0xff005484);
