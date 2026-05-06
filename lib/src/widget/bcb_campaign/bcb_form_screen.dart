@@ -108,7 +108,7 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loadingSchedule = true);
-    BotToast.showLoading();
+    // BotToast.showLoading();
     try {
       var activeDays = _scheduleDays;
       if (activeDays.isEmpty) {

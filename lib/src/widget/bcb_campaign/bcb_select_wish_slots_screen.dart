@@ -519,19 +519,21 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                               ),
                               const SizedBox(height: 12),
                               daySlots.isEmpty
-                                  ? Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          16, 0, 16, 16),
-                                      child: Text(
-                                        _morning
-                                            ? R.string.bcb_no_slots_morning.tr()
-                                            : R.string.bcb_no_slots_afternoon.tr(),
-                                        style: TextStyle(
-                                          color: R.color.color0xff111515
-                                              .withValues(alpha: 0.7),
+                                  ? Center(
+                                    child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            16, 0, 16, 16),
+                                        child: Text(
+                                          _morning
+                                              ? R.string.bcb_no_slots_morning.tr()
+                                              : R.string.bcb_no_slots_afternoon.tr(),
+                                          style: TextStyle(
+                                            color: R.color.color0xff111515
+                                                .withValues(alpha: 0.7),
+                                          ),
                                         ),
                                       ),
-                                    )
+                                  )
                                   : GridView.builder(
                                       padding: const EdgeInsets.fromLTRB(
                                           16, 0, 16, 16),
