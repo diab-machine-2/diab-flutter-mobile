@@ -62,7 +62,7 @@ class BcbCampaignClient extends FetchClient {
     try {
       final formData = FormData();
       formData.fields
-          .add(MapEntry('bcbCampaignId', registration.bcbCampaignId));
+          .add(MapEntry('campaignId', registration.bcbCampaignId));
       if (registration.doctorNote != null &&
           registration.doctorNote!.trim().isNotEmpty) {
         formData.fields.add(MapEntry('doctorNote', registration.doctorNote!));

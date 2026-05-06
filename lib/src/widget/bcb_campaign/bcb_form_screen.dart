@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/model/bcb_campaign/bcb_campaign_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -29,16 +29,19 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
   final _doctorNoteController = TextEditingController();
   final _medicalHistoryController = TextEditingController();
 
-  BcbCampaignModel? _campaign;
-  bool _loading = true;
   bool _loadingSchedule = false;
+  List<BcbPartnerScheduleDay> _scheduleDays = const [];
 
   static const _radius = BorderRadius.all(Radius.circular(10));
 
   @override
   void initState() {
     super.initState();
-    _loadCampaignSummary();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      // BotToast.showLoading();
+      await _prefetchScheduleDays();
+    });
   }
 
   String _defaultCampaignTitle() => R.string.bcb_register_health_check.tr();
@@ -49,47 +52,49 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
     return _defaultCampaignTitle();
   }
 
-  String _seedCardName() {
-    final n = widget.bcbCampaignName?.trim();
-    if (n != null && n.isNotEmpty) return n;
-    return R.string.bcb_health_campaign_default.tr();
+  List<BcbPartnerScheduleDay> _activeScheduleDays(
+      List<BcbPartnerScheduleDay> days) {
+    final active = days
+        .where((d) =>
+            d.isActive &&
+            d.examDateLocal != null &&
+            d.slots.any((s) => s.isActive && !s.isFull))
+        .toList();
+    active.sort((a, b) => (a.examDateUnix ?? 0).compareTo(b.examDateUnix ?? 0));
+    return active;
   }
 
-  Future<void> _loadCampaignSummary() async {
-    BcbCampaignModel summary = BcbCampaignModel(
-      id: widget.bcbCampaignId,
-      name: _seedCardName(),
-    );
-    // if (accountId != null && accountId.isNotEmpty) {
-    //   try {
-    //     final client = BcbCampaignClient();
-    //     final list = await client.fetchCampaigns(accountId);
-    //     for (final c in list) {
-    //       if (c.id == widget.bcbCampaignId) {
-    //         final apiName = c.name?.trim();
-    //         final branchName = widget.bcbCampaignName?.trim();
-    //         final resolvedName = (apiName != null && apiName.isNotEmpty)
-    //             ? apiName
-    //             : (branchName != null && branchName.isNotEmpty)
-    //                 ? branchName
-    //                 : _seedCardName();
-    //         summary = BcbCampaignModel(
-    //           id: c.id,
-    //           name: resolvedName,
-    //           partnerName: c.partnerName,
-    //           startDate: c.startDate,
-    //           status: c.status,
-    //         );
-    //         break;
-    //       }
-    //     }
-    //   } catch (_) {/* keep fallback summary */}
-    // }
-    if (!mounted) return;
-    setState(() {
-      _campaign = summary;
-      _loading = false;
-    });
+  Future<List<BcbPartnerScheduleDay>> _fetchActiveScheduleDays() async {
+    final client = BcbCampaignClient();
+    final days = await client.fetchPartnerScheduleDays(widget.bcbCampaignId);
+    // TODO: Apply filter isActive and isFull when BE ready _activeScheduleDays
+    return days;
+  }
+
+  Future<void> _prefetchScheduleDays() async {
+    try {
+      final activeDays = await _fetchActiveScheduleDays();
+      if (!mounted) return;
+      if (activeDays.isEmpty) {
+        BotToast.closeAllLoading();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(R.string.bcb_no_schedule_available.tr()),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 28),
+          ),
+        );
+        // Back to home when no schedule available
+        Navigator.of(context).pop();
+        return;
+      }
+      setState(() {
+        _scheduleDays = activeDays;
+      });
+    } catch (_) {
+      // Keep screen usable; we'll show actionable message when user continues.
+    } finally {
+      BotToast.closeAllLoading();
+    }
   }
 
   @override
@@ -101,24 +106,20 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
 
   Future<void> _continueToSlotSelection() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_campaign == null) return;
 
     setState(() => _loadingSchedule = true);
     BotToast.showLoading();
     try {
-      final client = BcbCampaignClient();
-      final days = await client.fetchPartnerScheduleDays(widget.bcbCampaignId);
+      var activeDays = _scheduleDays;
+      if (activeDays.isEmpty) {
+        activeDays = await _fetchActiveScheduleDays();
+        if (!mounted) return;
+        setState(() {
+          _scheduleDays = activeDays;
+        });
+      }
       if (!mounted) return;
-      // final active = days
-      //     .where((d) =>
-      //         d.isActive &&
-      //         d.examDateLocal != null &&
-      //         d.slots.any((s) => s.isActive && !s.isFull))
-      // .toList();
-      final active = days;
-      active
-          .sort((a, b) => (a.examDateUnix ?? 0).compareTo(b.examDateUnix ?? 0));
-      if (active.isEmpty) {
+      if (activeDays.isEmpty) {
         BotToast.closeAllLoading();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -132,7 +133,7 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
         MaterialPageRoute<void>(
           builder: (_) => BcbSelectWishSlotsScreen(
             bcbCampaignId: widget.bcbCampaignId,
-            scheduleDays: days,
+            scheduleDays: activeDays,
             doctorNote: _doctorNoteController.text.trim().isEmpty
                 ? null
                 : _doctorNoteController.text.trim(),
@@ -157,23 +158,6 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading || _campaign == null) {
-      return Scaffold(
-        backgroundColor: R.color.backgroundColorNew,
-        body: Column(
-          children: [
-            _buildCustomAppBar(),
-            Expanded(
-              child: Center(
-                child: CircularProgressIndicator(
-                    color: R.color.greenGradientBottom),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return Scaffold(
       backgroundColor: R.color.backgroundColorNew,
       body: Column(
@@ -217,8 +201,8 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: _radius,
-                              borderSide:
-                                  BorderSide(color: R.color.greenGradientBottom),
+                              borderSide: BorderSide(
+                                  color: R.color.greenGradientBottom),
                             ),
                             contentPadding: const EdgeInsets.all(12),
                           ),
@@ -237,8 +221,7 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
                           controller: _medicalHistoryController,
                           maxLines: 3,
                           decoration: InputDecoration(
-                            hintText:
-                                R.string.bcb_medical_condition_hint.tr(),
+                            hintText: R.string.bcb_medical_condition_hint.tr(),
                             hintStyle: TextStyle(
                                 color: R.color.captionColorGray,
                                 fontSize: 14,
@@ -253,8 +236,8 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: _radius,
-                              borderSide:
-                                  BorderSide(color: R.color.greenGradientBottom),
+                              borderSide: BorderSide(
+                                  color: R.color.greenGradientBottom),
                             ),
                             contentPadding: const EdgeInsets.all(12),
                           ),
@@ -353,64 +336,6 @@ class _BcbFormScreenState extends State<BcbFormScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _CampaignInfoCard extends StatelessWidget {
-  final BcbCampaignModel campaign;
-
-  const _CampaignInfoCard({Key? key, required this.campaign}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: R.color.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: R.color.color0xff111515.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            campaign.name ?? R.string.bcb_health_campaign_default.tr(),
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: R.color.color0xff111515,
-            ),
-          ),
-          if (campaign.partnerName != null) ...[
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(
-                  Icons.business_outlined,
-                  size: 14,
-                  color: R.color.greenGradientBottom,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  campaign.partnerName!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.greenGradientBottom,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
       ),
     );
   }

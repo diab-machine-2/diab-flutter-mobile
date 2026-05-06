@@ -7,7 +7,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/bloc/bcb_campaign/bcb_campaign_bloc.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
-import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -44,8 +43,6 @@ class BcbSelectWishSlotsScreen extends StatefulWidget {
 class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
   late final BcbCampaignBloc _bloc;
   List<BcbPartnerScheduleDay> _days = [];
-  bool _loading = false;
-  String? _loadError;
 
   BcbPartnerScheduleDay? _selectedDay;
   bool _morning = true;
@@ -86,31 +83,7 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
       _selectedDay = activeDays.isNotEmpty ? activeDays.first : null;
       _morning = _defaultMorningForDay(_selectedDay);
       _selectionOrder.clear();
-      _loadError = null;
-      _loading = false;
     });
-  }
-
-  Future<void> _fetchSchedule() async {
-    setState(() {
-      _loading = true;
-      _loadError = null;
-    });
-    BotToast.showLoading();
-    try {
-      final client = BcbCampaignClient();
-      final list = await client.fetchPartnerScheduleDays(widget.bcbCampaignId);
-      if (!mounted) return;
-      _applySchedule(list);
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loadError = e.toString();
-        _loading = false;
-      });
-    } finally {
-      BotToast.closeAllLoading();
-    }
   }
 
   bool _defaultMorningForDay(BcbPartnerScheduleDay? day) {
@@ -276,7 +249,7 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: Text(
-                    R.string.booking_success.tr(),
+                    R.string.booking_success_dialog_title.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.greenGradientBottom,
@@ -385,31 +358,6 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                 builder: (context, state) {
                   final submitting = state is BcbCampaignLoading;
                   final canSubmit = _selectionOrder.isNotEmpty && !submitting;
-
-                  if (_loading) {
-                    return const SizedBox.shrink();
-                  }
-                  if (_loadError != null) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _loadError!,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchSchedule,
-                              child: const Text('Thử lại'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
 
                   if (_days.isEmpty || _selectedDay == null) {
                     return Center(
