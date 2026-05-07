@@ -383,14 +383,24 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                                         ),
                                         SizedBox(width: 5),
                                         Expanded(
-                                          child: Text(
-                                            _cubit.lessonDetail?.name ?? '',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: R.color.white,
-                                              fontWeight: FontWeight.w600,
+                                          child: MediaQuery(
+                                            data:
+                                                MediaQuery.of(context).copyWith(
+                                              textScaler: MediaQuery.of(context)
+                                                  .textScaler
+                                                  .clamp(
+                                                      minScaleFactor: 1.0,
+                                                      maxScaleFactor: 1.3),
+                                            ),
+                                            child: Text(
+                                              _cubit.lessonDetail?.name ?? '',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: R.color.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                             ),
                                           ),
                                         ),

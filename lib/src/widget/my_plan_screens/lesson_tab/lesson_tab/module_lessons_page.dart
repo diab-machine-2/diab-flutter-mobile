@@ -33,6 +33,18 @@ class ModuleLessonsPage extends StatelessWidget {
       value: cubit,
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            splashColor: R.color.transparent,
+            highlightColor: R.color.transparent,
+            icon: Icon(
+              Icons.arrow_back_outlined,
+              color: R.color.white,
+              size: 24,
+            ),
+            onPressed: () {
+              NavigationUtil.pop(context);
+            },
+          ),
           leadingWidth: 36,
           titleSpacing: 0,
           title: Text(
@@ -53,7 +65,11 @@ class ModuleLessonsPage extends StatelessWidget {
             IconButton(
               splashColor: R.color.transparent,
               highlightColor: R.color.transparent,
-              icon: Icon(Icons.search, color: R.color.white),
+              icon: Icon(
+                Icons.search,
+                color: R.color.white,
+                size: 24,
+              ),
               onPressed: () {
                 NavigationUtil.navigatePage(
                   context,
@@ -138,7 +154,7 @@ class _ModuleLessonRow extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        height: 87,
+        constraints: const BoxConstraints(minHeight: 87),
         alignment: Alignment.center,
         color: R.color.transparent,
         child: Row(
@@ -173,7 +189,7 @@ class _ModuleLessonRow extends StatelessWidget {
                         ),
                         Icon(
                           Icons.chevron_right_rounded,
-                          size: 20,
+                          size: 24,
                           color: R.color.greenGradientBottom,
                         ),
                       ],

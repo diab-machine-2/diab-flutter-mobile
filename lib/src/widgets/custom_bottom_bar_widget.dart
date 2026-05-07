@@ -60,7 +60,7 @@ class CustomBottomBarWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Previous button
-              _buildPreviousButton(),
+              _buildPreviousButton(context),
               SizedBox(width: 4),
               // Center button
               // _buildCenterButton(),
@@ -73,7 +73,7 @@ class CustomBottomBarWidget extends StatelessWidget {
                 _buildCenterButton(),
               SizedBox(width: 4),
               // Next button
-              _buildNextButton(),
+              _buildNextButton(context),
             ],
           ),
         ],
@@ -117,7 +117,7 @@ class CustomBottomBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPreviousButton() {
+  Widget _buildPreviousButton(BuildContext context) {
     final bool isInactive = isPreviousButtonActive;
 
     return InkWell(
@@ -140,16 +140,24 @@ class CustomBottomBarWidget extends StatelessWidget {
               size: 16,
               color: isInactive ? R.color.color0xff5E6566 : R.color.mainColor,
             ),
-            Text(
-              previousButtonTitle ?? R.string.back.tr(),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color:
-                      isInactive ? R.color.color0xff5E6566 : R.color.mainColor,
-                  // height: 1.43,
-                  letterSpacing: 0.4),
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
+                previousButtonTitle ?? R.string.back.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: isInactive
+                        ? R.color.color0xff5E6566
+                        : R.color.mainColor,
+                    // height: 1.43,
+                    letterSpacing: 0.4),
+              ),
             ),
           ],
         ),
@@ -181,7 +189,7 @@ class CustomBottomBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     if (isCompleted != null) {
       final bool canComplete = isCompleted!;
       return InkWell(
@@ -222,7 +230,13 @@ class CustomBottomBarWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
               nextButtonTitle ?? R.string.next_lesson.tr(),
               style: TextStyle(
                   fontSize: 14,
@@ -232,7 +246,7 @@ class CustomBottomBarWidget extends StatelessWidget {
                       : R.color.color0xff5E6566,
                   // height: 1.43,
                   letterSpacing: 0.4),
-            ),
+            )),
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
@@ -280,11 +294,18 @@ class _DonutStepProgress extends StatelessWidget {
               strokeWidth: strokeWidth,
             ),
           ),
-          Text(
-            currentPositionTitle,
-            maxLines: 1,
-            overflow: TextOverflow.visible,
-            style: labelStyle,
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: MediaQuery.of(context)
+                  .textScaler
+                  .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+            ),
+            child: Text(
+              currentPositionTitle,
+              maxLines: 1,
+              overflow: TextOverflow.visible,
+              style: labelStyle,
+            ),
           ),
         ],
       ),

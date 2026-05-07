@@ -408,12 +408,18 @@ class _LessonTabPageState extends State<LessonTabPage>
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          moduleName,
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
+                        child: MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                          ),
+                          child: Text(
+                            moduleName,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
@@ -428,7 +434,7 @@ class _LessonTabPageState extends State<LessonTabPage>
               ),
               const SizedBox(height: 8),
               SizedBox(
-                height: 250,
+                height: 262,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -518,7 +524,7 @@ class _LessonTabPageState extends State<LessonTabPage>
             )
           else
             SizedBox(
-              height: 250,
+              height: 262,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -796,15 +802,22 @@ class _LessonTabPageState extends State<LessonTabPage>
                       ),
                     ),
                   const SizedBox(height: 4),
-                  Text(
-                    lessonDetail?.name ?? '',
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
+                  MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    child: Text(
+                      lessonDetail?.name ?? '',
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   LessonStatusWidget(
@@ -868,16 +881,23 @@ class _LessonTabPageState extends State<LessonTabPage>
               ),
             const SizedBox(height: 4),
             SizedBox(
-              height: 40,
-              child: Text(
-                lessonDetail?.name ?? '',
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+              height: 42,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                child: Text(
+                  lessonDetail?.name ?? '',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             const SizedBox(height: 4),
@@ -934,15 +954,22 @@ class _LessonTabPageState extends State<LessonTabPage>
             const SizedBox(height: 4),
             SizedBox(
               height: 40,
-              child: Text(
-                lessonDetail?.name ?? '',
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                child: Text(
+                  lessonDetail?.name ?? '',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             const SizedBox(height: 4),

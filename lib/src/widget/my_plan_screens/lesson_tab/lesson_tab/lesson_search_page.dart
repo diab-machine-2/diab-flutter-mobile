@@ -382,18 +382,25 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: Text(
-                  moduleName,
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                  ),
+                  child: Text(
+                    moduleName,
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 8),
               SizedBox(
-                height: 250,
+                height: 260,
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   scrollDirection: Axis.horizontal,
@@ -425,55 +432,69 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
           border: Border.all(color: R.color.grey_6),
         ),
         padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                height: 132,
-                width: double.infinity,
-                child: Image.network(
-                  lesson?.image?.url ?? '',
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      Container(color: R.color.grey_6),
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: MediaQuery.of(context)
+                .textScaler
+                .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  height: 132,
+                  width: double.infinity,
+                  child: Image.network(
+                    lesson?.image?.url ?? '',
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) =>
+                        Container(color: R.color.grey_6),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            if (category.isNotEmpty)
-              Text(
-                category,
-                style: TextStyle(
-                  color: R.color.greenGradientBottom,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+              const SizedBox(height: 8),
+              if (category.isNotEmpty)
+                Text(
+                  category,
+                  style: TextStyle(
+                    color: R.color.greenGradientBottom,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            const SizedBox(height: 4),
-            SizedBox(
-              height: 40,
-              child: Text(
-                lesson?.name ?? '',
-                style: TextStyle(
-                  color: R.color.textDark,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+              const SizedBox(height: 4),
+              SizedBox(
+                height: 44,
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                  ),
+                  child: Text(
+                    lesson?.name ?? '',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const SizedBox(height: 4),
-            LessonStatusWidget(
-              learningStatus: lesson?.learningStatus,
-              progress: lesson?.percentComplete,
-            ),
-          ],
+              const SizedBox(height: 4),
+              LessonStatusWidget(
+                learningStatus: lesson?.learningStatus,
+                progress: lesson?.percentComplete,
+              ),
+            ],
+          ),
         ),
       ),
     );
