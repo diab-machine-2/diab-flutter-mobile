@@ -180,6 +180,7 @@ dependencies:
   # tutorial_coach_mark: 1.2.11
   calendar_date_picker2: 1.1.9
   add_2_calendar_new: 1.0.4
+  syncfusion_flutter_pdfviewer: 24.2.9
 
 dev_dependencies:
   flutter_test:

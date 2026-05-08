@@ -9,8 +9,8 @@ class BcbCampaignLoading extends BcbCampaignState {}
 class BcbRegistrationSubmitted extends BcbCampaignState {}
 
 class BcbExamResultLoaded extends BcbCampaignState {
-  final BcbExamResultModel result;
-  BcbExamResultLoaded({required this.result});
+  final List<BcbExamResultModel> results;
+  BcbExamResultLoaded({required this.results});
 }
 
 class BcbResultMarkedViewed extends BcbCampaignState {}

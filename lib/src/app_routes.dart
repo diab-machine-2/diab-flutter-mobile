@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
@@ -27,6 +28,8 @@ import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 import 'package:medical/src/widget/profile/cancellation_refund_policy.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_form_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/campaign_test_result_detail_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/campaign_test_result_screen.dart';
 
 import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
@@ -361,7 +364,8 @@ class AppRoutes {
         break;
       case NavigatorName.prescription:
         final prescriptionData = settings.arguments as Map<String, dynamic>?;
-        final initialBottomIndex = prescriptionData?['initialBottomIndex'] as int?;
+        final initialBottomIndex =
+            prescriptionData?['initialBottomIndex'] as int?;
         page = PrescriptionListPage(initialBottomIndex: initialBottomIndex);
         break;
 
@@ -378,6 +382,23 @@ class AppRoutes {
             bcbCampaignId: id,
             bcbCampaignName: name,
           );
+          break;
+        }
+      case NavigatorName.view_test_result:
+        {
+          final data = settings.arguments as Map<String, dynamic>?;
+          page = CampaignTestResultScreen(
+            campaignId:
+                data?['campaignId'] ?? data?['campaignCustomerId'] ?? '',
+          );
+          break;
+        }
+      case NavigatorName.campaign_test_result_detail:
+        {
+          final data = settings.arguments as Map<String, dynamic>?;
+          final result = data?['result'] as BcbExamResultModel?;
+          if (result == null) break;
+          page = CampaignTestResultDetailScreen(result: result);
           break;
         }
 

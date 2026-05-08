@@ -27,9 +27,9 @@ class BcbCampaignService {
     return _client.submitRegistration(registration);
   }
 
-  /// GET App/BcbExamResult/{campaignCustomerId} — lấy kết quả khám
-  Future<BcbExamResultModel> getExamResult(String campaignCustomerId) {
-    return _client.fetchExamResult(campaignCustomerId);
+  /// GET App/BcbExamResult/CampaginCustomerId?id={campaignId} — lấy kết quả khám
+  Future<List<BcbExamResultModel>> getExamResult(String campaignId) {
+    return _client.fetchExamResult(campaignId);
   }
 
   /// PUT App/BcbExamResult/{id}/mark-viewed — đánh dấu đã xem

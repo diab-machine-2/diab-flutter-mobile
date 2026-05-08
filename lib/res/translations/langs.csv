@@ -1520,3 +1520,21 @@ bcb_no_slots_morning,"Không có khung giờ buổi sáng cho ngày này.","Ther
 bcb_no_slots_afternoon,"Không có khung giờ buổi chiều cho ngày này.","There are no afternoon slots for this day.",
 bcb_register_health_check,"Đăng ký khám sức khoẻ","Register for a health check",
 bcb_health_campaign_default,"Chiến dịch khám sức khoẻ","Health check campaign"
+bcb_exam_category_laboratory_test,"Xét nghiệm","Laboratory tests",
+bcb_exam_category_diagnostic_imaging,"Chẩn đoán hình ảnh","Diagnostic imaging",
+bcb_exam_category_functional_exploration,"Thăm dò chức năng","Functional exploration",
+bcb_exam_category_endoscopy_biopsy,"Nội soi","Endoscopy",
+bcb_exam_results_title,"Kết quả cận lâm sàng","Paraclinical results",
+bcb_no_exam_results,"Chưa có kết quả xét nghiệm","No test results yet",
+bcb_exam_results_list,"Danh sách kết quả","Results list",
+bcb_result_file_not_found,"Không tìm thấy file kết quả","Result file not found",
+bcb_invalid_file_url,"Đường dẫn file không hợp lệ","Invalid file URL",
+bcb_cannot_download_file,"Không thể tải file","Cannot download file",
+bcb_exam_result_default_title,"Kết quả xét nghiệm","Test result",
+bcb_view_result,"Xem","View",
+bcb_share_feature_in_development,"Tính năng chia sẻ đang phát triển","Share feature is under development",
+bcb_no_pdf_file,"Không có file PDF","No PDF file available",
+bcb_cannot_load_pdf_in_app,"Không thể tải PDF trong app.","Cannot load PDF in the app.",
+bcb_open_external,"Mở ngoài","Open externally",
+bcb_download,"Tải xuống","Download"
+bcb_tai_lieu,"tài liệu","documents"

@@ -1571,4 +1571,27 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get bcb_no_slots_afternoon => 'bcb_no_slots_afternoon';
   String get bcb_register_health_check => 'bcb_register_health_check';
   String get bcb_health_campaign_default => 'bcb_health_campaign_default';
+  String get bcb_exam_category_laboratory_test =>
+      'bcb_exam_category_laboratory_test';
+  String get bcb_exam_category_diagnostic_imaging =>
+      'bcb_exam_category_diagnostic_imaging';
+  String get bcb_exam_category_functional_exploration =>
+      'bcb_exam_category_functional_exploration';
+  String get bcb_exam_category_endoscopy_biopsy =>
+      'bcb_exam_category_endoscopy_biopsy';
+  String get bcb_exam_results_title => 'bcb_exam_results_title';
+  String get bcb_no_exam_results => 'bcb_no_exam_results';
+  String get bcb_exam_results_list => 'bcb_exam_results_list';
+  String get bcb_result_file_not_found => 'bcb_result_file_not_found';
+  String get bcb_invalid_file_url => 'bcb_invalid_file_url';
+  String get bcb_cannot_download_file => 'bcb_cannot_download_file';
+  String get bcb_exam_result_default_title => 'bcb_exam_result_default_title';
+  String get bcb_view_result => 'bcb_view_result';
+  String get bcb_share_feature_in_development =>
+      'bcb_share_feature_in_development';
+  String get bcb_no_pdf_file => 'bcb_no_pdf_file';
+  String get bcb_cannot_load_pdf_in_app => 'bcb_cannot_load_pdf_in_app';
+  String get bcb_open_external => 'bcb_open_external';
+  String get bcb_download => 'bcb_download';
+  String get bcb_tai_lieu => 'bcb_tai_lieu';
 }

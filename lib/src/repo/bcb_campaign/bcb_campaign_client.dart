@@ -24,8 +24,7 @@ class BcbCampaignClient extends FetchClient {
         if (response.data['data'] == null) {
           return [];
         }
-        return BcbCampaignModel.toList(
-            response.data['data'] as List<dynamic>);
+        return BcbCampaignModel.toList(response.data['data'] as List<dynamic>);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -61,8 +60,7 @@ class BcbCampaignClient extends FetchClient {
       BcbCampaignRegistrationModel registration) async {
     try {
       final formData = FormData();
-      formData.fields
-          .add(MapEntry('campaignId', registration.bcbCampaignId));
+      formData.fields.add(MapEntry('campaignId', registration.bcbCampaignId));
       if (registration.doctorNote != null &&
           registration.doctorNote!.trim().isNotEmpty) {
         formData.fields.add(MapEntry('doctorNote', registration.doctorNote!));
@@ -88,16 +86,17 @@ class BcbCampaignClient extends FetchClient {
     }
   }
 
-  /// GET App/BcbExamResult/{campaignCustomerId} — lấy kết quả khám
-  Future<BcbExamResultModel> fetchExamResult(
-      String campaignCustomerId) async {
+  /// GET App/BcbExamResult/CampaginCustomerId?id={campaignId} — lấy kết quả khám
+  Future<List<BcbExamResultModel>> fetchExamResult(String campaignId) async {
     try {
       final Response response = await super.fetchData(
-        url: '/App/BcbExamResult/$campaignCustomerId',
+        url: '/App/BcbExamResult/CampaginCustomerId',
+        params: {'id': campaignId},
       );
       if (response.statusCode == 200) {
-        return BcbExamResultModel.fromJson(
-            response.data['data'] as Map<String, dynamic>);
+        final body = response.data;
+        final raw = body is Map<String, dynamic> ? body['data'] : body;
+        return BcbExamResultModel.listFrom(raw);
       } else {
         final error = Error.fromJson(response);
         throw error;

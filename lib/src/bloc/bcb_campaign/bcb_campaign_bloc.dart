@@ -53,8 +53,8 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
     try {
       yield BcbCampaignLoading();
       final client = BcbCampaignClient();
-      final result = await client.fetchExamResult(campaignCustomerId);
-      yield BcbExamResultLoaded(result: result);
+      final results = await client.fetchExamResult(campaignCustomerId);
+      yield BcbExamResultLoaded(results: results);
     } catch (e, _) {
       if (e is Error) {
         yield BcbCampaignError(message: e.message ?? '');
