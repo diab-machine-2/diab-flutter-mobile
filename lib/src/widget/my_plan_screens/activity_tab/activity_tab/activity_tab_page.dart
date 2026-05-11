@@ -201,7 +201,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         child: HorizontalSelector(
                           initialValue: _selectedTopTab,
                           values: const [0, 1, 2],
-                          labels: const ['Hoạt động', 'Kiến thức', 'Vận động'],
+                          labels: [
+                            R.string.activity.tr(),
+                            R.string.knowledge.tr(),
+                            R.string.exercise.tr(),
+                          ],
                           onSelected: (i) {
                             setState(() => _selectedTopTab = i);
                           },
@@ -859,12 +863,11 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       // Include lessons (type 11) and infographics
       // Exclude quizzes (type 11 resolved as quiz)
       if (t == ScheduleType.lesson.typeIndex) {
-        final resolved =
-            ScheduleTypeExtend.getTypeFromIndexWithLessonData(t,
-                lessonData: e.lessonData,
-                lessonNested: e.lesson,
-                activityName: e.name,
-                activityDescription: e.description);
+        final resolved = ScheduleTypeExtend.getTypeFromIndexWithLessonData(t,
+            lessonData: e.lessonData,
+            lessonNested: e.lesson,
+            activityName: e.name,
+            activityDescription: e.description);
         return resolved != ScheduleType.quiz;
       }
       return t == ScheduleType.infographic.typeIndex;
@@ -967,14 +970,17 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                         ),
                         child: Row(
                           children: [
-                            Container(
-                                clipBehavior: Clip.hardEdge,
-                                height: 48,
-                                width: 48,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: NetWorkImageWidget(
-                                    imageUrl: smartGoal.lesson?.image?.url)),
+                            Opacity(
+                              opacity: isLocked ? 0.5 : 1.0,
+                              child: Container(
+                                  clipBehavior: Clip.hardEdge,
+                                  height: 48,
+                                  width: 48,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: NetWorkImageWidget(
+                                      imageUrl: smartGoal.lesson?.image?.url)),
+                            ),
                             GapW(12),
                             Expanded(
                               child: Column(
@@ -982,7 +988,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                 children: [
                                   Text(smartGoal.name ?? '',
                                       style: TextStyle(
-                                          color: R.color.textDark,
+                                          color: isLocked
+                                              ? R.color.captionColorGray
+                                              : R.color.textDark,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700)),
                                   const SizedBox(height: 4),

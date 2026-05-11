@@ -146,12 +146,19 @@ class CalendarNavigationBar extends StatelessWidget {
               color: R.color.greenGradientBottom,
             ),
             const SizedBox(width: 8),
-            Text(
-              '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
+                '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],

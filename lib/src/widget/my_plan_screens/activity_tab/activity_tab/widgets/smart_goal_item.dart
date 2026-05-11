@@ -54,13 +54,13 @@ class SmartGoalItem extends StatelessWidget {
                 return false;
               },
               background: _buildDismissBg(),
-              child: _buildCard(),
+              child: _buildCard(context),
             )
-          : _buildCard(),
+          : _buildCard(context),
     );
   }
 
-  Widget _buildCard() {
+  Widget _buildCard(BuildContext context) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -85,13 +85,20 @@ class SmartGoalItem extends StatelessWidget {
                     height: 24,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    Utils.getActivityIconDescription(type),
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Utils.getActivityIconTextColor(type),
+                  MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                     ),
-                    textAlign: TextAlign.center,
+                    child: Text(
+                      Utils.getActivityIconDescription(type),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Utils.getActivityIconTextColor(type),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ),
@@ -140,25 +147,28 @@ class SmartGoalItem extends StatelessWidget {
             state == ScheduleState.in_progress.stateIndex
                 ? Image.asset(R.drawable.ic_learning,
                     width: 24, height: 24, color: R.color.mainColor)
-                : Container(
-                    margin: EdgeInsets.only(left: 20),
-                    width: 24,
-                    height: 24,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color:
-                          isDone ? R.color.greenGradientBottom : R.color.white,
-                      border: isDone
-                          ? null
-                          : Border.all(color: R.color.grey_2, width: 1.5),
-                      shape: BoxShape.circle,
+                : Visibility(
+                  visible: isDone,
+                  child: Container(
+                      margin: EdgeInsets.only(left: 20),
+                      width: 24,
+                      height: 24,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color:
+                            isDone ? R.color.greenGradientBottom : R.color.white,
+                        border: isDone
+                            ? null
+                            : Border.all(color: R.color.grey_2, width: 1.5),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check_rounded,
+                        color: isDone ? R.color.white : R.color.grey_2,
+                        size: 20,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.check_rounded,
-                      color: isDone ? R.color.white : R.color.grey_2,
-                      size: 20,
-                    ),
-                  ),
+                ),
           ],
         ),
       ),
