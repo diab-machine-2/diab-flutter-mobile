@@ -1592,4 +1592,9 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
       'lesson_reason_sufficient_references';
   String get lesson_reason_beautiful_images => 'lesson_reason_beautiful_images';
   String get lesson_for_you => 'lesson_for_you';
+  String get utilities => 'utilities';
+  String get connect_device_home => 'connect_device_home';
+  String get healthy_lifestyle_consulting => 'healthy_lifestyle_consulting';
+  String get book_medical_appointment => 'book_medical_appointment';
+  String get featured_news => 'featured_news';
 }

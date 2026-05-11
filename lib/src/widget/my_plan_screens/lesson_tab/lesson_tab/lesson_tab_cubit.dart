@@ -32,7 +32,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   int recommendationType = 0;
   List<LessonSectionListResponseData?>? recommendationLessons;
   bool isRecommendationLoading = false;
-  bool _hasLoadedRecommendationOnce = false;
   List<LessonSectionListResponseData?>? forYouLessons;
   bool isForYouLoading = false;
   bool _hasLoadedForYouOnce = false;
@@ -261,21 +260,15 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   Future<void> getRecommendationLessons({int? type, bool emitState = true}) async {
     final int requestType = type ?? recommendationType;
     recommendationType = requestType;
-    // Don't show inline loading spinner for the very first load,
-    // because a global BotToast loading is already visible then.
-    final bool shouldShowLoading = _hasLoadedRecommendationOnce;
-    if (shouldShowLoading) {
-      isRecommendationLoading = true;
-      if (emitState) {
-        emit(const LessonTabSuccess());
-      }
+    isRecommendationLoading = true;
+    if (emitState) {
+      emit(const LessonTabSuccess());
     }
     final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getLessonModuleType(requestType);
     apiResult.when(success: (List<LessonSectionListResponseData> response) {
       // API now returns a list of LessonSectionListResponseData.
       recommendationLessons = response;
-      _hasLoadedRecommendationOnce = true;
       isRecommendationLoading = false;
       if (emitState) {
         emit(const LessonTabSuccess());

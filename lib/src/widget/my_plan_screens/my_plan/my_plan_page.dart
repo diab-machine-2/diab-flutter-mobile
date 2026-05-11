@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -98,7 +99,7 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
               BotToast.closeAllLoading();
             }
             return CommonPage(
-              title: 'Thư viện',
+              title: R.string.profile_gallery.tr(),
               textColor: R.color.white,
               backgroundColor: R.color.backgroundColorNew,
               appbarColor: R.color.greenGradientBottom,

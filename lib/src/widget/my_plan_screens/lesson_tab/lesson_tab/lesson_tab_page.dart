@@ -174,11 +174,6 @@ class _LessonTabPageState extends State<LessonTabPage>
         listener: (context, state) {
           if (state is LessonTabSuccess) {
             _checkExistLessonId();
-            if (_cubit.isRecommendationLoading) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _scrollToWidget(_recommendationLoadingKey);
-              });
-            }
           }
           if (state is LessonTabLoadMore) {
             setState(() {
@@ -327,17 +322,19 @@ class _LessonTabPageState extends State<LessonTabPage>
                                     _buildForYouSection(),
                                     if (_cubit.lessonsList!.isEmpty)
                                       (state is LessonTabLoading)
-                                          ? SizedBox(
-                                              height: 220.h,
-                                              width: double.infinity,
-                                              child: Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: R.color
-                                                      .greenGradientBottom,
-                                                ),
-                                              ),
-                                            )
+                                          ? 
+                                          // SizedBox(
+                                          //     height: 220.h,
+                                          //     width: double.infinity,
+                                          //     child: Center(
+                                          //       child:
+                                          //           CircularProgressIndicator(
+                                          //         color: R.color
+                                          //             .greenGradientBottom,
+                                          //       ),
+                                          //     ),
+                                          //   )
+                                          const SizedBox.shrink()
                                           : (state is LessonTabWeekChanged)
                                               ? Container()
                                               : _buildEmptyLessonList()
@@ -567,125 +564,122 @@ class _LessonTabPageState extends State<LessonTabPage>
 
   /// \"Đề xuất\" section at bottom using recommendationLessons.
   Widget _buildRecommendationSection(LessonTabState state) {
+    if ((_cubit.lessonsList ?? []).isEmpty) return const SizedBox.shrink();
     final lessons = _cubit.recommendationLessons ?? [];
-    final bool hideRecommendationFilters =
-        state is LessonTabLoading || _botToastLessonLoadingVisible;
-    return hideRecommendationFilters
-        ? const SizedBox.shrink()
-        : Container(
-            color: R.color.white,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(
-                    R.string.recommended.tr(),
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 40,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _recommendationChipLabels.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      final isActive = _cubit.recommendationType == index;
-                      final label = _recommendationChipLabels[index] ?? '';
-                      return Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            _cubit.getRecommendationLessons(type: index);
-                          },
-                          borderRadius: BorderRadius.circular(200),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: isActive
-                                  ? R.color.greenGradientBottom
-                                  : R.color.white,
-                              borderRadius: BorderRadius.circular(200),
-                              border: isActive
-                                  ? null
-                                  : Border.all(color: R.color.captionColorGray),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              label,
-                              style: TextStyle(
-                                color: isActive
-                                    ? R.color.white
-                                    : R.color.captionColorGray,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
+    return Container(
+      color: R.color.white,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              R.string.recommended.tr(),
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _recommendationChipLabels.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final isActive = _cubit.recommendationType == index;
+                final label = _recommendationChipLabels[index] ?? '';
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      _cubit.getRecommendationLessons(type: index);
                     },
-                  ),
-                ),
-                if (_cubit.isRecommendationLoading)
-                  KeyedSubtree(
-                    key: _recommendationLoadingKey,
+                    borderRadius: BorderRadius.circular(200),
                     child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 130,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      color: Colors.transparent,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: CircularProgressIndicator(
-                          color: R.color.greenGradientBottom,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? R.color.greenGradientBottom
+                            : R.color.white,
+                        borderRadius: BorderRadius.circular(200),
+                        border: isActive
+                            ? null
+                            : Border.all(color: R.color.captionColorGray),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          color: isActive
+                              ? R.color.white
+                              : R.color.captionColorGray,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                  )
-                else
-                  ...List.generate(
-                    lessons.length,
-                    (index) => _buildRecommendationRow(
-                      lessonDetail: lessons[index],
-                      onTap: () async {
-                        final lesson = lessons[index];
-                        if (lesson?.id?.isNotEmpty == true) {
-                          ActivityListTracking.clickLessonItem(
-                            objectId: lesson!.id,
-                            objectIndex: index,
-                            objectTitle: lesson.name,
-                          );
-
-                          await NavigationUtil.navigatePage(
-                            context,
-                            LessonDetailPage(
-                              lessonType: lesson.type,
-                              lessonId: lesson.id!,
-                              onComplete: (lessonId, percentComplete) {
-                                _cubit.updateStatusLesson(
-                                  lessonId: lessonId,
-                                  percentComplete: percentComplete,
-                                );
-                              },
-                            ),
-                          );
-                        }
-                      },
-                    ),
                   ),
-              ],
+                );
+              },
             ),
-          );
+          ),
+          if (_cubit.isRecommendationLoading)
+            KeyedSubtree(
+              key: _recommendationLoadingKey,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 130,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                color: Colors.transparent,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(
+                    color: R.color.greenGradientBottom,
+                  ),
+                ),
+              ),
+            )
+          else
+            ...List.generate(
+              lessons.length,
+              (index) => _buildRecommendationRow(
+                lessonDetail: lessons[index],
+                onTap: () async {
+                  final lesson = lessons[index];
+                  if (lesson?.id?.isNotEmpty == true) {
+                    ActivityListTracking.clickLessonItem(
+                      objectId: lesson!.id,
+                      objectIndex: index,
+                      objectTitle: lesson.name,
+                    );
+
+                    await NavigationUtil.navigatePage(
+                      context,
+                      LessonDetailPage(
+                        lessonType: lesson.type,
+                        lessonId: lesson.id!,
+                        onComplete: (lessonId, percentComplete) {
+                          _cubit.updateStatusLesson(
+                            lessonId: lessonId,
+                            percentComplete: percentComplete,
+                          );
+                        },
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   void animateToIndex(int index, {bool refresh = true}) {
