@@ -560,9 +560,8 @@ class Utils {
         return R.string.event.tr();
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
-        return R.string.interview.tr();
       case ScheduleType.booking_solo:
-        return R.string.booking.tr();
+        return R.string.interview.tr();
       case ScheduleType.survey:
       case ScheduleType.update_profile:
         return R.string.survey.tr();
@@ -615,10 +614,9 @@ class Utils {
       case ScheduleType.output_assessment:
       case ScheduleType.io_evaluate:
         return R.color.event_color;
-      case ScheduleType.booking_solo:
-        return R.color.greenGradientTop02;
       case ScheduleType.screening_interview:
       case ScheduleType.evaluate_interview:
+      case ScheduleType.booking_solo:
         return R.color.interview_color;
       case ScheduleType.survey:
       case ScheduleType.quiz:
