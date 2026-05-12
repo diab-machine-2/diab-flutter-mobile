@@ -5,6 +5,8 @@ import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking
 import 'package:medical/src/modal/food/nutrition_lesson.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/nutrition_guide_page.dart';
 import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
@@ -79,8 +81,12 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
             child: InkWell(
               onTap: () {
                 // Navigate to guide page if exists
-                // Navigator.of(context)
-                //     .pushNamed(NavigatorName.nutrient_intro_2nd_page);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NutritionGuidePage(),
+                  ),
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -157,7 +163,7 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  height: 40,
+                  height: 44,
                   decoration: BoxDecoration(
                     color: R.color.mainColor,
                     borderRadius: BorderRadius.circular(200),
@@ -181,7 +187,7 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
                       minimumSize: Size.fromHeight(40),
                     ),
                     child: Text(
-                      "Ghi lại bữa ăn của bạn",
+                      R.string.record_your_meal.tr(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -208,7 +214,7 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              "Bạn cần hỗ trợ gì?",
+              R.string.what_need_support.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -281,18 +287,25 @@ class _NutrientIntro1stPageState extends State<NutrientIntro1stPage> {
               width: 72,
               height: 72,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Expanded(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 20 / 14,
-                  fontWeight: FontWeight.w400,
-                  color: R.color.primaryGreyColor,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 20 / 14,
+                    fontWeight: FontWeight.w400,
+                    color: R.color.primaryGreyColor,
+                  ),
                 ),
               ),
             ),

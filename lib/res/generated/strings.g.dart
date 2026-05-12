@@ -1559,4 +1559,35 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get change_medicine_quantity_message => 'change_medicine_quantity_message';
   String get delete_medicine_dialog_title => 'delete_medicine_dialog_title';
   String get exceed_medicine_warning => 'exceed_medicine_warning';
+  String get food_guide_meal_score_question => 'food_guide_meal_score_question';
+  String get food_guide_nutrient_group_meaning =>
+      'food_guide_nutrient_group_meaning';
+  String get record_your_meal => 'record_your_meal';
+  String get choose_meal => 'choose_meal';
+  String get meal_breakfast => 'meal_breakfast';
+  String get meal_lunch => 'meal_lunch';
+  String get meal_dinner => 'meal_dinner';
+  String get meal_snack => 'meal_snack';
+  String get good_lighting => 'good_lighting';
+  String get max_one_photo => 'max_one_photo';
+  String get one_dish_per_capture => 'one_dish_per_capture';
+  String get photo => 'photo';
+  String get rotate => 'rotate';
+  String get find_food => 'find_food';
+  String get change_image => 'change_image';
+  String get today_you_achieved => 'today_you_achieved';
+  String get ai_health_assistant_suggestion => 'ai_health_assistant_suggestion';
+  String get an_error_occurred => 'an_error_occurred';
+  String get protein_nutrient => 'protein_nutrient';
+  String get fat_nutrient => 'fat_nutrient';
+  String get vegetable_nutrient => 'vegetable_nutrient';
+  String get chat_with_health_assistant => 'chat_with_health_assistant';
+  String get need_gallery_permission_for_food_images =>
+      'need_gallery_permission_for_food_images';
+  String get image_saved_to_gallery => 'image_saved_to_gallery';
+  String get image_save_error => 'image_save_error';
+  String get selected_images => 'selected_images';
+  String get need_camera_gallery_permission_to_select_image =>
+      'need_camera_gallery_permission_to_select_image';
+  String get allow => 'allow';
 }

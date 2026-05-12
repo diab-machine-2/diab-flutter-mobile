@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
@@ -240,7 +241,7 @@ class _FoodImagesSelectionState extends State<FoodImagesSelection> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Ảnh đã chọn',
+                  R.string.selected_images.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -483,17 +484,18 @@ class _FoodImagesSelectionState extends State<FoodImagesSelection> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Thông báo'),
-          content: Text('Ứng dụng cần quyền truy cập camera/thư viện để chọn ảnh'),
+          title: Text(R.string.notification.tr()),
+          content:
+              Text(R.string.need_camera_gallery_permission_to_select_image.tr()),
           actions: [
             TextButton(
-              child: Text('Hủy'),
+              child: Text(R.string.cancel.tr()),
               onPressed: () {
                 Navigator.pop(context);
               },
             ),
             TextButton(
-              child: Text('Cho phép'),
+              child: Text(R.string.allow.tr()),
               onPressed: () {
                 Navigator.pop(context);
                 openAppSettings();

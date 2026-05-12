@@ -913,7 +913,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Tìm món ăn',
+                      R.string.find_food.tr(),
                       style: TextStyle(
                         color: R.color.greenGradientBottom,
                         fontSize: 13,

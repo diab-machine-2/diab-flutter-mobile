@@ -121,6 +121,18 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         return;
       }
 
+      // Request gallery/photos permission on first screen visit as well.
+      // This prevents the first capture from failing to save/open in gallery flow.
+      final hasGalleryPermission = await _requestGalleryPermission();
+      if (!hasGalleryPermission && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(R.string.need_gallery_permission_for_food_images.tr()),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+
       _requestingPermission = false;
 
       // Wait a bit before initializing camera to ensure permissions are fully processed
@@ -336,7 +348,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Ảnh đã được lưu vào thư viện'),
+              content: Text(R.string.image_saved_to_gallery.tr()),
               duration: const Duration(seconds: 2),
               backgroundColor: Colors.green,
             ),
@@ -348,7 +360,8 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Lỗi lưu ảnh: ${result.errorMessage}'),
+              content:
+                  Text('${R.string.image_save_error.tr()}: ${result.errorMessage}'),
               duration: const Duration(seconds: 3),
               backgroundColor: Colors.red,
             ),
@@ -361,7 +374,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi lưu ảnh: $e'),
+            content: Text('${R.string.image_save_error.tr()}: $e'),
             duration: const Duration(seconds: 3),
             backgroundColor: Colors.red,
           ),
@@ -375,11 +388,11 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Lỗi'),
+          title: Text(R.string.error.tr()),
           content: Text(message),
           actions: [
             TextButton(
-              child: const Text('Đóng'),
+              child: Text(R.string.close.tr()),
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
@@ -557,9 +570,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Widget _buildTopOverlay() {
     return Container(
-      height: 82,
+      constraints: const BoxConstraints(minHeight: 82),
       margin: EdgeInsets.symmetric(horizontal: 12).copyWith(top: 12),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
@@ -570,17 +583,22 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           // Good lighting section
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(R.drawable.ic_sunny, width: 24, height: 24),
                 const SizedBox(height: 4),
-                Text(
-                  'Ánh sáng tốt',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
+                Flexible(
+                  child: Text(
+                    R.string.good_lighting.tr(),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ],
@@ -593,18 +611,23 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           // Good lighting section
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(R.drawable.ic_image_placeholder,
                     width: 24, height: 24),
                 const SizedBox(height: 4),
-                Text(
-                  'Tối đa 1 ảnh',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
+                Flexible(
+                  child: Text(
+                    R.string.max_one_photo.tr(),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ],
@@ -617,17 +640,22 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           // Good lighting section
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(R.drawable.ic_food_bowl, width: 24, height: 24),
                 const SizedBox(height: 4),
-                Text(
-                  'Mỗi lần 1 món',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
+                Flexible(
+                  child: Text(
+                    R.string.one_dish_per_capture.tr(),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ],
@@ -656,7 +684,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 _buildGalleryPreviewButton(),
                 const SizedBox(height: 6),
                 Text(
-                  'Ảnh',
+                  R.string.photo.tr(),
                   style: TextStyle(
                     color: Color(0xFF636A6B),
                     fontSize: 13,
@@ -683,7 +711,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Xoay',
+                  R.string.rotate.tr(),
                   style: TextStyle(
                     color: Color(0xFF636A6B),
                     fontSize: 13,

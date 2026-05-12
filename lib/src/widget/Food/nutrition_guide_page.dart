@@ -71,7 +71,7 @@ class _NutritionGuidePageState extends State<NutritionGuidePage> {
         leadingWidth: 30,
         centerTitle: false,
         title: Text(
-          'Hướng dẫn',
+          R.string.huong_dan.tr(),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -85,7 +85,7 @@ class _NutritionGuidePageState extends State<NutritionGuidePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Support Section - Bạn cần hỗ trợ gì?
-            _buildSectionTitle('Bạn cần hỗ trợ gì?'),
+            _buildSectionTitle(R.string.what_need_support.tr()),
             const SizedBox(height: 12),
             if (_pinedLessons.isNotEmpty) ...[
               Row(
@@ -118,7 +118,7 @@ class _NutritionGuidePageState extends State<NutritionGuidePage> {
             const SizedBox(height: 24),
 
             // Meal Scoring Image
-            _buildSectionTitle('Bữa ăn của bạn bao nhiêu điểm?'),
+            _buildSectionTitle(R.string.food_guide_meal_score_question.tr()),
             const SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -132,7 +132,7 @@ class _NutritionGuidePageState extends State<NutritionGuidePage> {
             const SizedBox(height: 24),
 
             // Nutrient Percentage Image
-            _buildSectionTitle('% các nhóm chất có ý nghĩa gì?'),
+            _buildSectionTitle(R.string.food_guide_nutrient_group_meaning.tr()),
             const SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(12),

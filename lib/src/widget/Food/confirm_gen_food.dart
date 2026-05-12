@@ -198,7 +198,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                                   BorderRadius.circular(16),
                                             ),
                                             child: Text(
-                                              'Đổi ảnh',
+                                              R.string.change_image.tr(),
                                               style: TextStyle(
                                                 color: R.color.textDark,
                                                 fontSize: 13,

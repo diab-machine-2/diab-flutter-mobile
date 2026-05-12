@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 
 class NutritionAIHelpButton extends StatelessWidget {
@@ -24,14 +25,21 @@ class NutritionAIHelpButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Flexible(
-                  child: Text(
-                    'Trò chuyện cùng Trợ lý Sống khoẻ',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.mainColor, // Teal text
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    child: Text(
+                      R.string.chat_with_health_assistant.tr(),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: R.color.mainColor, // Teal text
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],

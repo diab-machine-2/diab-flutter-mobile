@@ -202,7 +202,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                text: 'Hôm nay bạn đã đạt ',
+                text: R.string.today_you_achieved.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   color: R.color.textDark,
@@ -248,7 +248,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
           const SizedBox(height: 32),
           // Nutrition Distribution
           Text(
-            'Phân bổ dinh dưỡng',
+            R.string.phan_bo_dinh_duong.tr(),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -266,7 +266,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
               Icon(Icons.auto_awesome, color: Color(0xFF0EA5E9), size: 20),
               const SizedBox(width: 6),
               Text(
-                'Gợi ý từ Trợ lý Sống khoẻ',
+                R.string.ai_health_assistant_suggestion.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -280,7 +280,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
           if (_aiResult == null || _aiResult!.isEmpty)
             Center(
               child: Text(
-                'Có lỗi xảy ra',
+                R.string.an_error_occurred.tr(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -325,27 +325,27 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
 
     final items = [
       {
-        'label': 'Tinh bột',
+        'label': R.string.tinh_bot.tr(),
         'percent': np?['carb'] ?? 0,
         'color': _parseHexColor(nc?['carb'], defaultColor)
       },
       {
-        'label': 'Chất đạm',
+        'label': R.string.protein_nutrient.tr(),
         'percent': np?['protein'] ?? 0,
         'color': _parseHexColor(nc?['protein'], defaultColor)
       },
       {
-        'label': 'Chất béo',
+        'label': R.string.fat_nutrient.tr(),
         'percent': np?['fat'] ?? 0,
         'color': _parseHexColor(nc?['fat'], defaultColor)
       },
       {
-        'label': 'Rau củ',
+        'label': R.string.vegetable_nutrient.tr(),
         'percent': np?['vegetable'] ?? 0,
         'color': _parseHexColor(nc?['vegetable'], defaultColor)
       },
       {
-        'label': 'Hoa quả',
+        'label': R.string.nhom_hoa_qua.tr(),
         'percent': np?['fruit'] ?? 0,
         'color': _parseHexColor(nc?['fruit'], defaultColor)
       },
@@ -454,7 +454,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             ),
             child: ElevatedButton(
               onPressed: _shareFood,
-              child: Text('Chia sẻ',
+              child: Text(R.string.share.tr(),
                   style: TextStyle(
                       color: Color(0xFF008479),
                       fontSize: 15,
@@ -485,7 +485,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             ),
             child: ElevatedButton(
               onPressed: _doComplete,
-              child: Text(R.string.completed.tr(),
+              child: Text(R.string.hoan_thanh.tr(),
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 15,
