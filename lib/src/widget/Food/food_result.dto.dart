@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 
@@ -46,4 +48,17 @@ class FoodResultDto {
     this.nutritionPercent,
     this.nutritionColors,
   });
+
+  /// True when the meal is considered balanced (mirrors the same logic in food_detail.dart).
+  bool get isBalanced {
+    final raw = balanceStatus?.toLowerCase() ?? '';
+    if (raw == 'cân bằng' || raw == 'balanced') return true;
+    if (raw == 'chưa cân bằng' || raw == 'unbalanced') return false;
+    // Fall back to score if raw status is absent.
+    return (score ?? 0) >= 6;
+  }
+
+  /// Localized display string for balanceStatus.
+  String get localizedBalanceStatus =>
+      isBalanced ? R.string.can_bang.tr() : R.string.chua_can_bang.tr();
 }

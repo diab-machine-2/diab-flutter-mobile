@@ -145,7 +145,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
               size: 64, color: R.color.color0xffBFC6C6),
           const SizedBox(height: 16),
           Text(
-            'Chưa có dữ liệu dinh dưỡng',
+            R.string.chua_co_du_lieu_dinh_duong.tr(),
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -173,14 +173,21 @@ class FoodDetailControllerState extends State<FoodDetailController>
           padding: EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 12),
           child: Row(
             children: [
-              Text(
-                convertCustomDate(element.date!),
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF111515),
-                  letterSpacing: 0.04,
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text(
+                  convertCustomDate(element.date!),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF111515),
+                    letterSpacing: 0.04,
+                  ),
                 ),
               ),
             ],
@@ -203,7 +210,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
         0;
     // Đồng bộ: điểm >= 6 được tính là Cân bằng (giống biểu đồ trend)
     final bool isBalanced = inputModel.isBalanced ?? (score >= 6);
-    final String balanceText = isBalanced ? 'Cân bằng' : 'Chưa cân bằng';
+    final String balanceText = isBalanced ? R.string.can_bang.tr() : R.string.chua_can_bang.tr();
     // Figma: Cân bằng = #23C559, Chưa cân bằng = #FFCD57
     final Color balanceColor =
         isBalanced ? Color(0xFF23C559) : Color(0xFFFFCD57);
@@ -212,12 +219,12 @@ class FoodDetailControllerState extends State<FoodDetailController>
     String mealText = inputModel.timeFrameName ?? inputModel.mealText ?? '';
     if (mealText.isNotEmpty) {
       String lower = mealText.toLowerCase();
-      if (lower.contains('sáng') || lower.contains('breakfast')) mealText = 'Bữa sáng';
-      else if (lower.contains('trưa') || lower.contains('lunch')) mealText = 'Bữa trưa';
-      else if (lower.contains('tối') || lower.contains('dinner')) mealText = 'Bữa tối';
-      else if (lower.contains('nhẹ') || lower.contains('snack')) mealText = 'Bữa nhẹ';
-      else if (lower.contains('khuya') || lower.contains('late')) mealText = 'Bữa khuya';
-      else if (!lower.startsWith('bữa')) mealText = 'Bữa $lower';
+      if (lower.contains('sáng') || lower.contains('breakfast')) mealText = R.string.meal_breakfast.tr();
+      else if (lower.contains('trưa') || lower.contains('lunch')) mealText = R.string.meal_lunch.tr();
+      else if (lower.contains('tối') || lower.contains('dinner')) mealText = R.string.meal_dinner.tr();
+      else if (lower.contains('nhẹ') || lower.contains('snack')) mealText = R.string.meal_snack.tr();
+      else if (lower.contains('khuya') || lower.contains('late')) mealText = R.string.meal_late.tr();
+      else if (!lower.startsWith('bữa')) mealText = '${R.string.meal.tr()} $lower';
     }
 
     // Time string
@@ -259,21 +266,22 @@ class FoodDetailControllerState extends State<FoodDetailController>
                   children: [
                     // Score: number bold + "điểm" regular
                     RichText(
+                      textScaler: MediaQuery.textScalerOf(context),
                       text: TextSpan(
                         children: [
                           TextSpan(
                             text: '$score',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF111515),
                               height: 1.46,
                             ),
                           ),
                           TextSpan(
-                            text: ' điểm',
+                            text: ' ${R.string.point.tr()}',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 13,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF111515),
                               height: 1.46,
@@ -286,12 +294,13 @@ class FoodDetailControllerState extends State<FoodDetailController>
                     _dotSeparator(),
                     // Kcal: number bold + "Kcal" regular
                     RichText(
+                      textScaler: MediaQuery.textScalerOf(context),
                       text: TextSpan(
                         children: [
                           TextSpan(
                             text: '${totalKcal.round()}',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF111515),
                               height: 1.46,
@@ -300,7 +309,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
                           TextSpan(
                             text: ' Kcal',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 13,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF111515),
                               height: 1.46,

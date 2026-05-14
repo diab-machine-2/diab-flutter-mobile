@@ -5,6 +5,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/helper/tracking_manager.dart';
@@ -148,8 +150,10 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   }
 
   Widget _appBarSection() {
-    String formattedDateTime =
-        DateFormat('EEEE, dd/MM/yyyy', 'vi').format(widget.data.dateTime);
+    final appLang = AppPreference().appLanguage;
+    final localeId = appLang == Const.VI ? 'vi' : 'en';
+    final formattedDateTime =
+        DateFormat('EEE, dd/MM/yyyy', localeId).format(widget.data.dateTime);
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
       centerTitle: false,
@@ -238,10 +242,9 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             width: double.infinity,
             child: _CircularNutritionGauge(
               totalCalories: widget.data.totalCalories,
-              goalCalories: widget.data.goalCalories,
               timeFrame: widget.data.timeFrame,
               score: widget.data.score ?? 0,
-              balanceStatus: widget.data.balanceStatus ?? '',
+              balanceStatus: widget.data.localizedBalanceStatus,
             ),
           ),
 
@@ -265,13 +268,20 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             children: [
               Icon(Icons.auto_awesome, color: Color(0xFF0EA5E9), size: 20),
               const SizedBox(width: 6),
-              Text(
-                R.string.ai_health_assistant_suggestion.tr(),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
-                  height: 21 / 15,
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text(
+                  R.string.ai_health_assistant_suggestion.tr(),
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: R.color.textDark,
+                    height: 21 / 15,
+                  ),
                 ),
               ),
             ],
@@ -367,7 +377,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             Icon(Icons.info_outline, size: 16, color: R.color.primaryGreyColor),
             const SizedBox(width: 4),
             Text(
-              'Ăn bao nhiêu là đủ',
+              R.string.an_bao_nhieu_la_du.tr(),
               style: TextStyle(
                 fontSize: 13,
                 color: R.color.primaryGreyColor,
@@ -387,14 +397,22 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   }) {
     return Row(
       children: [
-        SizedBox(
+        Container(
+          margin: EdgeInsets.only(right: 4),
           width: 80,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: R.color.textDark,
-              fontWeight: FontWeight.w400,
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: MediaQuery.of(context)
+                  .textScaler
+                  .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: R.color.textDark,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ),
@@ -544,14 +562,12 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
 
 class _CircularNutritionGauge extends StatelessWidget {
   final double totalCalories;
-  final double goalCalories;
   final String timeFrame;
   final int score;
   final String balanceStatus;
 
   const _CircularNutritionGauge({
     required this.totalCalories,
-    required this.goalCalories,
     required this.timeFrame,
     required this.score,
     required this.balanceStatus,
@@ -560,11 +576,11 @@ class _CircularNutritionGauge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasValidScore = score > 0;
-    final safeGoalCalories = goalCalories <= 0 ? 1 : goalCalories;
-    final percent = (totalCalories / safeGoalCalories) * 100;
-    final progressValue = hasValidScore ? min(percent, 100.0) : 0.0;
-    Color arcColor =
-        balanceStatus == 'Cân bằng' ? Color(0xFF4CAF50) : Color(0xFFFFA726);
+    // Arc uses the same 0–100 scale as RadialAxis; map score (0–10) so the
+    // ring matches the centered X/10 (calorie ratio is already in the header).
+    final progressValue = hasValidScore ? min(score * 10.0, 100.0) : 0.0;
+    final isBalanced = balanceStatus == R.string.can_bang.tr();
+    Color arcColor = isBalanced ? Color(0xFF4CAF50) : Color(0xFFFFA726);
 
     return Center(
       child: SfRadialGauge(
@@ -602,20 +618,34 @@ class _CircularNutritionGauge extends StatelessWidget {
                 widget: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      balanceStatus,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: arcColor,
-                        fontWeight: FontWeight.bold,
+                    MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                      ),
+                      child: Text(
+                        balanceStatus,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: arcColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      '$timeFrame - ${totalCalories.toInt()} kcal',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
+                    MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                      ),
+                      child: Text(
+                        '$timeFrame - ${totalCalories.toInt()} kcal',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ),
                     SizedBox(height: 8),

@@ -78,14 +78,14 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                 const SizedBox(height: 16),
                 // List of items
                 SizedBox(
-                  height: 318,
+                  height: 330,
                   child: ListView.separated(
                     controller: _scrollController,
                     padding: const EdgeInsets.only(left: 12),
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       return SizedBox(
-                          child: _buildLessonItem(lessons[index]), height: 318);
+                          child: _buildLessonItem(lessons[index]), height: 330);
                     },
                     separatorBuilder: (context, index) {
                       return const SizedBox(width: 12);
@@ -176,7 +176,7 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                         style: TextStyle(
                           color: R.color.textDark,
                           fontSize: 15.0,
-                          height: 24.0 / 15.0,
+                          height: 1.4,
                         ),
                       ),
                       const SizedBox(height: 4.0),

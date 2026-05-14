@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -224,7 +225,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                                             16),
                                                   ),
                                                   child: Text(
-                                                    'Đổi ảnh',
+                                                    R.string.change_image.tr(),
                                                     style: TextStyle(
                                                       color: R.color.textDark,
                                                       fontSize: 13,
@@ -277,7 +278,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
       backgroundColor: R.color.greenGradientBottom,
       centerTitle: false,
       title: Text(
-        timeframe,
+        FoodBloc.localizedMealText(timeframeId, timeframe),
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,

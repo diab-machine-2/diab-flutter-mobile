@@ -276,7 +276,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             Expanded(
               child: Center(
                 child: Text(
-                  'Không có dữ liệu\ntrong $periodText ngày gần nhất',
+                  R.string.no_data_within.tr(args: [periodText]),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -302,7 +302,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                 width: 55 + 8, // 55px column + left padding
                 child: Padding(
                   padding: const EdgeInsets.only(left: 16),
-                  child: Text('8 điểm',
+                  child: Text('8 ${R.string.point.tr()}',
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -345,7 +345,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     String selectedValue = '';
     String selectedFontColor = '#008479';
     String selectedMealText = '';
-    String selectedType = 'Cân bằng';
+    String selectedType = R.string.can_bang.tr();
     int selectedScore = 0;
 
     if (_focusIndex >= 0 && _focusIndex < trends.length) {
@@ -367,27 +367,27 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       if (selectedMealText.isNotEmpty) {
         String lower = selectedMealText.toLowerCase();
         if (lower.contains('sáng') || lower.contains('breakfast'))
-          selectedMealText = 'Bữa sáng';
+          selectedMealText = R.string.meal_breakfast.tr();
         else if (lower.contains('trưa') || lower.contains('lunch'))
-          selectedMealText = 'Bữa trưa';
+          selectedMealText = R.string.meal_lunch.tr();
         else if (lower.contains('tối') || lower.contains('dinner'))
-          selectedMealText = 'Bữa tối';
+          selectedMealText = R.string.meal_dinner.tr();
         else if (lower.contains('nhẹ') || lower.contains('snack'))
-          selectedMealText = 'Bữa nhẹ';
+          selectedMealText = R.string.meal_snack.tr();
         else if (lower.contains('khuya') || lower.contains('late'))
-          selectedMealText = 'Bữa khuya';
+          selectedMealText = R.string.meal_late.tr();
         else if (!lower.startsWith('bữa'))
-          selectedMealText = 'Bữa $lower'; // Fallback
+          selectedMealText = '$lower'; // Fallback
       }
       selectedScore = t.score ?? 0;
 
       // Override API's old string like "Trung bình" / "Tốt"
       // with the new standard "Cân bằng" / "Chưa cân bằng"
       if (selectedScore >= 8) {
-        selectedType = 'Cân bằng';
+        selectedType = R.string.can_bang.tr();
         selectedFontColor = '#23C559';
       } else {
-        selectedType = 'Chưa cân bằng';
+        selectedType = R.string.chua_can_bang.tr();
         selectedFontColor = '#FFCD57';
       }
     }
@@ -459,7 +459,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                     color: Color(0xFF3E3F3F))),
             _dotWidget(size: 6),
           ],
-          Text('$selectedScore điểm',
+          Text('$selectedScore ${R.string.point.tr()}',
               style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
@@ -615,13 +615,20 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               top: max(0, min(targetPx - 8, constraints.maxHeight - 20)),
               left: 0,
               right: 0,
-              child: Text('${threshold.toInt()} điểm',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff111515,
-                      height: 1.2),
-                  textAlign: TextAlign.left),
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text('${threshold.toInt()} ${R.string.point.tr()}',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: R.color.color0xff111515,
+                        height: 1.2),
+                    textAlign: TextAlign.left),
+              ),
             ),
           ]),
         ),
@@ -701,7 +708,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               final tooltipColor =
                   score >= 8 ? R.color.goodGreen : R.color.warningYellow;
               return LineTooltipItem(
-                '${spot.y.toInt()} điểm',
+                '${spot.y.toInt()} ${R.string.point.tr()}',
                 TextStyle(color: tooltipColor, fontWeight: FontWeight.bold),
               );
             }).toList(),

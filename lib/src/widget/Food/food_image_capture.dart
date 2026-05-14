@@ -123,15 +123,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
       // Request gallery/photos permission on first screen visit as well.
       // This prevents the first capture from failing to save/open in gallery flow.
-      final hasGalleryPermission = await _requestGalleryPermission();
-      if (!hasGalleryPermission && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(R.string.need_gallery_permission_for_food_images.tr()),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+      await _requestGalleryPermission();
 
       _requestingPermission = false;
 

@@ -96,8 +96,10 @@ class FoodCalorieTrendItem {
   final int? score; // điểm đánh giá 0-10
   final String? colorCode;
   final String? fontColor;
-  final String? mealText; // "Sáng", "Trưa", "Tối"...
+  final String? mealText; // Localized meal name: "Bữa sáng", "Bữa trưa", etc.
   final String? type; // "Cân bằng", "Cao", "Thấp"
+  final String? timeFrameId; // UUID from API (e.g. "9a4c53ca-...") or numeric id
+  final String? timeFrameName; // Raw name from API (e.g. "Ăn sáng")
 
   FoodCalorieTrendItem({
     this.id,
@@ -108,6 +110,8 @@ class FoodCalorieTrendItem {
     this.fontColor,
     this.mealText,
     this.type,
+    this.timeFrameId,
+    this.timeFrameName,
   });
 }
 

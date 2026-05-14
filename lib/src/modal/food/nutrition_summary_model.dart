@@ -155,12 +155,16 @@ class TrendDataItem {
   final int? avgScore;
   final int? totalCalories;
   final int? mealCount;
+  final String? timeFrameId;
+  final String? timeFrameName;
 
   TrendDataItem({
     this.date,
     this.avgScore,
     this.totalCalories,
     this.mealCount,
+    this.timeFrameId,
+    this.timeFrameName,
   });
 
   factory TrendDataItem.fromJson(Map<String, dynamic> json) {
@@ -193,6 +197,8 @@ class TrendDataItem {
       avgScore: (json['avgScore'] as num?)?.toInt(),
       totalCalories: (json['totalCalories'] as num?)?.toInt(),
       mealCount: (json['mealCount'] as num?)?.toInt(),
+      timeFrameId: json['timeFrameId']?.toString(),
+      timeFrameName: json['timeFrameName']?.toString(),
     );
   }
 }

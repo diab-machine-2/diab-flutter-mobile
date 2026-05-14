@@ -454,6 +454,7 @@ class _BloodSugarDetailTabbarControllerState
             children: [
               Text(
                 R.string.ai_suggestion_glucose.tr(),
+                maxLines: 2,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -520,8 +521,8 @@ class _BloodSugarDetailTabbarControllerState
             Expanded(
               child: Text(
                 _haveGlucoseScheduler
-                    ? 'Lịch đo đường huyết của bạn'
-                    : 'Gợi ý lịch đo từ chuyên gia',
+                    ? R.string.lich_do_duong_huyet_cua_ban.tr()
+                    : R.string.goi_y_lich_do_tu_chuyen_gia.tr(),
               ),
             ),
             Icon(Icons.arrow_forward_ios,

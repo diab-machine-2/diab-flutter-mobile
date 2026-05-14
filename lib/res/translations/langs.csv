@@ -741,7 +741,7 @@ duong_huyet,Đường huyết,Blood Glucose,
 bmi,BMI,BMI,
 hba1c,HbA1c,Hba1c,
 cam_xuc,Cảm xúc,Mood,
-dinh_duong,Dinh dưỡng,Diet,
+dinh_duong,Dinh dưỡng,Nutrition,
 van_dong,Vận động,Exercise,
 can_nang,Cân nặng,Weight,
 high,Cao,High,
@@ -957,7 +957,7 @@ feeling,Cảm nghĩ,Feelings,
 enter_your_feeling,Nhập cảm nghĩ của bạn,Enter your feelings,
 sent_report,Gửi đánh giá,Submit a review,
 completed_quiz,Hoàn tất!,Completed,
-completed,Hoàn tất,Completed,
+completed,Hoàn tất,Complete,
 you_have_successfully_completed,Bạn đã xuất sắc hoàn tất bài quiz và trả lời đúng {} câu!,You have successfully completed the quiz and answered {} questions correctly!,
 continue_learning,Tiếp tục học,Continue learning,
 you_have_completed,Bạn đã hoàn tất bài quiz và trả lời đúng {} câu!,You have completed the quiz and answered {} questions correctly!,
@@ -1038,7 +1038,7 @@ chat_with_coach,Chat với huấn luyện viên,Chat with Coach,
 chat_with_group,Chat nhóm,Group chat,
 today,Hôm nay,Today,
 chua_hoan_thanh,Chưa hoàn thành,Incompleted,
-hoan_thanh,Hoàn thành,Completed,
+hoan_thanh,Hoàn thành,Complete,
 install_zalo,"Để bắt đầu trò chuyện, bạn sẽ được chuyển hướng để tải ứng dụng Zalo","To start chatting, you will be redirected to download the zalo app",
 phone_not_available,Không tìm thấy số điện thoại của huấn luyện viên,Coach's phone number unavailable,
 group_not_available,Không tìm thấy nhóm,Group unavailable,
@@ -1535,3 +1535,17 @@ image_save_error,"Lỗi lưu ảnh","Image save error",
 selected_images,"Ảnh đã chọn","Selected images",
 need_camera_gallery_permission_to_select_image,"Ứng dụng cần quyền truy cập camera/thư viện để chọn ảnh","The app needs camera/gallery access to select images",
 allow,"Cho phép","Allow",
+meal_distribution,"Phân bổ bữa ăn","Meal distribution",
+phan_bo_dinh_duong,"Phân bổ dinh dưỡng","Nutrient distribution",
+an_bao_nhieu_la_du,"Ăn bao nhiêu là đủ","How much is enough",
+point,điểm,point,
+meal,Bữa ăn,Meal
+can_bang,Cân bằng,Balanced
+chua_can_bang,Chưa cân bằng,Unbalanced
+meal_late,Bữa khuya,Late-night meal
+nhap_bua_an,Nhập bữa ăn,Log your meal
+chua_co_du_lieu_dinh_duong,Chưa có dữ liệu dinh dưỡng,No nutrition data yet
+nhe,Nhẹ,Snack
+khuya,Khuya,Late
+lich_do_duong_huyet_cua_ban,Lịch đo đường huyết của bạn,Your glucose schedule
+goi_y_lich_do_tu_chuyen_gia,Gợi ý lịch đo từ chuyên gia,Expert-suggested schedule

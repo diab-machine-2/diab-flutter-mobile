@@ -376,6 +376,7 @@ class Strings {
   String get da_an => 'da_an';
   String get nang_luong_phan_bo => 'nang_luong_phan_bo';
   String get phan_bo_dinh_duong => 'phan_bo_dinh_duong';
+  String get an_bao_nhieu_la_du => 'an_bao_nhieu_la_du';
   String get chon_mon => 'chon_mon';
   String get xu_huong_dinh_duong => 'xu_huong_dinh_duong';
   String get nhap_mon_an => 'nhap_mon_an';
@@ -1590,4 +1591,16 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get need_camera_gallery_permission_to_select_image =>
       'need_camera_gallery_permission_to_select_image';
   String get allow => 'allow';
+  String get meal_distribution => 'meal_distribution';
+  String get point => 'point';
+  String get meal => 'meal';
+  String get can_bang => 'can_bang';
+  String get chua_can_bang => 'chua_can_bang';
+  String get meal_late => 'meal_late';
+  String get nhap_bua_an => 'nhap_bua_an';
+  String get chua_co_du_lieu_dinh_duong => 'chua_co_du_lieu_dinh_duong';
+  String get nhe => 'nhe';
+  String get khuya => 'khuya';
+  String get lich_do_duong_huyet_cua_ban => 'lich_do_duong_huyet_cua_ban';
+  String get goi_y_lich_do_tu_chuyen_gia => 'goi_y_lich_do_tu_chuyen_gia';
 }

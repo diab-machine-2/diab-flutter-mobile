@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -92,11 +93,11 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
   /// Hiển thị chart từ nutrient data — cùng style với AI MealScore chart
   Widget _buildNutrientBars(Map<String, double> data) {
     final displayItems = [
-      {'label': 'Tinh bột', 'key': 'carb'},
-      {'label': 'Chất đạm', 'key': 'protein'},
-      {'label': 'Chất béo', 'key': 'fat'},
-      {'label': 'Rau củ', 'key': 'vegetable'},
-      {'label': 'Hoa quả', 'key': 'fruit'},
+      {'label': R.string.tinh_bot.tr(), 'key': 'carb'},
+      {'label': R.string.protein_nutrient.tr(), 'key': 'protein'},
+      {'label': R.string.fat_nutrient.tr(), 'key': 'fat'},
+      {'label': R.string.vegetable_nutrient.tr(), 'key': 'vegetable'},
+      {'label': R.string.nhom_hoa_qua.tr(), 'key': 'fruit'},
     ];
 
     return Padding(
@@ -114,7 +115,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Phân bổ dinh dưỡng',
+                  R.string.phan_bo_dinh_duong.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -152,7 +153,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
       child: Row(
         children: [
           SizedBox(
-            width: 96,
+            width: 100,
             child: Text(
               name,
               style: TextStyle(
@@ -211,11 +212,11 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
     final nc = widget.nutritionColors;
 
     final items = [
-      {'label': 'Tinh bột', 'key': 'carb'},
-      {'label': 'Chất đạm', 'key': 'protein'},
-      {'label': 'Chất béo', 'key': 'fat'},
-      {'label': 'Rau củ', 'key': 'vegetable'},
-      {'label': 'Hoa quả', 'key': 'fruit'},
+      {'label': R.string.tinh_bot.tr(), 'key': 'carb'},
+      {'label': R.string.protein_nutrient.tr(), 'key': 'protein'},
+      {'label': R.string.fat_nutrient.tr(), 'key': 'fat'},
+      {'label': R.string.vegetable_nutrient.tr(), 'key': 'vegetable'},
+      {'label': R.string.nhom_hoa_qua.tr(), 'key': 'fruit'},
     ];
 
     return Padding(
@@ -233,7 +234,7 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Phân bổ dinh dưỡng',
+                  R.string.phan_bo_dinh_duong.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,

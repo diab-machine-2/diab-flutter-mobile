@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -57,7 +58,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      'Gợi ý từ Trợ lý Sống khoẻ',
+                      R.string.ai_health_assistant_suggestion.tr(),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -89,7 +90,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      'Gợi ý từ Trợ lý Sống khoẻ',
+                      R.string.ai_health_assistant_suggestion.tr(),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -102,7 +103,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Có lỗi xảy ra',
+                  R.string.an_error_occurred.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
@@ -123,7 +124,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
               final text = snapshot.data;
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                    const EdgeInsets.symmetric(horizontal: 0, vertical: 24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,12 +132,18 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          'Gợi ý từ Trợ lý Sống khoẻ',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: R.color.color0xff111515,
+                        MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                          ),
+                          child: Text(
+                            R.string.ai_health_assistant_suggestion.tr(),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: R.color.color0xff111515,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -151,7 +158,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
                       )
                     else if (text.isEmpty)
                       Text(
-                        'Có lỗi xảy ra',
+                        R.string.an_error_occurred.tr(),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
@@ -188,7 +195,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    'Gợi ý từ Trợ lý Sống khoẻ',
+                    R.string.ai_health_assistant_suggestion.tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -24,7 +25,7 @@ class MealItemsDisplayWidget extends StatelessWidget {
         const SizedBox(height: 24),
         // Header
         Text(
-          'Bữa ăn gồm',
+          R.string.bua_an_gom.tr(),
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,

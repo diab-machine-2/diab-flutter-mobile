@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
@@ -280,7 +281,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                           elevation: 0,
                         ),
                         child: Text(
-                          'Nhập bữa ăn',
+                          R.string.nhap_bua_an.tr(),
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,

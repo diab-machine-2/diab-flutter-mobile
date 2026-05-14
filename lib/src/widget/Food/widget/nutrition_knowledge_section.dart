@@ -3,14 +3,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/modal/food/nutrition_lesson.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
-import 'package:medical/src/repo/learning/learning_client.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/utils/navigation_util.dart';
+import 'package:medical/src/widget/helper/tracking_manager.dart';
+import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Widget hiển thị "Kiến thức từ Chuyên gia DiaB"
-/// UI giống HbA1cKnowledgeSection, dữ liệu từ LearningPost API
+/// Dữ liệu từ FoodClient().fetchNutritionLessons()
 class NutritionKnowledgeSection extends StatefulWidget {
   final int position;
 
@@ -31,7 +34,7 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
   bool _isUserInteracting = false;
   bool _autoScrollInitialized = false;
 
-  List<LearningPostModel> _posts = [];
+  List<NutritionLesson> _lessons = [];
   bool _isLoading = true;
   bool _hasError = false;
 
@@ -52,18 +55,18 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
 
   Future<void> _loadData() async {
     try {
-      final posts = await LearningClient().fetchLearningPost(widget.position);
+      final lessons = await FoodClient().fetchNutritionLessons();
       if (mounted) {
         setState(() {
-          _posts = posts;
+          _lessons = lessons ?? [];
           _isLoading = false;
         });
-        if (_posts.length > 1) {
-          _startAutoScroll(_posts.length);
+        if (_lessons.length > 1) {
+          _startAutoScroll(_lessons.length);
         }
       }
-    } catch (e) {
-      print('❌ Error loading posts: $e');
+    } catch (e, s) {
+      TrackingManager.recordError(e, s);
       if (mounted) {
         setState(() {
           _hasError = true;
@@ -77,7 +80,7 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
     final double currentScroll = _scrollController.position.pixels;
     final double eachItemWidth = _itemWidth + _itemSpacing;
     int currentIndex = (currentScroll / eachItemWidth).round();
-    if (currentIndex != _currentIndex && currentIndex < _posts.length) {
+    if (currentIndex != _currentIndex && currentIndex < _lessons.length) {
       setState(() {
         _currentIndex = currentIndex;
       });
@@ -131,7 +134,7 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
       );
     }
 
-    if (_hasError || _posts.isEmpty) {
+    if (_hasError || _lessons.isEmpty) {
       return SizedBox();
     }
 
@@ -158,14 +161,13 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
             ),
           ),
           const SizedBox(height: 16),
-          // List of posts
           SizedBox(
-            height: 318,
+            height: 300,
             child: NotificationListener<UserScrollNotification>(
               onNotification: (notification) {
                 if (notification.direction == ScrollDirection.idle) {
                   _isUserInteracting = false;
-                  _restartAutoScrollWithDelay(_posts.length);
+                  _restartAutoScrollWithDelay(_lessons.length);
                 } else {
                   _isUserInteracting = true;
                   _stopAutoScroll();
@@ -177,25 +179,24 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
                 padding: const EdgeInsets.only(left: 12, right: 12),
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
-                  return _buildPostItem(_posts[index]);
+                  return _buildLessonItem(_lessons[index]);
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(width: _itemSpacing);
                 },
-                itemCount: _posts.length,
+                itemCount: _lessons.length,
               ),
             ),
           ),
           const SizedBox(height: 16),
-          // Pagination dots
-          if (_posts.length > 1)
+          if (_lessons.length > 1)
             SizedBox(
               height: 8,
               child: Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    for (int i = 0; i < _posts.length; i++)
+                    for (int i = 0; i < _lessons.length; i++)
                       Container(
                         width: _currentIndex == i ? 16 : 8,
                         height: 8,
@@ -217,12 +218,12 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
     );
   }
 
-  Widget _buildPostItem(LearningPostModel post) {
+  Widget _buildLessonItem(NutritionLesson lesson) {
     return SizedBox(
-      height: 318,
+      height: 300,
       width: _itemWidth,
       child: InkWell(
-        onTap: () => _onPostTap(post),
+        onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
         borderRadius: BorderRadius.circular(12.0),
         child: Container(
           decoration: BoxDecoration(
@@ -232,65 +233,47 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
           ),
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Post image
+              // Lesson image
               ClipRRect(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12.0),
                   topRight: Radius.circular(12.0),
                 ),
                 child: NetWorkImageWidget(
-                  imageUrl: post.imageUrl.url,
+                  imageUrl: lesson.imageUrl,
                   fit: BoxFit.cover,
                   height: 174.0,
                   width: double.infinity,
                 ),
               ),
               const SizedBox(height: 12.0),
-              // Post content
+              // Lesson content
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Post title
-                      Text(
-                        post.title ?? '',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: R.color.textDark,
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w500,
-                          height: 24.0 / 15.0,
+                      // Lesson title
+                      MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                         ),
-                      ),
-                      const SizedBox(height: 4.0),
-                      // Category tag
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            R.drawable.ic_lesson_category,
-                            width: 16.0,
-                            height: 16.0,
+                        child: Text(
+                          lesson.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w500,
+                            height: 24.0 / 15.0,
                           ),
-                          const SizedBox(width: 6.0),
-                          Flexible(
-                            child: Text(
-                              'Bài học',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: R.color.color0xff666666,
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -333,22 +316,20 @@ class _NutritionKnowledgeSectionState extends State<NutritionKnowledgeSection> {
     );
   }
 
-  void _onPostTap(LearningPostModel post) {
-    if (post.enableLink && post.link != null) {
-      _launchInBrowser(post.link!);
-    } else {
-      Navigator.pushNamed(
-        context,
-        NavigatorName.news_detail,
-        arguments: {'id': post.id},
-      );
-    }
-  }
+  void _navigateToLessonDetail(String id, int type) async {
+    ActivityListTracking.clickLessonItem(
+      objectId: id,
+      objectIndex: null,
+      objectTitle: null,
+    );
 
-  Future<void> _launchInBrowser(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
+    await NavigationUtil.navigatePage(
+      context,
+      LessonDetailPage(
+        lessonType: type,
+        lessonId: id,
+        onComplete: (_, __) {},
+      ),
+    );
   }
 }
