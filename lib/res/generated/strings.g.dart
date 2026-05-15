@@ -1597,4 +1597,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get analyzing_your_index => 'analyzing_your_index';
   String get lich_do_duong_huyet_cua_ban => 'lich_do_duong_huyet_cua_ban';
   String get goi_y_lich_do_tu_chuyen_gia => 'goi_y_lich_do_tu_chuyen_gia';
+  String get add_measurement => 'add_measurement';
 }

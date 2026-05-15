@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
@@ -196,7 +197,7 @@ class HomeLesson extends StatelessWidget {
                           width: 20.0, height: 20.0),
                       const SizedBox(width: 8.0),
                       Text(
-                        "Chia sẻ",
+                        R.string.share.tr(),
                         style:
                             TextStyle(color: R.color.textDark, fontSize: 15.0),
                       ),
