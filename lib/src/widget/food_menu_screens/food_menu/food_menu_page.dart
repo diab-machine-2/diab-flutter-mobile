@@ -346,22 +346,27 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
     VoidCallback? onUpdateKcal,
   }) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 28, 16, 34),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: R.color.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: R.color.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
-          const SizedBox(width: 50),
           GestureDetector(
             onTap: onUpdateKcal,
             child: Container(
@@ -414,15 +419,22 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    mealData?.mealName ?? '',
-                    style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
+                  child: MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                    child: Text(
+                      mealData?.mealName ?? '',
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
+                const SizedBox(width: 4),
                 Text(
                   R.string.total_kcals.tr(args: [
                     '${num.parse(mealData?.totalKcal?.toStringAsFixed(1) ?? '0')}'

@@ -681,7 +681,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
               Text(
                 R.string.ai_suggestion_glucose.tr(),
                 style: TextStyle(
-                  fontSize: 15,
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
                   color: R.color.textDark,
                   height: 21 / 15,

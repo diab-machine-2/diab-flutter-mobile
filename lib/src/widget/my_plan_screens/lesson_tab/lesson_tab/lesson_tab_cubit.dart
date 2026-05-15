@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/lesson_filter_request.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
@@ -13,15 +14,27 @@ import '../../../../utils/const.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
+import 'lesson_search_cache.dart';
 import 'models/lesson_type.dart';
 
 class LessonTabCubit extends Cubit<LessonTabState> {
   LessonTabCubit(this.repository, this.myPlanCubit)
-      : super(const LessonTabInitial());
+      : super(const LessonTabLoading());
 
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
   int numRecordOfPage = 10;
+
+  /// Recommendation section state (\"Đề xuất\").
+  /// type mapping:
+  /// 0: Tất cả, 1: Theo dõi chỉ số, 2: Tinh thần, 3: Tâm lý hành vi,
+  /// 4: Dinh dưỡng, 5: Bệnh lý, 6: Vận động.
+  int recommendationType = 0;
+  List<LessonSectionListResponseData?>? recommendationLessons;
+  bool isRecommendationLoading = false;
+  List<LessonSectionListResponseData?>? forYouLessons;
+  bool isForYouLoading = false;
+  bool _hasLoadedForYouOnce = false;
 
   final List<LessonType> lessonTypeList = [
     LessonType.route,
@@ -110,6 +123,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       bool showCurrentWeek = true,
       int? currentWeek,
       int currentPage = 1}) async {
+    // Emit a loading state immediately so the UI doesn't render an empty
+    // placeholder while async user info + API calls are still in progress.
+    if (!isRefresh) {
+      if (currentPage == 1) {
+        emit(LessonTabLoading());
+      } else {
+        emit(const LessonTabLoadMore());
+      }
+    }
+
     if (myPlanCubit.userInfo == null || AppSettings.isReloadCurrentUserInfo) {
       await myPlanCubit.getCurrentUserInfo();
     }
@@ -124,14 +147,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       }
     }
 
-    await Future.delayed(Duration(milliseconds: 10));
-    if (!isRefresh) {
-      if (currentPage == 1) {
-        emit(LessonTabLoading());
-      } else
-        emit(const LessonTabLoadMore());
-    }
-    ;
     await getLessonWeekStates(isRefresh: isRefresh);
 
     if (currentWeek != null) {
@@ -170,8 +185,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     }
 
     RefreshDataOfList();
-    await getLessonsList(
-        isRefresh: isRefresh, iPagingPage: currentPage, size: numRecordOfPage);
+    await Future.wait([
+      getLessonsList(
+          isRefresh: isRefresh,
+          iPagingPage: currentPage,
+          size: numRecordOfPage),
+      getForYouLessons(emitState: false),
+      getRecommendationLessons(type: recommendationType, emitState: false),
+    ]);
+    emit(const LessonTabSuccess());
+    emit(const LessonTabInitial());
   }
 
   Future<void> getLessonsList({
@@ -220,6 +243,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
           });
         }
       }
+      // Cache for search page so it can reuse loaded data.
+      LessonSearchCache.lessons = lessonsList;
       // emit(LessonTabScrollToLesson(response.firstLessonIndex));
       // Timer(const Duration(milliseconds: 0), () {
       //   emit(LessonTabScrollToLesson(response.firstLessonIndex));
@@ -229,6 +254,65 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
     });
     emit(const LessonTabInitial());
+  }
+
+  /// Load recommendation lessons for Library \"Đề xuất\" section.
+  Future<void> getRecommendationLessons({int? type, bool emitState = true}) async {
+    final int requestType = type ?? recommendationType;
+    recommendationType = requestType;
+    isRecommendationLoading = true;
+    if (emitState) {
+      emit(const LessonTabSuccess());
+    }
+    final ApiResult<List<LessonSectionListResponseData>> apiResult =
+        await repository.getLessonModuleType(requestType);
+    apiResult.when(success: (List<LessonSectionListResponseData> response) {
+      // API now returns a list of LessonSectionListResponseData.
+      recommendationLessons = response;
+      isRecommendationLoading = false;
+      if (emitState) {
+        emit(const LessonTabSuccess());
+      }
+    }, failure: (NetworkExceptions error) {
+      isRecommendationLoading = false;
+      if (emitState) {
+        emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+      }
+    });
+    if (emitState) {
+      emit(const LessonTabInitial());
+    }
+  }
+
+  /// Load personalized lessons for "Dành cho bạn" section.
+  Future<void> getForYouLessons({bool emitState = true}) async {
+    // Don't show inline loading spinner for the very first load
+    // because global BotToast loading is already visible then.
+    final bool shouldShowLoading = _hasLoadedForYouOnce;
+    if (shouldShowLoading) {
+      isForYouLoading = true;
+      if (emitState) {
+        emit(const LessonTabSuccess());
+      }
+    }
+    final ApiResult<List<LessonSectionListResponseData>> apiResult =
+        await repository.getRecommendedLessons();
+    apiResult.when(success: (List<LessonSectionListResponseData> response) {
+      forYouLessons = response;
+      _hasLoadedForYouOnce = true;
+      isForYouLoading = false;
+      if (emitState) {
+        emit(const LessonTabSuccess());
+      }
+    }, failure: (NetworkExceptions error) {
+      isForYouLoading = false;
+      if (emitState) {
+        emit(LessonTabFailure(NetworkExceptions.getErrorMessage(error)));
+      }
+    });
+    if (emitState) {
+      emit(const LessonTabInitial());
+    }
   }
 
   Future<void> scrollToLesson() async {

@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/text_styles_extension.dart';
 
@@ -23,7 +24,7 @@ class AILoadingTextWidget extends StatelessWidget {
         child: AnimatedTextKit(
           animatedTexts: [
             TypewriterAnimatedText(
-              'Đang phân tích chỉ số của bạn',
+              R.string.analyzing_your_index.tr(),
               speed: const Duration(milliseconds: 60),
             ),
           ],

@@ -1,3 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:medical/res/R.dart';
+
 enum TabBarType {
   home,
   program,
@@ -9,17 +12,16 @@ enum TabBarType {
 extension TabBarTypeExt on TabBarType {
   String get title {
     switch (this) {
-      // TODO: localize
       case TabBarType.home:
-        return 'Trang chủ';
+        return R.string.tab_home.tr();
       case TabBarType.program:
-        return 'Chương trình';
+        return R.string.program.tr();
       case TabBarType.library:
-        return 'Thư viện';
+        return R.string.profile_gallery.tr();
       case TabBarType.chat:
-        return 'Hỏi đáp';
+        return R.string.q_and_a.tr();
       case TabBarType.store:
-        return 'Cửa hàng';
+        return R.string.store.tr();
     }
   }
 

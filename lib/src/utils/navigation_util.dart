@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../res/R.dart';
+import 'navigator_name.dart';
 import '../widgets/button_widget.dart';
 
 class NavigationUtil {
@@ -31,6 +32,15 @@ class NavigationUtil {
     for (int i = 0; i < count - 1; i++) Navigator.of(context).pop();
 
     Navigator.of(context).pop(result);
+  }
+
+  /// Pops routes until the main tab shell is on top (one [Navigator.popUntil]).
+  /// Use instead of multiple [pop] calls so navigation is handled as a single operation.
+  /// Stops at [NavigatorName.tabbar], or at the root route if the tab bar is not in this stack.
+  static void popUntilTabbar(BuildContext context) {
+    Navigator.of(context).popUntil((Route<dynamic> route) {
+      return route.settings.name == NavigatorName.tabbar || route.isFirst;
+    });
   }
 
   static void popUtil(BuildContext context, Type type) {

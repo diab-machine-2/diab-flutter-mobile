@@ -228,7 +228,7 @@ class BmiInstructionAppBar extends StatelessWidget
     return CustomAppBar(
       backgroundColor: R.color.greenGradientBottom,
       title: Text(
-        R.string.exercise_help_title.tr(),
+        R.string.huong_dan.tr(),
         style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,

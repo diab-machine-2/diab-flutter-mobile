@@ -262,7 +262,7 @@ class _BloodPressureLessonSectionState
                           color: R.color.textDark,
                           fontFamily: R.font.sfpro,
                           fontSize: 15.0,
-                          height: 24.0 / 15.0,
+                          height: 1.3,
                         ),
                       ),
                       const SizedBox(height: 4.0),

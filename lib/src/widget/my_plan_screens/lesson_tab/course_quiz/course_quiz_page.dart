@@ -9,7 +9,6 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/app_sharing.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/model/response/quiz_lesson.dart';
@@ -28,7 +27,6 @@ import 'package:medical/src/widgets/custom_scroll_physics.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../../card_course_quiz/card_course_quiz.dart';
-import '../lesson_detail/widgets/share_lesson_button.dart';
 import 'course_quiz.dart';
 import 'widgets/quiz_result_popup.dart';
 
@@ -100,7 +98,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: R.color.color0xffDFF6EC,
+      backgroundColor: R.color.backgroundColorNew,
       body: BlocProvider(
         create: (context) => _cubit,
         child: BlocConsumer<CourseQuizCubit, CourseQuizState>(
@@ -135,7 +133,7 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               BotToast.closeAllLoading();
             }
             return SafeArea(
-              top: true,
+              top: false,
               bottom: false,
               child: buildPage(context, state),
             );
@@ -149,101 +147,78 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
     final int lengthQuiz = _cubit.listQuiz.length;
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [R.color.main_6, R.color.color0xffB1DDDB],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+        color: R.color.backgroundColorNew,
       ),
       child: Column(
         children: [
           CustomAppBar(
-            backgroundColor: R.color.transparent,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.close, color: R.color.black),
-                        onPressed: () {
-                          if (_cubit.isShowResult) {
-                            onDoneQuiz(context);
-                            return;
-                          }
-                          NavigationUtil.pop(context);
-                        },
-                      ),
-                      Expanded(
-                        child: AutoSizeText(
-                          R.string.knowledge_test.tr(),
-                          maxLines: 1,
-                          maxFontSize: 16,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: R.color.textDark,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 10.w),
-                ShareLessonButton(
-                  featureImage: _cubit.lessonDetail.image?.url,
-                  lesson: _cubit.lessonSectionItem!,
-                  lessonDescription: _cubit.lessonDetail.description,
-                ),
-              ],
+            backgroundColor: R.color.greenGradientBottom,
+            leadingIcon: IconButton(
+              icon: Icon(Icons.arrow_back_outlined, color: R.color.white),
+              onPressed: () {
+                if (_cubit.isShowResult) {
+                  onDoneQuiz(context);
+                  return;
+                }
+                NavigationUtil.pop(context);
+              },
             ),
-            showRightCloseButton: true,
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              _cubit.quizName,
+            title: AutoSizeText(
+              R.string.knowledge_test.tr(),
+              maxLines: 1,
+              maxFontSize: 20,
               style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
-                  height: 1.4,
-                  letterSpacing: 0.4),
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: R.color.white,
+              ),
             ),
           ),
-          const SizedBox(height: 5),
-          Container(
-            height: 40,
-            alignment: Alignment.center,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemCount: lengthQuiz,
-              itemBuilder: (context, index) => buildStep(
-                  index: index,
-                  onTap: () async {
-                    QuizLessonQuiz? quiz = _cubit.listQuiz[index]?.quiz;
-                    await TrackingManager.logEvent(
-                      name: 'component_clicked',
-                      parameters: {
-                        "screen_name": 'quiz_lession',
-                        'component_name': 'list_quiz_question',
-                        'object_id': _cubit.lessonSectionItem?.id,
-                        'object_title': widget.lessonDetail.name,
-                        'object_index': index,
-                      },
-                    );
-                    _controller.scrollToIndex(index,
-                        duration: duration,
-                        preferPosition: AutoScrollPosition.begin);
-                    _cubit.jumpToIndexCourse(index);
-                  }),
-              separatorBuilder: (context, index) => const SizedBox(width: 14),
-            ),
-          ),
+          const SizedBox(height: 16),
+          // Container(
+          //   alignment: Alignment.centerLeft,
+          //   padding: const EdgeInsets.symmetric(horizontal: 16),
+          //   child: Text(
+          //     _cubit.quizName,
+          //     style: TextStyle(
+          //         fontSize: 18,
+          //         fontWeight: FontWeight.bold,
+          //         color: R.color.textDark,
+          //         height: 1.4,
+          //         letterSpacing: 0.4),
+          //   ),
+          // ),
+          // const SizedBox(height: 5),
+          // Container(
+          //   height: 40,
+          //   alignment: Alignment.center,
+          //   child: ListView.separated(
+          //     padding: const EdgeInsets.symmetric(horizontal: 16),
+          //     shrinkWrap: true,
+          //     scrollDirection: Axis.horizontal,
+          //     itemCount: lengthQuiz,
+          //     itemBuilder: (context, index) => buildStep(
+          //         index: index,
+          //         onTap: () async {
+          //           QuizLessonQuiz? quiz = _cubit.listQuiz[index]?.quiz;
+          //           await TrackingManager.logEvent(
+          //             name: 'component_clicked',
+          //             parameters: {
+          //               "screen_name": 'quiz_lession',
+          //               'component_name': 'list_quiz_question',
+          //               'object_id': _cubit.lessonSectionItem?.id,
+          //               'object_title': widget.lessonDetail.name,
+          //               'object_index': index,
+          //             },
+          //           );
+          //           _controller.scrollToIndex(index,
+          //               duration: duration,
+          //               preferPosition: AutoScrollPosition.begin);
+          //           _cubit.jumpToIndexCourse(index);
+          //         }),
+          //     separatorBuilder: (context, index) => const SizedBox(width: 14),
+          //   ),
+          // ),
           Expanded(
             child: ListView.builder(
               controller: _controller,
@@ -286,136 +261,230 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
               },
             ),
           ),
-          CustomBottomBarWidget(
-            isPreviousButtonActive: _cubit.selectedCourseIndex == 0,
-            onTapPrevious: _cubit.selectedCourseIndex == 0
-                ? null
-                : () async {
-                    await TrackingManager.logEvent(
-                      name: 'cta_button_clicked',
-                      parameters: {
-                        "screen_name": 'quiz_lession',
-                        'cta_button_name': 'cta_quiz_previous',
-                        'object_id': _cubit.lessonSectionItem?.id,
-                        'object_title': _cubit.lessonDetail.name,
-                      },
-                    );
-                    final int newIndex = _cubit.selectedCourseIndex - 1;
-                    _controller.scrollToIndex(newIndex,
-                        duration: duration,
-                        preferPosition: AutoScrollPosition.begin);
-                    _cubit.jumpToIndexCourse(newIndex);
+          if (_cubit.isShowResult)
+            _buildShowAnswerActionsBar(context)
+          else
+            CustomBottomBarWidget(
+              isPreviousButtonActive: _cubit.selectedCourseIndex == 0,
+              onTapPrevious: _cubit.selectedCourseIndex == 0
+                  ? null
+                  : () async {
+                      await TrackingManager.logEvent(
+                        name: 'cta_button_clicked',
+                        parameters: {
+                          "screen_name": 'quiz_lession',
+                          'cta_button_name': 'cta_quiz_previous',
+                          'object_id': _cubit.lessonSectionItem?.id,
+                          'object_title': _cubit.lessonDetail.name,
+                        },
+                      );
+                      final int newIndex = _cubit.selectedCourseIndex - 1;
+                      _controller.scrollToIndex(newIndex,
+                          duration: duration,
+                          preferPosition: AutoScrollPosition.begin);
+                      _cubit.jumpToIndexCourse(newIndex);
+                    },
+              isNextButtonActive: lengthQuiz != 0 &&
+                  _cubit.selectedCourseIndex < lengthQuiz - 1,
+              onTapNext: () async {
+                await TrackingManager.logEvent(
+                  name: 'cta_button_clicked',
+                  parameters: {
+                    "screen_name": 'quiz_lession',
+                    'cta_button_name': 'cta_quiz_next',
+                    'object_id': _cubit.lessonSectionItem?.id,
+                    'object_title': widget.lessonDetail.name,
                   },
-            isNextButtonActive:
-                lengthQuiz != 0 && _cubit.selectedCourseIndex < lengthQuiz - 1,
-            onTapNext: () async {
-              await TrackingManager.logEvent(
-                name: 'cta_button_clicked',
-                parameters: {
-                  "screen_name": 'quiz_lession',
-                  'cta_button_name': 'cta_quiz_next',
-                  'object_id': _cubit.lessonSectionItem?.id,
-                  'object_title': widget.lessonDetail.name,
-                },
-              );
-              if (lengthQuiz == 0) {
-                onDoneQuiz(context);
-                return;
-              }
-
-              if (_cubit.canComplete == true) {
-                if (_cubit.isShowResult) {
-                  // onDoneQuiz();
+                );
+                if (lengthQuiz == 0) {
+                  onDoneQuiz(context);
                   return;
                 }
-                //   if (_cubit.isPassed) {
-                _cubit.setCompleteQuiz();
-                // To update progress
-                widget.onComplete!();
-                //   }
-                _buildDialogCompleted(seeResultCallback: () async {
-                  await TrackingManager.logEvent(
-                    name: 'cta_button_clicked',
-                    parameters: {
-                      "screen_name": 'quiz_lession',
-                      'cta_button_name': 'cta_quiz_answer',
-                      'object_id': _cubit.lessonSectionItem?.id,
-                      'object_title': _cubit.lessonDetail.name,
-                    },
-                  );
-                  _cubit.showAnswer();
-                  _controller.scrollToIndex(0,
-                      duration: duration,
-                      preferPosition: AutoScrollPosition.begin);
-                }, retryCallback: () async {
-                  await TrackingManager.logEvent(
-                    name: 'cta_button_clicked',
-                    parameters: {
-                      "screen_name": 'quiz_lession',
-                      'cta_button_name': 'cta_quiz_retry',
-                      'object_id': _cubit.lessonSectionItem?.id,
-                      'object_title': _cubit.lessonDetail.name,
-                    },
-                  );
-                  _cubit.retryQuiz();
-                  _controller.scrollToIndex(0,
-                      duration: duration,
-                      preferPosition: AutoScrollPosition.begin);
-                }, continueLearnCallback: () async {
-                  await TrackingManager.logEvent(
-                    name: 'cta_button_clicked',
-                    parameters: {
-                      "screen_name": 'quiz_lession',
-                      'cta_button_name': 'cta_quiz_continue',
-                      'object_id': _cubit.lessonSectionItem?.id,
-                      'object_title': _cubit.lessonDetail.name,
-                    },
-                  );
-                  onDoneQuiz(context);
-                }, skipCallback: () async {
-                  await TrackingManager.logEvent(
-                    name: 'cta_button_clicked',
-                    parameters: {
-                      "screen_name": 'quiz_lession',
-                      'cta_button_name': 'cta_quiz_skip',
-                      'object_id': _cubit.lessonSectionItem?.id,
-                      'object_title': _cubit.lessonDetail.name,
-                    },
-                  );
+
+                if (_cubit.canComplete == true) {
+                  // When user already saw answers, we hide the entire bar.
+                  if (_cubit.isShowResult) return;
+
+                  _cubit.setCompleteQuiz();
+                  widget.onComplete!();
                   _buildDialogCompleted(
-                      rate: 90,
-                      seeResultCallback: () {
+                      seeResultCallback: () async {
+                        await TrackingManager.logEvent(
+                          name: 'cta_button_clicked',
+                          parameters: {
+                            "screen_name": 'quiz_lession',
+                            'cta_button_name': 'cta_quiz_answer',
+                            'object_id': _cubit.lessonSectionItem?.id,
+                            'object_title': _cubit.lessonDetail.name,
+                          },
+                        );
                         _cubit.showAnswer();
                         _controller.scrollToIndex(0,
                             duration: duration,
                             preferPosition: AutoScrollPosition.begin);
                       },
-                      retryCallback: () {
+                      retryCallback: () async {
+                        await TrackingManager.logEvent(
+                          name: 'cta_button_clicked',
+                          parameters: {
+                            "screen_name": 'quiz_lession',
+                            'cta_button_name': 'cta_quiz_retry',
+                            'object_id': _cubit.lessonSectionItem?.id,
+                            'object_title': _cubit.lessonDetail.name,
+                          },
+                        );
                         _cubit.retryQuiz();
                         _controller.scrollToIndex(0,
                             duration: duration,
                             preferPosition: AutoScrollPosition.begin);
                       },
-                      continueLearnCallback: () {
+                      continueLearnCallback: () async {
+                        await TrackingManager.logEvent(
+                          name: 'cta_button_clicked',
+                          parameters: {
+                            "screen_name": 'quiz_lession',
+                            'cta_button_name': 'cta_quiz_continue',
+                            'object_id': _cubit.lessonSectionItem?.id,
+                            'object_title': _cubit.lessonDetail.name,
+                          },
+                        );
                         onDoneQuiz(context);
                       },
-                      skipCallback: () {});
-                });
-              } else {
-                final int newIndex = _cubit.selectedCourseIndex + 1;
-                if (newIndex > lengthQuiz - 1) return;
-                _controller.scrollToIndex(newIndex,
-                    duration: duration,
-                    preferPosition: AutoScrollPosition.begin);
-                _cubit.jumpToIndexCourse(newIndex);
-              }
-            },
-            currentPositionTitle: lengthQuiz == 0
-                ? '0/0'
-                : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
-            previousButtonTitle: R.string.previous_question.tr(),
-            nextButtonTitle: R.string.next_question.tr(),
-            isCompleted: _cubit.isShowResult ? null : _cubit.canComplete,
+                      skipCallback: () async {
+                        await TrackingManager.logEvent(
+                          name: 'cta_button_clicked',
+                          parameters: {
+                            "screen_name": 'quiz_lession',
+                            'cta_button_name': 'cta_quiz_skip',
+                            'object_id': _cubit.lessonSectionItem?.id,
+                            'object_title': _cubit.lessonDetail.name,
+                          },
+                        );
+                        _buildDialogCompleted(
+                            rate: 90,
+                            seeResultCallback: () {
+                              _cubit.showAnswer();
+                              _controller.scrollToIndex(0,
+                                  duration: duration,
+                                  preferPosition:
+                                      AutoScrollPosition.begin);
+                            },
+                            retryCallback: () {
+                              _cubit.retryQuiz();
+                              _controller.scrollToIndex(0,
+                                  duration: duration,
+                                  preferPosition: AutoScrollPosition.begin);
+                            },
+                            continueLearnCallback: () {
+                              onDoneQuiz(context);
+                            },
+                            skipCallback: () {});
+                      });
+                } else {
+                  final int newIndex = _cubit.selectedCourseIndex + 1;
+                  if (newIndex > lengthQuiz - 1) return;
+                  _controller.scrollToIndex(newIndex,
+                      duration: duration,
+                      preferPosition: AutoScrollPosition.begin);
+                  _cubit.jumpToIndexCourse(newIndex);
+                }
+              },
+              currentPositionTitle: lengthQuiz == 0
+                  ? '0/0'
+                  : '${_cubit.selectedCourseIndex + 1}/$lengthQuiz',
+              previousButtonTitle: R.string.previous_question.tr(),
+              nextButtonTitle: R.string.next_question.tr(),
+              isCompleted: _cubit.isShowResult ? null : _cubit.canComplete,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShowAnswerActionsBar(BuildContext context) {
+    return Container(
+      color: R.color.white,
+      padding: EdgeInsets.fromLTRB(
+        16,
+        14,
+        16,
+        MediaQuery.of(context).padding.bottom + 10,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () async {
+                await TrackingManager.logEvent(
+                  name: 'cta_button_clicked',
+                  parameters: {
+                    "screen_name": 'quiz_lession',
+                    'cta_button_name': 'cta_quiz_retry',
+                    'object_id': _cubit.lessonSectionItem?.id,
+                    'object_title': _cubit.lessonDetail.name,
+                  },
+                );
+                _cubit.retryQuiz();
+                _controller.scrollToIndex(0,
+                    duration: duration, preferPosition: AutoScrollPosition.begin);
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: R.color.color0xffDCFFFC,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  // Closest available translation key to "redo test".
+                  R.string.redo_quiz.tr(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.mainColor,
+                    height: 1,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: InkWell(
+              onTap: () async {
+                await TrackingManager.logEvent(
+                  name: 'cta_button_clicked',
+                  parameters: {
+                    "screen_name": 'quiz_lession',
+                    'cta_button_name': 'cta_quiz_continue',
+                    'object_id': _cubit.lessonSectionItem?.id,
+                    'object_title': _cubit.lessonDetail.name,
+                  },
+                );
+                onDoneQuiz(context);
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: R.color.greenGradientBottom,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  R.string.continue_learning.tr(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.white,
+                    height: 1,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -546,14 +615,14 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
       ),
       onCancel: () async {
         if (widget.smartGoal?.id != null) {
-          await HomeClient().completeSmartGoal(
-            DateTime.now(), widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
+          await HomeClient().completeSmartGoal(DateTime.now(),
+              widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
         }
-        NavigationUtil.pop(context);
         if (widget.onDone == null) {
-          NavigationUtil.pop(context);
+          // Legacy path: one [popUntil] to tab bar instead of chained pops.
+          NavigationUtil.popUntilTabbar(context);
           return;
-        } else {}
+        }
         widget.onDone!(_cubit.isPassed);
       },
     );

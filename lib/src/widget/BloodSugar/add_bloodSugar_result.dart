@@ -267,13 +267,19 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                R.string.ai_suggestion_glucose.tr(),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
-                  height: 21 / 15,
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                child: Text(
+                  R.string.ai_suggestion_glucose.tr(),
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: R.color.textDark,
+                    height: 21 / 15,
+                  ),
                 ),
               ),
               const SizedBox(width: 6),

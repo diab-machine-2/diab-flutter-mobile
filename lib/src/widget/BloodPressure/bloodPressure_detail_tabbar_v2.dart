@@ -437,7 +437,7 @@ class _BloodPressureDetailTabbarControllerState
           bottomRight: Radius.circular(16),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -445,12 +445,18 @@ class _BloodPressureDetailTabbarControllerState
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                R.string.ai_suggestion_glucose.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                child: Text(
+                  R.string.ai_suggestion_glucose.tr(),
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: R.color.textDark,
+                  ),
                 ),
               ),
               const SizedBox(width: 6),

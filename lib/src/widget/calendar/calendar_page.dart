@@ -27,7 +27,8 @@ class CalendarController extends StatefulWidget {
   final int interviewType;
   final bool fromActivityTab;
   CalendarController(this.pickSlot, this.courseId, this.endTime,
-      this.bookingQuantity, this.interviewType, {this.fromActivityTab = false});
+      this.bookingQuantity, this.interviewType,
+      {this.fromActivityTab = false});
 
   @override
   _CalendarControllerState createState() => _CalendarControllerState();
@@ -62,12 +63,10 @@ class _CalendarControllerState extends State<CalendarController> {
         print('[ONBOARDING] on pop scope calendar page');
         if (widget.fromActivityTab) {
           // Navigate back to activity tab
-          Navigator.of(context, rootNavigator: true)
-              .popUntil((route) =>
-                  route.isFirst ||
-                  route.settings.name == NavigatorName.tabbar);
-          Observable.instance.notifyObservers([],
-              notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
+          Navigator.of(context, rootNavigator: true).popUntil((route) =>
+              route.isFirst || route.settings.name == NavigatorName.tabbar);
+          Observable.instance
+              .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
           return false;
         } else {
           if (Navigator.of(context).canPop()) {
@@ -121,7 +120,6 @@ class _CalendarControllerState extends State<CalendarController> {
                             HomeSupportFunctions.showModalAddData(context);
                           },
                           child: Container(
-                            width: 85,
                             height: 33,
                             padding: EdgeInsets.symmetric(
                                 vertical: 8, horizontal: 6),
@@ -144,7 +142,14 @@ class _CalendarControllerState extends State<CalendarController> {
                                   fit: BoxFit.scaleDown,
                                 ),
                                 GapW(4),
-                                Expanded(
+                                MediaQuery(
+                                  data: MediaQuery.of(context).copyWith(
+                                    textScaler: MediaQuery.of(context)
+                                        .textScaler
+                                        .clamp(
+                                            minScaleFactor: 1.0,
+                                            maxScaleFactor: 1.3),
+                                  ),
                                   child: Text(
                                     R.string.contact.tr(),
                                     textAlign: TextAlign.center,
@@ -174,10 +179,11 @@ class _CalendarControllerState extends State<CalendarController> {
 
                           if (widget.fromActivityTab) {
                             // Navigate back to activity tab
-                            Navigator.of(context, rootNavigator: true)
-                                .popUntil((route) =>
+                            Navigator.of(context, rootNavigator: true).popUntil(
+                                (route) =>
                                     route.isFirst ||
-                                    route.settings.name == NavigatorName.tabbar);
+                                    route.settings.name ==
+                                        NavigatorName.tabbar);
                             Observable.instance.notifyObservers([],
                                 notifyName: Const.NAVIGATE_TO_ACTIVITY_TAB);
                           } else {
@@ -284,6 +290,8 @@ class _CalendarControllerState extends State<CalendarController> {
                             Observable.instance.notifyObservers([],
                                 notifyName: Const
                                     .UPDATE_SUBSCRIPTION_WITHOUT_NAVIGATE_PROGRAM),
+                            Observable.instance.notifyObservers([],
+                                notifyName: "refresh_activity_tab"),
                             // Navigator.of(context, rootNavigator: true)
                             //     .pushNamedAndRemoveUntil(
                             //   NavigatorName.tabbar,

@@ -37,9 +37,9 @@ String convertToSectionTicketDate(int timeStamp, String format) {
   final yesterday = today.subtract(Duration(days: 1));
   final aDate = DateTime(date.year, date.month, date.day);
   if (aDate == today) {
-    return 'Hôm nay';
+    return R.string.today.tr();
   } else if (aDate == yesterday) {
-    return 'Hôm qua';
+    return R.string.yesterday.tr();
   } else {
     return formattedDate;
   }
@@ -53,7 +53,7 @@ String getStringToday(int timeStamp) {
   } else if (now.day - 1 == date.day &&
       now.month == date.month &&
       now.year == date.year) {
-    return 'Hôm qua';
+    return R.string.yesterday.tr();
   } else {
     return '';
   }
