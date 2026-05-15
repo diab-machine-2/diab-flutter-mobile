@@ -211,18 +211,24 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                   SizedBox(
                     width: imageSize.w,
                     height: 20,
-                    child: Text(
-                      e.category ?? '',
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: isSelected
-                            ? R.color.greenGradientBottom
-                            : R.color.textDark,
-                        fontSize: 14,
-                        fontWeight:
-                            isSelected ? FontWeight.w500 : FontWeight.normal,
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                          textScaler: MediaQuery.of(context)
+                              .textScaler
+                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                      child: Text(
+                        e.category ?? '',
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isSelected
+                              ? R.color.greenGradientBottom
+                              : R.color.textDark,
+                          fontSize: 13,
+                          fontWeight:
+                              isSelected ? FontWeight.w500 : FontWeight.normal,
+                        ),
                       ),
                     ),
                   ),
@@ -249,8 +255,8 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
               ClipRRect(
                 borderRadius: BorderRadius.circular(200),
                 child: SizedBox(
-                  width: imageSize.w,
-                  height: imageSize.h,
+                  width: (1.sw - 16.w * 4) / 4 * 0.75,
+                  height: (1.sw - 16.w * 4) / 4 * 0.75,
                   child: Container(
                     color: R.color.textDark.withOpacity(0.1),
                     child: Icon(
@@ -266,7 +272,7 @@ class _ExercisesCategoriesState extends State<ExercisesCategories>
                 R.string.khac.tr(),
                 style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.normal,
                 ),
               ),
@@ -508,7 +514,8 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                             data.addAll(state.category!.exerciseCategories);
                           }
                           if (state.category?.exerciseCategoryCommons != null) {
-                            data.addAll(state.category!.exerciseCategoryCommons);
+                            data.addAll(
+                                state.category!.exerciseCategoryCommons);
                           }
                         }
 
@@ -530,7 +537,7 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                             crossAxisCount: 4,
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
-                            childAspectRatio: 0.75.r,
+                            childAspectRatio: 0.65.r,
                           ),
                           itemCount: data.length,
                           itemBuilder: (context, index) {
@@ -563,25 +570,35 @@ class _ExercisesSelectCategoryState extends State<ExercisesSelectCategory>
                                     ),
                                   ),
                                   // Tên hoạt động
-                                  Container(
-                                    height: 38,
-                                    width: double.infinity,
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4, vertical: 2),
-                                    child: Text(
-                                      e.category ?? '',
-                                      textAlign: TextAlign.center,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isSelected
-                                            ? R.color.greenGradientBottom
-                                            : R.color.textDark,
-                                        fontSize: 14,
-                                        fontWeight: isSelected
-                                            ? FontWeight.w600
-                                            : FontWeight.normal,
+                                  Expanded(
+                                    child: Container(
+                                      // height: 38,
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4, vertical: 2),
+                                      child: MediaQuery(
+                                        data: MediaQuery.of(context).copyWith(
+                                            textScaler: MediaQuery.of(context)
+                                                .textScaler
+                                                .clamp(
+                                                    minScaleFactor: 1.0,
+                                                    maxScaleFactor: 1.3)),
+                                        child: Text(
+                                          e.category ?? '',
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: isSelected
+                                                ? R.color.greenGradientBottom
+                                                : R.color.textDark,
+                                            fontSize: 13,
+                                            fontWeight: isSelected
+                                                ? FontWeight.w600
+                                                : FontWeight.normal,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   )

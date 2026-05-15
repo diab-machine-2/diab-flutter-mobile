@@ -1597,4 +1597,6 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get healthy_lifestyle_consulting => 'healthy_lifestyle_consulting';
   String get book_medical_appointment => 'book_medical_appointment';
   String get featured_news => 'featured_news';
+  String get day_number => 'day_number';
+  String get analyzing_your_index => 'analyzing_your_index';
 }

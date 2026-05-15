@@ -366,13 +366,19 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Day title
-            Text(
-              'Ngày $dayNumber',
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                height: 1.2,
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+              child: Text(
+                R.string.day_number.tr(args: ['$dayNumber']),
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -431,8 +437,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 }
               },
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                 decoration: BoxDecoration(
                   color: R.color.color0xffF2F6F9,
                   borderRadius: BorderRadius.circular(12),
@@ -459,16 +464,24 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            exerciseItem?.name ?? '',
-                            style: TextStyle(
-                              color: exerciseItem?.exerciseMovementStates ==
-                                      Const.LESSON_LOCKED
-                                  ? R.color.grayCaption
-                                  : R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              height: 1.25,
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3)),
+                            child: Text(
+                              exerciseItem?.name ?? '',
+                              style: TextStyle(
+                                color: exerciseItem?.exerciseMovementStates ==
+                                        Const.LESSON_LOCKED
+                                    ? R.color.grayCaption
+                                    : R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                height: 1.25,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -658,22 +671,27 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Day title
-            Text(
-              dayNumber != null
-                  ? 'Ngày $dayNumber'
-                  : R.string.today_is_day_off.tr(),
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                height: 1.2,
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+              child: Text(
+                dayNumber != null
+                    ? R.string.day_number.tr(args: ['$dayNumber'])
+                    : R.string.today_is_day_off.tr(),
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
               ),
             ),
             const SizedBox(height: 12),
             // Activity sub-card (not clickable)
             Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
               decoration: BoxDecoration(
                 color: R.color.color0xffF2F6F9,
                 borderRadius: BorderRadius.circular(12),
@@ -745,8 +763,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             // Day title
             Text(
               dayNumber != null
-                  ? 'Ngày $dayNumber'
-                  : R.string.today_is_day_no_exercise.tr(),
+                  ? R.string.day_number.tr(args: ['$dayNumber'])
+                    : R.string.today_is_day_no_exercise.tr(),
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 18,
@@ -757,8 +775,7 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             const SizedBox(height: 12),
             // Activity sub-card (not clickable)
             Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
               decoration: BoxDecoration(
                 color: R.color.color0xffF2F6F9,
                 borderRadius: BorderRadius.circular(12),

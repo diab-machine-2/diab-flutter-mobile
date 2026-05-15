@@ -1538,4 +1538,6 @@ utilities,Tiện ích,Utilities,
 connect_device_home,Kết nối thiết bị,Connect device,
 healthy_lifestyle_consulting,Tư vấn sống khoẻ,Healthy lifestyle consulting,
 book_medical_appointment,Đặt lịch khám bệnh,Book medical appointment,
-featured_news,Tin nổi bật,Featured news
+featured_news,Tin nổi bật,Featured news,
+day_number,Ngày {},Day {},
+analyzing_your_index,Đang phân tích chỉ số của bạn,Analyzing your index,

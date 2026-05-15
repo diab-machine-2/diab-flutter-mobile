@@ -497,14 +497,55 @@ class _LessonTabPageState extends State<LessonTabPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              R.string.lesson_for_you.tr(),
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+          GestureDetector(
+            onTap: () {
+              NavigationUtil.navigatePage(
+                context,
+                ModuleLessonsPage(
+                  moduleName: R.string.lesson_for_you.tr(),
+                  lessons: lessons.map((l) => l == null ? null : MyLessonResponseData(
+                    id: l.id,
+                    name: l.name,
+                    status: l.status,
+                    type: l.type,
+                    description: l.description,
+                    module: l.lessonModule?.name,
+                    learningStatus: l.learningStatus,
+                    percentComplete: l.percentComplete,
+                    order: l.order,
+                    image: l.image,
+                  )).toList(),
+                  cubit: _cubit,
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: MediaQuery.of(context).textScaler.clamp(
+                            minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                      ),
+                      child: Text(
+                        R.string.lesson_for_you.tr(),
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 24,
+                    color: R.color.greenGradientBottom,
+                  ),
+                ],
               ),
             ),
           ),
