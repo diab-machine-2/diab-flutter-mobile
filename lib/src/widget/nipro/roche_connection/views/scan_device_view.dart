@@ -57,6 +57,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   StreamController<int> secondsStreamController = StreamController<int>();
   Stream<int> get secondsStream => secondsStreamController.stream;
   StreamSubscription? characteristicListener;
+  StreamSubscription? _racpResponseListener;
 
   List<GlucoseMeasurementRecord> glucoseMeasurementRecordList = [];
   List<GlucoseMeasurementRecord> dataSelected = [];
@@ -65,6 +66,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   bool deviceFound = false;
   int previousDataCount = 0;
   bool isConnectionInProgress = false; // Track if connection is in progress
+  bool _racpCompleted = false; // Flag: device finished sending all records via RACP
   late GlucoseUnitsFlag glucoseUnits;
   String? modelName;
   String? modelNumber;
@@ -133,20 +135,29 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
   }
 
   /// Build RACP request with time filter for incremental sync
+  /// Uses BLE GATT date_time format: 7 bytes (year LE uint16, month, day, hour, min, sec)
+  /// Filter type 0x01 = User Facing Time per Bluetooth SIG RACP spec
   List<int> _buildRACPRequestWithTimeFilter(DateTime startTime) {
-    // Convert DateTime to Bluetooth time format (seconds since 2000-01-01)
-    final bluetoothEpoch = DateTime(2000, 1, 1);
-    final secondsSinceEpoch = startTime.difference(bluetoothEpoch).inSeconds;
-
-    // RACP request with time filter: OpCode(0x01) + Operator(0x03 = Greater than or equal) + FilterType(0x02 = User facing time) + Time(4 bytes)
+    final year = startTime.year;
+    // BLE date_time struct: year(2 bytes LE) + month(1) + day(1) + hour(1) + min(1) + sec(1)
     final timeBytes = [
-      (secondsSinceEpoch >> 24) & 0xFF,
-      (secondsSinceEpoch >> 16) & 0xFF,
-      (secondsSinceEpoch >> 8) & 0xFF,
-      secondsSinceEpoch & 0xFF,
+      year & 0xFF,            // Year LSB (little-endian)
+      (year >> 8) & 0xFF,     // Year MSB
+      startTime.month,         // Month (1-12)
+      startTime.day,           // Day (1-31)
+      startTime.hour,          // Hours (0-23)
+      startTime.minute,        // Minutes (0-59)
+      startTime.second,        // Seconds (0-59)
     ];
 
-    return [0x01, 0x03, 0x02, ...timeBytes];
+    print('📋 RACP Time Filter bytes: year=$year (${timeBytes[0]},${timeBytes[1]}), '
+        'month=${startTime.month}, day=${startTime.day}, '
+        'hour=${startTime.hour}, min=${startTime.minute}, sec=${startTime.second}');
+
+    // OpCode: 0x01 (Report stored records)
+    // Operator: 0x03 (Greater than or equal to)
+    // Filter Type: 0x01 (User Facing Time)
+    return [0x01, 0x03, 0x01, ...timeBytes];
   }
 
   Timer? _statusTimer;
@@ -174,6 +185,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
       device!.disconnect();
     }
     characteristicListener?.cancel();
+    _racpResponseListener?.cancel();
     if (!secondsStreamController.isClosed) {
       secondsStreamController.close();
     }
@@ -279,9 +291,23 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
       // Save cache time and device info after successful sync
       if (device != null) {
-        final syncTime = DateTime.now();
         final deviceId = device!.remoteId.str;
         final userId = AppSettings.userInfo?.id ?? '';
+
+        // Use the latest measurement record time instead of phone's DateTime.now()
+        // This ensures incremental sync works correctly even if device/phone clocks differ
+        DateTime syncTime = DateTime.now();
+        if (glucoseMeasurementRecordList.isNotEmpty) {
+          final latestRecordTime = glucoseMeasurementRecordList
+              .where((r) => r.calendar != null)
+              .map((r) => r.calendar!)
+              .fold<DateTime?>(null, (prev, current) =>
+                  prev == null || current.isAfter(prev) ? current : prev);
+          if (latestRecordTime != null) {
+            syncTime = latestRecordTime;
+            print('📅 Using latest record time as sync time: ${syncTime.toIso8601String()}');
+          }
+        }
 
         // Lưu cache mới với deviceId + userId + lastSyncTime
         if (deviceId.isNotEmpty && userId.isNotEmpty) {
@@ -1595,6 +1621,32 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
                 .RECORD_ACCESS_CONTROL_POINT_CHARACTERISTIC_UUID) {
           await characteristic.setNotifyValue(true);
 
+          // Listen for RACP response to know when device finishes sending records
+          _racpCompleted = false;
+          _racpResponseListener?.cancel();
+          _racpResponseListener =
+              characteristic.lastValueStream.listen((data) {
+            if (data.length >= 4 && data[0] == 0x06) {
+              // OpCode 0x06 = Response Code
+              // data[1] = Operator (0x00 = Null)
+              // data[2] = Request Op Code (0x01 = Report stored records)
+              // data[3] = Response Code Value
+              //   0x01 = Success
+              //   0x06 = No records found
+              print('📡 RACP Response received: ${data.map((e) => e.toRadixString(16).padLeft(2, '0')).join(' ')}');
+              if (data[2] == 0x01) {
+                if (data[3] == 0x01) {
+                  print('✅ RACP: Success - all records have been sent');
+                } else if (data[3] == 0x06) {
+                  print('ℹ️ RACP: No records found matching the filter');
+                } else {
+                  print('⚠️ RACP: Response code = ${data[3]}');
+                }
+                _racpCompleted = true;
+              }
+            }
+          });
+
           // Đợi một chút để đảm bảo notification đã được setup
           await Future.delayed(Duration(milliseconds: 500));
 
@@ -1607,18 +1659,12 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
             try {
               // Build RACP request for all data
               List<int> requestData = await _buildRACPRequest();
-              print('📡 RACP Request: $requestData');
+              print('📡 RACP Request (attempt ${retryCount + 1}): $requestData');
               await characteristic.write(requestData);
-
-              // Đợi lâu hơn cho lần đầu tiên để device có thời gian xử lý
-              int delaySeconds = retryCount == 0 ? 8 : 5;
-              await Future.delayed(Duration(seconds: delaySeconds));
 
               dataRequestSuccess = true;
               print(
                   'Data request sent successfully on attempt ${retryCount + 1}');
-              print(
-                  '🔍 DEBUG: RACP request completed, dataRequestSuccess = true');
             } catch (e) {
               retryCount++;
               print('Data request failed on attempt $retryCount: $e');
@@ -1840,7 +1886,7 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
   void startCheckingData() {
     int noDataCount = 0;
-    const maxNoDataCount = 5; // Giảm timeout xuống 5 giây
+    const maxNoDataCount = 15; // Increased timeout to 15 seconds for slow BLE connections
     bool hasReceivedData = false; // Flag để track xem đã nhận được dữ liệu chưa
 
     print(
@@ -1848,34 +1894,44 @@ class _ScanDeviceViewState extends State<ScanDeviceView>
 
     Timer.periodic(Duration(seconds: 1), (timer) {
       print(
-          '🔍 DEBUG: Checking data - current: ${glucoseMeasurementRecordList.length}, previous: $previousDataCount, noDataCount: $noDataCount, hasReceivedData: $hasReceivedData');
+          '🔍 DEBUG: Checking data - current: ${glucoseMeasurementRecordList.length}, previous: $previousDataCount, noDataCount: $noDataCount, hasReceivedData: $hasReceivedData, racpCompleted: $_racpCompleted');
+
+      // Check 1: If RACP response indicates completion, process immediately
+      if (_racpCompleted) {
+        // Give a small grace period (2s) after RACP completion for any remaining BLE packets
+        if (noDataCount >= 2 || (noDataCount >= 1 && !hasReceivedData)) {
+          print(
+              '✅ RACP completed + grace period elapsed → processing ${glucoseMeasurementRecordList.length} records');
+          timer.cancel();
+          _racpResponseListener?.cancel();
+          fetchGlucoseInputNotExist();
+          return;
+        }
+      }
 
       if (glucoseMeasurementRecordList.length > previousDataCount) {
         previousDataCount = glucoseMeasurementRecordList.length;
         noDataCount = 0; // Reset counter khi có dữ liệu mới
         hasReceivedData = true; // Đánh dấu đã nhận được dữ liệu
         print('🔍 DEBUG: New data detected, reset counter');
-
-        // Nếu đã có dữ liệu, đợi thêm 2 giây để xem có dữ liệu mới không, rồi xử lý
-        if (glucoseMeasurementRecordList.length >= 1) {
-          print('🔍 DEBUG: Data available, will process after 2 seconds');
-        }
       } else {
         noDataCount++;
         print('🔍 DEBUG: No new data, counter: $noDataCount/$maxNoDataCount');
 
-        // Nếu đã có dữ liệu và đợi đủ lâu, xử lý ngay
-        if (hasReceivedData && noDataCount >= 2) {
+        // Nếu đã có dữ liệu và đợi đủ lâu (3s of no new data), xử lý ngay
+        if (hasReceivedData && noDataCount >= 3) {
           print(
-              '🔍 DEBUG: Data available and waited enough, calling fetchGlucoseInputNotExist');
+              '🔍 DEBUG: Data available and no new data for 3s, calling fetchGlucoseInputNotExist');
           timer.cancel();
+          _racpResponseListener?.cancel();
           fetchGlucoseInputNotExist();
         }
         // Nếu chưa nhận được dữ liệu gì và timeout, cũng gọi fetchGlucoseInputNotExist
         else if (!hasReceivedData && noDataCount >= maxNoDataCount) {
           print(
-              '🔍 DEBUG: Timeout reached without receiving any data, calling fetchGlucoseInputNotExist');
+              '🔍 DEBUG: Timeout reached (${maxNoDataCount}s) without receiving any data, calling fetchGlucoseInputNotExist');
           timer.cancel();
+          _racpResponseListener?.cancel();
           fetchGlucoseInputNotExist();
         }
       }
