@@ -437,7 +437,7 @@ class _BloodPressureDetailTabbarControllerState
           bottomRight: Radius.circular(16),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -453,7 +453,7 @@ class _BloodPressureDetailTabbarControllerState
                 child: Text(
                   R.string.ai_suggestion_glucose.tr(),
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                     color: R.color.textDark,
                   ),
