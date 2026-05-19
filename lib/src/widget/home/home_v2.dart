@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -1115,7 +1116,7 @@ class _HomeControllerState extends State<HomeController>
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          "Hoạt động hôm nay",
+                                          R.string.goal_of_day.tr(),
                                           style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.bold,
@@ -1155,7 +1156,7 @@ class _HomeControllerState extends State<HomeController>
                                                   ),
                                                   onPressed: _viewMoreActivity,
                                                   child: Text(
-                                                    "Xem thêm",
+                                                    R.string.more.tr(),
                                                     style: TextStyle(
                                                         color: R
                                                             .color.burntOrange),

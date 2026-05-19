@@ -390,14 +390,20 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                R.string.ai_suggestion_glucose.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF111515),
-                  fontFamily: R.font.sfpro,
-                  letterSpacing: 0.036,
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                child: Text(
+                  R.string.ai_suggestion_glucose.tr(),
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF111515),
+                    fontFamily: R.font.sfpro,
+                    letterSpacing: 0.036,
+                  ),
                 ),
               ),
               const SizedBox(width: 6),

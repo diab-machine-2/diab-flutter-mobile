@@ -68,7 +68,8 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
           });
         },
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        collapsedShape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           session.session.toString(),
           style: const TextStyle(
@@ -98,29 +99,38 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
             color: Colors.white,
             margin: const EdgeInsets.all(0),
             child: Padding(
-              padding: const EdgeInsets.only(top: 0, left: 12, right: 12, bottom: 12),
+              padding: const EdgeInsets.only(
+                  top: 0, left: 12, right: 12, bottom: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Tên đơn thuốc + giờ
                   Container(
                     width: double.infinity,
-                    height: 38,
+                    height: 42,
                     color: Color(0xFFFFFDEF),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 253 / 375,
-                          height: 22,
-                          child: Text(
-                            pres.prescriptionName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15,
-                              height: 1.46,
-                              color: Color(0xFF95682E),
-                              overflow: TextOverflow.ellipsis,
+                          height: 30,
+                          child: MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3)),
+                            child: Text(
+                              pres.prescriptionName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                height: 1.46,
+                                color: Color(0xFF95682E),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
                         ),

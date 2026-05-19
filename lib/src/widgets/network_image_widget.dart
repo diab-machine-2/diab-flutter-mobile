@@ -45,7 +45,7 @@ class NetWorkImageWidget extends StatelessWidget {
               height: height,
               imageUrl: imageUrl!,
               color: isSelected ? Colors.white : null,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               placeholder: showLoading
                   ? (_, __) {
                       return Container(color: R.color.transparent);

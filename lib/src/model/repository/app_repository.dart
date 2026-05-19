@@ -447,6 +447,32 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<List<LessonSectionListResponseData>>> getLessonModuleType(
+      int type) async {
+    try {
+      final LessonModuleTypeResponse res =
+          await appClient.getLessonModuleType(type);
+      return ApiResult.success(
+          data: res.data?.whereType<LessonSectionListResponseData>().toList() ??
+              []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<List<LessonSectionListResponseData>>>
+      getRecommendedLessons() async {
+    try {
+      final LessonModuleTypeResponse res =
+          await appClient.getRecommendedLessons();
+      return ApiResult.success(
+          data: res.data?.whereType<LessonSectionListResponseData>().toList() ??
+              []);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<FilterDataResponse>> getFilterData() async {
     try {
       final FilterDataResponse response = await appClient.getFilterData();
@@ -1346,7 +1372,7 @@ class AppRepository {
     }
   }
 
-    Future<bool> saveVnpayTransactionInfo(VnpayPaymentRequest request) async {
+  Future<bool> saveVnpayTransactionInfo(VnpayPaymentRequest request) async {
     try {
       log('[VNPAY] saveVnpayTransactionInfo payload: $request');
       final response = await FetchClient().postHttp(

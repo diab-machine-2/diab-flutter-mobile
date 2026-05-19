@@ -93,7 +93,14 @@ class _BookingClinicProvidersPageState
 
   _initData() async {
     try {
-      final position = await AppSettings.getPositionPreferences();
+      var position = await AppSettings.getPositionPreferences();
+      if (position == null || position.isEmpty) {
+        final geolocation = await determinePosition();
+        if (geolocation != null) {
+          await AppSettings.saveLocationPreferences(geolocation);
+          position = geolocation.latitude.toString() + ',' + geolocation.longitude.toString();
+        }
+      }
 
       String lat = '';
       String lng = '';

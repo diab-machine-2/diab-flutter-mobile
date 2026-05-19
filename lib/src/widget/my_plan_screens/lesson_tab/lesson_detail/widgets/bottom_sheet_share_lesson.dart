@@ -92,7 +92,8 @@ class BottomSheetShareLesson extends StatelessWidget {
                     textColor: R.color.accentColor,
                     title: R.string.completed.tr(),
                     onPressed: () {
-                      Navigator.pop(context);
+                      // Do not pop here: [onCancel] may use [NavigationUtil.popUntilTabbar]
+                      // to remove this sheet and lesson detail in one go (smoother UX).
                       onCancel();
                     },
                     textSize: 14,

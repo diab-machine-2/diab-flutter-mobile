@@ -24,7 +24,8 @@ import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
-import 'package:medical/src/widget/Bmi/views/bmi_on_boarding/bmi_on_boarding_page.dart';
+import 'package:medical/src/widget/Bmi/views/add_bmi/add_bmi_page.dart';
+import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
@@ -218,13 +219,54 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handleWeight(
       BuildContext context, SmartGoalList? smartGoal) async {
-    Map<String, dynamic> args = {
+    final bmiBloc = context.read<BmiBloc>();
+    final currentHeight = bmiBloc.height;
+
+    if (currentHeight != null) {
+      await _redirectToBmiInputPage(
+        context,
+        smartGoal: smartGoal,
+        bmiBloc: bmiBloc,
+        height: currentHeight,
+      );
+      return;
+    }
+
+    BmiHeightInputDialog.show(
+      context,
+      onConfirmed: (height) {
+        final userInfo = AppSettings.userInfo!;
+        ProfileInfoController.updateUserInfo(
+          context,
+          userInfo.copyWith(height: height),
+        );
+        _redirectToBmiInputPage(
+          context,
+          smartGoal: smartGoal,
+          bmiBloc: bmiBloc,
+          height: height,
+        );
+      },
+    );
+  }
+
+  static Future<void> _redirectToBmiInputPage(
+    BuildContext context, {
+    required SmartGoalList? smartGoal,
+    required BmiBloc bmiBloc,
+    required double height,
+  }) async {
+    final args = {
       'type': 'input',
       'goalId': smartGoal?.id,
-      BmiOnBoardingPage.bmiBlocKey: context.read<BmiBloc>(),
+      AddBmiPage.bmiInputCurrentHeightKey: height,
+      AddBmiPage.bmiBlocKey: bmiBloc,
     };
-    await Navigator.pushNamed(context, NavigatorName.bmiInputPage,
-        arguments: args);
+    await Navigator.pushNamed(
+      context,
+      NavigatorName.bmiInputPage,
+      arguments: args,
+    );
   }
 
   static Future<void> _handleEmotion(
@@ -291,7 +333,9 @@ class SmartGoalNavigationUtil {
           smartGoal: smartGoal,
         ));
 
-    Observable.instance.notifyObservers([], notifyName: "refresh_lesson_tab");
+    // Do not notify refresh_lesson_tab here: LessonDetailCubit already does when the
+    // lesson is completed, and a second refresh while returning to Program could fight
+    // with library-tab observers. Activity/home still need refresh_home.
     Observable.instance.notifyObservers([], notifyName: "refresh_home");
   }
 

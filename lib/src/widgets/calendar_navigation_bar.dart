@@ -92,7 +92,7 @@ class CalendarNavigationBar extends StatelessWidget {
         padding: const EdgeInsets.all(6),
         child: Icon(
           icon,
-          size: 22,
+          size: 30,
           color: isEnabled
               ? R.color.greenGradientBottom
               : R.color.captionColorGray,
@@ -113,7 +113,7 @@ class CalendarNavigationBar extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: isTodayDisabled ? R.color.grayBorder : R.color.grayBorder,
+            color: isTodayDisabled ? R.color.grayBorder : R.color.greenGradientBottom,
           ),
         ),
         child: Text(
@@ -146,12 +146,19 @@ class CalendarNavigationBar extends StatelessWidget {
               color: R.color.greenGradientBottom,
             ),
             const SizedBox(width: 8),
-            Text(
-              '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
+                '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
