@@ -2,7 +2,9 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -188,10 +190,29 @@ class _CampaignTestResultDetailScreenState
                     child: SizedBox(
                       height: 48,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          BotToast.showText(
-                            text: R.string.bcb_share_feature_in_development.tr(),
-                          );
+                        onPressed: () async {
+                          final id = widget.result.id;
+                          if (id == null || id.isEmpty) return;
+                          try {
+                            final link = await BranchioLinkConfig.instance
+                                .createShareLabResultLink(
+                              labResultId: id,
+                              labResultName: title,
+                            );
+                            final box =
+                                context.findRenderObject() as RenderBox?;
+                            await Share.share(
+                              'Kết quả xét nghiệm từ ứng dụng DiaB\n$link',
+                              subject: 'DIAB | Kết quả xét nghiệm',
+                              sharePositionOrigin: box != null
+                                  ? (box.localToGlobal(Offset.zero) & box.size)
+                                  : null,
+                            );
+                          } catch (e) {
+                            BotToast.showText(
+                              text: 'Không thể chia sẻ kết quả xét nghiệm',
+                            );
+                          }
                         },
                         icon: const Icon(Icons.share_outlined),
                         label: Text(R.string.share.tr()),

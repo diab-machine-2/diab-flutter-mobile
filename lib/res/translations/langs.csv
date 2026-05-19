@@ -1557,7 +1557,7 @@ bcb_health_campaign_default,"Chiến dịch khám sức khoẻ","Health check ca
 bcb_exam_category_laboratory_test,"Xét nghiệm","Laboratory tests",
 bcb_exam_category_diagnostic_imaging,"Chẩn đoán hình ảnh","Diagnostic imaging",
 bcb_exam_category_functional_exploration,"Thăm dò chức năng","Functional exploration",
-bcb_exam_category_endoscopy_biopsy,"Nội soi","Endoscopy",
+bcb_exam_category_endoscopy_biopsy,"Nội soi và sinh thiết","Endoscopy and biopsy",
 bcb_exam_results_title,"Kết quả cận lâm sàng","Paraclinical results",
 bcb_no_exam_results,"Chưa có kết quả xét nghiệm","No test results yet",
 bcb_exam_results_list,"Danh sách kết quả","Results list",

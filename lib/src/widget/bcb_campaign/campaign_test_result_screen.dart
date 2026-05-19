@@ -3,10 +3,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum ExamResultCategory {
@@ -54,9 +56,7 @@ enum ExamResultCategory {
 }
 
 class CampaignTestResultScreen extends StatefulWidget {
-  const CampaignTestResultScreen({super.key, required this.campaignId});
-
-  final String campaignId;
+  const CampaignTestResultScreen({super.key});
 
   @override
   State<CampaignTestResultScreen> createState() =>
@@ -76,12 +76,8 @@ class _CampaignTestResultScreenState extends State<CampaignTestResultScreen> {
   }
 
   Future<void> _fetchResults() async {
-    if (widget.campaignId.trim().isEmpty) {
-      setState(() => _loading = false);
-      return;
-    }
     try {
-      final data = await _client.fetchExamResult(widget.campaignId);
+      final data = await _client.fetchExamResult();
       if (!mounted) return;
       setState(() {
         _results
@@ -110,7 +106,11 @@ class _CampaignTestResultScreenState extends State<CampaignTestResultScreen> {
     return Scaffold(
       backgroundColor: R.color.backgroundColorNew,
       appBar: AppBar(
-        title: Text(R.string.bcb_exam_results_title.tr()),
+        title: Text(
+          R.string.bcb_exam_results_title.tr(),
+          style: TextStyle(
+              color: R.color.white, fontSize: 18, fontWeight: FontWeight.w700),
+        ),
         centerTitle: false,
         leadingWidth: 30,
         foregroundColor: Colors.white,
@@ -429,11 +429,28 @@ class _ExamResultItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: IconButton.filled(
-                        onPressed: () {
-                          BotToast.showText(
-                            text:
-                                R.string.bcb_share_feature_in_development.tr(),
-                          );
+                        onPressed: () async {
+                          final id = result.id;
+                          if (id == null || id.isEmpty) return;
+                          try {
+                            final link = await BranchioLinkConfig.instance
+                                .createShareLabResultLink(
+                              labResultId: id,
+                            );
+                            final box =
+                                context.findRenderObject() as RenderBox?;
+                            await Share.share(
+                              'Kết quả xét nghiệm từ ứng dụng DiaB\n$link',
+                              subject: 'DIAB | Kết quả xét nghiệm',
+                              sharePositionOrigin: box != null
+                                  ? (box.localToGlobal(Offset.zero) & box.size)
+                                  : null,
+                            );
+                          } catch (e) {
+                            BotToast.showText(
+                              text: 'Không thể chia sẻ kết quả xét nghiệm',
+                            );
+                          }
                         },
                         icon: const Icon(Icons.share_outlined, size: 24),
                         style: IconButton.styleFrom(
