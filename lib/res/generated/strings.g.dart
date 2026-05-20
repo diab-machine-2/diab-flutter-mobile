@@ -1307,11 +1307,8 @@ class Strings {
       'conversation_message_placeholder';
   String get exercrise_step_onboarding_title =>
       'exercrise_step_onboarding_title';
-  String get exercrise_step_onboarding_action_btn =>
-      'exercrise_step_onboarding_action_btn';
   String get exercrise_step_onboarding_input_step_btn =>
       'exercrise_step_onboarding_input_step_btn';
-  String get exercrise_step_guide_title => 'exercrise_step_guide_title';
   //exercrise_step_guide_add
   String get exercrise_step_guide_add => 'exercrise_step_guide_add';
   //exercrise_step_dashboard_title
@@ -1324,7 +1321,6 @@ class Strings {
   String get exercrise_select_category_title =>
       'exercrise_select_category_title';
   String get exercrise_result_title => 'exercrise_result_title';
-  String get exercise_help_title => 'exercise_help_title';
   String get exercise_delete_popup_title => 'exercise_delete_popup_title';
   String get exercise_delete_popup_body => 'exercise_delete_popup_body';
   String get exercise_delete_success => 'exercise_delete_success';
@@ -1597,4 +1593,9 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get healthy_lifestyle_consulting => 'healthy_lifestyle_consulting';
   String get book_medical_appointment => 'book_medical_appointment';
   String get featured_news => 'featured_news';
+  String get day_number => 'day_number';
+  String get analyzing_your_index => 'analyzing_your_index';
+  String get lich_do_duong_huyet_cua_ban => 'lich_do_duong_huyet_cua_ban';
+  String get goi_y_lich_do_tu_chuyen_gia => 'goi_y_lich_do_tu_chuyen_gia';
+  String get add_measurement => 'add_measurement';
 }

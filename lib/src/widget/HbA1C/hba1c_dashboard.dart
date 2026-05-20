@@ -1149,14 +1149,20 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              R.string.ai_suggestion_glucose.tr(),
-              style: TextStyle(
-                fontFamily: R.font.sfpro,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: R.color.textDark,
-                letterSpacing: 0.2,
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+              child: Text(
+                R.string.ai_suggestion_glucose.tr(),
+                style: TextStyle(
+                  fontFamily: R.font.sfpro,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: R.color.textDark,
+                  letterSpacing: 0.2,
+                ),
               ),
             ),
             const SizedBox(width: 6),

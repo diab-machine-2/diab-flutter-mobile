@@ -181,7 +181,7 @@ class _ExercisesResultState extends State<ExercisesResult>
                                 context, NavigatorName.exercrise_guide);
                           },
                           child: Text(
-                            R.string.exercrise_step_onboarding_action_btn.tr(),
+                            R.string.huong_dan.tr(),
                             style: TextStyle(
                               color: R.color.white,
                               fontSize: 16,
