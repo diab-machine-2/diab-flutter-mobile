@@ -686,6 +686,6 @@ abstract class AppApi {
   // BCB Campaign Customer
   @GET("/App/BcbCampaignCustomer/GetEntityByCampaignAndPhoneNumber")
   Future<BcbCampaignCustomerResponse> getBcbCampaignCustomer(
-    @Query("phoneNumber") String phoneNumber,
+    @Query("campaignId") String campaignId,
   );
 }

@@ -4023,11 +4023,11 @@ class _AppApi implements AppApi {
 
   @override
   Future<BcbCampaignCustomerResponse> getBcbCampaignCustomer(
-    String phoneNumber,
+    String campaignId,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
-      r'phoneNumber': phoneNumber,
+      r'campaignId': campaignId,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

@@ -231,17 +231,17 @@ class BranchioLinkConfig {
               result.when(
                 success: (response) {
                   final status = response.data?.status;
-                  if (status == 9) {
-                    navigatorKey.currentState?.pushNamed(
-                      NavigatorName.view_test_result,
-                    );
-                  } else {
+                  if (status != null && status >= 2 && status <= 5) {
                     navigatorKey.currentState?.pushNamed(
                       NavigatorName.bcb_form,
                       arguments: <String, dynamic>{
                         'bcbCampaignId': campaignId,
                         if (campaignName != null) 'bcbCampaignName': campaignName,
                       },
+                    );
+                  } else if (status != null && status >= 9 && status <= 10) {
+                    navigatorKey.currentState?.pushNamed(
+                      NavigatorName.view_test_result,
                     );
                   }
                 },
