@@ -19,7 +19,7 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
     if (event is SubmitBcbRegistrationEvent) {
       yield* _submitRegistration(event);
     } else if (event is LoadBcbExamResultEvent) {
-      yield* _loadExamResult();
+      yield* _loadExamResult(event);
     } else if (event is MarkResultViewedEvent) {
       yield* _markResultViewed(event.examResultId);
     }
@@ -49,11 +49,13 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
     }
   }
 
-  Stream<BcbCampaignState> _loadExamResult() async* {
+  Stream<BcbCampaignState> _loadExamResult(LoadBcbExamResultEvent event) async* {
     try {
       yield BcbCampaignLoading();
       final client = BcbCampaignClient();
-      final results = await client.fetchExamResult();
+      final results = await client.fetchExamResult(
+        campaignId: event.campaignCustomerId,
+      );
       yield BcbExamResultLoaded(results: results);
     } catch (e, _) {
       if (e is Error) {

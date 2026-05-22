@@ -56,7 +56,9 @@ enum ExamResultCategory {
 }
 
 class CampaignTestResultScreen extends StatefulWidget {
-  const CampaignTestResultScreen({super.key});
+  const CampaignTestResultScreen({super.key, this.campaignId});
+
+  final String? campaignId;
 
   @override
   State<CampaignTestResultScreen> createState() =>
@@ -77,7 +79,9 @@ class _CampaignTestResultScreenState extends State<CampaignTestResultScreen> {
 
   Future<void> _fetchResults() async {
     try {
-      final data = await _client.fetchExamResult();
+      final data = await _client.fetchExamResult(
+        campaignId: widget.campaignId,
+      );
       if (!mounted) return;
       setState(() {
         _results

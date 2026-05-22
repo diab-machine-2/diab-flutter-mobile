@@ -242,6 +242,7 @@ class BranchioLinkConfig {
                   } else if (status != null && status >= 9 && status <= 10) {
                     navigatorKey.currentState?.pushNamed(
                       NavigatorName.view_test_result,
+                      arguments: {'campaignId': campaignId},
                     );
                   }
                 },
@@ -1134,17 +1135,18 @@ class BranchioLinkConfig {
           result.when(
             success: (response) {
               final status = response.data?.status;
-              if (status == 9) {
-                navigatorKey.currentState?.pushNamed(
-                  NavigatorName.view_test_result,
-                );
-              } else {
+              if (status != null && status >= 2 && status <= 5) {
                 navigatorKey.currentState?.pushNamed(
                   NavigatorName.bcb_form,
                   arguments: {
                     'bcbCampaignId': bid,
                     if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
                   },
+                );
+              } else if (status != null && status >= 9 && status <= 10) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.view_test_result,
+                  arguments: {'campaignId': bid},
                 );
               }
             },

@@ -87,11 +87,15 @@ class BcbCampaignClient extends FetchClient {
   }
 
   /// GET App/BcbExamResult/CampaginCustomerId — lấy kết quả khám
-  Future<List<BcbExamResultModel>> fetchExamResult() async {
+  Future<List<BcbExamResultModel>> fetchExamResult({String? campaignId}) async {
     try {
+      final Map<String, String> params = {};
+      if (campaignId != null && campaignId.isNotEmpty) {
+        params['campaignId'] = campaignId;
+      }
       final Response response = await super.fetchData(
         url: '/App/BcbExamResult/CampaginCustomerId',
-        params: {},
+        params: params,
       );
       if (response.statusCode == 200) {
         final body = response.data;

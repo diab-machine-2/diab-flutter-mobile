@@ -386,7 +386,9 @@ class AppRoutes {
         }
       case NavigatorName.view_test_result:
         {
-          page = const CampaignTestResultScreen();
+          final data = settings.arguments as Map<String, dynamic>?;
+          final campaignId = data?['campaignId'] as String?;
+          page = CampaignTestResultScreen(campaignId: campaignId);
           break;
         }
       case NavigatorName.campaign_test_result_detail:
