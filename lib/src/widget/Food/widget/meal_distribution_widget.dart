@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,9 +6,13 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
+import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/repo/food/food_client.dart';
+import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
+import 'package:medical/src/widget/Food/widget/add_target_food.dart';
 import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/food_menu_screens/intro_sample_menu/intro_sample_menu_page.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -53,6 +58,42 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
   reloadData(int periodFilter) {
     periodFilterType = periodFilter;
     if (mounted) setState(() {});
+  }
+
+  Future<void> _editTargetCalories(double currentTarget) async {
+    final initialGoal =
+        currentTarget.toInt() > 0 ? currentTarget.toInt() : null;
+    final result = await showDialog<int>(
+      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
+      context: context,
+      builder: (_) => AddTargetFood(goal: initialGoal),
+    );
+    if (result == null || !mounted) return;
+    await _updateTargetCalories(result);
+  }
+
+  Future<void> _updateTargetCalories(int goal) async {
+    BotToast.showLoading();
+    try {
+      await FoodClient().updateTargetEnergy(goal);
+      UserClient().fetchUser();
+      context.read<FoodBloc>().add(FetchNutritionOverview(
+            periodFilterType: periodFilterType.toString(),
+          ));
+      Observable.instance
+          .notifyObservers([], notifyName: 'food_change_data');
+      Observable.instance
+          .notifyObservers([], notifyName: 'goal_calo_changed');
+      BotToast.closeAllLoading();
+    } catch (e, _) {
+      BotToast.closeAllLoading();
+      if (!mounted) return;
+      if (e is Error) {
+        Message.showToastMessage(context, e.message);
+      } else {
+        Message.showToastMessage(context, e.toString());
+      }
+    }
   }
 
   @override
@@ -352,10 +393,17 @@ class MealDistributionWidgetState extends State<MealDistributionWidget>
                             ],
                           ),
                         ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.grey[400],
-                          size: 22,
+                        InkWell(
+                          onTap: () => _editTargetCalories(totalEnergy),
+                          borderRadius: BorderRadius.circular(22),
+                          child: Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.edit_outlined,
+                              color: Colors.grey[400],
+                              size: 22,
+                            ),
+                          ),
                         ),
                       ],
                     ),

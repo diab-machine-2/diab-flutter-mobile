@@ -495,9 +495,9 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         return;
       }
 
-      if (summary.targetKcal != null && summary.targetKcal! > 0) {
-        targetKcal = summary.targetKcal!;
-      }
+      // if (summary.targetKcal != null && summary.targetKcal! > 0) {
+      //   targetKcal = summary.targetKcal!;
+      // }
 
       int balancedCount = 0;
       int totalMealCount = 0;
@@ -554,9 +554,9 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
           balancedCount = summary.mealDistribution!.balanced;
           totalMealCount = summary.mealDistribution!.total;
         }
-        if (summary.targetKcal != null && summary.targetKcal! > 0) {
-          targetKcal = summary.targetKcal!;
-        }
+        // if (summary.targetKcal != null && summary.targetKcal! > 0) {
+        //   targetKcal = summary.targetKcal!;
+        // }
         energyChartItems = _energyChartFromSummary(summary);
       } catch (e) {
         print('[EnergyDistribution] Failed to load: $e');
