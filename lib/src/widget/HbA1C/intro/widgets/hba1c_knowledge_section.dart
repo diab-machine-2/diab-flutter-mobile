@@ -265,6 +265,7 @@ class _HbA1cKnowledgeSectionState extends State<HbA1cKnowledgeSection> {
                 ),
                 child: NetWorkImageWidget(
                   imageUrl: _getImageUrl(lesson),
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
                   fit: BoxFit.cover,
                   height: 174.0,
                   width: double.infinity,

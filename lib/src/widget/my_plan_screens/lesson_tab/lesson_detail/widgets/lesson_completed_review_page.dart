@@ -161,6 +161,7 @@ class _LessonCompletedReviewPageState extends State<LessonCompletedReviewPage> {
                 height: 80,
                 child: NetWorkImageWidget(
                   imageUrl: imageUrl,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
                   fit: BoxFit.cover,
                 ),
               ),
