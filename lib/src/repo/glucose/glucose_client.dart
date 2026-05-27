@@ -23,8 +23,15 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
 
-
 class GlucoseClient extends FetchClient {
+  int _parseEpochSeconds(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toInt();
+    final text = value.toString().trim();
+    if (text.isEmpty) return 0;
+    return num.tryParse(text)?.toInt() ?? 0;
+  }
+
   Future<List<TimeFrameModel>> fetchFlucoseTimeFrame({int? time}) async {
     // try {
     final Response response = await super.fetchData(
@@ -312,7 +319,7 @@ class GlucoseClient extends FetchClient {
       glucoses.forEach((element) {
         params.add({
           'glucose': double.tryParse(element['glucose']!) ?? 0,
-          'createDate': int.tryParse(element['date']!) ?? 0,
+          'createDate': _parseEpochSeconds(element['date']),
           'unitType': type ?? 1,
           'modelName': modelName,
           'modelNumber': modelNumber,

@@ -11,6 +11,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 
 import '../../../../app_setting/app_setting.dart';
 import '../../../../utils/const.dart';
+import '../../../../utils/lesson_sort_util.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
@@ -113,8 +114,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     int index = lessonsList!.indexWhere((element) => element?.id == lessonId);
     lessonsList![index]!.percentComplete = percentComplete;
     lessonsList![index]!.learningStatus = learningStatus;
-    // lessonsList!.sort((a, b) => a!.percentComplete!.compareTo(b!.percentComplete!));
-    //  emit(LessonTabScrollToLesson(firstLessonIndex));
+    _sortLessonsListLearntLast();
     emit(LessonTabInitial());
   }
 
@@ -243,6 +243,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
           });
         }
       }
+      _sortLessonsListLearntLast();
       // Cache for search page so it can reuse loaded data.
       LessonSearchCache.lessons = lessonsList;
       // emit(LessonTabScrollToLesson(response.firstLessonIndex));
@@ -268,7 +269,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
         await repository.getLessonModuleType(requestType);
     apiResult.when(success: (List<LessonSectionListResponseData> response) {
       // API now returns a list of LessonSectionListResponseData.
-      recommendationLessons = response;
+      recommendationLessons =
+          sortSectionLessonsLearntLast(response);
       isRecommendationLoading = false;
       if (emitState) {
         emit(const LessonTabSuccess());
@@ -298,7 +300,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getRecommendedLessons();
     apiResult.when(success: (List<LessonSectionListResponseData> response) {
-      forYouLessons = response;
+      forYouLessons = sortSectionLessonsLearntLast(response);
       _hasLoadedForYouOnce = true;
       isForYouLoading = false;
       if (emitState) {
@@ -358,5 +360,16 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       });
     }
     //  emit(const LessonTabInitial());
+  }
+
+  void _sortLessonsListLearntLast() {
+    if (currentLessonTypeIndex == 0) {
+      if (lessonsListRoadmap != null) {
+        lessonsListRoadmap = sortMyLessonsLearntLast(lessonsListRoadmap!);
+      }
+    } else if (lessonsListSuggest != null) {
+      lessonsListSuggest = sortMyLessonsLearntLast(lessonsListSuggest!);
+    }
+    LessonSearchCache.lessons = lessonsList;
   }
 }

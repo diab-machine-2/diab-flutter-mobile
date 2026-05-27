@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -383,7 +384,7 @@ class MeasurementSummary extends StatelessWidget {
               height: 16.0,
             ),
             Text(
-              "Thêm chỉ số",
+              R.string.add_measurement.tr(),
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

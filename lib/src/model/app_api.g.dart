@@ -1049,10 +1049,9 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<ExerciseMovementResponse> getExerciseMovement(int? week) async {
+  Future<ExerciseMovementResponse> getExerciseMovement() async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'week': week};
-    queryParameters.removeWhere((k, v) => v == null);
+    final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<ExerciseMovementResponse>(Options(

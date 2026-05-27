@@ -544,11 +544,10 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement(
-      {int? week}) async {
+  Future<ApiResult<ExerciseMovementResponse>> getExerciseMovement() async {
     try {
       final ExerciseMovementResponse response =
-          await appClient.getExerciseMovement(week);
+          await appClient.getExerciseMovement();
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
