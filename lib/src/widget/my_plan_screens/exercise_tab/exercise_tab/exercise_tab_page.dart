@@ -128,29 +128,45 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           children: [
                             Expanded(
                               flex: 9,
-                              child: Text(
-                                _cubit.roadMapName.isNotEmpty
-                                    ? _cubit.roadMapName
-                                    : R.string.title_route.tr(),
-                                style: TextStyle(
-                                  color: R.color.hba1c_text_color,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                              child: MediaQuery(
+                                data: MediaQuery.of(context).copyWith(
+                                    textScaler: MediaQuery.of(context)
+                                        .textScaler
+                                        .clamp(
+                                            minScaleFactor: 1.0,
+                                            maxScaleFactor: 1.3)),
+                                child: Text(
+                                  _cubit.roadMapName.isNotEmpty
+                                      ? _cubit.roadMapName
+                                      : R.string.title_route.tr(),
+                                  style: TextStyle(
+                                    color: R.color.hba1c_text_color,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  softWrap: true,
+                                  maxLines: null,
                                 ),
-                                softWrap: true,
-                                maxLines: null,
                               ),
                             ),
                             Expanded(
                               flex: 3,
-                              child: Text(
-                                R.string.change.tr(),
-                                style: TextStyle(
-                                  color: R.color.accentColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
+                              child: MediaQuery(
+                                data: MediaQuery.of(context).copyWith(
+                                    textScaler: MediaQuery.of(context)
+                                        .textScaler
+                                        .clamp(
+                                            minScaleFactor: 1.0,
+                                            maxScaleFactor: 1.3)),
+                                child: Text(
+                                  R.string.change.tr(),
+                                  style: TextStyle(
+                                    color: R.color.accentColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.end,
                                 ),
-                                textAlign: TextAlign.end,
                               ),
                             ),
                           ],
@@ -680,6 +696,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 dayNumber != null
                     ? R.string.day_number.tr(args: ['$dayNumber'])
                     : R.string.today_is_day_off.tr(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: R.color.textDark,
                   fontSize: 18,
@@ -690,55 +708,77 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             ),
             const SizedBox(height: 12),
             // Activity sub-card (not clickable)
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-              decoration: BoxDecoration(
-                color: R.color.color0xffF2F6F9,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Image thumbnail
-                  Container(
-                    clipBehavior: Clip.hardEdge,
-                    height: 70,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: R.color.color0xffF2F6F9,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image thumbnail
+                    Container(
+                      clipBehavior: Clip.hardEdge,
+                      height: 70,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(R.drawable.img_activity_empty),
                     ),
-                    child: Image.asset(R.drawable.img_activity_empty),
-                  ),
-                  const SizedBox(width: 8),
-                  // Activity details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          R.string.today_is_day_off.tr(),
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            height: 1.25,
+                    const SizedBox(width: 8),
+                    // Activity details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3)),
+                            child: Text(
+                              R.string.today_is_day_off.tr(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                height: 1.25,
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          R.string.today_is_day_off_description.tr(),
-                          style: TextStyle(
-                            color: R.color.grey_2,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            height: 1.25,
+                          const SizedBox(height: 4),
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3)),
+                            child: Text(
+                              R.string.today_is_day_off_description.tr(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: R.color.grey_2,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                height: 1.25,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -764,7 +804,9 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             Text(
               dayNumber != null
                   ? R.string.day_number.tr(args: ['$dayNumber'])
-                    : R.string.today_is_day_no_exercise.tr(),
+                  : R.string.today_is_day_no_exercise.tr(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 18,
@@ -774,55 +816,61 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             ),
             const SizedBox(height: 12),
             // Activity sub-card (not clickable)
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-              decoration: BoxDecoration(
-                color: R.color.color0xffF2F6F9,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Image thumbnail
-                  Container(
-                    clipBehavior: Clip.hardEdge,
-                    height: 70,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: R.color.color0xffF2F6F9,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image thumbnail
+                    Container(
+                      clipBehavior: Clip.hardEdge,
+                      height: 70,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(R.drawable.img_day_no_exercise),
                     ),
-                    child: Image.asset(R.drawable.img_day_no_exercise),
-                  ),
-                  const SizedBox(width: 8),
-                  // Activity details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          R.string.today_is_day_no_exercise.tr(),
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            height: 1.25,
+                    const SizedBox(width: 8),
+                    // Activity details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            R.string.today_is_day_no_exercise.tr(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              height: 1.25,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          R.string.today_is_day_off_description.tr(),
-                          style: TextStyle(
-                            color: R.color.grey_2,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            height: 1.25,
+                          const SizedBox(height: 4),
+                          Text(
+                            R.string.today_is_day_off_description.tr(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: R.color.grey_2,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              height: 1.25,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

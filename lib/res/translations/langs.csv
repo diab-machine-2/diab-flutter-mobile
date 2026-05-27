@@ -1571,4 +1571,5 @@ bcb_no_pdf_file,"Không có file PDF","No PDF file available",
 bcb_cannot_load_pdf_in_app,"Không thể tải PDF trong app.","Cannot load PDF in the app.",
 bcb_open_external,"Mở ngoài","Open externally",
 bcb_download,"Tải xuống","Download",
-bcb_tai_lieu,"tài liệu","documents"
+bcb_tai_lieu,"tài liệu","documents",
+cannot_use_medicine_in_future,Không thể đánh dấu đã dùng thuốc trong tương lai,Cannot mark medicine as used in the future

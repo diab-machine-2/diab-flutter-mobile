@@ -337,7 +337,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchBanners() async* {
     final ApiResult<LearningPostListResponse> apiResult =
-        await AppRepository().getBanners(position: 8);
+        await AppRepository().getBanners(position: 9);
     List<LearningPostModel>? bannersResp;
     apiResult.when(success: (LearningPostListResponse response) {
       bannersResp = response.data?.map((e) => e).toList();

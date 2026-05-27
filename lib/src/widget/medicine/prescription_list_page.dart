@@ -359,6 +359,7 @@ class _PrescriptionListPageState extends State<PrescriptionListPage>
         return MedicineSessionCard(
           session: session,
           isExpanded: sessionIndex == defaultExpandedIndex,
+          selectedDate: _selectedDate,
           onTap: (prescriptionIndex, medicationIndex, isTaken) {
             final med = session
                 .prescriptions[prescriptionIndex].medications[medicationIndex];

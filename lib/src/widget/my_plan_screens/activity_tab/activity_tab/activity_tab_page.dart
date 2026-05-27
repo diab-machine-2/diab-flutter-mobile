@@ -13,6 +13,7 @@ import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/response/week_states_response.dart';
 import 'package:medical/src/utils/app_log.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/lesson_sort_util.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -57,6 +58,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   final RefreshController _controller = RefreshController();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollSmartGoalListController = ScrollController();
+  final ScrollController _knowledgeScrollController = ScrollController();
+  final Map<int, GlobalKey> _knowledgeWeekKeys = {};
+  int? _pendingKnowledgeScrollWeek;
   bool isVisible = false;
   int _selectedTopTab = 0; // 0: Activities, 1: Knowledge, 2: Exercise
 
@@ -82,6 +86,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    _knowledgeScrollController.dispose();
     super.dispose();
   }
 
@@ -166,6 +171,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
           if (state is ActivityTabSuccess) {
             _checkExistZoomId();
             _checkExistActivityId();
+            if (_pendingKnowledgeScrollWeek != null) {
+              _scheduleScrollToPendingKnowledgeWeek();
+            }
             //     _scrollSmartGoalListController.animateTo(_scrollSmartGoalListController.position.minScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.ease);
           }
           if (state is ActivityTabFailure) {
@@ -872,8 +880,9 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       }
       return t == ScheduleType.infographic.typeIndex;
     }).toList();
+    final List<SmartGoalList> sortedLessons = sortSmartGoalsLearntLast(lessons);
 
-    if (lessons.isEmpty) {
+    if (sortedLessons.isEmpty) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         child: Column(
@@ -900,7 +909,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
     }
 
     final Map<int, List<SmartGoalList>> grouped = {};
-    for (final SmartGoalList? item in lessons) {
+    for (final SmartGoalList? item in sortedLessons) {
       final int week = item?.weekInTranServicePackage ?? 0;
       if (grouped[week] == null) grouped[week] = [];
       grouped[week]!.add(item!);
@@ -911,12 +920,18 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       padding: EdgeInsets.fromLTRB(
           16, 16, 16, MediaQuery.of(context).padding.bottom + 75),
       child: SingleChildScrollView(
+        controller: _knowledgeScrollController,
         child: Column(
           children: List.generate(sortedWeeks.length, (index) {
             final int week = sortedWeeks[index];
             final List<SmartGoalList> items = grouped[week] ?? [];
             final int done = items.where((e) => e.progress == 1).length;
+            final int displayWeek = week <= 0 ? 1 : week;
             return Container(
+              key: _knowledgeWeekKeys.putIfAbsent(
+                displayWeek,
+                () => GlobalKey(),
+              ),
               margin: const EdgeInsets.only(bottom: 16),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -931,7 +946,7 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                     children: [
                       Expanded(
                         child: Text(
-                          'Tuần ${week <= 0 ? 1 : week}',
+                          '${R.string.week_upper_case_first.tr()} $displayWeek',
                           style: TextStyle(
                               color: R.color.grey_1,
                               fontSize: 16,
@@ -959,7 +974,12 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                       onTap: isLocked
                           ? null
                           : () async {
-                              _onSelectGoal(type, smartGoal: smartGoal);
+                              if (_isKnowledgeLessonScheduleType(type)) {
+                                _pendingKnowledgeScrollWeek =
+                                    _normalizeKnowledgeWeek(
+                                        smartGoal.weekInTranServicePackage);
+                              }
+                              await _onSelectGoal(type, smartGoal: smartGoal);
                             },
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
@@ -979,7 +999,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8)),
                                   child: NetWorkImageWidget(
-                                      imageUrl: smartGoal.lesson?.image?.url)),
+                                    imageUrl: smartGoal.lesson?.image?.url,
+                                    fallbackImageUrl:
+                                        R.drawable.ic_error_lesson_image,
+                                  )),
                             ),
                             GapW(12),
                             Expanded(
@@ -1178,10 +1201,60 @@ class _ActivityTabPageState extends State<ActivityTabPage>
       context,
       type,
       smartGoal: smartGoal,
-      onRefreshData: () {
-        _cubit.refreshData(isRefresh: true);
-      },
+      onRefreshData: () => _cubit.refreshData(isRefresh: true),
     );
+    if (_pendingKnowledgeScrollWeek != null && _selectedTopTab == 1) {
+      _scheduleScrollToPendingKnowledgeWeek();
+    }
+  }
+
+  int _normalizeKnowledgeWeek(int? week) =>
+      (week == null || week <= 0) ? 1 : week;
+
+  bool _isKnowledgeLessonScheduleType(ScheduleType type) {
+    return type == ScheduleType.lesson ||
+        type == ScheduleType.infographic ||
+        type == ScheduleType.book_1_n;
+  }
+
+  void _scheduleScrollToPendingKnowledgeWeek() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryScrollToPendingKnowledgeWeek(attempt: 0);
+    });
+  }
+
+  void _tryScrollToPendingKnowledgeWeek({int attempt = 0}) {
+    const int maxAttempts = 10;
+    final int? week = _pendingKnowledgeScrollWeek;
+
+    if (week == null || _selectedTopTab != 1) {
+      if (attempt == 0) {
+        _pendingKnowledgeScrollWeek = null;
+      }
+      return;
+    }
+
+    final BuildContext? weekContext = _knowledgeWeekKeys[week]?.currentContext;
+    if (weekContext != null && weekContext.mounted) {
+      _pendingKnowledgeScrollWeek = null;
+      Scrollable.ensureVisible(
+        weekContext,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOut,
+        alignment: 0.05,
+      );
+      return;
+    }
+
+    if (attempt >= maxAttempts) {
+      _pendingKnowledgeScrollWeek = null;
+      return;
+    }
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) return;
+      _tryScrollToPendingKnowledgeWeek(attempt: attempt + 1);
+    });
   }
 
   Future<void> _handleExaminationNavigation(

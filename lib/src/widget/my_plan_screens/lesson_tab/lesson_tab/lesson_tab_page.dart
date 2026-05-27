@@ -12,6 +12,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/lesson_sort_util.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -322,7 +323,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                     _buildForYouSection(),
                                     if (_cubit.lessonsList!.isEmpty)
                                       (state is LessonTabLoading)
-                                          ? 
+                                          ?
                                           // SizedBox(
                                           //     height: 220.h,
                                           //     width: double.infinity,
@@ -378,7 +379,8 @@ class _LessonTabPageState extends State<LessonTabPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: moduleIndexMap.entries.map((entry) {
         final String moduleName = entry.key;
-        final List<int> indices = entry.value;
+        final List<int> indices = List<int>.from(entry.value);
+        sortLessonIndicesLearntLast(indices, lessons);
         final List<MyLessonResponseData?> moduleLessons =
             indices.map((i) => _cubit.lessonsList?[i]).toList();
         return Container(
@@ -482,7 +484,7 @@ class _LessonTabPageState extends State<LessonTabPage>
 
   /// "Dành cho bạn" section shown above all lesson modules.
   Widget _buildForYouSection() {
-    final lessons = _cubit.forYouLessons ?? [];
+    final lessons = sortSectionLessonsLearntLast(_cubit.forYouLessons ?? []);
     if (lessons.isEmpty && !_cubit.isForYouLoading) {
       return const SizedBox.shrink();
     }
@@ -503,32 +505,37 @@ class _LessonTabPageState extends State<LessonTabPage>
                 context,
                 ModuleLessonsPage(
                   moduleName: R.string.lesson_for_you.tr(),
-                  lessons: lessons.map((l) => l == null ? null : MyLessonResponseData(
-                    id: l.id,
-                    name: l.name,
-                    status: l.status,
-                    type: l.type,
-                    description: l.description,
-                    module: l.lessonModule?.name,
-                    learningStatus: l.learningStatus,
-                    percentComplete: l.percentComplete,
-                    order: l.order,
-                    image: l.image,
-                  )).toList(),
+                  lessons: lessons
+                      .map((l) => l == null
+                          ? null
+                          : MyLessonResponseData(
+                              id: l.id,
+                              name: l.name,
+                              status: l.status,
+                              type: l.type,
+                              description: l.description,
+                              module: l.lessonModule?.name,
+                              learningStatus: l.learningStatus,
+                              percentComplete: l.percentComplete,
+                              order: l.order,
+                              image: l.image,
+                            ))
+                      .toList(),
                   cubit: _cubit,
                 ),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0, vertical: 4.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
               child: Row(
                 children: [
                   Expanded(
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: MediaQuery.of(context).textScaler.clamp(
-                            minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                       ),
                       child: Text(
                         R.string.lesson_for_you.tr(),
@@ -606,7 +613,8 @@ class _LessonTabPageState extends State<LessonTabPage>
   /// \"Đề xuất\" section at bottom using recommendationLessons.
   Widget _buildRecommendationSection(LessonTabState state) {
     if ((_cubit.lessonsList ?? []).isEmpty) return const SizedBox.shrink();
-    final lessons = _cubit.recommendationLessons ?? [];
+    final lessons =
+        sortSectionLessonsLearntLast(_cubit.recommendationLessons ?? []);
     return Container(
       color: R.color.white,
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -819,7 +827,10 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: SizedBox(
                 width: 80,
                 height: 80,
-                child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url),
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -899,7 +910,10 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: SizedBox(
                 height: 132,
                 width: double.infinity,
-                child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url),
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -971,7 +985,10 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: SizedBox(
                 height: 132,
                 width: double.infinity,
-                child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url),
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
               ),
             ),
             const SizedBox(height: 8),

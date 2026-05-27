@@ -250,9 +250,7 @@ abstract class AppApi {
   );
 
   @GET("App/ExerciseMovement/All")
-  Future<ExerciseMovementResponse> getExerciseMovement(
-    @Query('week') int? week,
-  );
+  Future<ExerciseMovementResponse> getExerciseMovement();
 
   @GET("App/PackageAccountTransaction/GetContentWelcome")
   Future<ContentWelcomeResponse> getContentWelcome(

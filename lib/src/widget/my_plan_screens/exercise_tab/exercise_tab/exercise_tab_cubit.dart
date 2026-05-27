@@ -161,7 +161,7 @@ class ExerciseTabCubit extends Cubit<ExerciseTabState> {
     }
 
     final ApiResult<ExerciseMovementResponse> apiResult =
-        await repository.getExerciseMovement(week: week);
+        await repository.getExerciseMovement();
     apiResult.when(success: (ExerciseMovementResponse response) {
       exerciseMovementResponse = response;
       mark = exerciseMovementResponse?.getMarkNotLearnIndex(

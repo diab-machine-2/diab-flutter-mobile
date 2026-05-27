@@ -155,6 +155,7 @@ class _GlucoseLessonSectionState extends State<GlucoseLessonSection> {
                 ),
                 child: NetWorkImageWidget(
                   imageUrl: lesson.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
                   fit: BoxFit.cover,
                   height: 174.0,
                   width: double.infinity,

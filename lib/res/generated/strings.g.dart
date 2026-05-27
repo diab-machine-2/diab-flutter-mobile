@@ -1634,4 +1634,5 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get bcb_open_external => 'bcb_open_external';
   String get bcb_download => 'bcb_download';
   String get bcb_tai_lieu => 'bcb_tai_lieu';
+  String get cannot_use_medicine_in_future => 'cannot_use_medicine_in_future';
 }

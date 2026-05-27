@@ -73,7 +73,7 @@ class SmartGoalNavigationUtil {
     ScheduleType type, {
     SmartGoalList? smartGoal,
     String? title,
-    VoidCallback? onRefreshData,
+    Future<void> Function()? onRefreshData,
   }) async {
     // Track event if title is provided
     if (title != null && _config.trackingEnabled) {
@@ -184,9 +184,9 @@ class SmartGoalNavigationUtil {
         break;
     }
 
-    // Call refresh callback if provided
+    // Call refresh callback if provided (await so callers can act after data reload)
     if (onRefreshData != null) {
-      onRefreshData();
+      await onRefreshData();
     }
   }
 
