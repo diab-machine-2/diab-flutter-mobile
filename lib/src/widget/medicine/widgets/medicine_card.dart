@@ -10,6 +10,7 @@ class MedicineCard extends StatelessWidget {
   final MedicineItemModel medicine;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
+
   /// When true, show [MedicineItemModel.amount] (original quantity).
   /// When false, show [MedicineItemModel.remain] (left after use). Used for create vs edit.
   final bool showAmountInsteadOfRemain;
@@ -147,13 +148,25 @@ class MedicineCard extends StatelessWidget {
                   Row(
                     children: [
                       if ((medicine.morning ?? 0.0) > 0.0)
-                        buildDose(momentName: R.string.the_morning2.tr(), amount: medicine.morning!),
+                        buildDose(
+                            momentName: R.string.the_morning2.tr(),
+                            amount: medicine.morning!,
+                            context: context),
                       if ((medicine.midDay ?? 0.0) > 0.0)
-                        buildDose(momentName: R.string.the_noon2.tr(), amount: medicine.midDay!),
+                        buildDose(
+                            momentName: R.string.the_noon2.tr(),
+                            amount: medicine.midDay!,
+                            context: context),
                       if ((medicine.afternoon ?? 0.0) > 0.0)
-                        buildDose(momentName: R.string.the_afternoon2.tr(), amount: medicine.afternoon!),
+                        buildDose(
+                            momentName: R.string.the_afternoon2.tr(),
+                            amount: medicine.afternoon!,
+                            context: context),
                       if ((medicine.night ?? 0.0) > 0.0)
-                        buildDose(momentName: R.string.the_night2.tr(), amount: medicine.night!),
+                        buildDose(
+                            momentName: R.string.the_night2.tr(),
+                            amount: medicine.night!,
+                            context: context),
                     ],
                   ),
                   if (medicine.note != null) ...[
@@ -161,7 +174,9 @@ class MedicineCard extends StatelessWidget {
                     Text.rich(
                       TextSpan(
                         children: [
-                          TextSpan(text: 'Ghi chú: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: '${R.string.ghi_chu.tr()}: ',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(text: medicine.note),
                         ],
                       ),
@@ -195,35 +210,54 @@ class MedicineCard extends StatelessWidget {
     );
   }
 
-  Container buildDose({required String momentName, required double amount}) {
+  Container buildDose(
+      {required String momentName,
+      required double amount,
+      required BuildContext context}) {
     return Container(
       width: 60,
-      height: 52,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
         color: R.color.backgroundColorNew,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            momentName,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400, color: R.color.color0xff5E6566),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: MediaQuery.of(context)
+                  .textScaler
+                  .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+            ),
+            child: Text(
+              momentName,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: R.color.color0xff5E6566),
+            ),
           ),
-          Text(
-            amount.toStringAsFixed(1),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.fade,
-            softWrap: false,
-            style: TextStyle(
-              fontSize: 15,
-              height: 1,
-              fontWeight: FontWeight.bold,
-              color: R.color.color0xff5E6566,
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: MediaQuery.of(context)
+                  .textScaler
+                  .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+            ),
+            child: Text(
+              amount.toStringAsFixed(1),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.fade,
+              softWrap: false,
+              style: TextStyle(
+                fontSize: 14,
+                height: 1,
+                fontWeight: FontWeight.bold,
+                color: R.color.color0xff5E6566,
+              ),
             ),
           ),
         ],

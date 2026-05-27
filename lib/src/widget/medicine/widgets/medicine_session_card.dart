@@ -11,6 +11,7 @@ class MedicineSessionCard extends StatefulWidget {
     required this.isExpanded,
     this.firstMedicineKey,
     required this.onTap,
+    required this.selectedDate,
   });
 
   final PrescriptionsBySessionModel session;
@@ -18,6 +19,7 @@ class MedicineSessionCard extends StatefulWidget {
   final GlobalKey? firstMedicineKey;
 
   final Function(int, int, bool) onTap;
+  final DateTime selectedDate;
 
   @override
   State<MedicineSessionCard> createState() => _MedicineSessionCardState();
@@ -40,6 +42,21 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
       return '${parts[0]}:${parts[1]}';
     }
     return timeSchedule;
+  }
+
+  /// Returns true if [timeSchedule] ("HH:mm:ss") is later than [selectedDate] at that time.
+  bool _isTimeInFuture(String timeSchedule) {
+    final parts = timeSchedule.split(':');
+    if (parts.length >= 3) {
+      final hour = int.tryParse(parts[0]) ?? 0;
+      final minute = int.tryParse(parts[1]) ?? 0;
+      final second = int.tryParse(parts[2]) ?? 0;
+      final selectedDate = widget.selectedDate;
+      final scheduleTime = DateTime(
+          selectedDate.year, selectedDate.month, selectedDate.day, hour, minute, second);
+      return scheduleTime.isAfter(DateTime.now());
+    }
+    return false;
   }
 
   @override
@@ -148,7 +165,7 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
                   ),
                   const SizedBox(height: 8),
 
-                  ..._buildListOfMedicine(presIndex, pres.medications, onTap),
+                  ..._buildListOfMedicine(presIndex, pres.medications, pres.timeSchedule, onTap),
 
                   // Ghi chú (nếu có)
                   if (pres.note != null)
@@ -177,6 +194,7 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
   List<Widget> _buildListOfMedicine(
     int prescriptionIndex,
     List<MedicationInSession> medicationList,
+    String timeSchedule,
     Function(int, int, bool) onTap,
   ) {
     List<Widget> widgets = [];
@@ -202,6 +220,16 @@ class _MedicineSessionCardState extends State<MedicineSessionCard> {
             medication.dosage,
             medication.isTaken,
             () {
+              if (!medication.isTaken && _isTimeInFuture(timeSchedule)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      R.string.cannot_use_medicine_in_future.tr(),
+                    ),
+                  ),
+                );
+                return;
+              }
               onTap(prescriptionIndex, i, !medication.isTaken);
               setState(() {
                 medication.isTaken = !medication.isTaken;
