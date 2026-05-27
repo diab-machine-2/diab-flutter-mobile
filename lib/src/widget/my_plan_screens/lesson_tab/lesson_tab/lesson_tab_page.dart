@@ -12,6 +12,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/lesson_sort_util.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -378,7 +379,8 @@ class _LessonTabPageState extends State<LessonTabPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: moduleIndexMap.entries.map((entry) {
         final String moduleName = entry.key;
-        final List<int> indices = entry.value;
+        final List<int> indices = List<int>.from(entry.value);
+        sortLessonIndicesLearntLast(indices, lessons);
         final List<MyLessonResponseData?> moduleLessons =
             indices.map((i) => _cubit.lessonsList?[i]).toList();
         return Container(
@@ -482,7 +484,8 @@ class _LessonTabPageState extends State<LessonTabPage>
 
   /// "Dành cho bạn" section shown above all lesson modules.
   Widget _buildForYouSection() {
-    final lessons = _cubit.forYouLessons ?? [];
+    final lessons =
+        sortSectionLessonsLearntLast(_cubit.forYouLessons ?? []);
     if (lessons.isEmpty && !_cubit.isForYouLoading) {
       return const SizedBox.shrink();
     }
@@ -606,7 +609,8 @@ class _LessonTabPageState extends State<LessonTabPage>
   /// \"Đề xuất\" section at bottom using recommendationLessons.
   Widget _buildRecommendationSection(LessonTabState state) {
     if ((_cubit.lessonsList ?? []).isEmpty) return const SizedBox.shrink();
-    final lessons = _cubit.recommendationLessons ?? [];
+    final lessons =
+        sortSectionLessonsLearntLast(_cubit.recommendationLessons ?? []);
     return Container(
       color: R.color.white,
       padding: const EdgeInsets.symmetric(vertical: 12),

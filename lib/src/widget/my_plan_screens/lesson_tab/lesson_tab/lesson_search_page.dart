@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
+import 'package:medical/src/utils/lesson_sort_util.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 
@@ -135,7 +136,8 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
       );
     }
 
-    final List<MyLessonResponseData?> results = filtered.toList();
+    final List<MyLessonResponseData?> results =
+        sortMyLessonsLearntLast(filtered.toList());
 
     setState(() {
       _isSearching = true;
@@ -208,45 +210,57 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
                     color: R.color.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  alignment: Alignment.center,
-                  child: TextField(
-                    controller: _searchController,
-                    focusNode: _searchFocusNode,
-                    textInputAction: TextInputAction.search,
-                    textAlignVertical: TextAlignVertical.center,
-                    onChanged: _onSearchChanged,
-                    onSubmitted: _onSearchSubmitted,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 0,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: Icon(
+                          Icons.search,
+                          color: R.color.grey_2,
+                          size: 20,
+                        ),
                       ),
-                      border: InputBorder.none,
-                      hintText: 'Tìm bài học',
-                      hintStyle: TextStyle(
-                        color: R.color.grey_2,
-                        fontSize: 14,
+                      Expanded(
+                        child: TextField(
+                          controller: _searchController,
+                          focusNode: _searchFocusNode,
+                          textInputAction: TextInputAction.search,
+                          textAlignVertical: TextAlignVertical.center,
+                          onChanged: _onSearchChanged,
+                          onSubmitted: _onSearchSubmitted,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 0,
+                            ),
+                            border: InputBorder.none,
+                            hintText: 'Tìm bài học',
+                            hintStyle: TextStyle(
+                              color: R.color.grey_2,
+                              fontSize: 14,
+                            ),
+                          ),
+                          style: TextStyle(
+                            color: R.color.textDark,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: R.color.grey_2,
-                        size: 20,
-                      ),
-                      suffixIcon: _currentQuery.isNotEmpty || _showEmptyState
-                          ? GestureDetector(
-                              onTap: _onClearPressed,
-                              child: Icon(
-                                Icons.close,
-                                color: R.color.grey_2,
-                                size: 18,
-                              ),
-                            )
-                          : null,
-                    ),
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 14,
-                    ),
+                      if (_currentQuery.isNotEmpty || _showEmptyState)
+                        GestureDetector(
+                          onTap: _onClearPressed,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: Icon(
+                              Icons.close,
+                              color: R.color.grey_2,
+                              size: 18,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -364,6 +378,9 @@ class _LessonSearchPageState extends State<LessonSearchPage> {
           ? R.string.title_route.tr()
           : lesson.module!.trim();
       moduleMap.putIfAbsent(key, () => <MyLessonResponseData?>[]).add(lesson);
+    }
+    for (final String key in moduleMap.keys) {
+      moduleMap[key] = sortMyLessonsLearntLast(moduleMap[key] ?? []);
     }
 
     return ListView.builder(

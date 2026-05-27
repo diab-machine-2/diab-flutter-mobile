@@ -1676,7 +1676,7 @@ class _HomeControllerState extends State<HomeController>
       type,
       smartGoal: smartGoal,
       title: title,
-      onRefreshData: () {
+      onRefreshData: () async {
         _refresh();
       },
     );
