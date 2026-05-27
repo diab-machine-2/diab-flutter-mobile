@@ -166,7 +166,10 @@ class _ModuleLessonRow extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: NetWorkImageWidget(imageUrl: lesson?.image?.url),
+              child: NetWorkImageWidget(
+                imageUrl: lesson?.image?.url,
+                fallbackImageUrl: R.drawable.ic_error_lesson_image,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(

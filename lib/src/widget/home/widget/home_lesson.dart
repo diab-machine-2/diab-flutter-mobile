@@ -132,6 +132,7 @@ class HomeLesson extends StatelessWidget {
             // https://picsum.photos/654/348
             NetWorkImageWidget(
               imageUrl: lesson.image?.url,
+              fallbackImageUrl: R.drawable.ic_error_lesson_image,
               fit: BoxFit.cover,
               height: 174.0,
               width: double.infinity,

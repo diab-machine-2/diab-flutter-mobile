@@ -999,7 +999,10 @@ class _ActivityTabPageState extends State<ActivityTabPage>
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8)),
                                   child: NetWorkImageWidget(
-                                      imageUrl: smartGoal.lesson?.image?.url)),
+                                    imageUrl: smartGoal.lesson?.image?.url,
+                                    fallbackImageUrl:
+                                        R.drawable.ic_error_lesson_image,
+                                  )),
                             ),
                             GapW(12),
                             Expanded(

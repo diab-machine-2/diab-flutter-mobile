@@ -323,7 +323,7 @@ class _LessonTabPageState extends State<LessonTabPage>
                                     _buildForYouSection(),
                                     if (_cubit.lessonsList!.isEmpty)
                                       (state is LessonTabLoading)
-                                          ? 
+                                          ?
                                           // SizedBox(
                                           //     height: 220.h,
                                           //     width: double.infinity,
@@ -484,8 +484,7 @@ class _LessonTabPageState extends State<LessonTabPage>
 
   /// "Dành cho bạn" section shown above all lesson modules.
   Widget _buildForYouSection() {
-    final lessons =
-        sortSectionLessonsLearntLast(_cubit.forYouLessons ?? []);
+    final lessons = sortSectionLessonsLearntLast(_cubit.forYouLessons ?? []);
     if (lessons.isEmpty && !_cubit.isForYouLoading) {
       return const SizedBox.shrink();
     }
@@ -506,32 +505,37 @@ class _LessonTabPageState extends State<LessonTabPage>
                 context,
                 ModuleLessonsPage(
                   moduleName: R.string.lesson_for_you.tr(),
-                  lessons: lessons.map((l) => l == null ? null : MyLessonResponseData(
-                    id: l.id,
-                    name: l.name,
-                    status: l.status,
-                    type: l.type,
-                    description: l.description,
-                    module: l.lessonModule?.name,
-                    learningStatus: l.learningStatus,
-                    percentComplete: l.percentComplete,
-                    order: l.order,
-                    image: l.image,
-                  )).toList(),
+                  lessons: lessons
+                      .map((l) => l == null
+                          ? null
+                          : MyLessonResponseData(
+                              id: l.id,
+                              name: l.name,
+                              status: l.status,
+                              type: l.type,
+                              description: l.description,
+                              module: l.lessonModule?.name,
+                              learningStatus: l.learningStatus,
+                              percentComplete: l.percentComplete,
+                              order: l.order,
+                              image: l.image,
+                            ))
+                      .toList(),
                   cubit: _cubit,
                 ),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0, vertical: 4.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
               child: Row(
                 children: [
                   Expanded(
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: MediaQuery.of(context).textScaler.clamp(
-                            minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                       ),
                       child: Text(
                         R.string.lesson_for_you.tr(),
@@ -823,7 +827,10 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: SizedBox(
                 width: 80,
                 height: 80,
-                child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url),
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -903,7 +910,10 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: SizedBox(
                 height: 132,
                 width: double.infinity,
-                child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url),
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -975,7 +985,10 @@ class _LessonTabPageState extends State<LessonTabPage>
               child: SizedBox(
                 height: 132,
                 width: double.infinity,
-                child: NetWorkImageWidget(imageUrl: lessonDetail?.image?.url),
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
               ),
             ),
             const SizedBox(height: 8),
