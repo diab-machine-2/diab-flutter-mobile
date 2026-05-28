@@ -186,6 +186,7 @@ class NavigatorName {
 
   // BCB Bundle Campaign
   static const String bcb_form = '/bcb-campaign/form';
+  static const String bcb_campaign_confirmation = '/bcb-campaign/confirmation';
   static const String bcb_result = '/bcb-campaign/result';
   static const String view_test_result = '/bcb-campaign/view-test-result';
   static const String campaign_test_result_detail =

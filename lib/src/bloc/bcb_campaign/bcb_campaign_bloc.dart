@@ -34,8 +34,7 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
         BcbCampaignRegistrationModel(
           bcbCampaignId: event.bcbCampaignId,
           doctorNote: event.doctorNote,
-          medicalHistory: event.medicalHistory,
-          slotIds: event.slotIds,
+          slotId: event.slotId,
         ),
       );
       yield BcbRegistrationSubmitted();
@@ -49,7 +48,8 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
     }
   }
 
-  Stream<BcbCampaignState> _loadExamResult(LoadBcbExamResultEvent event) async* {
+  Stream<BcbCampaignState> _loadExamResult(
+      LoadBcbExamResultEvent event) async* {
     try {
       yield BcbCampaignLoading();
       final client = BcbCampaignClient();

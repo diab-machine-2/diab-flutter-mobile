@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_selected_wish_slot.dart';
 import 'package:medical/src/widget/BloodSugar/widget/blood_sugar_image_capture.dart';
 import 'package:medical/src/widget/booking_clinic/booking_clinic_page.dart';
 import 'package:medical/src/widget/BloodPressure/bloodpressure_result.dto.dart';
@@ -27,7 +29,8 @@ import 'package:medical/src/widget/utilities/utilities_page.dart';
 import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 import 'package:medical/src/widget/profile/cancellation_refund_policy.dart';
-import 'package:medical/src/widget/bcb_campaign/bcb_form_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_campaign_confirmation_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_detail_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_screen.dart';
 
@@ -378,9 +381,26 @@ class AppRoutes {
           final id = data?['bcbCampaignId'] as String?;
           if (id == null || id.isEmpty) break;
           final name = data?['bcbCampaignName'] as String?;
-          page = BcbFormScreen(
+          page = BcbSelectWishSlotsScreen(
             bcbCampaignId: id,
             bcbCampaignName: name,
+          );
+          break;
+        }
+      case NavigatorName.bcb_campaign_confirmation:
+        {
+          final data = settings.arguments as Map<String, dynamic>?;
+          final id = data?['bcbCampaignId'] as String?;
+          final selected = data?['selectedWishSlot'] as BcbSelectedWishSlot?;
+          if (id == null || id.isEmpty || selected == null) break;
+          page = BcbCampaignConfirmationScreen(
+            bcbCampaignId: id,
+            bcbCampaignName: data?['bcbCampaignName'] as String?,
+            scheduleDays:
+                (data?['scheduleDays'] as List<BcbPartnerScheduleDay>?) ??
+                    const [],
+            selectedWishSlot: selected,
+            initialDoctorNote: data?['initialDoctorNote'] as String?,
           );
           break;
         }

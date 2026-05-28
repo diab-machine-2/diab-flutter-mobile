@@ -6,14 +6,12 @@ abstract class BcbCampaignEvent {}
 class SubmitBcbRegistrationEvent extends BcbCampaignEvent {
   final String bcbCampaignId;
   final String? doctorNote;
-  final String? medicalHistory;
-  final List<String> slotIds;
+  final String slotId;
 
   SubmitBcbRegistrationEvent({
     required this.bcbCampaignId,
     this.doctorNote,
-    this.medicalHistory,
-    required this.slotIds,
+    required this.slotId,
   });
 }
 

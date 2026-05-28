@@ -1,38 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:intl/intl.dart';
 import 'package:medical/res/R.dart';
-import 'package:medical/src/app.dart';
-import 'package:medical/src/bloc/bcb_campaign/bcb_campaign_bloc.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_selected_wish_slot.dart';
+import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/date_utils.dart';
-import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_campaign_confirmation_screen.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 
-class _SelectedWishSlot {
-  final BcbPartnerScheduleDay day;
-  final BcbPartnerScheduleSlot slot;
-
-  const _SelectedWishSlot({required this.day, required this.slot});
-
-  String get key => '${day.id}_${slot.id}';
-}
-
-/// Chọn tối đa 3 khung giờ khám mong muốn (theo lịch partner), rồi gửi đăng ký.
+/// Chọn 1 khung giờ khám mong muốn (theo lịch partner), rồi xác nhận đăng ký.
 class BcbSelectWishSlotsScreen extends StatefulWidget {
   final String bcbCampaignId;
-  final List<BcbPartnerScheduleDay> scheduleDays;
-  final String? doctorNote;
-  final String? medicalHistory;
+  final String? bcbCampaignName;
+  final List<BcbPartnerScheduleDay>? scheduleDays;
+  final BcbSelectedWishSlot? selectedWishSlot;
+  final String? initialDoctorNote;
 
   const BcbSelectWishSlotsScreen({
     Key? key,
     required this.bcbCampaignId,
-    required this.scheduleDays,
-    this.doctorNote,
-    this.medicalHistory,
+    this.bcbCampaignName,
+    this.scheduleDays,
+    this.selectedWishSlot,
+    this.initialDoctorNote,
   }) : super(key: key);
 
   @override
@@ -41,34 +31,54 @@ class BcbSelectWishSlotsScreen extends StatefulWidget {
 }
 
 class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
-  late final BcbCampaignBloc _bloc;
   List<BcbPartnerScheduleDay> _days = [];
 
   BcbPartnerScheduleDay? _selectedDay;
   bool _morning = true;
-  final List<_SelectedWishSlot> _selectionOrder = [];
-
-  void _runAfterBuild(VoidCallback action) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      action();
-    });
-  }
+  BcbSelectedWishSlot? _selectedWishSlot;
+  bool _loadingSchedule = false;
 
   @override
   void initState() {
     super.initState();
-    _bloc = BcbCampaignBloc();
-    _applySchedule(widget.scheduleDays);
+    _selectedWishSlot = widget.selectedWishSlot;
+    if (widget.scheduleDays != null && widget.scheduleDays!.isNotEmpty) {
+      _applySchedule(widget.scheduleDays!, preserveSelection: true);
+    }
+    _fetchScheduleDays();
   }
 
   @override
   void dispose() {
-    _bloc.close();
     super.dispose();
   }
 
-  void _applySchedule(List<BcbPartnerScheduleDay> list) {
+  Future<void> _fetchScheduleDays() async {
+    setState(() => _loadingSchedule = true);
+    try {
+      final client = BcbCampaignClient();
+      final days = await client.fetchPartnerScheduleDays(widget.bcbCampaignId);
+      if (!mounted) return;
+      _applySchedule(days, preserveSelection: true);
+      if (days.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(R.string.bcb_no_schedule_available.tr()),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      if (mounted) setState(() => _loadingSchedule = false);
+    }
+  }
+
+  void _applySchedule(List<BcbPartnerScheduleDay> list,
+      {bool preserveSelection = false}) {
     // final activeDays = list
     //     .where((d) =>
     //         d.isActive &&
@@ -78,12 +88,31 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     final activeDays = list;
     activeDays
         .sort((a, b) => (a.examDateUnix ?? 0).compareTo(b.examDateUnix ?? 0));
+    final selected =
+        preserveSelection ? _findSelectionInDays(activeDays) : null;
+    final selectedDay =
+        selected?.day ?? (activeDays.isNotEmpty ? activeDays.first : null);
     setState(() {
       _days = activeDays;
-      _selectedDay = activeDays.isNotEmpty ? activeDays.first : null;
-      _morning = _defaultMorningForDay(_selectedDay);
-      _selectionOrder.clear();
+      _selectedDay = selectedDay;
+      _morning = selected == null
+          ? _defaultMorningForDay(_selectedDay)
+          : _isMorningSlot(selected.day, selected.slot);
+      _selectedWishSlot = selected;
     });
+  }
+
+  BcbSelectedWishSlot? _findSelectionInDays(List<BcbPartnerScheduleDay> days) {
+    final current = _selectedWishSlot;
+    if (current == null) return null;
+    for (final day in days) {
+      for (final slot in day.slots) {
+        if ('${day.id}_${slot.id}' == current.key) {
+          return BcbSelectedWishSlot(day: day, slot: slot);
+        }
+      }
+    }
+    return current;
   }
 
   bool _defaultMorningForDay(BcbPartnerScheduleDay? day) {
@@ -93,6 +122,12 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     if (morningSlots.isNotEmpty) return true;
     if (afternoonSlots.isNotEmpty) return false;
     return true;
+  }
+
+  bool _isMorningSlot(BcbPartnerScheduleDay day, BcbPartnerScheduleSlot slot) {
+    if (slot.startTime == null) return true;
+    final time = _parseTimeOnDay(day, slot.startTime!);
+    return time == null || time.hour < 12;
   }
 
   List<BcbPartnerScheduleSlot> _slotsForPeriod(
@@ -139,34 +174,23 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     return '${short(a)}-${short(b)}';
   }
 
-  int? _orderForSlot(BcbPartnerScheduleDay day, BcbPartnerScheduleSlot slot) {
+  bool _isSelectedSlot(BcbPartnerScheduleDay day, BcbPartnerScheduleSlot slot) {
     final k = '${day.id}_${slot.id}';
-    for (var i = 0; i < _selectionOrder.length; i++) {
-      if (_selectionOrder[i].key == k) return i + 1;
-    }
-    return null;
+    return _selectedWishSlot?.key == k;
   }
 
   void _onSlotTap(BcbPartnerScheduleDay day, BcbPartnerScheduleSlot slot) {
-    final sel = _SelectedWishSlot(day: day, slot: slot);
-    final existing = _selectionOrder.indexWhere((e) => e.key == sel.key);
-    if (existing >= 0) {
-      setState(() => _selectionOrder.removeAt(existing));
+    final sel = BcbSelectedWishSlot(day: day, slot: slot);
+    if (_selectedWishSlot?.key == sel.key) {
+      setState(() => _selectedWishSlot = null);
       return;
     }
-    if (_selectionOrder.length >= 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(R.string.bcb_max_3_wish_slots.tr()),
-        ),
-      );
-      return;
-    }
-    setState(() => _selectionOrder.add(sel));
+    setState(() => _selectedWishSlot = sel);
   }
 
   void _confirmRegistration() {
-    if (_selectionOrder.isEmpty) {
+    final selected = _selectedWishSlot;
+    if (selected == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(R.string.ban_chua_chon_khung_gio.tr()),
@@ -175,11 +199,8 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
       return;
     }
 
-    final slotIds = _selectionOrder
-        .map((s) => s.slot.id ?? '')
-        .where((id) => id.isNotEmpty)
-        .toList();
-    if (slotIds.isEmpty || slotIds.length != _selectionOrder.length) {
+    final slotId = selected.slot.id ?? '';
+    if (slotId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(R.string.bcb_slot_id_missing.tr()),
@@ -188,138 +209,16 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
       return;
     }
 
-    _bloc.add(SubmitBcbRegistrationEvent(
-      bcbCampaignId: widget.bcbCampaignId,
-      doctorNote: widget.doctorNote,
-      medicalHistory: widget.medicalHistory,
-      slotIds: slotIds,
-    ));
-  }
-
-  void _showSuccessAndGoHome() {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(dialogContext);
-                        navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                          NavigatorName.tabbar,
-                          (route) => false,
-                        );
-                      },
-                      child: Icon(
-                        Icons.close,
-                        color: R.color.textDark,
-                        size: 24,
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Image.asset(R.drawable.ic_dialog_success,
-                    width: 43, height: 43),
-                Padding(
-                  padding: const EdgeInsets.only(top: 14),
-                  child: Text(
-                    R.string.congratulation_on.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.color0xff636A6B,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    R.string.booking_success_dialog_title.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w700,
-                      height: 1.15,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: Text(
-                    R.string.bcb_success_contact_subtitle.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.color0xff777E90,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(dialogContext);
-                          navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                            NavigatorName.tabbar,
-                            (route) => false,
-                          );
-                        },
-                        child: Container(
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: R.color.mainColor,
-                            borderRadius: BorderRadius.circular(200),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                R.color.greenGradientTop,
-                                R.color.greenGradientMid,
-                                R.color.greenGradientBottom,
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              R.string.back_home_page.tr(),
-                              style: TextStyle(
-                                color: R.color.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
-          ),
-        );
-      },
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (_) => BcbCampaignConfirmationScreen(
+          bcbCampaignId: widget.bcbCampaignId,
+          bcbCampaignName: widget.bcbCampaignName,
+          scheduleDays: _days,
+          selectedWishSlot: selected,
+          initialDoctorNote: widget.initialDoctorNote,
+        ),
+      ),
     );
   }
 
@@ -327,50 +226,26 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
   Widget build(BuildContext context) {
     final primary = R.color.greenGradientBottom;
 
-    return BlocProvider.value(
-      value: _bloc,
-      child: Scaffold(
-        backgroundColor: R.color.backgroundColorNew,
-        body: Column(
-          children: [
-            _buildCustomAppBar(),
-            Expanded(
-              child: BlocConsumer<BcbCampaignBloc, BcbCampaignState>(
-                listener: (context, state) {
-                  if (state is BcbCampaignLoading) {
-                    BotToast.showLoading();
-                  } else {
-                    BotToast.closeAllLoading();
-                  }
-                  if (state is BcbRegistrationSubmitted) {
-                    _runAfterBuild(_showSuccessAndGoHome);
-                  } else if (state is BcbCampaignError) {
-                    _runAfterBuild(() {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.message),
-                          backgroundColor: const Color(0xffEF4444),
-                        ),
-                      );
-                    });
-                  }
-                },
-                builder: (context, state) {
-                  final submitting = state is BcbCampaignLoading;
-                  final canSubmit = _selectionOrder.isNotEmpty && !submitting;
+    final canSubmit = _selectedWishSlot != null && !_loadingSchedule;
 
-                  if (_days.isEmpty || _selectedDay == null) {
-                    return Center(
-                      child: Text(
-                        R.string.bcb_no_schedule_available.tr(),
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  }
-
-                  final daySlots = _slotsForPeriod(_selectedDay!, _morning);
-
-                  return Stack(
+    return Scaffold(
+      backgroundColor: R.color.backgroundColorNew,
+      body: Column(
+        children: [
+          _buildCustomAppBar(),
+          Expanded(
+            child: _days.isEmpty || _selectedDay == null
+                ? Center(
+                    child: _loadingSchedule
+                        ? CircularProgressIndicator(
+                            color: R.color.greenGradientBottom,
+                          )
+                        : Text(
+                            R.string.bcb_no_schedule_available.tr(),
+                            textAlign: TextAlign.center,
+                          ),
+                  )
+                : Stack(
                     children: [
                       SingleChildScrollView(
                         padding: const EdgeInsets.fromLTRB(12, 12, 12, 100),
@@ -518,22 +393,24 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              daySlots.isEmpty
+                              _slotsForPeriod(_selectedDay!, _morning).isEmpty
                                   ? Center(
-                                    child: Padding(
+                                      child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             16, 0, 16, 16),
                                         child: Text(
                                           _morning
-                                              ? R.string.bcb_no_slots_morning.tr()
-                                              : R.string.bcb_no_slots_afternoon.tr(),
+                                              ? R.string.bcb_no_slots_morning
+                                                  .tr()
+                                              : R.string.bcb_no_slots_afternoon
+                                                  .tr(),
                                           style: TextStyle(
                                             color: R.color.color0xff111515
                                                 .withValues(alpha: 0.7),
                                           ),
                                         ),
                                       ),
-                                  )
+                                    )
                                   : GridView.builder(
                                       padding: const EdgeInsets.fromLTRB(
                                           16, 0, 16, 16),
@@ -547,12 +424,14 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                                         crossAxisSpacing: 10,
                                         childAspectRatio: 2.4,
                                       ),
-                                      itemCount: daySlots.length,
+                                      itemCount: _slotsForPeriod(
+                                              _selectedDay!, _morning)
+                                          .length,
                                       itemBuilder: (context, i) {
-                                        final slot = daySlots[i];
-                                        final order =
-                                            _orderForSlot(_selectedDay!, slot);
-                                        final isOn = order != null;
+                                        final slot = _slotsForPeriod(
+                                            _selectedDay!, _morning)[i];
+                                        final isOn = _isSelectedSlot(
+                                            _selectedDay!, slot);
                                         return GestureDetector(
                                           onTap: () =>
                                               _onSlotTap(_selectedDay!, slot),
@@ -596,14 +475,10 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                                                   child: CircleAvatar(
                                                     radius: 10,
                                                     backgroundColor: primary,
-                                                    child: Text(
-                                                      '$order',
-                                                      style: TextStyle(
-                                                        color: R.color.white,
-                                                        fontSize: 11,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                      ),
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      color: R.color.white,
+                                                      size: 14,
                                                     ),
                                                   ),
                                                 ),
@@ -650,7 +525,7 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      R.string.sign_up.tr(),
+                                      R.string.tiep_tuc.tr(),
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
@@ -665,12 +540,9 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                         ),
                       ),
                     ],
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+                  ),
+          ),
+        ],
       ),
     );
   }

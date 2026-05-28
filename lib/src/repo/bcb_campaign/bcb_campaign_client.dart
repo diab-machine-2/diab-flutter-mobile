@@ -55,7 +55,7 @@ class BcbCampaignClient extends FetchClient {
     }
   }
 
-  /// POST App/BcbCustomerRegistration — đăng ký với 3 slotId ưu tiên
+  /// POST App/BcbCustomerRegistration — đăng ký với 1 slotId đã chọn
   Future<void> submitRegistration(
       BcbCampaignRegistrationModel registration) async {
     try {
@@ -65,14 +65,7 @@ class BcbCampaignClient extends FetchClient {
           registration.doctorNote!.trim().isNotEmpty) {
         formData.fields.add(MapEntry('doctorNote', registration.doctorNote!));
       }
-      if (registration.medicalHistory != null &&
-          registration.medicalHistory!.trim().isNotEmpty) {
-        formData.fields
-            .add(MapEntry('medicalHistory', registration.medicalHistory!));
-      }
-      for (final id in registration.slotIds) {
-        formData.fields.add(MapEntry('slotIds', id));
-      }
+      formData.fields.add(MapEntry('slotId', registration.slotId));
       final Response response = await super.postData(
         url: '/App/BcbCustomerRegistration',
         params: formData,
