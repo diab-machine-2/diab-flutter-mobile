@@ -1542,3 +1542,22 @@ lich_do_duong_huyet_cua_ban,Lịch đo đường huyết của bạn,Your glucos
 goi_y_lich_do_tu_chuyen_gia,Gợi ý lịch đo từ chuyên gia,Expert-suggested schedule,
 add_measurement,Thêm chỉ số,Add measurement
 cannot_use_medicine_in_future,Không thể đánh dấu đã dùng thuốc trong tương lai,Cannot mark medicine as used in the future
+webinar_register_success,Đăng ký tham gia thành công,Successfully registered,
+webinar_online_event,Sự kiện trực tuyến,Online event,
+webinar_calendar_join_link,Link tham gia: {},Join link: {},
+webinar_calendar_description,Sự kiện từ ứng dụng DiaB,Event from DiaB app,
+webinar_cannot_open_link,Không thể mở liên kết,Cannot open link,
+webinar_no_replay_lesson,Không có bài học để xem lại,No replay lesson available,
+webinar_cannot_identify_lesson_type,Không thể xác định loại bài học,Cannot identify lesson type,
+webinar_share_content,"{} đã chia sẻ cho bạn sự kiện {} từ ứng dụng DiaB - ứng dụng tự quản lý bệnh đái tháo đường và kết nối với chuyên gia.\n{}","{} shared the event {} from DiaB - an app for diabetes self-management and expert connection.\n{}",
+webinar_share_subject,DIAB | Ứng dụng giúp quản lý đường huyết hiệu quả,DIAB | App for effective blood glucose management,
+webinar_not_found,Không tìm thấy sự kiện,Event not found,
+webinar_upcoming_in_hours,Sẽ diễn ra sau {} tiếng,Starts in {} hours,
+webinar_event_ended,Đã kết thúc sự kiện,Event has ended,
+webinar_registration_count,{} lượt đăng ký,{} registrations,
+webinar_program_info,Thông tin chương trình,Program information,
+webinar_similar_events,Sự kiện tương tự,Similar events,
+webinar_participant_count,{} lượt tham gia,{} participants,
+webinar_watch_replay,Xem lại sự kiện,Watch event replay,
+webinar_registered,Đã đăng ký,Registered,
+webinar_register_participation,Đăng ký tham gia,Register to join

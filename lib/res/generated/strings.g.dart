@@ -1599,4 +1599,24 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get goi_y_lich_do_tu_chuyen_gia => 'goi_y_lich_do_tu_chuyen_gia';
   String get add_measurement => 'add_measurement';
   String get cannot_use_medicine_in_future => 'cannot_use_medicine_in_future';
+  String get webinar_register_success => 'webinar_register_success';
+  String get webinar_online_event => 'webinar_online_event';
+  String get webinar_calendar_join_link => 'webinar_calendar_join_link';
+  String get webinar_calendar_description => 'webinar_calendar_description';
+  String get webinar_cannot_open_link => 'webinar_cannot_open_link';
+  String get webinar_no_replay_lesson => 'webinar_no_replay_lesson';
+  String get webinar_cannot_identify_lesson_type =>
+      'webinar_cannot_identify_lesson_type';
+  String get webinar_share_content => 'webinar_share_content';
+  String get webinar_share_subject => 'webinar_share_subject';
+  String get webinar_not_found => 'webinar_not_found';
+  String get webinar_upcoming_in_hours => 'webinar_upcoming_in_hours';
+  String get webinar_event_ended => 'webinar_event_ended';
+  String get webinar_registration_count => 'webinar_registration_count';
+  String get webinar_program_info => 'webinar_program_info';
+  String get webinar_similar_events => 'webinar_similar_events';
+  String get webinar_participant_count => 'webinar_participant_count';
+  String get webinar_watch_replay => 'webinar_watch_replay';
+  String get webinar_registered => 'webinar_registered';
+  String get webinar_register_participation => 'webinar_register_participation';
 }
