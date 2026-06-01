@@ -15,7 +15,8 @@ enum ExamResultCategory {
   laboratoryTest(1),
   diagnosticImaging(2),
   functionalExploration(3),
-  endoscopyAndBiopsy(4);
+  endoscopyAndBiopsy(4),
+  labResult(5);
 
   const ExamResultCategory(this.value);
   final int value;
@@ -30,6 +31,8 @@ enum ExamResultCategory {
         return R.icons.ic_tham_do_chuc_nang;
       case ExamResultCategory.endoscopyAndBiopsy:
         return R.icons.ic_noi_soi;
+      case ExamResultCategory.labResult:
+        return R.icons.ic_ket_qua_xet_nghiem;
     }
   }
 
@@ -43,6 +46,8 @@ enum ExamResultCategory {
         return R.string.bcb_exam_category_functional_exploration.tr();
       case ExamResultCategory.endoscopyAndBiopsy:
         return R.string.bcb_exam_category_endoscopy_biopsy.tr();
+      case ExamResultCategory.labResult:
+        return R.string.bcb_exam_result_default_title.tr();
     }
   }
 
