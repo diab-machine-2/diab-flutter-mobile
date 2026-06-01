@@ -14,6 +14,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/utils/app_log.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/conversation/conversation_comon.dart'
     as itypes;
@@ -616,7 +617,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
                       Container(
                         margin: const EdgeInsets.only(top: 6),
                         child: Text(
-                          R.string.conversation_ai_citation.tr(),
+                          R.string.conversation_ai_citation.tr(args: [Const.CHAT_MODEL]),
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             color: R.color.captionColorGray,
@@ -731,7 +732,7 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
   // // This is the method auto response from the chatbot
   _handleBotResponse(String messageId) async {
     final ApiResult<MessageResponse> apiResult =
-        await AppRepository().sendMessageById(_conversation.id, messageId);
+        await AppRepository().sendMessageById(_conversation.id, messageId, Const.CHAT_MODEL);
     apiResult.when(
         success: ((data) => {
               setState(() {

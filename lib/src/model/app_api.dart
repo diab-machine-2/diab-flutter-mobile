@@ -494,11 +494,13 @@ abstract class AppApi {
   Future<MessageResponse> sendMessageById(
     @Path('conversationId') String conversationId,
     @Path('messageId') String messageId,
+    @Query('model') String model,
   );
   // ## 3. Tạo Lại Câu Trả Lời AI
   @PUT('/App/Chat/conversations/{conversationId}/messages/regenerate')
   Future<MessageResponse> regenerateMessage(
-      @Path('conversationId') String conversationId);
+      @Path('conversationId') String conversationId,
+      @Query('model') String model);
   // Create
   @POST('/App/Chat/conversations')
   Future<CreateConversationResponse> createConversation(
