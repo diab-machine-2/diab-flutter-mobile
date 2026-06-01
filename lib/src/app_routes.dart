@@ -33,6 +33,7 @@ import 'package:medical/src/widget/bcb_campaign/bcb_campaign_confirmation_screen
 import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_detail_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_detail_appointment_screen.dart';
 
 import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
@@ -417,6 +418,14 @@ class AppRoutes {
           final result = data?['result'] as BcbExamResultModel?;
           if (result == null) break;
           page = CampaignTestResultDetailScreen(result: result);
+          break;
+        }
+      case NavigatorName.bcb_detail_appointment:
+        {
+          final data = settings.arguments as Map<String, dynamic>?;
+          final campaignId = data?['campaignId'] as String?;
+          if (campaignId == null || campaignId.isEmpty) break;
+          page = BcbDetailAppointmentScreen(campaignId: campaignId);
           break;
         }
 

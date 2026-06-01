@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
@@ -14,6 +15,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 class BcbCampaignConfirmationScreen extends StatefulWidget {
@@ -77,6 +79,16 @@ class _BcbCampaignConfirmationScreenState
     if (date == null) return '';
     final weekDay = DateUtil.weekDayToString(date, isDisplayfull: true);
     return '$weekDay, ${DateFormat('dd/MM/yyyy').format(date)}';
+  }
+
+  String? get _partnerHotline {
+    final hotline = widget.selectedWishSlot.day.partnerHotline?.trim();
+    if (hotline != null && hotline.isNotEmpty) return hotline;
+    for (final day in widget.scheduleDays) {
+      final value = day.partnerHotline?.trim();
+      if (value != null && value.isNotEmpty) return value;
+    }
+    return null;
   }
 
   void _editService() {
@@ -189,13 +201,83 @@ class _BcbCampaignConfirmationScreenState
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildButton(R.string.back_home_page.tr(), () {
-                  Navigator.pop(dialogContext);
-                  navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                    NavigatorName.tabbar,
-                    (route) => false,
-                  );
-                }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(dialogContext);
+                          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                            NavigatorName.bcb_detail_appointment,
+                            (route) =>
+                                route.settings.name == NavigatorName.tabbar ||
+                                !Navigator.of(context).canPop(),
+                            arguments: {'campaignId': widget.bcbCampaignId},
+                          );
+                        },
+                        child: Container(
+                          height: 43,
+                          margin: EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: R.color.white,
+                            borderRadius: BorderRadius.circular(200),
+                            border: Border.all(
+                              color: R.color.greenGradientBottom,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.recheck_information.tr(),
+                              style: TextStyle(
+                                color: R.color.greenGradientBottom,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(dialogContext);
+                          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                            NavigatorName.tabbar,
+                            (route) => false,
+                          );
+                        },
+                        child: Container(
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: R.color.mainColor,
+                            borderRadius: BorderRadius.circular(200),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                R.color.greenGradientTop,
+                                R.color.greenGradientMid,
+                                R.color.greenGradientBottom,
+                              ],
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              R.string.back_home_page.tr(),
+                              style: TextStyle(
+                                color: R.color.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
               ],
             ),
@@ -249,6 +331,8 @@ class _BcbCampaignConfirmationScreenState
                           GapH(12),
                           _buildServiceInformation(),
                           GapH(12),
+                          _buildClinicInformation(),
+                          GapH(12),
                           _buildNoteSection(),
                         ],
                       ),
@@ -269,7 +353,7 @@ class _BcbCampaignConfirmationScreenState
                         child: Opacity(
                           opacity: submitting ? 0.6 : 1,
                           child: _buildButton(
-                            R.string.confirm_book_consult.tr(),
+                            R.string.submit_booking.tr(),
                             submitting ? null : _submit,
                           ),
                         ),
@@ -305,7 +389,7 @@ class _BcbCampaignConfirmationScreenState
       child: Column(
         children: [
           _buildSectionHeader(
-            R.string.service_type.tr(),
+            R.string.service.tr(),
             action: InkWell(
               onTap: _editService,
               child: Text(
@@ -320,7 +404,7 @@ class _BcbCampaignConfirmationScreenState
           ),
           GapH(12),
           _buildInfoRow(
-            R.string.bcb_register_health_check.tr(),
+            R.string.thoi_gian.tr(),
             _slotLabel(
                 widget.selectedWishSlot.day, widget.selectedWishSlot.slot),
             valueColor: R.color.greenGradientBottom,
@@ -338,6 +422,36 @@ class _BcbCampaignConfirmationScreenState
                 color: R.color.greenGradientBottom,
               ),
             ),
+          ),
+          GapH(12),
+          _buildInfoRow(
+            R.string.appointment_details.tr(),
+            R.string.corporate_health_checkup.tr(),
+            valueColor: R.color.greenGradientBottom,
+            valueWeight: FontWeight.w700,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildClinicInformation() {
+    final day = widget.selectedWishSlot.day;
+    return _buildCard(
+      child: Column(
+        children: [
+          _buildSectionHeader(R.string.kham_tai_phong_kham.tr()),
+          GapH(16),
+          _buildInfoRow(
+            R.string.centre_name.tr(),
+            (day.partnerName ?? '').toUpperCase(),
+          ),
+          GapH(4),
+          _buildInfoRow(R.string.address.tr(), day.partnerAddress ?? ''),
+          GapH(4),
+          _buildInfoRow(
+            'Hotline',
+            day.partnerHotline ?? '',
           ),
         ],
       ),
@@ -395,7 +509,8 @@ class _BcbCampaignConfirmationScreenState
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
+        Flexible(
+          flex: 5,
           child: Text(
             label,
             style: TextStyle(
@@ -406,7 +521,8 @@ class _BcbCampaignConfirmationScreenState
           ),
         ),
         const SizedBox(width: 8),
-        Expanded(
+        Flexible(
+          flex: 8,
           child: Text(
             value,
             textAlign: TextAlign.right,
@@ -468,12 +584,19 @@ class _BcbCampaignConfirmationScreenState
       child: CustomAppBar(
         backgroundColor: Colors.transparent,
         centerTitle: false,
-        title: Text(
-          R.string.confirm_information.tr(),
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: R.color.white,
+        title: MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: MediaQuery.of(context)
+                .textScaler
+                .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+          ),
+          child: Text(
+            R.string.confirm_information.tr(),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: R.color.white,
+            ),
           ),
         ),
         leadingIcon: IconButton(
@@ -481,6 +604,60 @@ class _BcbCampaignConfirmationScreenState
           highlightColor: Colors.transparent,
           icon: Icon(Icons.arrow_back, color: R.color.white),
           onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [_buildContactAction()],
+      ),
+    );
+  }
+
+  Widget _buildContactAction() {
+    return InkWell(
+      onTap: () async {
+        await HomeSupportFunctions.showModalAddData(
+          context,
+          hotline: _partnerHotline,
+        );
+      },
+      child: Container(
+        height: 36,
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+        margin: const EdgeInsets.fromLTRB(0, 12, 16, 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: R.color.color0xffCAFAF5,
+          border: Border.all(
+            color: R.color.color0xff8FEBE0,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              R.icons.ic_telephone,
+              width: 16,
+              height: 16,
+              color: R.color.greenGradientBottom,
+              fit: BoxFit.scaleDown,
+            ),
+            GapW(4),
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
+                R.string.contact.tr(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'sfpro',
+                  fontWeight: FontWeight.w700,
+                  color: R.color.greenGradientBottom,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

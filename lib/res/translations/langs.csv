@@ -1591,4 +1591,10 @@ webinar_similar_events,Sự kiện tương tự,Similar events,
 webinar_participant_count,{} lượt tham gia,{} participants,
 webinar_watch_replay,Xem lại sự kiện,Watch event replay,
 webinar_registered,Đã đăng ký,Registered,
-webinar_register_participation,Đăng ký tham gia,Register to join
+webinar_register_participation,Đăng ký tham gia,Register to join,
+service,Dịch vụ,Service,
+limit_change_schedule,"Bạn đã đến giới hạn đổi lịch hẹn","You have reached the limit of appointment changes",
+please_select_schedule,Vui lòng chọn lịch,Please select a schedule,
+contact_support,"Vui lòng liên hệ {} để được hỗ trợ.","Please contact {} for support.",
+corporate_health_checkup,Khám sức khoẻ doanh nghiệp,Corporate Health Checkup,
+appointment_details,"Thông tin lịch hẹn","Appointment details"

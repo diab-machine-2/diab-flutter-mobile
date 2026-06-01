@@ -231,13 +231,18 @@ class BranchioLinkConfig {
               result.when(
                 success: (response) {
                   final status = response.data?.status;
-                  if (status != null && status >= 2 && status <= 5) {
+                  if (status != null && status >= 2 && status <= 4) {
                     navigatorKey.currentState?.pushNamed(
                       NavigatorName.bcb_form,
                       arguments: <String, dynamic>{
                         'bcbCampaignId': campaignId,
                         if (campaignName != null) 'bcbCampaignName': campaignName,
                       },
+                    );
+                  } else if (status != null && status >= 5 && status <= 6) {
+                    navigatorKey.currentState?.pushNamed(
+                      NavigatorName.bcb_detail_appointment,
+                      arguments: {'campaignId': campaignId},
                     );
                   } else if (status != null && status >= 9 && status <= 10) {
                     navigatorKey.currentState?.pushNamed(
@@ -1135,13 +1140,18 @@ class BranchioLinkConfig {
           result.when(
             success: (response) {
               final status = response.data?.status;
-              if (status != null && status >= 2 && status <= 5) {
+              if (status != null && status >= 2 && status <= 4) {
                 navigatorKey.currentState?.pushNamed(
                   NavigatorName.bcb_form,
                   arguments: {
                     'bcbCampaignId': bid,
                     if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
                   },
+                );
+              } else if (status != null && status >= 5 && status <= 6) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.bcb_detail_appointment,
+                  arguments: {'campaignId': bid},
                 );
               } else if (status != null && status >= 9 && status <= 10) {
                 navigatorKey.currentState?.pushNamed(

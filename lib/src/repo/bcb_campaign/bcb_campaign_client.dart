@@ -5,6 +5,7 @@ import 'package:medical/src/model/bcb_campaign/bcb_campaign_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_registration_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_customer_appointment_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 
@@ -118,4 +119,28 @@ class BcbCampaignClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
+
+  /// GET App/BcbCustomerAppointment/my-registered?campaignId={campaignId}
+  Future<BcbCustomerAppointmentModel?> fetchMyRegisteredAppointment(
+      String campaignId) async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/BcbCustomerAppointment/my-registered',
+        params: {'campaignId': campaignId},
+      );
+      if (response.statusCode == 200) {
+        final body = response.data;
+        final raw = body is Map<String, dynamic> ? body['data'] : body;
+        if (raw == null) return null;
+        return BcbCustomerAppointmentModel.fromJson(
+            raw as Map<String, dynamic>);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
 }
+

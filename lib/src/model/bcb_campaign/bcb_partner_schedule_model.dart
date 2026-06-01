@@ -40,6 +40,9 @@ class BcbPartnerScheduleDay {
   final int? maxPerDay;
   final int? bookedCount;
   final bool isActive;
+  final String? partnerName;
+  final String? partnerAddress;
+  final String? partnerHotline;
   final List<BcbPartnerScheduleSlot> slots;
 
   BcbPartnerScheduleDay({
@@ -49,6 +52,9 @@ class BcbPartnerScheduleDay {
     this.maxPerDay,
     this.bookedCount,
     this.isActive = false,
+    this.partnerName,
+    this.partnerAddress,
+    this.partnerHotline,
     this.slots = const [],
   });
 
@@ -61,6 +67,9 @@ class BcbPartnerScheduleDay {
       maxPerDay: json['maxPerDay'] as int?,
       bookedCount: json['bookedCount'] as int?,
       isActive: json['isActive'] == true,
+      partnerName: json['partnerName']?.toString(),
+      partnerAddress: json['partnerAddress']?.toString(),
+      partnerHotline: json['partnerHotline']?.toString(),
       slots: rawSlots is List
           ? rawSlots
               .map((e) =>
@@ -83,8 +92,7 @@ class BcbPartnerScheduleDay {
     if (u > 20000000000) {
       return DateTime.fromMillisecondsSinceEpoch(u, isUtc: true).toLocal();
     }
-    return DateTime.fromMillisecondsSinceEpoch(u * 1000, isUtc: true)
-        .toLocal();
+    return DateTime.fromMillisecondsSinceEpoch(u * 1000, isUtc: true).toLocal();
   }
 
   static List<BcbPartnerScheduleDay> listFrom(dynamic raw) {

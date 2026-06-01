@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_selected_wish_slot.dart';
@@ -7,6 +8,8 @@ import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_campaign_confirmation_screen.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/home/widget/home_support_functions.dart';
+import 'package:medical/src/widgets/gap_widget.dart';
 
 /// Chọn 1 khung giờ khám mong muốn (theo lịch partner), rồi xác nhận đăng ký.
 class BcbSelectWishSlotsScreen extends StatefulWidget {
@@ -44,8 +47,13 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     _selectedWishSlot = widget.selectedWishSlot;
     if (widget.scheduleDays != null && widget.scheduleDays!.isNotEmpty) {
       _applySchedule(widget.scheduleDays!, preserveSelection: true);
+      // Only refetch if we don't have a pre-selected slot (i.e., fresh entry)
+      if (widget.selectedWishSlot == null) {
+        _fetchScheduleDays();
+      }
+    } else {
+      _fetchScheduleDays();
     }
-    _fetchScheduleDays();
   }
 
   @override
@@ -107,7 +115,7 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     if (current == null) return null;
     for (final day in days) {
       for (final slot in day.slots) {
-        if ('${day.id}_${slot.id}' == current.key) {
+        if ('${day.id}_${slot.id}' == current.key && !slot.isFull) {
           return BcbSelectedWishSlot(day: day, slot: slot);
         }
       }
@@ -180,12 +188,23 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
   }
 
   void _onSlotTap(BcbPartnerScheduleDay day, BcbPartnerScheduleSlot slot) {
+    if (slot.isFull) return;
     final sel = BcbSelectedWishSlot(day: day, slot: slot);
     if (_selectedWishSlot?.key == sel.key) {
       setState(() => _selectedWishSlot = null);
       return;
     }
     setState(() => _selectedWishSlot = sel);
+  }
+
+  String? get _partnerHotline {
+    final hotline = _selectedDay?.partnerHotline?.trim();
+    if (hotline != null && hotline.isNotEmpty) return hotline;
+    for (final day in _days) {
+      final value = day.partnerHotline?.trim();
+      if (value != null && value.isNotEmpty) return value;
+    }
+    return null;
   }
 
   void _confirmRegistration() {
@@ -420,8 +439,8 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                                       gridDelegate:
                                           const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 3,
-                                        mainAxisSpacing: 10,
-                                        crossAxisSpacing: 10,
+                                        mainAxisSpacing: 8,
+                                        crossAxisSpacing: 8,
                                         childAspectRatio: 2.4,
                                       ),
                                       itemCount: _slotsForPeriod(
@@ -432,46 +451,86 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
                                             _selectedDay!, _morning)[i];
                                         final isOn = _isSelectedSlot(
                                             _selectedDay!, slot);
+                                        final disabled = slot.isFull;
                                         return GestureDetector(
-                                          onTap: () =>
-                                              _onSlotTap(_selectedDay!, slot),
+                                          onTap: disabled
+                                              ? null
+                                              : () => _onSlotTap(
+                                                  _selectedDay!, slot),
                                           child: Stack(
                                             clipBehavior: Clip.none,
                                             children: [
                                               Container(
                                                 alignment: Alignment.center,
                                                 decoration: BoxDecoration(
-                                                  color: R.color.white,
+                                                  color: disabled
+                                                      ? R.color.color0xffEDEEEE
+                                                      : R.color.white,
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                   border: Border.all(
-                                                    color: isOn
-                                                        ? primary
-                                                        : const Color(
-                                                            0xffE5E7EB),
+                                                    color: disabled
+                                                        ? const Color(
+                                                            0xffE5E7EB)
+                                                        : isOn
+                                                            ? primary
+                                                            : const Color(
+                                                                0xffE5E7EB),
                                                     width: isOn ? 2 : 1,
                                                   ),
                                                 ),
-                                                child: Text(
-                                                  _slotLabel(
-                                                      _selectedDay!, slot),
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: isOn
-                                                        ? FontWeight.w700
-                                                        : FontWeight.w400,
-                                                    color: isOn
-                                                        ? primary
-                                                        : R.color
-                                                            .color0xff111515,
+                                                child: MediaQuery(
+                                                  data: MediaQuery.of(context)
+                                                      .copyWith(
+                                                    textScaler:
+                                                        MediaQuery.of(context)
+                                                            .textScaler
+                                                            .clamp(
+                                                                minScaleFactor:
+                                                                    1.0,
+                                                                maxScaleFactor:
+                                                                    1.3),
+                                                  ),
+                                                  child: MediaQuery(
+                                                    data: MediaQuery.of(context)
+                                                        .copyWith(
+                                                      textScaler: MediaQuery.of(
+                                                              context)
+                                                          .textScaler
+                                                          .clamp(
+                                                              minScaleFactor:
+                                                                  1.0,
+                                                              maxScaleFactor:
+                                                                  1.3),
+                                                    ),
+                                                    child: Text(
+                                                      _slotLabel(
+                                                          _selectedDay!, slot),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontSize: 13.5,
+                                                        fontWeight: isOn
+                                                            ? FontWeight.w700
+                                                            : FontWeight.w400,
+                                                        color: disabled
+                                                            ? R.color
+                                                                .color0xff636A6B
+                                                                .withValues(
+                                                                    alpha: 0.5)
+                                                            : isOn
+                                                                ? primary
+                                                                : R.color
+                                                                    .color0xff111515,
+                                                      ),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                               if (isOn)
                                                 Positioned(
                                                   right: -4,
-                                                  top: -4,
+                                                  top: -8,
                                                   child: CircleAvatar(
                                                     radius: 10,
                                                     backgroundColor: primary,
@@ -575,6 +634,60 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
             icon: Icon(Icons.arrow_back, color: R.color.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
+          actions: [_buildContactAction()],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactAction() {
+    return InkWell(
+      onTap: () async {
+        await HomeSupportFunctions.showModalAddData(
+          context,
+          hotline: _partnerHotline,
+        );
+      },
+      child: Container(
+        height: 36,
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+        margin: const EdgeInsets.fromLTRB(0, 12, 16, 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: R.color.color0xffCAFAF5,
+          border: Border.all(
+            color: R.color.color0xff8FEBE0,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              R.icons.ic_telephone,
+              width: 16,
+              height: 16,
+              color: R.color.greenGradientBottom,
+              fit: BoxFit.scaleDown,
+            ),
+            GapW(4),
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
+                R.string.contact.tr(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'sfpro',
+                  fontWeight: FontWeight.w700,
+                  color: R.color.greenGradientBottom,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

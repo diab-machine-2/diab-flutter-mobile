@@ -405,7 +405,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                           if (CalendarBookingCubit.updateCount > 1) {
                             _showPopupOverSwitchTime(
                                 onConfirm: () => {},
-                                title: 'Bạn đã đến giới hạn đổi lịch hẹn');
+                                title: R.string.limit_change_schedule.tr());
                             BotToast.closeAllLoading();
                             return;
                           } else {
@@ -437,9 +437,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                         if (pickSlot == null) {
                           _showPopupOverSwitchTime(
                               onConfirm: () => {},
-                              title: "Vui lòng chọn lịch",
+                              title: R.string.please_select_schedule.tr(),
                               subtitle:
-                                  'Vui lòng liên hệ 093188832 để được hỗ trợ.',
+                                  R.string.contact_support.tr(args: [Const.HOTLINE_NUMBER]),
                               isShowImg: true);
                           BotToast.closeAllLoading();
                           return;
@@ -567,8 +567,9 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
     bool isShowImg = false,
     String? subtitle,
     String? title,
-    String buttonTitle = 'Tôi đã hiểu',
+    String buttonTitle = '',
   }) {
+    buttonTitle = buttonTitle.isNotEmpty ? buttonTitle : R.string.i_understand.tr();
     showDialog(
       context: context,
       builder: (context) {
