@@ -124,7 +124,6 @@ class SmartGoalNavigationUtil {
         _showCoachingPopup(context, smartGoal);
         break;
       case ScheduleType.survey:
-      case ScheduleType.quiz:
         _showSurveyPopup(context, survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
@@ -134,6 +133,7 @@ class SmartGoalNavigationUtil {
       case ScheduleType.lesson:
       case ScheduleType.infographic:
       case ScheduleType.book_1_n:
+      case ScheduleType.quiz:
         await _handleLesson(context, smartGoal);
         break;
       case ScheduleType.io_evaluate:
