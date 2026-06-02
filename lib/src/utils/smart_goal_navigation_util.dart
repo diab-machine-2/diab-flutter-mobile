@@ -29,6 +29,7 @@ import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -277,10 +278,7 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handleFood(
       BuildContext context, SmartGoalList? smartGoal) async {
-    await NavigationUtil.navigatePage(
-      context,
-      DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
-    );
+    FoodActionPopup.show(context);
   }
 
   static Future<void> _handleExercise(
