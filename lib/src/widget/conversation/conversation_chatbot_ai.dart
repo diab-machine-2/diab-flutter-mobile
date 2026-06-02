@@ -9,6 +9,8 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_chat_ui/src/models/date_header.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/chat_supabase_response.dart';
@@ -562,16 +564,43 @@ class _ConversationChatbotAiState extends State<ConversationChatbotAi>
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                  ReadMoreText((message as types.TextMessage).text,
-                      trimMode: TrimMode.Length,
-                      trimLines: 5,
-                      trimLength: 240,
-                      style: TextStyle(color: R.color.textDark, fontSize: 16),
-                      colorClickableText: Color.fromARGB(149, 104, 46, 1),
-                      trimCollapsedText:
-                          R.string.conversation_message_read_more.tr(),
-                      trimExpandedText:
-                          R.string.conversation_message_read_less.tr()),
+                  if (message.author.id == _bot.id)
+                    Html(
+                      data: (message as types.TextMessage).text,
+                      style: {
+                        "body": Style(
+                          color: R.color.textDark,
+                          fontSize: FontSize(16),
+                          padding: HtmlPaddings.zero,
+                          margin: Margins.zero,
+                        ),
+                        "a": Style(
+                          color: Color.fromARGB(149, 104, 46, 1),
+                          textDecoration: TextDecoration.none,
+                        ),
+                        "p": Style(
+                          padding: HtmlPaddings.zero,
+                          margin: Margins.zero,
+                        ),
+                      },
+                      onLinkTap: (String? url, Map<String, String> attributes, element) {
+                        if (url != null) {
+                          Uri link = Uri.parse(url);
+                          launchUrl(link, mode: LaunchMode.externalApplication);
+                        }
+                      },
+                    )
+                  else
+                    ReadMoreText((message as types.TextMessage).text,
+                        trimMode: TrimMode.Length,
+                        trimLines: 5,
+                        trimLength: 240,
+                        style: TextStyle(color: R.color.textDark, fontSize: 16),
+                        colorClickableText: Color.fromARGB(149, 104, 46, 1),
+                        trimCollapsedText:
+                            R.string.conversation_message_read_more.tr(),
+                        trimExpandedText:
+                            R.string.conversation_message_read_less.tr()),
                   // Draw time for each group of messages
                   if (!nextMessageInGroup) ...[
                     Container(

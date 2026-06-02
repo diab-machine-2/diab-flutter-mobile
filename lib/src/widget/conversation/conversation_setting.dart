@@ -11,6 +11,7 @@ import '../../../res/R.dart';
 import '../../app_setting/app_setting.dart';
 import '../helper/show_message.dart';
 import '../helper/tracking_manager.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 class ConversationSetting extends StatefulWidget {
   final itypes.Conversation conversation;
@@ -199,13 +200,6 @@ class _ConversationSettingState extends State<ConversationSetting> {
                                                 width: 130,
                                                 child: Row(
                                                   children: [
-                                                    (_isLoadingDelete)
-                                                        ? SpinKitCircle(
-                                                            color: R.color.red,
-                                                            size: 16,
-                                                          )
-                                                        : Container(),
-                                                    SizedBox(width: 2),
                                                     Text(
                                                       R.string
                                                           .conversation_setting_delete_btn_delete
@@ -236,26 +230,18 @@ class _ConversationSettingState extends State<ConversationSetting> {
   }
 
   void _handleDeleteConversation(conversationId) async {
-    if (_isLoadingDelete) return;
-    setState(() {
-      _isLoadingDelete = true;
-    });
+    Navigator.pop(context); // Close dialog
+    BotToast.showLoading();
     final apiResult = await AppRepository().deleteConversation(conversationId);
+    BotToast.closeAllLoading();
     apiResult.when(
         success: (data) => {
-              // Console.log('Success: $data'),
-              setState(() {
-                _isLoadingDelete = false;
-              }),
               Message.showToastMessage(
                   context, R.string.conversation_setting_delete_success.tr()),
               Navigator.pushReplacementNamed(
                   context, NavigatorName.conversation_chatbot_ai)
             },
         failure: (error) => {
-              setState(() {
-                _isLoadingDelete = false;
-              }),
               Console.log('Error: $error'),
             });
   }
