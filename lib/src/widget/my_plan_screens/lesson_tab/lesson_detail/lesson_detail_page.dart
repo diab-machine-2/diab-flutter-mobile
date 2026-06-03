@@ -212,9 +212,19 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
             );
             final int rating = _cubit.review?.rating ?? 0;
             final String note = _cubit.review?.note ?? '';
+            // Complete the smart goal before navigating away, since
+            // pushReplacement removes LessonDetailPage from the stack and we
+            // can no longer run code after the navigation resolves.
+            if (widget.smartGoal?.id != null) {
+              await HomeClient().completeSmartGoal(DateTime.now(),
+                  widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
+            }
+            BotToast.closeAllLoading();
             // [onShare] receives the review page's own [BuildContext] so that
             // share_plus can anchor the iOS share popover to the correct widget.
-            final dynamic result = await NavigationUtil.navigatePage(
+            // Use pushReplacement so the review page sits directly on top of
+            // ActivityTabPage — popping from the review page skips LessonDetailPage.
+            NavigationUtil.navigateReplacePage(
               context,
               LessonCompletedReviewPage(
                 moduleName: _cubit.lessonDetail?.lessonModule?.name ?? '',
@@ -227,12 +237,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                     _onShareLesson(shareContext, _cubit.currentSectionDetail!),
               ),
             );
-            if (widget.smartGoal?.id != null) {
-              await HomeClient().completeSmartGoal(DateTime.now(),
-                  widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
-            }
-            NavigationUtil.pop(context, result: result ?? 1);
-            BotToast.closeAllLoading();
           }
         },
         builder: (context, state) {
@@ -1021,7 +1025,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
     Observable.instance
         .notifyObservers([], notifyName: "refresh_home_activity");
     if (_cubit.sectionList.length == 1 && _isShowModal == false) {
-      NavigationUtil.navigatePage(
+      // Use pushReplacement so the review page sits directly on top of
+      // ActivityTabPage — popping from the review page skips LessonDetailPage.
+      NavigationUtil.navigateReplacePage(
         context,
         LessonCompletedReviewPage(
           moduleName: _cubit.lessonDetail?.lessonModule?.name ?? '',
@@ -1032,10 +1038,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           note: _cubit.review?.note ?? '',
           onShare: (BuildContext shareContext) => _onShareLesson(shareContext, _cubit.currentSectionDetail!),
         ),
-      ).then((_) {
-        NavigationUtil.pop(context, result: 1);
-        BotToast.closeAllLoading();
-      });
+      );
       setState(() {
         _isShowModal = true;
       });
