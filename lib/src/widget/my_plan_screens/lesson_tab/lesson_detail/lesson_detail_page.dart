@@ -192,12 +192,28 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
               return;
             }
 
+            // Pause and dispose media before navigating to the review page so
+            // audio/video does not continue playing in the background.
+            debugPrint('[VIDEO] Pausing media before navigating to review page');
+            try {
+              _cubit.videoManager?.controller.then((controller) {
+                controller?.pause();
+              }).catchError((_) {});
+            } catch (_) {}
+            try {
+              _cubit.audioManager?.controller?.pause();
+            } catch (_) {}
+            _cubit.videoManager?.disposeAllVideo();
+            _cubit.audioManager?.disposeAllAudio();
+
             LessonDetailTracking.lessonCompleted(
               objectId: _cubit.lessonDetail?.id,
               objectTitle: _cubit.lessonDetail?.name,
             );
             final int rating = _cubit.review?.rating ?? 0;
             final String note = _cubit.review?.note ?? '';
+            // [onShare] receives the review page's own [BuildContext] so that
+            // share_plus can anchor the iOS share popover to the correct widget.
             final dynamic result = await NavigationUtil.navigatePage(
               context,
               LessonCompletedReviewPage(
@@ -207,8 +223,8 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
                 imageUrl: _cubit.lessonDetail?.image?.url ?? '',
                 rating: rating,
                 note: note,
-                onShare: () =>
-                    _onShareLesson(context, _cubit.currentSectionDetail!),
+                onShare: (BuildContext shareContext) =>
+                    _onShareLesson(shareContext, _cubit.currentSectionDetail!),
               ),
             );
             if (widget.smartGoal?.id != null) {
@@ -1014,7 +1030,7 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           imageUrl: _cubit.lessonDetail?.image?.url ?? '',
           rating: _cubit.review?.rating ?? 0,
           note: _cubit.review?.note ?? '',
-          onShare: () => _onShareLesson(context, _cubit.currentSectionDetail!),
+          onShare: (BuildContext shareContext) => _onShareLesson(shareContext, _cubit.currentSectionDetail!),
         ),
       ).then((_) {
         NavigationUtil.pop(context, result: 1);
@@ -1186,6 +1202,9 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
         lessonDescription: _cubit.lessonDescription,
       );
     }
+    // Use the provided context (which should belong to the currently-visible
+    // page/widget) so that share_plus can locate the correct RenderBox anchor
+    // for the iOS UIActivityViewController popover.
     AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 

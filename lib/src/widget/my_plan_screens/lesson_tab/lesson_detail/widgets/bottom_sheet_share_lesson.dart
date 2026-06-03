@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widgets/block_bottom_sheet.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 
@@ -36,6 +37,8 @@ class BottomSheetShareLesson extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlockBottomSheet(
       onClose: () {
+        // BlockBottomSheet already calls Navigator.pop() before this callback,
+        // so we just invoke onCancel for any follow-up navigation.
         onCancel();
       },
       title: 'Chia sẻ bài học',
@@ -92,8 +95,9 @@ class BottomSheetShareLesson extends StatelessWidget {
                     textColor: R.color.accentColor,
                     title: R.string.completed.tr(),
                     onPressed: () {
-                      // Do not pop here: [onCancel] may use [NavigationUtil.popUntilTabbar]
-                      // to remove this sheet and lesson detail in one go (smoother UX).
+                      // Pop the bottom sheet first to prevent iOS transition conflicts
+                      // which cause a black screen when popping multiple routes at once.
+                      NavigationUtil.pop(context);
                       onCancel();
                     },
                     textSize: 14,
