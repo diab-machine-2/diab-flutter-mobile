@@ -8,9 +8,11 @@ class FoodActionPopup extends StatelessWidget {
   const FoodActionPopup({
     Key? key,
     this.fromDashboard = false,
+    this.goalId,
   }) : super(key: key);
 
   final bool fromDashboard;
+  final String? goalId;
 
   void _handleItemTap(
       BuildContext context, String timeframeId, String timeframe) {
@@ -22,7 +24,7 @@ class FoodActionPopup extends StatelessWidget {
     //   fromDashboard: fromDashboard,
     // );
     Navigator.pushNamed(context, NavigatorName.food_image_capture,
-        arguments: {'timeframe': timeframe, 'timeframeId': timeframeId});
+        arguments: {'timeframe': timeframe, 'timeframeId': timeframeId, 'goalId': goalId});
   }
 
   @override
@@ -150,7 +152,7 @@ class FoodActionPopup extends StatelessWidget {
   }
 
   // Static method to show the popup
-  static void show(BuildContext context, {bool fromDashboard = false}) {
+  static void show(BuildContext context, {bool fromDashboard = false, String? goalId}) {
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -163,7 +165,7 @@ class FoodActionPopup extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
-        child: FoodActionPopup(fromDashboard: fromDashboard),
+        child: FoodActionPopup(fromDashboard: fromDashboard, goalId: goalId),
       ),
     );
   }

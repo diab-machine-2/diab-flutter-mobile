@@ -717,7 +717,7 @@ class _DsmesAppointmentPageState extends State<DsmesAppointmentPage>
                   _currentRoute = NavigatorName.dsmes_booking_history;
                 },
                 child: Container(
-                  width: 90,
+                  // width: 90,
                   height: 33,
                   padding: EdgeInsets.symmetric(vertical: 4, horizontal: 6),
                   margin: EdgeInsets.fromLTRB(0, 12, 16, 12),

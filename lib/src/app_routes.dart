@@ -205,6 +205,7 @@ class AppRoutes {
               data?['files'] != null ? List<String>.from(data!['files']) : [],
           mealScoreData: data?['mealScoreData'] as Map<String, dynamic>?,
           isManualInput: data?['isManualInput'] == true,
+          goalId: data?['goalId'],
         );
         break;
       case NavigatorName.food_image_capture:
@@ -212,6 +213,7 @@ class AppRoutes {
         page = FoodImageCapture(
           timeframe: data?['timeframe'] ?? '-',
           timeframeId: data?['timeframeId'] ?? '-',
+          goalId: data?['goalId'],
         );
         break;
       // ~ END: Dinh Duong (mới) ~

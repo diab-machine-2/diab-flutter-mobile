@@ -19,11 +19,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class FoodImageCapture extends StatefulWidget {
   const FoodImageCapture(
-      {Key? key, required this.timeframe, required this.timeframeId})
+      {Key? key, required this.timeframe, required this.timeframeId, this.goalId})
       : super(key: key);
 
   final String timeframe;
   final String timeframeId;
+  final String? goalId;
 
   @override
   State<FoodImageCapture> createState() => _FoodImageCaptureState();
@@ -1149,6 +1150,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
               'files': imagePaths,
               'mealScoreData': mealScoreData,
               'isManualInput': false,
+              'goalId': widget.goalId,
             });
       } else {
         BotToast.closeAllLoading(); // Close all toasts including custom text

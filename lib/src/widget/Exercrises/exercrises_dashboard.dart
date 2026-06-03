@@ -91,11 +91,12 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
 
   void _goBack() {
     if (Navigator.canPop(context)) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        NavigatorName.tabbar,
-        (route) => false,
-      );
+      // Navigator.pushNamedAndRemoveUntil(
+      //   context,
+      //   NavigatorName.tabbar,
+      //   (route) => false,
+      // );
+      Navigator.of(context).pop();
     } else {
       BotToast.showText(
         text: 'Opps! You can not go back',
@@ -164,7 +165,7 @@ class _ExercriseDashboardState extends State<ExercriseDashboard>
                 R.string.exercise.tr(),
                 style: TextStyle(
                   color: R.color.white,
-                fontSize: 20,
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 20 * 0.002,
                 ),

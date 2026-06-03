@@ -18,6 +18,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
+import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'food_result.dto.dart';
 import 'search_food_controller.dart';
 import 'widget/food_edit_popup.dart';
@@ -29,6 +31,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
   final List<String> files;
   final Map<String, dynamic>? mealScoreData;
   final bool isManualInput;
+  final String? goalId;
 
   const ConfirmGeneratedFood({
     Key? key,
@@ -38,6 +41,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
     required this.files,
     this.mealScoreData,
     this.isManualInput = false,
+    this.goalId,
   }) : super(key: key);
 
   @override
@@ -737,6 +741,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           ? (result == true || result is Map<String, dynamic>)
           : (result is String && result.isNotEmpty);
       if (isSubmitSuccess) {
+        if (widget.goalId != null && widget.goalId!.isNotEmpty) {
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
+              1, ScheduleType.food.typeIndex);
+        }
         // Clean up temporary files
         if (paths.isNotEmpty) {
           await _cleanupTempFiles(paths);

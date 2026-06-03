@@ -63,7 +63,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
         Column(
           children: [
             CustomAppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: R.color.transparent,
               title: Text(
                 R.string.center_information.tr(),
                 style: TextStyle(
@@ -88,7 +88,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Column(
                     children: [
                       _cubit.selectedClinic != null
@@ -174,7 +174,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                           runSpacing: 6,
                           children: data.specialty.take(3).map((e) {
                             return Container(
-                                height: 20,
+                                // height: 20,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
@@ -199,7 +199,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
             ),
             GapH(12),
             Container(
-              height: 70,
+              // height: 70,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(R.drawable.map_location_bg),
@@ -251,7 +251,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                             }
                           : null,
                       child: Container(
-                        width: 120,
+                        // width: 120,
                         decoration: BoxDecoration(
                           color: R.color.color0xff00B83D,
                           borderRadius: BorderRadius.circular(20),
@@ -517,7 +517,7 @@ class _DsmesClinicDetailPageState extends State<DsmesClinicDetailPage> {
                     runSpacing: 6,
                     children: data.suggestion.map((e) {
                       return Container(
-                          height: 20,
+                          // height: 20,
                           padding:
                               EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
