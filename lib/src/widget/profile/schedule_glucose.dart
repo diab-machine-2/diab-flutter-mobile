@@ -199,6 +199,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                     Row(
                                       children: [
                                         _buildButton(
+                                            context: context,
                                             title: R.string.setup.tr(),
                                             icon: R.drawable.ic_alarm,
                                             onTap: () {
@@ -209,6 +210,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
                                             }),
                                         const SizedBox(width: 16),
                                         _buildButton(
+                                          context: context,
                                           title: R
                                               .string.testing_schedule_suggest
                                               .tr(),
@@ -532,10 +534,16 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(icon, width: 51, height: 34),
               const SizedBox(width: 8),
-              Text(title,
-                  style: TextStyle(
-                      color: highlight ? R.color.mainColor : R.color.gray,
-                      fontSize: 16))
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                child: Text(title,
+                    style: TextStyle(
+                        color: highlight ? R.color.mainColor : R.color.gray,
+                        fontSize: 16)),
+              )
             ])),
       ),
     );
@@ -678,6 +686,7 @@ class _ScheduleGlucoseControllerState extends State<ScheduleGlucoseController>
 }
 
 Widget _buildButton({
+  required BuildContext context,
   required String title,
   required String icon,
   required VoidCallback onTap,
@@ -695,12 +704,18 @@ Widget _buildButton({
         children: [
           Image.asset(icon, width: 24, height: 24),
           const SizedBox(width: 8),
-          Text(
-            title,
-            style: TextStyle(
-                color: R.color.mainColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w600),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+            child: Text(
+              title,
+              style: TextStyle(
+                  color: R.color.mainColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

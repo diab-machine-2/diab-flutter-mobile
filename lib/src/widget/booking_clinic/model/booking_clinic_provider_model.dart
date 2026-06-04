@@ -204,8 +204,8 @@ class ClinicService {
       name: json['name'] ?? json['vi'] ?? '',
       type: json['type'] ?? '',
       id: normalizedId,
-      fromPrice: json['from_price'],
-      price: json['price'],
+      fromPrice: _parseFromPrice(json['from_price'], json['price']),
+      price: json['price']?.toString() ?? '',
     );
   }
 
@@ -217,6 +217,23 @@ class ClinicService {
     if (parts.length <= 1) return rawId;
     final lastPart = parts.last.trim();
     return lastPart.isEmpty ? rawId : lastPart;
+  }
+
+  static int _parseFromPrice(dynamic fromPrice, dynamic price) {
+    if (fromPrice is int) return fromPrice;
+    if (fromPrice is double) return fromPrice.toInt();
+    if (fromPrice is String) {
+      final normalized = fromPrice.replaceAll(RegExp(r'[^0-9]'), '');
+      final parsed = int.tryParse(normalized);
+      if (parsed != null) return parsed;
+    }
+
+    if (price is String) {
+      final normalized = price.replaceAll(RegExp(r'[^0-9]'), '');
+      return int.tryParse(normalized) ?? 0;
+    }
+
+    return 0;
   }
 }
 

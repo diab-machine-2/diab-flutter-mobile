@@ -29,6 +29,7 @@ import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -73,7 +74,7 @@ class SmartGoalNavigationUtil {
     ScheduleType type, {
     SmartGoalList? smartGoal,
     String? title,
-    VoidCallback? onRefreshData,
+    Future<void> Function()? onRefreshData,
   }) async {
     // Track event if title is provided
     if (title != null && _config.trackingEnabled) {
@@ -124,7 +125,6 @@ class SmartGoalNavigationUtil {
         _showCoachingPopup(context, smartGoal);
         break;
       case ScheduleType.survey:
-      case ScheduleType.quiz:
         _showSurveyPopup(context, survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
@@ -134,6 +134,7 @@ class SmartGoalNavigationUtil {
       case ScheduleType.lesson:
       case ScheduleType.infographic:
       case ScheduleType.book_1_n:
+      case ScheduleType.quiz:
         await _handleLesson(context, smartGoal);
         break;
       case ScheduleType.io_evaluate:
@@ -184,9 +185,9 @@ class SmartGoalNavigationUtil {
         break;
     }
 
-    // Call refresh callback if provided
+    // Call refresh callback if provided (await so callers can act after data reload)
     if (onRefreshData != null) {
-      onRefreshData();
+      await onRefreshData();
     }
   }
 
@@ -277,10 +278,7 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handleFood(
       BuildContext context, SmartGoalList? smartGoal) async {
-    await NavigationUtil.navigatePage(
-      context,
-      DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
-    );
+    FoodActionPopup.show(context);
   }
 
   static Future<void> _handleExercise(
@@ -333,7 +331,9 @@ class SmartGoalNavigationUtil {
           smartGoal: smartGoal,
         ));
 
-    Observable.instance.notifyObservers([], notifyName: "refresh_lesson_tab");
+    // Do not notify refresh_lesson_tab here: LessonDetailCubit already does when the
+    // lesson is completed, and a second refresh while returning to Program could fight
+    // with library-tab observers. Activity/home still need refresh_home.
     Observable.instance.notifyObservers([], notifyName: "refresh_home");
   }
 

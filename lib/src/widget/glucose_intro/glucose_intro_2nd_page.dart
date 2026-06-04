@@ -299,6 +299,7 @@ class _GlucoseIntro2ndPageState extends State<GlucoseIntro2ndPage> {
           children: [
             NetWorkImageWidget(
               imageUrl: imageUrl,
+              fallbackImageUrl: R.drawable.ic_error_lesson_image,
               fit: BoxFit.cover,
               width: 72,
               height: 72,

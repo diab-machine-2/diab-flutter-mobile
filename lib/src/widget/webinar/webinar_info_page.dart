@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:medical/res/R.dart';
@@ -106,25 +107,36 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     BotToast.showLoading();
     try {
       await _repository.registerLearningPostEvent(webinar.id ?? '');
-      Message.showToastMessage(context, 'Đăng ký tham gia thành công');
+      _finishRegisterLoading();
 
-      // After successful registration, add this event to device calendar
-      await _addEventToCalendar(webinar);
+      if (!mounted) return;
+      Message.showToastMessage(context, R.string.webinar_register_success.tr());
 
       // Reload data to update isJoin status
-      _loadData();
+      await _loadData();
+
+      // After successful registration, add this event to device calendar.
+      // On iOS this call can hand off to Calendar without completing reliably,
+      // so registration loading must already be cleared before this await.
+      await _addEventToCalendar(webinar);
     } catch (e) {
-      Message.showToastMessage(
-          context,
-          NetworkExceptions.getErrorMessage(
-              NetworkExceptions.getDioException(e)));
-    } finally {
-      BotToast.closeAllLoading();
       if (mounted) {
-        setState(() {
-          _registering = false;
-        });
+        Message.showToastMessage(
+            context,
+            NetworkExceptions.getErrorMessage(
+                NetworkExceptions.getDioException(e)));
       }
+    } finally {
+      _finishRegisterLoading();
+    }
+  }
+
+  void _finishRegisterLoading() {
+    BotToast.closeAllLoading();
+    if (mounted && _registering) {
+      setState(() {
+        _registering = false;
+      });
     }
   }
 
@@ -138,23 +150,26 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
         _getEventEndDateTime(webinar) ?? start.add(const Duration(hours: 1));
 
     final isOfflineEvent = webinar.eventType == true;
-    final location =
-        isOfflineEvent ? (webinar.eventAddress ?? '') : 'Sự kiện trực tuyến';
+    final location = isOfflineEvent
+        ? (webinar.eventAddress ?? '')
+        : R.string.webinar_online_event.tr();
 
     String description = webinar.content ?? '';
-    
+
     // If it's an online event, add the zoom link to the description
     if (!isOfflineEvent && webinar.link != null && webinar.link!.isNotEmpty) {
       if (description.isNotEmpty) {
         description += '\n\n';
       }
-      description += 'Link tham gia: ${webinar.link}';
+      description +=
+          R.string.webinar_calendar_join_link.tr(args: [webinar.link ?? '']);
     }
 
     final event = Event(
       title: webinar.title,
-      description:
-          description.isNotEmpty ? description : 'Sự kiện từ ứng dụng DiaB',
+      description: description.isNotEmpty
+          ? description
+          : R.string.webinar_calendar_description.tr(),
       location: location.isNotEmpty ? location : null,
       startDate: start,
       endDate: end,
@@ -175,7 +190,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     if (await canLaunchUrl(launchUri)) {
       await launchUrl(launchUri);
     } else {
-      Message.showToastMessage(context, 'Không thể mở liên kết');
+      Message.showToastMessage(context, R.string.webinar_cannot_open_link.tr());
     }
   }
 
@@ -195,12 +210,13 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
     final lessonType = webinar.lesson?.type;
 
     if (lessonId == null || lessonId.isEmpty) {
-      Message.showToastMessage(context, 'Không có bài học để xem lại');
+      Message.showToastMessage(context, R.string.webinar_no_replay_lesson.tr());
       return;
     }
 
     if (lessonType == null) {
-      Message.showToastMessage(context, 'Không thể xác định loại bài học');
+      Message.showToastMessage(
+          context, R.string.webinar_cannot_identify_lesson_type.tr());
       return;
     }
 
@@ -230,8 +246,9 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
           ? (box.localToGlobal(Offset.zero) & box.size) as Rect?
           : null;
       await Share.share(
-        '${user.fullName} đã chia sẻ cho bạn sự kiện ${webinar.title} từ ứng dụng DiaB - ứng dụng tự quản lý bệnh đái tháo đường và kết nối với chuyên gia.\n$shareLink',
-        subject: 'DIAB | Ứng dụng giúp quản lý đường huyết hiệu quả',
+        R.string.webinar_share_content
+            .tr(args: [user.fullName ?? '', webinar.title, shareLink]),
+        subject: R.string.webinar_share_subject.tr(),
         sharePositionOrigin: sharePositionOrigin,
       );
     } catch (e) {
@@ -463,7 +480,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : webinar == null
-              ? const Center(child: Text('Không tìm thấy sự kiện'))
+              ? Center(child: Text(R.string.webinar_not_found.tr()))
               : Column(
                   children: [
                     Expanded(
@@ -516,7 +533,13 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                                   ),
                                                   GapW(4.w),
                                                   Text(
-                                                    'Sẽ diễn ra sau ${_calculateHoursUntilEvent(webinar)} tiếng',
+                                                    R.string
+                                                        .webinar_upcoming_in_hours
+                                                        .tr(args: [
+                                                      _calculateHoursUntilEvent(
+                                                              webinar)
+                                                          .toString()
+                                                    ]),
                                                     style: TextStyle(
                                                       fontSize: 15.sp,
                                                       color: Colors.white,
@@ -574,7 +597,9 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                                         ),
                                                         GapW(6.w),
                                                         Text(
-                                                          'Đang diễn ra',
+                                                          R.string
+                                                              .status_actived
+                                                              .tr(),
                                                           style: TextStyle(
                                                             fontSize: 11.sp,
                                                             fontWeight:
@@ -627,7 +652,8 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                               child: Row(
                                                 children: [
                                                   Text(
-                                                    'Đã kết thúc sự kiện',
+                                                    R.string.webinar_event_ended
+                                                        .tr(),
                                                     style: TextStyle(
                                                       fontSize: 15.sp,
                                                       color: Colors.white,
@@ -668,7 +694,12 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                             ),
                                             if (webinar.eventJoinCount != null)
                                               Text(
-                                                '${webinar.eventJoinCount} lượt đăng ký',
+                                                R.string
+                                                    .webinar_registration_count
+                                                    .tr(args: [
+                                                  webinar.eventJoinCount
+                                                      .toString()
+                                                ]),
                                                 style: TextStyle(
                                                   fontSize: 12.sp,
                                                   color:
@@ -759,7 +790,10 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                                     if (uri != null &&
                                                         await canLaunchUrl(
                                                             uri)) {
-                                                      await launchUrl(uri);
+                                                      // await launchUrl(uri);
+                                                      FlutterBranchSdk
+                                                          .handleDeepLink(
+                                                              uri.toString());
                                                     }
                                                   }
                                                 },
@@ -768,7 +802,9 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                                   webinar.eventType == true
                                                       ? (webinar.eventAddress ??
                                                           '')
-                                                      : 'Sự kiện trực tuyến',
+                                                      : R.string
+                                                          .webinar_online_event
+                                                          .tr(),
                                                   style: TextStyle(
                                                     fontSize: 13.sp,
                                                     color:
@@ -795,7 +831,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Thông tin chương trình',
+                                    R.string.webinar_program_info.tr(),
                                     style: TextStyle(
                                       fontSize: 18.sp,
                                       fontWeight: FontWeight.w700,
@@ -822,7 +858,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                     top: 16.h,
                                     bottom: 8.h),
                                 child: Text(
-                                  'Sự kiện tương tự',
+                                  R.string.webinar_similar_events.tr(),
                                   style: TextStyle(
                                     fontSize: 18.sp,
                                     fontWeight: FontWeight.w700,
@@ -1197,7 +1233,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                                 ),
                                 GapW(6.w),
                                 Text(
-                                  'Đang diễn ra',
+                                  R.string.status_actived.tr(),
                                   style: TextStyle(
                                     fontSize: 11.sp,
                                     fontWeight: FontWeight.w600,
@@ -1286,7 +1322,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                     // eventType true = offline, false = online
                     item.eventType == true
                         ? (item.eventAddress ?? '')
-                        : 'Sự kiện trực tuyến',
+                        : R.string.webinar_online_event.tr(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -1301,7 +1337,8 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
             // {eventJoinCount} lượt tham gia
             if (item.eventJoinCount != null)
               Text(
-                '${item.eventJoinCount} lượt tham gia',
+                R.string.webinar_participant_count
+                    .tr(args: [item.eventJoinCount.toString()]),
                 style: TextStyle(
                   fontSize: 12.sp,
                   color: const Color(0xFF6B7280),
@@ -1345,7 +1382,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
             ),
             child: Center(
               child: Text(
-                'Xem lại sự kiện',
+                R.string.webinar_watch_replay.tr(),
                 style: TextStyle(
                   color: R.color.greenGradientBottom,
                   fontSize: 15,
@@ -1382,7 +1419,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
             ),
             child: Center(
               child: Text(
-                'Tham gia ngay',
+                R.string.join_now.tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -1419,7 +1456,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                 ),
                 GapW(8.w),
                 Text(
-                  'Đã đăng ký',
+                  R.string.webinar_registered.tr(),
                   style: TextStyle(
                     color: const Color(0xff0FB4A5),
                     fontSize: 16,
@@ -1460,7 +1497,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                     ),
                   )
                 : Text(
-                    'Đăng ký tham gia',
+                    R.string.webinar_register_participation.tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -1498,7 +1535,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
               ),
               GapW(8.w),
               Text(
-                'Đã đăng ký',
+                R.string.webinar_registered.tr(),
                 style: TextStyle(
                   color: const Color(0xff0FB4A5),
                   fontSize: 16,
@@ -1540,7 +1577,7 @@ class _WebinarInfoPageState extends State<WebinarInfoPage> {
                   ),
                 )
               : Text(
-                  'Đăng ký tham gia',
+                  R.string.webinar_register_participation.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

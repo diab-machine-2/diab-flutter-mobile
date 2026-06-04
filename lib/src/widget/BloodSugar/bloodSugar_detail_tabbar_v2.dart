@@ -452,12 +452,18 @@ class _BloodSugarDetailTabbarControllerState
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                R.string.ai_suggestion_glucose.tr(),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: R.color.textDark,
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                    textScaler: MediaQuery.of(context)
+                        .textScaler
+                        .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                child: Text(
+                  R.string.ai_suggestion_glucose.tr(),
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: R.color.textDark,
+                  ),
                 ),
               ),
               const SizedBox(width: 6),
@@ -520,8 +526,8 @@ class _BloodSugarDetailTabbarControllerState
             Expanded(
               child: Text(
                 _haveGlucoseScheduler
-                    ? 'Lịch đo đường huyết của bạn'
-                    : 'Gợi ý lịch đo từ chuyên gia',
+                    ? R.string.lich_do_duong_huyet_cua_ban.tr()
+                    : R.string.goi_y_lich_do_tu_chuyen_gia.tr(),
               ),
             ),
             Icon(Icons.arrow_forward_ios,

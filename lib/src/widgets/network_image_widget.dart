@@ -7,14 +7,16 @@ import 'package:medical/res/R.dart';
 class NetWorkImageWidget extends StatelessWidget {
   const NetWorkImageWidget({
     required this.imageUrl,
+    this.fallbackImageUrl,
     this.showLoading = true,
     this.width,
     this.height,
-    this.fit = BoxFit.fill,
+    this.fit = BoxFit.cover,
     this.isSelected = false,
   });
 
   final String? imageUrl;
+  final String? fallbackImageUrl; // For lesson placeholder
   final double? width;
   final double? height;
   final bool showLoading;
@@ -23,6 +25,41 @@ class NetWorkImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (fallbackImageUrl != null) {
+      return _buildLessonCachedImage();
+    } else {
+      return _buildCachedImage();
+    }
+  }
+
+  Widget _buildLessonCachedImage() {
+    return LayoutBuilder(builder: (context, constraint) {
+      final double? effectiveHeight = height ??
+          (constraint.maxHeight.isFinite ? constraint.maxHeight : null);
+      final double? effectiveWidth =
+          width ?? (constraint.maxWidth.isFinite ? constraint.maxWidth : null);
+
+      return imageUrl?.isNotEmpty != true
+          ? _buildErrorLessonWidget(effectiveWidth, effectiveHeight)
+          : CachedNetworkImage(
+              width: effectiveWidth,
+              height: effectiveHeight,
+              imageUrl: imageUrl!,
+              color: isSelected ? Colors.white : null,
+              fit: fit,
+              placeholder: showLoading
+                  ? (_, __) {
+                      return Container(color: R.color.transparent);
+                    }
+                  : null,
+              errorWidget: (_, __, ___) {
+                return _buildErrorLessonWidget(effectiveWidth, effectiveHeight);
+              },
+            );
+    });
+  }
+
+  Widget _buildCachedImage() {
     return LayoutBuilder(builder: (context, constraint) {
       late final double errorIconSize;
 
@@ -45,7 +82,7 @@ class NetWorkImageWidget extends StatelessWidget {
               height: height,
               imageUrl: imageUrl!,
               color: isSelected ? Colors.white : null,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               placeholder: showLoading
                   ? (_, __) {
                       return Container(color: R.color.transparent);
@@ -56,6 +93,26 @@ class NetWorkImageWidget extends StatelessWidget {
               },
             );
     });
+  }
+
+  Widget _buildErrorLessonWidget(
+      double? effectiveWidth, double? effectiveHeight) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(6),
+      child: Container(
+        alignment: Alignment.center,
+        height: effectiveHeight,
+        width: effectiveWidth,
+        color: R.color.main_6,
+        child: Image.asset(
+          fallbackImageUrl ?? R.drawable.ic_error_lesson_image,
+          fit: fit,
+          alignment: Alignment.center,
+          height: effectiveHeight,
+          width: effectiveWidth ?? double.infinity,
+        ),
+      ),
+    );
   }
 
   Widget _buildErrorWidget(double errorIconSize, BoxConstraints constraint) {

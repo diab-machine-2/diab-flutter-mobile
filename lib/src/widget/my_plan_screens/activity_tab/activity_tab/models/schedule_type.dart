@@ -412,19 +412,43 @@ extension ScheduleTypeExtend on ScheduleType {
     return ScheduleType.custom;
   }
 
+  /// Type index 11 is shared by [ScheduleType.lesson] and [ScheduleType.quiz].
+  /// When the list payload omits [lessonNested] / full [lessonData], use
+  /// [activityName] / [activityDescription] (e.g. Vietnamese "Trắc nghiệm") or
+  /// lesson `type == 3` (quiz) from partial lesson data.
   static ScheduleType getTypeFromIndexWithLessonData(int? index,
-      {LessonSectionListResponseData? lessonData}) {
+      {LessonSectionListResponseData? lessonData,
+      LessonSectionListResponseData? lessonNested,
+      String? activityName,
+      String? activityDescription}) {
     final type = getTypeFromIndex(index);
-    // If type is lesson (11) and lessonData is provided, check if it's quiz
-    if (type == ScheduleType.lesson && index == 11) {
-      // Check if lessonData.code contains "quiz" - if yes, it's a quiz
-      if (lessonData != null) {
-        final lessonCode = lessonData.code?.toLowerCase() ?? '';
-        if (lessonCode.contains('quiz')) {
-          return ScheduleType.quiz;
-        }
+    if (type == ScheduleType.lesson && index == ScheduleType.lesson.typeIndex) {
+      if (_isType11QuizContent(
+          lessonData: lessonData,
+          lessonNested: lessonNested,
+          activityName: activityName,
+          activityDescription: activityDescription)) {
+        return ScheduleType.quiz;
       }
     }
     return type;
+  }
+
+  static bool _isType11QuizContent({
+    LessonSectionListResponseData? lessonData,
+    LessonSectionListResponseData? lessonNested,
+    String? activityName,
+    String? activityDescription,
+  }) {
+    if (lessonData?.type == 3 || lessonNested?.type == 3) return true;
+    final lessonCode =
+        (lessonData?.code ?? lessonNested?.code ?? '').toLowerCase();
+    if (lessonCode.contains('quiz')) return true;
+    final text =
+        '${activityName ?? ''} ${activityDescription ?? ''}'.toLowerCase();
+    if (text.contains('trắc nghiệm') || text.contains('trac nghiem')) {
+      return true;
+    }
+    return false;
   }
 }

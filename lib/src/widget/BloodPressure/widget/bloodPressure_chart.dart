@@ -1103,7 +1103,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
         11; // Maximum points to show without scrolling (changed from 12)
     const double scrollVisiblePointCount =
         5.5; // Points visible when scrolling (half of 11)
-    const double chartHeight = 120;
+    const double chartHeight = 130;
     double leftTitleWidth = 50;
     double leftTitleMargin = 2;
 
@@ -1376,7 +1376,7 @@ class BloodPressureChartState extends State<BloodPressureChart>
                               bottomTitles: AxisTitles(
                                 sideTitles: SideTitles(
                                   showTitles: true,
-                                  reservedSize: 16,
+                                  reservedSize: 24,
                                   interval: 1,
                                   getTitlesWidget:
                                       (double value, TitleMeta meta) {
@@ -1393,22 +1393,30 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                       return const Text('--');
                                     }
                                     // return heart rate value
-                                    return Text(
-                                      trends[index]
-                                          .pulseRate!
-                                          .round()
-                                          .toString(),
-                                      style: TextStyle(
-                                          color: _focusIndex == value.toInt()
-                                              ? R.color.color0xff111515
-                                              : R.color.color0xff636A6B,
-                                          fontSize: 12,
-                                          fontWeight:
-                                              _focusIndex == value.toInt()
-                                                  ? FontWeight.w700
-                                                  : FontWeight.normal,
-                                          fontFamily: R.font.sfpro,
-                                          height: 1.5),
+                                    return MediaQuery(
+                                      data: MediaQuery.of(context).copyWith(
+                                          textScaler: MediaQuery.of(context)
+                                              .textScaler
+                                              .clamp(
+                                                  minScaleFactor: 1.0,
+                                                  maxScaleFactor: 1.3)),
+                                      child: Text(
+                                        trends[index]
+                                            .pulseRate!
+                                            .round()
+                                            .toString(),
+                                        style: TextStyle(
+                                            color: _focusIndex == value.toInt()
+                                                ? R.color.color0xff111515
+                                                : R.color.color0xff636A6B,
+                                            fontSize: 12,
+                                            fontWeight:
+                                                _focusIndex == value.toInt()
+                                                    ? FontWeight.w700
+                                                    : FontWeight.normal,
+                                            fontFamily: R.font.sfpro,
+                                            height: 1.5),
+                                      ),
                                     );
                                   },
                                 ),

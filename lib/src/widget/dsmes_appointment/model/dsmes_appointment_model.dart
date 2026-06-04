@@ -451,7 +451,8 @@ class Pivot {
 
 enum DsmesAppointmentMode {
   telemedicine,
-  atClinic;
+  atClinic,
+  atHome;
 
   static DsmesAppointmentMode fromString(String value) {
     switch (value.toLowerCase()) {
@@ -459,6 +460,8 @@ enum DsmesAppointmentMode {
         return DsmesAppointmentMode.telemedicine;
       case 'at_clinic':
         return DsmesAppointmentMode.atClinic;
+      case 'at_home':
+        return DsmesAppointmentMode.atHome;
       default:
         throw ArgumentError('Invalid DsmesAppointmentMode value: $value');
     }
@@ -470,6 +473,8 @@ enum DsmesAppointmentMode {
         return 'telemedicine';
       case DsmesAppointmentMode.atClinic:
         return 'at_clinic';
+      case DsmesAppointmentMode.atHome:
+        return 'at_home';
     }
   }
 }

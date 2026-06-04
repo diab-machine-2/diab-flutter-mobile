@@ -213,6 +213,13 @@ abstract class AppApi {
     @Body() LessonFilterRequest request,
   );
 
+  @GET("App/Lesson/LessonModuleType")
+  Future<LessonModuleTypeResponse> getLessonModuleType(
+      @Query('type') int type);
+
+  @GET("App/Lesson/GetRecommendedLessons")
+  Future<LessonModuleTypeResponse> getRecommendedLessons();
+
   @GET("App/Lesson/PrepareSearchFormItem")
   Future<FilterDataResponse> getFilterData();
 
@@ -242,9 +249,7 @@ abstract class AppApi {
   );
 
   @GET("App/ExerciseMovement/All")
-  Future<ExerciseMovementResponse> getExerciseMovement(
-    @Query('week') int? week,
-  );
+  Future<ExerciseMovementResponse> getExerciseMovement();
 
   @GET("App/PackageAccountTransaction/GetContentWelcome")
   Future<ContentWelcomeResponse> getContentWelcome(

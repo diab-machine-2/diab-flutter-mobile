@@ -7,17 +7,15 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
-import 'package:medical/src/app_setting/dynamic_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widgets/common_page.dart';
-import 'package:medical/src/widgets/widget_custom_multi_select_toggle.dart';
 
-import '../exercise_tab/exercise_tab/exercise_tab.dart';
 import '../lesson_tab/lesson_tab/lesson_tab.dart';
+import '../lesson_tab/lesson_tab/lesson_search_page.dart';
 import 'models/plan_type.dart';
 import 'my_plan.dart';
 
@@ -101,10 +99,22 @@ class _MyPlanPageState extends State<MyPlanPage> with Observer {
               BotToast.closeAllLoading();
             }
             return CommonPage(
-              title: R.string.my_plan.tr(),
+              title: R.string.profile_gallery.tr(),
+              textColor: R.color.white,
               backgroundColor: R.color.backgroundColorNew,
-              appbarColor: R.color.white,
+              appbarColor: R.color.greenGradientBottom,
               hideAllBackButton: true,
+              appBarAction: IconButton(
+                splashColor: R.color.transparent,
+                highlightColor: R.color.transparent,
+                icon: Icon(Icons.search, color: R.color.white),
+                onPressed: () {
+                  NavigationUtil.navigatePage(
+                    context,
+                    const LessonSearchPage(),
+                  );
+                },
+              ),
               child: Column(
                 children: [
                   // Container(

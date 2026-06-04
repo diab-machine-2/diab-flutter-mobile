@@ -112,6 +112,7 @@ class _MedicineSessionBottomSheetState
                     return MedicineSessionCard(
                       session: session,
                       isExpanded: !_isSessionAllMedicinesTaken(session),
+                      selectedDate: DateTime.now(),
                       onTap:
                           (prescriptionIndex, medicationIndex, isTaken) async {
                         final med = session.prescriptions[prescriptionIndex]
