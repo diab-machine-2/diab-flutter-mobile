@@ -796,7 +796,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
                 Text(
                   "-",
                   style: TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 13.0,
                       fontFamily: 'sfpro',
                       fontWeight: PickerHelper.getTextFontWeightByState(
                         isSelected: isSlotPicked,
@@ -873,7 +873,7 @@ class _CalendarBookingControllerState extends State<CalendarBookingController> {
           style: TextStyle(
             color: PickerHelper.getTextColorByState(
                 isSelected: isSlotPicked, hasSlot: true),
-            fontSize: 14,
+            fontSize: 13,
             fontFamily: 'sfpro',
             fontWeight:
                 PickerHelper.getTextFontWeightByState(isSelected: isSlotPicked),

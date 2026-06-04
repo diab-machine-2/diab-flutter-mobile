@@ -790,6 +790,7 @@ class App extends StatelessWidget {
                           isUpdate: args?['isUpdate'],
                           exerciseInputId: args?['exerciseInputId'],
                           datetime: args?['datetime'],
+                          goalId: args?['goalId'],
                         ));
                   case NavigatorName.exercrise_select_category:
                     final args = settings.arguments as Map<String, dynamic>;

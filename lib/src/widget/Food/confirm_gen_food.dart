@@ -18,6 +18,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
+import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'food_detail_tabbar.dart';
 import 'search_food_controller.dart';
 
@@ -26,6 +28,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
   final String timeframe;
   final String timeframeId;
   final List<String> files;
+  final String? goalId;
 
   const ConfirmGeneratedFood({
     Key? key,
@@ -33,6 +36,7 @@ class ConfirmGeneratedFood extends StatefulWidget {
     required this.timeframe,
     required this.timeframeId,
     required this.files,
+    this.goalId,
   }) : super(key: key);
 
   @override
@@ -605,6 +609,10 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           name: '[CAPTURE]');
 
       if (result == true) {
+        if (widget.goalId != null && widget.goalId!.isNotEmpty) {
+          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
+              1, ScheduleType.food.typeIndex);
+        }
         // Clean up temporary files created on iOS after successful API submission
         await _cleanupTempFiles(paths);
         Observable.instance.notifyObservers([], notifyName: "food_change_data");

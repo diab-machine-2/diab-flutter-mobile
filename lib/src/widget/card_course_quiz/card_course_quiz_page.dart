@@ -124,7 +124,8 @@ class CardCourseQuizPageState extends State<CardCourseQuizPage>
           ),
           const SizedBox(height: 10),
           Visibility(
-            visible: _cubit.isShowAnswer,
+            // visible: _cubit.isShowAnswer,
+            visible: false, // TODO: Temporary hide until portal setup is ready
             child: Center(
               child: GestureDetector(
                 onTap: () {

@@ -206,6 +206,7 @@ class AppRoutes {
           timeframeId: data?['timeframeId'] ?? '-',
           files:
               data?['files'] != null ? List<String>.from(data!['files']) : [],
+          goalId: data?['goalId'],
         );
         break;
       case NavigatorName.food_image_capture:
@@ -213,6 +214,7 @@ class AppRoutes {
         page = FoodImageCapture(
           timeframe: data?['timeframe'] ?? '-',
           timeframeId: data?['timeframeId'] ?? '-',
+          goalId: data?['goalId'],
         );
         break;
       // ~ END: Dinh Duong (mới) ~

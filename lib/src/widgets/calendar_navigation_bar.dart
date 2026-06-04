@@ -156,7 +156,7 @@ class CalendarNavigationBar extends StatelessWidget {
                 '${DateUtil.weekDayToString(currentDate)} - ${convertToUTC(DateUtil.getDayInMillis(currentDate), 'dd/MM')}',
                 style: TextStyle(
                   color: R.color.textDark,
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
               ),

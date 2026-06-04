@@ -27,7 +27,7 @@ class LessonCompletedReviewPage extends StatefulWidget {
   final String imageUrl;
   final int rating;
   final String note;
-  final VoidCallback onShare;
+  final ValueChanged<BuildContext> onShare;
 
   @override
   State<LessonCompletedReviewPage> createState() =>
@@ -480,7 +480,7 @@ class _LessonCompletedReviewPageState extends State<LessonCompletedReviewPage> {
                     child: SizedBox(
                       height: 44,
                       child: ElevatedButton(
-                        onPressed: widget.onShare,
+                        onPressed: () => widget.onShare(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: R.color.mainColor,
                           foregroundColor: R.color.white,
