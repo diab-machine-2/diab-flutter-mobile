@@ -237,15 +237,22 @@ class _CustomCalendarDatePickerState extends State<CustomHorizontalDatePicker> {
                       fontFamily: 'sfpro',
                     ),
                   ),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(
-                      color: PickerHelper.getTextColorByState(
-                          isSelected: isSelected, hasSlot: hasSlot),
-                      fontWeight: PickerHelper.getTextFontWeightByState(
-                          isSelected: isSelected),
-                      fontSize: 15,
-                      fontFamily: 'sfpro',
+                  MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                    ),
+                    child: Text(
+                      formattedDate,
+                      style: TextStyle(
+                        color: PickerHelper.getTextColorByState(
+                            isSelected: isSelected, hasSlot: hasSlot),
+                        fontWeight: PickerHelper.getTextFontWeightByState(
+                            isSelected: isSelected),
+                        fontSize: 15,
+                        fontFamily: 'sfpro',
+                      ),
                     ),
                   ),
                 ],

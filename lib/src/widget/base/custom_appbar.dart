@@ -40,6 +40,22 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: widget.backgroundColor,
+      flexibleSpace: widget.backgroundColor == null
+          ? null
+          : (widget.backgroundColor == R.color.transparent
+              ? Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        R.color.greenGradientMid,
+                        R.color.greenGradientBottom,
+                      ],
+                    ),
+                  ),
+                )
+              : null),
       title: widget.showRightCloseButton == true ||
               widget.hideAllBackButton == true
           ? widget.title

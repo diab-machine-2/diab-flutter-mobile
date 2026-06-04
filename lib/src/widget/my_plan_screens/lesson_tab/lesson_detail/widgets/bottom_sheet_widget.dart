@@ -11,12 +11,20 @@ class BottomSheetWidget extends StatefulWidget {
     required this.sectionList,
     required this.currentSection,
     required this.onChangeSection,
+    this.canNavigateForward = true,
+    this.onBlockedForwardNavigation,
   });
 
   final List<LessonSectionItem?> sectionList;
   final LessonSectionListResponseData lessonDetail;
   final int currentSection;
   final Function(int newIndex) onChangeSection;
+
+  /// When false, taps on a section after the current one are ignored (matches next-button rules).
+  final bool canNavigateForward;
+
+  /// Called when user taps a later section while [canNavigateForward] is false.
+  final VoidCallback? onBlockedForwardNavigation;
 
   @override
   _BottomSheetWidgetState createState() => _BottomSheetWidgetState();
@@ -73,6 +81,15 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                             sectionDetail: widget.sectionList[index],
                             isSelected: index == currentSection,
                             onTap: () async {
+                              if (index == widget.currentSection) {
+                                NavigationUtil.pop(context);
+                                return;
+                              }
+                              if (index > widget.currentSection &&
+                                  !widget.canNavigateForward) {
+                                widget.onBlockedForwardNavigation?.call();
+                                return;
+                              }
 
                               if (widget.sectionList[index]?.name ==
                                   'Câu hỏi trắc nghiệm') {
@@ -147,9 +164,9 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-            color: isSelected ? R.color.greenbg : R.color.white,
+            color: isSelected ? R.color.backgroundColorNew : R.color.white,
             border:
-                isSelected ? Border.all(color: R.color.notActiveGreen) : null,
+                isSelected ? Border.all(color: R.color.greenGradientBottom) : null,
             borderRadius: BorderRadius.circular(10)),
         child: Row(
           children: [

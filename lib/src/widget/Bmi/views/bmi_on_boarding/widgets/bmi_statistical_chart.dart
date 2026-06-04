@@ -118,25 +118,35 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
             children: [
               SizedBox(
                 width: _widthOfSideBar,
-                // padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: Column(
+                height: _heightOfChart,
+                child: Stack(
+                  clipBehavior: Clip.none,
                   children: [
                     if (_bmiBloc.weightGoal != null)
-                      Padding(
-                        padding: EdgeInsets.only(
-                          bottom: _bendmarkPadding >= _heightOfChart
-                              ? _heightOfChart / 2
-                              : _bendmarkPadding,
-                        ),
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: _bendmarkPadding >= _heightOfChart
+                            ? _heightOfChart / 2
+                            : _bendmarkPadding,
                         child: Text(
                           "${_bmiBloc.weightGoal!.floor() == _bmiBloc.weightGoal ? _bmiBloc.weightGoal!.floor() : _bmiBloc.weightGoal} kg",
+                          textAlign: TextAlign.center,
                           style: R.style.smallTextStyle
                               .copyWith(color: AppColors.neutral3),
                         ),
                       ),
-                    Image.asset(
-                      "lib/res/drawables/icon_waist.png",
-                      width: 18,
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        // Match chart container vertical padding so the icon
+                        // aligns with the bottom-axis labels.
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Image.asset(
+                          "lib/res/drawables/icon_waist.png",
+                          width: 18,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -155,8 +165,10 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                       LineChartData(
                         minY: _minWeightOnChart,
                         maxY: _maxWeightOnChart,
-                        minX: data.length == 1 ? -0.5 : 0,
-                        maxX: data.length == 1 ? 0 : data.length - 1,
+                        // For a single data point, place it at the start (left)
+                        // by making x=0 the minX, not the maxX.
+                        minX: data.length == 1 ? 0 : 0,
+                        maxX: data.length == 1 ? 1 : data.length - 1,
                         clipData: FlClipData.none(),
                         gridData: FlGridData(show: false),
                         titlesData: FlTitlesData(

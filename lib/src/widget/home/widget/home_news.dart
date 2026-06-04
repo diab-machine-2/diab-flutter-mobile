@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
@@ -45,7 +46,7 @@ class HomeNews extends StatelessWidget {
             children: [
               const SizedBox(width: 16.0),
               Text(
-                "Tin nổi bật",
+                R.string.featured_news.tr(),
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,

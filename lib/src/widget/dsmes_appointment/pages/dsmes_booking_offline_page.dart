@@ -280,7 +280,7 @@ class _DsmesBookingOfflinePageState extends State<DsmesBookingOfflinePage> {
                   runSpacing: 6,
                   children: data.specialty.take(3).map((e) {
                     return Container(
-                        height: 21,
+                        // height: 21,
                         padding:
                             EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(

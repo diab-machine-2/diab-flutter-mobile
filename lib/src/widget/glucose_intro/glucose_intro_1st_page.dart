@@ -270,7 +270,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
     return InkWell(
       onTap: () => _navigateToLessonDetail(lesson.id, lesson.type),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        padding: const EdgeInsets.fromLTRB(8, 16, 8, 0),
         height: 152.h,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -283,6 +283,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
           children: [
             NetWorkImageWidget(
               imageUrl: imageUrl,
+              fallbackImageUrl: R.drawable.ic_error_lesson_image,
               fit: BoxFit.cover,
               width: 72,
               height: 72,
@@ -293,7 +294,7 @@ class _GlucoseIntro1stPageState extends State<GlucoseIntro1stPage> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                height: 20 / 14,
+                height: 1.2,
                 fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
               ),

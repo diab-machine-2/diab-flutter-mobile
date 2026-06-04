@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/update_lesson_section_request.dart';
 import 'package:medical/src/model/response/common_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
@@ -11,10 +12,11 @@ import 'package:medical/src/model/response/smart_goal_list_reponse.dart';
 import 'package:medical/src/model/service/api_result.dart';
 import 'package:medical/src/model/service/network_exceptions.dart';
 import 'package:medical/src/repo/home/home_client.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 
-import 'lesson_detail.dart';
+import 'lesson_detail_state.dart';
 import 'models/audio_manager.dart';
 import 'models/section_status_data.dart';
 import 'models/video_manager.dart';
@@ -70,6 +72,8 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         Observable.instance
             .notifyObservers([], notifyName: "refresh_home_activity");
         Observable.instance
+            .notifyObservers([], notifyName: "refresh_lesson_tab");
+        Observable.instance
             .notifyObservers([], notifyName: "goal_calo_changed");
         emit(LessonDetailCompleted(showPopupShare: showQuizLesson == false));
         return;
@@ -77,6 +81,12 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
     }
 
     if (newSection < 0 || newSection >= sectionList.length) {
+      // If the lesson was already completed before, pressing "complete" (next on last section)
+      // should show the completed-review page instead of popping back immediately.
+      if (newSection >= sectionList.length && alreadyDoneLesson) {
+        emit(LessonDetailCompleted(showPopupShare: showQuizLesson == false));
+        return;
+      }
       if (Navigator.canPop(context)) {
         if (smartGoal?.id != null) {
           await HomeClient().completeSmartGoal(
@@ -84,6 +94,13 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
         }
         Navigator.pop(context, 1);
       }
+      return;
+    }
+
+    // Match next-button rule: cannot jump forward from the section picker until current is complete.
+    if (isFromList &&
+        newSection > currentSection &&
+        currentSectionDetail?.isComplete != true) {
       return;
     }
 
@@ -233,8 +250,15 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       sectionList = response.data?.lessonSections ?? [];
       featureImage = response.data?.image?.url;
       lessonDescription = response.data?.description;
-      if (response.data?.lessonReviews?.isNotEmpty == true) {
-        review = response.data?.lessonReviews?.first;
+      final String? currentAccountId = AppSettings.userInfo?.accountId;
+      final reviews = response.data?.lessonReviews ?? const [];
+      if (currentAccountId != null && currentAccountId.isNotEmpty) {
+        review = reviews.cast<LessonSectionListResponseDataLessonReviews?>().firstWhere(
+              (r) => r?.accountId == currentAccountId,
+              orElse: () => null,
+            );
+      } else {
+        review = null;
       }
       isEnabledRating = response.data?.isEnabledRating;
       alreadyDoneLesson = isAllSectionCompleted;
@@ -268,5 +292,47 @@ class LessonDetailCubit extends Cubit<LessonDetailState> {
       currentSectionDetail?.isComplete = true;
     });
     emit(const LessonDetailInitial());
+  }
+
+  Future<String?> sendLessonFeedback({
+    required int rating,
+    required String note,
+  }) async {
+    final SendFeedbackCourseRequest request = SendFeedbackCourseRequest(
+      lessonId: lessonId,
+      rating: rating,
+      note: note,
+    );
+    final ApiResult<CommonResponse> apiResult =
+        await repository.sendFeedbackCourse(lessonId, request);
+    return apiResult.when(
+      success: (_) {
+        // Keep local lessonReviews in sync so UI can display per-lesson review
+        // without relying on transient widget state.
+        final String? currentAccountId = AppSettings.userInfo?.accountId;
+        final LessonSectionListResponseDataLessonReviews updated =
+            LessonSectionListResponseDataLessonReviews(
+          lessonId: lessonId,
+          accountId: currentAccountId,
+          rating: rating,
+          note: note,
+        );
+        review = updated;
+        final List<LessonSectionListResponseDataLessonReviews?> existing =
+            List<LessonSectionListResponseDataLessonReviews?>.from(
+                lessonDetail?.lessonReviews ?? const []);
+        final int idx = existing.indexWhere(
+            (r) => r?.accountId != null && r?.accountId == currentAccountId);
+        if (idx >= 0) {
+          existing[idx] = updated;
+        } else {
+          existing.insert(0, updated);
+        }
+        lessonDetail?.lessonReviews = existing;
+        return null;
+      },
+      failure: (NetworkExceptions error) =>
+          NetworkExceptions.getErrorMessage(error),
+    );
   }
 }

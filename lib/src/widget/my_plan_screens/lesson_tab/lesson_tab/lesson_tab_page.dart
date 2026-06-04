@@ -8,30 +8,35 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
-import 'package:medical/src/app_setting/firebase_tracking/lesson_detail_tracking.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
-import 'package:medical/src/model/response/week_states_response.dart';
+import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/utils/lesson_sort_util.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/my_plan_screens/my_plan/models/plan_type.dart';
-import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
-import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/lesson_status_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import '../../../../utils/utils.dart';
-import '../../my_plan/models/completion_status.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_detail/lesson_detail.dart';
-import '../lesson_filter/lesson_filter.dart';
-import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
-import 'models/lesson_type.dart';
+import 'module_lessons_page.dart';
+
+/// Recommendation filter chip: type index -> label.
+const Map<int, String> _recommendationChipLabels = {
+  0: 'Tất cả',
+  1: 'Theo dõi chỉ số',
+  2: 'Tinh thần',
+  3: 'Tâm lý hành vi',
+  4: 'Dinh dưỡng',
+  5: 'Bệnh lý',
+  6: 'Vận động',
+};
 
 class LessonTabPage extends StatefulWidget {
   const LessonTabPage();
@@ -46,10 +51,16 @@ class _LessonTabPageState extends State<LessonTabPage>
   final RefreshController _controller = RefreshController();
   final ScrollController _lessonScrollController = ScrollController();
   final ScrollController _weekScrollController = ScrollController();
+  final GlobalKey _lessonTabBottomLoadingKey = GlobalKey();
+  final GlobalKey _recommendationLoadingKey = GlobalKey();
 
   int currentPageRoad = 1;
   int currentPageSuggest = 1;
   bool isLoading = false;
+  bool _didShowInitialBotToast = false;
+
+  /// True while BotToast loading overlay is shown (kept in sync with show/close calls).
+  bool _botToastLessonLoadingVisible = false;
 
   @override
   void initState() {
@@ -58,7 +69,20 @@ class _LessonTabPageState extends State<LessonTabPage>
     final MyPlanCubit _myPlanCubit = BlocProvider.of<MyPlanCubit>(context);
     final AppRepository appRepository = AppRepository();
     _cubit = LessonTabCubit(appRepository, _myPlanCubit);
-    _cubit.getInitData();
+    // Trigger loads after the first frame so BlocConsumer listeners are mounted.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Ensure the first navigation always shows bot loading.
+      if (!_didShowInitialBotToast) {
+        _didShowInitialBotToast = true;
+        _setBotToastLessonLoadingVisible(true);
+        BotToast.showLoading();
+      }
+      // Await main list first so getRecommendationLessons cannot emit Initial/Success
+      // while lessons are still loading (which briefly showed the empty placeholder).
+      await _cubit.getInitData();
+      await _cubit.getForYouLessons();
+      await _cubit.getRecommendationLessons(type: 0);
+    });
 
     _lessonScrollController.addListener(() {
       if (_lessonScrollController.position.pixels ==
@@ -75,6 +99,9 @@ class _LessonTabPageState extends State<LessonTabPage>
   @override
   void dispose() {
     Observable.instance.removeObserver(this);
+    _controller.dispose();
+    _lessonScrollController.dispose();
+    _weekScrollController.dispose();
     super.dispose();
   }
 
@@ -87,15 +114,25 @@ class _LessonTabPageState extends State<LessonTabPage>
 
     if (notifyName == 'refresh_lesson_tab') {
       await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+      await _cubit.getForYouLessons();
+      // Re-load recommendations so learning status in the list is updated
+      // right after completing a lesson.
+      await _cubit.getRecommendationLessons(type: _cubit.recommendationType);
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
       if (_cubit.lessonsList == null) {
         await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
+        _setBotToastLessonLoadingVisible(true);
         BotToast.showLoading();
       } else {
         _checkExistLessonId();
       }
     }
+  }
+
+  void _setBotToastLessonLoadingVisible(bool visible) {
+    if (_botToastLessonLoadingVisible == visible) return;
+    setState(() => _botToastLessonLoadingVisible = visible);
   }
 
   _checkExistLessonId() async {
@@ -106,6 +143,26 @@ class _LessonTabPageState extends State<LessonTabPage>
         'lessonType': PlanType.lesson.planTypeIndex,
       });
       BranchioLinkConfig.instance.removeLessonId();
+    }
+  }
+
+  void _scrollToWidget(GlobalKey key) {
+    final currentContext = key.currentContext;
+    if (currentContext != null) {
+      Scrollable.ensureVisible(
+        currentContext,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+      return;
+    }
+    if (_lessonScrollController.hasClients) {
+      final max = _lessonScrollController.position.maxScrollExtent;
+      _lessonScrollController.animateTo(
+        max,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -123,11 +180,19 @@ class _LessonTabPageState extends State<LessonTabPage>
             setState(() {
               isLoading = true;
             });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _scrollToWidget(_lessonTabBottomLoadingKey);
+            });
           } else if (state is LessonTabLoading) {
-            BotToast.showLoading();
+            if (!_didShowInitialBotToast) {
+              _setBotToastLessonLoadingVisible(true);
+              BotToast.showLoading();
+            }
           } else {
             if (state is! LessonTabWeekChanged) {
               BotToast.closeAllLoading();
+              _setBotToastLessonLoadingVisible(false);
+              _didShowInitialBotToast = false;
               setState(() {
                 isLoading = false;
               });
@@ -142,24 +207,12 @@ class _LessonTabPageState extends State<LessonTabPage>
           }
           if (state is LessonTabScrollToLesson) {
             if (_lessonScrollController.hasClients) {
-              //   if(_cubit.currentLessonTypeIndex == 0){
               if (_cubit.lessonsList != null &&
                   _cubit.lessonsList!.length > 5) {
                 _lessonScrollController.jumpTo(
                   127.0 * state.newIndex,
-                  //    duration: const Duration(milliseconds: 10),
-                  //    curve: Curves.ease,
                 );
               }
-              // } else {
-              //   if(_cubit.lessonsListSuggest != null && _cubit.lessonsListSuggest!.length > 5){
-              //     _lessonScrollController.animateTo(
-              //       127.0 * state.newIndex,
-              //       duration: const Duration(milliseconds: 10),
-              //       curve: Curves.ease,
-              //     );
-              //   }
-              // }
             }
           }
         },
@@ -167,193 +220,513 @@ class _LessonTabPageState extends State<LessonTabPage>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
-                color: R.color.white,
-                child: Column(
-                  children: [
-                    // _buildWeekListWidget(),
-                    Row(children: [
-                      ...List.generate(
-                        _cubit.lessonTypeList.length,
-                        (index) {
-                          return _buildLessonTypeSelect(
-                            title: _cubit.lessonTypeList[index].title,
-                            isActive: _cubit.currentLessonTypeIndex == index,
-                            onTap: () {
-                              if (_cubit.lessonTypeList[index] ==
-                                  LessonType.suggest) {
-                                LessonDetailTracking.tabLessonRecommend();
-                              }
-                              _cubit.changeLessonType(index);
-                            },
-                          );
-                        },
-                      ),
-                      const Spacer(),
-                      InkWell(
-                        onTap: () async {
-                          final FilterData newFilter =
-                              _cubit.filterData.copyWith();
-                          final dynamic result =
-                              await NavigationUtil.navigatePage(
-                            context,
-                            LessonFilterPage(
-                              newFilter,
-                            ),
-                          );
-                          if (result is FilterData) {
-                            _cubit.filterData = result;
-                            _cubit.RefreshDataOfList();
-                            _cubit.getInitData(currentPage: 1);
-                          } else {
-                            _cubit.refresh();
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Stack(
-                            children: [
-                              Column(
-                                children: [
-                                  const SizedBox(height: 3, width: 24),
-                                  Image.asset(
-                                    R.drawable.ic_filter_lesson,
-                                    width: 20,
-                                    height: 20,
-                                  ),
-                                ],
-                              ),
-                              Visibility(
-                                visible: !_cubit.filterData.isEmpty,
-                                child: Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      color: R.color.greenGradientTop,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                          width: 2, color: R.color.white),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ]),
-                  ],
-                ),
-              ),
-              //Lesson list
+              // Container(
+              //   color: R.color.white,
+              //   child: Column(
+              //     children: [
+              //       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              //         ...List.generate(
+              //           _cubit.lessonTypeList.length,
+              //           (index) {
+              //             return _buildLessonTypeSelect(
+              //               title: _cubit.lessonTypeList[index].title,
+              //               isActive: _cubit.currentLessonTypeIndex == index,
+              //               onTap: () {
+              //                 if (_cubit.lessonTypeList[index] ==
+              //                     LessonType.suggest) {
+              //                   LessonDetailTracking.tabLessonRecommend();
+              //                 }
+              //                 _cubit.changeLessonType(index);
+              //               },
+              //             );
+              //           },
+              //         ),
+              //         const Spacer(),
+              //         InkWell(
+              //           onTap: () async {
+              //             final FilterData newFilter =
+              //                 _cubit.filterData.copyWith();
+              //             final dynamic result =
+              //                 await NavigationUtil.navigatePage(
+              //               context,
+              //               LessonFilterPage(
+              //                 newFilter,
+              //               ),
+              //             );
+              //             if (result is FilterData) {
+              //               _cubit.filterData = result;
+              //               _cubit.RefreshDataOfList();
+              //               _cubit.getInitData(currentPage: 1);
+              //             } else {
+              //               _cubit.refresh();
+              //             }
+              //           },
+              //           child: Padding(
+              //             padding: const EdgeInsets.only(bottom: 12),
+              //             child: Stack(
+              //               children: [
+              //                 Column(
+              //                   children: [
+              //                     const SizedBox(height: 3, width: 24),
+              //                     Image.asset(
+              //                       R.drawable.ic_filter_lesson,
+              //                       width: 20,
+              //                       height: 20,
+              //                     ),
+              //                   ],
+              //                 ),
+              //                 Visibility(
+              //                   visible: !_cubit.filterData.isEmpty,
+              //                   child: Positioned(
+              //                     top: 0,
+              //                     right: 0,
+              //                     child: Container(
+              //                       width: 10,
+              //                       height: 10,
+              //                       decoration: BoxDecoration(
+              //                         color: R.color.greenGradientTop,
+              //                         shape: BoxShape.circle,
+              //                         border: Border.all(
+              //                             width: 2, color: R.color.white),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 )
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ]),
+              //     ],
+              //   ),
+              // ),
+              // Lesson list
               Expanded(
                 child: _cubit.lessonsList?.isEmpty == null
                     ? const SizedBox.shrink()
-                    : SafeArea(
-                        top: false,
-                        child: SmartRefresher(
-                          controller: _controller,
-                          scrollController: _lessonScrollController,
-                          onRefresh: () {
-                            currentPageRoad = 1;
-                            currentPageSuggest = 1;
-                            _cubit.onRefresh(isRefresh: true);
-                          },
-                          child: _cubit.lessonsList!.isEmpty
-                              ? (state is LessonTabLoading ||
-                                      state is LessonTabWeekChanged)
-                                  ? Container()
-                                  : _buildEmptyLessonList()
-                              : SingleChildScrollView(
-                                  child: Column(
-                                    children: List.generate(
-                                      _cubit.lessonsList?.length ?? 0,
-                                      (index) => _buildLessonWidget(
-                                          lessonDetail:
-                                              _cubit.lessonsList?[index],
-                                          onTap: () async {
-                                            if (_cubit.lessonsList?[index]?.id
-                                                    ?.isNotEmpty ==
-                                                true) {
-                                              ActivityListTracking
-                                                  .clickLessonItem(
-                                                objectId: _cubit
-                                                    .lessonsList![index]!.id,
-                                                objectIndex: index,
-                                                objectTitle: _cubit
-                                                    .lessonsList![index]!.name,
-                                              );
-
-                                              debugPrint(
-                                                  '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Navigating to LessonDetailPage for id=' +
-                                                      (_cubit
-                                                              .lessonsList![
-                                                                  index]!
-                                                              .id ??
-                                                          '') +
-                                                      ' name=' +
-                                                      (_cubit
-                                                              .lessonsList![
-                                                                  index]!
-                                                              .name ??
-                                                          ''));
-                                              var result = await NavigationUtil
-                                                  .navigatePage(
-                                                context,
-                                                LessonDetailPage(
-                                                  lessonType: _cubit
-                                                      .lessonsList?[index]
-                                                      ?.type,
-                                                  lessonId: _cubit
-                                                      .lessonsList![index]!.id!,
-                                                  onComplete: (lessonId,
-                                                      percentComplete) {
-                                                    //_controller.requestRefresh();
-                                                    _cubit.updateStatusLesson(
-                                                      lessonId: lessonId,
-                                                      percentComplete:
-                                                          percentComplete,
-                                                    );
-                                                  },
-                                                ),
-                                              );
-                                              debugPrint(
-                                                  '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Returned from LessonDetailPage with result=' +
-                                                      (result?.toString() ??
-                                                          'null'));
-                                              // if (result == 0) {
-                                              // _controller.requestRefresh();
-                                              // }
-                                              //   if(result != null){
-                                              //     _cubit.getInitData(isRefresh: true,
-                                              //       showCurrentWeek: true, currentWeek: _cubit.filterData.currentWeek);
-                                              //   }
-                                            }
-                                          }),
-                                    )
-                                      ..insert(0, SizedBox(height: 20.h))
-                                      ..add(SizedBox(height: 20.h)),
-                                  ),
+                    : Stack(
+                        children: [
+                          SafeArea(
+                            top: false,
+                            child: SmartRefresher(
+                              controller: _controller,
+                              scrollController: _lessonScrollController,
+                              onRefresh: () {
+                                currentPageRoad = 1;
+                                currentPageSuggest = 1;
+                                _cubit.onRefresh(isRefresh: true);
+                              },
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildForYouSection(),
+                                    if (_cubit.lessonsList!.isEmpty)
+                                      (state is LessonTabLoading)
+                                          ?
+                                          // SizedBox(
+                                          //     height: 220.h,
+                                          //     width: double.infinity,
+                                          //     child: Center(
+                                          //       child:
+                                          //           CircularProgressIndicator(
+                                          //         color: R.color
+                                          //             .greenGradientBottom,
+                                          //       ),
+                                          //     ),
+                                          //   )
+                                          const SizedBox.shrink()
+                                          : (state is LessonTabWeekChanged)
+                                              ? Container()
+                                              : _buildEmptyLessonList()
+                                    else
+                                      _buildGroupedLessonList(),
+                                    _buildRecommendationSection(state),
+                                    if (_cubit.lessonsList!.isNotEmpty)
+                                      Container(
+                                          height: 24.h, color: R.color.white),
+                                  ],
                                 ),
-                        ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
               ),
-              if (isLoading)
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 130,
-                  color: Colors.transparent,
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
             ],
           );
         },
+      ),
+    );
+  }
+
+  /// Group current lesson list by module and render each module as a section.
+  Widget _buildGroupedLessonList() {
+    final List<MyLessonResponseData?> lessons = _cubit.lessonsList ?? [];
+    if (lessons.isEmpty) return const SizedBox.shrink();
+
+    // Map: module name -> list of indices in lessonsList.
+    final Map<String, List<int>> moduleIndexMap = {};
+    for (int i = 0; i < lessons.length; i++) {
+      final MyLessonResponseData? lesson = lessons[i];
+      final String rawModule = lesson?.module ?? '';
+      final String moduleName =
+          rawModule.trim().isEmpty ? R.string.title_route.tr() : rawModule;
+      moduleIndexMap.putIfAbsent(moduleName, () => <int>[]).add(i);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: moduleIndexMap.entries.map((entry) {
+        final String moduleName = entry.key;
+        final List<int> indices = List<int>.from(entry.value);
+        sortLessonIndicesLearntLast(indices, lessons);
+        final List<MyLessonResponseData?> moduleLessons =
+            indices.map((i) => _cubit.lessonsList?[i]).toList();
+        return Container(
+          color: R.color.white,
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  NavigationUtil.navigatePage(
+                    context,
+                    ModuleLessonsPage(
+                      moduleName: moduleName,
+                      lessons: moduleLessons,
+                      cubit: _cubit,
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                          ),
+                          child: Text(
+                            moduleName,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        size: 24,
+                        color: R.color.greenGradientBottom,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 262,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: indices.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, idx) {
+                    final int lessonIndex = indices[idx];
+                    final lesson = _cubit.lessonsList?[lessonIndex];
+                    return _buildModuleLessonCard(
+                      lessonDetail: lesson,
+                      onTap: () async {
+                        if (lesson?.id?.isNotEmpty == true) {
+                          ActivityListTracking.clickLessonItem(
+                            objectId: lesson!.id,
+                            objectIndex: lessonIndex,
+                            objectTitle: lesson.name,
+                          );
+                          debugPrint(
+                              '[VIDEO][${DateTime.now().toIso8601String().substring(11, 23)}] Navigating to LessonDetailPage for id=' +
+                                  (lesson.id ?? '') +
+                                  ' name=' +
+                                  (lesson.name ?? ''));
+                          await NavigationUtil.navigatePage(
+                            context,
+                            LessonDetailPage(
+                              lessonType: lesson.type,
+                              lessonId: lesson.id!,
+                              onComplete: (lessonId, percentComplete) {
+                                _cubit.updateStatusLesson(
+                                  lessonId: lessonId,
+                                  percentComplete: percentComplete,
+                                );
+                              },
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  /// "Dành cho bạn" section shown above all lesson modules.
+  Widget _buildForYouSection() {
+    final lessons = sortSectionLessonsLearntLast(_cubit.forYouLessons ?? []);
+    if (lessons.isEmpty && !_cubit.isForYouLoading) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              NavigationUtil.navigatePage(
+                context,
+                ModuleLessonsPage(
+                  moduleName: R.string.lesson_for_you.tr(),
+                  lessons: lessons
+                      .map((l) => l == null
+                          ? null
+                          : MyLessonResponseData(
+                              id: l.id,
+                              name: l.name,
+                              status: l.status,
+                              type: l.type,
+                              description: l.description,
+                              module: l.lessonModule?.name,
+                              learningStatus: l.learningStatus,
+                              percentComplete: l.percentComplete,
+                              order: l.order,
+                              image: l.image,
+                            ))
+                      .toList(),
+                  cubit: _cubit,
+                ),
+              );
+            },
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                      ),
+                      child: Text(
+                        R.string.lesson_for_you.tr(),
+                        style: TextStyle(
+                          color: R.color.textDark,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 24,
+                    color: R.color.greenGradientBottom,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (_cubit.isForYouLoading)
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 130,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: R.color.greenGradientBottom,
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              height: 262,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: lessons.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final lesson = lessons[index];
+                  return _buildForYouLessonCard(
+                    lessonDetail: lesson,
+                    onTap: () async {
+                      if (lesson?.id?.isNotEmpty == true) {
+                        ActivityListTracking.clickLessonItem(
+                          objectId: lesson!.id,
+                          objectIndex: index,
+                          objectTitle: lesson.name,
+                        );
+                        await NavigationUtil.navigatePage(
+                          context,
+                          LessonDetailPage(
+                            lessonType: lesson.type,
+                            lessonId: lesson.id!,
+                            onComplete: (lessonId, percentComplete) {
+                              _cubit.updateStatusLesson(
+                                lessonId: lessonId,
+                                percentComplete: percentComplete,
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// \"Đề xuất\" section at bottom using recommendationLessons.
+  Widget _buildRecommendationSection(LessonTabState state) {
+    if ((_cubit.lessonsList ?? []).isEmpty) return const SizedBox.shrink();
+    final lessons =
+        sortSectionLessonsLearntLast(_cubit.recommendationLessons ?? []);
+    return Container(
+      color: R.color.white,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              R.string.recommended.tr(),
+              style: TextStyle(
+                color: R.color.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _recommendationChipLabels.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final isActive = _cubit.recommendationType == index;
+                final label = _recommendationChipLabels[index] ?? '';
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      _cubit.getRecommendationLessons(type: index);
+                    },
+                    borderRadius: BorderRadius.circular(200),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? R.color.greenGradientBottom
+                            : R.color.white,
+                        borderRadius: BorderRadius.circular(200),
+                        border: isActive
+                            ? null
+                            : Border.all(color: R.color.captionColorGray),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          color: isActive
+                              ? R.color.white
+                              : R.color.captionColorGray,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          if (_cubit.isRecommendationLoading)
+            KeyedSubtree(
+              key: _recommendationLoadingKey,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 130,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                color: Colors.transparent,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(
+                    color: R.color.greenGradientBottom,
+                  ),
+                ),
+              ),
+            )
+          else
+            ...List.generate(
+              lessons.length,
+              (index) => _buildRecommendationRow(
+                lessonDetail: lessons[index],
+                onTap: () async {
+                  final lesson = lessons[index];
+                  if (lesson?.id?.isNotEmpty == true) {
+                    ActivityListTracking.clickLessonItem(
+                      objectId: lesson!.id,
+                      objectIndex: index,
+                      objectTitle: lesson.name,
+                    );
+
+                    await NavigationUtil.navigatePage(
+                      context,
+                      LessonDetailPage(
+                        lessonType: lesson.type,
+                        lessonId: lesson.id!,
+                        onComplete: (lessonId, percentComplete) {
+                          _cubit.updateStatusLesson(
+                            lessonId: lessonId,
+                            percentComplete: percentComplete,
+                          );
+                        },
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -379,156 +752,6 @@ class _LessonTabPageState extends State<LessonTabPage>
     if (refresh) {
       _cubit.onSelectWeek(index);
     }
-  }
-
-  Widget _buildWeekListWidget() {
-    if (_cubit.weekStatesList.isEmpty) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
-      child: Row(
-        children: [
-          InkWell(
-            onTap: () {
-              if (_cubit.isFiltering) return;
-              animateToIndex(_cubit.currentWeekIndex - 1);
-            },
-            child: Icon(
-              Icons.chevron_left_rounded,
-              size: 24,
-              color: _cubit.currentWeekIndex <= 0 || _cubit.isFiltering
-                  ? R.color.captionColorGray
-                  : R.color.greenGradientBottom,
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _weekScrollController,
-              child: Row(
-                children: List.generate(
-                  _cubit.weekStatesList.length,
-                  (index) => _buildSingleWeek(
-                      state: _cubit.weekStatesList[index],
-                      isSelected: index == _cubit.currentWeekIndex,
-                      isDisable: _cubit.isFiltering,
-                      onSelect: () {
-                        _cubit.onSelectWeek(index);
-                      }),
-                )..add(SizedBox(
-                    width: MediaQuery.of(context).size.width - 96 * 2)),
-              ),
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              if (_cubit.isFiltering) return;
-              animateToIndex(_cubit.currentWeekIndex + 1);
-            },
-            child: Icon(
-              Icons.chevron_right_rounded,
-              size: 24,
-              color: _cubit.currentWeekIndex >=
-                          (_cubit.weekStatesList.length - 1) ||
-                      _cubit.isFiltering
-                  ? R.color.captionColorGray
-                  : R.color.greenGradientBottom,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSingleWeek({
-    required WeekStatesResponseData state,
-    required bool isSelected,
-    bool isDisable = false,
-    VoidCallback? onSelect,
-  }) {
-    final Color background =
-        isSelected && state.completionStatus == CompletionStatus.not_start_yet
-            ? R.color.grey_6
-            : state.completionStatus.statusBackgroundColor;
-    final BoxBorder? border =
-        isSelected && state.completionStatus != CompletionStatus.not_start_yet
-            ? Border.all(color: state.completionStatus.statusIconColor)
-            : (isSelected &&
-                    state.completionStatus == CompletionStatus.not_start_yet)
-                ? Border.all(color: R.color.mainColor)
-                : null;
-    final Color textColor =
-        isSelected && state.completionStatus == CompletionStatus.not_start_yet
-            ? R.color.mainColor
-            : state.completionStatus.statusIconColor;
-    final bool showIcon = !(isSelected &&
-        state.completionStatus == CompletionStatus.not_start_yet);
-
-    return GestureDetector(
-      onTap: isDisable
-          ? () {}
-          : () {
-              onSelect?.call();
-            },
-      child: Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.only(left: 6),
-        width: 96,
-        height: 32,
-        decoration: BoxDecoration(
-          color: isDisable ? R.color.grey_6 : background,
-          border: isDisable ? null : border,
-          borderRadius: BorderRadius.circular(200),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              Utils.getNewTitle(state.weekTitle ?? ''),
-              style: TextStyle(
-                color: isDisable ? R.color.grayCaption : textColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            if (showIcon && !isDisable) state.completionStatus.weekStatusIcon
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLessonTypeSelect({
-    required String title,
-    required bool isActive,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: isActive
-                  ? R.color.greenGradientBottom
-                  : R.color.captionColorGray,
-              fontSize: 16,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
-            ),
-          ),
-          Container(
-            width: 105,
-            height: 3,
-            margin: const EdgeInsets.only(top: 10),
-            decoration: BoxDecoration(
-              color: isActive ? R.color.mainColor : R.color.transparent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildEmptyLessonList() {
@@ -579,178 +802,234 @@ class _LessonTabPageState extends State<LessonTabPage>
     );
   }
 
-  Widget _buildLessonWidget({
-    required MyLessonResponseData? lessonDetail,
+  /// Row style for recommendation list: module -> title -> book icon + duration + arrow.
+  Widget _buildRecommendationRow({
+    required LessonSectionListResponseData? lessonDetail,
     VoidCallback? onTap,
   }) {
+    final String module = lessonDetail?.lessonModule?.name ?? '';
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
-      height: 87,
-      alignment: Alignment.center,
-      color: R.color.transparent,
-      child: Row(
-        children: [
-          const SizedBox(width: 16),
-          Expanded(
-            child: InkWell(
-              onTap: () {
-                // Set flag to show phone validation after view detail lesson
-                PhoneValidationManager.setShouldShowPhoneValidation();
-                if (lessonDetail?.learningStatus ==
-                    Const.LESSON_CAN_NOT_LEARN) {
-                  showUpdateRequirePopup(context: context);
-                  return;
-                }
-                if (lessonDetail?.learningStatus == Const.LESSON_LOCKED) {
-                  _showLockedDialog();
-                  return;
-                }
-                onTap?.call();
-              },
-              child: Row(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: R.color.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: R.color.grey_6),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Thumbnail image on the left
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 80,
+                height: 80,
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                      clipBehavior: Clip.hardEdge,
-                      height: 87,
-                      width: 87,
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                      child: NetWorkImageWidget(
-                          imageUrl: lessonDetail?.image?.url)),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (lessonDetail?.module?.isNotEmpty == true)
-                            Row(
-                              children: [
-                                Text(
-                                  lessonDetail?.module ?? '',
-                                  style: TextStyle(
-                                    color: R.color.greenGradientBottom,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                if (lessonDetail?.isNew == true)
-                                  Image.asset(
-                                    R.drawable.ic_new_lesson,
-                                    width: 24,
-                                    height: 24,
-                                  )
-                              ],
-                            ),
-                          MediaQuery(
-                            data: MediaQuery.of(context).copyWith(
-                              textScaler: MediaQuery.of(context)
-                                  .textScaler
-                                  .clamp(
-                                      minScaleFactor: 1.0, maxScaleFactor: 1.3),
-                            ),
-                            child: Text(
-                              lessonDetail?.name ?? '',
-                              style: TextStyle(
-                                color: R.color.textDark,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          LessonStatusWidget(
-                            learningStatus: lessonDetail?.learningStatus,
-                            progress: lessonDetail?.percentComplete,
-                          ),
-                        ],
+                  if (module.isNotEmpty)
+                    Text(
+                      module,
+                      style: TextStyle(
+                        color: R.color.greenGradientBottom,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
+                  const SizedBox(height: 4),
+                  MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                    ),
+                    child: Text(
+                      lessonDetail?.name ?? '',
+                      style: TextStyle(
+                        color: R.color.textDark,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    size: 24,
-                    color: lessonDetail?.learningStatus == Const.LESSON_LOCKED
-                        ? R.color.captionColorGray
-                        : R.color.greenGradientBottom,
+                  const SizedBox(height: 4),
+                  LessonStatusWidget(
+                    learningStatus: lessonDetail?.learningStatus,
+                    progress: lessonDetail?.percentComplete,
                   ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(width: 16),
-        ],
+            const SizedBox(width: 8),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 24,
+              color: R.color.greenGradientBottom,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  void _showLockedDialog() {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      barrierDismissible: true,
-      context: context,
-      builder: (_) => Scaffold(
-        backgroundColor: R.color.transparent,
-        body: Center(
-          child: GestureDetector(
-            child: Container(
-              width: 344,
-              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 24.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    R.color.white,
-                    R.color.main_6,
-                  ],
+  /// Card for horizontal module list (image -> module/category -> name -> book icon + duration).
+  Widget _buildModuleLessonCard({
+    required MyLessonResponseData? lessonDetail,
+    VoidCallback? onTap,
+  }) {
+    final String category = lessonDetail?.module ?? '';
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 260,
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: R.color.grey_6),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                height: 132,
+                width: double.infinity,
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
                 ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(84.w, 0, 84.w, 20),
-                    child: Image.asset(
-                      R.drawable.img_lesson_locked,
-                    ),
+            ),
+            const SizedBox(height: 8),
+            if (category.isNotEmpty)
+              Text(
+                category,
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            const SizedBox(height: 4),
+            SizedBox(
+              height: 42,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text(
+                  lessonDetail?.name ?? '',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
                   ),
-                  Text(
-                    R.string.lesson_locked.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: R.color.textDark,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    R.string.lesson_locked_warning.tr(),
-                    textAlign: TextAlign.center,
-                    style: R.style.normalTextStyle,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 24),
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: ButtonWidget(
-                      height: 43,
-                      title: R.string.agree.tr(),
-                      onPressed: () {
-                        NavigationUtil.pop(context);
-                      },
-                      textSize: 14,
-                    ),
-                  )
-                ],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
-          ),
+            const SizedBox(height: 4),
+            LessonStatusWidget(
+              learningStatus: lessonDetail?.learningStatus,
+              progress: lessonDetail?.percentComplete,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Card for horizontal "Dành cho bạn" list.
+  Widget _buildForYouLessonCard({
+    required LessonSectionListResponseData? lessonDetail,
+    VoidCallback? onTap,
+  }) {
+    final String category = lessonDetail?.lessonModule?.name ?? '';
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 260,
+        decoration: BoxDecoration(
+          color: R.color.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: R.color.grey_6),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                height: 132,
+                width: double.infinity,
+                child: NetWorkImageWidget(
+                  imageUrl: lessonDetail?.image?.url,
+                  fallbackImageUrl: R.drawable.ic_error_lesson_image,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (category.isNotEmpty)
+              Text(
+                category,
+                style: TextStyle(
+                  color: R.color.greenGradientBottom,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            const SizedBox(height: 4),
+            SizedBox(
+              height: 40,
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text(
+                  lessonDetail?.name ?? '',
+                  style: TextStyle(
+                    color: R.color.textDark,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            LessonStatusWidget(
+              learningStatus: lessonDetail?.learningStatus,
+              progress: lessonDetail?.percentComplete,
+            ),
+          ],
         ),
       ),
     );
