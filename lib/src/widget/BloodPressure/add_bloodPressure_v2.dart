@@ -1193,31 +1193,36 @@ class _AddBloodPressureControllerState
                     padding: const EdgeInsets.only(left: 0.0, right: 4),
                     child: SizedBox(
                       width: 120,
-                      child: TextField(
-                        focusNode: _heartFocus,
-                        onChanged: (value) {
-                          // _checkValidateInput();
-                          setState(() {});
-                        },
-                        controller: _controllerHeart,
-                        textAlign: TextAlign.right,
-                        maxLength: 3,
-                        keyboardType: TextInputType.number,
-                        style: TextStyle(
-                            color: R.color.black,
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: R.font.sfpro),
-                        decoration: InputDecoration(
-                          hintText: '0',
-                          counterText: '',
-                          contentPadding: EdgeInsets.only(bottom: 8),
-                          border: InputBorder.none,
-                          hintStyle: TextStyle(
-                              color: R.color.captionColorGray,
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                            textScaler: MediaQuery.of(context).textScaler.clamp(
+                                minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                        child: TextField(
+                          focusNode: _heartFocus,
+                          onChanged: (value) {
+                            // _checkValidateInput();
+                            setState(() {});
+                          },
+                          controller: _controllerHeart,
+                          textAlign: TextAlign.right,
+                          maxLength: 3,
+                          keyboardType: TextInputType.number,
+                          style: TextStyle(
+                              color: R.color.black,
                               fontSize: 48,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
                               fontFamily: R.font.sfpro),
+                          decoration: InputDecoration(
+                            hintText: '0',
+                            counterText: '',
+                            contentPadding: EdgeInsets.only(bottom: 8),
+                            border: InputBorder.none,
+                            hintStyle: TextStyle(
+                                color: R.color.captionColorGray,
+                                fontSize: 48,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: R.font.sfpro),
+                          ),
                         ),
                       ),
                     ),

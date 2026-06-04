@@ -7,6 +7,23 @@ import 'package:medical/src/app_setting/branchio_link_config.dart';
 
 import '../../../../../model/response/lesson_section_list_response.dart';
 
+Future<void> shareLessonSection(
+  BuildContext context, {
+  required LessonSectionItem lesson,
+  String? featureImage,
+  String? lessonDescription,
+}) async {
+  String shareLink = lesson.linkShare ?? "";
+  if (shareLink.isEmpty) {
+    shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
+      lesson: lesson,
+      featureImage: featureImage,
+      lessonDescription: lessonDescription,
+    );
+  }
+  AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
+}
+
 class ShareLessonButton extends StatelessWidget {
   final LessonSectionItem lesson;
   final String? featureImage;
@@ -22,7 +39,12 @@ class ShareLessonButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        _onShareLesson(context);
+        shareLessonSection(
+          context,
+          lesson: lesson,
+          featureImage: featureImage,
+          lessonDescription: lessonDescription,
+        );
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -54,18 +76,5 @@ class ShareLessonButton extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  _onShareLesson(BuildContext context) async {
-    String shareLink = lesson.linkShare ?? "";
-    if (shareLink.isEmpty) {
-      shareLink = await BranchioLinkConfig.instance.createShareLessonLink(
-          lesson: lesson,
-          featureImage: featureImage,
-          lessonDescription: lessonDescription);
-    }
-    // String shareLink = await BranchioLinkConfig.instance
-    //     .createShareLessonLink(lesson: lesson, featureImage: featureImage, lessonDescription: lessonDescription);
-    AppShare.instance.lessonDetail(context, shareLink, lesson.name ?? "");
   }
 }

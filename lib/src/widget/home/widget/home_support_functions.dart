@@ -14,7 +14,7 @@ class HomeSupportFunctions {
       context: context,
       isScrollControlled: true,
       builder: (context) => Container(
-        height: 200,
+        height: 210,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -56,7 +56,7 @@ class HomeSupportFunctions {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   ButtonSupportWidget(

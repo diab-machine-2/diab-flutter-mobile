@@ -104,7 +104,7 @@ class _ExercisesGuideState extends State<ExercisesGuide> {
           title: Align(
             alignment: Alignment.topLeft,
             child: Text(
-              R.string.exercrise_step_onboarding_action_btn.tr(),
+              R.string.huong_dan.tr(),
               style: TextStyle(
                 color: R.color.white,
                 fontSize: 20,

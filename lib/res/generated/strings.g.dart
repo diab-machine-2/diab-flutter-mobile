@@ -1307,11 +1307,8 @@ class Strings {
       'conversation_message_placeholder';
   String get exercrise_step_onboarding_title =>
       'exercrise_step_onboarding_title';
-  String get exercrise_step_onboarding_action_btn =>
-      'exercrise_step_onboarding_action_btn';
   String get exercrise_step_onboarding_input_step_btn =>
       'exercrise_step_onboarding_input_step_btn';
-  String get exercrise_step_guide_title => 'exercrise_step_guide_title';
   //exercrise_step_guide_add
   String get exercrise_step_guide_add => 'exercrise_step_guide_add';
   //exercrise_step_dashboard_title
@@ -1324,7 +1321,6 @@ class Strings {
   String get exercrise_select_category_title =>
       'exercrise_select_category_title';
   String get exercrise_result_title => 'exercrise_result_title';
-  String get exercise_help_title => 'exercise_help_title';
   String get exercise_delete_popup_title => 'exercise_delete_popup_title';
   String get exercise_delete_popup_body => 'exercise_delete_popup_body';
   String get exercise_delete_success => 'exercise_delete_success';
@@ -1558,4 +1554,69 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get change_medicine_quantity_message => 'change_medicine_quantity_message';
   String get delete_medicine_dialog_title => 'delete_medicine_dialog_title';
   String get exceed_medicine_warning => 'exceed_medicine_warning';
+  String get previous_lesson => 'previous_lesson';
+  String get redo_quiz => 'redo_quiz';
+  String get lesson_completed_title => 'lesson_completed_title';
+  String get lesson_completed_message => 'lesson_completed_message';
+  String get lesson_rating_very_useful => 'lesson_rating_very_useful';
+  String get lesson_rating_normal => 'lesson_rating_normal';
+  String get lesson_rating_not_useful => 'lesson_rating_not_useful';
+  String get lesson_rating_useful => 'lesson_rating_useful';
+  String get lesson_rating_question => 'lesson_rating_question';
+  String get lesson_share_feeling => 'lesson_share_feeling';
+  String get lesson_rate_action => 'lesson_rate_action';
+  String get lesson_back_to_library => 'lesson_back_to_library';
+  String get lesson_reason_hard_to_understand =>
+      'lesson_reason_hard_to_understand';
+  String get lesson_reason_low_quality_video => 'lesson_reason_low_quality_video';
+  String get lesson_reason_insufficient_references =>
+      'lesson_reason_insufficient_references';
+  String get lesson_reason_unclear_images => 'lesson_reason_unclear_images';
+  String get lesson_reason_not_fit_needs => 'lesson_reason_not_fit_needs';
+  String get lesson_reason_not_practical_examples =>
+      'lesson_reason_not_practical_examples';
+  String get lesson_reason_temporary_ok => 'lesson_reason_temporary_ok';
+  String get lesson_reason_need_more_examples =>
+      'lesson_reason_need_more_examples';
+  String get lesson_reason_need_shorter_presentation =>
+      'lesson_reason_need_shorter_presentation';
+  String get lesson_reason_need_more_illustrations =>
+      'lesson_reason_need_more_illustrations';
+  String get lesson_reason_useful_content => 'lesson_reason_useful_content';
+  String get lesson_reason_high_quality_video => 'lesson_reason_high_quality_video';
+  String get lesson_reason_sufficient_references =>
+      'lesson_reason_sufficient_references';
+  String get lesson_reason_beautiful_images => 'lesson_reason_beautiful_images';
+  String get lesson_for_you => 'lesson_for_you';
+  String get utilities => 'utilities';
+  String get connect_device_home => 'connect_device_home';
+  String get healthy_lifestyle_consulting => 'healthy_lifestyle_consulting';
+  String get book_medical_appointment => 'book_medical_appointment';
+  String get featured_news => 'featured_news';
+  String get day_number => 'day_number';
+  String get analyzing_your_index => 'analyzing_your_index';
+  String get lich_do_duong_huyet_cua_ban => 'lich_do_duong_huyet_cua_ban';
+  String get goi_y_lich_do_tu_chuyen_gia => 'goi_y_lich_do_tu_chuyen_gia';
+  String get add_measurement => 'add_measurement';
+  String get cannot_use_medicine_in_future => 'cannot_use_medicine_in_future';
+  String get webinar_register_success => 'webinar_register_success';
+  String get webinar_online_event => 'webinar_online_event';
+  String get webinar_calendar_join_link => 'webinar_calendar_join_link';
+  String get webinar_calendar_description => 'webinar_calendar_description';
+  String get webinar_cannot_open_link => 'webinar_cannot_open_link';
+  String get webinar_no_replay_lesson => 'webinar_no_replay_lesson';
+  String get webinar_cannot_identify_lesson_type =>
+      'webinar_cannot_identify_lesson_type';
+  String get webinar_share_content => 'webinar_share_content';
+  String get webinar_share_subject => 'webinar_share_subject';
+  String get webinar_not_found => 'webinar_not_found';
+  String get webinar_upcoming_in_hours => 'webinar_upcoming_in_hours';
+  String get webinar_event_ended => 'webinar_event_ended';
+  String get webinar_registration_count => 'webinar_registration_count';
+  String get webinar_program_info => 'webinar_program_info';
+  String get webinar_similar_events => 'webinar_similar_events';
+  String get webinar_participant_count => 'webinar_participant_count';
+  String get webinar_watch_replay => 'webinar_watch_replay';
+  String get webinar_registered => 'webinar_registered';
+  String get webinar_register_participation => 'webinar_register_participation';
 }

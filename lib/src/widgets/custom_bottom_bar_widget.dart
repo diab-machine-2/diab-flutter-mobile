@@ -1,9 +1,22 @@
+import 'dart:math' as math;
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 
-import 'button_widget.dart';
+double _progressFromPositionTitle(String title) {
+  try {
+    final parts = title.split('/');
+    if (parts.length < 2) return 0;
+    final cur = int.parse(parts[0].trim());
+    final tot = int.parse(parts[1].trim());
+    if (tot <= 0) return 0;
+    return (cur / tot).clamp(0.0, 1.0);
+  } catch (_) {
+    return 0;
+  }
+}
 
 class CustomBottomBarWidget extends StatelessWidget {
   CustomBottomBarWidget({
@@ -35,7 +48,7 @@ class CustomBottomBarWidget extends StatelessWidget {
       color: R.color.white,
       padding: EdgeInsets.fromLTRB(
         16,
-        14,
+        8,
         16,
         MediaQuery.of(context).padding.bottom + 10,
       ),
@@ -44,10 +57,10 @@ class CustomBottomBarWidget extends StatelessWidget {
         children: [
           // Row for buttons
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Previous button
-              _buildPreviousButton(),
+              _buildPreviousButton(context),
               SizedBox(width: 4),
               // Center button
               // _buildCenterButton(),
@@ -60,7 +73,7 @@ class CustomBottomBarWidget extends StatelessWidget {
                 _buildCenterButton(),
               SizedBox(width: 4),
               // Next button
-              _buildNextButton(),
+              _buildNextButton(context),
             ],
           ),
         ],
@@ -69,87 +82,82 @@ class CustomBottomBarWidget extends StatelessWidget {
   }
 
   Widget _buildCenter() {
-    int target = 0;
-    try {
-      target = int.parse(currentPositionTitle.split('/')[0]) - 1;
-    } catch (e) {}
+    final logoUrl = AppSettings.userInfo?.ownPackage?.logo ?? '';
 
     return InkWell(
       onTap: onTapCenter,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.network(
-            height: 50,
-            AppSettings.userInfo?.ownPackage?.logo ?? "",
-            errorBuilder: (context, error, stackTrace) {
-              return SizedBox();
-            },
-          ),
-          SizedBox(height: 10),
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                  int.parse(currentPositionTitle.split('/')[1]), (index) {
-                bool isTarget = index == target;
-                return AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  margin: EdgeInsets.symmetric(horizontal: 2),
-                  width: isTarget ? 16 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    borderRadius: isTarget
-                        ? BorderRadius.all(Radius.circular(10))
-                        : BorderRadius.circular(8),
-                    color: isTarget
-                        ? Colors.green
-                        : Colors
-                            .grey, // Replace Colors.green with your custom color if needed
-                  ),
-                );
-              }),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // if (logoUrl.isNotEmpty)
+            //   Image.network(
+            //     logoUrl,
+            //     height: 30,
+            //     errorBuilder: (context, error, stackTrace) {
+            //       return const SizedBox(height: 50);
+            //     },
+            //   ),
+            // if (logoUrl.isNotEmpty) const SizedBox(height: 10),
+            _DonutStepProgress(
+              currentPositionTitle: currentPositionTitle,
+              labelStyle: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: R.color.mainColor,
+                height: 1,
+                letterSpacing: 0.2,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPreviousButton() {
+  Widget _buildPreviousButton(BuildContext context) {
+    final bool isInactive = isPreviousButtonActive;
+
     return InkWell(
-      onTap: onTapPrevious,
+      onTap: isInactive ? null : onTapPrevious,
       child: Container(
-        width: 135,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        width: 148,
+        height: 44,
+        // padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: isPreviousButtonActive ? R.color.grayBorder : R.color.main_6,
+          color: isInactive ? R.color.color0xffEAEDEE : R.color.white,
+          border: isInactive ? null : Border.all(color: R.color.mainColor),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
               Icons.arrow_back_ios,
               size: 16,
-              color: isPreviousButtonActive
-                  ? AppSettings.isOwnPackage
-                      ? R.color.main_1
-                      : R.color.textDark
-                  : R.color.accentColor,
+              color: isInactive ? R.color.color0xff5E6566 : R.color.mainColor,
             ),
-            Text(
-              previousButtonTitle ?? R.string.back.tr(),
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: isPreviousButtonActive
-                      ? AppSettings.isOwnPackage
-                          ? R.color.main_1
-                          : R.color.textDark
-                      : R.color.accentColor,
-                  height: 1.43,
-                  letterSpacing: 0.4),
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
+                previousButtonTitle ?? R.string.back.tr(),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: isInactive
+                        ? R.color.color0xff5E6566
+                        : R.color.mainColor,
+                    // height: 1.43,
+                    letterSpacing: 0.4),
+              ),
             ),
           ],
         ),
@@ -161,25 +169,19 @@ class CustomBottomBarWidget extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: onTapCenter,
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: 1,
-              color: R.color.accentColor,
-            ),
-            color: Colors.white,
-          ),
-          child: Text(
-            currentPositionTitle,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: R.color.accentColor,
-              height: 1.43,
-              letterSpacing: 0.4,
+        borderRadius: BorderRadius.circular(40),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Center(
+            child: _DonutStepProgress(
+              currentPositionTitle: currentPositionTitle,
+              labelStyle: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: R.color.mainColor,
+                height: 1,
+                letterSpacing: 0.3,
+              ),
             ),
           ),
         ),
@@ -187,59 +189,175 @@ class CustomBottomBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     if (isCompleted != null) {
-      return Container(
-        width: 135,
-        height: 36,
-        child: ButtonWidget(
-          title: R.string.complete_lesson.tr(),
-          onPressed: isCompleted! ? onTapNext : null,
-          textSize: 14,
+      final bool canComplete = isCompleted!;
+      return InkWell(
+        onTap: canComplete ? onTapNext : null,
+        child: Container(
+          width: 148,
+          height: 44,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: canComplete
+                ? R.color.greenGradientBottom
+                : R.color.color0xffEAEDEE,
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            R.string.complete_lesson.tr(),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: canComplete ? R.color.white : R.color.color0xff5E6566,
+            ),
+          ),
         ),
       );
     }
     return InkWell(
       onTap: isNextButtonActive ? onTapNext : null,
       child: Container(
-        width: 140,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        width: 148,
+        height: 44,
+        // padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: isNextButtonActive ? R.color.main_6 : R.color.grayBorder,
+          color: isNextButtonActive ? R.color.white : R.color.color0xffEAEDEE,
+          border:
+              isNextButtonActive ? Border.all(color: R.color.mainColor) : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: MediaQuery.of(context)
+                    .textScaler
+                    .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+              ),
+              child: Text(
               nextButtonTitle ?? R.string.next_lesson.tr(),
               style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: isNextButtonActive
-                      ? R.color.accentColor
-                      : AppSettings.isOwnPackage
-                          ? R.color.main_1
-                          : AppSettings.isOwnPackage
-                              ? R.color.main_6
-                              : R.color.textDark,
-                  height: 1.43,
+                      ? R.color.mainColor
+                      : R.color.color0xff5E6566,
+                  // height: 1.43,
                   letterSpacing: 0.4),
-            ),
+            )),
             Icon(
               Icons.arrow_forward_ios,
               size: 16,
               color: isNextButtonActive
-                  ? R.color.accentColor
-                  : AppSettings.isOwnPackage
-                      ? R.color.main_1
-                      : AppSettings.isOwnPackage
-                          ? R.color.main_6
-                          : R.color.textDark,
+                  ? R.color.mainColor
+                  : R.color.color0xff5E6566,
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+/// Minimal donut ring: track [R.color.color0xffDADEDF], progress [R.color.mainColor].
+class _DonutStepProgress extends StatelessWidget {
+  const _DonutStepProgress({
+    required this.currentPositionTitle,
+    this.size = 44,
+    this.strokeWidth = 3,
+    required this.labelStyle,
+  });
+
+  final String currentPositionTitle;
+  final double size;
+  final double strokeWidth;
+  final TextStyle labelStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = _progressFromPositionTitle(currentPositionTitle);
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          CustomPaint(
+            size: Size(size, size),
+            painter: _DonutRingPainter(
+              progress: progress,
+              trackColor: R.color.color0xffDADEDF,
+              progressColor: R.color.mainColor,
+              strokeWidth: strokeWidth,
+            ),
+          ),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: MediaQuery.of(context)
+                  .textScaler
+                  .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+            ),
+            child: Text(
+              currentPositionTitle,
+              maxLines: 1,
+              overflow: TextOverflow.visible,
+              style: labelStyle,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DonutRingPainter extends CustomPainter {
+  _DonutRingPainter({
+    required this.progress,
+    required this.trackColor,
+    required this.progressColor,
+    required this.strokeWidth,
+  });
+
+  final double progress;
+  final Color trackColor;
+  final Color progressColor;
+  final double strokeWidth;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.shortestSide - strokeWidth) / 2;
+    final rect = Rect.fromCircle(center: center, radius: radius);
+
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    final progressPaint = Paint()
+      ..color = progressColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    const start = -math.pi / 2;
+    canvas.drawArc(rect, start, math.pi * 2, false, trackPaint);
+
+    final sweep = math.pi * 2 * progress.clamp(0.0, 1.0);
+    if (sweep > 0) {
+      canvas.drawArc(rect, start, sweep, false, progressPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DonutRingPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.trackColor != trackColor ||
+        oldDelegate.progressColor != progressColor ||
+        oldDelegate.strokeWidth != strokeWidth;
   }
 }

@@ -1032,7 +1032,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
             })
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 7, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             decoration: BoxDecoration(
               border: Border.all(
                   color: PickerHelper.getBorderColorByState(
@@ -1052,7 +1052,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
                   Text(
                     "-",
                     style: TextStyle(
-                        fontSize: 14.0,
+                        fontSize: 13.0,
                         fontFamily: 'sfpro',
                         fontWeight: PickerHelper.getTextFontWeightByState(
                           isSelected: isSlotPicked,
@@ -1133,15 +1133,21 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
         color: R.color.white,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        "${time.split(':')[0].trim()}:${time.split(':')[1].trim()}",
-        style: TextStyle(
-          color: PickerHelper.getTextColorByState(
-              isSelected: isSlotPicked, hasSlot: true),
-          fontSize: 14,
-          fontFamily: 'sfpro',
-          fontWeight:
-              PickerHelper.getTextFontWeightByState(isSelected: isSlotPicked),
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+            textScaler: MediaQuery.of(context)
+                .textScaler
+                .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+        child: Text(
+          "${time.split(':')[0].trim()}:${time.split(':')[1].trim()}",
+          style: TextStyle(
+            color: PickerHelper.getTextColorByState(
+                isSelected: isSlotPicked, hasSlot: true),
+            fontSize: 13,
+            fontFamily: 'sfpro',
+            fontWeight:
+                PickerHelper.getTextFontWeightByState(isSelected: isSlotPicked),
+          ),
         ),
       ),
     );

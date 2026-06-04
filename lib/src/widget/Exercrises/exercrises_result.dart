@@ -86,7 +86,12 @@ class _ExercisesResultState extends State<ExercisesResult>
 
   void _goBack() {
     if (Navigator.canPop(context)) {
-      Navigator.pushNamed(context, NavigatorName.exercrise_dashboard);
+      Observable.instance.notifyObservers([], notifyName: "active_change_data_v2");
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        NavigatorName.exercrise_dashboard,
+        (route) => route.settings.name == NavigatorName.tabbar,
+      );
     } else {
       BotToast.showText(
         text: 'Opps! You can not go back',
@@ -181,7 +186,7 @@ class _ExercisesResultState extends State<ExercisesResult>
                                 context, NavigatorName.exercrise_guide);
                           },
                           child: Text(
-                            R.string.exercrise_step_onboarding_action_btn.tr(),
+                            R.string.huong_dan.tr(),
                             style: TextStyle(
                               color: R.color.white,
                               fontSize: 16,
@@ -251,10 +256,7 @@ class _ExercisesResultState extends State<ExercisesResult>
                                       backgroundColor: R.color.greenGradientMid,
                                       textColor: R.color.white,
                                       onPressed: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          NavigatorName.exercrise_dashboard,
-                                        );
+                                        _goBack();
                                       },
                                     ),
                                   )

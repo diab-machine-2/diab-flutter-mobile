@@ -126,12 +126,18 @@ class _SelectRoadMapPageState extends State<SelectRoadMapPage> {
                   ),
                 GapH(4),
                 // Title
-                Text(
-                  itemData.name ?? '',
-                  style: TextStyle(
-                    color: R.color.textDark,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                      textScaler: MediaQuery.of(context)
+                          .textScaler
+                          .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+                  child: Text(
+                    itemData.name ?? '',
+                    style: TextStyle(
+                      color: R.color.textDark,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 GapH(8),

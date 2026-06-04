@@ -32,6 +32,10 @@ import '../exercise_detail/exercise_detail.dart';
 import '../select_road_map/select_road_map.dart';
 import 'exercise_tab.dart';
 
+/// Shared height for exercise / day-off / no-exercise cards so the timeline stays aligned.
+/// Must match [_ExerciseTabPageState._buildProgressTrackingBar] `itemHeight`.
+const double _kExerciseDayCardHeight = 174.0;
+
 class ExerciseTabPage extends StatefulWidget {
   const ExerciseTabPage();
 
@@ -124,29 +128,45 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                           children: [
                             Expanded(
                               flex: 9,
-                              child: Text(
-                                _cubit.roadMapName.isNotEmpty
-                                    ? _cubit.roadMapName
-                                    : R.string.title_route.tr(),
-                                style: TextStyle(
-                                  color: R.color.hba1c_text_color,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                              child: MediaQuery(
+                                data: MediaQuery.of(context).copyWith(
+                                    textScaler: MediaQuery.of(context)
+                                        .textScaler
+                                        .clamp(
+                                            minScaleFactor: 1.0,
+                                            maxScaleFactor: 1.3)),
+                                child: Text(
+                                  _cubit.roadMapName.isNotEmpty
+                                      ? _cubit.roadMapName
+                                      : R.string.title_route.tr(),
+                                  style: TextStyle(
+                                    color: R.color.hba1c_text_color,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  softWrap: true,
+                                  maxLines: null,
                                 ),
-                                softWrap: true,
-                                maxLines: null,
                               ),
                             ),
                             Expanded(
                               flex: 3,
-                              child: Text(
-                                R.string.change.tr(),
-                                style: TextStyle(
-                                  color: R.color.accentColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
+                              child: MediaQuery(
+                                data: MediaQuery.of(context).copyWith(
+                                    textScaler: MediaQuery.of(context)
+                                        .textScaler
+                                        .clamp(
+                                            minScaleFactor: 1.0,
+                                            maxScaleFactor: 1.3)),
+                                child: Text(
+                                  R.string.change.tr(),
+                                  style: TextStyle(
+                                    color: R.color.accentColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.end,
                                 ),
-                                textAlign: TextAlign.end,
                               ),
                             ),
                           ],
@@ -349,11 +369,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
         exerciseItem?.exerciseMovementStates == Const.LESSON_LOCKED ||
             exerciseItem?.exerciseMovementStates == Const.LESSON_CAN_NOT_LEARN;
 
-    // Unified height 153: padding 16 + title 24 + spacing 12 + subcard (16 + 70 + 16) + extra space
-    const double fixedHeight = 153.0;
-
     return SizedBox(
-      height: fixedHeight,
+      height: _kExerciseDayCardHeight,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -365,12 +382,19 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Day title
-            Text(
-              'Ngày $dayNumber',
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+              child: Text(
+                R.string.day_number.tr(args: ['$dayNumber']),
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -429,12 +453,13 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                 }
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                 decoration: BoxDecoration(
                   color: R.color.color0xffF2F6F9,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Image thumbnail
                     Container(
@@ -448,21 +473,31 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                         imageUrl: exerciseItem?.image?.url ?? '',
                       ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 8),
                     // Activity details
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            exerciseItem?.name ?? '',
-                            style: TextStyle(
-                              color: exerciseItem?.exerciseMovementStates ==
-                                      Const.LESSON_LOCKED
-                                  ? R.color.grayCaption
-                                  : R.color.textDark,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3)),
+                            child: Text(
+                              exerciseItem?.name ?? '',
+                              style: TextStyle(
+                                color: exerciseItem?.exerciseMovementStates ==
+                                        Const.LESSON_LOCKED
+                                    ? R.color.grayCaption
+                                    : R.color.textDark,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                height: 1.25,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -472,31 +507,38 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
                               color: R.color.grey_2,
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
+                              height: 1.25,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    // Status icon (checkmark or padlock)
+                    // Status icon (checkmark or padlock), vertically centered to 70px thumb
                     if (isCompleted)
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: R.color.greenGradientBottom,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.check_rounded,
-                          size: 16,
-                          color: R.color.white,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 23),
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: R.color.greenGradientBottom,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check_rounded,
+                            size: 16,
+                            color: R.color.white,
+                          ),
                         ),
                       )
                     else if (isLocked)
-                      Icon(
-                        Icons.lock_outline,
-                        size: 20,
-                        color: R.color.grayCaption,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 25),
+                        child: Icon(
+                          Icons.lock_outline,
+                          size: 20,
+                          color: R.color.grayCaption,
+                        ),
                       ),
                   ],
                 ),
@@ -526,9 +568,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
       }
     }
 
-    // Calculate exact item height to match exercise widget (fixed at 153px)
-    // Card: padding 16 + title (center at 16 + 9 = 25px) + spacing 12 + subcard (16 + 70 + 16)
-    const double itemHeight = 153.0; // Current fixed card height
+    // Exact item height to match exercise / day-off / no-exercise cards
+    const double itemHeight = _kExerciseDayCardHeight;
     const double iconSize = 20.0; // dayStatusIcon is 20x20
     const double separatorHeight = 16.0;
 
@@ -633,11 +674,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildDayOffWidget({int? dayNumber}) {
-    // Unified height and padding to match exercise card
-    const double fixedHeight = 153.0;
-
     return SizedBox(
-      height: fixedHeight,
+      height: _kExerciseDayCardHeight,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -649,63 +687,98 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Day title
-            Text(
-              dayNumber != null
-                  ? 'Ngày $dayNumber'
-                  : R.string.today_is_day_off.tr(),
-              style: TextStyle(
-                color: R.color.textDark,
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+              child: Text(
+                dayNumber != null
+                    ? R.string.day_number.tr(args: ['$dayNumber'])
+                    : R.string.today_is_day_off.tr(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: R.color.textDark,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
               ),
             ),
             const SizedBox(height: 12),
             // Activity sub-card (not clickable)
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              decoration: BoxDecoration(
-                color: R.color.color0xffF2F6F9,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  // Image thumbnail
-                  Container(
-                    clipBehavior: Clip.hardEdge,
-                    height: 70,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: R.color.color0xffF2F6F9,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image thumbnail
+                    Container(
+                      clipBehavior: Clip.hardEdge,
+                      height: 70,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(R.drawable.img_activity_empty),
                     ),
-                    child: Image.asset(R.drawable.img_activity_empty),
-                  ),
-                  const SizedBox(width: 4),
-                  // Activity details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          R.string.today_is_day_off.tr(),
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                    const SizedBox(width: 8),
+                    // Activity details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3)),
+                            child: Text(
+                              R.string.today_is_day_off.tr(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: R.color.textDark,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                height: 1.25,
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          R.string.today_is_day_off_description.tr(),
-                          style: TextStyle(
-                            color: R.color.grey_2,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                          const SizedBox(height: 4),
+                          MediaQuery(
+                            data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3)),
+                            child: Text(
+                              R.string.today_is_day_off_description.tr(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: R.color.grey_2,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                height: 1.25,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -715,11 +788,8 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
   }
 
   Widget _buildDayNoExerciseWidget({int? dayNumber}) {
-    // Unified height and padding to match exercise card
-    const double fixedHeight = 153.0;
-
     return SizedBox(
-      height: fixedHeight,
+      height: _kExerciseDayCardHeight,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -733,61 +803,74 @@ class _ExerciseTabPageState extends State<ExerciseTabPage>
             // Day title
             Text(
               dayNumber != null
-                  ? 'Ngày $dayNumber'
+                  ? R.string.day_number.tr(args: ['$dayNumber'])
                   : R.string.today_is_day_no_exercise.tr(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: R.color.textDark,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
+                height: 1.2,
               ),
             ),
             const SizedBox(height: 12),
             // Activity sub-card (not clickable)
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-              decoration: BoxDecoration(
-                color: R.color.color0xffF2F6F9,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  // Image thumbnail
-                  Container(
-                    clipBehavior: Clip.hardEdge,
-                    height: 70,
-                    width: 70,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: R.color.color0xffF2F6F9,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image thumbnail
+                    Container(
+                      clipBehavior: Clip.hardEdge,
+                      height: 70,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(R.drawable.img_day_no_exercise),
                     ),
-                    child: Image.asset(R.drawable.img_day_no_exercise),
-                  ),
-                  const SizedBox(width: 4),
-                  // Activity details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          R.string.today_is_day_no_exercise.tr(),
-                          style: TextStyle(
-                            color: R.color.textDark,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                    const SizedBox(width: 8),
+                    // Activity details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            R.string.today_is_day_no_exercise.tr(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: R.color.textDark,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              height: 1.25,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          R.string.today_is_day_off_description.tr(),
-                          style: TextStyle(
-                            color: R.color.grey_2,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                          const SizedBox(height: 4),
+                          Text(
+                            R.string.today_is_day_off_description.tr(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: R.color.grey_2,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              height: 1.25,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

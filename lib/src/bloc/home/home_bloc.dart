@@ -202,7 +202,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               .map((e) => e!)
               .map((e) {
             final ScheduleType type =
-                ScheduleTypeExtend.getTypeFromIndex(e.type);
+                ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
+                    lessonData: e.lessonData,
+                    lessonNested: e.lesson,
+                    activityName: e.name,
+                    activityDescription: e.description);
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,
@@ -219,7 +223,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               .map((e) => e!)
               .map((e) {
             final ScheduleType type =
-                ScheduleTypeExtend.getTypeFromIndex(e.type);
+                ScheduleTypeExtend.getTypeFromIndexWithLessonData(e.type,
+                    lessonData: e.lessonData,
+                    lessonNested: e.lesson,
+                    activityName: e.name,
+                    activityDescription: e.description);
             final activity = HomeActivityData(
               id: e.id!,
               icon: type.icon,
@@ -329,7 +337,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _fetchBanners() async* {
     final ApiResult<LearningPostListResponse> apiResult =
-        await AppRepository().getBanners(position: 8);
+        await AppRepository().getBanners(position: 9);
     List<LearningPostModel>? bannersResp;
     apiResult.when(success: (LearningPostListResponse response) {
       bannersResp = response.data?.map((e) => e).toList();
@@ -401,38 +409,38 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     String? preOrder = FirebaseRemoteSetting.instance.utilitiesOrder;
     final moreItem = HomeUtilityData(
       icon: R.drawable.ic_home_more,
-      title: "Xem thêm",
+      title: R.string.more.tr(),
       slug: "xem-them",
       navigatorName: NavigatorName.utilities,
     );
     final all = [
       HomeUtilityData(
         icon: R.drawable.ic_home_glucose_calendar,
-        title: "Lịch đo đường huyết",
+        title: R.string.blood_sugar_schedule_single_line.tr(),
         slug: "lich-do-duong-huyet",
         navigatorName: NavigatorName.schedule_glucose,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_sample_menu,
-        title: "Thực đơn mẫu",
+        title: R.string.food_menu.tr(),
         slug: "thuc-don-mau",
         navigatorName: NavigatorName.food_menu,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_goal,
-        title: "Thiết lập mục tiêu",
+        title: R.string.goal_setting.tr(),
         slug: "thiet-lap-muc-tieu",
         navigatorName: NavigatorName.goal_setting,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_peripheral,
-        title: "Kết nối thiết bị",
+        title: R.string.connect_device_home.tr(),
         slug: "ket-noi-thiet-bi",
         navigatorName: NavigatorName.connect_device_app,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_referral,
-        title: "Mời bạn bè",
+        title: R.string.diab_refferal.tr(),
         slug: "moi-ban-be",
         navigatorName: "share",
       ),
@@ -444,7 +452,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       ),
       HomeUtilityData(
         icon: R.drawable.ic_home_reminder,
-        title: "Lịch nhắc nhở",
+        title: R.string.reminder_calendar.tr(),
         slug: "lich-nhac-nho",
         navigatorName: NavigatorName.reminder,
       ),
@@ -456,19 +464,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // ),
       HomeUtilityData(
         icon: R.drawable.ic_home_doctor_consult,
-        title: "Tư vấn sống khoẻ",
+        title: R.string.healthy_lifestyle_consulting.tr(),
         slug: "tu-van-song-khoe",
         navigatorName: NavigatorName.dsmes_booking,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_booking_clinic,
-        title: "Đặt lịch khám bệnh",
+        title: R.string.book_medical_appointment.tr(),
         slug: "dat-lich-kham-benh",
         navigatorName: NavigatorName.booking_clinic,
       ),
       HomeUtilityData(
         icon: R.drawable.ic_booking_doctor,
-        title: "Khám từ xa",
+        title: R.string.kham_tu_xa.tr(),
         slug: "kham-tu-xa",
         navigatorName: NavigatorName.booking_doctor,
       ),
@@ -638,7 +646,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final haveGlucose =
         model?.glucoseIndex.index != null && model!.glucoseIndex.index! > 0;
     final glucose = HomeMeasurementData(
-      title: "Đường Huyết",
+      title: R.string.duong_huyet.tr(),
       titleColor: haveGlucose ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveGlucose
           ? R.drawable.ic_home_measurement_glucose
@@ -701,7 +709,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     print('  haveBloodPressure: $haveBloodPressure');
     final bloodPressure = HomeMeasurementData(
-      title: "Huyết Áp",
+      title: R.string.huyet_ap.tr(),
       titleColor: haveBloodPressure ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveBloodPressure
           ? R.drawable.ic_home_measurement_blood
@@ -732,7 +740,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         (model?.exercise?.index != null && model!.exercise!.index! > 0) ||
             model?.exercise?.isDataNotEmpty == true;
     final exercise = HomeMeasurementData(
-      title: "Vận Động",
+      title: R.string.van_dong.tr(),
       titleColor: haveExercise ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveExercise
           ? R.drawable.ic_home_measurement_exercise
@@ -752,7 +760,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final haveNutrition = model?.energyCard?.consumedEnergy != null &&
         model!.energyCard!.consumedEnergy! > 0;
     final nutrition = HomeMeasurementData(
-      title: "Dinh Dưỡng",
+      title: R.string.dinh_duong.tr(),
       titleColor: haveNutrition ? _haveValueTitleColor : _noValueTitleColor,
       icon: haveNutrition
           ? R.drawable.ic_home_measurement_nutrition
