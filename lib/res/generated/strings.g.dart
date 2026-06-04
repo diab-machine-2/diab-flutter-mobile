@@ -1661,4 +1661,5 @@ class Strings {
   String get contact_support => 'contact_support';
   String get corporate_health_checkup => 'corporate_health_checkup';
   String get appointment_details => 'appointment_details';
+  String get bcb_medical_examination_result => 'bcb_medical_examination_result';
 }

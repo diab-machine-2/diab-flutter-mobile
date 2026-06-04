@@ -47,7 +47,7 @@ enum ExamResultCategory {
       case ExamResultCategory.endoscopyAndBiopsy:
         return R.string.bcb_exam_category_endoscopy_biopsy.tr();
       case ExamResultCategory.labResult:
-        return R.string.bcb_exam_result_default_title.tr();
+        return R.string.bcb_medical_examination_result.tr();
     }
   }
 

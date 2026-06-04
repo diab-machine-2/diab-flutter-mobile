@@ -1597,4 +1597,5 @@ limit_change_schedule,"Bạn đã đến giới hạn đổi lịch hẹn","You 
 please_select_schedule,Vui lòng chọn lịch,Please select a schedule,
 contact_support,"Vui lòng liên hệ {} để được hỗ trợ.","Please contact {} for support.",
 corporate_health_checkup,Khám sức khoẻ doanh nghiệp,Corporate Health Checkup,
-appointment_details,"Thông tin lịch hẹn","Appointment details"
+appointment_details,"Thông tin lịch hẹn","Appointment details",
+bcb_medical_examination_result,"Kết quả khám","Medical examination result"
