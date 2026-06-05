@@ -482,8 +482,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       ),
       HomeUtilityData(
         icon: R.drawable.ic_lab_result,
-        title: R.string.bcb_exam_result_default_title.tr(),
-        slug: "ket-qua-xet-nghiem",
+        title: R.string.bcb_medical_examination_result.tr(),
+        slug: "ket-qua-kham",
         navigatorName: NavigatorName.view_test_result,
       ),
     ];

@@ -116,7 +116,7 @@ class _CampaignTestResultScreenState extends State<CampaignTestResultScreen> {
       backgroundColor: R.color.backgroundColorNew,
       appBar: AppBar(
         title: Text(
-          R.string.bcb_exam_results_title.tr(),
+          R.string.bcb_medical_examination_result.tr(),
           style: TextStyle(
               color: R.color.white, fontSize: 18, fontWeight: FontWeight.w700),
         ),
