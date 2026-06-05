@@ -33,6 +33,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   int recommendationType = 0;
   List<LessonSectionListResponseData?>? recommendationLessons;
   bool isRecommendationLoading = false;
+  bool _hasLoadedRecommendationOnce = false;
   List<LessonSectionListResponseData?>? forYouLessons;
   bool isForYouLoading = false;
   bool _hasLoadedForYouOnce = false;
@@ -261,7 +262,14 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   Future<void> getRecommendationLessons({int? type, bool emitState = true}) async {
     final int requestType = type ?? recommendationType;
     recommendationType = requestType;
-    isRecommendationLoading = true;
+    // Only show inline loading spinner for the very first load;
+    // subsequent refreshes (e.g. after completing a lesson) update silently.
+    final bool shouldShowLoading = _hasLoadedRecommendationOnce;
+    if (shouldShowLoading) {
+      isRecommendationLoading = false;
+    } else {
+      isRecommendationLoading = true;
+    }
     if (emitState) {
       emit(const LessonTabSuccess());
     }
@@ -271,6 +279,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
       // API now returns a list of LessonSectionListResponseData.
       recommendationLessons =
           sortSectionLessonsLearntLast(response);
+      _hasLoadedRecommendationOnce = true;
       isRecommendationLoading = false;
       if (emitState) {
         emit(const LessonTabSuccess());
