@@ -24,7 +24,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
-  int numRecordOfPage = 10;
+  int numRecordOfPage = 1000;
 
   /// Recommendation section state (\"Đề xuất\").
   /// type mapping:
@@ -227,7 +227,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     bool isShowLoading = false,
     bool isRefreshData = true,
     int iPagingPage = 1,
-    int size = 10,
+    int size = 1000,
   }) async {
     if (lessonsList?.isNotEmpty == true && !isRefreshData) {
       //   Timer(const Duration(milliseconds: 0), () {
