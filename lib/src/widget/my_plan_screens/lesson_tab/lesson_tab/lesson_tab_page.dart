@@ -12,7 +12,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/response/my_lesson_response.dart';
 import 'package:medical/src/model/response/lesson_section_list_response.dart';
 import 'package:medical/src/utils/const.dart';
-import 'package:medical/src/utils/lesson_sort_util.dart';
+
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -113,11 +113,9 @@ class _LessonTabPageState extends State<LessonTabPage>
     }
 
     if (notifyName == 'refresh_lesson_tab') {
-      await _cubit.getInitData(isRefresh: true, showCurrentWeek: false);
-      await _cubit.getForYouLessons();
-      // Re-load recommendations so learning status in the list is updated
-      // right after completing a lesson.
-      await _cubit.getRecommendationLessons(type: _cubit.recommendationType);
+      // Optimistic update already applied via onComplete callback;
+      // silently sync with server in the background (no loading indicators).
+      _cubit.silentRefreshAll();
     }
     if (notifyName == Const.NAVIGATE_TO_LESSON_DETAIL) {
       if (_cubit.lessonsList == null) {
@@ -380,7 +378,6 @@ class _LessonTabPageState extends State<LessonTabPage>
       children: moduleIndexMap.entries.map((entry) {
         final String moduleName = entry.key;
         final List<int> indices = List<int>.from(entry.value);
-        sortLessonIndicesLearntLast(indices, lessons);
         final List<MyLessonResponseData?> moduleLessons =
             indices.map((i) => _cubit.lessonsList?[i]).toList();
         return Container(
@@ -484,7 +481,7 @@ class _LessonTabPageState extends State<LessonTabPage>
 
   /// "Dành cho bạn" section shown above all lesson modules.
   Widget _buildForYouSection() {
-    final lessons = sortSectionLessonsLearntLast(_cubit.forYouLessons ?? []);
+    final lessons = _cubit.forYouLessons ?? [];
     if (lessons.isEmpty && !_cubit.isForYouLoading) {
       return const SizedBox.shrink();
     }
@@ -613,8 +610,7 @@ class _LessonTabPageState extends State<LessonTabPage>
   /// \"Đề xuất\" section at bottom using recommendationLessons.
   Widget _buildRecommendationSection(LessonTabState state) {
     if ((_cubit.lessonsList ?? []).isEmpty) return const SizedBox.shrink();
-    final lessons =
-        sortSectionLessonsLearntLast(_cubit.recommendationLessons ?? []);
+    final lessons = _cubit.recommendationLessons ?? [];
     return Container(
       color: R.color.white,
       padding: const EdgeInsets.symmetric(vertical: 12),
