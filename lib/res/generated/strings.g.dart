@@ -1344,7 +1344,7 @@ class Strings {
   String get subscription_title_1 => 'subscription_title_1';
   String get subscription_title_2 => 'subscription_title_2';
   String get subscription_subtitle => 'subscription_subtitle';
-String get tiet_kiem_nhat => 'tiet_kiem_nhat';
+  String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get begin_program => 'begin_program';
   String get loading_subscription_packages => 'loading_subscription_packages';
   String get basic_program_confirm => 'basic_program_confirm';
@@ -1403,7 +1403,7 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get should_not_do_1_description => 'should_not_do_1_description';
   String get should_not_do_2 => 'should_not_do_2';
   String get should_not_do_3 => 'should_not_do_3';
-  String get tutorial_reference  => 'tutorial_reference';
+  String get tutorial_reference => 'tutorial_reference';
   String get add_prescription => 'add_prescription';
   String get edit_prescription => 'edit_prescription';
   String get prescription_warning => 'prescription_warning';
@@ -1598,6 +1598,42 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get lich_do_duong_huyet_cua_ban => 'lich_do_duong_huyet_cua_ban';
   String get goi_y_lich_do_tu_chuyen_gia => 'goi_y_lich_do_tu_chuyen_gia';
   String get add_measurement => 'add_measurement';
+  String get bcb_recheck_information => 'bcb_recheck_information';
+  String get bcb_success_contact_subtitle => 'bcb_success_contact_subtitle';
+  String get bcb_max_3_wish_slots => 'bcb_max_3_wish_slots';
+  String get bcb_note_for_doctor => 'bcb_note_for_doctor';
+  String get bcb_note_for_doctor_hint => 'bcb_note_for_doctor_hint';
+  String get bcb_medical_condition => 'bcb_medical_condition';
+  String get bcb_medical_condition_hint => 'bcb_medical_condition_hint';
+  String get bcb_no_schedule_available => 'bcb_no_schedule_available';
+  String get bcb_slot_id_missing => 'bcb_slot_id_missing';
+  String get bcb_no_slots_morning => 'bcb_no_slots_morning';
+  String get bcb_no_slots_afternoon => 'bcb_no_slots_afternoon';
+  String get bcb_register_health_check => 'bcb_register_health_check';
+  String get bcb_health_campaign_default => 'bcb_health_campaign_default';
+  String get bcb_exam_category_laboratory_test =>
+      'bcb_exam_category_laboratory_test';
+  String get bcb_exam_category_diagnostic_imaging =>
+      'bcb_exam_category_diagnostic_imaging';
+  String get bcb_exam_category_functional_exploration =>
+      'bcb_exam_category_functional_exploration';
+  String get bcb_exam_category_endoscopy_biopsy =>
+      'bcb_exam_category_endoscopy_biopsy';
+  String get bcb_exam_results_title => 'bcb_exam_results_title';
+  String get bcb_no_exam_results => 'bcb_no_exam_results';
+  String get bcb_exam_results_list => 'bcb_exam_results_list';
+  String get bcb_result_file_not_found => 'bcb_result_file_not_found';
+  String get bcb_invalid_file_url => 'bcb_invalid_file_url';
+  String get bcb_cannot_download_file => 'bcb_cannot_download_file';
+  String get bcb_exam_result_default_title => 'bcb_exam_result_default_title';
+  String get bcb_view_result => 'bcb_view_result';
+  String get bcb_share_feature_in_development =>
+      'bcb_share_feature_in_development';
+  String get bcb_no_pdf_file => 'bcb_no_pdf_file';
+  String get bcb_cannot_load_pdf_in_app => 'bcb_cannot_load_pdf_in_app';
+  String get bcb_open_external => 'bcb_open_external';
+  String get bcb_download => 'bcb_download';
+  String get bcb_tai_lieu => 'bcb_tai_lieu';
   String get cannot_use_medicine_in_future => 'cannot_use_medicine_in_future';
   String get webinar_register_success => 'webinar_register_success';
   String get webinar_online_event => 'webinar_online_event';
@@ -1619,4 +1655,11 @@ String get tiet_kiem_nhat => 'tiet_kiem_nhat';
   String get webinar_watch_replay => 'webinar_watch_replay';
   String get webinar_registered => 'webinar_registered';
   String get webinar_register_participation => 'webinar_register_participation';
+  String get service => 'service';
+  String get limit_change_schedule => 'limit_change_schedule';
+  String get please_select_schedule => 'please_select_schedule';
+  String get contact_support => 'contact_support';
+  String get corporate_health_checkup => 'corporate_health_checkup';
+  String get appointment_details => 'appointment_details';
+  String get bcb_medical_examination_result => 'bcb_medical_examination_result';
 }

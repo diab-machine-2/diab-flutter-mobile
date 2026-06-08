@@ -86,7 +86,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           // if have cache
           _cached = HomeLoaded(
             model: model,
-            utilities: this.getAllUtilities(full: false),
+            utilities: this.getAllUtilities(full: false, bcbStatus: model.bcbStatus),
             activities: model.activities,
             reminders: model.reminders,
             activityLoading: false,
@@ -122,7 +122,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         HomeLoaded currentState =
             (_cached?.copyWith(model: home) ?? HomeLoaded(model: home))
                 .copyWith(
-          utilities: this.getAllUtilities(full: false),
+          utilities: this.getAllUtilities(full: false, bcbStatus: home.bcbStatus),
           measurementLoading: false,
           activityLoading: _firstLoad,
           reminderLoading: _firstLoad,
@@ -405,7 +405,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   // Stream<HomeState> _syncHealthApp() async* {}
 
-  List<HomeUtilityData> getAllUtilities({bool full = false}) {
+  List<HomeUtilityData> getAllUtilities({bool full = false, bool bcbStatus = false}) {
     String? preOrder = FirebaseRemoteSetting.instance.utilitiesOrder;
     final moreItem = HomeUtilityData(
       icon: R.drawable.ic_home_more,
@@ -480,6 +480,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         slug: "kham-tu-xa",
         navigatorName: NavigatorName.booking_doctor,
       ),
+      if (bcbStatus)
+        HomeUtilityData(
+          icon: R.drawable.ic_lab_result,
+          title: R.string.bcb_medical_examination_result.tr(),
+          slug: "ket-qua-kham",
+          navigatorName: NavigatorName.view_test_result,
+        ),
     ];
 
     if (preOrder?.isNotEmpty == true) {

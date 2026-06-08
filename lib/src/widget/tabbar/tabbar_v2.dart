@@ -163,6 +163,13 @@ class _TabbarControllerState extends State<TabbarController> with Observer {
       print(
           "[ROUTE] TabbarController found pending deeplink, scheduling navigation");
       BranchioLinkConfig.instance.scheduleDeeplinkNavigation();
+    } else {
+      // Always check for pending content navigation (BCB campaign, lab result,
+      // smart-goal, lesson, activity) which use their own pending flags
+      // instead of the generic hasPendingDeeplink flag.
+      // This handles the cold-start case where the deep link was received
+      // before the app finished initializing.
+      BranchioLinkConfig.instance.checkPendingContentNavigation();
     }
   }
 

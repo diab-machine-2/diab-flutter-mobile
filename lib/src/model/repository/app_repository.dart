@@ -104,6 +104,7 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/model/response/exercise_lesson_response.dart';
+import 'package:medical/src/model/response/bcb_campaign_customer_response.dart';
 
 import '../app_api.dart';
 import '../request/SelectRoadmapRequest.dart';
@@ -1440,6 +1441,19 @@ class AppRepository {
       {required int id}) async {
     try {
       final response = await docosanClient.getDoctorRate(id);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<BcbCampaignCustomerResponse>> getBcbCampaignCustomer({
+    required String campaignId,
+  }) async {
+    try {
+      final response = await appClient.getBcbCampaignCustomer(
+        campaignId,
+      );
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

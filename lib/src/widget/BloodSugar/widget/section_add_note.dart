@@ -128,25 +128,29 @@ class SectionAddNoteState extends State<SectionAddNote> {
                 fontWeight: FontWeight.w400,
                 color: R.color.primaryGreyColor,
               ),
-              suffixIcon: GestureDetector(
-                onTap: _isAddable
-                    ? () {
-                        _showActionSheet(context);
-                      }
-                    : null,
-                child: Image.asset(
-                  R.drawable.ic_pick_photo,
-                  width: 24,
-                  height: 24,
-                  color: _isAddable
-                      ? R.color.greenGradientBottom
-                      : R.color.color0xffBFC6C6,
-                ),
-              ),
-              suffixIconConstraints: BoxConstraints(
-                maxHeight: 24,
-                maxWidth: 24,
-              ),
+              suffixIcon: widget.showCameraIcons
+                  ? GestureDetector(
+                      onTap: _isAddable
+                          ? () {
+                              _showActionSheet(context);
+                            }
+                          : null,
+                      child: Image.asset(
+                        R.drawable.ic_pick_photo,
+                        width: 24,
+                        height: 24,
+                        color: _isAddable
+                            ? R.color.greenGradientBottom
+                            : R.color.color0xffBFC6C6,
+                      ),
+                    )
+                  : null,
+              suffixIconConstraints: widget.showCameraIcons
+                  ? BoxConstraints(
+                      maxHeight: 24,
+                      maxWidth: 24,
+                    )
+                  : null,
             ),
             maxLines: 10,
             minLines: 1,
