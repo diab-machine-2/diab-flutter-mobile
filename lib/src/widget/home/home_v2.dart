@@ -789,7 +789,7 @@ class _HomeControllerState extends State<HomeController>
                 // case show all utilities
                 if (routeName == NavigatorName.utilities) {
                   final utilities = BlocProvider.of<HomeBloc>(context)
-                      .getAllUtilities(full: true);
+                      .getAllUtilities(full: true, bcbStatus: stateLoaded?.model.bcbStatus ?? false);
                   Navigator.pushNamed(context, routeName, arguments: utilities);
                   return;
                 }
