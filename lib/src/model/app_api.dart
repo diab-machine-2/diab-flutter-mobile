@@ -96,6 +96,7 @@ import 'response/user_info_referral_code_response.dart';
 import 'response/user_info_response.dart';
 import 'response/week_states_response.dart';
 import 'response/zoom_token_response.dart';
+import 'response/bcb_campaign_customer_response.dart';
 
 part 'app_api.g.dart';
 
@@ -679,4 +680,10 @@ abstract class AppApi {
   });
 
   // end region weight
+
+  // BCB Campaign Customer
+  @GET("/App/BcbCampaignCustomer/GetEntityByCampaignAndPhoneNumber")
+  Future<BcbCampaignCustomerResponse> getBcbCampaignCustomer(
+    @Query("campaignId") String campaignId,
+  );
 }

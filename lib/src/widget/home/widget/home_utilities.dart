@@ -60,7 +60,7 @@ class HomeUtilities extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: renderingUtilities
                 .getRange(0, renderingUtilities.length ~/ 2)
-                .map((utility) => Expanded(child: _buildActivityItem(utility)))
+                .map((utility) => Expanded(child: _buildActivityItem(utility, context)))
                 .toList(),
           ),
           const SizedBox(height: 16.0),
@@ -69,7 +69,7 @@ class HomeUtilities extends StatelessWidget {
             children: renderingUtilities
                 .getRange(
                     renderingUtilities.length ~/ 2, renderingUtilities.length)
-                .map((utility) => Expanded(child: _buildActivityItem(utility)))
+                .map((utility) => Expanded(child: _buildActivityItem(utility, context)))
                 .toList(),
           ),
         ],
@@ -77,7 +77,7 @@ class HomeUtilities extends StatelessWidget {
     );
   }
 
-  Widget _buildActivityItem(HomeUtilityData utility) {
+  Widget _buildActivityItem(HomeUtilityData utility, BuildContext context) {
     return InkWell(
       onTap: () => onTap(utility),
       child: Column(
@@ -90,15 +90,22 @@ class HomeUtilities extends StatelessWidget {
           ),
           const SizedBox(height: 12.0),
           Container(
+            padding: const EdgeInsets.symmetric(horizontal: 2.0),
             alignment: Alignment.center,
             width: double.infinity,
-            child: Text(
-              utility.title,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: TextStyle(
-                fontSize: 15.0,
-                color: R.color.textDark,
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3)),
+              child: Text(
+                utility.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: R.color.textDark,
+                ),
               ),
             ),
           ),
