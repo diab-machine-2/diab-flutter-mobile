@@ -27,6 +27,9 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'package:medical/src/utils/smart_goal_navigation_util.dart';
 import '../model/response/lesson_section_list_response.dart';
+import '../model/response/bcb_campaign_customer_response.dart';
+import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
 
 class BranchioLinkConfig {
   BranchioLinkConfig._privateConstructor();
@@ -69,6 +72,9 @@ class BranchioLinkConfig {
   String? _pendingSurveyId;
   String? _pendingLessonId;
   String? _pendingLessonType;
+  String? _pendingBcbCampaignId;
+  String? _pendingBcbCampaignName;
+  String? _pendingLabResultId;
 
   // Getter to check pending deeplinks
   bool get hasPendingDeeplink => _hasPendingDeeplink;
@@ -200,6 +206,93 @@ class BranchioLinkConfig {
           if (timeSinceLastMeeting.inSeconds < 5) return;
         }
         ZoomService().launchZoomMeeting(meetingId, meetingPassword);
+        return;
+      }
+
+      // BCB campaign — `\$campaignId` / `\$bcbCampaignId` / `bcb_campaign_id`; optional `\$campaignName` (e.g. date label)
+      if (data['+clicked_branch_link'] == true &&
+          (data.containsKey('\$campaignId') )) {
+        final campaignId = data['\$campaignId']
+            ?.toString()
+            .trim() ??
+            '';
+        if (campaignId.isEmpty) return;
+        final rawName = (data['\$campaignName'] ?? data['campaign_name'])
+            ?.toString()
+            .trim();
+        final campaignName =
+            (rawName != null && rawName.isNotEmpty) ? rawName : null;
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          final phone = AppSettings.userInfo!.phoneNumber;
+          if (phone != null && phone.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              final result = await AppRepository()
+                  .getBcbCampaignCustomer(campaignId: campaignId);
+              result.when(
+                success: (response) {
+                  final status = response.data?.status;
+                  if (status != null && status >= 2 && status <= 4) {
+                    navigatorKey.currentState?.pushNamed(
+                      NavigatorName.bcb_form,
+                      arguments: <String, dynamic>{
+                        'bcbCampaignId': campaignId,
+                        if (campaignName != null) 'bcbCampaignName': campaignName,
+                      },
+                    );
+                  } else if (status != null && status >= 5 && status <= 6) {
+                    navigatorKey.currentState?.pushNamed(
+                      NavigatorName.bcb_detail_appointment,
+                      arguments: {'campaignId': campaignId},
+                    );
+                  } else if (status != null && status >= 9 && status <= 10) {
+                    navigatorKey.currentState?.pushNamed(
+                      NavigatorName.view_test_result,
+                      arguments: {'campaignId': campaignId},
+                    );
+                  }
+                },
+                failure: (_) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.bcb_form,
+                    arguments: <String, dynamic>{
+                      'bcbCampaignId': campaignId,
+                      if (campaignName != null) 'bcbCampaignName': campaignName,
+                    },
+                  );
+                },
+              );
+            });
+          } else {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              navigatorKey.currentState?.pushNamed(
+                NavigatorName.bcb_form,
+                arguments: <String, dynamic>{
+                  'bcbCampaignId': campaignId,
+                  if (campaignName != null) 'bcbCampaignName': campaignName,
+                },
+              );
+            });
+          }
+        } else {
+          _pendingBcbCampaignId = campaignId;
+          _pendingBcbCampaignName = campaignName;
+        }
+        return;
+      }
+
+      // Handle lab result deeplink
+      if (data['+clicked_branch_link'] == true &&
+          data.containsKey("\$labResultId")) {
+        final labResultId = data['\$labResultId'] as String;
+        if (labResultId.isEmpty) return;
+        print('[ROUTE] Lab result deeplink detected: $labResultId');
+        if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await _navigateToLabResultDetail(labResultId);
+          });
+        } else {
+          _pendingLabResultId = labResultId;
+        }
         return;
       }
 
@@ -493,6 +586,87 @@ class BranchioLinkConfig {
     }
   }
 
+  /// Creates a Branch short URL that opens [NavigatorName.bcb_form] with
+  /// `\$campaignId`, `\$bcbCampaignId`, and optional `\$campaignName` (aligned with [listSession]).
+  Future<String> createBcbCampaignBranchLink({
+    required String bcbCampaignId,
+    String? campaignName,
+  }) async {
+    final canonicalId =
+        'bcb_campaign/${bcbCampaignId}';
+    final meta = BranchContentMetaData()
+      ..addCustomMetadata('\$campaignId', bcbCampaignId)
+      ..addCustomMetadata('\$bcbCampaignId', bcbCampaignId);
+    final name = campaignName?.trim();
+    if (name != null && name.isNotEmpty) {
+      meta.addCustomMetadata('\$campaignName', name);
+    }
+
+    final BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: canonicalId,
+      title: 'Đăng ký chiến dịch DiaB',
+      contentDescription:
+          'Hoàn tất đăng ký chiến dịch khám sức khỏe trên ứng dụng DiaB.',
+      imageUrl:
+          'https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png',
+      contentMetadata: meta,
+    );
+
+    final BranchLinkProperties linkProperties = BranchLinkProperties(
+      feature: 'bcb_campaign',
+      channel: 'campaign',
+      campaign: 'bcb_registration',
+    );
+
+    final BranchResponse response = await FlutterBranchSdk.getShortUrl(
+      buo: buo,
+      linkProperties: linkProperties,
+    );
+
+    if (response.success) {
+      return response.result;
+    } else {
+      throw Exception(
+          'Failed to create BCB campaign link: ${response.errorMessage}');
+    }
+  }
+
+  Future<String> createShareLabResultLink({
+    required String labResultId,
+    String? labResultName,
+  }) async {
+    final meta = BranchContentMetaData()
+      ..addCustomMetadata('\$labResultId', labResultId);
+
+    final BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: 'lab_result/$labResultId',
+      title: labResultName ?? 'Kết quả xét nghiệm DiaB',
+      contentDescription:
+          'Xem kết quả xét nghiệm trên ứng dụng DiaB.',
+      imageUrl:
+          'https://diab.com.vn/wp-content/uploads/2022/02/hinh-1-banner-trang-chu.png',
+      contentMetadata: meta,
+    );
+
+    final BranchLinkProperties linkProperties = BranchLinkProperties(
+      feature: 'lab_result_share',
+      channel: 'app_share',
+      campaign: 'lab_result_share',
+    );
+
+    final BranchResponse response = await FlutterBranchSdk.getShortUrl(
+      buo: buo,
+      linkProperties: linkProperties,
+    );
+
+    if (response.success) {
+      return response.result;
+    } else {
+      throw Exception(
+          'Failed to create lab result link: ${response.errorMessage}');
+    }
+  }
+
   void _processMeasurementDeepLink(String screenValue) async {
     if (!AppSettings.splashScreenInitDone || AppSettings.userInfo == null) {
       _pendingMeasurementScreen = screenValue;
@@ -740,6 +914,7 @@ class BranchioLinkConfig {
     _pendingSurveyId = null;
     _pendingLessonId = null;
     _pendingLessonType = null;
+    _pendingLabResultId = null;
   }
 
   void clearPendingLoginData() {
@@ -898,6 +1073,24 @@ class BranchioLinkConfig {
     return result;
   }
 
+  Future<void> _navigateToLabResultDetail(String labResultId) async {
+    try {
+      final client = BcbCampaignClient();
+      final results = await client.fetchExamResult();
+      final matched = results.where((r) => r.id == labResultId).firstOrNull;
+      if (matched != null) {
+        navigatorKey.currentState?.pushNamed(
+          NavigatorName.campaign_test_result_detail,
+          arguments: {'result': matched},
+        );
+      } else {
+        print('[ROUTE] Lab result not found for id: $labResultId');
+      }
+    } catch (e) {
+      print('[ROUTE] Error navigating to lab result detail: $e');
+    }
+  }
+
   Future<void> _handleTargetTypeDeeplink(
       int targetType, SmartGoalList smartGoal) async {
     try {
@@ -928,6 +1121,67 @@ class BranchioLinkConfig {
       print('[ROUTE] Executing pending activity navigation: $_activityId');
       Observable.instance
           .notifyObservers([], notifyName: Const.NAVIGATE_TO_ACTIVITY_DETAIL);
+    }
+
+    if (_pendingBcbCampaignId != null &&
+        _pendingBcbCampaignId!.isNotEmpty &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      final bid = _pendingBcbCampaignId!;
+      final bName = _pendingBcbCampaignName;
+      _pendingBcbCampaignId = null;
+      _pendingBcbCampaignName = null;
+      print('[ROUTE] Executing pending BCB registration deeplink: $bid');
+      final phone = AppSettings.userInfo!.phoneNumber;
+      if (phone != null && phone.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          final result = await AppRepository()
+              .getBcbCampaignCustomer(campaignId: bid);
+          result.when(
+            success: (response) {
+              final status = response.data?.status;
+              if (status != null && status >= 2 && status <= 4) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.bcb_form,
+                  arguments: {
+                    'bcbCampaignId': bid,
+                    if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
+                  },
+                );
+              } else if (status != null && status >= 5 && status <= 6) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.bcb_detail_appointment,
+                  arguments: {'campaignId': bid},
+                );
+              } else if (status != null && status >= 9 && status <= 10) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.view_test_result,
+                  arguments: {'campaignId': bid},
+                );
+              }
+            },
+            failure: (_) {
+              navigatorKey.currentState?.pushNamed(
+                NavigatorName.bcb_form,
+                arguments: {
+                  'bcbCampaignId': bid,
+                  if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
+                },
+              );
+            },
+          );
+        });
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          navigatorKey.currentState?.pushNamed(
+            NavigatorName.bcb_form,
+            arguments: {
+              'bcbCampaignId': bid,
+              if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
+            },
+          );
+        });
+      }
     }
 
     if (_pendingTargetType != null &&
@@ -962,6 +1216,18 @@ class BranchioLinkConfig {
       _pendingSurveyId = null;
       _pendingLessonId = null;
       _pendingLessonType = null;
+    }
+
+    if (_pendingLabResultId != null &&
+        _pendingLabResultId!.isNotEmpty &&
+        AppSettings.splashScreenInitDone &&
+        AppSettings.userInfo != null) {
+      final lid = _pendingLabResultId!;
+      _pendingLabResultId = null;
+      print('[ROUTE] Executing pending lab result deeplink: $lid');
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await _navigateToLabResultDetail(lid);
+      });
     }
   }
 

@@ -45,4 +45,10 @@ class Icons {
   String get ic_flag_fr => "lib/res/icons/ic_flag_fr.svg";
   String get ic_policy => "lib/res/icons/ic_policy.svg";
   String get ic_edit => "lib/res/icons/ic_edit.svg";
+  String get ic_xet_nghiem => "lib/res/icons/ic_xet_nghiem.svg";
+  String get ic_chan_doan_hinh_anh => "lib/res/icons/ic_chan_doan_hinh_anh.svg";
+  String get ic_tham_do_chuc_nang => "lib/res/icons/ic_tham_do_chuc_nang.svg";
+  String get ic_noi_soi => "lib/res/icons/ic_noi_soi.svg";
+  String get ic_file_pdf => "lib/res/icons/ic_file_pdf.svg";
+  String get ic_ket_qua_xet_nghiem => "lib/res/icons/ic_ket_qua_xet_nghiem.svg";
 }
