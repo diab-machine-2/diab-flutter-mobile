@@ -618,6 +618,11 @@ class _CourseQuizPageState extends State<CourseQuizPage> {
           await HomeClient().completeSmartGoal(DateTime.now(),
               widget.smartGoal!.id, 1, ScheduleType.lesson.typeIndex);
         }
+        // Wait for bottom sheet pop animation to complete to prevent iOS black screen.
+        await Future.delayed(const Duration(milliseconds: 300));
+
+        if (!mounted) return;
+
         if (widget.onDone == null) {
           // Legacy path: one [popUntil] to tab bar instead of chained pops.
           NavigationUtil.popUntilTabbar(context);

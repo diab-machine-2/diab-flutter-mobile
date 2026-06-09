@@ -11,7 +11,7 @@ import 'package:medical/src/model/service/network_exceptions.dart';
 
 import '../../../../app_setting/app_setting.dart';
 import '../../../../utils/const.dart';
-import '../../../../utils/lesson_sort_util.dart';
+
 import '../../my_plan/my_plan.dart';
 import '../lesson_filter/models/filter_data.dart';
 import 'lesson_tab.dart';
@@ -24,7 +24,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
 
   final AppRepository repository;
   final MyPlanCubit myPlanCubit;
-  int numRecordOfPage = 10;
+  int numRecordOfPage = 1000;
 
   /// Recommendation section state (\"Đề xuất\").
   /// type mapping:
@@ -33,6 +33,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   int recommendationType = 0;
   List<LessonSectionListResponseData?>? recommendationLessons;
   bool isRecommendationLoading = false;
+  bool _hasLoadedRecommendationOnce = false;
   List<LessonSectionListResponseData?>? forYouLessons;
   bool isForYouLoading = false;
   bool _hasLoadedForYouOnce = false;
@@ -100,22 +101,46 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     required String lessonId,
     required int percentComplete,
   }) async {
-    // lessonsList.firstW(here((element) => element?.id == lessonId);
-    emit(LessonTabLoading());
     int learningStatus = Const.LESSON_LEARNING;
-
-    print('percentComplete: $percentComplete');
     if (percentComplete == 0) {
       learningStatus = Const.LESSON_NOT_LEARN;
     }
     if (percentComplete == 100) {
       learningStatus = Const.LESSON_LEARNT;
     }
-    int index = lessonsList!.indexWhere((element) => element?.id == lessonId);
-    lessonsList![index]!.percentComplete = percentComplete;
-    lessonsList![index]!.learningStatus = learningStatus;
-    _sortLessonsListLearntLast();
-    emit(LessonTabInitial());
+
+    // Optimistic update across all 3 lesson lists so the UI reflects
+    // the new status immediately without waiting for API calls.
+    final int index =
+        lessonsList?.indexWhere((e) => e?.id == lessonId) ?? -1;
+    if (index >= 0) {
+      lessonsList![index]!.percentComplete = percentComplete;
+      lessonsList![index]!.learningStatus = learningStatus;
+    }
+
+    // Update "For You" list.
+    if (forYouLessons != null) {
+      for (final lesson in forYouLessons!) {
+        if (lesson?.id == lessonId) {
+          lesson?.percentComplete = percentComplete;
+          lesson?.learningStatus = learningStatus;
+        }
+      }
+    }
+
+    // Update "Recommendations" list.
+    if (recommendationLessons != null) {
+      for (final lesson in recommendationLessons!) {
+        if (lesson?.id == lessonId) {
+          lesson?.percentComplete = percentComplete;
+          lesson?.learningStatus = learningStatus;
+        }
+      }
+    }
+
+    LessonSearchCache.lessons = lessonsList;
+    emit(const LessonTabSuccess());
+    emit(const LessonTabInitial());
   }
 
   Future<void> getInitData(
@@ -202,7 +227,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     bool isShowLoading = false,
     bool isRefreshData = true,
     int iPagingPage = 1,
-    int size = 10,
+    int size = 1000,
   }) async {
     if (lessonsList?.isNotEmpty == true && !isRefreshData) {
       //   Timer(const Duration(milliseconds: 0), () {
@@ -243,7 +268,6 @@ class LessonTabCubit extends Cubit<LessonTabState> {
           });
         }
       }
-      _sortLessonsListLearntLast();
       // Cache for search page so it can reuse loaded data.
       LessonSearchCache.lessons = lessonsList;
       // emit(LessonTabScrollToLesson(response.firstLessonIndex));
@@ -261,7 +285,14 @@ class LessonTabCubit extends Cubit<LessonTabState> {
   Future<void> getRecommendationLessons({int? type, bool emitState = true}) async {
     final int requestType = type ?? recommendationType;
     recommendationType = requestType;
-    isRecommendationLoading = true;
+    // Only show inline loading spinner for the very first load;
+    // subsequent refreshes (e.g. after completing a lesson) update silently.
+    final bool shouldShowLoading = _hasLoadedRecommendationOnce;
+    if (shouldShowLoading) {
+      isRecommendationLoading = false;
+    } else {
+      isRecommendationLoading = true;
+    }
     if (emitState) {
       emit(const LessonTabSuccess());
     }
@@ -269,8 +300,8 @@ class LessonTabCubit extends Cubit<LessonTabState> {
         await repository.getLessonModuleType(requestType);
     apiResult.when(success: (List<LessonSectionListResponseData> response) {
       // API now returns a list of LessonSectionListResponseData.
-      recommendationLessons =
-          sortSectionLessonsLearntLast(response);
+      recommendationLessons = response;
+      _hasLoadedRecommendationOnce = true;
       isRecommendationLoading = false;
       if (emitState) {
         emit(const LessonTabSuccess());
@@ -300,7 +331,7 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     final ApiResult<List<LessonSectionListResponseData>> apiResult =
         await repository.getRecommendedLessons();
     apiResult.when(success: (List<LessonSectionListResponseData> response) {
-      forYouLessons = sortSectionLessonsLearntLast(response);
+      forYouLessons = response;
       _hasLoadedForYouOnce = true;
       isForYouLoading = false;
       if (emitState) {
@@ -362,14 +393,15 @@ class LessonTabCubit extends Cubit<LessonTabState> {
     //  emit(const LessonTabInitial());
   }
 
-  void _sortLessonsListLearntLast() {
-    if (currentLessonTypeIndex == 0) {
-      if (lessonsListRoadmap != null) {
-        lessonsListRoadmap = sortMyLessonsLearntLast(lessonsListRoadmap!);
-      }
-    } else if (lessonsListSuggest != null) {
-      lessonsListSuggest = sortMyLessonsLearntLast(lessonsListSuggest!);
-    }
-    LessonSearchCache.lessons = lessonsList;
+  /// Silently re-fetch all lesson data in the background.
+  /// No loading indicators or BotToast — the UI only updates when data arrives.
+  Future<void> silentRefreshAll() async {
+    await Future.wait([
+      getLessonsList(isRefresh: true, isShowLoading: false),
+      getForYouLessons(emitState: false),
+      getRecommendationLessons(type: recommendationType, emitState: false),
+    ]);
+    emit(const LessonTabSuccess());
+    emit(const LessonTabInitial());
   }
 }

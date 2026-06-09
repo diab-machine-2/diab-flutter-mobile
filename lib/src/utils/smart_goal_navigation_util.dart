@@ -29,6 +29,7 @@ import 'package:medical/src/widget/Bmi/views/bmi_height_input_dialog.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custom_height_picker.dart';
 import 'package:medical/src/widget/Bmi/views/add_bmi_view_old/widgets/custome_weight_picker.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'package:medical/src/widget/Food/widget/food_action_popup.dart';
 import 'package:medical/src/widget/calendar/calendar_model.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -124,7 +125,6 @@ class SmartGoalNavigationUtil {
         _showCoachingPopup(context, smartGoal);
         break;
       case ScheduleType.survey:
-      case ScheduleType.quiz:
         _showSurveyPopup(context, survey: smartGoal);
         break;
       case ScheduleType.lesson_recommend:
@@ -134,6 +134,7 @@ class SmartGoalNavigationUtil {
       case ScheduleType.lesson:
       case ScheduleType.infographic:
       case ScheduleType.book_1_n:
+      case ScheduleType.quiz:
         await _handleLesson(context, smartGoal);
         break;
       case ScheduleType.io_evaluate:
@@ -277,10 +278,7 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handleFood(
       BuildContext context, SmartGoalList? smartGoal) async {
-    await NavigationUtil.navigatePage(
-      context,
-      DailyNutritionPage(type: 'input', id: null, goalId: smartGoal?.id),
-    );
+    FoodActionPopup.show(context);
   }
 
   static Future<void> _handleExercise(
@@ -697,12 +695,12 @@ class SmartGoalNavigationUtil {
           final meetingLink = smartGoal?.calendar?.meetingLink ?? '';
           if (await canLaunch(meetingLink)) {
             FlutterBranchSdk.handleDeepLink(meetingLink);
-            await launch(
-              meetingLink,
-              forceSafariVC: false,
-              forceWebView: false,
-              headers: <String, String>{'my_header_key': 'my_header_value'},
-            );
+            // await launch(
+            //   meetingLink,
+            //   forceSafariVC: false,
+            //   forceWebView: false,
+            //   headers: <String, String>{'my_header_key': 'my_header_value'},
+            // );
           } else {
             throw 'Could not launch $meetingLink';
           }

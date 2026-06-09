@@ -9,6 +9,7 @@ class FoodFunctions {
     required String timeframe,
     required String timeframeId,
     bool fromDashboard = false,
+    String? goalId,
   }) {
     Widget buildContentItem(
         String title, String subtitle, String iconPath, VoidCallback onPressed) {
@@ -140,7 +141,7 @@ class FoodFunctions {
                       // );
                       Navigator.pop(context);
                       Navigator.pushNamed(context, NavigatorName.food_image_capture,
-                          arguments: {'timeframe': timeframe, 'timeframeId': timeframeId});
+                          arguments: {'timeframe': timeframe, 'timeframeId': timeframeId, 'goalId': goalId});
                     },
                   ),
                   const SizedBox(height: 16),
@@ -165,7 +166,7 @@ class FoodFunctions {
                       Navigator.pushNamed(
                         context,
                         NavigatorName.add_food,
-                        arguments: {'type': 'input', 'timeframeId': timeframeId},
+                        arguments: {'type': 'input', 'timeframeId': timeframeId, 'goalId': goalId},
                       );
                     },
                   ),

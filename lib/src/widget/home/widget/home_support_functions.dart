@@ -6,7 +6,8 @@ import 'package:medical/src/utils/const.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomeSupportFunctions {
-  static Future<void> showModalAddData(BuildContext context) async {
+  static Future<void> showModalAddData(BuildContext context,
+      {String? hotline}) async {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
@@ -80,7 +81,7 @@ class HomeSupportFunctions {
                     title: R.string.call_for_support.tr(),
                     onPressed: () {
                       Navigator.pop(context);
-                      _launchCaller();
+                      _launchCaller(hotline: hotline);
                     },
                   ),
                 ],
@@ -93,12 +94,12 @@ class HomeSupportFunctions {
   }
 }
 
-_launchCaller() async {
-  final launchUri = Uri(scheme: 'tel', path: Const.HOTLINE_NUMBER);
+_launchCaller({String? hotline}) async {
+  final launchUri = Uri(scheme: 'tel', path: hotline ?? Const.HOTLINE_NUMBER);
   if (await canLaunchUrl(launchUri)) {
     await launchUrl(launchUri);
   } else {
-    throw 'Could not make phone call ${Const.HOTLINE_NUMBER}';
+    throw 'Could not make phone call ${hotline ?? Const.HOTLINE_NUMBER}';
   }
 }
 
