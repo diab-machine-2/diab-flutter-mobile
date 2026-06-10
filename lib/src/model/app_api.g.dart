@@ -2814,9 +2814,10 @@ class _AppApi implements AppApi {
   Future<MessageResponse> sendMessageById(
     String conversationId,
     String messageId,
+    String model,
   ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'model': model};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<MessageResponse>(Options(
@@ -2847,9 +2848,12 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<MessageResponse> regenerateMessage(String conversationId) async {
+  Future<MessageResponse> regenerateMessage(
+    String conversationId,
+    String model,
+  ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'model': model};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<MessageResponse>(Options(

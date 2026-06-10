@@ -947,10 +947,11 @@ class AppRepository {
   Future<ApiResult<MessageResponse>> sendMessageById(
     String conversationId,
     String messageId,
+    String model,
   ) async {
     try {
       final response =
-          await appClient.sendMessageById(conversationId, messageId);
+          await appClient.sendMessageById(conversationId, messageId, model);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -958,9 +959,9 @@ class AppRepository {
   }
 
   Future<ApiResult<MessageResponse>> regenerateMessage(
-      String conversationId) async {
+      String conversationId, String model) async {
     try {
-      final response = await appClient.regenerateMessage(conversationId);
+      final response = await appClient.regenerateMessage(conversationId, model);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
