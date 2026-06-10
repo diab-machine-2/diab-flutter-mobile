@@ -154,17 +154,7 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
       appBar: AppBar(
         backgroundColor: R.color.greenGradientBottom,
         leading: IconButton(
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            } else {
-              Navigator.of(context, rootNavigator: true)
-                  .pushNamedAndRemoveUntil(
-                NavigatorName.tabbar,
-                (route) => false,
-              );
-            }
-          },
+          onPressed: () => Navigator.of(context).pop(),
           icon: Icon(Icons.arrow_back, color: R.color.white),
         ),
         leadingWidth: 30,

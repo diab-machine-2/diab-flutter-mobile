@@ -83,7 +83,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
     });
 
     if (!foundDetailRoute && mounted) {
-      Navigator.pushReplacementNamed(context, NavigatorName.detail_food);
+      Navigator.pushNamed(context, NavigatorName.detail_food);
     }
   }
 
