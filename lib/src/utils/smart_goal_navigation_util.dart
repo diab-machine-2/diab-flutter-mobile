@@ -696,12 +696,12 @@ class SmartGoalNavigationUtil {
           final meetingLink = smartGoal?.calendar?.meetingLink ?? '';
           if (await canLaunch(meetingLink)) {
             FlutterBranchSdk.handleDeepLink(meetingLink);
-            await launch(
-              meetingLink,
-              forceSafariVC: false,
-              forceWebView: false,
-              headers: <String, String>{'my_header_key': 'my_header_value'},
-            );
+            // await launch(
+            //   meetingLink,
+            //   forceSafariVC: false,
+            //   forceWebView: false,
+            //   headers: <String, String>{'my_header_key': 'my_header_value'},
+            // );
           } else {
             throw 'Could not launch $meetingLink';
           }

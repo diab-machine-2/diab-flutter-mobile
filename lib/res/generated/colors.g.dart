@@ -215,5 +215,8 @@ class Colors {
   Color get cardShadowColor => Color(0x14042B28);
   Color get examination_color => Color(0xffF86F6F);
   Color get color0xffEAEDEE => Color(0xffEAEDEE);
+  Color get color0xff6A7282 => Color(0xff6A7282);
+  Color get color0xffFEF2F2 => Color(0xffFEF2F2);
+  Color get color0xffF3F4F6 => Color(0xffF3F4F6);
   Color get color0xff126B56 => Color(0xff126B56);
 }

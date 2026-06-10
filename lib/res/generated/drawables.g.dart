@@ -855,7 +855,8 @@ class Drawables {
       "lib/res/drawables/ic_phone_illustration.png";
   String get medicine_banner => "lib/res/drawables/medicine_banner.png";
   String get ic_mobile => "lib/res/drawables/ic_mobile.png";
-  String get ic_medicine_calendar => "lib/res/drawables/ic_medicine_calendar.png";
+  String get ic_medicine_calendar =>
+      "lib/res/drawables/ic_medicine_calendar.png";
   String get ic_input_by_camera => "lib/res/drawables/ic_input_by_camera.png";
   String get ic_input_by_hand => "lib/res/drawables/ic_input_by_hand.png";
   String get ic_add => "lib/res/drawables/ic_add.png";
@@ -865,5 +866,6 @@ class Drawables {
   String get ic_examination => "lib/res/drawables/ic_examination.png";
   String get ic_examination_at_home =>
       "lib/res/drawables/home/ic_examination_at_home.png";
+  String get ic_lab_result => "lib/res/drawables/home/ic_lab_result.png";
   String get ic_error_lesson_image => "lib/res/drawables/ic_error_lesson_image.png";
 }

@@ -141,7 +141,8 @@ class _HomeControllerState extends State<HomeController>
       customGlucoseHandler: (routeName, smartGoalId) async {
         await _showGlucoseAddBottomSheet(routeName, smartGoalId: smartGoalId);
       },
-      customExaminationHandler: SmartGoalNavigationUtil.defaultExaminationHandler,
+      customExaminationHandler:
+          SmartGoalNavigationUtil.defaultExaminationHandler,
     ));
   }
 
@@ -266,10 +267,13 @@ class _HomeControllerState extends State<HomeController>
     if (_shouldSkipMedicineSessionBottomSheetForCurrentSession()) return;
     final medicineClient = MedicineClient();
     final currentDateTime = DateTime.now();
-    final today = DateTime(currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
-    final medicineSchedule = await medicineClient.fetchMedicineScheduleByDate(timestamp: (today.millisecondsSinceEpoch / 1000).round());
+    final today = DateTime(
+        currentDateTime.year, currentDateTime.month, currentDateTime.day, 7);
+    final medicineSchedule = await medicineClient.fetchMedicineScheduleByDate(
+        timestamp: (today.millisecondsSinceEpoch / 1000).round());
     final medicineScheduleAlert = filterDailyMedicines(medicineSchedule.daily);
-    final sessions = PrescriptionsBySessionModel.fromDailyList(medicineScheduleAlert);
+    final sessions =
+        PrescriptionsBySessionModel.fromDailyList(medicineScheduleAlert);
     // Sắp xếp buổi theo thứ tự: Sáng, Trưa, Chiều, Tối
     final orderedSessions = [...sessions]
       ..sort((a, b) => a.session.index.compareTo(b.session.index));
@@ -286,7 +290,8 @@ class _HomeControllerState extends State<HomeController>
     }
   }
 
-  List<DailyMedicineModel> filterDailyMedicines(List<DailyMedicineModel> dailyList) {
+  List<DailyMedicineModel> filterDailyMedicines(
+      List<DailyMedicineModel> dailyList) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
@@ -301,13 +306,16 @@ class _HomeControllerState extends State<HomeController>
       final s = parts.length > 2 ? int.tryParse(parts[2]) ?? 0 : 0;
       final appt = DateTime(today.year, today.month, today.day, h, m, s);
 
-      return appt.isBefore(now) && appt.year == today.year && appt.month == today.month && appt.day == today.day;
+      return appt.isBefore(now) &&
+          appt.year == today.year &&
+          appt.month == today.month &&
+          appt.day == today.day;
     }).toList();
   }
 
-
   Future<void> showMedicineSessionBottomSheet(BuildContext context,
-      {required List<PrescriptionsBySessionModel> sessionList, required List<String> ids}) {
+      {required List<PrescriptionsBySessionModel> sessionList,
+      required List<String> ids}) {
     return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -781,7 +789,7 @@ class _HomeControllerState extends State<HomeController>
                 // case show all utilities
                 if (routeName == NavigatorName.utilities) {
                   final utilities = BlocProvider.of<HomeBloc>(context)
-                      .getAllUtilities(full: true);
+                      .getAllUtilities(full: true, bcbStatus: stateLoaded?.model.bcbStatus ?? false);
                   Navigator.pushNamed(context, routeName, arguments: utilities);
                   return;
                 }
@@ -1046,6 +1054,45 @@ class _HomeControllerState extends State<HomeController>
                             ),
 
                           const SizedBox(height: 16.0),
+
+                          // TODO: View campaign test result button
+                          // Padding(
+                          //   padding:
+                          //       const EdgeInsets.symmetric(horizontal: 12.0),
+                          //   child: SizedBox(
+                          //     width: double.infinity,
+                          //     height: 48.0,
+                          //     child: ElevatedButton(
+                          //       style: ElevatedButton.styleFrom(
+                          //         elevation: 0,
+                          //         backgroundColor: R.color.greenGradientBottom,
+                          //         foregroundColor: Colors.white,
+                          //         shape: RoundedRectangleBorder(
+                          //           borderRadius: BorderRadius.circular(12.0),
+                          //         ),
+                          //       ),
+                          //       onPressed: () {
+                          //         Navigator.pushNamed(
+                          //           context,
+                          //           NavigatorName.view_test_result,
+                          //           arguments: {
+                          //             'campaignId':
+                          //                 '1efb9d66-aae0-4ffd-0164-08deab468abc',
+                          //           },
+                          //         );
+                          //       },
+                          //       child: const Text(
+                          //         "Kết quả xét nghiệm",
+                          //         style: TextStyle(
+                          //           fontSize: 16.0,
+                          //           fontWeight: FontWeight.w700,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+
+                          // const SizedBox(height: 16.0),
 
                           Padding(
                             padding:
