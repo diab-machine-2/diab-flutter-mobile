@@ -304,11 +304,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              convertToUTC(
-                selectedDate.millisecondsSinceEpoch ~/ 1000,
-                'HH:mm - dd/MM/yyyy',
-              ),
+            Text( 
+              DateFormat('HH:mm - dd/MM/yyyy').format(selectedDate),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
@@ -1029,12 +1026,12 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                               Navigator.pop(context); // Close dialog
                               Navigator.pop(context); // Close confirm_gen_food
                               // Navigate back to food image capture screen
-                              Navigator.pushNamed(
-                                  context, NavigatorName.food_image_capture,
-                                  arguments: {
-                                    'timeframe': widget.timeframe,
-                                    'timeframeId': widget.timeframeId,
-                                  });
+                              // Navigator.pushNamed(
+                              //     context, NavigatorName.food_image_capture,
+                              //     arguments: {
+                              //       'timeframe': widget.timeframe,
+                              //       'timeframeId': widget.timeframeId,
+                              //     });
                             },
                             child: Container(
                               height: 43,

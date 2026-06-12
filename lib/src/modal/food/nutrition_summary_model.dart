@@ -151,6 +151,7 @@ class MealDistribution {
 }
 
 class TrendDataItem {
+  final String? id;
   final String? date;
   final int? avgScore;
   final int? totalCalories;
@@ -159,6 +160,7 @@ class TrendDataItem {
   final String? timeFrameName;
 
   TrendDataItem({
+    this.id,
     this.date,
     this.avgScore,
     this.totalCalories,
@@ -193,6 +195,7 @@ class TrendDataItem {
     }
 
     return TrendDataItem(
+      id: json['id']?.toString(),
       date: dateStr,
       avgScore: (json['avgScore'] as num?)?.toInt(),
       totalCalories: (json['totalCalories'] as num?)?.toInt(),

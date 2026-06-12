@@ -649,8 +649,8 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
         'type': 'Cân bằng',
         'color': '#23C559'
       }; // Sửa màu Cân bằng giống Figma
-    if (score >= 6) return {'type': 'Khá cân bằng', 'color': '#23C559'};
-    if (score >= 4) return {'type': 'Trung bình', 'color': '#F39C12'};
+    // if (score >= 6) return {'type': 'Khá cân bằng', 'color': '#23C559'};
+    // if (score >= 4) return {'type': 'Trung bình', 'color': '#F39C12'};
     return {
       'type': 'Chưa cân bằng',
       'color': '#FFCD57'

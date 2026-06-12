@@ -34,7 +34,9 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    final FoodModel foodModel = map?['food'];
+    if (notifyName != 'add_food_to_cart' && notifyName != 'remove_food_from_cart') return;
+    final FoodModel? foodModel = map?['food'];
+    if (foodModel == null) return;
     if (notifyName == 'add_food_to_cart') {
       setState(() {
         this.foods.removeWhere((element) => foodModel.id == element.id);

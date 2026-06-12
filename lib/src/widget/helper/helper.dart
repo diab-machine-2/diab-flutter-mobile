@@ -6,7 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/home/home_model.dart';
 
 String convertToUTC(int timeStamp, String format) {
-  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000);
+  final date = DateTime.fromMillisecondsSinceEpoch(timeStamp * 1000, isUtc: true);
   String formattedDate = DateFormat(format).format(date);
   return formattedDate;
 }

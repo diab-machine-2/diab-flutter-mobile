@@ -8,6 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
+import 'package:medical/src/widget/Food/daily_nutrition/update_meal_page_ai.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
 import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
 import 'package:medical/src/widget/helper/helper.dart';
@@ -353,7 +354,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       if (t.date != null) {
         // Dùng local time thay vì UTC để hiển thị đúng múi giờ VN
         final dt =
-            DateTime.fromMillisecondsSinceEpoch(t.date! * 1000, isUtc: false);
+            DateTime.fromMillisecondsSinceEpoch(t.date! * 1000, isUtc: true);
         selectedDate = DateFormat('dd/MM').format(dt);
         // Chỉ hiện giờ khi có mealText (data per-meal từ Input API)
         // Summary API trả timestamp theo ngày (midnight) nên ẩn giờ
@@ -738,7 +739,7 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
           // If the trend item has an id, open in edit mode; otherwise create mode with that date
           if (trendItem.id != null && trendItem.id!.isNotEmpty) {
             NavigationUtil.navigatePage(
-                context, DailyNutritionPage(type: 'update', id: trendItem.id));
+                context, UpdateMealPageAI(updateMealId: trendItem.id!));
           } else {
             // Parse the date from the trend item for the new input
             DateTime? dotDate;

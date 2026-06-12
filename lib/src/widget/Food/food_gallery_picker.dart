@@ -24,6 +24,7 @@ class FoodGalleryPicker extends StatefulWidget {
     this.onImagesSelected,
     this.initialSelectedFilePath,
     this.initialSelectedAssetId,
+    this.skipPermissionRequest = false,
   }) : super(key: key);
 
   final String timeframe;
@@ -33,6 +34,11 @@ class FoodGalleryPicker extends StatefulWidget {
   final String? initialSelectedFilePath;
   // Prefer selecting by asset ID when available (more reliable than file path)
   final String? initialSelectedAssetId;
+  // When true, skip the PhotoManager permission request flow entirely.
+  // Used when navigating from FoodImageCapture after capture, where permission
+  // was already granted during initState. On Android 16, re-requesting
+  // permission (even just checking state) can trigger the system photo picker.
+  final bool skipPermissionRequest;
 
   @override
   State<FoodGalleryPicker> createState() => _FoodGalleryPickerState();
@@ -94,16 +100,32 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
     try {
       if (!mounted) return;
+      developer.log(
+          '[GALLERY] _requestPermissionAndLoadPhotos - skipPermissionRequest: ${widget.skipPermissionRequest}',
+          name: '[GALLERY]');
       setState(() {
-        _isLoading = true; // show loading while resolving permission
+        _isLoading = true;
       });
-      print('Starting permission and photo loading process...');
+
+      // When skipPermissionRequest is true (called from FoodImageCapture after
+      // capture), permission was already granted. Skip the entire permission
+      // request flow — including PhotoManager.requestPermissionExtend() —
+      // because on Android 16 calling it with limited access can re-trigger
+      // the system photo picker dialog.
+      if (widget.skipPermissionRequest) {
+        developer.log(
+            '[GALLERY] skipPermissionRequest=true, loading photos directly',
+            name: '[GALLERY]');
+        await _tryLoadPhotosDirectly();
+        return;
+      }
 
       // First, try to access photos directly without requesting permission
       // This avoids triggering permission dialog if permission is already granted
       try {
-        print(
-            'Attempting to access photos directly without requesting permission...');
+        developer.log(
+            '[GALLERY] Attempting direct photo access without permission request...',
+            name: '[GALLERY]');
         final List<AssetPathEntity> albums =
             await PhotoManager.getAssetPathList(
           type: RequestType.image,
@@ -111,14 +133,30 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         );
 
         if (albums.isNotEmpty) {
-          // Successfully accessed photos - permission is already granted
-          print('Successfully accessed photos without requesting permission');
+          developer.log(
+              '[GALLERY] Direct access succeeded, albums found: ${albums.length}',
+              name: '[GALLERY]');
 
-          // Now check permission state to determine if it's limited (without requesting)
-          // This should not trigger a dialog if permission is already granted
-          final PermissionState currentState =
-              await PhotoManager.requestPermissionExtend();
-          print('Permission state (already granted): $currentState');
+          // Use getPermissionState() instead of requestPermissionExtend()
+          // to check limited status without triggering the system picker.
+          PermissionState currentState = PermissionState.authorized;
+          try {
+            currentState = await PhotoManager.getPermissionState(
+              requestOption: const PermissionRequestOption(
+                androidPermission: AndroidPermission(
+                  type: RequestType.image,
+                  mediaLocation: false,
+                ),
+              ),
+            );
+          } catch (stateError) {
+            developer.log(
+                '[GALLERY] getPermissionState failed, using default: $stateError',
+                name: '[GALLERY]');
+          }
+          developer.log(
+              '[GALLERY] Permission state: $currentState',
+              name: '[GALLERY]');
 
           if (!mounted) return;
           final bool isLimited = currentState == PermissionState.limited;
@@ -132,20 +170,20 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           return;
         }
       } catch (directAccessError) {
-        // Direct access failed - permission might not be granted
-        print(
-            'Direct access failed, need to request permission: $directAccessError');
+        developer.log(
+            '[GALLERY] Direct access failed: $directAccessError',
+            name: '[GALLERY]');
       }
 
       // If direct access failed, request permission
-      print('Requesting permission...');
+      developer.log(
+          '[GALLERY] Requesting permission via requestPermissionExtend()...',
+          name: '[GALLERY]');
       final PermissionState currentState =
           await PhotoManager.requestPermissionExtend();
-      print('Permission state after request: $currentState');
-      print('Permission isAuth: ${currentState.isAuth}');
-      print(
-          'Permission isAuthorized: ${currentState == PermissionState.authorized}');
-      print('Permission isLimited: ${currentState == PermissionState.limited}');
+      developer.log(
+          '[GALLERY] Permission state after request: $currentState, isAuth: ${currentState.isAuth}, limited: ${currentState == PermissionState.limited}',
+          name: '[GALLERY]');
 
       if (_isDisposed || !mounted) return;
 
@@ -162,11 +200,15 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       if (currentState == PermissionState.authorized ||
           currentState == PermissionState.limited ||
           currentState.isAuth) {
-        print('Permission appears to be granted, attempting to load photos...');
+        developer.log(
+            '[GALLERY] Permission appears to be granted, attempting to load photos...',
+            name: '[GALLERY]');
       }
       await _tryLoadPhotosDirectly();
     } catch (e) {
-      print('Error in permission process: $e');
+      developer.log(
+          '[GALLERY] Error in permission process: $e',
+          name: '[GALLERY]');
       if (!mounted) return;
       setState(() {
         _hasPermission = false;
@@ -191,12 +233,14 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       print('Direct album access result: ${albums.length} albums found');
 
       if (albums.isNotEmpty) {
-        print('Successfully accessed photos - permission is actually granted');
+        developer.log(
+            '[GALLERY] Direct album access succeeded: ${albums.length} albums',
+            name: '[GALLERY]');
         if (!mounted) return;
 
-        // Check permission state again to update limited status
-        final PermissionState currentState =
-            await PhotoManager.requestPermissionExtend();
+        // Use getPermissionState() instead of requestPermissionExtend()
+        // to check limited status without triggering the system picker.
+        final PermissionState currentState = await _getPermissionStateSafe();
         final bool isLimited = currentState == PermissionState.limited;
 
         setState(() {
@@ -208,20 +252,21 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
         // Check if album has any photos before trying to load
         final int assetCount = await _recentAlbum!.assetCountAsync;
-        print('Album has $assetCount photos');
+        developer.log(
+            '[GALLERY] Album has $assetCount photos',
+            name: '[GALLERY]');
 
         if (assetCount == 0) {
-          // Gallery is empty - stop retrying
-          print('Gallery is empty - no photos to load');
+          developer.log(
+              '[GALLERY] Gallery is empty - no photos to load',
+              name: '[GALLERY]');
           if (!mounted) return;
-          // Check permission state to update limited status
-          final PermissionState currentState =
-              await PhotoManager.requestPermissionExtend();
+          final PermissionState currentState = await _getPermissionStateSafe();
           final bool isLimited = currentState == PermissionState.limited;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
-            _hasPermission = true; // Permission is granted, just no photos
+            _hasPermission = true;
             _isLimitedPermission = isLimited;
             _hasCheckedEmptyGallery = true;
           });
@@ -230,112 +275,139 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
         await _loadPhotosPage(0, isInitialLoad: true);
       } else {
-        // No albums found - check permission state to determine if it's empty gallery or denied
-        print('No albums found - checking permission state...');
-        final PermissionState currentState =
-            await PhotoManager.requestPermissionExtend();
+        developer.log(
+            '[GALLERY] No albums found - checking permission state...',
+            name: '[GALLERY]');
+        final PermissionState currentState = await _getPermissionStateSafe();
 
-        // If permission is limited or authorized but no albums, treat as empty gallery
         if (currentState == PermissionState.limited ||
             currentState == PermissionState.authorized ||
             currentState.isAuth) {
-          print('Permission granted but no albums - gallery is empty');
+          developer.log(
+              '[GALLERY] Permission granted but no albums - gallery is empty',
+              name: '[GALLERY]');
           if (!mounted) return;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
-            _hasPermission = true; // Permission is granted, just no photos
+            _hasPermission = true;
             _hasCheckedEmptyGallery = true;
           });
         } else {
-          // Permission is truly denied
-          print('Permission denied - cannot access gallery');
+          developer.log(
+              '[GALLERY] Permission denied - cannot access gallery',
+              name: '[GALLERY]');
           if (!mounted) return;
           setState(() {
             _hasPermission = false;
             _isLoading = false;
-            _hasCheckedEmptyGallery = true; // Stop retrying
+            _hasCheckedEmptyGallery = true;
           });
         }
       }
     } catch (e) {
-      print('Error accessing photos directly: $e');
+      developer.log(
+          '[GALLERY] Error accessing photos directly: $e',
+          name: '[GALLERY]');
       if (!mounted) return;
 
       // On Android 13+, check permission state even if there was an error
       // Sometimes errors occur even when permission is granted
       try {
-        final PermissionState currentState =
-            await PhotoManager.requestPermissionExtend();
-        print('Permission state after error: $currentState');
+        final PermissionState currentState = await _getPermissionStateSafe();
+        developer.log(
+            '[GALLERY] Permission state after error: $currentState',
+            name: '[GALLERY]');
 
-        // If permission is actually granted (authorized, limited, or isAuth),
-        // set hasPermission to true even if there was an error accessing photos
         if (currentState == PermissionState.authorized ||
             currentState == PermissionState.limited ||
             currentState.isAuth) {
-          print(
-              'Permission is actually granted despite error - treating as granted');
+          developer.log(
+              '[GALLERY] Permission is actually granted despite error',
+              name: '[GALLERY]');
           setState(() {
             _hasPermission = true;
             _isLoading = false;
             _isLimitedPermission = currentState == PermissionState.limited;
             _hasCheckedEmptyGallery = true;
-            _recentPhotos = []; // Empty list since we couldn't load photos
+            _recentPhotos = [];
           });
           return;
         }
       } catch (permissionCheckError) {
-        print('Error checking permission state: $permissionCheckError');
+        developer.log(
+            '[GALLERY] Error checking permission state: $permissionCheckError',
+            name: '[GALLERY]');
       }
 
-      // Mark as checked to prevent infinite retries
       setState(() {
         _isLoading = false;
         _hasCheckedEmptyGallery = true;
-        // Only set to false if permission is truly denied
         _hasPermission = false;
       });
+    }
+  }
+
+  /// Safe wrapper around getPermissionState() that never triggers a system
+  /// dialog. Falls back to PermissionState.denied on any error.
+  Future<PermissionState> _getPermissionStateSafe() async {
+    try {
+      return await PhotoManager.getPermissionState(
+        requestOption: const PermissionRequestOption(
+          androidPermission: AndroidPermission(
+            type: RequestType.image,
+            mediaLocation: false,
+          ),
+        ),
+      );
+    } catch (e) {
+      developer.log(
+          '[GALLERY] _getPermissionStateSafe error: $e',
+          name: '[GALLERY]');
+      return PermissionState.denied;
     }
   }
 
   Future<void> _handlePermissionDenied() async {
     if (_isDisposed || !mounted || _hasCheckedEmptyGallery) return;
 
-    print('Handling permission denied state...');
+    developer.log(
+        '[GALLERY] Handling permission denied state...',
+        name: '[GALLERY]');
 
-    // Mark as checked to prevent infinite retries
     _hasCheckedEmptyGallery = true;
 
-    // Try one more permission request
     try {
       final PermissionState permission =
           await PhotoManager.requestPermissionExtend();
-      print('Final permission request result: $permission');
+      developer.log(
+          '[GALLERY] Final permission request result: $permission',
+          name: '[GALLERY]');
 
       if (_isDisposed || !mounted) return;
 
       if (permission == PermissionState.authorized ||
           permission == PermissionState.limited ||
           permission.isAuth) {
-        print('Permission granted on final attempt');
-        // Update limited permission status
+        developer.log(
+            '[GALLERY] Permission granted on final attempt',
+            name: '[GALLERY]');
         if (!mounted) return;
         setState(() {
           _isLimitedPermission = permission == PermissionState.limited;
         });
-        // Reset the flag to allow one more try
         _hasCheckedEmptyGallery = false;
         await _tryLoadPhotosDirectly();
         return;
       }
     } catch (e) {
-      print('Error in final permission request: $e');
+      developer.log(
+          '[GALLERY] Error in final permission request: $e',
+          name: '[GALLERY]');
     }
 
     if (_isDisposed || !mounted) return;
 
-    // If we get here, permission is truly denied
     setState(() {
       _hasPermission = false;
       _isLoading = false;

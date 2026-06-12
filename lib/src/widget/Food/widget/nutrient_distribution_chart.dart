@@ -45,11 +45,9 @@ class NutrientDistributionChartState extends State<NutrientDistributionChart>
       return toColor(colorCode);
     }
     if (percent <= 50) {
-      return R.color.goodGreen;
-    } else if (percent <= 80) {
-      return R.color.goodGreen;
-    } else if (percent <= 100) {
       return R.color.warningYellow;
+    } else if (percent <= 100) {
+      return R.color.goodGreen;
     } else {
       return R.color.dangerRed;
     }

@@ -133,7 +133,7 @@ class FoodClient extends FetchClient {
     try {
       final Response response = await super.fetchData(
           url: '/App/Diet/FoodLatest',
-          params: {'periodFilterType': '1', 'currentDateTime': '1615348913'});
+          params: {'periodFilterType': '1', 'currentDateTime': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()});
       if (response.statusCode == 200) {
         return FoodDataModel(
             foods: FoodModel.toList(response.data['data']),
@@ -196,7 +196,7 @@ class FoodClient extends FetchClient {
         response = await super.fetchData(url: '/App/Food', params: {
           'keyword': keyword,
           'page': page.toString(),
-          'pageSize': '20'
+          'size': '20'
         });
       }
       if (response.statusCode == 200) {

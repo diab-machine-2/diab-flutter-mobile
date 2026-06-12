@@ -22,7 +22,8 @@ class SearchFoodController extends StatefulWidget {
   final List<FoodModel>? foods;
   final SearchFoodCallback? callback;
   final double? suggestKcal;
-  const SearchFoodController({this.foods, this.callback, this.suggestKcal});
+  final bool popAfterCallback;
+  const SearchFoodController({this.foods, this.callback, this.suggestKcal, this.popAfterCallback = true});
   @override
   _SearchFoodControllerState createState() => _SearchFoodControllerState();
 
@@ -327,7 +328,9 @@ class _SearchFoodControllerState extends State<SearchFoodController>
             foods: widget.foods,
             callback: (data) {
               widget.callback!(data);
-              Navigator.pop(context);
+              if (widget.popAfterCallback) {
+                Navigator.pop(context);
+              }
             })
       ]),
     );

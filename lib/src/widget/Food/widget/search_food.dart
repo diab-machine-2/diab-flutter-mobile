@@ -10,6 +10,7 @@ import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/utils/debouncer.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
@@ -27,6 +28,7 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   late BuildContext currentContext;
 
   TextEditingController controller = TextEditingController();
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
 
   List<FoodModel> selectedFoods = [];
 
@@ -45,11 +47,11 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    final FoodModel foodModel = map?['food'];
-    if (notifyName == 'add_food_to_cart') {
-      this.selectedFoods.add(foodModel);
-      setState(() {});
-    }
+    if (notifyName != 'add_food_to_cart') return;
+    final FoodModel? foodModel = map?['food'];
+    if (foodModel == null) return;
+    this.selectedFoods.add(foodModel);
+    setState(() {});
   }
 
   @override
@@ -104,9 +106,8 @@ class _SearchFoodState extends State<SearchFood> with Observer {
       resizeToAvoidBottomInset: false,
       body: Container(
           decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_splash),
-                  fit: BoxFit.cover)),
+            color: R.color.backgroundColorNew,
+          ),
           child: SafeArea(
             top: false,
             child: Column(children: [
@@ -136,7 +137,8 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                       decoration: BoxDecoration(
                           color: R.color.white,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: R.color.grayComponentBorder)),
+                          border:
+                              Border.all(color: R.color.grayComponentBorder)),
                       child: Padding(
                         padding: EdgeInsets.only(left: 16, right: 8),
                         child: Row(
@@ -152,12 +154,8 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                     onSubmitted: (value) {
                                       refresh();
                                     },
-                                    onChanged: (value) async {
-                                      await refresh();
-                                      // Future.delayed(
-                                      //     Duration(milliseconds: 500), () {
-                                      //   refresh();
-                                      // });
+                                    onChanged: (value) {
+                                      _debouncer.run(() { refresh(); });
                                     })),
                             GestureDetector(
                               onTap: () {
@@ -179,8 +177,7 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                     List<FoodModel>? model;
                     if (state is FoodInitial) {
                       BlocProvider.of<FoodBloc>(currentContext).add(
-                          FetchSearchFood(
-                              keyword: controller.text, page: 1));
+                          FetchSearchFood(keyword: controller.text, page: 1));
                     }
                     if (state is FoodError) {
                       Message.showToastMessage(context, state.message);
