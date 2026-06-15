@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/widget/Food/widget/nutrition_ai_help_button.dart';
 
 class FoodAISuggestion extends StatefulWidget {
@@ -27,7 +29,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
 
   Future<String> _resolveAdvice(FoodNutritionOverviewLoaded state) async {
     final api = state.aiAdvice;
-    if (api != null && api.isNotEmpty) return api;
+    if (api != null && api.recommendation.isNotEmpty) return api.recommendation;
     return '';
   }
 
@@ -175,6 +177,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
                           height: 1.46,
                         ),
                       ),
+                      AiReferencesWidget(references: state.aiAdvice?.references ?? []),
                       const SizedBox(height: 16),
                       const NutritionAIHelpButton(),
                     ],

@@ -141,7 +141,7 @@ class FoodNutritionOverviewLoaded extends FoodState {
   final int totalMealCount;
   final int targetKcal;
   final Map<String, double> nutrientPercent;
-  final String? aiAdvice;
+  final AiRecommendationResult? aiAdvice;
 
   FoodNutritionOverviewLoaded({
     required this.periodFilterType,

@@ -1,3 +1,5 @@
+import 'package:medical/src/model/ai_recommendation_result.dart';
+
 /// Model for GET /App/Nutrition/Summary?periodFilterType=X response
 class NutritionSummaryModel {
   final NutritionDateRange? dateRange;
@@ -8,7 +10,7 @@ class NutritionSummaryModel {
   final List<EnergyDistributionItem> energyDistribution;
   final MealDistribution? mealDistribution;
   final int? targetKcal;
-  final String? aiAdvice;
+  final AiRecommendationResult? aiAdvice;
   final List<TrendDataItem> trendData;
 
   NutritionSummaryModel({
@@ -25,6 +27,26 @@ class NutritionSummaryModel {
   });
 
   factory NutritionSummaryModel.fromJson(Map<String, dynamic> json) {
+    AiRecommendationResult? aiAdvice;
+    final raw = json['aiAdvice'];
+    if (raw != null) {
+      if (raw is Map) {
+        aiAdvice = AiRecommendationResult.fromJson(raw.cast<String, dynamic>());
+      } else {
+        final text = raw.toString();
+        final rawRefs = json['references'];
+        List<AiReference> refs = [];
+        if (rawRefs is List) {
+          refs = rawRefs
+              .map((e) => e is Map<String, dynamic>
+                  ? AiReference.fromJson(e)
+                  : AiReference.fromJson(Map<String, dynamic>.from(e)))
+              .toList();
+        }
+        aiAdvice = AiRecommendationResult(recommendation: text, references: refs);
+      }
+    }
+
     return NutritionSummaryModel(
       dateRange: json['dateRange'] != null
           ? NutritionDateRange.fromJson(json['dateRange'])
@@ -44,7 +66,7 @@ class NutritionSummaryModel {
           ? MealDistribution.fromJson(json['mealDistribution'])
           : null,
       targetKcal: (json['targetKcal'] as num?)?.toInt(),
-      aiAdvice: json['aiAdvice'],
+      aiAdvice: aiAdvice,
       trendData: json['trendData'] != null
           ? (json['trendData'] as List)
               .map((e) => TrendDataItem.fromJson(e))

@@ -7,7 +7,9 @@ import 'package:medical/src/widget/helper/tracking_manager.dart';
 import 'package:medical/src/widget/HbA1C/intro/widgets/hba1c_knowledge_section.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/bloc/HbA1C/HbA1C_bloc.dart';
 import 'package:medical/src/modal/HbA1C/HbA1C_Input.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -44,7 +46,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       3; // Default to 3 (24 months, used with takeAll for "Tất cả")
   int _selectedUIIndex =
       0; // Track UI selection separately (default to "Tất cả")
-  String? _aiSuggestion;
+  AiRecommendationResult? _aiSuggestion;
   bool _isLoadingAI = false; // Track if AI is being loaded to prevent loops
   int _focusIndex = -1; // Focused time-group index (x axis group)
   int _focusSubIndex = 0; // Focused item within the time group
@@ -128,7 +130,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
 
       if (mounted) {
         setState(() {
-          if (aiResult != null && aiResult.isNotEmpty) {
+          if (aiResult != null && aiResult.recommendation.isNotEmpty) {
             _aiSuggestion = aiResult;
             print('✅ AI Analysis from API loaded successfully');
           } else {
@@ -191,13 +193,17 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
       }
 
       // Simple message referring to the most recent measurement
-      _aiSuggestion =
-          "Chỉ số HbA1c ${currentHbA1cValue.toStringAsFixed(1)}% ($level) đo ngày $formattedDate $advice";
+      _aiSuggestion = AiRecommendationResult(
+        recommendation:
+          "Chỉ số HbA1c ${currentHbA1cValue.toStringAsFixed(1)}% ($level) đo ngày $formattedDate $advice",
+      );
 
       print('✅ Backup Analysis Generated Successfully');
     } else {
-      _aiSuggestion =
-          "Chưa có dữ liệu HbA1c để phân tích. Hãy nhập chỉ số HbA1c để nhận được lời khuyên từ AI.";
+      _aiSuggestion = AiRecommendationResult(
+        recommendation:
+          "Chưa có dữ liệu HbA1c để phân tích. Hãy nhập chỉ số HbA1c để nhận được lời khuyên từ AI.",
+      );
 
       print('⚠️ No HbA1C data available for backup analysis');
     }
@@ -1137,11 +1143,11 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
     );
   }
 
-  Widget _sectionAIHelp(String? aiSuggestion) {
+  Widget _sectionAIHelp(AiRecommendationResult? aiSuggestion) {
     return _buildAIHelpInner(aiSuggestion);
   }
 
-  Widget _buildAIHelpInner(String? aiSuggestion) {
+  Widget _buildAIHelpInner(AiRecommendationResult? aiSuggestion) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -1171,11 +1177,11 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         ),
         const SizedBox(height: 8),
         if (aiSuggestion == null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: const AILoadingTextWidget(),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: AILoadingTextWidget(),
           )
-        else if (aiSuggestion.isEmpty)
+        else if (aiSuggestion.recommendation.isEmpty)
           Text(
             'Có lỗi xảy ra',
             style: TextStyle(
@@ -1188,7 +1194,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
         else ...[
           Text(
             textAlign: TextAlign.justify,
-            aiSuggestion,
+            aiSuggestion.recommendation,
             style: TextStyle(
               fontFamily: R.font.sfpro,
               fontSize: 15,
@@ -1198,6 +1204,7 @@ class _HbA1cDashboardState extends State<HbA1cDashboard> {
               letterSpacing: 0.2,
             ),
           ),
+          AiReferencesWidget(references: aiSuggestion.references),
           const SizedBox(height: 16),
           Container(
             width: double.infinity,

@@ -5,7 +5,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -26,7 +28,7 @@ class PageAddFoodResult extends StatefulWidget {
 }
 
 class _PageAddFoodResultState extends State<PageAddFoodResult> {
-  String? _aiResult;
+  AiRecommendationResult? _aiResult;
 
   bool _haveEditNote = false;
   // ignore: unused_field
@@ -54,7 +56,12 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
   void _loadData() async {
     final data = widget.data;
     _files = data.images;
-    _aiResult = data.healthRecommendation;
+    _aiResult = data.healthRecommendation != null
+        ? AiRecommendationResult(
+            recommendation: data.healthRecommendation!,
+            references: data.references,
+          )
+        : null;
     if (mounted) {
       setState(() {});
     }
@@ -300,7 +307,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             )
           else ...[
             Text(
-              _aiResult ?? '',
+              _aiResult!.recommendation,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -308,6 +315,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                 height: 20 / 14,
               ),
             ),
+            AiReferencesWidget(references: _aiResult!.references),
             const SizedBox(height: 16),
             NutritionAIHelpButton(),
             // Meal items display

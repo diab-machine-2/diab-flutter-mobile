@@ -10,6 +10,7 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/food/food_statistic_diet_model.dart' hide EnergyItemModel;
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/modal/food/nutrition_summary_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:meta/meta.dart';
@@ -446,7 +447,7 @@ class FoodBloc extends Bloc<FoodEvent, FoodState> {
       final mealText = localizedMealText(trend.timeFrameId, trend.timeFrameName);
 
       items.add(FoodCalorieTrendItem(
-        id: trend.date,
+        id: trend.id,
         date: timestamp,
         value: calories,
         score: score,

@@ -1,5 +1,6 @@
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:meta/meta.dart';
 
 /// Model cho danh sách input theo ngày (cũ: dayItems, mới: groups)
@@ -108,7 +109,7 @@ class FoodInputModel {
   final int? fatPercent;
   final int? vegetablePercent;
   final int? fruitPercent;
-  final String? aiAdvice;
+  final AiRecommendationResult? aiAdvice;
   final String? imageUrl;
   final bool? isFromAI;
   final bool? isBalanced;
@@ -175,7 +176,7 @@ class FoodInputModel {
       fatPercent: json['fatPercent'],
       vegetablePercent: json['vegetablePercent'],
       fruitPercent: json['fruitPercent'],
-      aiAdvice: json['aiAdvice'],
+      aiAdvice: AiRecommendationResult.fromDynamic(json['aiAdvice']),
       imageUrl: json['imageUrl'],
       isFromAI: json['isFromAI'],
       isBalanced: json['isBalanced'],

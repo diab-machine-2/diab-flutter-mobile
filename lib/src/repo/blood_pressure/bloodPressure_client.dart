@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/modal/base/keyvalue.dart';
 import 'package:medical/src/modal/blood_pressure/bloodPressure_Input_data_model.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
@@ -338,7 +339,7 @@ class BloodPressureClient extends FetchClient {
     }
   }
 
-  Future<String?> fetchBloodPressureInputAnalysis(
+  Future<AiRecommendationResult?> fetchBloodPressureInputAnalysis(
     String id,
   ) async {
     Map<String, String> params = {
@@ -351,15 +352,14 @@ class BloodPressureClient extends FetchClient {
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJsonTypeString(
-        response.data as Map<String, dynamic>,
+      return AiRecommendationResult.fromDynamic(
+        (response.data as Map<String, dynamic>)['data'],
       );
-      return singleResponse.data;
     }
     return null;
   }
 
-  Future<String?> fetchBloodPressureAlltimeAnalysis(int periodFilterType) async {
+  Future<AiRecommendationResult?> fetchBloodPressureAlltimeAnalysis(int periodFilterType) async {
     final Response response = await super.fetchData(
       url: '/App/BloodPressure/Analysis/HealthTrend',
       params: {
@@ -371,10 +371,9 @@ class BloodPressureClient extends FetchClient {
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJsonTypeString(
-        response.data as Map<String, dynamic>,
+      return AiRecommendationResult.fromDynamic(
+        (response.data as Map<String, dynamic>)['data'],
       );
-      return singleResponse.data;
     }
     return null;
   }

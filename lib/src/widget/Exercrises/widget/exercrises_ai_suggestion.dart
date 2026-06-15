@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 
 class ExercrisesAISuggestion extends StatefulWidget {
   final int periodFilterType;
@@ -25,7 +27,7 @@ class ExercrisesAISuggestion extends StatefulWidget {
 
 class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
   bool isLoading = true;
-  String? aiSuggestion;
+  AiRecommendationResult? aiSuggestion;
   bool hasError = false;
   String errorMessage = '';
 
@@ -164,7 +166,7 @@ class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
   Widget _buildContent() {
     if (isLoading) {
       return AILoadingTextWidget();
-    } else if (hasError || (aiSuggestion == null || aiSuggestion!.isEmpty)) {
+    } else if (hasError || (aiSuggestion == null || aiSuggestion!.recommendation.isEmpty)) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -204,14 +206,20 @@ class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
       return AnimatedOpacity(
         opacity: 1.0,
         duration: Duration(milliseconds: 500),
-        child: Text(
-          aiSuggestion!,
-          style: TextStyle(
-            fontSize: 15,
-            color: R.color.color0xff111515,
-            height: 16 / 12,
-            letterSpacing: 0.4,
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              aiSuggestion!.recommendation,
+              style: TextStyle(
+                fontSize: 15,
+                color: R.color.color0xff111515,
+                height: 16 / 12,
+                letterSpacing: 0.4,
+              ),
+            ),
+            AiReferencesWidget(references: aiSuggestion!.references),
+          ],
         ),
       );
     }

@@ -5,12 +5,14 @@ import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/widget/BloodPressure/widget/horizontal_selector.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/widget/my_plan_screens/lesson_tab/lesson_detail/lesson_detail.dart';
 import 'package:medical/src/widgets/background_page.dart';
 
@@ -42,7 +44,7 @@ class _BloodPressureDetailTabbarControllerState
   final GlobalKey<BloodPressureChartState> _bloodPressureTrendKey = GlobalKey();
 
   int _periodFilterType = 3;
-  String? _aiSuggestion;
+  AiRecommendationResult? _aiSuggestion;
   bool _isDetailViewed =
       false; // Track if user has viewed Blood Pressure detail page
   bool _isFirstLoad =
@@ -428,7 +430,7 @@ class _BloodPressureDetailTabbarControllerState
     );
   }
 
-  Widget _sectionAIHelp(String? aiSuggestion) {
+  Widget _sectionAIHelp(AiRecommendationResult? aiSuggestion) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -440,6 +442,7 @@ class _BloodPressureDetailTabbarControllerState
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // AI result
           Row(
@@ -465,11 +468,11 @@ class _BloodPressureDetailTabbarControllerState
           ),
           const SizedBox(height: 8),
           if (aiSuggestion == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: const AILoadingTextWidget(),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: AILoadingTextWidget(),
             )
-          else if (aiSuggestion.isEmpty)
+          else if (aiSuggestion.recommendation.isEmpty)
             Text(
               'Có lỗi xảy ra',
               style: TextStyle(
@@ -480,7 +483,7 @@ class _BloodPressureDetailTabbarControllerState
             )
           else ...[
             Text(
-              aiSuggestion,
+              aiSuggestion.recommendation,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
@@ -488,6 +491,7 @@ class _BloodPressureDetailTabbarControllerState
                 height: 1.46,
               ),
             ),
+            AiReferencesWidget(references: aiSuggestion.references),
             const SizedBox(height: 16),
             AIHelpButton(rangeType: _rangeType),
           ],

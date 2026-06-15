@@ -26,6 +26,7 @@ import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
@@ -1342,6 +1343,17 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<AiRecommendationResult?>> getExerciseHealthTrend(
+      String currentDateTime, int periodFilterType) async {
+    try {
+      final response = await appClient.getExerciseHealthTrend(
+          currentDateTime, periodFilterType);
+      return ApiResult.success(data: response.data);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<ExerciseSummary>> getExerciseSummary(
       DateTime currentDateTime) async {
     try {
@@ -1357,17 +1369,6 @@ class AppRepository {
     try {
       final response = await appClient.getSupportExercises();
       return ApiResult.success(data: response.data ?? []);
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-    }
-  }
-
-  Future<ApiResult<String>> getExerciseHealthTrend(
-      String currentDateTime, int periodFilterType) async {
-    try {
-      final response = await appClient.getExerciseHealthTrend(
-          currentDateTime, periodFilterType);
-      return ApiResult.success(data: response.data);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

@@ -18,6 +18,8 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
 import 'food_result.dto.dart';
@@ -841,7 +843,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           timeFrame: widget.timeframe,
           timeFrameId: widget.timeframeId,
           totalCalories: totalKcal,
-          goalCalories: 2000,
+          goalCalories: (AppSettings.userInfo?.energyGoal ?? 2000).toDouble(),
           carbs: totalCarbs,
           protein: totalProtein,
           fat: totalFat,
@@ -856,6 +858,11 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           balanceStatus: balanceStatus,
           nutritionPercent: nutritionPercent,
           nutritionColors: nutritionColors,
+          references: mealScoreData?['references'] != null
+              ? (mealScoreData!['references'] as List)
+                  .map((e) => AiReference.fromJson(e as Map<String, dynamic>))
+                  .toList()
+              : null,
         );
 
         Observable.instance.notifyObservers([], notifyName: "food_change_data");

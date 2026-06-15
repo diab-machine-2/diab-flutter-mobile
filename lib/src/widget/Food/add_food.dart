@@ -15,6 +15,7 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -1121,7 +1122,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           timeFrame: selectedTimeFrame?.name ?? '',
           timeFrameId: selectedTimeFrame?.id ?? '',
           totalCalories: totalKcal,
-          goalCalories: 2000,
+          goalCalories: (AppSettings.userInfo?.energyGoal ?? 2000).toDouble(),
           carbs: _calculateTotalCarbs(),
           protein: _calculateTotalProtein(),
           fat: _calculateTotalFat(),
@@ -1136,6 +1137,11 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
           balanceStatus: balanceStatus,
           nutritionPercent: nutritionPercent,
           nutritionColors: nutritionColors,
+          references: mealScoreData?['references'] != null
+              ? (mealScoreData!['references'] as List)
+                  .map((e) => AiReference.fromJson(e as Map<String, dynamic>))
+                  .toList()
+              : null,
         );
 
         Observable.instance.notifyObservers([], notifyName: "food_change_data");

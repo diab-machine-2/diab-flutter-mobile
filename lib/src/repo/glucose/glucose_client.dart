@@ -6,6 +6,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/bloc/nipro/model/glucose_data.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/glucose/Glucose_Input_data_model.dart';
 import 'package:medical/src/modal/glucose/glucose_comparer.dart';
@@ -117,7 +118,7 @@ class GlucoseClient extends FetchClient {
     return null;
   }
 
-  Future<String?> fetchGlucoseInputAnalysis(
+  Future<AiRecommendationResult?> fetchGlucoseInputAnalysis(
     String id,
     int unit,
   ) async {
@@ -131,15 +132,14 @@ class GlucoseClient extends FetchClient {
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJsonTypeString(
-        response.data as Map<String, dynamic>,
+      return AiRecommendationResult.fromDynamic(
+        (response.data as Map<String, dynamic>)['data'],
       );
-      return singleResponse.data;
     }
     return null;
   }
 
-  Future<String?> fetchGlucoseAlltimeAnalysis(int periodFilterType) async {
+  Future<AiRecommendationResult?> fetchGlucoseAlltimeAnalysis(int periodFilterType) async {
     final Response response = await super.fetchData(
       url: '/App/Glucose/Analysis/HealthTrend',
       params: {
@@ -150,10 +150,9 @@ class GlucoseClient extends FetchClient {
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJsonTypeString(
-        response.data as Map<String, dynamic>,
+      return AiRecommendationResult.fromDynamic(
+        (response.data as Map<String, dynamic>)['data'],
       );
-      return singleResponse.data;
     }
     return null;
   }

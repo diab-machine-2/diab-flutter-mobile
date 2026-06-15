@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 
 class FoodResultDto {
   final String id;
@@ -20,6 +21,7 @@ class FoodResultDto {
   final List<ImagesModel> images;
   final String? healthRecommendation;
   final bool? isFetchAnalysis;
+  final List<AiReference>? references;
   final int? score; // Điểm đánh giá từ 0-10
   final String? balanceStatus; // "Cân bằng" hoặc "Chưa cân bằng"
   final Map<String, int>?
@@ -43,6 +45,7 @@ class FoodResultDto {
     required this.images,
     this.healthRecommendation,
     this.isFetchAnalysis,
+    this.references,
     this.score,
     this.balanceStatus,
     this.nutritionPercent,
