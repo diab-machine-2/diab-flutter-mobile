@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -62,8 +62,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     }
 
     final bool shouldScroll = trends.length >= _breakingTypeNumber;
-    const double maxSpacing = 12.0;
-    const double minSpacing = 12.0;
+    const double maxSpacing = 60.0;
+    const double minSpacing = 25.0;
     final screenWidth = MediaQuery.of(context).size.width - 32;
     double pointSpacing = shouldScroll
         ? max(minSpacing,
@@ -477,9 +477,9 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
 
         // ── Chart ──
         Container(
-          height: 88,
+          height: 120,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _buildChart(trends, padding: 32, selectedScore: selectedScore),
+          child: _buildChart(trends, padding: 16, selectedScore: selectedScore),
         ),
       ],
     );
@@ -570,30 +570,32 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     // Threshold = mức điểm chuẩn
     double threshold = 8.0;
 
-    // Y-axis range (0-10)
+    // Y-axis range (0-12) — add 20% headroom above max score (10) so tooltip
+    // for high scores (8-10) doesn't overlap the dot when using showOnTopOfTheChartBoxArea
     double minY = 0.0;
-    double maxY = 10.0;
+    double maxY = 12.0;
 
     final screenWidth = MediaQuery.of(context).size.width - padding;
     final bool shouldScroll = trends.length >= _breakingTypeNumber;
-    const double maxSp = 12.0, minSp = 12.0;
+    const double maxSp = 60.0, minSp = 25.0;
 
     double pointSpacing = shouldScroll
         ? max(minSp, maxSp - (trends.length - _breakingTypeNumber) * 2.5)
-        : screenWidth / max(5, (trends.length - 1));
+        : screenWidth / max(1, (trends.length - 1));
 
     double chartWidth =
         shouldScroll ? pointSpacing * (trends.length - 1) : screenWidth;
-    double minX = 0;
-    // ensure at least 5 intervals on screen so lines between points are never too long
-    double maxX = shouldScroll
-        ? trends.length.toDouble() - 1
-        : max(5.0, trends.length.toDouble() - 1);
+
+    double minX = trends.length == 1 ? -1 : 0;
+    double maxX = trends.length == 1 ? 1 : trends.length.toDouble() - 1;
 
     return LayoutBuilder(builder: (context, constraints) {
-      final chartH = constraints.maxHeight - 16;
-      // Position score label aligned with the dashed threshold line
-      final targetPx = 8 + (maxY - threshold) / (maxY - minY) * chartH;
+      const double chartPaddingTop = 8.0;
+      const double chartPaddingBottom = 8.0;
+      final chartHeight = constraints.maxHeight - chartPaddingTop;
+      final usableHeight = chartHeight - chartPaddingBottom;
+      final targetPx =
+          chartPaddingTop + (maxY - threshold) / (maxY - minY) * usableHeight;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!_isChartReady && mounted) {
@@ -642,7 +644,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
                   child: Container(
                     width: chartWidth,
                     height: constraints.maxHeight,
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.only(
+                      top: chartPaddingTop,
+                      left: 8,
+                      right: 8,
+                      bottom: chartPaddingBottom,
+                    ),
+                    alignment: Alignment.center,
                     child:
                         _lineChart(trends, minX, maxX, minY, maxY, threshold),
                   ),
@@ -650,7 +658,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               : Container(
                   width: chartWidth,
                   height: constraints.maxHeight,
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(
+                    top: chartPaddingTop,
+                    left: 8,
+                    right: 8,
+                    bottom: chartPaddingBottom,
+                  ),
+                  alignment: Alignment.center,
                   child: _lineChart(trends, minX, maxX, minY, maxY, threshold),
                 ),
         ),
@@ -678,7 +692,8 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
               dashArray: [4, 6]),
         ]),
         lineTouchData: LineTouchData(
-          touchSpotThreshold: 24,
+          getTouchLineStart: (barData, index) => -double.infinity,
+          getTouchLineEnd: (barData, index) => double.infinity,
           getTouchedSpotIndicator: (barData, indexes) => indexes.map((index) {
             return TouchedSpotIndicatorData(
               FlLine(color: Colors.transparent, strokeWidth: 0),
@@ -695,15 +710,13 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             );
           }).toList(),
           touchTooltipData: LineTouchTooltipData(
-            showOnTopOfTheChartBoxArea: true,
-            fitInsideHorizontally: false,
-            fitInsideVertically: true,
-            tooltipHorizontalAlignment: FLHorizontalAlignment.center,
-            tooltipHorizontalOffset: 0,
-            getTooltipColor: (_) => R.color.transparent,
+            showOnTopOfTheChartBoxArea: false,
+            fitInsideHorizontally: true,
+            fitInsideVertically: false,
+            getTooltipColor: (LineBarSpot touchedSpot) => R.color.transparent,
             tooltipRoundedRadius: 8,
-            tooltipMargin: 12,
-            tooltipPadding: const EdgeInsets.only(bottom: 72),
+            tooltipMargin: 18,
+            tooltipPadding: const EdgeInsets.symmetric(horizontal: 4),
             getTooltipItems: (spots) => spots.map((spot) {
               final score = trends[spot.spotIndex].score ?? 0;
               final tooltipColor =
@@ -830,3 +843,4 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     if (mounted) setState(() {});
   }
 }
+

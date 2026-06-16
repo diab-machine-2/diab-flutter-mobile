@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -663,7 +663,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionAIHelp(AiRecommendationResult? aiSuggestion, BloodSugarRangeType? rangeType) {
+  Widget _sectionAIHelp(
+      AiRecommendationResult? aiSuggestion, BloodSugarRangeType? rangeType) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -916,12 +917,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
             );
           }).toList(),
           touchTooltipData: LineTouchTooltipData(
-            showOnTopOfTheChartBoxArea: true,
+            showOnTopOfTheChartBoxArea: false,
             fitInsideHorizontally: true,
-            fitInsideVertically: true,
+            fitInsideVertically: false,
             getTooltipColor: (LineBarSpot touchedSpot) => R.color.transparent,
             tooltipRoundedRadius: 8,
-            tooltipPadding: const EdgeInsets.only(bottom: 50),
+            tooltipMargin: 18,
+            tooltipPadding: const EdgeInsets.symmetric(horizontal: 4),
             getTooltipItems: (lineBarsSpot) {
               return lineBarsSpot.map((spot) {
                 return LineTooltipItem(
@@ -1075,3 +1077,4 @@ class BloodSugarChartState extends State<BloodSugarChart>
         page: '1'));
   }
 }
+
