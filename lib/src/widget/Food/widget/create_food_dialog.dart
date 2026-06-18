@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
@@ -78,7 +79,7 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
 
     // Tạo FoodModel mới
     final newFood = FoodModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: "",
       name: _nameController.text.trim(),
       portion: _portion,
       unit: _selectedUnit,
@@ -368,7 +369,7 @@ class _CreateFoodDialogState extends State<CreateFoodDialog> {
               ),
               child: Center(
                 child: Text(
-                  'Tiếp tục',
+                  R.string.tiep_tuc.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

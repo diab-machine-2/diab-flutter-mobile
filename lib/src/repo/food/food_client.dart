@@ -348,6 +348,8 @@ class FoodClient extends FetchClient {
       };
       for (int i = 0; i < foods.length; i++) {
         params['items[$i].foodId'] = foods[i].id ?? '';
+        params['items[$i].name'] = foods[i].name ?? '';
+        params['items[$i].unit'] = foods[i].unit ?? '';
         params['items[$i].portion'] =
             foods[i].portion != null ? foods[i].portion.toString() : '1';
       }
@@ -477,13 +479,11 @@ class FoodClient extends FetchClient {
       List<String?> removalImageIds,
       List<String> files) async {
     try {
-      final dt = DateTime.fromMillisecondsSinceEpoch(date * 1000);
-      final dateStr = dt.toIso8601String();
       final Map<String, String> params = {
         'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'date': dateStr,
-        'createDatetime': dateStr,
+        'date': date.toString(),
+        'createDatetime': date.toString(),
       };
       for (int i = 0; i < foods.length; i++) {
         params['items[$i].foodId'] = foods[i].id ?? '';

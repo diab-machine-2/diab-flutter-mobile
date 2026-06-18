@@ -7,6 +7,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
+import 'package:medical/src/widget/Food/nutrition_guide_page.dart';
 import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -181,7 +182,12 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
             padding: const EdgeInsets.only(right: 8.0),
             child: InkWell(
               onTap: () {
-                // TODO: Show guide
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NutritionGuidePage(),
+                  ),
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

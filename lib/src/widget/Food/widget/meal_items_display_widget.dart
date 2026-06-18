@@ -104,7 +104,7 @@ class MealItemsDisplayWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${food.portion ?? 1} ${food.unit ?? 'đĩa'} • ${(food.calorie ?? 0).toInt()} kcals',
+                  '${food.portion ?? 1} ${food.unit ?? 'đĩa'} • ${(food.calorie ?? 0).toInt() * (food.portion ?? 1)} kcals',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
@@ -124,5 +124,4 @@ class MealItemsDisplayWidget extends StatelessWidget {
       ),
     );
   }
-
 }

@@ -11,6 +11,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/utils/debouncer.dart';
+import 'package:medical/src/widget/Food/widget/food_choosen.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
@@ -110,23 +111,44 @@ class _SearchFoodState extends State<SearchFood> with Observer {
           ),
           child: SafeArea(
             top: false,
-            child: Column(children: [
+            child: Stack(
+              children: [
+                Column(children: [
               CustomAppBar(
                   title: Text(
-                    R.string.nhap_mon_an.tr(),
+                    'Tìm món ăn',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: R.color.textDark),
+                        color: R.color.white),
                   ),
-                  backgroundColor: R.color.transparent,
+                  backgroundColor: R.color.greenGradientBottom,
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.close, color: R.color.textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
                         Navigator.pop(context);
-                      })),
+                      }),
+                  actions: [
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Text(
+                            'Hướng dẫn',
+                            style: TextStyle(
+                              color: R.color.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                  ),
               Padding(
                 padding:
                     EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
@@ -253,8 +275,22 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                         }))),
                           );
                   }))
-            ]),
-          )),
+              ]),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: FoodChoosen(
+                  foods: selectedFoods,
+                  callback: (foods) {
+                    Navigator.pop(context, foods);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

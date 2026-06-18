@@ -226,7 +226,16 @@ class FoodInputModel {
     return null;
   }
 
-  /// Parse new items format (items[].foodId, items[].name, items[].portion, etc.)
+  /// Parse calorie from item, converting total calories to per-unit value
+  static double? _parseItemCalories(Map<String, dynamic> map) {
+    final totalCalories = (map['calories'] as num?)?.toDouble() ??
+        (map['calorie'] as num?)?.toDouble();
+    if (totalCalories == null) return null;
+    final portion = (map['portion'] as num?)?.toDouble() ?? 1;
+    if (portion == 0) return totalCalories;
+    return totalCalories / portion;
+  }
+
   static List<FoodModel> _parseFoodItems(List<dynamic> items) {
     return items.map((item) {
       final map = item as Map<String, dynamic>;
@@ -235,8 +244,7 @@ class FoodInputModel {
         name: map['name'],
         portion: (map['portion'] as num?)?.toDouble() ?? 1,
         unit: map['unitName'] ?? map['unit'],
-        calorie: (map['calories'] as num?)?.toDouble() ??
-            (map['calorie'] as num?)?.toDouble(),
+        calorie: _parseItemCalories(map),
         glucose: (map['glucose'] as num?)?.toDouble(),
         lipid: (map['lipid'] as num?)?.toDouble(),
         protein: (map['protein'] as num?)?.toDouble(),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/const.dart';
 
 class NutritionAIHelpButton extends StatelessWidget {
   const NutritionAIHelpButton({Key? key}) : super(key: key);
@@ -16,7 +18,8 @@ class NutritionAIHelpButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            // TODO: Navigate to chat or AI help
+            Observable.instance
+                .notifyObservers([], notifyName: Const.NAVIGATE_TO_CHAT_TAB);
           },
           borderRadius: BorderRadius.circular(20),
           child: Padding(
@@ -32,7 +35,7 @@ class NutritionAIHelpButton extends StatelessWidget {
                           .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
                     ),
                     child: Text(
-                      R.string.chat_with_health_assistant.tr(),
+                      R.string.chat_with_AI.tr(),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,

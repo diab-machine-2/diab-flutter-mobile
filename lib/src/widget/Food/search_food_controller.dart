@@ -168,7 +168,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                 child: Column(children: [
                   CustomAppBar(
                     title: Text(
-                      'Tìm món ăn',
+                      R.string.find_food.tr(),
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -189,7 +189,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                           child: GestureDetector(
                             onTap: () {},
                             child: Text(
-                              'Hướng dẫn',
+                              R.string.huong_dan.tr(),
                               style: TextStyle(
                                 color: R.color.white,
                                 fontSize: 14,
@@ -205,8 +205,8 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                     padding: EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 16),
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final result = await Navigator.push<List<FoodModel>>(
                             context,
                             CupertinoPageRoute(
                                 fullscreenDialog: true,
@@ -216,6 +216,12 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                                     suggestKcal: widget.suggestKcal,
                                   );
                                 }));
+                        if (result != null && result.isNotEmpty) {
+                          selectedFoods = result;
+                          setState(() {});
+                          Navigator.pop(context);
+                          widget.callback?.call(result);
+                        }
                       },
                       child: Container(
                           height: 48,
@@ -233,7 +239,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                                     height: 24,
                                     color: R.color.primaryGreyColor),
                                 SizedBox(width: 8),
-                                Text('Tìm món ăn',
+                                Text(R.string.find_food.tr(),
                                     style: TextStyle(
                                         color: R.color.primaryGreyColor)),
                               ],
@@ -253,7 +259,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                             children: [
                               SizedBox(width: 16),
                               _buildCategoryBubble(
-                                  title: 'Tất cả',
+                                  title: R.string.all.tr(),
                                   iconData: Icons.restaurant,
                                   isSelected: selectedIndex == 0,
                                   onTap: () => jumpToCategory(0)),
@@ -325,7 +331,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
           ),
         ),
         FoodChoosen(
-            foods: widget.foods,
+            foods: selectedFoods,
             callback: (data) {
               widget.callback!(data);
               if (widget.popAfterCallback) {

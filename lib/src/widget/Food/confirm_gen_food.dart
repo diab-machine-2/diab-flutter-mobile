@@ -833,16 +833,48 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         }
 
         // Create FoodResultDto for result screen
+        // Update _selectedFoods with nutrition data from mealScoreData items
+        if (mealScoreData != null && mealScoreData['items'] != null) {
+          final items = mealScoreData['items'] as List;
+          for (final item in items) {
+            final name = item['name'] as String?;
+            if (name == null) continue;
+            final index = _selectedFoods.indexWhere((f) => f.name == name);
+            if (index != -1) {
+              final food = _selectedFoods[index];
+              _selectedFoods[index] = food.copyWith(
+                id: item['foodId'] as String?,
+                calorie: (item['calorie'] as num?)?.toDouble(),
+                glucose: (item['glucose'] as num?)?.toDouble(),
+                lipid: (item['lipid'] as num?)?.toDouble(),
+                protein: (item['protein'] as num?)?.toDouble(),
+                fibre: (item['fibre'] as num?)?.toDouble(),
+              );
+            }
+          }
+        }
+
         double totalCarbs = _calculateTotalCarbs();
         double totalProtein = _calculateTotalProtein();
         double totalFat = _calculateTotalFat();
+
+        double finalTotalKcal = totalKcal;
+        if (finalTotalKcal == 0.0 &&
+            mealScoreData != null &&
+            mealScoreData['items'] != null) {
+          final items = mealScoreData!['items'] as List;
+          finalTotalKcal = items.fold<double>(
+            0,
+            (sum, item) => sum + ((item['calorie'] as num?)?.toDouble() ?? 0),
+          );
+        }
 
         final foodResult = FoodResultDto(
           id: '',
           dateTime: selectedDate,
           timeFrame: widget.timeframe,
           timeFrameId: widget.timeframeId,
-          totalCalories: totalKcal,
+          totalCalories: finalTotalKcal,
           goalCalories: (AppSettings.userInfo?.energyGoal ?? 2000).toDouble(),
           carbs: totalCarbs,
           protein: totalProtein,
