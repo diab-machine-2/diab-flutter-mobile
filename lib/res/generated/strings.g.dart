@@ -1705,4 +1705,8 @@ class Strings {
   String get corporate_health_checkup => 'corporate_health_checkup';
   String get appointment_details => 'appointment_details';
   String get bcb_medical_examination_result => 'bcb_medical_examination_result';
+  String get recommendation_track_index => 'recommendation_track_index';
+  String get recommendation_spirit => 'recommendation_spirit';
+  String get recommendation_behavioral_psychology => 'recommendation_behavioral_psychology';
+  String get recommendation_pathology => 'recommendation_pathology';
 }
