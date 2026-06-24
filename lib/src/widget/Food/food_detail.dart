@@ -141,8 +141,7 @@ class FoodDetailControllerState extends State<FoodDetailController>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.restaurant_menu,
-              size: 64, color: R.color.color0xffBFC6C6),
+          Icon(Icons.restaurant_menu, size: 64, color: R.color.color0xffBFC6C6),
           const SizedBox(height: 16),
           Text(
             R.string.chua_co_du_lieu_dinh_duong.tr(),
@@ -205,12 +204,12 @@ class FoodDetailControllerState extends State<FoodDetailController>
   Widget _buildMealInputCard(FoodInputModel inputModel) {
     // Extract data with fallbacks
     final int score = inputModel.totalMealScore ?? 0;
-    final double totalKcal = inputModel.totalCalories ??
-        inputModel.calorie ??
-        0;
+    final double totalKcal =
+        inputModel.totalCalories ?? inputModel.calorie ?? 0;
     // Đồng bộ: điểm >= 6 được tính là Cân bằng (giống biểu đồ trend)
     final bool isBalanced = inputModel.isBalanced ?? (score >= 6);
-    final String balanceText = isBalanced ? R.string.can_bang.tr() : R.string.chua_can_bang.tr();
+    final String balanceText =
+        isBalanced ? R.string.can_bang.tr() : R.string.chua_can_bang.tr();
     // Figma: Cân bằng = #23C559, Chưa cân bằng = #FFCD57
     final Color balanceColor =
         isBalanced ? Color(0xFF23C559) : Color(0xFFFFCD57);
@@ -219,18 +218,27 @@ class FoodDetailControllerState extends State<FoodDetailController>
     String mealText = inputModel.timeFrameName ?? inputModel.mealText ?? '';
     if (mealText.isNotEmpty) {
       String lower = mealText.toLowerCase();
-      if (lower.contains('sáng') || lower.contains('breakfast')) mealText = R.string.meal_breakfast.tr();
-      else if (lower.contains('trưa') || lower.contains('lunch')) mealText = R.string.meal_lunch.tr();
-      else if (lower.contains('tối') || lower.contains('dinner')) mealText = R.string.meal_dinner.tr();
-      else if (lower.contains('nhẹ') || lower.contains('snack')) mealText = R.string.meal_snack.tr();
-      else if (lower.contains('khuya') || lower.contains('late')) mealText = R.string.meal_late.tr();
-      else if (!lower.startsWith('bữa')) mealText = '${R.string.meal.tr()} $lower';
+      if (lower.contains('sáng') || lower.contains('breakfast'))
+        mealText = R.string.meal_breakfast.tr();
+      else if (lower.contains('trưa') || lower.contains('lunch'))
+        mealText = R.string.meal_lunch.tr();
+      else if (lower.contains('tối') || lower.contains('dinner'))
+        mealText = R.string.meal_dinner.tr();
+      else if (lower.contains('nhẹ') || lower.contains('snack'))
+        mealText = R.string.meal_snack.tr();
+      else if (lower.contains('khuya') || lower.contains('late'))
+        mealText = R.string.meal_late.tr();
+      else if (!lower.startsWith('bữa'))
+        mealText = '${R.string.meal.tr()} $lower';
     }
 
     // Time string
     String timeStr = '';
     if (inputModel.date != null) {
-      timeStr = convertToUTC(inputModel.date!, 'HH:mm');
+      final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+      final localDate = DateTime.fromMillisecondsSinceEpoch(
+          (inputModel.date! - timezoneOffset) * 1000);
+      timeStr = DateFormat('HH:mm').format(localDate);
     }
 
     return GestureDetector(

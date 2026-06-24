@@ -55,12 +55,24 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   final List<FoodModel> _selectedFoods = [];
   List<dynamic> files = [];
   final List<String> _displayImagePaths = [];
+  int _currentImageIndex = 0;
+  late PageController _pageController;
   int maxMedia = 5;
   DateTime selectedDate = DateTime.now();
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
       GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
+
+  /// Carousel sources: local paths if available, else food network URLs for display
+  List<String> get _carouselImagePaths {
+    if (_displayImagePaths.isNotEmpty) return _displayImagePaths;
+    // Manual input: show generatedFoods[].image.url (network URLs, display only)
+    return widget.generatedFoods
+        .where((f) => f.image?.url != null && f.image!.url!.isNotEmpty)
+        .map((f) => f.image!.url!)
+        .toList();
+  }
 
   bool get _haveFood => _selectedFoods.isNotEmpty;
 
@@ -72,8 +84,9 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     _selectedFoods.addAll(widget.generatedFoods);
-    _displayImagePaths.addAll(widget.files);
+    _displayImagePaths.addAll(widget.files); // local device paths only
     _files.addAll(widget.files.map((e) => File(e)).toList());
     try {
       developer.log(
@@ -88,6 +101,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   @override
   void dispose() {
     _controllerNote.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -135,25 +149,65 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                   height: 298,
                                   child: Stack(
                                     children: [
-                                      Positioned.fill(
-                                        child: _displayImagePaths.isNotEmpty
-                                            ? Image.file(
-                                                File(_displayImagePaths.first),
+                                      // Image carousel (local paths or food network URLs)
+                                      if (_carouselImagePaths.isNotEmpty)
+                                        Positioned.fill(
+                                          child: PageView.builder(
+                                            controller: _pageController,
+                                            onPageChanged: (index) {
+                                              setState(() {
+                                                _currentImageIndex = index;
+                                              });
+                                            },
+                                            itemCount:
+                                                _carouselImagePaths.length,
+                                            itemBuilder: (context, index) {
+                                              final path =
+                                                  _carouselImagePaths[index];
+                                              // Local file or network URL
+                                              if (path.startsWith('http://') ||
+                                                  path.startsWith('https://')) {
+                                                return Image.network(
+                                                  path,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      Container(
+                                                    color: R
+                                                        .color.glucose_bg_color,
+                                                  ),
+                                                );
+                                              }
+                                              return Image.file(
+                                                File(path),
                                                 fit: BoxFit.cover,
-                                              )
-                                            : SizedBox(),
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.black.withOpacity(0.3),
-                                              Colors.transparent,
-                                            ],
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    Container(
+                                                  color:
+                                                      R.color.glucose_bg_color,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        )
+                                      else
+                                        Positioned.fill(
+                                          child: SizedBox(),
+                                        ),
+                                      IgnorePointer(
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Colors.black.withOpacity(0.3),
+                                                Colors.transparent,
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -165,8 +219,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                         child: Center(
                                             child: _dateTimePickerOverlay()),
                                       ),
-                                      // Số ảnh (1/n) - góc trái dưới
-                                      if (_displayImagePaths.isNotEmpty)
+                                      // Image counter (1/n) - góc trái dưới
+                                      if (_carouselImagePaths.isNotEmpty)
                                         Positioned(
                                           left: 16,
                                           bottom: 86,
@@ -180,7 +234,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                                   BorderRadius.circular(12),
                                             ),
                                             child: Text(
-                                              '1/${_displayImagePaths.length}',
+                                              '${_currentImageIndex + 1}/${_carouselImagePaths.length}',
                                               style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13,
@@ -189,31 +243,32 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                             ),
                                           ),
                                         ),
-                                      // Nút "Đổi ảnh" - góc phải dưới
-                                      Positioned(
-                                        right: 16,
-                                        bottom: 86,
-                                        child: GestureDetector(
-                                          onTap: _changeImage,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 6),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
-                                            child: Text(
-                                              R.string.change_image.tr(),
-                                              style: TextStyle(
-                                                color: R.color.textDark,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w500,
+                                      // Nút "Đổi ảnh" - góc phải dưới (ẩn khi manual input)
+                                      if (!widget.isManualInput)
+                                        Positioned(
+                                          right: 16,
+                                          bottom: 86,
+                                          child: GestureDetector(
+                                            onTap: _changeImage,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              child: Text(
+                                                R.string.change_image.tr(),
+                                                style: TextStyle(
+                                                  color: R.color.textDark,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
                                     ],
                                   ),
                                 ),
@@ -306,7 +361,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text( 
+            Text(
               DateFormat('HH:mm - dd/MM/yyyy').format(selectedDate),
               style: TextStyle(
                 fontSize: 15,
@@ -741,8 +796,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           : (result is String && result.isNotEmpty);
       if (isSubmitSuccess) {
         if (widget.goalId != null && widget.goalId!.isNotEmpty) {
-          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
-              1, ScheduleType.food.typeIndex);
+          await HomeClient().completeSmartGoal(selectedDate,
+              widget.goalId ?? '', 1, ScheduleType.food.typeIndex);
         }
         // Clean up temporary files
         if (paths.isNotEmpty) {

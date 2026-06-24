@@ -10,6 +10,7 @@ import 'package:medical/src/modal/error/error_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -20,7 +21,6 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
-import '../food_gallery_picker.dart';
 import '../search_food_controller.dart';
 import '../widget/food_edit_popup.dart';
 
@@ -46,6 +46,15 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
       GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
+  int _currentImageIndex = 0;
+  late PageController _pageController;
+
+  /// Displayable carousel items from _files (ImagesModel with url, or non-empty String paths)
+  List<dynamic> get _carouselItems => _files.where((f) {
+        if (f is ImagesModel) return f.url != null && f.url!.isNotEmpty;
+        if (f is String) return f.isNotEmpty;
+        return false;
+      }).toList();
 
   bool get _haveFood => _selectedFoods.isNotEmpty;
 
@@ -61,6 +70,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     _loadData();
   }
 
@@ -71,11 +81,28 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
         setState(() {
           _selectedFoods.addAll(model.foods);
           if (model.date != null) {
-            selectedDate =
-                DateTime.fromMillisecondsSinceEpoch(model.date! * 1000);
+            final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+            selectedDate = DateTime.fromMillisecondsSinceEpoch(
+                (model.date! - timezoneOffset) * 1000);
           }
           _controllerNote.text = model.note ?? '';
-          _files.addAll(model.images);
+          // Priority: foods[].image → model.images → model.imageUrl
+          {
+            bool hasFoodImages = false;
+            for (final food in model.foods) {
+              if (food.image?.url != null && food.image!.url!.isNotEmpty) {
+                _files.add(food.image!);
+                hasFoodImages = true;
+              }
+            }
+            if (!hasFoodImages) {
+              if (model.images.isNotEmpty) {
+                _files.addAll(model.images);
+              } else if (model.imageUrl != null && model.imageUrl!.isNotEmpty) {
+                _files.add(ImagesModel(id: null, url: model.imageUrl));
+              }
+            }
+          }
           timeframe = model.timeFrameName ?? model.mealText ?? '';
           timeframeId = model.timeFrameId ?? model.mealId ?? '';
           _isLoading = false;
@@ -90,6 +117,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
   @override
   void dispose() {
     _controllerNote.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -139,36 +167,78 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                         height: 298,
                                         child: Stack(
                                           children: [
-                                            Positioned.fill(
-                                              child: _files.length > 0 &&
-                                                      _files.first is String
-                                                  ? Image.file(
-                                                      File(_files.first
-                                                          as String),
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : _files.length > 0
-                                                      ? Image.network(
-                                                          (_files.first
-                                                                      as dynamic)
-                                                                  .url ??
-                                                              '',
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                      : SizedBox(),
-                                            ),
-                                            Container(
-                                              width: double.infinity,
-                                              height: double.infinity,
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                  colors: [
-                                                    Colors.black
-                                                        .withOpacity(0.3),
-                                                    Colors.transparent,
-                                                  ],
+                                            // Image carousel (from _files)
+                                            if (_carouselItems.isNotEmpty)
+                                              Positioned.fill(
+                                                child: PageView.builder(
+                                                  controller: _pageController,
+                                                  onPageChanged: (index) {
+                                                    setState(() {
+                                                      _currentImageIndex =
+                                                          index;
+                                                    });
+                                                  },
+                                                  itemCount:
+                                                      _carouselItems.length,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final item =
+                                                        _carouselItems[index];
+                                                    if (item is ImagesModel) {
+                                                      return Image.network(
+                                                        item.url ?? '',
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          color: R.color
+                                                              .glucose_bg_color,
+                                                        ),
+                                                      );
+                                                    }
+                                                    if (item is String) {
+                                                      return Image.file(
+                                                        File(item),
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          color: R.color
+                                                              .glucose_bg_color,
+                                                        ),
+                                                      );
+                                                    }
+                                                    return Container(
+                                                      color: R.color
+                                                          .glucose_bg_color,
+                                                    );
+                                                  },
+                                                ),
+                                              )
+                                            else
+                                              // Fallback placeholder when no images
+                                              Positioned.fill(
+                                                child: Container(
+                                                  color:
+                                                      R.color.glucose_bg_color,
+                                                ),
+                                              ),
+                                            IgnorePointer(
+                                              child: Container(
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topCenter,
+                                                    end: Alignment.bottomCenter,
+                                                    colors: [
+                                                      Colors.black
+                                                          .withOpacity(0.3),
+                                                      Colors.transparent,
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -181,8 +251,8 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                                   child:
                                                       _dateTimePickerOverlay()),
                                             ),
-                                            // Số ảnh (1/n) - góc trái dưới
-                                            if (_files.isNotEmpty)
+                                            // Image counter (1/n) — counts all carousel items in _files
+                                            if (_carouselItems.isNotEmpty)
                                               Positioned(
                                                 left: 16,
                                                 bottom: 86,
@@ -198,7 +268,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                                             12),
                                                   ),
                                                   child: Text(
-                                                    '1/${_files.length}',
+                                                    '${_currentImageIndex + 1}/${_carouselItems.length}',
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 13,
@@ -208,34 +278,6 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                                   ),
                                                 ),
                                               ),
-                                            // Nút "Đổi ảnh" - góc phải dưới
-                                            Positioned(
-                                              right: 16,
-                                              bottom: 86,
-                                              child: GestureDetector(
-                                                onTap: _changeImage,
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 6),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                  ),
-                                                  child: Text(
-                                                    R.string.change_image.tr(),
-                                                    style: TextStyle(
-                                                      color: R.color.textDark,
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
                                           ],
                                         ),
                                       ),
@@ -329,10 +371,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              convertToUTC(
-                selectedDate.millisecondsSinceEpoch ~/ 1000,
-                'HH:mm - dd/MM/yyyy',
-              ),
+              DateFormat('HH:mm - dd/MM/yyyy').format(selectedDate),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
@@ -817,37 +856,6 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
     );
   }
 
-  /// Quay về thư viện để đổi ảnh
-  void _changeImage() {
-    Navigator.push(
-      context,
-      CupertinoPageRoute(
-        builder: (context) => FoodGalleryPicker(
-          timeframe: timeframe,
-          timeframeId: timeframeId,
-          onImagesSelected: (List<String> newFiles) {
-            if (newFiles.isNotEmpty) {
-              // Pop về màn hình capture rồi push lại confirm với ảnh mới
-              Navigator.pop(context); // Pop gallery
-              Navigator.pop(context); // Pop confirm hiện tại
-
-              // Push lại với ảnh mới - cần gọi lại AI analyze
-              Navigator.pushNamed(
-                context,
-                NavigatorName.food_image_capture,
-                arguments: {
-                  'timeframe': timeframe,
-                  'timeframeId': timeframeId,
-                  'selectedFiles': newFiles,
-                },
-              );
-            }
-          },
-        ),
-      ),
-    );
-  }
-
   void _submitData() async {
     BotToast.showLoading();
 
@@ -895,15 +903,6 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
         }
       }
 
-      if (paths.isEmpty && _files.isNotEmpty) {
-        // Handle images model
-        for (var f in _files) {
-          if (f.runtimeType.toString() == 'ImagesModel') {
-            paths.add(''); // Use remote images format compatibility if needed
-          }
-        }
-      }
-
       developer.log(
           '[CAPTURE] Prepared paths count: ${paths.length}, paths: ${paths.join(", ")}',
           name: '[CAPTURE]');
@@ -942,7 +941,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
 
       final result = await client.updateIndexFood(
           widget.updateMealId,
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           timeframeId,
           _controllerNote.text,
           swappedFoods,

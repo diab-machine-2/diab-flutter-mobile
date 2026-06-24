@@ -107,7 +107,8 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     refresh();
   }
 
-  Future<void> getInitialData({String? type, String? id, DateTime? initialDate}) async {
+  Future<void> getInitialData(
+      {String? type, String? id, DateTime? initialDate}) async {
     if (type == null || type.isEmpty) return;
     // If an initial date is provided (e.g. from chart navigation), use it
     if (initialDate != null) {
@@ -158,7 +159,9 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     model = await FoodClient().fetchDetailInput(id);
     // Support both old (date as unix) and new (createDatetime as ISO)
     if (model!.date != null) {
-      selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+      final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+      selectedDate = DateTime.fromMillisecondsSinceEpoch(
+          (model!.date! - timezoneOffset) * 1000);
     }
     notes = model!.note ?? '';
     files.addAll(model!.images);
@@ -340,7 +343,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
         paths.add(file.path);
       }
       final result = await FoodClient().postIndexFood(
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame?.id,
           notes,
           addTotalCalo
@@ -389,7 +392,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       }).toList();
       final bool result = await FoodClient().updateIndexFood(
           id,
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame!.id,
           notes,
           addTotalCalo

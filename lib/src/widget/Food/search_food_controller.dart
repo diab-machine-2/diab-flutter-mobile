@@ -183,22 +183,22 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                           Navigator.pop(context);
                         }),
                     actions: [
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 16.0),
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Text(
-                              R.string.huong_dan.tr(),
-                              style: TextStyle(
-                                color: R.color.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
+                      // Center(
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.only(right: 16.0),
+                      //     child: GestureDetector(
+                      //       onTap: () {},
+                      //       child: Text(
+                      //         R.string.huong_dan.tr(),
+                      //         style: TextStyle(
+                      //           color: R.color.white,
+                      //           fontSize: 14,
+                      //           fontWeight: FontWeight.w400,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // )
                     ],
                   ),
                   Padding(

@@ -959,45 +959,45 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
-        // Nút "Tìm món ăn"
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: GestureDetector(
-              onTap: _openSearchFood,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Color(0xFFCAFAF5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Color(0xFF8FEBE0),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.edit_outlined,
-                      size: 16,
-                      color: R.color.greenGradientBottom,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      R.string.find_food.tr(),
-                      style: TextStyle(
-                        color: R.color.greenGradientBottom,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+        // // Nút "Tìm món ăn"
+        // Center(
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(right: 16.0),
+        //     child: GestureDetector(
+        //       onTap: _openSearchFood,
+        //       child: Container(
+        //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        //         decoration: BoxDecoration(
+        //           color: Color(0xFFCAFAF5),
+        //           borderRadius: BorderRadius.circular(12),
+        //           border: Border.all(
+        //             color: Color(0xFF8FEBE0),
+        //             width: 1,
+        //           ),
+        //         ),
+        //         child: Row(
+        //           mainAxisSize: MainAxisSize.min,
+        //           children: [
+        //             Icon(
+        //               Icons.edit_outlined,
+        //               size: 16,
+        //               color: R.color.greenGradientBottom,
+        //             ),
+        //             const SizedBox(width: 4),
+        //             Text(
+        //               R.string.find_food.tr(),
+        //               style: TextStyle(
+        //                 color: R.color.greenGradientBottom,
+        //                 fontSize: 13,
+        //                 fontWeight: FontWeight.w700,
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

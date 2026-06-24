@@ -105,8 +105,9 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     BotToast.showLoading();
     model = await FoodClient().fetchDetailInput(widget.id);
     BotToast.closeAllLoading();
-    selectedDate =
-        DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
+    final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(
+        ((model!.date ?? 0) - timezoneOffset) * 1000);
     _controllerNote.text = model?.note ?? "";
     files.addAll(model?.images ?? []);
     // Support both old (mealId/mealText) and new (timeFrameId/timeFrameName)
@@ -979,7 +980,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       }
       final result = await FoodClient().updateIndexFood(
           widget.id,
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame?.id,
           note,
           addTotalCalo
@@ -1048,7 +1049,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         }
       }
       final result = await FoodClient().postIndexFood(
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame?.id,
           note,
           addTotalCalo
@@ -1098,7 +1099,6 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
               };
             }
           }
-
         }
 
         String? balanceStatus;
@@ -1269,8 +1269,9 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
     if (model != null) {
       final noteText = model?.note ?? '';
-      final date =
-          DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
+      final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+      final date = DateTime.fromMillisecondsSinceEpoch(
+          ((model!.date ?? 0) - timezoneOffset) * 1000);
       if (note == noteText &&
           selectedFoods.length == model!.foods.length &&
           files.length == model!.images.length &&

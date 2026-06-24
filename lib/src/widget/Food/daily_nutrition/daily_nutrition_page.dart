@@ -34,7 +34,8 @@ import '../food_detail_tabbar.dart';
 import 'daily_nutrition.dart';
 
 class DailyNutritionPage extends StatefulWidget {
-  DailyNutritionPage({required this.type, required this.id, this.goalId, this.initialDate});
+  DailyNutritionPage(
+      {required this.type, required this.id, this.goalId, this.initialDate});
 
   final String? type;
   final String? id;
@@ -60,7 +61,8 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
   void initState() {
     final AppRepository appRepository = AppRepository();
     _cubit = DailyNutritionCubit(appRepository, widget.goalId ?? '');
-    _cubit.getInitialData(type: widget.type, id: widget.id, initialDate: widget.initialDate);
+    _cubit.getInitialData(
+        type: widget.type, id: widget.id, initialDate: widget.initialDate);
     super.initState();
     firebaseSetup();
     animationFocus();
@@ -1192,8 +1194,9 @@ class _DailyNutritionPageState extends State<DailyNutritionPage>
 
     if (_cubit.model != null) {
       final noteText = _cubit.model!.note ?? '';
-      final date =
-          DateTime.fromMillisecondsSinceEpoch(_cubit.model!.date! * 1000);
+      final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+      final date = DateTime.fromMillisecondsSinceEpoch(
+          (_cubit.model!.date! - timezoneOffset) * 1000);
       if (note == noteText &&
           _cubit.selectedFoods.length == _cubit.model!.foods.length &&
           _cubit.files.length == _cubit.model!.images.length &&

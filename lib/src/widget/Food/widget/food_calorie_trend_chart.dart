@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -353,8 +353,9 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
       final t = trends[_focusIndex];
       if (t.date != null) {
         // Dùng local time thay vì UTC để hiển thị đúng múi giờ VN
-        final dt =
-            DateTime.fromMillisecondsSinceEpoch(t.date! * 1000, isUtc: true);
+        final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+        final dt = DateTime.fromMillisecondsSinceEpoch(
+            (t.date! - timezoneOffset) * 1000);
         selectedDate = DateFormat('dd/MM').format(dt);
         // Chỉ hiện giờ khi có mealText (data per-meal từ Input API)
         // Summary API trả timestamp theo ngày (midnight) nên ẩn giờ
@@ -757,9 +758,9 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
             // Parse the date from the trend item for the new input
             DateTime? dotDate;
             if (trendItem.date != null) {
+              final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
               dotDate = DateTime.fromMillisecondsSinceEpoch(
-                  trendItem.date! * 1000,
-                  isUtc: true);
+                  (trendItem.date! - timezoneOffset) * 1000);
             }
             NavigationUtil.navigatePage(
                 context,
@@ -843,4 +844,3 @@ class FoodCalorieTrendChartState extends State<FoodCalorieTrendChart>
     if (mounted) setState(() {});
   }
 }
-
