@@ -2,7 +2,7 @@ import 'package:medical/src/model/ai_recommendation_result.dart';
 
 class ExerciseAnalysisResponse {
   final Meta? meta;
-  final ExerciseAnalysis? data;
+  final AiRecommendationResult? data;
 
   ExerciseAnalysisResponse({
     this.meta,
@@ -13,7 +13,7 @@ class ExerciseAnalysisResponse {
     return ExerciseAnalysisResponse(
       meta: json['meta'] != null ? Meta.fromJson(json['meta']) : null,
       data:
-          json['data'] != null ? ExerciseAnalysis.fromJson(json['data']) : null,
+          json['data'] != null ? AiRecommendationResult.fromJson(json['data']) : null,
     );
   }
 

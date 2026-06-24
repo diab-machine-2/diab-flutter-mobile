@@ -125,6 +125,7 @@ class GlucoseClient extends FetchClient {
     Map<String, String> params = {
       'id': id,
       'unit': unit.toString(),
+      'includeReferences': 'true',
     };
     final Response response = await super.fetchData(
       url: '/App/Glucose/Analysis/Index',
@@ -139,10 +140,12 @@ class GlucoseClient extends FetchClient {
     return null;
   }
 
-  Future<AiRecommendationResult?> fetchGlucoseAlltimeAnalysis(int periodFilterType) async {
+  Future<AiRecommendationResult?> fetchGlucoseAlltimeAnalysis(
+      int periodFilterType) async {
     final Response response = await super.fetchData(
       url: '/App/Glucose/Analysis/HealthTrend',
       params: {
+        'includeReferences': 'true',
         'periodFilterType': periodFilterType.toString(),
         'currentDateTime':
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),

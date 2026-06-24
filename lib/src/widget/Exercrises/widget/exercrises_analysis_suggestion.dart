@@ -9,23 +9,21 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/components/ai_references_widget.dart';
 
-class ExercrisesAISuggestion extends StatefulWidget {
-  final int periodFilterType;
-  final DateTime date;
+class ExercrisesAnalysisSuggestion extends StatefulWidget {
+  final String exerciseId;
   final String titleButton;
 
-  const ExercrisesAISuggestion({
+  const ExercrisesAnalysisSuggestion({
     Key? key,
-    required this.periodFilterType,
-    required this.date,
+    required this.exerciseId,
     required this.titleButton,
   }) : super(key: key);
 
   @override
-  State<ExercrisesAISuggestion> createState() => _ExercrisesAISuggestionState();
+  State<ExercrisesAnalysisSuggestion> createState() => _ExercrisesAnalysisSuggestionState();
 }
 
-class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
+class _ExercrisesAnalysisSuggestionState extends State<ExercrisesAnalysisSuggestion> {
   bool isLoading = true;
   AiRecommendationResult? aiSuggestion;
   bool hasError = false;
@@ -34,20 +32,19 @@ class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
   @override
   void initState() {
     super.initState();
-    _fetchExerciseHealthTrend();
+    _fetchExerciseAnalysis();
   }
 
   @override
-  void didUpdateWidget(ExercrisesAISuggestion oldWidget) {
+  void didUpdateWidget(ExercrisesAnalysisSuggestion oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Refetch data if periodFilterType or date changed
-    if (oldWidget.periodFilterType != widget.periodFilterType ||
-        oldWidget.date != widget.date) {
-      _fetchExerciseHealthTrend();
+    // Refetch data if exerciseId changed
+    if (oldWidget.exerciseId != widget.exerciseId) {
+      _fetchExerciseAnalysis();
     }
   }
 
-  Future<void> _fetchExerciseHealthTrend() async {
+  Future<void> _fetchExerciseAnalysis() async {
     if (mounted) {
       setState(() {
         isLoading = true;
@@ -56,9 +53,8 @@ class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
     }
 
     try {
-      final result = await AppRepository().getExerciseHealthTrend(
-        (widget.date.millisecondsSinceEpoch ~/ 1000).toString(),
-        widget.periodFilterType,
+      final result = await AppRepository().getExerciseAnalysis(
+        widget.exerciseId,
       );
 
       result.when(
@@ -133,7 +129,6 @@ class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
           if (!isLoading)
             InkWell(
               onTap: () async {
-                // await _fetchExerciseHealthTrend();
                 Observable.instance.notifyObservers([],
                     notifyName: Const.NAVIGATE_TO_CHAT_TAB);
               },
@@ -187,20 +182,6 @@ class _ExercrisesAISuggestionState extends State<ExercrisesAISuggestion> {
             ),
             textAlign: TextAlign.start,
           ),
-          // SizedBox(height: 16),
-          // ElevatedButton(
-          //   onPressed: _fetchExerciseHealthTrend,
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor: R.color.greenGradientBottom,
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(8),
-          //     ),
-          //   ),
-          //   child: Text(
-          //     'Thử lại',
-          //     style: TextStyle(color: R.color.white),
-          //   ),
-          // ),
         ],
       );
     } else {

@@ -127,7 +127,8 @@ class HbA1CClient extends FetchClient {
         'description': description
       };
       log('HbA1C input params: $params');
-      final response = await super.postHttp(path: '/App/HbA1C/Input', params: params, files: files);
+      final response = await super
+          .postHttp(path: '/App/HbA1C/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         return true;
@@ -230,6 +231,7 @@ class HbA1CClient extends FetchClient {
           'hba1cValue': hba1cValue,
           'date': date.toString(),
           'note': note ?? '',
+          'includeReferences': 'true',
         },
       );
       if (response.statusCode == 200) {
@@ -247,6 +249,7 @@ class HbA1CClient extends FetchClient {
       {bool takeAll = false}) async {
     try {
       Map<String, String> params = {
+        'includeReferences': 'true',
         'currentDateTime':
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         'page': '1',

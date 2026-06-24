@@ -3159,9 +3159,12 @@ class _AppApi implements AppApi {
 
   @override
   Future<ExerciseAnalysisResponse> getExerciseAnalysis(
-      String exerciseId) async {
+      String exerciseId, {String includeReferences = 'true'}) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'id': exerciseId};
+    final queryParameters = <String, dynamic>{
+      r'id': exerciseId,
+      r'includeReferences': includeReferences,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<ExerciseAnalysisResponse>(Options(
@@ -3263,12 +3266,14 @@ class _AppApi implements AppApi {
   @override
   Future<ExerciseHealthTrendResponse> getExerciseHealthTrend(
     String currentDateTime,
-    int periodFilterType,
-  ) async {
+    int periodFilterType, {
+    String includeReferences = 'true',
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'CurrentDateTime': currentDateTime,
       r'PeriodFilterType': periodFilterType,
+      r'includeReferences': includeReferences,
     };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
@@ -3385,9 +3390,13 @@ class _AppApi implements AppApi {
   }
 
   @override
-  Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(String id) async {
+  Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(String id,
+      {String includeReferences = 'true'}) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'id': id};
+    final queryParameters = <String, dynamic>{
+      r'id': id,
+      r'includeReferences': includeReferences,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<BmiGetAnalyzeWeightIndexResponse>(Options(
@@ -3423,6 +3432,7 @@ class _AppApi implements AppApi {
     required int periodFilterType,
     int? page,
     int? size,
+    String includeReferences = 'true',
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -3430,6 +3440,7 @@ class _AppApi implements AppApi {
       r'periodFilterType': periodFilterType,
       r'page': page,
       r'size': size,
+      r'includeReferences': includeReferences,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};

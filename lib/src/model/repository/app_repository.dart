@@ -1333,10 +1333,12 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ExerciseAnalysis>> getExerciseAnalysis(
-      String exerciseId) async {
+  Future<ApiResult<AiRecommendationResult>> getExerciseAnalysis(
+      String exerciseId,
+      {String includeReferences = 'true'}) async {
     try {
-      final response = await appClient.getExerciseAnalysis(exerciseId);
+      final response = await appClient.getExerciseAnalysis(
+          exerciseId, includeReferences: includeReferences);
       return ApiResult.success(data: response.data!);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -1344,10 +1346,12 @@ class AppRepository {
   }
 
   Future<ApiResult<AiRecommendationResult?>> getExerciseHealthTrend(
-      String currentDateTime, int periodFilterType) async {
+      String currentDateTime, int periodFilterType,
+      {String includeReferences = 'true'}) async {
     try {
       final response = await appClient.getExerciseHealthTrend(
-          currentDateTime, periodFilterType);
+          currentDateTime, periodFilterType,
+          includeReferences: includeReferences);
       return ApiResult.success(data: response.data);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
