@@ -1643,3 +1643,8 @@ recommendation_track_index,"Theo dõi chỉ số","Track index"
 recommendation_spirit,"Tinh thần","Spirit"
 recommendation_behavioral_psychology,"Tâm lý hành vi","Behavioral psychology"
 recommendation_pathology,"Bệnh lý","Pathology"
+gallery_permission_denied_title,Không có quyền truy cập thư viện ảnh,No photo library access,
+gallery_permission_denied_body_android,"Vui lòng cấp quyền truy cập thư viện ảnh\nđể sử dụng tính năng này.\n\nTrên Android 13+, bạn có thể chọn:\n• Cho phép truy cập tất cả ảnh\n• Cho phép truy cập một số ảnh","Please grant photo library access\nto use this feature.\n\nOn Android 13+, you can choose:\n• Allow all photos access\n• Allow selected photos access",
+gallery_permission_denied_body,"Vui lòng cấp quyền truy cập thư viện ảnh để sử dụng tính năng này.\n\nBạn có thể cấp quyền trong phần Cài đặt của thiết bị.","Please grant photo library access to use this feature.\n\nYou can grant access in your device Settings.",
+gallery_permission_denied_body_ios,"Vui lòng cấp quyền truy cập thư viện ảnh\ntrong Cài đặt để sử dụng tính năng này.\n\nTrên iOS, bạn có thể quản lý quyền truy cập ảnh\ntrong Cài đặt > Quyền riêng tư > Ảnh.","Please grant photo library access\nin Settings to use this feature.\n\nOn iOS, you can manage photo access\nin Settings > Privacy > Photos.",
+go_to_settings,Đi tới Cài đặt,Go to Settings,

@@ -126,7 +126,7 @@ class FoodAISuggestionState extends State<FoodAISuggestion>
               final text = snapshot.data;
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 0, vertical: 24),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,

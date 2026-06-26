@@ -1709,4 +1709,13 @@ class Strings {
   String get recommendation_spirit => 'recommendation_spirit';
   String get recommendation_behavioral_psychology => 'recommendation_behavioral_psychology';
   String get recommendation_pathology => 'recommendation_pathology';
+  String get gallery_permission_denied_title =>
+      'gallery_permission_denied_title';
+  String get gallery_permission_denied_body =>
+      'gallery_permission_denied_body';
+  String get gallery_permission_denied_body_android =>
+      'gallery_permission_denied_body_android';
+  String get gallery_permission_denied_body_ios =>
+      'gallery_permission_denied_body_ios';
+  String get go_to_settings => 'go_to_settings';
 }

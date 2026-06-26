@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -49,21 +50,44 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
   int _currentImageIndex = 0;
   late PageController _pageController;
 
-  /// Displayable carousel items from _files (ImagesModel with url, or non-empty String paths)
-  List<dynamic> get _carouselItems => _files.where((f) {
-        if (f is ImagesModel) return f.url != null && f.url!.isNotEmpty;
-        if (f is String) return f.isNotEmpty;
-        return false;
-      }).toList();
+  /// Displayable carousel items built from:
+  /// 1. The main AI captured imageUrl (if isFromAI)
+  /// 2. Non-null food thumbnail URLs (manually added foods)
+  /// 3. Any additional files (String paths) from notes/images
+  List<dynamic> get _carouselItems {
+    final items = <dynamic>[];
+    // 1. AI-captured meal image
+    if (_isFromAI && _mealImageUrl != null && _mealImageUrl!.isNotEmpty) {
+      items.add(ImagesModel(id: null, url: _mealImageUrl));
+    }
+    // 2. Food thumbnail images (manual foods have non-null image.url)
+    for (final food in _selectedFoods) {
+      if (food.image?.url != null && food.image!.url!.isNotEmpty) {
+        final url = food.image!.url!;
+        if (!items.any((i) => i is ImagesModel && i.url == url)) {
+          items.add(food.image!);
+        }
+      }
+    }
+    // 3. Additional raw file paths (e.g. from notes)
+    for (final f in _files) {
+      if (f is String && f.isNotEmpty) {
+        if (!items.contains(f)) {
+          items.add(f);
+        }
+      }
+    }
+    return items;
+  }
 
   bool get _haveFood => _selectedFoods.isNotEmpty;
 
-  double get totalKcal => _selectedFoods.fold(
-      0,
-      (sum, food) =>
-          sum + (food.calorie ?? 0) * (food.portion?.toDouble() ?? 0));
+  double get totalKcal =>
+      _selectedFoods.fold(0, (sum, food) => sum + (food.totalKcal ?? 0));
 
   bool _isLoading = true;
+  bool _isFromAI = false;
+  String? _mealImageUrl;
   String timeframe = '';
   String timeframeId = '';
 
@@ -79,28 +103,20 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
       final model = await FoodClient().fetchDetailInput(widget.updateMealId);
       if (model != null && mounted) {
         setState(() {
+          log("Foods model: ${jsonEncode(model.foods.map((f) => f.toJson()).toList())}");
           _selectedFoods.addAll(model.foods);
+          _isFromAI = model.isFromAI ?? false;
+          _mealImageUrl = model.imageUrl;
           if (model.date != null) {
             final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
             selectedDate = DateTime.fromMillisecondsSinceEpoch(
                 (model.date! - timezoneOffset) * 1000);
           }
           _controllerNote.text = model.note ?? '';
-          // Priority: foods[].image → model.images → model.imageUrl
-          {
-            bool hasFoodImages = false;
-            for (final food in model.foods) {
-              if (food.image?.url != null && food.image!.url!.isNotEmpty) {
-                _files.add(food.image!);
-                hasFoodImages = true;
-              }
-            }
-            if (!hasFoodImages) {
-              if (model.images.isNotEmpty) {
-                _files.addAll(model.images);
-              } else if (model.imageUrl != null && model.imageUrl!.isNotEmpty) {
-                _files.add(ImagesModel(id: null, url: model.imageUrl));
-              }
+          // Populate _files for the notes section (String file paths only)
+          for (final img in model.images) {
+            if (img.url != null && img.url!.isNotEmpty) {
+              _files.add(img.url!);
             }
           }
           timeframe = model.timeFrameName ?? model.mealText ?? '';
@@ -167,7 +183,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                         height: 298,
                                         child: Stack(
                                           children: [
-                                            // Image carousel (from _files)
+                                            // Image carousel (from _carouselItems)
                                             if (_carouselItems.isNotEmpty)
                                               Positioned.fill(
                                                 child: PageView.builder(
@@ -184,35 +200,47 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                                       (context, index) {
                                                     final item =
                                                         _carouselItems[index];
-                                                    if (item is ImagesModel) {
-                                                      return Image.network(
-                                                        item.url ?? '',
-                                                        fit: BoxFit.cover,
-                                                        errorBuilder: (context,
-                                                                error,
-                                                                stackTrace) =>
-                                                            Container(
-                                                          color: R.color
-                                                              .glucose_bg_color,
-                                                        ),
-                                                      );
-                                                    }
-                                                    if (item is String) {
-                                                      return Image.file(
-                                                        File(item),
-                                                        fit: BoxFit.cover,
-                                                        errorBuilder: (context,
-                                                                error,
-                                                                stackTrace) =>
-                                                            Container(
-                                                          color: R.color
-                                                              .glucose_bg_color,
-                                                        ),
-                                                      );
-                                                    }
-                                                    return Container(
-                                                      color: R.color
-                                                          .glucose_bg_color,
+                                                    return GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pushNamed(
+                                                            context,
+                                                            '/photo_view',
+                                                            arguments: {
+                                                              'files':
+                                                                  _carouselItems,
+                                                              'index': index,
+                                                            });
+                                                      },
+                                                      child: (item
+                                                              is ImagesModel)
+                                                          ? Image.network(
+                                                              item.url ?? '',
+                                                              fit: BoxFit.cover,
+                                                              errorBuilder: (context,
+                                                                      error,
+                                                                      stackTrace) =>
+                                                                  Container(
+                                                                color: R.color
+                                                                    .glucose_bg_color,
+                                                              ),
+                                                            )
+                                                          : (item is String
+                                                              ? Image.file(
+                                                                  File(item),
+                                                                  fit:
+                                                                      BoxFit.cover,
+                                                                  errorBuilder: (context,
+                                                                          error,
+                                                                          stackTrace) =>
+                                                                      Container(
+                                                                    color: R.color
+                                                                        .glucose_bg_color,
+                                                                  ),
+                                                                )
+                                                              : Container(
+                                                                  color: R.color
+                                                                      .glucose_bg_color,
+                                                                )),
                                                     );
                                                   },
                                                 ),
@@ -490,7 +518,7 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
                                         ),
                                       ),
                                       Text(
-                                        '${formatNumber((food.calorie ?? 0) * (food.portion ?? 0))} ${R.string.kcal.tr()}',
+                                        '${formatNumber((food.totalKcal ?? 0))} ${R.string.kcal.tr()}',
                                         style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w400,
@@ -566,9 +594,11 @@ class _UpdateMealPageAIState extends State<UpdateMealPageAI> {
         controllerNote: _controllerNote,
         maxMedia: 5,
         key: _sectionAddNoteKey,
-        initialFiles: _files,
+        initialFiles: _carouselItems,
         noteTitle: R.string.ghi_chu.tr(),
         horizontalPadding: 12,
+        showCameraIcons: false,
+        showDeleteIcon: false,
       ),
     );
   }

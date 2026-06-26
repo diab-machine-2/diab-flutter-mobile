@@ -279,8 +279,6 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Icon(Icons.auto_awesome, color: Color(0xFF0EA5E9), size: 20),
-              const SizedBox(width: 6),
               MediaQuery(
                 data: MediaQuery.of(context).copyWith(
                   textScaler: MediaQuery.of(context)
@@ -290,7 +288,7 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
                 child: Text(
                   R.string.ai_health_assistant_suggestion.tr(),
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: R.color.textDark,
                     height: 21 / 15,
@@ -386,20 +384,20 @@ class _PageAddFoodResultState extends State<PageAddFoodResult> {
               ),
             )),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Icon(Icons.info_outline, size: 16, color: R.color.primaryGreyColor),
-            const SizedBox(width: 4),
-            Text(
-              R.string.an_bao_nhieu_la_du.tr(),
-              style: TextStyle(
-                fontSize: 13,
-                color: R.color.primaryGreyColor,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
+        // Row(
+        //   children: [
+        //     Icon(Icons.info_outline, size: 16, color: R.color.primaryGreyColor),
+        //     const SizedBox(width: 4),
+        //     Text(
+        //       R.string.an_bao_nhieu_la_du.tr(),
+        //       style: TextStyle(
+        //         fontSize: 13,
+        //         color: R.color.primaryGreyColor,
+        //         fontWeight: FontWeight.w400,
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ],
     );
   }

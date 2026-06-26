@@ -139,10 +139,7 @@ class FoodOverviewControllerState extends State<FoodOverviewController>
                             return Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(16),
-                                  bottomRight: Radius.circular(16),
-                                ),
+                                borderRadius: BorderRadius.circular(16),
                               ),
                               child: FoodAISuggestion(
                                 key: aiSuggestionKey,

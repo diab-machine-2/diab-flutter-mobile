@@ -44,7 +44,8 @@ class FoodGalleryPicker extends StatefulWidget {
   State<FoodGalleryPicker> createState() => _FoodGalleryPickerState();
 }
 
-class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
+class _FoodGalleryPickerState extends State<FoodGalleryPicker>
+    with WidgetsBindingObserver {
   List<AssetEntity> _recentPhotos = [];
   List<String> _selectedImages = []; // Store photo IDs instead of file paths
   bool _isLoading = true;
@@ -75,17 +76,30 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _requestPermissionAndLoadPhotos();
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _isDisposed = true;
     _scrollController.dispose();
     // Clear thumbnail cache to free memory
     PhotoManager.clearFileCache();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // When the user returns from App Settings (where they may have granted
+      // gallery permission), re-check permission and reload photos.
+      if (!_hasPermission) {
+        _requestPermissionAndLoadPhotos();
+      }
+    }
   }
 
   void _onScroll() {
@@ -154,8 +168,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
                 '[GALLERY] getPermissionState failed, using default: $stateError',
                 name: '[GALLERY]');
           }
-          developer.log(
-              '[GALLERY] Permission state: $currentState',
+          developer.log('[GALLERY] Permission state: $currentState',
               name: '[GALLERY]');
 
           if (!mounted) return;
@@ -170,8 +183,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           return;
         }
       } catch (directAccessError) {
-        developer.log(
-            '[GALLERY] Direct access failed: $directAccessError',
+        developer.log('[GALLERY] Direct access failed: $directAccessError',
             name: '[GALLERY]');
       }
 
@@ -206,8 +218,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       }
       await _tryLoadPhotosDirectly();
     } catch (e) {
-      developer.log(
-          '[GALLERY] Error in permission process: $e',
+      developer.log('[GALLERY] Error in permission process: $e',
           name: '[GALLERY]');
       if (!mounted) return;
       setState(() {
@@ -252,13 +263,11 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
         // Check if album has any photos before trying to load
         final int assetCount = await _recentAlbum!.assetCountAsync;
-        developer.log(
-            '[GALLERY] Album has $assetCount photos',
+        developer.log('[GALLERY] Album has $assetCount photos',
             name: '[GALLERY]');
 
         if (assetCount == 0) {
-          developer.log(
-              '[GALLERY] Gallery is empty - no photos to load',
+          developer.log('[GALLERY] Gallery is empty - no photos to load',
               name: '[GALLERY]');
           if (!mounted) return;
           final PermissionState currentState = await _getPermissionStateSafe();
@@ -294,8 +303,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             _hasCheckedEmptyGallery = true;
           });
         } else {
-          developer.log(
-              '[GALLERY] Permission denied - cannot access gallery',
+          developer.log('[GALLERY] Permission denied - cannot access gallery',
               name: '[GALLERY]');
           if (!mounted) return;
           setState(() {
@@ -306,8 +314,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         }
       }
     } catch (e) {
-      developer.log(
-          '[GALLERY] Error accessing photos directly: $e',
+      developer.log('[GALLERY] Error accessing photos directly: $e',
           name: '[GALLERY]');
       if (!mounted) return;
 
@@ -315,8 +322,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       // Sometimes errors occur even when permission is granted
       try {
         final PermissionState currentState = await _getPermissionStateSafe();
-        developer.log(
-            '[GALLERY] Permission state after error: $currentState',
+        developer.log('[GALLERY] Permission state after error: $currentState',
             name: '[GALLERY]');
 
         if (currentState == PermissionState.authorized ||
@@ -361,8 +367,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         ),
       );
     } catch (e) {
-      developer.log(
-          '[GALLERY] _getPermissionStateSafe error: $e',
+      developer.log('[GALLERY] _getPermissionStateSafe error: $e',
           name: '[GALLERY]');
       return PermissionState.denied;
     }
@@ -371,8 +376,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   Future<void> _handlePermissionDenied() async {
     if (_isDisposed || !mounted || _hasCheckedEmptyGallery) return;
 
-    developer.log(
-        '[GALLERY] Handling permission denied state...',
+    developer.log('[GALLERY] Handling permission denied state...',
         name: '[GALLERY]');
 
     _hasCheckedEmptyGallery = true;
@@ -380,8 +384,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     try {
       final PermissionState permission =
           await PhotoManager.requestPermissionExtend();
-      developer.log(
-          '[GALLERY] Final permission request result: $permission',
+      developer.log('[GALLERY] Final permission request result: $permission',
           name: '[GALLERY]');
 
       if (_isDisposed || !mounted) return;
@@ -389,8 +392,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       if (permission == PermissionState.authorized ||
           permission == PermissionState.limited ||
           permission.isAuth) {
-        developer.log(
-            '[GALLERY] Permission granted on final attempt',
+        developer.log('[GALLERY] Permission granted on final attempt',
             name: '[GALLERY]');
         if (!mounted) return;
         setState(() {
@@ -401,8 +403,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         return;
       }
     } catch (e) {
-      developer.log(
-          '[GALLERY] Error in final permission request: $e',
+      developer.log('[GALLERY] Error in final permission request: $e',
           name: '[GALLERY]');
     }
 
@@ -1312,7 +1313,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Không có quyền truy cập thư viện ảnh',
+              R.string.gallery_permission_denied_title.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -1321,7 +1322,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Vui lòng cấp quyền truy cập thư viện ảnh\nđể sử dụng tính năng này.\n\nTrên Android 13+, bạn có thể chọn:\n• Cho phép truy cập tất cả ảnh\n• Cho phép truy cập một số ảnh',
+              R.string.gallery_permission_denied_body.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -1332,12 +1333,18 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child:             ElevatedButton.icon(
                     onPressed: () async {
-                      await _requestPermissionAndLoadPhotos();
+                      // After the OS blocks further permission dialogs
+                      // (both iOS and Android), the only way forward is
+                      // App Settings. Open it directly so the user can
+                      // grant gallery access there.
+                      if (!mounted) return;
+                      await AppSettings.openAppSettings(
+                          type: AppSettingsType.settings);
                     },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Thử lại'),
+                    icon: const Icon(Icons.settings),
+                    label: Text(R.string.go_to_settings.tr()),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: R.color.greenGradientBottom,
                       foregroundColor: Colors.white,
@@ -1353,7 +1360,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.arrow_back),
-                    label: const Text('Quay lại'),
+                    label: Text(R.string.back.tr()),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey[600],
                       foregroundColor: Colors.white,

@@ -64,14 +64,23 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
 
-  /// Carousel sources: local paths if available, else food network URLs for display
+  /// Carousel sources: local images (from capture) + food network thumbnails
+  /// from _selectedFoods (AI-generated + manually added via SearchFoodController).
   List<String> get _carouselImagePaths {
-    if (_displayImagePaths.isNotEmpty) return _displayImagePaths;
-    // Manual input: show generatedFoods[].image.url (network URLs, display only)
-    return widget.generatedFoods
-        .where((f) => f.image?.url != null && f.image!.url!.isNotEmpty)
-        .map((f) => f.image!.url!)
-        .toList();
+    final paths = <String>[];
+    // 1. Local device images (captured/selected by user)
+    if (_displayImagePaths.isNotEmpty) {
+      paths.addAll(_displayImagePaths);
+    }
+    // 2. Food network thumbnails from _selectedFoods (deduped against local)
+    for (final food in _selectedFoods) {
+      if (food.image?.url != null && food.image!.url!.isNotEmpty) {
+        if (!paths.contains(food.image!.url)) {
+          paths.add(food.image!.url!);
+        }
+      }
+    }
+    return paths;
   }
 
   bool get _haveFood => _selectedFoods.isNotEmpty;
@@ -164,29 +173,43 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                             itemBuilder: (context, index) {
                                               final path =
                                                   _carouselImagePaths[index];
-                                              // Local file or network URL
-                                              if (path.startsWith('http://') ||
-                                                  path.startsWith('https://')) {
-                                                return Image.network(
-                                                  path,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error,
-                                                          stackTrace) =>
-                                                      Container(
-                                                    color: R
-                                                        .color.glucose_bg_color,
-                                                  ),
-                                                );
-                                              }
-                                              return Image.file(
-                                                File(path),
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (context, error,
-                                                        stackTrace) =>
-                                                    Container(
-                                                  color:
-                                                      R.color.glucose_bg_color,
-                                                ),
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      context,
+                                                      '/photo_view',
+                                                      arguments: {
+                                                        'files':
+                                                            _carouselImagePaths,
+                                                        'index': index,
+                                                      });
+                                                },
+                                                child: (path.startsWith(
+                                                            'http://') ||
+                                                        path.startsWith(
+                                                            'https://'))
+                                                    ? Image.network(
+                                                        path,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          color: R.color
+                                                              .glucose_bg_color,
+                                                        ),
+                                                      )
+                                                    : Image.file(
+                                                        File(path),
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          color: R.color
+                                                              .glucose_bg_color,
+                                                        ),
+                                                      ),
                                               );
                                             },
                                           ),
