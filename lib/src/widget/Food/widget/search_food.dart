@@ -25,7 +25,7 @@ class SearchFood extends StatefulWidget {
   _SearchFoodState createState() => _SearchFoodState();
 }
 
-class _SearchFoodState extends State<SearchFood> with Observer {
+class _SearchFoodState extends State<SearchFood> {
   late BuildContext currentContext;
 
   TextEditingController controller = TextEditingController();
@@ -41,24 +41,28 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   void initState() {
     super.initState();
     controller.text = '';
+    // Work with a local copy - only sync back on confirm
     selectedFoods = [...widget.foods];
-    Observable.instance.addObserver(this);
-  }
-
-  @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    if (notifyName != 'add_food_to_cart') return;
-    final FoodModel? foodModel = map?['food'];
-    if (foodModel == null) return;
-    this.selectedFoods.add(foodModel);
-    setState(() {});
   }
 
   @override
   void dispose() {
-    Observable.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // Local add/remove — creates a new list on every toggle so that
+  // FoodChoosen's didUpdateWidget reference check (!=) detects the change.
+  void _toggleFood(FoodModel food) {
+    final existingIndex = selectedFoods.indexWhere((f) => f.id == food.id);
+    setState(() {
+      final updated = [...selectedFoods];
+      if (existingIndex >= 0) {
+        updated.removeAt(existingIndex);
+      } else {
+        updated.add(food);
+      }
+      selectedFoods = updated;
+    });
   }
 
   Future<bool> _loadMore() async {
@@ -128,7 +132,8 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        Navigator.pop(context);
+                        // Return current selections so parent always syncs state on back-navigation
+                        Navigator.pop(context, selectedFoods);
                       }),
                   actions: [
                     Center(
@@ -137,7 +142,7 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                         child: GestureDetector(
                           onTap: () {},
                           child: Text(
-                            'Hướng dẫn',
+                            R.string.huong_dan.tr(),
                             style: TextStyle(
                               color: R.color.white,
                               fontSize: 14,
@@ -181,7 +186,8 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                     })),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pop(context);
+                                // Return current selections so parent syncs state when dismissing search
+                                Navigator.pop(context, selectedFoods);
                               },
                               child: Image.asset(R.drawable.ic_clear,
                                   width: 35, height: 35),
@@ -261,16 +267,19 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                                     ? selectedFoods[
                                                         selectedIndex]
                                                     : null;
-                                            return FoodItem(
-                                              model: model[index],
-                                              selectedModel: selectedModel,
-                                              index: index,
-                                              isSearch: true,
-                                              callback: (model, index) {
-                                                likeFood(model, index);
-                                              },
-                                              kcalLeft: getKcalLeft(selectedModel),
-                                            );
+                                             return FoodItem(
+                                               model: model[index],
+                                               selectedModel: selectedModel,
+                                               index: index,
+                                               isSearch: true,
+                                               callback: (model, index) {
+                                                 likeFood(model, index);
+                                               },
+                                               kcalLeft: getKcalLeft(selectedModel),
+                                               onSelectionChanged: (food, isSelected) {
+                                                 _toggleFood(food);
+                                               },
+                                             );
                                           }
                                         }))),
                           );
@@ -281,6 +290,7 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                 left: 0,
                 right: 0,
                 child: FoodChoosen(
+                  title: R.string.confirm.tr(),
                   foods: selectedFoods,
                   callback: (foods) {
                     Navigator.pop(context, foods);

@@ -1718,4 +1718,5 @@ class Strings {
   String get gallery_permission_denied_body_ios =>
       'gallery_permission_denied_body_ios';
   String get go_to_settings => 'go_to_settings';
+  String get favorite => 'favorite';
 }
