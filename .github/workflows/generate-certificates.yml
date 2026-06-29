@@ -1,0 +1,114 @@
+name: Generate iOS Certificates
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-certificates:
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - name: Install Fastlane
+        run: sudo gem install fastlane --no-document
+
+      - name: Setup App Store Connect API Key
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$ASC_KEY_BASE64" | base64 -d > ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          echo "✅ API Key file created"
+
+      - name: Generate Distribution Certificate AND Provisioning Profile
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+          APP_IDENTIFIER: "com.cactusoftware.diab"
+        run: |
+          echo "🔐 Generating Distribution Certificate + App Store Profile..."
+          fastlane generate_all
+
+      - name: Export Certificate to P12 and Profile to Base64
+        run: |
+          echo "📋 Available certificates:"
+          security find-identity -v -p codesigning
+
+          CERT_NAME=$(security find-identity -v -p codesigning | grep -E "Apple Distribution|iPhone Distribution" | head -1 | sed -e 's/.*"\(.*\)".*/\1/')
+
+          if [ -z "$CERT_NAME" ]; then
+            echo "❌ No valid Distribution certificate found"
+            security find-identity -v
+            exit 1
+          fi
+          echo "✅ Found certificate: $CERT_NAME"
+
+          echo "📦 Exporting certificate to P12..."
+          security export \
+            -k ~/Library/Keychains/login.keychain-db \
+            -t identities \
+            -f pkcs12 \
+            -o certificate.p12 \
+            -P ""
+
+          if [ ! -s certificate.p12 ]; then
+            echo "❌ Export failed - certificate.p12 is empty"
+            exit 1
+          fi
+          echo "✅ Certificate export: $(wc -c < certificate.p12) bytes"
+
+          base64 -i certificate.p12 -o certificate_base64.txt
+          echo "✅ Certificate base64 ready"
+
+          PROFILE_PATH=$(find ./profiles -name "*.mobileprovision" | head -1)
+          if [ -z "$PROFILE_PATH" ]; then
+            echo "❌ No provisioning profile found!"
+            exit 1
+          fi
+          echo "✅ Found profile: $PROFILE_PATH"
+
+          base64 -i "$PROFILE_PATH" -o profile_base64.txt
+          echo "✅ Profile base64 ready"
+
+          echo ""
+          echo "📊 File sizes:"
+          ls -la certificate.p12 certificate_base64.txt "$PROFILE_PATH" profile_base64.txt
+
+      - name: Upload Certificate and Profile Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-dist-cert-and-profile-${{ github.run_number }}
+          path: |
+            certificate.p12
+            certificate_base64.txt
+            profile_base64.txt
+          retention-days: 7
+
+      - name: Print Next Steps
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "  NEXT STEPS"
+          echo "=========================================="
+          echo ""
+          echo "1. Download artifact 'ios-dist-cert-and-profile-${{ github.run_number }}'"
+          echo ""
+          echo "2. Update CERTIFICATE_BASE64 secret:"
+          echo "   - Open certificate_base64.txt -> Copy all -> Paste into secret"
+          echo ""
+          echo "3. Update PROVISIONING_PROFILE_BASE64 secret:"
+          echo "   - Open profile_base64.txt -> Copy all -> Paste into secret"
+          echo ""
+          echo "4. Make sure P12_PASSWORD secret = empty string"
+          echo ""
+          echo "5. Re-run 'Upload to TestFlight' workflow"
+          echo "=========================================="
