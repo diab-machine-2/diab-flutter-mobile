@@ -5,8 +5,10 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/res/text_styles_extension.dart';
 import 'package:medical/src/utils/const.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_bloc.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/widget/Bmi/bloc/bmi_state.dart';
 import 'package:medical/src/widgets/button/secondary_rounded_button.dart';
 
@@ -52,10 +54,11 @@ class BmiOverviewAIEvaluationSession extends StatelessWidget {
                       : Column(
                           children: [
                             Text(
-                              _bmiBloc.aiAnalysicWeightRecord,
+                              _bmiBloc.aiAnalysicWeightRecord?.recommendation ?? '',
                               style: R.style.normalTextStyle.neutral3,
                               textAlign: TextAlign.justify,
                             ),
+                            AiReferencesWidget(references: _bmiBloc.aiAnalysicWeightRecord?.references ?? []),
                             const SizedBox(
                               height: 20,
                             ),

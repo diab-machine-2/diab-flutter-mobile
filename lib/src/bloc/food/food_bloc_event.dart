@@ -79,3 +79,46 @@ class FetchStatisticDistribute extends FoodEvent {
 
   FetchStatisticDistribute({this.currentDateTime, this.periodFilterType});
 }
+
+// Event cho phân bổ theo nhóm thực phẩm (Tinh bột, Chất đạm, Chất béo, Rau củ, Hoa quả)
+class FetchFoodGroupDistribute extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchFoodGroupDistribute({this.currentDateTime, this.periodFilterType});
+}
+
+// Event cho AI Analysis
+class FetchDietAnalysis extends FoodEvent {
+  final String currentDateTime;
+  final String periodFilterType;
+
+  FetchDietAnalysis({
+    required this.currentDateTime,
+    required this.periodFilterType,
+  });
+}
+
+// Event cho phân bổ dinh dưỡng (tính từ food input, style MealScore)
+class FetchNutrientDistribution extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchNutrientDistribution({this.currentDateTime, this.periodFilterType});
+}
+
+// Event cho biểu đồ calo xu hướng (từng bữa ăn riêng biệt)
+class FetchFoodCalorieTrend extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchFoodCalorieTrend({this.currentDateTime, this.periodFilterType});
+}
+
+/// Single nutrition summary fetch for overview (trend, distribution, meal balance, nutrients, AI).
+class FetchNutritionOverview extends FoodEvent {
+  final String? currentDateTime;
+  final String? periodFilterType;
+
+  FetchNutritionOverview({this.currentDateTime, this.periodFilterType});
+}

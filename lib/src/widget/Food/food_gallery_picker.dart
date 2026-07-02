@@ -10,8 +10,10 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:path/path.dart' as p;
+import 'package:medical/src/widget/Food/search_food_controller.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class FoodGalleryPicker extends StatefulWidget {
@@ -22,6 +24,7 @@ class FoodGalleryPicker extends StatefulWidget {
     this.onImagesSelected,
     this.initialSelectedFilePath,
     this.initialSelectedAssetId,
+    this.skipPermissionRequest = false,
   }) : super(key: key);
 
   final String timeframe;
@@ -31,18 +34,28 @@ class FoodGalleryPicker extends StatefulWidget {
   final String? initialSelectedFilePath;
   // Prefer selecting by asset ID when available (more reliable than file path)
   final String? initialSelectedAssetId;
+  // When true, skip the PhotoManager permission request flow entirely.
+  // Used when navigating from FoodImageCapture after capture, where permission
+  // was already granted during initState. On Android 16, re-requesting
+  // permission (even just checking state) can trigger the system photo picker.
+  final bool skipPermissionRequest;
 
   @override
   State<FoodGalleryPicker> createState() => _FoodGalleryPickerState();
 }
 
-class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
+class _FoodGalleryPickerState extends State<FoodGalleryPicker>
+    with WidgetsBindingObserver {
   List<AssetEntity> _recentPhotos = [];
   List<String> _selectedImages = []; // Store photo IDs instead of file paths
   bool _isLoading = true;
   bool _hasPermission = false;
   bool _isLimitedPermission = false; // Track if permission is limited
-  final int _maxSelection = 5;
+  // Temporary single-select mode. Increase this value in the future to
+  // re-enable multi-select behavior without changing the selection flow.
+  static const int _selectionLimit = 1;
+  int get _maxSelection => _selectionLimit;
+  bool get _isSingleSelectionMode => _maxSelection == 1;
   bool _didApplyInitialSelectedPath = false;
 
   // Pagination variables
@@ -63,17 +76,30 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _requestPermissionAndLoadPhotos();
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _isDisposed = true;
     _scrollController.dispose();
     // Clear thumbnail cache to free memory
     PhotoManager.clearFileCache();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // When the user returns from App Settings (where they may have granted
+      // gallery permission), re-check permission and reload photos.
+      if (!_hasPermission) {
+        _requestPermissionAndLoadPhotos();
+      }
+    }
   }
 
   void _onScroll() {
@@ -88,16 +114,32 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
     try {
       if (!mounted) return;
+      developer.log(
+          '[GALLERY] _requestPermissionAndLoadPhotos - skipPermissionRequest: ${widget.skipPermissionRequest}',
+          name: '[GALLERY]');
       setState(() {
-        _isLoading = true; // show loading while resolving permission
+        _isLoading = true;
       });
-      print('Starting permission and photo loading process...');
+
+      // When skipPermissionRequest is true (called from FoodImageCapture after
+      // capture), permission was already granted. Skip the entire permission
+      // request flow — including PhotoManager.requestPermissionExtend() —
+      // because on Android 16 calling it with limited access can re-trigger
+      // the system photo picker dialog.
+      if (widget.skipPermissionRequest) {
+        developer.log(
+            '[GALLERY] skipPermissionRequest=true, loading photos directly',
+            name: '[GALLERY]');
+        await _tryLoadPhotosDirectly();
+        return;
+      }
 
       // First, try to access photos directly without requesting permission
       // This avoids triggering permission dialog if permission is already granted
       try {
-        print(
-            'Attempting to access photos directly without requesting permission...');
+        developer.log(
+            '[GALLERY] Attempting direct photo access without permission request...',
+            name: '[GALLERY]');
         final List<AssetPathEntity> albums =
             await PhotoManager.getAssetPathList(
           type: RequestType.image,
@@ -105,14 +147,29 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         );
 
         if (albums.isNotEmpty) {
-          // Successfully accessed photos - permission is already granted
-          print('Successfully accessed photos without requesting permission');
+          developer.log(
+              '[GALLERY] Direct access succeeded, albums found: ${albums.length}',
+              name: '[GALLERY]');
 
-          // Now check permission state to determine if it's limited (without requesting)
-          // This should not trigger a dialog if permission is already granted
-          final PermissionState currentState =
-              await PhotoManager.requestPermissionExtend();
-          print('Permission state (already granted): $currentState');
+          // Use getPermissionState() instead of requestPermissionExtend()
+          // to check limited status without triggering the system picker.
+          PermissionState currentState = PermissionState.authorized;
+          try {
+            currentState = await PhotoManager.getPermissionState(
+              requestOption: const PermissionRequestOption(
+                androidPermission: AndroidPermission(
+                  type: RequestType.image,
+                  mediaLocation: false,
+                ),
+              ),
+            );
+          } catch (stateError) {
+            developer.log(
+                '[GALLERY] getPermissionState failed, using default: $stateError',
+                name: '[GALLERY]');
+          }
+          developer.log('[GALLERY] Permission state: $currentState',
+              name: '[GALLERY]');
 
           if (!mounted) return;
           final bool isLimited = currentState == PermissionState.limited;
@@ -126,20 +183,19 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
           return;
         }
       } catch (directAccessError) {
-        // Direct access failed - permission might not be granted
-        print(
-            'Direct access failed, need to request permission: $directAccessError');
+        developer.log('[GALLERY] Direct access failed: $directAccessError',
+            name: '[GALLERY]');
       }
 
       // If direct access failed, request permission
-      print('Requesting permission...');
+      developer.log(
+          '[GALLERY] Requesting permission via requestPermissionExtend()...',
+          name: '[GALLERY]');
       final PermissionState currentState =
           await PhotoManager.requestPermissionExtend();
-      print('Permission state after request: $currentState');
-      print('Permission isAuth: ${currentState.isAuth}');
-      print(
-          'Permission isAuthorized: ${currentState == PermissionState.authorized}');
-      print('Permission isLimited: ${currentState == PermissionState.limited}');
+      developer.log(
+          '[GALLERY] Permission state after request: $currentState, isAuth: ${currentState.isAuth}, limited: ${currentState == PermissionState.limited}',
+          name: '[GALLERY]');
 
       if (_isDisposed || !mounted) return;
 
@@ -156,11 +212,14 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       if (currentState == PermissionState.authorized ||
           currentState == PermissionState.limited ||
           currentState.isAuth) {
-        print('Permission appears to be granted, attempting to load photos...');
+        developer.log(
+            '[GALLERY] Permission appears to be granted, attempting to load photos...',
+            name: '[GALLERY]');
       }
       await _tryLoadPhotosDirectly();
     } catch (e) {
-      print('Error in permission process: $e');
+      developer.log('[GALLERY] Error in permission process: $e',
+          name: '[GALLERY]');
       if (!mounted) return;
       setState(() {
         _hasPermission = false;
@@ -185,12 +244,14 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
       print('Direct album access result: ${albums.length} albums found');
 
       if (albums.isNotEmpty) {
-        print('Successfully accessed photos - permission is actually granted');
+        developer.log(
+            '[GALLERY] Direct album access succeeded: ${albums.length} albums',
+            name: '[GALLERY]');
         if (!mounted) return;
 
-        // Check permission state again to update limited status
-        final PermissionState currentState =
-            await PhotoManager.requestPermissionExtend();
+        // Use getPermissionState() instead of requestPermissionExtend()
+        // to check limited status without triggering the system picker.
+        final PermissionState currentState = await _getPermissionStateSafe();
         final bool isLimited = currentState == PermissionState.limited;
 
         setState(() {
@@ -202,20 +263,19 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
         // Check if album has any photos before trying to load
         final int assetCount = await _recentAlbum!.assetCountAsync;
-        print('Album has $assetCount photos');
+        developer.log('[GALLERY] Album has $assetCount photos',
+            name: '[GALLERY]');
 
         if (assetCount == 0) {
-          // Gallery is empty - stop retrying
-          print('Gallery is empty - no photos to load');
+          developer.log('[GALLERY] Gallery is empty - no photos to load',
+              name: '[GALLERY]');
           if (!mounted) return;
-          // Check permission state to update limited status
-          final PermissionState currentState =
-              await PhotoManager.requestPermissionExtend();
+          final PermissionState currentState = await _getPermissionStateSafe();
           final bool isLimited = currentState == PermissionState.limited;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
-            _hasPermission = true; // Permission is granted, just no photos
+            _hasPermission = true;
             _isLimitedPermission = isLimited;
             _hasCheckedEmptyGallery = true;
           });
@@ -224,112 +284,131 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
         await _loadPhotosPage(0, isInitialLoad: true);
       } else {
-        // No albums found - check permission state to determine if it's empty gallery or denied
-        print('No albums found - checking permission state...');
-        final PermissionState currentState =
-            await PhotoManager.requestPermissionExtend();
+        developer.log(
+            '[GALLERY] No albums found - checking permission state...',
+            name: '[GALLERY]');
+        final PermissionState currentState = await _getPermissionStateSafe();
 
-        // If permission is limited or authorized but no albums, treat as empty gallery
         if (currentState == PermissionState.limited ||
             currentState == PermissionState.authorized ||
             currentState.isAuth) {
-          print('Permission granted but no albums - gallery is empty');
+          developer.log(
+              '[GALLERY] Permission granted but no albums - gallery is empty',
+              name: '[GALLERY]');
           if (!mounted) return;
           setState(() {
             _recentPhotos = [];
             _isLoading = false;
-            _hasPermission = true; // Permission is granted, just no photos
+            _hasPermission = true;
             _hasCheckedEmptyGallery = true;
           });
         } else {
-          // Permission is truly denied
-          print('Permission denied - cannot access gallery');
+          developer.log('[GALLERY] Permission denied - cannot access gallery',
+              name: '[GALLERY]');
           if (!mounted) return;
           setState(() {
             _hasPermission = false;
             _isLoading = false;
-            _hasCheckedEmptyGallery = true; // Stop retrying
+            _hasCheckedEmptyGallery = true;
           });
         }
       }
     } catch (e) {
-      print('Error accessing photos directly: $e');
+      developer.log('[GALLERY] Error accessing photos directly: $e',
+          name: '[GALLERY]');
       if (!mounted) return;
 
       // On Android 13+, check permission state even if there was an error
       // Sometimes errors occur even when permission is granted
       try {
-        final PermissionState currentState =
-            await PhotoManager.requestPermissionExtend();
-        print('Permission state after error: $currentState');
+        final PermissionState currentState = await _getPermissionStateSafe();
+        developer.log('[GALLERY] Permission state after error: $currentState',
+            name: '[GALLERY]');
 
-        // If permission is actually granted (authorized, limited, or isAuth),
-        // set hasPermission to true even if there was an error accessing photos
         if (currentState == PermissionState.authorized ||
             currentState == PermissionState.limited ||
             currentState.isAuth) {
-          print(
-              'Permission is actually granted despite error - treating as granted');
+          developer.log(
+              '[GALLERY] Permission is actually granted despite error',
+              name: '[GALLERY]');
           setState(() {
             _hasPermission = true;
             _isLoading = false;
             _isLimitedPermission = currentState == PermissionState.limited;
             _hasCheckedEmptyGallery = true;
-            _recentPhotos = []; // Empty list since we couldn't load photos
+            _recentPhotos = [];
           });
           return;
         }
       } catch (permissionCheckError) {
-        print('Error checking permission state: $permissionCheckError');
+        developer.log(
+            '[GALLERY] Error checking permission state: $permissionCheckError',
+            name: '[GALLERY]');
       }
 
-      // Mark as checked to prevent infinite retries
       setState(() {
         _isLoading = false;
         _hasCheckedEmptyGallery = true;
-        // Only set to false if permission is truly denied
         _hasPermission = false;
       });
+    }
+  }
+
+  /// Safe wrapper around getPermissionState() that never triggers a system
+  /// dialog. Falls back to PermissionState.denied on any error.
+  Future<PermissionState> _getPermissionStateSafe() async {
+    try {
+      return await PhotoManager.getPermissionState(
+        requestOption: const PermissionRequestOption(
+          androidPermission: AndroidPermission(
+            type: RequestType.image,
+            mediaLocation: false,
+          ),
+        ),
+      );
+    } catch (e) {
+      developer.log('[GALLERY] _getPermissionStateSafe error: $e',
+          name: '[GALLERY]');
+      return PermissionState.denied;
     }
   }
 
   Future<void> _handlePermissionDenied() async {
     if (_isDisposed || !mounted || _hasCheckedEmptyGallery) return;
 
-    print('Handling permission denied state...');
+    developer.log('[GALLERY] Handling permission denied state...',
+        name: '[GALLERY]');
 
-    // Mark as checked to prevent infinite retries
     _hasCheckedEmptyGallery = true;
 
-    // Try one more permission request
     try {
       final PermissionState permission =
           await PhotoManager.requestPermissionExtend();
-      print('Final permission request result: $permission');
+      developer.log('[GALLERY] Final permission request result: $permission',
+          name: '[GALLERY]');
 
       if (_isDisposed || !mounted) return;
 
       if (permission == PermissionState.authorized ||
           permission == PermissionState.limited ||
           permission.isAuth) {
-        print('Permission granted on final attempt');
-        // Update limited permission status
+        developer.log('[GALLERY] Permission granted on final attempt',
+            name: '[GALLERY]');
         if (!mounted) return;
         setState(() {
           _isLimitedPermission = permission == PermissionState.limited;
         });
-        // Reset the flag to allow one more try
         _hasCheckedEmptyGallery = false;
         await _tryLoadPhotosDirectly();
         return;
       }
     } catch (e) {
-      print('Error in final permission request: $e');
+      developer.log('[GALLERY] Error in final permission request: $e',
+          name: '[GALLERY]');
     }
 
     if (_isDisposed || !mounted) return;
 
-    // If we get here, permission is truly denied
     setState(() {
       _hasPermission = false;
       _isLoading = false;
@@ -465,14 +544,12 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             photos.where((e) => e.id == widget.initialSelectedAssetId);
         if (matching.isNotEmpty) {
           final match = matching.first;
-          if (!_selectedImages.contains(match.id) &&
-              _selectedImages.length < _maxSelection) {
-            if (!mounted) return;
-            setState(() {
-              _selectedImages.add(match.id);
+          if (!mounted) return;
+          setState(() {
+            if (_trySelectImage(match.id)) {
               _didApplyInitialSelectedPath = true;
-            });
-          }
+            }
+          });
         }
       }
 
@@ -488,14 +565,12 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             final File? assetFile = await asset.file;
             if (assetFile != null &&
                 assetFile.path == widget.initialSelectedFilePath) {
-              if (!_selectedImages.contains(asset.id) &&
-                  _selectedImages.length < _maxSelection) {
-                if (!mounted) return;
-                setState(() {
-                  _selectedImages.add(asset.id);
+              if (!mounted) return;
+              setState(() {
+                if (_trySelectImage(asset.id)) {
                   _didApplyInitialSelectedPath = true;
-                });
-              }
+                }
+              });
               break;
             }
           }
@@ -592,10 +667,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
 
           if (saved != null && mounted) {
             setState(() {
-              if (!_selectedImages.contains(saved.id) &&
-                  _selectedImages.length < _maxSelection) {
-                _selectedImages.add(saved.id);
-              }
+              _trySelectImage(saved.id);
             });
           }
         } catch (e) {
@@ -614,13 +686,37 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
     setState(() {
       if (_selectedImages.contains(imageId)) {
         _selectedImages.remove(imageId);
-      } else if (_selectedImages.length < _maxSelection) {
-        _selectedImages.add(imageId);
       } else {
-        _showErrorDialog(
-            R.string.max_image_select_dynamic.tr(args: ["${_maxSelection}"]));
+        _trySelectImage(
+          imageId,
+          showLimitError: !_isSingleSelectionMode,
+        );
       }
     });
+  }
+
+  bool _trySelectImage(String imageId, {bool showLimitError = false}) {
+    if (_selectedImages.contains(imageId)) {
+      return false;
+    }
+
+    // In single-select mode, selecting a new image replaces previous selection.
+    if (_isSingleSelectionMode) {
+      _selectedImages = <String>[imageId];
+      return true;
+    }
+
+    if (_selectedImages.length < _maxSelection) {
+      _selectedImages.add(imageId);
+      return true;
+    }
+
+    if (showLimitError) {
+      _showErrorDialog(
+        R.string.max_image_select_dynamic.tr(args: ["${_maxSelection}"]),
+      );
+    }
+    return false;
   }
 
   /// Convert image to 480x480 JPEG, auto-cropping to center square.
@@ -862,6 +958,74 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
         highlightColor: R.color.transparent,
         icon: Icon(Icons.arrow_back, color: R.color.white),
         onPressed: () => Navigator.pop(context),
+      ),
+      actions: [
+        // // Nút "Tìm món ăn"
+        // Center(
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(right: 16.0),
+        //     child: GestureDetector(
+        //       onTap: _openSearchFood,
+        //       child: Container(
+        //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        //         decoration: BoxDecoration(
+        //           color: Color(0xFFCAFAF5),
+        //           borderRadius: BorderRadius.circular(12),
+        //           border: Border.all(
+        //             color: Color(0xFF8FEBE0),
+        //             width: 1,
+        //           ),
+        //         ),
+        //         child: Row(
+        //           mainAxisSize: MainAxisSize.min,
+        //           children: [
+        //             Icon(
+        //               Icons.edit_outlined,
+        //               size: 16,
+        //               color: R.color.greenGradientBottom,
+        //             ),
+        //             const SizedBox(width: 4),
+        //             Text(
+        //               R.string.find_food.tr(),
+        //               style: TextStyle(
+        //                 color: R.color.greenGradientBottom,
+        //                 fontSize: 13,
+        //                 fontWeight: FontWeight.w700,
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
+      ],
+    );
+  }
+
+  /// Mở màn hình tìm kiếm món ăn
+  void _openSearchFood() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => SearchFoodController(
+          foods: [],
+          callback: (foods) {
+            if (foods.isNotEmpty) {
+              Navigator.pushNamed(
+                context,
+                NavigatorName.confirm_food,
+                arguments: {
+                  'foods': foods,
+                  'timeframe': widget.timeframe,
+                  'timeframeId': widget.timeframeId,
+                  'files': <String>[],
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -1149,7 +1313,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Không có quyền truy cập thư viện ảnh',
+              R.string.gallery_permission_denied_title.tr(),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -1158,7 +1322,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Vui lòng cấp quyền truy cập thư viện ảnh\nđể sử dụng tính năng này.\n\nTrên Android 13+, bạn có thể chọn:\n• Cho phép truy cập tất cả ảnh\n• Cho phép truy cập một số ảnh',
+              R.string.gallery_permission_denied_body.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -1169,12 +1333,18 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child:             ElevatedButton.icon(
                     onPressed: () async {
-                      await _requestPermissionAndLoadPhotos();
+                      // After the OS blocks further permission dialogs
+                      // (both iOS and Android), the only way forward is
+                      // App Settings. Open it directly so the user can
+                      // grant gallery access there.
+                      if (!mounted) return;
+                      await AppSettings.openAppSettings(
+                          type: AppSettingsType.settings);
                     },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Thử lại'),
+                    icon: const Icon(Icons.settings),
+                    label: Text(R.string.go_to_settings.tr()),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: R.color.greenGradientBottom,
                       foregroundColor: Colors.white,
@@ -1190,7 +1360,7 @@ class _FoodGalleryPickerState extends State<FoodGalleryPicker> {
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.arrow_back),
-                    label: const Text('Quay lại'),
+                    label: Text(R.string.back.tr()),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey[600],
                       foregroundColor: Colors.white,

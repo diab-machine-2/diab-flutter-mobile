@@ -24,6 +24,8 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
   static final double _widthOfSideBar = 32;
   static final double _marginOfWeight = 10; // Reduced margin to fit more data
   static final double _itemWidth = 40;
+  static const double _baselineWeight = 55;
+  static const int _baselineLineColor = 0xFFBFC6C6;
 
   late BmiBloc _bmiBloc;
   ScrollController _scrollController = ScrollController(
@@ -99,6 +101,14 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
             }
           }
 
+          // Ensure 55kg baseline is visible in chart range
+          if (_baselineWeight < _minWeightOnChart) {
+            _minWeightOnChart = _baselineWeight - _marginOfWeight;
+          }
+          if (_baselineWeight > _maxWeightOnChart) {
+            _maxWeightOnChart = _baselineWeight + _marginOfWeight;
+          }
+
           // Calculate bendmark padding with safety checks
           double _bendmarkPadding = 0.0;
           final weightRange = _maxWeightOnChart - _minWeightOnChart;
@@ -109,6 +119,20 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                 6;
             // Clamp padding to valid range (0 to _heightOfChart)
             _bendmarkPadding = _bendmarkPadding.clamp(0.0, _heightOfChart);
+          }
+
+          // Calculate 55kg baseline label position in sidebar
+          double baseline55FromBottom = 0;
+          if (weightRange > 0) {
+            const double chartVerticalPadding = 8.0;
+            final double drawingHeight =
+                _heightOfChart - chartVerticalPadding * 2;
+            baseline55FromBottom =
+                ((_baselineWeight - _minWeightOnChart) / weightRange) *
+                        drawingHeight +
+                    chartVerticalPadding;
+            baseline55FromBottom =
+                baseline55FromBottom.clamp(0.0, _heightOfChart.toDouble());
           }
 
           if (enableScroll) _focusToSelectedPoint(totalPoint: data.length);
@@ -136,6 +160,18 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                               .copyWith(color: AppColors.neutral3),
                         ),
                       ),
+                    // 55kg baseline label (always shown) — same pattern as bloodSugar_chart.dart baseline label
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: baseline55FromBottom,
+                      child: Text(
+                        '${_baselineWeight.toInt()} kg',
+                        textAlign: TextAlign.center,
+                        style: R.style.smallTextStyle
+                            .copyWith(color: R.color.color0xff5E6566),
+                      ),
+                    ),
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
@@ -303,16 +339,22 @@ class _BmiStatisticalChartState extends State<BmiStatisticalChart> {
                                 );
                               }).toList();
                             }),
-                        extraLinesData: _bmiBloc.weightGoal != null
-                            ? ExtraLinesData(horizontalLines: [
-                                HorizontalLine(
-                                  y: _bmiBloc.weightGoal ?? 0,
-                                  color: Colors.grey,
-                                  strokeWidth: 1,
-                                  dashArray: [5, 5],
-                                ),
-                              ])
-                            : null,
+                        extraLinesData: ExtraLinesData(horizontalLines: [
+                          if (_bmiBloc.weightGoal != null)
+                            HorizontalLine(
+                              y: _bmiBloc.weightGoal ?? 0,
+                              color: Colors.grey,
+                              strokeWidth: 1,
+                              dashArray: [5, 5],
+                            ),
+                          // 55kg baseline — always shown
+                          HorizontalLine(
+                            y: _baselineWeight,
+                            color: Color(_baselineLineColor),
+                            strokeWidth: 1,
+                            dashArray: [5, 5],
+                          ),
+                        ]),
                       ),
                     ),
                   ),

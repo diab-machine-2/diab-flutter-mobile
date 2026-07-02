@@ -154,7 +154,7 @@ class _InfoHeader extends StatelessWidget {
                         children: [
                           Text(
                             "BMI ",
-                            style: R.style.normalTextStyle.neutral4,
+                            style: R.style.largeTextStyle.neutral3,
                           ),
                           Text(
                             "${bmiBloc.selectedPointChart?.bmi ?? "--"}",
@@ -170,7 +170,7 @@ class _InfoHeader extends StatelessWidget {
                           ),
                           Text(
                             " kg",
-                            style: R.style.normalTextStyle.neutral4,
+                            style: R.style.largeTextStyle.neutral3,
                           ),
                         ],
                       ),

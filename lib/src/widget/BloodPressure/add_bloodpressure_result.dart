@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/blood_pressure/bloodPressure_client.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/ai_loading_text_widget.dart';
@@ -31,7 +33,7 @@ class PageAddBloodPressureResult extends StatefulWidget {
 class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     with WidgetsBindingObserver {
   // bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
-  String? _aiResult;
+  AiRecommendationResult? _aiResult;
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
       GlobalKey<SectionAddNoteState>();
 
@@ -84,16 +86,22 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
     bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
         ((data.healthRecommendation?.isEmpty) ?? true);
 
-    final aiResult = shouldFetchNewData
+    final fetched = shouldFetchNewData
         ? await BloodPressureClient()
             .fetchBloodPressureInputAnalysis(widget.data.id)
             .catchError((e, s) {
             TrackingManager.recordError(e, s);
             return null;
           })
-        : data.healthRecommendation;
+        : null;
 
-    _aiResult = aiResult ?? '';
+    if (fetched != null) {
+      _aiResult = fetched;
+    } else if (data.healthRecommendation != null) {
+      _aiResult = AiRecommendationResult(recommendation: data.healthRecommendation!);
+    } else {
+      _aiResult = AiRecommendationResult(recommendation: '');
+    }
     if (mounted) {
       setState(() {});
     }
@@ -416,11 +424,11 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
           ),
           const SizedBox(height: 12),
           if (_aiResult == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: const AILoadingTextWidget(),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: AILoadingTextWidget(),
             )
-          else if (_aiResult!.isEmpty)
+          else if (_aiResult!.recommendation.isEmpty)
             Text(
               'Có lỗi xảy ra',
               style: TextStyle(
@@ -432,7 +440,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
             )
           else ...[
             Text(
-              _aiResult ?? '',
+              _aiResult!.recommendation,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
@@ -442,6 +450,7 @@ class _PageAddBloodPressureResultState extends State<PageAddBloodPressureResult>
                 letterSpacing: 0.4,
               ),
             ),
+            AiReferencesWidget(references: _aiResult!.references),
             const SizedBox(height: 12),
             // elevated button, ic_zalo and text, full width
             AIHelpButton(rangeType: widget.data.rangeType),

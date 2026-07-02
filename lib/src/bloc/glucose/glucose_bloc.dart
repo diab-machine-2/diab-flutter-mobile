@@ -6,6 +6,7 @@ import 'package:medical/src/modal/glucose/glucose_data_trend.dart';
 import 'package:medical/src/modal/glucose/glucose_distribution.dart';
 import 'package:medical/src/modal/glucose/glucose_input.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/widget/BloodSugar/constant/bloodSugar_rangetype.dart';
 import 'package:meta/meta.dart';
@@ -140,7 +141,7 @@ class GlucoseBloc extends Bloc<GlucoseEvent, GlucoseState> {
             await client.fetchGlucoseAlltimeAnalysis(int.parse(periodFilterType!));
         yield GlucoseTrendLoaded(
           trend: model,
-          glucoseInputAIAnalysis: glucoseInputAIAnalysis ?? '',
+          glucoseInputAIAnalysis: glucoseInputAIAnalysis,
           mostAppearType: mostAppearType,
           mostAppearTypeColor: mostAppearTypeColor,
           rangeType: rangeType,

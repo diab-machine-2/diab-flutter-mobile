@@ -4,6 +4,7 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/widget/Food/widget/create_food_dialog.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
@@ -12,7 +13,8 @@ typedef FoodCallback = Function(List<FoodModel>);
 class FoodChoosen extends StatefulWidget {
   final List<FoodModel>? foods;
   final FoodCallback? callback;
-  FoodChoosen({this.foods, this.callback});
+  final String? title;
+  FoodChoosen({this.foods, this.callback, this.title});
   @override
   _FoodChoosenState createState() => _FoodChoosenState();
 }
@@ -31,14 +33,38 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
   }
 
   @override
+  void didUpdateWidget(FoodChoosen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When parent rebuilds with a new foods list (e.g. after _toggleFood in SearchFood),
+    // sync our internal list so the bottom panel stays consistent with the checkboxes.
+    if (widget.foods != oldWidget.foods) {
+      setState(() {
+        foods = [...(widget.foods ?? [])];
+        calculatorCalo();
+      });
+    }
+  }
+
+  @override
   void update(
       Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    final FoodModel foodModel = map?['food'];
+    if (notifyName != 'add_food_to_cart' && notifyName != 'remove_food_from_cart') return;
+    final FoodModel? foodModel = map?['food'];
+    if (foodModel == null) return;
     if (notifyName == 'add_food_to_cart') {
       setState(() {
         this.foods.removeWhere((element) => foodModel.id == element.id);
         this.foods.add(foodModel);
         calculatorCalo();
+      });
+    }
+    if (notifyName == 'remove_food_from_cart') {
+      setState(() {
+        this.foods.removeWhere((element) => foodModel.id == element.id);
+        calculatorCalo();
+        if (this.foods.isEmpty) {
+          showAll = false;
+        }
       });
     }
   }
@@ -208,31 +234,92 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                           },
                         ),
                       ),
-                GestureDetector(
-                  onTap: () {
-                    if (widget.callback != null) {
-                      widget.callback!(foods);
-                    }
-                  },
-                  child: Container(
-                      height: 48,
-                      width: 195,
-                      decoration: BoxDecoration(
-                          color: R.color.mainColor,
-                          borderRadius: BorderRadius.circular(200),
-                          gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                R.color.greenGradientTop,
-                                R.color.greenGradientBottom
-                              ])),
-                      child: Center(
-                          child: Text(R.string.save.tr(),
-                              style: TextStyle(
-                                  color: R.color.white,
+                // Hai nút: Tạo món mới và Tiếp tục
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      // Button: Tạo món mới
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            final result = await CreateFoodDialog.show(
+                              context: context,
+                            );
+
+                            if (result != null) {
+                              setState(() {
+                                foods.add(result);
+                                calculatorCalo();
+                              });
+                              // Notify observers
+                              Observable.instance.notifyObservers([],
+                                  notifyName: "add_food_to_cart",
+                                  map: {"food": result});
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: R.color.white,
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                color: R.color.greenGradientBottom,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Tạo món mới',
+                                style: TextStyle(
+                                  color: R.color.greenGradientBottom,
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 16)))),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Button: Tiếp tục
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (foods.isEmpty) return;
+                            if (widget.callback != null) {
+                              widget.callback!(foods);
+                            }
+                          },
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: foods.isEmpty ? R.color.color0xffE5E5E5 : R.color.mainColor,
+                              borderRadius: BorderRadius.circular(100),
+                              gradient: foods.isEmpty ? null : LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  R.color.greenGradientTop,
+                                  R.color.greenGradientBottom,
+                                ],
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                widget.title ?? R.string.tiep_tuc.tr(),
+                                style: TextStyle(
+                                  color: foods.isEmpty ? R.color.color0xff636A6B : R.color.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -4,11 +4,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_observer/Observer.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/app_setting/firebase_tracking/activity_list_tracking.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_glycemic_tracking.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
 import 'package:medical/src/widget/glucose_intro/widgets/glucose_lesson_section.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
@@ -52,7 +54,7 @@ class _BloodSugarDetailTabbarControllerState
   int periodFilterType = 3; // Default to 30 days
   late String name = R.string.filter_day.tr(args: ['30']);
   String? glucoseID;
-  String? _aiSuggestion;
+  AiRecommendationResult? _aiSuggestion;
   BloodSugarRangeType? _rangeType;
 
   bool _haveGlucoseScheduler = false;
@@ -403,7 +405,7 @@ class _BloodSugarDetailTabbarControllerState
       onViewListing: _viewListing,
       bloodSugarChartCallback: (rangeType, aiSuggestion) {
         if (!mounted) return;
-        if (rangeType == _rangeType && aiSuggestion == _aiSuggestion) return;
+        if (rangeType == _rangeType && aiSuggestion?.recommendation == _aiSuggestion?.recommendation) return;
         setState(() {
           _rangeType = rangeType;
           _aiSuggestion = aiSuggestion;
@@ -435,7 +437,7 @@ class _BloodSugarDetailTabbarControllerState
     );
   }
 
-  Widget _sectionAIHelp(String? aiSuggestion) {
+  Widget _sectionAIHelp(AiRecommendationResult? aiSuggestion) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -447,6 +449,7 @@ class _BloodSugarDetailTabbarControllerState
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // AI result
           Row(
@@ -472,11 +475,11 @@ class _BloodSugarDetailTabbarControllerState
           ),
           const SizedBox(height: 8),
           if (aiSuggestion == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: const AILoadingTextWidget(),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: AILoadingTextWidget(),
             )
-          else if (aiSuggestion.isEmpty)
+          else if (aiSuggestion.recommendation.isEmpty)
             Text(
               'Có lỗi xảy ra',
               style: TextStyle(
@@ -487,7 +490,7 @@ class _BloodSugarDetailTabbarControllerState
             )
           else ...[
             Text(
-              aiSuggestion,
+              aiSuggestion.recommendation,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
@@ -495,6 +498,7 @@ class _BloodSugarDetailTabbarControllerState
                 height: 1.46,
               ),
             ),
+            AiReferencesWidget(references: aiSuggestion.references),
             const SizedBox(height: 16),
             AIHelpButton(rangeType: _rangeType),
           ],

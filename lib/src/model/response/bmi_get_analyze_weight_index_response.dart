@@ -1,16 +1,9 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'dart:convert';
-
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/response/base/response.dart';
 
-part 'bmi_get_analyze_weight_index_response.g.dart';
-
-@JsonSerializable()
 class BmiGetAnalyzeWeightIndexResponse {
-    @JsonKey(name: "meta")
     final Meta? meta;
-    @JsonKey(name: "data")
-    final String? data;
+    final AiRecommendationResult? data;
 
     BmiGetAnalyzeWeightIndexResponse({
         this.meta,
@@ -19,14 +12,24 @@ class BmiGetAnalyzeWeightIndexResponse {
 
     BmiGetAnalyzeWeightIndexResponse copyWith({
         Meta? meta,
-        String? data,
-    }) => 
+        AiRecommendationResult? data,
+    }) =>
         BmiGetAnalyzeWeightIndexResponse(
             meta: meta ?? this.meta,
             data: data ?? this.data,
         );
 
-    factory BmiGetAnalyzeWeightIndexResponse.fromJson(Map<String, dynamic> json) => _$BmiGetAnalyzeWeightIndexResponseFromJson(json);
+    factory BmiGetAnalyzeWeightIndexResponse.fromJson(Map<String, dynamic> json) {
+      return BmiGetAnalyzeWeightIndexResponse(
+        meta: json['meta'] != null ? Meta.fromJson(json['meta']) : null,
+        data: AiRecommendationResult.fromDynamic(json['data']),
+      );
+    }
 
-    Map<String, dynamic> toJson() => _$BmiGetAnalyzeWeightIndexResponseToJson(this);
+    Map<String, dynamic> toJson() {
+      return {
+        'meta': meta?.toJson(),
+        'data': data?.toJson(),
+      };
+    }
 }

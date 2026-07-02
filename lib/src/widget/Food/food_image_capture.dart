@@ -6,10 +6,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigator_name.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/Food/food_gallery_picker.dart';
+import 'package:medical/src/widget/Food/search_food_controller.dart';
+import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:saver_gallery/saver_gallery.dart';
@@ -31,6 +33,7 @@ class FoodImageCapture extends StatefulWidget {
 class _FoodImageCaptureState extends State<FoodImageCapture>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   final String _refImagePathKey = 'last_captured_food_image';
+  final String _galleryPermissionRequestedKey = 'gallery_permission_requested';
   CameraController? _controller;
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0;
@@ -114,12 +117,51 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
       // Request camera permission first
       final cameraStatus = await Permission.camera.request();
+      developer.log(
+          '[PERMISSION] Camera permission status: ${cameraStatus.name}, isGranted: ${cameraStatus.isGranted}',
+          name: '[PERMISSION]');
       if (!cameraStatus.isGranted) {
         _requestingPermission = false;
         _showErrorDialog('Camera permission is required to take photos');
         return;
       }
-      
+
+      // Check if gallery permission is already granted (including limited access)
+      // before attempting to request. On Android 16, the limited access grant
+      // in compatibility mode is temporary — it can expire when the app goes
+      // to background and comes back. In that case, calling
+      // Permission.photos.request() would re-trigger the system photo picker
+      // dialog, even though the user already completed this flow once.
+      //
+      // To avoid re-showing the dialog on every visit, we:
+      //   1. Check if permission is already granted via the OS status API.
+      //   2. If not granted, check a SharedPreferences flag to see if the user
+      //      has ALREADY gone through this permission flow before.
+      //   3. Only call _requestGalleryPermission() if both OS status AND the
+      //      flag indicate it has never been requested.
+      final prefs = await SharedPreferences.getInstance();
+      final bool alreadyRequested =
+          prefs.getBool(_galleryPermissionRequestedKey) ?? false;
+      final bool alreadyGranted = await _checkGalleryPermission();
+
+      developer.log(
+          '[PERMISSION] Gallery already granted: $alreadyGranted, already requested: $alreadyRequested',
+          name: '[PERMISSION]');
+
+      if (!alreadyGranted && !alreadyRequested) {
+        // First time: request gallery permission (shows system photo picker)
+        final galleryGranted = await _requestGalleryPermission();
+        developer.log(
+            '[PERMISSION] Gallery permission result after request: $galleryGranted',
+            name: '[PERMISSION]');
+        // Mark that the user has completed this flow, so we never auto-prompt again
+        await prefs.setBool(_galleryPermissionRequestedKey, true);
+      } else {
+        developer.log(
+            '[PERMISSION] Skipping gallery permission request (alreadyGranted=$alreadyGranted, alreadyRequested=$alreadyRequested)',
+            name: '[PERMISSION]');
+      }
+
       _requestingPermission = false;
 
       // Wait a bit before initializing camera to ensure permissions are fully processed
@@ -264,7 +306,15 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       // Haptic feedback
       HapticFeedback.mediumImpact();
 
-      // Auto-open gallery after capture
+      // Small delay to let MediaStore index the newly saved image before
+      // querying for its asset ID, ensuring _getMostRecentImageAssetId()
+      // returns the just-captured photo.
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      // Navigate to FoodGalleryPicker with the captured image's path and
+      // most recent asset ID for reliable auto-selection. The file path alone
+      // cannot be used for matching because the camera cache path differs from
+      // the gallery path after SaverGallery.saveImage().
       final String? recentAssetId = await _getMostRecentImageAssetId();
       await _openGalleryPicker(
         initialFilePath: imageFile.path,
@@ -306,11 +356,18 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Future<void> _saveToPhotoAlbum(File imageFile) async {
     try {
-      // Request storage permission for both Android and iOS
-      bool hasPermission = await _requestGalleryPermission();
-      if (!hasPermission) {
-        print('Gallery permission denied');
-        return;
+      // Check current permission state without re-requesting (which could
+      // trigger the system photo picker on Android 16). On API 29+ the
+      // MediaStore insert used by SaverGallery.saveImage() does not require
+      // READ_MEDIA_IMAGES, but the plugin may internally check for it.
+      final bool hasGalleryAccess = await _checkGalleryPermission();
+      developer.log(
+          '[PERMISSION] _saveToPhotoAlbum: hasGalleryAccess=$hasGalleryAccess',
+          name: '[PERMISSION]');
+      if (!hasGalleryAccess) {
+        developer.log(
+            '[PERMISSION] _saveToPhotoAlbum: gallery permission not granted, attempting save anyway',
+            name: '[PERMISSION]');
       }
 
       // Read image as bytes
@@ -327,27 +384,34 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         androidExistNotSave: false,
       );
 
-      print('Image saved to gallery: $result');
+      developer.log(
+          '[SAVE] Image saved to gallery: $result, isSuccess: ${result.isSuccess}, errorMessage: ${result.errorMessage}',
+          name: '[SAVE]');
 
       if (result.isSuccess) {
-        print('Image saved successfully to path: ${result.errorMessage}');
+        developer.log(
+            '[SAVE] Image saved successfully',
+            name: '[SAVE]');
         // Show success message briefly
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Ảnh đã được lưu vào thư viện'),
+              content: Text(R.string.image_saved_to_gallery.tr()),
               duration: const Duration(seconds: 2),
               backgroundColor: Colors.green,
             ),
           );
         }
       } else {
-        print('Failed to save image: ${result.errorMessage}');
+        developer.log(
+            '[SAVE] Failed to save image: ${result.errorMessage}',
+            name: '[SAVE]');
         // Show error message for debugging
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Lỗi lưu ảnh: ${result.errorMessage}'),
+              content:
+                  Text('${R.string.image_save_error.tr()}: ${result.errorMessage}'),
               duration: const Duration(seconds: 3),
               backgroundColor: Colors.red,
             ),
@@ -355,12 +419,14 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         }
       }
     } catch (e) {
-      print('Error saving to photo album: $e');
+      developer.log(
+          '[SAVE] Error saving to photo album: $e',
+          name: '[SAVE]');
       // Show error for debugging
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi lưu ảnh: $e'),
+            content: Text('${R.string.image_save_error.tr()}: $e'),
             duration: const Duration(seconds: 3),
             backgroundColor: Colors.red,
           ),
@@ -374,11 +440,11 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Lỗi'),
+          title: Text(R.string.error.tr()),
           content: Text(message),
           actions: [
             TextButton(
-              child: const Text('Đóng'),
+              child: Text(R.string.close.tr()),
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.pop(context);
@@ -390,10 +456,33 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
     );
   }
 
-  void _manualInputSelect() {
-    // Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.pushNamed(context, NavigatorName.add_food,
-        arguments: {'type': 'input'});
+  void _manualInputSelect() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SearchFoodController(
+          foods: [],
+          suggestKcal: null,
+          popAfterCallback: false,
+          callback: (foods) {
+            if (foods.isNotEmpty) {
+              Navigator.pushNamed(
+                context,
+                NavigatorName.confirm_food,
+                arguments: {
+                  'foods': foods,
+                  'timeframe': widget.timeframe,
+                  'timeframeId': widget.timeframeId,
+                  'files': <String>[],
+                  'isManualInput': true,
+                  'goalId': widget.goalId,
+                },
+              );
+            }
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -530,9 +619,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
 
   Widget _buildTopOverlay() {
     return Container(
-      height: 82,
+      constraints: const BoxConstraints(minHeight: 82),
       margin: EdgeInsets.symmetric(horizontal: 12).copyWith(top: 12),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
@@ -543,17 +632,22 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           // Good lighting section
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(R.drawable.ic_sunny, width: 24, height: 24),
                 const SizedBox(height: 4),
-                Text(
-                  'Ánh sáng tốt',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
+                Flexible(
+                  child: Text(
+                    R.string.good_lighting.tr(),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ],
@@ -566,18 +660,23 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           // Good lighting section
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(R.drawable.ic_image_placeholder,
                     width: 24, height: 24),
                 const SizedBox(height: 4),
-                Text(
-                  'Tối đa 5 ảnh',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
+                Flexible(
+                  child: Text(
+                    R.string.max_one_photo.tr(),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ],
@@ -590,17 +689,22 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
           // Good lighting section
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(R.drawable.ic_food_bowl, width: 24, height: 24),
                 const SizedBox(height: 4),
-                Text(
-                  'Mỗi lần 1 món',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey.shade800,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
+                Flexible(
+                  child: Text(
+                    R.string.one_dish_per_capture.tr(),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.grey.shade800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
               ],
@@ -629,9 +733,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 _buildGalleryPreviewButton(),
                 const SizedBox(height: 6),
                 Text(
-                  'Ảnh',
+                  R.string.photo.tr(),
                   style: TextStyle(
-                    color: Color(0xF636A6B),
+                    color: Color(0xFF636A6B),
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),
@@ -656,9 +760,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Xoay',
+                  R.string.rotate.tr(),
                   style: TextStyle(
-                    color: Color(0xF636A6B),
+                    color: Color(0xFF636A6B),
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),
@@ -848,20 +952,31 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       if (Platform.isAndroid) {
         // For Android 13+ (API 33), check photos permission first
         status = await Permission.photos.status;
+        developer.log(
+            '[PERMISSION] _checkGalleryPermission Android photos.status: ${status.name}, isGranted: ${status.isGranted}, isLimited: ${status.isLimited}',
+            name: '[PERMISSION]');
         if (!status.isGranted) {
           // Fallback to storage permission for older Android versions
           status = await Permission.storage.status;
+          developer.log(
+              '[PERMISSION] _checkGalleryPermission Android storage.status (fallback): ${status.name}, isGranted: ${status.isGranted}',
+              name: '[PERMISSION]');
         }
       } else if (Platform.isIOS) {
         // For iOS, check photos permission
         status = await Permission.photos.status;
+        developer.log(
+            '[PERMISSION] _checkGalleryPermission iOS photos.status: ${status.name}, isGranted: ${status.isGranted}',
+            name: '[PERMISSION]');
       } else {
         return false;
       }
 
       return status.isGranted;
     } catch (e) {
-      print('Error checking gallery permission: $e');
+      developer.log(
+          '[PERMISSION] Error checking gallery permission: $e',
+          name: '[PERMISSION]');
       return false;
     }
   }
@@ -873,26 +988,47 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       if (Platform.isAndroid) {
         // For Android 13+ (API 33), use photos permission instead of storage
         status = await Permission.photos.status;
+        developer.log(
+            '[PERMISSION] _requestGalleryPermission Android photos.status (before request): ${status.name}, isGranted: ${status.isGranted}, isLimited: ${status.isLimited}',
+            name: '[PERMISSION]');
         if (!status.isGranted) {
           status = await Permission.photos.request();
+          developer.log(
+              '[PERMISSION] _requestGalleryPermission Android photos.request() result: ${status.name}, isGranted: ${status.isGranted}, isLimited: ${status.isLimited}',
+              name: '[PERMISSION]');
         }
 
         // Fallback to storage permission for older Android versions
         if (!status.isGranted) {
           status = await Permission.storage.request();
+          developer.log(
+              '[PERMISSION] _requestGalleryPermission Android storage.request() fallback result: ${status.name}, isGranted: ${status.isGranted}',
+              name: '[PERMISSION]');
         }
       } else if (Platform.isIOS) {
         // For iOS, request photos permission which is required for saving to Photos
         status = await Permission.photos.status;
+        developer.log(
+            '[PERMISSION] _requestGalleryPermission iOS photos.status (before request): ${status.name}, isGranted: ${status.isGranted}',
+            name: '[PERMISSION]');
         if (!status.isGranted) {
           status = await Permission.photos.request();
+          developer.log(
+              '[PERMISSION] _requestGalleryPermission iOS photos.request() result: ${status.name}, isGranted: ${status.isGranted}',
+              name: '[PERMISSION]');
         }
 
         // Also check photoLibrary permission as a fallback
         if (!status.isGranted) {
           final photoLibraryStatus = await Permission.photosAddOnly.status;
+          developer.log(
+              '[PERMISSION] _requestGalleryPermission iOS photosAddOnly.status: ${photoLibraryStatus.name}, isGranted: ${photoLibraryStatus.isGranted}',
+              name: '[PERMISSION]');
           if (!photoLibraryStatus.isGranted) {
             status = await Permission.photosAddOnly.request();
+            developer.log(
+                '[PERMISSION] _requestGalleryPermission iOS photosAddOnly.request() result: ${status.name}, isGranted: ${status.isGranted}',
+                name: '[PERMISSION]');
           } else {
             status = photoLibraryStatus;
           }
@@ -901,9 +1037,14 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         return false;
       }
 
+      developer.log(
+          '[PERMISSION] _requestGalleryPermission final status: ${status.name}, isGranted: ${status.isGranted}',
+          name: '[PERMISSION]');
       return status.isGranted;
     } catch (e) {
-      print('Error requesting gallery permission: $e');
+      developer.log(
+          '[PERMISSION] Error requesting gallery permission: $e',
+          name: '[PERMISSION]');
       return false;
     }
   }
@@ -930,7 +1071,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       if (assets.isEmpty) return null;
       return assets.first.id;
     } catch (e) {
-      print('Error fetching most recent image asset id: $e');
+      developer.log(
+          '[PERMISSION] Error fetching most recent image asset id: $e',
+          name: '[PERMISSION]');
       return null;
     }
   }
@@ -941,7 +1084,10 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
       // Safely dispose camera with proper error handling
       await _safeDisposeCamera();
 
-      // Open gallery picker
+      // Navigate to FoodGalleryPicker with skipPermissionRequest=true.
+      // Permission was already granted in _requestAllPermissions(), so
+      // telling FoodGalleryPicker to skip its own permission request avoids
+      // re-triggering the system photo picker on Android 16 (compatibility mode).
       final List<String>? selectedImages = await Navigator.push<List<String>>(
         context,
         MaterialPageRoute(
@@ -950,6 +1096,7 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
             timeframeId: widget.timeframeId,
             initialSelectedFilePath: initialFilePath,
             initialSelectedAssetId: initialAssetId,
+            skipPermissionRequest: true,
           ),
         ),
       );
@@ -965,6 +1112,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         await _processSelectedImages(selectedImages);
       } else {
         // Restart camera if no images selected - wait a bit for proper state
+        developer.log(
+            '[CAPTURE] No images selected, restarting camera',
+            name: '[CAPTURE]');
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted && !_disposed) {
             _initializeCamera();
@@ -972,7 +1122,9 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         });
       }
     } catch (e) {
-      print('Error opening gallery picker: $e');
+      developer.log(
+          '[CAPTURE] Error opening gallery picker: $e',
+          name: '[CAPTURE]');
       // Restart camera on error - wait a bit for proper state
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted && !_disposed) {
@@ -1023,7 +1175,12 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
         }
       }
 
-      final result = await FoodClient().postFoodImages(imagePaths);
+      final mealScoreData = await FoodClient().postMealScore(imagePaths);
+      
+      List<FoodModel> result = [];
+      if (mealScoreData != null && mealScoreData['items'] != null) {
+        result = FoodModel.toList(mealScoreData['items']);
+      }
       print("API call completed with result: ${result.length} items");
 
       // Update portion of each item to 1 when uploading with AI
@@ -1089,14 +1246,23 @@ class _FoodImageCaptureState extends State<FoodImageCapture>
                 ', paths: ' +
                 imagePaths.join(', '),
             name: '[CAPTURE]');
-        Navigator.pushReplacementNamed(context, NavigatorName.confirm_food,
+        await Navigator.pushNamed(context, NavigatorName.confirm_food,
             arguments: {
               'timeframe': widget.timeframe,
               'timeframeId': widget.timeframeId,
               'foods': updatedResult,
               'files': imagePaths,
+              'mealScoreData': mealScoreData,
+              'isManualInput': false,
               'goalId': widget.goalId,
             });
+
+        // Camera was disposed in _openGalleryPicker() before navigating
+        // to FoodGalleryPicker. Re-initialize it now that the user has
+        // returned from the confirm_food screen.
+        if (mounted && !_disposed) {
+          _initializeCamera();
+        }
       } else {
         BotToast.closeAllLoading(); // Close all toasts including custom text
         BotToast.showText(text: 'Không tìm thấy thực phẩm nào để đồng bộ');

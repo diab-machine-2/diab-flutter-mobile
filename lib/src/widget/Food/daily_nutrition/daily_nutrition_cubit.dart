@@ -107,8 +107,13 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
     refresh();
   }
 
-  Future<void> getInitialData({String? type, String? id}) async {
+  Future<void> getInitialData(
+      {String? type, String? id, DateTime? initialDate}) async {
     if (type == null || type.isEmpty) return;
+    // If an initial date is provided (e.g. from chart navigation), use it
+    if (initialDate != null) {
+      selectedDate = initialDate;
+    }
     // await getCurrentUserInfo();
     if (type == 'update') {
       loadDetail(id);
@@ -152,11 +157,19 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
   Future<void> loadDetail(String? id) async {
     emit(const DailyNutritionLoading());
     model = await FoodClient().fetchDetailInput(id);
-    selectedDate = DateTime.fromMillisecondsSinceEpoch(model!.date! * 1000);
+    // Support both old (date as unix) and new (createDatetime as ISO)
+    if (model!.date != null) {
+      final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+      selectedDate = DateTime.fromMillisecondsSinceEpoch(
+          (model!.date! - timezoneOffset) * 1000);
+    }
     notes = model!.note ?? '';
     files.addAll(model!.images);
-    selectedTimeFrame =
-        TimeFrameModel(id: model!.mealId, code: '', name: model!.mealText);
+    // Support both old (mealId/mealText) and new (timeFrameId/timeFrameName)
+    selectedTimeFrame = TimeFrameModel(
+        id: model!.timeFrameId ?? model!.mealId,
+        code: '',
+        name: model!.timeFrameName ?? model!.mealText);
     final int index =
         model!.foods.indexWhere((element) => element.id == otherFoodId);
     if (index == -1) {
@@ -330,14 +343,14 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
         paths.add(file.path);
       }
       final result = await FoodClient().postIndexFood(
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame?.id,
           notes,
           addTotalCalo
               ? [FoodModel(id: otherFoodId, portion: parsedTotalKcal)]
               : selectedFoods,
           paths);
-      if (result == true) {
+      if (result == true || result is Map<String, dynamic>) {
         //  if(goalId != null && goalId?.isNotEmpty == true){
         await HomeClient().completeSmartGoal(
             selectedDate, goalId ?? '', 1, ScheduleType.food.typeIndex);
@@ -379,7 +392,7 @@ class DailyNutritionCubit extends Cubit<DailyNutritionState> {
       }).toList();
       final bool result = await FoodClient().updateIndexFood(
           id,
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame!.id,
           notes,
           addTotalCalo

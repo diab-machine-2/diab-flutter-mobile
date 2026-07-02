@@ -32,6 +32,7 @@ class SectionAddNote extends StatefulWidget {
     this.subText,
     this.showCameraIcons = true, // Default to true for backward compatibility
     this.initialFilesFromCamera = false,
+    this.showDeleteIcon = true, // Default to true for backward compatibility
   });
 
   final FocusNode? focusNode;
@@ -42,6 +43,7 @@ class SectionAddNote extends StatefulWidget {
   final String? subText;
   final bool showCameraIcons;
   final bool initialFilesFromCamera;
+  final bool showDeleteIcon;
 
   // decorator
   final String? noteTitle;
@@ -228,25 +230,31 @@ class SectionAddNoteState extends State<SectionAddNote> {
                                             fit: BoxFit.cover),
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                // Only allow removing if NOT from camera
-                                if (isFromCamera) return;
-                                setState(() {
-                                  if (file is XFile || file is File) {
-                                    _files.removeAt(index);
-                                  } else {
-                                    _removeIDs.add(file.id);
-                                    _files.removeAt(index);
-                                  }
-                                });
-                              },
-                              child: isFromCamera
-                                  ? Image.asset(R.drawable.ic_camera_white,
-                                      width: 24, height: 24)
-                                  : Image.asset(R.drawable.ic_close_circle_red,
-                                      width: 24, height: 24),
-                            ),
+                            widget.showDeleteIcon
+                                ? GestureDetector(
+                                    onTap: () {
+                                      // Only allow removing if NOT from camera
+                                      if (isFromCamera) return;
+                                      setState(() {
+                                        if (file is XFile || file is File) {
+                                          _files.removeAt(index);
+                                        } else {
+                                          _removeIDs.add(file.id);
+                                          _files.removeAt(index);
+                                        }
+                                      });
+                                    },
+                                    child: isFromCamera
+                                        ? Image.asset(
+                                            R.drawable.ic_camera_white,
+                                            width: 24,
+                                            height: 24)
+                                        : Image.asset(
+                                            R.drawable.ic_close_circle_red,
+                                            width: 24,
+                                            height: 24),
+                                  )
+                                : const SizedBox.shrink(),
                           ],
                         ),
                       ),
@@ -378,26 +386,26 @@ class SectionAddNoteState extends State<SectionAddNote> {
     try {
       // Check storage permission for gallery access on Android
       if (Platform.isAndroid) {
-      // For Android 13+ use photos, for <=12 use storage
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      final sdkInt = androidInfo.version.sdkInt;
+        // For Android 13+ use photos, for <=12 use storage
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+        final sdkInt = androidInfo.version.sdkInt;
 
-      Permission permissionToRequest;
-      if (sdkInt >= 33) {
-        permissionToRequest = Permission.photos;      // READ_MEDIA_IMAGES
-      } else {
-        permissionToRequest = Permission.storage;     // READ_EXTERNAL_STORAGE
-      }
+        Permission permissionToRequest;
+        if (sdkInt >= 33) {
+          permissionToRequest = Permission.photos; // READ_MEDIA_IMAGES
+        } else {
+          permissionToRequest = Permission.storage; // READ_EXTERNAL_STORAGE
+        }
 
-      final status = await permissionToRequest.status;
-      if (!status.isGranted) {
-        final newStatus = await permissionToRequest.request();
-        if (!newStatus.isGranted) {
-          _showGalleryPermissionDialog(context);
-          return;
+        final status = await permissionToRequest.status;
+        if (!status.isGranted) {
+          final newStatus = await permissionToRequest.request();
+          if (!newStatus.isGranted) {
+            _showGalleryPermissionDialog(context);
+            return;
+          }
         }
       }
-    }
 
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
@@ -406,7 +414,8 @@ class SectionAddNoteState extends State<SectionAddNote> {
         // Convert image to JPEG format (handles HEIC/HEIF from iOS)
         final convertedPath = await Utils.convertImageToJpeg(pickedFile.path);
         final convertedFile = XFile(convertedPath);
-        _files.add(ImageWithSource(convertedFile, false)); // Mark as from gallery
+        _files
+            .add(ImageWithSource(convertedFile, false)); // Mark as from gallery
         setState(() {});
       }
     } catch (e) {

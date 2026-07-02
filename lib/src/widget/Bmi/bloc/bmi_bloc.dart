@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/repository/weight_repository.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
@@ -80,8 +81,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
   BmiStatistical? _bmiStatistical;
   BmiWaistStatistical? _bmiWaistStatistical;
 
-  String _aiAnalysicTrend = "";
-  String _aiAnalysicWeightRecord = "";
+  AiRecommendationResult? _aiAnalysicTrend;
+  AiRecommendationResult? _aiAnalysicWeightRecord;
 
   bool _hasInputedWaist = false;
   bool get hasInputedWaist => _hasInputedWaist;
@@ -133,8 +134,8 @@ class BmiBloc extends Bloc<BmiEvent, BmiState> {
 
   List<BmiGetWeightRecord> get historicalWeightList => _historicalWeightList;
 
-  String get aiAnalysicTrend => _aiAnalysicTrend;
-  String get aiAnalysicWeightRecord => _aiAnalysicWeightRecord;
+  AiRecommendationResult? get aiAnalysicTrend => _aiAnalysicTrend;
+  AiRecommendationResult? get aiAnalysicWeightRecord => _aiAnalysicWeightRecord;
 
   double? get height => AppSettings.userInfo?.height;
   set height(double? value) {

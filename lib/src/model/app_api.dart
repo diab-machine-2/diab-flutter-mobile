@@ -215,8 +215,7 @@ abstract class AppApi {
   );
 
   @GET("App/Lesson/LessonModuleType")
-  Future<LessonModuleTypeResponse> getLessonModuleType(
-      @Query('type') int type);
+  Future<LessonModuleTypeResponse> getLessonModuleType(@Query('type') int type);
 
   @GET("App/Lesson/GetRecommendedLessons")
   Future<LessonModuleTypeResponse> getRecommendedLessons();
@@ -495,11 +494,13 @@ abstract class AppApi {
   Future<MessageResponse> sendMessageById(
     @Path('conversationId') String conversationId,
     @Path('messageId') String messageId,
+    @Query('model') String model,
   );
   // ## 3. Tạo Lại Câu Trả Lời AI
   @PUT('/App/Chat/conversations/{conversationId}/messages/regenerate')
   Future<MessageResponse> regenerateMessage(
-      @Path('conversationId') String conversationId);
+      @Path('conversationId') String conversationId,
+      @Query('model') String model);
   // Create
   @POST('/App/Chat/conversations')
   Future<CreateConversationResponse> createConversation(
@@ -533,7 +534,8 @@ abstract class AppApi {
 
   @GET("App/Exercise/Analysis/Index")
   Future<ExerciseAnalysisResponse> getExerciseAnalysis(
-      @Query("id") String exerciseId);
+      @Query("id") String exerciseId,
+      {@Query("includeReferences") String includeReferences = 'true'});
 
   @GET("App/Exercise/Summary")
   Future<ExerciseSummaryResponse> getExerciseSummary(
@@ -544,9 +546,9 @@ abstract class AppApi {
 
   @GET('/App/Exercise/Analysis/HealthTrend')
   Future<ExerciseHealthTrendResponse> getExerciseHealthTrend(
-    @Query('CurrentDateTime') String currentDateTime,
-    @Query('PeriodFilterType') int periodFilterType,
-  );
+      @Query('CurrentDateTime') String currentDateTime,
+      @Query('PeriodFilterType') int periodFilterType,
+      {@Query("includeReferences") String includeReferences = 'true'});
 
   @POST('/App/PackageAccountTransaction/SubscriptionActivePackage')
   Future<CommonResponse> subscriptionActivePackage({
@@ -567,8 +569,8 @@ abstract class AppApi {
 
   @GET("/App/Weight/Analysis/Index")
   Future<BmiGetAnalyzeWeightIndexResponse> analyzeWeightIndex(
-    @Query("id") String id,
-  );
+      @Query("id") String id,
+      {@Query("includeReferences") String includeReferences = 'true'});
 
   @GET("/App/Weight/Analysis/Trend")
   Future<BmiGetAnalyzeWeightTrendResponse> analyzeWeightTrend({
@@ -576,6 +578,7 @@ abstract class AppApi {
     @Query('periodFilterType') required int periodFilterType,
     @Query('page') int? page,
     @Query('size') int? size,
+    @Query("includeReferences") String includeReferences = 'true',
   });
 
   @GET("/App/Bmi/Calculate-Bmi")

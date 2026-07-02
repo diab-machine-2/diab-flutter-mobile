@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:medical/res/R.dart';
 
@@ -754,12 +754,15 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
                                 }).toList();
                               },
                               touchTooltipData: LineTouchTooltipData(
-                                showOnTopOfTheChartBoxArea: true,
-                                fitInsideVertically: true,
+                                showOnTopOfTheChartBoxArea: false,
+                                fitInsideVertically: false,
                                 fitInsideHorizontally: true,
                                 getTooltipColor: (LineBarSpot touchedSpot) =>
                                     Colors.transparent,
                                 tooltipRoundedRadius: 8,
+                                tooltipMargin: 18,
+                                tooltipPadding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 getTooltipItems:
                                     (List<LineBarSpot> lineBarsSpot) {
                                   return lineBarsSpot.map((lineBarSpot) {
@@ -927,3 +930,4 @@ class _HbA1cTrendChartState extends State<HbA1cTrendChart> {
     }
   }
 }
+

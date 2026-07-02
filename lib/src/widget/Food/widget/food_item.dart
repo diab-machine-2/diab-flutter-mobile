@@ -1,16 +1,17 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_observer/Observable.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/widget/Food/widget/food_choose_quantity.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 typedef FoodItemCallback = Function(FoodModel, int);
+typedef FoodSelectionCallback = Function(FoodModel, bool); // food, isSelected
 
 class FoodItem extends StatelessWidget {
   const FoodItem({
@@ -22,6 +23,7 @@ class FoodItem extends StatelessWidget {
     this.categoryId,
     required this.callback,
     required this.kcalLeft,
+    this.onSelectionChanged, // Optional: for local selection handling (e.g., search mode)
   });
 
   final FoodModel model;
@@ -32,96 +34,178 @@ class FoodItem extends StatelessWidget {
   final String? categoryId;
   final FoodItemCallback callback;
   final double? kcalLeft;
+  final FoodSelectionCallback? onSelectionChanged;
 
   @override
   Widget build(BuildContext context) {
+    // Build subtitle: portion info + kcal
+    final String portionText = _buildPortionText();
+    final bool isSelected = selectedModel != null;
+
     return GestureDetector(
       onTap: () {
-        if (isSearch) {
-          Navigator.pop(context);
-        }
         if (isCategory) {
           Navigator.pop(context);
         }
 
-        showFoodQuantity(context);
+        // Use local callback if provided (e.g., search mode), otherwise use observer
+        if (onSelectionChanged != null) {
+          onSelectionChanged!(model, !isSelected);
+        } else if (isSelected) {
+          _removeFoodDirectly();
+        } else {
+          _addFoodDirectly();
+        }
       },
       child: Container(
           decoration: BoxDecoration(
-              color: selectedModel != null
+              color: (isSelected && !isSearch)
                   ? R.color.color0xFFC3E8D3
                   : R.color.transparent,
               border: Border.all(
-                  color: selectedModel != null
+                  color: (isSelected && !isSearch)
                       ? R.color.color0xff72CB9C
-                      : R.color.transparent)),
-          padding: EdgeInsets.only(left: 16, right: 16, top: 11, bottom: 11),
+                      : (isSearch ? R.color.transparent : R.color.transparent))),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(children: [
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: NetWorkImageWidget(
-                imageUrl: model.image == null ? '' : model.image!.url ?? '',
-                width: 50,
-                height: 50,
+            // Food image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 48,
+                height: 48,
+                child: NetWorkImageWidget(
+                  imageUrl: model.image == null ? '' : model.image!.url ?? '',
+                  width: 48,
+                  height: 48,
+                ),
               ),
             ),
-            SizedBox(width: 16),
+            SizedBox(width: 12),
+            // Name + portion/kcal info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(model.name!,
+                  Text(model.name ?? '',
                       style: TextStyle(
-                          color: R.color.black, fontWeight: FontWeight.w500)),
-                  selectedModel == null
-                      ? SizedBox()
-                      : Padding(
-                          padding: EdgeInsets.only(top: 4),
-                          child: Text(
-                              selectedModel!.code == 'OtherUneditable'
-                                  ? '${R.string.da_an.tr()} ${formatNumber((selectedModel?.quantity ?? 0) * (selectedModel?.calorie ?? 0))} kcal'
-                                  : '${R.string.da_an.tr()} ${roundAsFixed((selectedModel?.portion ?? 0) * (selectedModel?.quantity ?? 0))} ${selectedModel?.unit ?? ''}, ${((selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0)).round()} kcal',
-                              style: TextStyle(
-                                  color: R.color.black,
-                                  fontWeight: FontWeight.w400)),
-                        )
+                          color: R.color.textDark,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600)),
+                  SizedBox(height: 2),
+                  // Subtitle: portion · kcal
+                  Text(
+                    portionText,
+                    style: TextStyle(
+                      color: R.color.color0xff636A6B,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  // If selected, show selected portion info
+                  if (isSelected)
+                    Padding(
+                      padding: EdgeInsets.only(top: 2),
+                      child: Text(
+                          _buildSelectedText(),
+                          style: TextStyle(
+                              color: R.color.mainColor,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500)),
+                    ),
                 ],
               ),
             ),
             SizedBox(width: 8),
-            GestureDetector(
-              onTap: () {
-                final newModel = model.copyWith(
-                  mealId: selectedModel?.mealId,
-                  liked: !(model.liked ?? true),
-                );
-                callback(newModel, index);
-                likeFood(context);
-              },
-              child: Image.asset(
-                  model.liked!
-                      ? R.drawable.ic_heart_fill
-                      : R.drawable.ic_heart_line,
-                  width: 24,
-                  height: 24),
-            )
+            // Checkbox or Heart icon
+            isSearch 
+              ? GestureDetector(
+                  onTap: () {
+                    if (onSelectionChanged != null) {
+                      onSelectionChanged!(model, !isSelected);
+                    }
+                  },
+                  child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder, 
+                          width: 1.5
+                        ),
+                        color: isSelected ? R.color.greenGradientBottom : R.color.transparent,
+                      ),
+                      child: isSelected ? Icon(Icons.check, color: R.color.white, size: 18) : null,
+                    ),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    final newModel = model.copyWith(
+                      mealId: selectedModel?.mealId,
+                      liked: !(model.liked ?? true),
+                    );
+                    callback(newModel, index);
+                    likeFood(context);
+                  },
+                  child: Image.asset(
+                      model.liked == true
+                          ? R.drawable.ic_heart_fill
+                          : R.drawable.ic_heart_line,
+                      width: 24,
+                      height: 24),
+                )
           ])),
     );
   }
 
-  showFoodQuantity(BuildContext context) {
-    showDialog(
-      barrierColor: R.color.color0xff003F38.withOpacity(0.5),
-      context: context,
-      builder: (_) => FoodChooseQuantity(
-        model: model,
-        selectedModel: selectedModel,
-        categoryId: categoryId,
-        callback: (value) {},
-        kcalLeft: kcalLeft,
-      ),
-    );
+  /// Build portion text like "1 Tô · 200.5 kcals"
+  String _buildPortionText() {
+    final parts = <String>[];
+
+    // Portion + unit (e.g. "1 Tô")
+    final double qty = model.quantity ?? 1;
+    final String unit = model.unit ?? '';
+    if (unit.isNotEmpty) {
+      parts.add('${qty == qty.roundToDouble() ? qty.round().toString() : formatNumber(qty)} $unit');
+    }
+
+    // Calories per unit
+    final double cal = model.calorie ?? 0;
+    if (cal > 0) {
+      parts.add('${formatNumber(cal)} kcals');
+    }
+
+    return parts.join(' · ');
+  }
+
+  /// Build selected portion text
+  String _buildSelectedText() {
+    if (selectedModel == null) return '';
+    if (selectedModel!.code == 'OtherUneditable') {
+      return '${R.string.da_an.tr()} ${formatNumber((selectedModel?.quantity ?? 0) * (selectedModel?.calorie ?? 0))} kcal';
+    }
+    return '${R.string.da_an.tr()} ${roundAsFixed((selectedModel?.portion ?? 0) * (selectedModel?.quantity ?? 0))} ${selectedModel?.unit ?? ''}, ${((selectedModel?.portion ?? 0) * (selectedModel?.calorie ?? 0)).round()} kcal';
+  }
+
+  void _addFoodDirectly() {
+    Observable.instance.notifyObservers([],
+        notifyName: "add_food_to_cart",
+        map: {
+          "food": model.copyWith(
+            portion: 1,
+            quantity: model.quantity ?? 1,
+            mealId: selectedModel?.mealId ?? model.mealId,
+          ),
+        });
+  }
+
+  void _removeFoodDirectly() {
+    Observable.instance.notifyObservers([],
+        notifyName: "remove_food_from_cart",
+        map: {
+          "food": selectedModel ?? model,
+        });
   }
 
   likeFood(BuildContext context) async {

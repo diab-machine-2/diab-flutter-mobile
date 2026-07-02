@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/model/request/revise_weight_record_request.dart';
 import 'package:medical/src/model/request/submit_weight_record_request.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/response/bmi_get_analyze_weight_index_response.dart';
 import 'package:medical/src/model/response/bmi_get_analyze_weight_trend_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_detail_response.dart';
@@ -50,17 +51,17 @@ class WeightRepository {
     }
   }
 
-  Future<ApiResult<String>> analyzeWeightIndex(String id) async {
+  Future<ApiResult<AiRecommendationResult>> analyzeWeightIndex(String id) async {
     try {
       final BmiGetAnalyzeWeightIndexResponse response =
           await appClient.analyzeWeightIndex(id);
-      return ApiResult.success(data: response.data ?? "");
+      return ApiResult.success(data: response.data ?? AiRecommendationResult(recommendation: ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
-  Future<ApiResult<String>> analyzeWeightTrend({
+  Future<ApiResult<AiRecommendationResult>> analyzeWeightTrend({
     required int currentTime,
     required int periodFilterType,
     int page = 1,
@@ -74,7 +75,7 @@ class WeightRepository {
         page: page,
         size: size,
       );
-      return ApiResult.success(data: response.data ?? "");
+      return ApiResult.success(data: response.data ?? AiRecommendationResult(recommendation: ''));
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

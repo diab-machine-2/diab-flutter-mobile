@@ -10,6 +10,8 @@ import 'package:loadmore/loadmore.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/food/food_model.dart';
+import 'package:medical/src/utils/debouncer.dart';
+import 'package:medical/src/widget/Food/widget/food_choosen.dart';
 import 'package:medical/src/widget/Food/widget/food_item.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/load_more.dart';
@@ -23,10 +25,11 @@ class SearchFood extends StatefulWidget {
   _SearchFoodState createState() => _SearchFoodState();
 }
 
-class _SearchFoodState extends State<SearchFood> with Observer {
+class _SearchFoodState extends State<SearchFood> {
   late BuildContext currentContext;
 
   TextEditingController controller = TextEditingController();
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
 
   List<FoodModel> selectedFoods = [];
 
@@ -38,24 +41,28 @@ class _SearchFoodState extends State<SearchFood> with Observer {
   void initState() {
     super.initState();
     controller.text = '';
+    // Work with a local copy - only sync back on confirm
     selectedFoods = [...widget.foods];
-    Observable.instance.addObserver(this);
-  }
-
-  @override
-  void update(
-      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
-    final FoodModel foodModel = map?['food'];
-    if (notifyName == 'add_food_to_cart') {
-      this.selectedFoods.add(foodModel);
-      setState(() {});
-    }
   }
 
   @override
   void dispose() {
-    Observable.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // Local add/remove — creates a new list on every toggle so that
+  // FoodChoosen's didUpdateWidget reference check (!=) detects the change.
+  void _toggleFood(FoodModel food) {
+    final existingIndex = selectedFoods.indexWhere((f) => f.id == food.id);
+    setState(() {
+      final updated = [...selectedFoods];
+      if (existingIndex >= 0) {
+        updated.removeAt(existingIndex);
+      } else {
+        updated.add(food);
+      }
+      selectedFoods = updated;
+    });
   }
 
   Future<bool> _loadMore() async {
@@ -104,28 +111,49 @@ class _SearchFoodState extends State<SearchFood> with Observer {
       resizeToAvoidBottomInset: false,
       body: Container(
           decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(R.drawable.bg_splash),
-                  fit: BoxFit.cover)),
+            color: R.color.backgroundColorNew,
+          ),
           child: SafeArea(
             top: false,
-            child: Column(children: [
+            child: Stack(
+              children: [
+                Column(children: [
               CustomAppBar(
                   title: Text(
-                    R.string.nhap_mon_an.tr(),
+                    'Tìm món ăn',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: R.color.textDark),
+                        color: R.color.white),
                   ),
-                  backgroundColor: R.color.transparent,
+                  backgroundColor: R.color.greenGradientBottom,
                   leadingIcon: IconButton(
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
-                      icon: Icon(Icons.close, color: R.color.textDark),
+                      icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        Navigator.pop(context);
-                      })),
+                        // Return current selections so parent always syncs state on back-navigation
+                        Navigator.pop(context, selectedFoods);
+                      }),
+                  actions: [
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: Text(
+                            R.string.huong_dan.tr(),
+                            style: TextStyle(
+                              color: R.color.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                  ),
               Padding(
                 padding:
                     EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 16),
@@ -135,8 +163,9 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                       height: 48,
                       decoration: BoxDecoration(
                           color: R.color.white,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: R.color.grayComponentBorder)),
+                          borderRadius: BorderRadius.circular(8),
+                          border:
+                              Border.all(color: R.color.grayComponentBorder)),
                       child: Padding(
                         padding: EdgeInsets.only(left: 16, right: 8),
                         child: Row(
@@ -152,16 +181,13 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                     onSubmitted: (value) {
                                       refresh();
                                     },
-                                    onChanged: (value) async {
-                                      await refresh();
-                                      // Future.delayed(
-                                      //     Duration(milliseconds: 500), () {
-                                      //   refresh();
-                                      // });
+                                    onChanged: (value) {
+                                      _debouncer.run(() { refresh(); });
                                     })),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pop(context);
+                                // Return current selections so parent syncs state when dismissing search
+                                Navigator.pop(context, selectedFoods);
                               },
                               child: Image.asset(R.drawable.ic_clear,
                                   width: 35, height: 35),
@@ -179,8 +205,7 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                     List<FoodModel>? model;
                     if (state is FoodInitial) {
                       BlocProvider.of<FoodBloc>(currentContext).add(
-                          FetchSearchFood(
-                              keyword: controller.text, page: 1));
+                          FetchSearchFood(keyword: controller.text, page: 1));
                     }
                     if (state is FoodError) {
                       Message.showToastMessage(context, state.message);
@@ -242,22 +267,40 @@ class _SearchFoodState extends State<SearchFood> with Observer {
                                                     ? selectedFoods[
                                                         selectedIndex]
                                                     : null;
-                                            return FoodItem(
-                                              model: model[index],
-                                              selectedModel: selectedModel,
-                                              index: index,
-                                              isSearch: true,
-                                              callback: (model, index) {
-                                                likeFood(model, index);
-                                              },
-                                              kcalLeft: getKcalLeft(selectedModel),
-                                            );
+                                             return FoodItem(
+                                               model: model[index],
+                                               selectedModel: selectedModel,
+                                               index: index,
+                                               isSearch: true,
+                                               callback: (model, index) {
+                                                 likeFood(model, index);
+                                               },
+                                               kcalLeft: getKcalLeft(selectedModel),
+                                               onSelectionChanged: (food, isSelected) {
+                                                 _toggleFood(food);
+                                               },
+                                             );
                                           }
                                         }))),
                           );
                   }))
-            ]),
-          )),
+              ]),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: FoodChoosen(
+                  title: R.string.confirm.tr(),
+                  foods: selectedFoods,
+                  callback: (foods) {
+                    Navigator.pop(context, foods);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

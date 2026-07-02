@@ -160,32 +160,33 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
         borderRadius: BorderRadius.circular(12),
         color: R.color.white,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            R.string.question_number.tr(args: [(widget.index + 1).toString()]),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: R.color.textDark,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            quizData.name ?? "",
-            style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              R.string.question_number
+                  .tr(args: [(widget.index + 1).toString()]),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
                 color: R.color.textDark,
-                height: 1.4),
-            //    maxLines: 2,
-          ),
-          SizedBox(height: 20.h),
-          Expanded(
-            child: buildAnswerByType(quizData),
-          ),
-        ],
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              quizData.name ?? "",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: R.color.textDark,
+                  height: 1.4),
+              //    maxLines: 2,
+            ),
+            SizedBox(height: 20.h),
+            buildAnswerByType(quizData),
+          ],
+        ),
       ),
     );
   }
@@ -206,13 +207,14 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
           readOnly: isCompletedSurvey,
           onChanged: (text) {
             if (text != null) {
-              widget.onSubmitAnswer(QuestionAnswerResults(
-                  surveyQuestionId: quizData.id, 
-                  surveySectionId: widget.surveySectionId,
-                  content: text.trim(),
-                  isTyping: true,
-                ),
-              false);
+              widget.onSubmitAnswer(
+                  QuestionAnswerResults(
+                    surveyQuestionId: quizData.id,
+                    surveySectionId: widget.surveySectionId,
+                    content: text.trim(),
+                    isTyping: true,
+                  ),
+                  false);
             }
           },
           onSubmitted: (text) {
@@ -234,6 +236,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
       return ListView.separated(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           itemCount: quizData.answers?.length ?? 0,
           separatorBuilder: (context, indexQuestion) => SizedBox(
                 height: 10.h,
@@ -246,6 +249,7 @@ class CardCourseQuizSurveyPageState extends State<CardCourseQuizSurveyPage>
       return ListView.separated(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
           itemCount: quizData.answers?.length ?? 0,
           separatorBuilder: (context, indexQuestion) => SizedBox(
                 height: 10.h,
