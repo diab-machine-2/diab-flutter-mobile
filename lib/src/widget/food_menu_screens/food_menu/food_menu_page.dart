@@ -428,7 +428,7 @@ class _FoodMenuPageState extends State<FoodMenuPage> {
                       mealData?.mealName ?? '',
                       style: TextStyle(
                         color: R.color.greenGradientBottom,
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

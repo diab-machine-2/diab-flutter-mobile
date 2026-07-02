@@ -278,7 +278,7 @@ class SmartGoalNavigationUtil {
 
   static Future<void> _handleFood(
       BuildContext context, SmartGoalList? smartGoal) async {
-    FoodActionPopup.show(context);
+    FoodActionPopup.show(context, goalId: smartGoal?.id ?? "");
   }
 
   static Future<void> _handleExercise(
@@ -401,7 +401,8 @@ class SmartGoalNavigationUtil {
     ];
 
     final nameLower = name.toLowerCase();
-    if (!nameLower.contains('xét nghiệm') && !nameLower.contains('xet nghiem')) {
+    if (!nameLower.contains('xét nghiệm') &&
+        !nameLower.contains('xet nghiem')) {
       return null;
     }
 

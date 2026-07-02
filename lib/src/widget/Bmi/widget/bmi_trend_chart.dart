@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -669,14 +669,18 @@ class BmiTrendChartState extends State<BmiTrendChart>
                                 }).toList();
                               },
                               touchTooltipData: LineTouchTooltipData(
-                                showOnTopOfTheChartBoxArea: true,
-                                fitInsideVertically: true,
+                                showOnTopOfTheChartBoxArea: false,
+                                fitInsideVertically: false,
+                                fitInsideHorizontally: true,
                                 getTooltipColor: (LineBarSpot touchedSpot) =>
                                     touchIndex == -1
                                         ? R.color.transparent
                                         : toColor(trends[touchIndex].colorCode)
                                             .withOpacity(0.2),
                                 tooltipRoundedRadius: 8,
+                                tooltipMargin: 18,
+                                tooltipPadding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 getTooltipItems:
                                     (List<LineBarSpot> lineBarsSpot) {
                                   return lineBarsSpot.map((lineBarSpot) {
@@ -858,3 +862,4 @@ class BmiTrendChartState extends State<BmiTrendChart>
     }
   }
 }
+

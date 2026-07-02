@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Food/food_functions.dart';
 
 class FoodActionPopup extends StatelessWidget {
@@ -12,20 +14,23 @@ class FoodActionPopup extends StatelessWidget {
   final bool fromDashboard;
   final String? goalId;
 
-  void _handleItemTap(BuildContext context, String timeframeId, String timeframe) {
+  void _handleItemTap(
+      BuildContext context, String timeframeId, String timeframe) {
     Navigator.pop(context);
-    FoodFunctions.showModalAddData(
-      context,
-      timeframe: timeframe,
-      timeframeId: timeframeId,
-      fromDashboard: fromDashboard,
-      goalId: goalId,
-    );
+    // FoodFunctions.showModalAddData(
+    //   context,
+    //   timeframe: timeframe,
+    //   timeframeId: timeframeId,
+    //   fromDashboard: fromDashboard,
+    // );
+    Navigator.pushNamed(context, NavigatorName.food_image_capture,
+        arguments: {'timeframe': timeframe, 'timeframeId': timeframeId, 'goalId': goalId});
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<_FoodPopupItemModel> items = _FoodPopupItemModel.getFoodPopupItems();
+    final List<_FoodPopupItemModel> items =
+        _FoodPopupItemModel.getFoodPopupItems();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -45,7 +50,7 @@ class FoodActionPopup extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Text(
-                    'Chọn bữa',
+                    R.string.choose_meal.tr(),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -63,9 +68,9 @@ class FoodActionPopup extends StatelessWidget {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Food Action Items List
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -82,9 +87,9 @@ class FoodActionPopup extends StatelessWidget {
             }).toList(),
           ),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         SafeArea(
           top: false,
           bottom: true,
@@ -150,7 +155,8 @@ class FoodActionPopup extends StatelessWidget {
   static void show(BuildContext context, {bool fromDashboard = false, String? goalId}) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       backgroundColor: Colors.white,
       isScrollControlled: true,
       builder: (context) => Container(
@@ -183,25 +189,25 @@ class _FoodPopupItemModel {
     return [
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_breakfast,
-        name: 'Bữa sáng',
+        name: R.string.meal_breakfast.tr(),
         backgroundColor: const Color(0xFFEAFFEC),
         timeframeId: 'b770d23f-8444-4a36-9621-58cc24a39906',
       ),
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_lunch,
-        name: 'Bữa trưa',
+        name: R.string.meal_lunch.tr(),
         backgroundColor: const Color(0xFFFEEDDC),
         timeframeId: '9a4c53ca-7c5e-4d3c-9452-07fe19fc2aff',
       ),
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_dinner,
-        name: 'Bữa tối',
+        name: R.string.meal_dinner.tr(),
         backgroundColor: const Color(0xFFFFFAEB),
         timeframeId: '95faf80c-a6cb-4796-8d65-7478eb875833',
       ),
       _FoodPopupItemModel(
         imageAssetPath: R.drawable.im_food_snack,
-        name: 'Bữa phụ',
+        name: R.string.meal_snack.tr(),
         backgroundColor: const Color(0xFFF1F6FF),
         timeframeId: '6b0684ea-5e03-45ef-a5be-03c9aa4a9c03',
       ),

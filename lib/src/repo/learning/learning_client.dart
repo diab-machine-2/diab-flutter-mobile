@@ -138,4 +138,25 @@ class LearningClient extends FetchClient {
     }
     return [];
   }
+
+  // "/App/Lesson/NutritionLesson" ~ "/App/Lesson/MyLessonsOptimizedAndCacheLessonPercent"
+  // Type 1: Bắt buộc, Type 2: Tùy chọn, Type 3: Quiz cấp độ
+  Future<List<LessonModel>> fetchNutritionIntroLessons(
+      {int type = 1, int week = 0}) async {
+    final Response response = await super.postUri(
+      url: '/App/Lesson/NutrientLesson',
+      baseOption: true,
+      params: {
+        'type': type,
+        'isNotCompleted': false,
+        "week": week,
+        "page": 1,
+        "size": 10
+      },
+    );
+    if (response.statusCode == 200) {
+      return LessonModel.toList(response.data['data']);
+    }
+    return [];
+  }
 }

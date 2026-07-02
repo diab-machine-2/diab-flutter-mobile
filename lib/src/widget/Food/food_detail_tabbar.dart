@@ -6,26 +6,29 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_tracking/kpi_nutrition_tracking.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/widget/Food/nutrition_guide_page.dart';
 import 'package:medical/src/widget/Food/food_detail.dart';
 import 'package:medical/src/widget/Food/overview.dart';
 import 'package:medical/src/widget/HbA1C/widget/description/description.dart';
-import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/components/custom_action_descriptipn.dart';
-import 'package:medical/src/widget/food_menu_screens/food_menu/food_menu_page.dart';
 import 'package:medical/src/widget/home/fliter_enum.dart';
-import 'package:medical/src/widget/tabbar/action_list_panel.dart';
 import 'package:medical/src/widget/tabbar/fillter_bloodSugar_panel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app_setting/app_setting.dart';
-import 'widget/food_action_popup.dart';
+import '../BloodPressure/widget/horizontal_selector.dart';
 
 class FoodDetailTabbarController extends StatefulWidget {
   final int? initialTabIndex;
+  final Map<String, int>? nutritionPercent;
+  final Map<String, String>? nutritionColors;
 
-  const FoodDetailTabbarController({Key? key, this.initialTabIndex})
+  const FoodDetailTabbarController(
+      {Key? key,
+      this.initialTabIndex,
+      this.nutritionPercent,
+      this.nutritionColors})
       : super(key: key);
 
   @override
@@ -114,6 +117,20 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
     }
   }
 
+  void switchToTab(int index) {
+    // Navigate to detail page since TabBar was removed
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => _FoodDetailPageWrapper(
+            initialPeriodFilterType: periodFilterType,
+          ),
+        ),
+      );
+    }
+  }
+
   checkShowDes() async {
     final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
     final SharedPreferences prefs = await _prefs;
@@ -133,110 +150,81 @@ class _FoodDetailTabbarControllerState extends State<FoodDetailTabbarController>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: CustomAppBar(
-            backgroundColor: R.color.white,
-            title: Text(R.string.dinh_duong.tr(),
-                style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.textDark)),
-            leadingIcon: GestureDetector(
-                onTap: () {
-                  showDialog(
-                    barrierColor: R.color.color0xff003F38.withOpacity(0.3),
-                    useSafeArea: false,
-                    context: context,
-                    builder: (_) => ActionListPanel(selectedIndex: 4),
-                  );
-                },
-                child:
-                    Icon(Icons.format_list_bulleted, color: R.color.textDark)),
-            actions: [
-              CustomActionDescription(
-                  key: customActionDesKey,
-                  callback: (value) {
-                    customTabbarKey.currentState!.showDescription();
-                  }),
-              IconButton(
-                  icon: Icon(Icons.close, color: R.color.black),
-                  onPressed: () {
-                    // pushReplacement removes the previous route, so canPop may be false
-                    // If we can't pop, navigate to tabbar instead
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    } else {
-                      // Navigate to tabbar when there's nothing to pop back to
-                      Navigator.of(context, rootNavigator: true)
-                          .pushNamedAndRemoveUntil(
-                        NavigatorName.tabbar,
-                        (route) => false,
-                      );
-                    }
-                  }),
-              const SizedBox(width: 12),
-            ]),
-        body: Column(children: [
-          GestureDetector(
-            onTap: () async {
-              // if(userInfo?.ownPackage == null) {
-              //   NavigationUtil.showUpdateRequirePopup(context: context, title: R.string.food_menu.tr());
-              //   return;
-              // }
-
-              await NavigationUtil.navigatePage(context, const FoodMenuPage());
-              overviewKey.currentState!.reloadData(periodFilterType);
-            },
-            child: Container(
-              color: R.color.white,
-              padding: const EdgeInsets.only(top: 14, bottom: 14, right: 18),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Image.asset(
-                    R.drawable.ic_bowl_of_food,
-                    width: 24,
-                    height: 20,
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: R.color.greenGradientBottom,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+        ),
+        leadingWidth: 30,
+        centerTitle: false,
+        title: Text(
+          R.string.dinh_duong.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: R.color.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NutritionGuidePage(),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    R.string.food_menu.tr(),
-                    style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
+                );
+              },
+              child: Text(
+                R.string.huong_dan.tr(),
+                style: TextStyle(fontSize: 15, color: R.color.white),
               ),
             ),
           ),
-          CustomTabbarImage(
-              key: customTabbarKey,
-              tabController: _tabController,
-              data: des,
-              callback: (periodFilter) {
-                periodFilterType = periodFilter;
-                overviewKey.currentState!.reloadData(periodFilterType);
-                if (detailKey.currentState != null) {
-                  detailKey.currentState!.reloadData(periodFilterType);
-                }
-              }),
-          Expanded(
-              child: TabBarView(controller: _tabController, children: [
-            FoodOverviewController(key: overviewKey),
-            FoodDetailController(key: detailKey)
-          ])),
-        ]),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            FoodActionPopup.show(context, fromDashboard: true);
-            // NavigationUtil.navigatePage(
-            //     context, DailyNutritionPage(type: 'input', id: null));
-          },
-          child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
-        ));
+        ],
+      ),
+      body: Column(children: [
+        const SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: HorizontalSelector(
+            onSelected: (value) {
+              periodFilterType = value + 1;
+              overviewKey.currentState!.reloadData(periodFilterType);
+              if (detailKey.currentState != null) {
+                detailKey.currentState!.reloadData(periodFilterType);
+              }
+            },
+            initialValue: periodFilterType - 1,
+            values: [0, 1, 2, 3],
+            labels: [
+              R.string.filter_day.tr(args: ['7']),
+              R.string.filter_day.tr(args: ['14']),
+              R.string.filter_day.tr(args: ['30']),
+              R.string.filter_day.tr(args: ['90']),
+            ],
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: FoodOverviewController(key: overviewKey),
+        ),
+      ]),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     FoodActionPopup.show(context, fromDashboard: true);
+      //     // NavigationUtil.navigatePage(
+      //     //     context, DailyNutritionPage(type: 'input', id: null));
+      //   },
+      //   child: Image.asset(R.drawable.ic_button_plus, width: 80, height: 80),
+      // ),
+    );
   }
 }
 
@@ -401,5 +389,91 @@ class _ActionFilterState extends State<ActionFilter> {
                 widget.callback!(index + 1);
               }
             }));
+  }
+}
+
+/// Wrapper page for standalone detail view with filter + appbar
+class _FoodDetailPageWrapper extends StatefulWidget {
+  final int initialPeriodFilterType;
+
+  const _FoodDetailPageWrapper({
+    Key? key,
+    required this.initialPeriodFilterType,
+  }) : super(key: key);
+
+  @override
+  _FoodDetailPageWrapperState createState() => _FoodDetailPageWrapperState();
+}
+
+class _FoodDetailPageWrapperState extends State<_FoodDetailPageWrapper>
+    with Observer {
+  GlobalKey<FoodDetailControllerState> _detailKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    Observable.instance.addObserver(this);
+  }
+
+  @override
+  void update(
+      Observable observable, String? notifyName, Map<dynamic, dynamic>? map) {
+    if (notifyName == 'food_change_data') {
+      _detailKey.currentState
+          ?.reloadData(widget.initialPeriodFilterType);
+    }
+  }
+
+  @override
+  void dispose() {
+    Observable.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: R.color.backgroundColorNew,
+      appBar: AppBar(
+        backgroundColor: R.color.greenGradientBottom,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: R.color.white),
+        ),
+        leadingWidth: 30,
+        centerTitle: false,
+        title: Text(
+          R.string.detail.tr(),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: R.color.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NutritionGuidePage(),
+                  ),
+                );
+              },
+              child: Text(
+                R.string.huong_dan.tr(),
+                style: TextStyle(fontSize: 15, color: R.color.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: FoodDetailController(
+        key: _detailKey,
+        periodFilterType: widget.initialPeriodFilterType,
+      ),
+    );
   }
 }

@@ -162,7 +162,7 @@ class FoodTrendChartTabViewState extends State<FoodTrendChartTabView>
                                         strokeWidth: 18,
                                         strokeColor: toColor(
                                                 model.items[index].colorCode)
-                                            .withOpacity(0.3),
+                                            .withValues(alpha: 0.3),
                                       ),
                                     ),
                                   );
@@ -177,7 +177,7 @@ class FoodTrendChartTabViewState extends State<FoodTrendChartTabView>
                                         ? R.color.transparent
                                         : toColor(model
                                                 .items[touchIndex].colorCode)
-                                            .withOpacity(0.2),
+                                            .withValues(alpha: 0.2),
                                 tooltipRoundedRadius: 8,
                                 getTooltipItems:
                                     (List<LineBarSpot> lineBarsSpot) {
@@ -302,7 +302,7 @@ class FoodTrendChartTabViewState extends State<FoodTrendChartTabView>
                       color: toColor(model.items[index].colorCode),
                       strokeWidth: model.items.length - 1 == index ? 18 : 0,
                       strokeColor:
-                          toColor(model.items.last.colorCode).withOpacity(0.2),
+                          toColor(model.items.last.colorCode).withValues(alpha: 0.2),
                     );
                   }),
               belowBarData: BarAreaData(

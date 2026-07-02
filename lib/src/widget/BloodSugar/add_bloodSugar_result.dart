@@ -8,7 +8,9 @@ import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/glucose/glucose_client.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -34,7 +36,7 @@ class PageAddBloodSugarResult extends StatefulWidget {
 
 class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
   bool get _haveNote => _note.isNotEmpty == true || _files.isNotEmpty == true;
-  String? _aiResult;
+  AiRecommendationResult? _aiResult;
 
   bool _haveEditNote = false;
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
@@ -59,16 +61,22 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
     bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
         ((data.healthRecommendation?.isEmpty) ?? true);
 
-    final aiResult = shouldFetchNewData
+    final fetched = shouldFetchNewData
         ? await GlucoseClient()
             .fetchGlucoseInputAnalysis(widget.data.id, unit)
             .catchError((e, s) {
             TrackingManager.recordError(e, s);
             return null;
           })
-        : data.healthRecommendation;
+        : null;
 
-    _aiResult = aiResult ?? '';
+    if (fetched != null) {
+      _aiResult = fetched;
+    } else if (data.healthRecommendation != null) {
+      _aiResult = AiRecommendationResult(recommendation: data.healthRecommendation!);
+    } else {
+      _aiResult = AiRecommendationResult(recommendation: '');
+    }
     if (mounted) {
       setState(() {});
     }
@@ -292,11 +300,11 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
           ),
           const SizedBox(height: 8),
           if (_aiResult == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: const AILoadingTextWidget(),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: AILoadingTextWidget(),
             )
-          else if (_aiResult!.isEmpty)
+          else if (_aiResult!.recommendation.isEmpty)
             Text(
               'Có lỗi xảy ra',
               style: TextStyle(
@@ -307,7 +315,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
             )
           else ...[
             Text(
-              _aiResult ?? '',
+              _aiResult!.recommendation,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -315,6 +323,7 @@ class _PageAddBloodSugarResultState extends State<PageAddBloodSugarResult> {
                 height: 16 / 12,
               ),
             ),
+            AiReferencesWidget(references: _aiResult!.references),
             const SizedBox(height: 16),
             // elevated button, ic_zalo and text, full width
             AIHelpButton(rangeType: widget.data.rangeType),

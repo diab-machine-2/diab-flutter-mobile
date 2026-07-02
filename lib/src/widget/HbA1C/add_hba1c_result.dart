@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/utils/app_storages.dart';
 import 'package:medical/src/utils/navigator_name.dart';
@@ -27,7 +29,7 @@ class PageAddHbA1CResult extends StatefulWidget {
 
 class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
     with WidgetsBindingObserver {
-  String? _aiResult;
+  AiRecommendationResult? _aiResult;
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
       GlobalKey<SectionAddNoteState>();
 
@@ -67,48 +69,35 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
     bool shouldFetchNewData = (data.isFetchAnalysis ?? false) ||
         ((data.healthRecommendation?.isEmpty) ?? true);
 
-    // For HbA1C analysis - similar to blood pressure
-    String? aiResult;
-
     if (shouldFetchNewData) {
       try {
-        print('🔄 Fetching HbA1C analysis...');
-        print('📊 HbA1C Value: ${widget.data.hba1c}');
-        print('🆔 ID: ${widget.data.id}');
-
-        aiResult = await HbA1CClient().fetchHbA1CInputAnalysis(
+        final fetched = await HbA1CClient().fetchHbA1CInputAnalysis(
           id: widget.data.id.isEmpty ? null : widget.data.id,
           hba1cValue: widget.data.hba1c.toString(),
           date: (widget.data.dateTime.millisecondsSinceEpoch ~/ 1000),
           note: widget.data.note,
         );
 
-        print(
-            '✅ API Response: ${aiResult != null && aiResult.isNotEmpty ? "Success" : "Empty/Null"}');
-
-        // If API returns null or empty, provide fallback content
-        if (aiResult == null || aiResult.isEmpty) {
-          print('⚠️ Using fallback analysis due to empty API response');
-          aiResult = _generateFallbackAnalysis();
+        if (fetched != null && fetched.recommendation.isNotEmpty) {
+          _aiResult = fetched;
+        } else {
+          _aiResult = _generateFallbackAnalysis();
         }
       } catch (e, s) {
-        print('❌ API Error: $e');
         TrackingManager.recordError(e, s);
-        // Provide fallback analysis when API fails
-        aiResult = _generateFallbackAnalysis();
+        _aiResult = _generateFallbackAnalysis();
       }
+    } else if (data.healthRecommendation != null) {
+      _aiResult = AiRecommendationResult(recommendation: data.healthRecommendation!);
     } else {
-      print('📱 Using cached recommendation');
-      aiResult = data.healthRecommendation;
+      _aiResult = _generateFallbackAnalysis();
     }
-
-    _aiResult = aiResult ?? _generateFallbackAnalysis();
     if (mounted) {
       setState(() {});
     }
   }
 
-  String _generateFallbackAnalysis() {
+  AiRecommendationResult _generateFallbackAnalysis() {
     final hba1c = widget.data.hba1c;
     final rangeLabel = widget.data.rangeType.title;
     final measurementDate = widget.data.dateTime;
@@ -135,7 +124,7 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
           "Chỉ số này đang ở mức rất cao, có nguy cơ tiểu đường type 2 nghiêm trọng. Cần được theo dõi và điều trị chặt chẽ. Vui lòng liên hệ ngay với bác sĩ điều trị để được tư vấn và điều trị kịp thời.";
     }
 
-    return analysis;
+    return AiRecommendationResult(recommendation: analysis);
   }
 
   void _doComplete() async {
@@ -370,13 +359,13 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
           ),
           const SizedBox(height: 8),
           if (_aiResult == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: const AILoadingTextWidget(),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: AILoadingTextWidget(),
             )
           else ...[
             Text(
-              _aiResult ?? '',
+              _aiResult!.recommendation,
               style: TextStyle(
                 fontFamily: R.font.sfpro,
                 fontSize: 15,
@@ -385,6 +374,7 @@ class _PageAddHbA1CResultState extends State<PageAddHbA1CResult>
                 height: 1.46,
               ),
             ),
+            AiReferencesWidget(references: _aiResult!.references),
             const SizedBox(height: 16),
             // AI Help button for HbA1C
             Container(

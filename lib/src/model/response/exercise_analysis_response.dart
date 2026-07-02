@@ -1,6 +1,8 @@
+import 'package:medical/src/model/ai_recommendation_result.dart';
+
 class ExerciseAnalysisResponse {
   final Meta? meta;
-  final ExerciseAnalysis? data;
+  final AiRecommendationResult? data;
 
   ExerciseAnalysisResponse({
     this.meta,
@@ -11,7 +13,7 @@ class ExerciseAnalysisResponse {
     return ExerciseAnalysisResponse(
       meta: json['meta'] != null ? Meta.fromJson(json['meta']) : null,
       data:
-          json['data'] != null ? ExerciseAnalysis.fromJson(json['data']) : null,
+          json['data'] != null ? AiRecommendationResult.fromJson(json['data']) : null,
     );
   }
 
@@ -57,24 +59,24 @@ class Meta {
 
 class ExerciseAnalysis {
   final String exerciseId;
-  final String analysisData;
+  final AiRecommendationResult? analysisData;
 
   ExerciseAnalysis({
     required this.exerciseId,
-    required this.analysisData,
+    this.analysisData,
   });
 
   factory ExerciseAnalysis.fromJson(Map<String, dynamic> json) {
     return ExerciseAnalysis(
       exerciseId: json['exerciseId'],
-      analysisData: json['analysisData'],
+      analysisData: AiRecommendationResult.fromDynamic(json['analysisData']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'exerciseId': exerciseId,
-      'analysisData': analysisData,
+      'analysisData': analysisData?.toJson(),
     };
   }
 }

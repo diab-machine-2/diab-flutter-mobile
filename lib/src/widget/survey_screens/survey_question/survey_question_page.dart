@@ -207,52 +207,68 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                InkWell(
-                  onTap: _cubit.selectedCourseIndex == 0
-                      ? null
-                      : () {
-                          FocusScope.of(context).unfocus();
-                          final int newIndex = _cubit.selectedCourseIndex - 1;
-                          _controller.scrollToIndex(newIndex,
-                              duration: const Duration(milliseconds: 500),
-                              preferPosition: AutoScrollPosition.middle);
-                          _cubit.jumpToIndexCourse(newIndex);
-                        },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: _cubit.selectedCourseIndex == 0
-                          ? R.color.grayBorder
-                          : R.color.main_6,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.arrow_back_ios,
-                          size: 20,
-                          color: _cubit.selectedCourseIndex == 0
-                              ? R.color.textDark
-                              : R.color.accentColor,
-                        ),
-                        Text(
-                          R.string.back.tr(),
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: _cubit.selectedCourseIndex == 0
-                                  ? R.color.textDark
-                                  : R.color.accentColor,
-                              height: 1.43,
-                              letterSpacing: 0.4),
-                        ),
-                      ],
+                Flexible(
+                  child: InkWell(
+                    onTap: _cubit.selectedCourseIndex == 0
+                        ? null
+                        : () {
+                            FocusScope.of(context).unfocus();
+                            final int newIndex = _cubit.selectedCourseIndex - 1;
+                            _controller.scrollToIndex(newIndex,
+                                duration: const Duration(milliseconds: 500),
+                                preferPosition: AutoScrollPosition.middle);
+                            _cubit.jumpToIndexCourse(newIndex);
+                          },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: _cubit.selectedCourseIndex == 0
+                            ? R.color.grayBorder
+                            : R.color.main_6,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.arrow_back_ios,
+                            size: 20,
+                            color: _cubit.selectedCourseIndex == 0
+                                ? R.color.textDark
+                                : R.color.accentColor,
+                          ),
+                          Flexible(
+                            child: MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                textScaler: MediaQuery.of(context)
+                                    .textScaler
+                                    .clamp(
+                                        minScaleFactor: 1.0,
+                                        maxScaleFactor: 1.3),
+                              ),
+                              child: Text(
+                                R.string.back.tr(),
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: _cubit.selectedCourseIndex == 0
+                                        ? R.color.textDark
+                                        : R.color.accentColor,
+                                    height: 1.43,
+                                    letterSpacing: 0.4),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                buildNextButton()
+                const SizedBox(width: 12),
+                Flexible(child: buildNextButton()),
               ],
             ),
           )
@@ -310,7 +326,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
     return _cubit.selectedCourseIndex == _cubit.lengthQuiz - 1
         ? Container(
             height: 36,
-            width: 117,
+            constraints: BoxConstraints(maxWidth: 117),
             child: ButtonWidget(
               title: R.string.next.tr(),
               onPressed: onTap ?? () {},
@@ -330,19 +346,31 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                 color: isEnable ? R.color.main_6 : R.color.grayBorder,
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    _cubit.selectedCourseIndex == _cubit.lengthQuiz - 1
-                        ? R.string.completed.tr()
-                        : R.string.next_question.tr(),
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color:
-                            isEnable ? R.color.accentColor : R.color.textDark,
-                        height: 1.43,
-                        letterSpacing: 0.4),
+                  Flexible(
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: MediaQuery.of(context)
+                            .textScaler
+                            .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                      ),
+                      child: Text(
+                        _cubit.selectedCourseIndex == _cubit.lengthQuiz - 1
+                            ? R.string.completed.tr()
+                            : R.string.next_question.tr(),
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: isEnable
+                                ? R.color.accentColor
+                                : R.color.textDark,
+                            height: 1.43,
+                            letterSpacing: 0.4),
+                      ),
+                    ),
                   ),
                   Icon(
                     Icons.arrow_forward_ios,
