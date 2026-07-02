@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/base/images.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/modal/base/keyvalue.dart';
 import 'package:medical/src/modal/blood_pressure/bloodPressure_Input_data_model.dart';
 import 'package:medical/src/modal/blood_pressure/blood_pressure.dart';
@@ -44,8 +45,8 @@ class BloodPressureClient extends FetchClient {
   }
 
   Future<List<BloodPressureColorConfig>?> fetchColorConfig() async {
-    final Response response =
-        await super.fetchData(url: '/App/BloodPressure/Config/Status', params: {});
+    final Response response = await super
+        .fetchData(url: '/App/BloodPressure/Config/Status', params: {});
 
     if (response.statusCode == 200) {
       final listResponse = ListResponse.fromJson(
@@ -59,8 +60,8 @@ class BloodPressureClient extends FetchClient {
 
   Future<List<KeyValue>> fetchReasons() async {
     try {
-      final Response response =
-          await super.fetchData(url: '/App/BloodPressure/Input/Reasons', params: {});
+      final Response response = await super
+          .fetchData(url: '/App/BloodPressure/Input/Reasons', params: {});
 
       if (response.statusCode == 200) {
         final listData = response.data as List<dynamic>;
@@ -86,7 +87,6 @@ class BloodPressureClient extends FetchClient {
       TrackingManager.recordError(e, stack);
     }
     return false;
-    
   }
 
   // lấy danh sách huyết áp
@@ -166,15 +166,14 @@ class BloodPressureClient extends FetchClient {
   Future<BloodPressureTrendModel> fetchBloodPressureTrend(
       int? currentDateTime, int? periodFilterType) async {
     try {
-      final Response response = await super.fetchData(
-          url: '/App/BloodPressure/Trend',
-          params: {
-            'currentDateTime': '$currentDateTime',
-            'periodFilterType': '$periodFilterType',
-            'page': '1',
-            'size': '100',
-            'IsFromLatestTime': 'true'
-          });
+      final Response response =
+          await super.fetchData(url: '/App/BloodPressure/Trend', params: {
+        'currentDateTime': '$currentDateTime',
+        'periodFilterType': '$periodFilterType',
+        'page': '1',
+        'size': '100',
+        'IsFromLatestTime': 'true'
+      });
       if (response.statusCode == 200) {
         return BloodPressureTrendModel.fromJson(response.data['data']);
       } else {
@@ -190,14 +189,13 @@ class BloodPressureClient extends FetchClient {
   Future<BloodPressureTrendModel> fetchPulseRateTrend(
       int? currentDateTime, int? periodFilterType) async {
     try {
-      final Response response = await super.fetchData(
-          url: '/App/BloodPressure/Trend/PulseRate',
-          params: {
-            'currentDateTime': '$currentDateTime',
-            'periodFilterType': '$periodFilterType',
-            'page': '1',
-            'size': '100',
-          });
+      final Response response = await super
+          .fetchData(url: '/App/BloodPressure/Trend/PulseRate', params: {
+        'currentDateTime': '$currentDateTime',
+        'periodFilterType': '$periodFilterType',
+        'page': '1',
+        'size': '100',
+      });
       if (response.statusCode == 200) {
         return BloodPressureTrendModel.fromJson(response.data['data']);
       } else {
@@ -208,7 +206,7 @@ class BloodPressureClient extends FetchClient {
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }
-  
+
   Future<List<TimeFrameModel>> fetchBloodPressureTimeFrame({int? time}) async {
     final Response response = await super.fetchData(
         url: '/app/timeframe/kpi/blood-pressure',
@@ -249,21 +247,21 @@ class BloodPressureClient extends FetchClient {
 
     if (response.statusCode == 200) {
       final data = await response.stream.bytesToString();
-        final jsonData = jsonDecode(data);
-        String? id = jsonData['data'];
-        if (id != null) {
-          try {
-            final detailResponse = await fetchBloodPressureDetail(id);
-            return BloodPressureInputResult(
-              id: detailResponse.id ?? id,
-              images: detailResponse.images,
-              pulseRateStatus: detailResponse.pulseRateStatus ?? '-',
-              bloodPressureStatus: detailResponse.bloodPressureType ?? '-',
-            );
-          } catch (e) {
-            print(e);
-          }
+      final jsonData = jsonDecode(data);
+      String? id = jsonData['data'];
+      if (id != null) {
+        try {
+          final detailResponse = await fetchBloodPressureDetail(id);
+          return BloodPressureInputResult(
+            id: detailResponse.id ?? id,
+            images: detailResponse.images,
+            pulseRateStatus: detailResponse.pulseRateStatus ?? '-',
+            bloodPressureStatus: detailResponse.bloodPressureType ?? '-',
+          );
+        } catch (e) {
+          print(e);
         }
+      }
       return null;
     } else {
       throw response.reasonPhrase!;
@@ -338,11 +336,12 @@ class BloodPressureClient extends FetchClient {
     }
   }
 
-  Future<String?> fetchBloodPressureInputAnalysis(
+  Future<AiRecommendationResult?> fetchBloodPressureInputAnalysis(
     String id,
   ) async {
     Map<String, String> params = {
       'id': id,
+      'includeReferences': 'true',
     };
     // Fetch blood pressure analysis data
     final Response response = await super.fetchData(
@@ -351,30 +350,31 @@ class BloodPressureClient extends FetchClient {
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJsonTypeString(
-        response.data as Map<String, dynamic>,
+      return AiRecommendationResult.fromDynamic(
+        (response.data as Map<String, dynamic>)['data'],
       );
-      return singleResponse.data;
     }
     return null;
   }
 
-  Future<String?> fetchBloodPressureAlltimeAnalysis(int periodFilterType) async {
+  Future<AiRecommendationResult?> fetchBloodPressureAlltimeAnalysis(
+      int periodFilterType) async {
     final Response response = await super.fetchData(
       url: '/App/BloodPressure/Analysis/HealthTrend',
       params: {
+        'includeReferences': 'true',
         'periodFilterType': periodFilterType.toString(),
-        'currentDateTime': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
+        'currentDateTime':
+            (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         'page': '1',
         'size': '100',
       },
     );
 
     if (response.statusCode == 200) {
-      final singleResponse = SingleResponse.fromJsonTypeString(
-        response.data as Map<String, dynamic>,
+      return AiRecommendationResult.fromDynamic(
+        (response.data as Map<String, dynamic>)['data'],
       );
-      return singleResponse.data;
     }
     return null;
   }
@@ -475,7 +475,8 @@ class BloodPressureClient extends FetchClient {
   }
 
   Future<List<BloodPressureLesson>?> fetchBloodPressureLessons() async {
-    final Response response = await super.fetchData(url: '/app/lesson/support/blood-pressure', params: {});
+    final Response response = await super
+        .fetchData(url: '/app/lesson/support/blood-pressure', params: {});
 
     if (response.statusCode == 200) {
       final listResponse = ListResponse.fromJson(

@@ -48,7 +48,7 @@ class GlucoseAlllLoaded extends GlucoseState {
 
 class GlucoseTrendLoaded extends GlucoseState {
   final TrendDataModel trend;
-  final String? glucoseInputAIAnalysis;
+  final AiRecommendationResult? glucoseInputAIAnalysis;
   final String? mostAppearType;
   final String? mostAppearTypeColor;
   final BloodSugarRangeType? rangeType;
@@ -63,7 +63,7 @@ class GlucoseTrendLoaded extends GlucoseState {
 
   GlucoseTrendLoaded copyWith({
     TrendDataModel? trend,
-    String? glucoseInputAIAnalysis,
+    AiRecommendationResult? glucoseInputAIAnalysis,
     String? mostAppearType,
     String? mostAppearTypeColor,
     BloodSugarRangeType? rangeType,

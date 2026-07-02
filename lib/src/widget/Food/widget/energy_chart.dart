@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_observer/Observable.dart';
@@ -9,17 +10,10 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/bloc/food/food_bloc.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/food/food_calo_model.dart';
-import 'package:medical/src/model/repository/app_repository.dart';
-import 'package:medical/src/model/request/create_menu_request.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/repo/user/user_client.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
-import 'package:medical/src/widget/Food/widget/add_target_food.dart';
-import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
-import 'package:medical/src/widget/notice_change/notice_change_page.dart';
-
-import '../../../widgets/network_image_widget.dart';
 
 class EnergyChart extends StatefulWidget {
   const EnergyChart({Key? key}) : super(key: key);
@@ -29,7 +23,6 @@ class EnergyChart extends StatefulWidget {
 
 class EnergyChartState extends State<EnergyChart>
     with AutomaticKeepAliveClientMixin<EnergyChart> {
-  final AppRepository _appRepository = AppRepository();
   @override
   bool get wantKeepAlive => true;
   late BuildContext currentContext;
@@ -56,12 +49,6 @@ class EnergyChartState extends State<EnergyChart>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final width = MediaQuery.of(context).size.width - 32;
-    final height = width / 1029 * 1044;
-    final heightApple = 185 * height / 348;
-
-    final heightLA = height * 22 / 348;
-    final top = height * 66 / 348;
 
     return BlocProvider<FoodBloc>(
         create: (context) => FoodBloc(),
@@ -79,234 +66,258 @@ class EnergyChartState extends State<EnergyChart>
           if (state is FoodStatisticCaloLoaded) {
             model = state.model;
           }
+
           return model == null
               ? Container(
-                  height: 491.5,
+                  height: 100,
                   child: const Center(child: CircularProgressIndicator()))
               : Container(
                   padding: const EdgeInsets.all(16),
-                  child: SizedBox(
-                    width: width,
-                    height: height,
-                    child: Stack(children: [
-                      Positioned(
-                        top: 70,
-                        left: 0,
-                        child: Stack(
-                            alignment: AlignmentDirectional.center,
-                            children: [
-                              SizedBox(
-                                  width: heightApple,
-                                  height: heightApple,
-                                  child: CustomPaint(
-                                      painter: GradientArcPainter(
-                                    progress: 1,
-                                    startColor: R.color.white,
-                                    endColor: R.color.white,
-                                    width: 56.0,
-                                  ))),
-                              SizedBox(
-                                  width: heightApple,
-                                  height: heightApple,
-                                  child: CustomPaint(
-                                      painter: GradientArcPainter(
-                                    progress: model.goal == null
-                                        ? 0
-                                        : model.total! / model.goal!,
-                                    startColor: toColor(model.colorCode)
-                                        .withOpacity(0.3),
-                                    endColor: toColor(model.colorCode),
-                                    width: 56.0,
-                                  ))),
-                            ]),
-                      ),
-                      Positioned(
-                        top: top,
-                        left: 0,
-                        child: Center(
-                          child: Container(
-                              height: heightLA,
-                              width: heightApple,
-                              color: toColor(model.colorCode)),
-                        ),
-                      ),
-                      Image.asset(R.drawable.bg_apple_orange),
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(top: 16, left: 16, right: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(R.string.nang_luong.tr(),
-                                style: TextStyle(
-                                    color: R.color.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700)),
-                            GestureDetector(
-                              onTap: () async {
-                                final int inputEnergy = model!.goal!.round();
-                                final newInputEnergy = await showDialog(
-                                  barrierColor:
-                                      R.color.color0xff003F38.withOpacity(0.5),
-                                  context: context,
-                                  builder: (_) =>
-                                      AddTargetFood(goal: model!.goal!.round()),
-                                );
-                                if (newInputEnergy is int &&
-                                    newInputEnergy != inputEnergy) {
-                                  showDialog(
-                                    barrierColor: R.color.color0xff003F38
-                                        .withOpacity(0.5),
-                                    context: context,
-                                    builder: (_) => NoticeChangePage(
-                                        description: R.string.consumption.tr(),
-                                        onClick: () {
-                                          updateGoal(newInputEnergy);
-                                          Future.delayed(
-                                              const Duration(milliseconds: 200),
-                                              () {
-                                            _appRepository
-                                                .createMenu(CreateMenuRequest(
-                                              kcal: newInputEnergy,
-                                              includeBreakfast:
-                                                  model?.includeBreakfast ??
-                                                      false,
-                                              includeLunch:
-                                                  model?.includeLunch ?? false,
-                                              includeDinner:
-                                                  model?.includeDinner ?? false,
-                                            ));
-                                          });
-                                        }),
-                                  );
-                                }
-                              },
-                              child: Container(
-                                color: R.color.transparent,
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      R.drawable.ic_circle_plus_exe,
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(R.string.muc_tieu_moi.tr(),
-                                        style: TextStyle(
-                                            color: R.color.mainColor,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w700)),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        top: 58,
-                        right: 43,
-                        child: SizedBox(
-                          height: 170,
-                          child: Row(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: List.generate(
-                                    model.mealDetails.length,
-                                    (index) => Row(children: [
-                                          NetWorkImageWidget(imageUrl: 
-                                              model!.mealDetails[index].icon
-                                                      .url ??
-                                                  '',
-                                              width: 24,
-                                              height: 24),
-                                          const SizedBox(width: 4),
-                                          Text(model.mealDetails[index].text!),
-                                        ])),
-                              ),
-                              const SizedBox(width: 20),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: List.generate(
-                                    model.mealDetails.length,
-                                    (index) => SizedBox(
-                                          height: 24,
-                                          child: Text(
-                                              model!.mealDetails[index].value!
-                                                  .round()
-                                                  .toString(),
-                                              style: TextStyle(
-                                                  fontFamily: 'Viga',
-                                                  color: R.color.black,
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 18)),
-                                        )),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: top,
-                        left: 0,
-                        child: Container(
-                          width: heightApple,
-                          height: heightApple,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(R.drawable.ic_bat,
-                                      width: 24, height: 24),
-                                  const SizedBox(width: 4),
-                                  Text(model.total!.round().toString(),
-                                      style: TextStyle(
-                                          fontFamily: 'Viga',
-                                          color: R.color.black,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w400)),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                  model.goal == null
-                                      ? '0 ${R.string.kcal.tr()}'
-                                      : '/${formatNumber(model.goal)} ${R.string.kcal.tr()}',
-                                  style: TextStyle(
-                                      color: R.color.primaryGreyColor))
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 16,
-                        right: 16,
-                        child: Row(
-                          children: [
-                            NetWorkImageWidget(imageUrl: model.image!.url ?? '',
-                                width: 65, height: 110),
-                            const SizedBox(width: 25),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(model.note ?? ''),
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ]),
+                  child: Column(
+                    children: [
+                      // Header section (Balance status, meal, time, kcal)
+                      _buildHeader(model),
+                      // Removed the yellow "Năng lượng" box with apple chart
+                    ],
                   ),
                 );
         }));
+  }
+
+  Widget _buildHeader(FoodCaloModel model) {
+    // Sample data - replace with actual meal data from API
+    String selectedDate = DateFormat('dd/MM').format(DateTime.now());
+    String selectedDateTime = DateFormat('HH:mm').format(DateTime.now());
+    String selectedStatus = 'Chưa cân bằng'; // TODO: Get from API
+
+    // Get the latest meal (last in list) - assuming API returns meals in chronological order
+    String selectedMeal = 'Bữa trưa';
+    double selectedEnergy = 0;
+    if (model.mealDetails.isNotEmpty) {
+      // Take the last meal in the list (most recent)
+      final latestMeal = model.mealDetails.last;
+      selectedMeal = latestMeal.text ?? 'Bữa ăn';
+      selectedEnergy = latestMeal.value ?? 0;
+    }
+
+    String selectedPoints = '0 điểm'; // TODO: Get from API when available
+    String selectedKcal = '${selectedEnergy.round()} Kcal';
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: R.color.white,
+                borderRadius: BorderRadius.circular(19),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '$selectedDateTime',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
+                    ),
+                  ),
+                  Container(
+                    width: 4,
+                    height: 4,
+                    margin: EdgeInsets.only(left: 4, right: 4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFBFC6C6),
+                    ),
+                  ),
+                  Text(
+                    '$selectedDate',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.textDark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(width: 16),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: R.color.color0xffE5E5E5,
+                  width: 1,
+                ),
+                color: Colors.white,
+              ),
+              child: Icon(
+                Icons.chevron_left,
+                size: 20,
+                color: R.color.color0xffE5E5E5, // Disabled for now
+              ),
+            ),
+            Expanded(
+              child: Center(
+                child: Text(
+                  selectedStatus,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: R.color.greenGradientBottom,
+                    height: 36 / 24,
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: R.color.color0xffE5E5E5,
+                  width: 1,
+                ),
+                color: Colors.white,
+              ),
+              child: Icon(
+                Icons.chevron_right,
+                size: 20,
+                color: R.color.color0xffE5E5E5, // Disabled for now
+              ),
+            ),
+            const SizedBox(width: 16),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$selectedMeal',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: R.color.color0xff5E6566,
+              ),
+            ),
+            Container(
+              width: 4,
+              height: 4,
+              margin: EdgeInsets.only(left: 4, right: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFBFC6C6),
+              ),
+            ),
+            Text(
+              '$selectedPoints',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.textDark,
+              ),
+            ),
+            Container(
+              width: 4,
+              height: 4,
+              margin: EdgeInsets.only(left: 4, right: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFBFC6C6),
+              ),
+            ),
+            Text(
+              '$selectedKcal',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: R.color.textDark,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Mockup line chart
+        Container(
+          height: 88,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: _buildMockupChart(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMockupChart() {
+    // Mockup data points (waiting for API)
+    final mockupData = [
+      FlSpot(0, 500),
+      FlSpot(1, 650),
+      FlSpot(2, 720),
+      FlSpot(3, 580),
+      FlSpot(4, 690),
+    ];
+
+    return LineChart(
+      LineChartData(
+        minX: 0,
+        maxX: 4,
+        minY: 400,
+        maxY: 800,
+        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(show: false),
+        borderData: FlBorderData(show: false),
+        lineBarsData: [
+          LineChartBarData(
+            spots: mockupData,
+            isCurved: true,
+            color: R.color.greenGradientBottom,
+            barWidth: 2,
+            isStrokeCapRound: true,
+            dotData: FlDotData(
+              show: true,
+              getDotPainter: (spot, percent, barData, index) {
+                return FlDotCirclePainter(
+                  radius: 4,
+                  color: R.color.greenGradientBottom,
+                  strokeWidth: 2,
+                  strokeColor: Colors.white,
+                );
+              },
+            ),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                colors: [
+                  R.color.greenGradientBottom.withOpacity(0.3),
+                  R.color.greenGradientBottom.withOpacity(0.0),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   updateGoal(int goal) async {
@@ -334,7 +345,7 @@ class GradientArcPainter extends CustomPainter {
     required this.startColor,
     required this.endColor,
     required this.width,
-  })  : super();
+  }) : super();
 
   final double progress;
   final Color startColor;

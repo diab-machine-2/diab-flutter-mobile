@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/Exercrises/widget/circular_arch_progress_bar.dart';
-import 'package:medical/src/widget/Exercrises/widget/exercrises_ai_suggestion.dart';
+import 'package:medical/src/widget/Exercrises/widget/exercrises_analysis_suggestion.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/button_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -42,6 +42,9 @@ class _ExercisesResultState extends State<ExercisesResult>
   // Dùng cho _buildActivityList
   List<InputDataExercriseModel> inputDataExercrises = [];
   bool? hasMore = false;
+
+  // Exercise input ID cho AI Analysis (lấy từ dữ liệu đầu tiên)
+  String? _latestExerciseId;
 
   // Dùng cho _buildProgressSection
   ExercriseSummaryModel? exerciseSummary;
@@ -86,7 +89,8 @@ class _ExercisesResultState extends State<ExercisesResult>
 
   void _goBack() {
     if (Navigator.canPop(context)) {
-      Observable.instance.notifyObservers([], notifyName: "active_change_data_v2");
+      Observable.instance
+          .notifyObservers([], notifyName: "active_change_data_v2");
       Navigator.pushNamedAndRemoveUntil(
         context,
         NavigatorName.exercrise_dashboard,
@@ -138,6 +142,12 @@ class _ExercisesResultState extends State<ExercisesResult>
                 setState(() {
                   inputDataExercrises = state.inputExercrisesModel;
                   hasMore = state.hasMore;
+                  // Lấy exercise input ID đầu tiên để gọi API Analysis/Index
+                  if (inputDataExercrises.isNotEmpty &&
+                      inputDataExercrises.first.exerciseInput.isNotEmpty) {
+                    _latestExerciseId =
+                        inputDataExercrises.first.exerciseInput.first.id;
+                  }
                 });
               } else if (state is ExercriseDataDailyLoaded) {
                 setState(() {
@@ -508,12 +518,12 @@ class _ExercisesResultState extends State<ExercisesResult>
   }
 
   Widget _buildSuggestionSection() {
+    if (_latestExerciseId == null) return const SizedBox.shrink();
     return Container(
       padding: EdgeInsets.all(12.w),
       color: R.color.backgroundColorNew,
-      child: ExercrisesAISuggestion(
-        periodFilterType: periodFilterType,
-        date: DateTime.now().subtract(Duration(days: 1)),
+      child: ExercrisesAnalysisSuggestion(
+        exerciseId: _latestExerciseId!,
         titleButton: R.string.chat_with_AI.tr(),
       ),
     );

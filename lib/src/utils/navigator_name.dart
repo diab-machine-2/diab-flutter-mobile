@@ -39,6 +39,7 @@ class NavigatorName {
   static const String add_work = '/add_work';
   static const String add_insight = '/add_insight';
   static const String add_food = '/add_food';
+  static const String add_food_result = '/add_food_result';
   static const String confirm_food = '/confirm_food';
   static const String food_image_capture = '/food_image_capture';
   static const String detail_food = '/detail_food';
@@ -175,6 +176,10 @@ class NavigatorName {
 
   // Webinar
   static const String webinar_info = '/webinar_info';
+
+
+  // New Nutrition
+  static const String nutrient_intro_1st_page = '/nutrient_intro_1st_page';
 
   // Phone Update Flow
   static const String update_phone_number = '/update_phone_number';

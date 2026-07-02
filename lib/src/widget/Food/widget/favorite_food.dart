@@ -18,10 +18,7 @@ class FavoriteFood extends StatefulWidget {
   FavoriteFoodState createState() => FavoriteFoodState();
 }
 
-class FavoriteFoodState extends State<FavoriteFood>
-    with AutomaticKeepAliveClientMixin<FavoriteFood>, Observer {
-  @override
-  bool get wantKeepAlive => true;
+class FavoriteFoodState extends State<FavoriteFood> with Observer {
   late BuildContext currentContext;
 
   List<FoodModel> selectedFoods = [];
@@ -31,6 +28,18 @@ class FavoriteFoodState extends State<FavoriteFood>
     super.initState();
     selectedFoods = [...widget.foods];
     Observable.instance.addObserver(this);
+  }
+
+  @override
+  void didUpdateWidget(FavoriteFood oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Sync selectedFoods when the parent rebuilds with a new list
+    // (e.g. after returning from SearchFood with updated selections).
+    if (widget.foods != oldWidget.foods) {
+      setState(() {
+        selectedFoods = [...widget.foods];
+      });
+    }
   }
 
   @override
@@ -82,7 +91,6 @@ class FavoriteFoodState extends State<FavoriteFood>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return BlocProvider<FoodBloc>(
         create: (context) => FoodBloc(),
         child: BlocBuilder<FoodBloc, FoodState>(

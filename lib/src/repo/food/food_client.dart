@@ -13,17 +13,25 @@ import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/food/food_statistic_diet_model.dart';
 import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/modal/food/food_statistic_trend_model.dart';
+import 'package:medical/src/modal/food/nutrition_lesson.dart';
+import 'package:medical/src/modal/food/nutrition_summary_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class FoodClient extends FetchClient {
-// Lấy danh sách time frame
+  // ============================================================
+  // TimeFrame - NEW: /App/TimeFrame
+  // ============================================================
+
+  /// Lấy danh sách time frame
+  /// NEW endpoint: GET /App/TimeFrame
   Future<List<TimeFrameModel>> fetchFoodTimeFrame({int? time}) async {
     try {
       final Response response = await super.fetchData(
-          url: '/App/Diet/MealTimeFrame',
+          url: '/App/TimeFrame',
           params: time == null ? {} : {'time': time.toString()});
       if (response.statusCode == 200) {
         return TimeFrameModel.toList(response.data['data']);
@@ -36,21 +44,36 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lấy danh sách input thức ăn
+  // ============================================================
+  // Nutrition Input - NEW: /App/Nutrition/Input
+  // ============================================================
+
+  /// Lấy danh sách input dinh dưỡng theo range (grouped by date)
+  /// NEW endpoint: GET /App/Nutrition/Input?range=X
+  /// range: 0=today, 1=7d, 2=14d, 3=30d, 4=90d
   Future<FoodInputDataModel> fetchInput(
-      String currentDateTime, String periodFilterType, int page) async {
+      String currentDateTime, String periodFilterType, int page,
+      {int size = 10}) async {
     try {
       final Response response =
-          await super.fetchData(url: '/App/Diet/Input', params: {
-        'currentDateTime': currentDateTime,
+          await super.fetchData(url: '/App/Nutrition/Input', params: {
         'periodFilterType': periodFilterType,
-        'page': '$page',
-        'size': '10'
+        'page': page.toString(),
+        'pageSize': size.toString(),
       });
       if (response.statusCode == 200) {
+        final data = response.data['data'];
+        if (data != null && data['groups'] != null) {
+          // New format: groups[]
+          return FoodInputDataModel(
+              inputs: MealDayItemModel.toList(data['groups']), hasMore: false);
+        }
+        // Fallback to old format
         return FoodInputDataModel(
-            inputs: MealDayItemModel.toList(response.data['data']['dayItems']),
-            hasMore: response.data['meta']['canNext']);
+            inputs: data != null && data['dayItems'] != null
+                ? MealDayItemModel.toList(data['dayItems'])
+                : [],
+            hasMore: response.data['meta']?['canNext'] ?? false);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -60,11 +83,12 @@ class FoodClient extends FetchClient {
     }
   }
 
-//   lấy chi tiết input thức ăn
+  /// Lấy chi tiết nutrition input
+  /// NEW endpoint: GET /App/Nutrition/Input/{id}
   Future<FoodInputModel> fetchDetailInput(String? id) async {
     try {
       final Response response =
-          await super.fetchData(url: '/App/Diet/Input/$id');
+          await super.fetchData(url: '/App/Nutrition/Input/$id');
       if (response.statusCode == 200) {
         return FoodInputModel.fromJson(response.data['data']);
       } else {
@@ -76,14 +100,25 @@ class FoodClient extends FetchClient {
     }
   }
 
-// lay danh sach thức ăn
+  // ============================================================
+  // Food Search - NEW: /App/Food
+  // ============================================================
+
+  /// Tìm kiếm món ăn
+  /// NEW endpoint: GET /App/Food?keyword=X&page=X&pageSize=X
   Future<FoodDataModel> fetchFood() async {
     try {
       final Response response = await super.fetchData(url: '/App/Food');
       if (response.statusCode == 200) {
+        final data = response.data['data'];
+        // Support new format (data.items[]) and old format (data[])
+        final items = data is Map ? (data['items'] ?? []) : (data ?? []);
         return FoodDataModel(
-            foods: FoodModel.toList(response.data['data']),
-            hasMore: response.data['meta']['canNext']);
+            foods: FoodModel.toList(items),
+            hasMore: data is Map
+                ? (data['totalCount'] != null &&
+                    (data['totalCount'] as int) > (items as List).length)
+                : (response.data['meta']?['canNext'] ?? false));
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -93,12 +128,12 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lay danh sach thức ăn gần đây
+  /// Tìm kiếm món ăn gần đây
   Future<FoodDataModel> fetchFoodLatest() async {
     try {
       final Response response = await super.fetchData(
           url: '/App/Diet/FoodLatest',
-          params: {'periodFilterType': '1', 'currentDateTime': '1615348913'});
+          params: {'periodFilterType': '1', 'currentDateTime': (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()});
       if (response.statusCode == 200) {
         return FoodDataModel(
             foods: FoodModel.toList(response.data['data']),
@@ -112,7 +147,7 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lay danh sach thức ăn ưa thích
+  /// Tìm kiếm món ăn ưa thích
   Future<FoodDataModel> fetchFoodFavorite() async {
     try {
       final Response response =
@@ -130,7 +165,7 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lay danh mục thức ăn
+  /// Tìm kiếm danh mục món ăn
   Future<List<FoodCategoryModel>> fetchCategory() async {
     try {
       final Response response =
@@ -146,19 +181,34 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lay danh sach thức ăn theo nhóm
+  /// Tìm kiếm món ăn theo nhóm/keyword
+  /// NEW: uses /App/Food?keyword=X&page=X&pageSize=X for keyword search
   Future<FoodCategoryDataModel> fetchFoodCategory(
       String? foodCategoryId, String? keyword, int? page) async {
     try {
-      final Response response = await super.fetchData(
-          url: '/App/Diet/Food',
-          params: foodCategoryId != null
-              ? {'foodCategoryId': foodCategoryId}
-              : {'searchTerm': keyword, 'page': page.toString(), 'size': '20'});
+      Response response;
+      if (foodCategoryId != null) {
+        // Category search - keep old endpoint
+        response = await super.fetchData(
+            url: '/App/Diet/Food', params: {'foodCategoryId': foodCategoryId});
+      } else {
+        // Keyword search - NEW endpoint
+        response = await super.fetchData(url: '/App/Food', params: {
+          'keyword': keyword,
+          'page': page.toString(),
+          'size': '20'
+        });
+      }
       if (response.statusCode == 200) {
+        final data = response.data['data'];
+        // Support new format
+        final items = data is Map ? (data['items'] ?? []) : (data ?? []);
         return FoodCategoryDataModel(
-            foods: FoodModel.toList(response.data['data']),
-            hasMore: response.data['meta']['canNext']);
+            foods: FoodModel.toList(items),
+            hasMore: data is Map
+                ? (data['totalCount'] != null &&
+                    (data['totalCount'] as int) > (items as List).length)
+                : (response.data['meta']?['canNext'] ?? false));
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -200,31 +250,43 @@ class FoodClient extends FetchClient {
     }
   }
 
-  //nhập chỉ số dinh duỡng
+  // ============================================================
+  // Upload AI Image - NEW: /App/Image/UploadAI/MealScore
+  // ============================================================
+
+  /// Upload ảnh AI và phân tích MealScore
+  /// NEW endpoint: POST /App/Image/UploadAI/MealScore
+  /// Response includes: imageUrl, totalMealScore, scoreRange, carbPercent,
+  /// proteinPercent, fatPercent, vegetablePercent, fruitPercent, aiAdvice, items[]
   Future<List<FoodModel>> postFoodImages(List<String> files) async {
     try {
-      // Validate input files
       if (files.isEmpty) {
         throw 'No files provided for upload';
       }
 
       final Map<String, String> params = {};
       final response = await super.postHttp(
-        path: '/App/Image/UploadAI',
+        path: '/App/Image/UploadAI/MealScore',
         params: params,
         files: files,
       );
 
       final data = await response.stream.bytesToString();
+      print('📸 [UploadAI/MealScore] Status: ${response.statusCode}');
+      print('📸 [UploadAI/MealScore] Response: $data');
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(data);
+        print(
+            '📸 [UploadAI/MealScore] data keys: ${jsonData['data']?.keys?.toList()}');
         if (jsonData['data'] != null && jsonData['data']['items'] != null) {
-          return FoodModel.toList(jsonData['data']['items']);
+          final items = FoodModel.toList(jsonData['data']['items']);
+          print('📸 [UploadAI/MealScore] Parsed ${items.length} food items');
+          return items;
         }
+        print('📸 [UploadAI/MealScore] No items found in response data');
         return [];
       } else {
-        // Include response body in error for better debugging
         throw 'Upload failed with status ${response.statusCode}: ${response.reasonPhrase}\nResponse: $data';
       }
     } catch (e) {
@@ -233,26 +295,75 @@ class FoodClient extends FetchClient {
     }
   }
 
-  //nhập chỉ số dinh duỡng
-  Future<bool> postIndexFood(int date, String? timeFrameId, String note,
+  /// Call MealScore API to get full nutrition analysis and score
+  /// NEW endpoint: POST /App/Image/UploadAI/MealScore
+  /// Returns all MealScore data to be saved with Nutrition Input
+  Future<Map<String, dynamic>?> postMealScore(List<String> files) async {
+    try {
+      if (files.isEmpty) return null;
+
+      final Map<String, String> params = {};
+      final response = await super.postHttp(
+        path: '/App/Image/UploadAI/MealScore',
+        params: params,
+        files: files,
+      );
+
+      final data = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        log('MealScore API response: $data');
+        final jsonData = jsonDecode(data);
+        if (jsonData['data'] != null) {
+          return jsonData['data'] as Map<String, dynamic>;
+        }
+        return null;
+      } else {
+        print('MealScore API failed: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error in postMealScore: $e');
+      return null;
+    }
+  }
+
+  // ============================================================
+  // Create Nutrition Input - NEW: POST /App/Nutrition/Input
+  // ============================================================
+
+  /// Manual Flow: Lưu bữa ăn (user chọn từ DB)
+  /// NEW endpoint: POST /App/Nutrition/Input (multipart/form-data)
+  /// Params: timeFrameId, note, isFromAI=false, items[X].foodId, items[X].portion
+  /// Response: { "success": true, "data": "nutrition-input-guid" }
+  Future<dynamic> postIndexFood(int date, String? timeFrameId, String note,
       List<FoodModel> foods, List<String> files) async {
     try {
       final Map<String, String> params = {
-        'date': date.toString(),
-        'mealId': timeFrameId ?? '',
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
+        'date': date.toString(),
+        'isFromAI': 'false',
+        'createDatetime': date.toString(),
       };
       for (int i = 0; i < foods.length; i++) {
-        params['foods[$i].id'] = foods[i].id ?? '';
-        params['foods[$i].portion'] =
+        params['items[$i].foodId'] = foods[i].id ?? '';
+        params['items[$i].name'] = foods[i].name ?? '';
+        params['items[$i].unit'] = foods[i].unit ?? '';
+        params['items[$i].portion'] =
             foods[i].portion != null ? foods[i].portion.toString() : '1';
-        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '';
       }
       final response = await super
-          .postHttp(path: '/App/Diet/Input', params: params, files: files);
+          .postHttp(path: '/App/Nutrition/Input', params: params, files: files);
       final data = await response.stream.bytesToString();
       print('Upload response status: ${response.statusCode}, data: $data');
+      log('Upload response data: $jsonEncode(response.data)');
       if (response.statusCode == 200) {
+        final jsonData = jsonDecode(data);
+        final responseData = jsonData['data'];
+        if (responseData is Map<String, dynamic>) {
+          return responseData;
+        }
         return true;
       } else {
         throw response.reasonPhrase!;
@@ -262,50 +373,89 @@ class FoodClient extends FetchClient {
     }
   }
 
-  Future<bool> postIndexFoodAI(int date, String? timeFrameId, String note,
-      List<FoodModel> foods, List<String> files) async {
+  /// AI Flow: Lưu bữa ăn từ kết quả phân tích AI
+  /// NEW endpoint: POST /App/Nutrition/Input (JSON body)
+  /// Body: isFromAI=true + all MealScore fields
+  Future<String?> postIndexFoodAI(
+    int date,
+    String? timeFrameId,
+    String note,
+    List<FoodModel> foods,
+    List<String> files, {
+    Map<String, dynamic>? mealScoreData,
+  }) async {
     try {
+      // Build multipart params (all fields must be strings).
       final Map<String, String> params = {
-        'date': date.toString(),
-        'mealId': timeFrameId ?? '',
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'IsGptResult': 'true',
+        'date': date.toString(),
+        'isFromAI': 'true',
+        'createDatetime': date.toString(),
       };
 
-      for (int i = 0; i < foods.length; i++) {
-        final totalCalories = foods[i].calorie != null
-            ? foods[i].calorie!.toDouble() * (foods[i].portion ?? 0).toDouble()
-            : 0.0;
-        final isGptResult = (foods[i].id == null || foods[i].id!.isEmpty) ? 'true' : 'false';
-        params['foods[$i].id'] = foods[i].id ?? '00000000-0000-0000-0000-000000000000';
-        params['foods[$i].name'] = foods[i].name ?? '';
-        params['foods[$i].portion'] = foods[i].portion?.toString() ?? '1';
-        params['foods[$i].foodUnitId'] = foods[i].unit ?? '';
-        params['foods[$i].calorie'] = totalCalories.round().toString();
-        params['foods[$i].glucose'] = foods[i].glucose?.toString() ?? '';
-        params['foods[$i].lipid'] = foods[i].lipid?.toString() ?? '';
-        params['foods[$i].protein'] = foods[i].protein?.toString() ?? '';
-        params['foods[$i].fibre'] = foods[i].fibre?.toString() ?? '';
-        params['foods[$i].liked'] = foods[i].liked?.toString() ?? '';
-        params['foods[$i].text'] = foods[i].text ?? '';
-        params['foods[$i].description'] = foods[i].description ?? '';
-        params['foods[$i].foodCategoryId'] = foods[i].foodCategoryId ?? '';
-        params['foods[$i].quantity'] = foods[i].quantity?.toString() ?? '1';
-        params['foods[$i].mealId'] = foods[i].mealId ?? '';
-        params['foods[$i].timeCode'] = foods[i].timeCode?.toString() ?? '';
-        params['foods[$i].foodMenuCode'] = foods[i].foodMenuCode ?? '';
-        // Handle image object - you might need to send image ID or URL
-        params['foods[$i].imageId'] = foods[i].image?.id ?? '';
-        params['foods[$i].imageUrl'] = foods[i].imageUrl ?? '';
-        params['foods[$i].IsGptResult'] = isGptResult;
+      if (mealScoreData != null) {
+        params['totalMealScore'] =
+            (mealScoreData['totalMealScore'] ?? '').toString();
+        params['scoreRange'] = (mealScoreData['scoreRange'] ?? '').toString();
+        params['carbPercent'] = (mealScoreData['carbPercent'] ?? 0).toString();
+        params['proteinPercent'] =
+            (mealScoreData['proteinPercent'] ?? 0).toString();
+        params['fatPercent'] = (mealScoreData['fatPercent'] ?? 0).toString();
+        params['vegetablePercent'] =
+            (mealScoreData['vegetablePercent'] ?? 0).toString();
+        params['fruitPercent'] =
+            (mealScoreData['fruitPercent'] ?? 0).toString();
+        params['aiAdvice'] = (mealScoreData['aiAdvice'] ?? '').toString();
+
+        // If top-level imageUrl is missing, fallback to first imageUrl in items[].
+        dynamic imageUrl = mealScoreData['imageUrl'];
+        if ((imageUrl == null || imageUrl.toString().isEmpty) &&
+            mealScoreData['items'] is List) {
+          final List<dynamic> items = mealScoreData['items'] as List<dynamic>;
+          for (final dynamic item in items) {
+            if (item is Map &&
+                item['imageUrl'] != null &&
+                item['imageUrl'].toString().isNotEmpty) {
+              imageUrl = item['imageUrl'];
+              break;
+            }
+          }
+        }
+        if (imageUrl != null && imageUrl.toString().isNotEmpty) {
+          params['imageUrl'] = imageUrl.toString();
+        }
       }
-      final response = await super
-          .postHttp(path: '/App/Diet/InputAI', params: params, files: files);
-      log('input AI nutrition params: $params');
+
+      // Build items fields for multipart binding
+      for (int i = 0; i < foods.length; i++) {
+        final food = foods[i];
+        params['items[$i].foodId'] = food.id ?? '';
+        params['items[$i].name'] = food.name ?? '';
+        params['items[$i].unit'] = food.unit ?? '';
+        params['items[$i].portion'] = (food.portion ?? 1).toString();
+        params['items[$i].calorie'] = (food.calorie?.round() ?? 0).toString();
+        params['items[$i].glucose'] = (food.glucose ?? 0).toString();
+        params['items[$i].lipid'] = (food.lipid ?? 0).toString();
+        params['items[$i].protein'] = (food.protein ?? 0).toString();
+        params['items[$i].fibre'] = (food.fibre ?? 0).toString();
+      }
+
+      log('input AI nutrition params: ${jsonEncode(params)}');
+
+      // Send as multipart/form-data
+      final response = await super.postHttp(
+        path: '/App/Nutrition/Input',
+        params: params,
+        files: files,
+      );
+
       final data = await response.stream.bytesToString();
-      print('Upload response status: ${response.statusCode}, data: $data');
+      print(
+          'Upload AI JSON response status: ${response.statusCode}, data: $data');
       if (response.statusCode == 200) {
-        return true;
+        final jsonData = jsonDecode(data);
+        return jsonData['data'] as String?;
       } else {
         throw response.reasonPhrase!;
       }
@@ -314,8 +464,12 @@ class FoodClient extends FetchClient {
     }
   }
 
-  //cập nhật chỉ số vận động
+  // ============================================================
+  // Update Nutrition Input - NEW: PUT /App/Nutrition/Input/{id}
+  // ============================================================
 
+  /// Cập nhật nutrition input
+  /// NEW endpoint: PUT /App/Nutrition/Input/{id} (multipart/form-data)
   Future<bool> updateIndexFood(
       String? id,
       int date,
@@ -326,19 +480,17 @@ class FoodClient extends FetchClient {
       List<String> files) async {
     try {
       final Map<String, String> params = {
-        'id': id ?? '',
-        'date': date.toString(),
-        'mealId': timeFrameId ?? '',
+        'timeFrameId': timeFrameId ?? '',
         'note': note,
-        'removalImageIdsStr': removalImageIds.join(';')
+        'date': date.toString(),
+        'createDatetime': date.toString(),
       };
       for (int i = 0; i < foods.length; i++) {
-        params['foods[$i].id'] = foods[i].id ?? '';
-        params['foods[$i].portion'] =
-            foods[i].portion != null ? foods[i].quantity.toString() : '1';
+        params['items[$i].foodId'] = foods[i].id ?? '';
+        params['items[$i].portion'] = foods[i].portion?.toString() ?? '1';
       }
-      final response = await super
-          .putHttp(path: '/App/Diet/Input', params: params, files: files);
+      final response = await super.putHttp(
+          path: '/App/Nutrition/Input/$id', params: params, files: files);
 
       if (response.statusCode == 200) {
         return true;
@@ -350,10 +502,16 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // xóa chỉ số vận động
+  // ============================================================
+  // Delete Nutrition Input - NEW: DELETE /App/Nutrition/Input/{id}
+  // ============================================================
+
+  /// Xóa nutrition input
+  /// NEW endpoint: DELETE /App/Nutrition/Input/{id}
   Future<bool> deleteInputFood(String? id) async {
     try {
-      final Response response = await super.delete(url: '/App/Diet/Input/$id');
+      final Response response =
+          await super.delete(url: '/App/Nutrition/Input/$id');
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -365,7 +523,56 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lấy biểu đồ năng luợng
+  // ============================================================
+  // Nutrition Summary - NEW: GET /App/Nutrition/Summary
+  // ============================================================
+
+  /// In-flight dedupe **only for the same [periodFilterType] and same moment** (e.g. duplicate
+  /// listeners). **Changing [periodFilterType] always uses a new map entry and a new HTTP GET.**
+  /// This is not a response cache: after the request finishes, the entry is removed
+  /// so the next load for that periodFilterType hits the network again.
+  static final Map<int, Future<NutritionSummaryModel>> _nutritionSummaryInflight =
+      {};
+
+  /// Lấy thống kê dinh dưỡng tổng hợp
+  /// NEW endpoint: GET /App/Nutrition/Summary?periodFilterType=X
+  Future<NutritionSummaryModel> fetchNutritionSummary(int periodFilterType) {
+    return _nutritionSummaryInflight.putIfAbsent(periodFilterType, () {
+      final future = _fetchNutritionSummaryOnce(periodFilterType);
+      future.whenComplete(() => _nutritionSummaryInflight.remove(periodFilterType));
+      return future;
+    });
+  }
+
+  Future<NutritionSummaryModel> _fetchNutritionSummaryOnce(int periodFilterType) async {
+    try {
+      print(
+          '🔍 [NutritionSummary] Calling API: /App/Nutrition/Summary?periodFilterType=$periodFilterType');
+      final Response response = await super.fetchData(
+          url: '/App/Nutrition/Summary', params: {'periodFilterType': periodFilterType.toString()});
+      print('✅ [NutritionSummary] Status code: ${response.statusCode}');
+      print('📦 [NutritionSummary] Response data: ${response.data}');
+      if (response.statusCode == 200) {
+        print(
+            '📊 [NutritionSummary] data[\'data\'] keys: ${response.data['data']?.keys?.toList()}');
+        print(
+            '📈 [NutritionSummary] trendData: ${response.data['data']?['trendData']}');
+        return NutritionSummaryModel.fromJson(response.data['data']);
+      } else {
+        print('⚠️ [NutritionSummary] Non-200 status: ${response.statusCode}');
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      print('❌ [NutritionSummary] Error: $e');
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  // ============================================================
+  // Legacy Statistic Endpoints (kept for backward compatibility)
+  // ============================================================
+
   Future<FoodCaloModel> fetchStatisticCalo() async {
     try {
       final Response response =
@@ -381,7 +588,6 @@ class FoodClient extends FetchClient {
     }
   }
 
-// lấy biểu đồ tinh bột
   Future<FoodCaloModel> fetchStatisticCarb() async {
     try {
       final Response response =
@@ -397,7 +603,6 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lấy biểu đồ dinh duong đã nạp theo ngày
   Future<FoodDietModel> fetchStatisticDetail(
       String? currentDateTime, String? periodFilterType) async {
     try {
@@ -418,7 +623,6 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lấy biểu đồ xu huớng dinh duong
   Future<FoodTrendModel> fetchStatisticTrend(
       String? currentDateTime, String? periodFilterType) async {
     try {
@@ -439,7 +643,6 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lấy biểu đồ năng luợng phân bổ
   Future<FoodDistributeModel> fetchStatisticDistribute(
       String? currentDateTime, String? periodFilterType) async {
     try {
@@ -460,7 +663,29 @@ class FoodClient extends FetchClient {
     }
   }
 
-  // lay danh sach cuong do van dong
+  Future<FoodDistributeModel> fetchFoodGroupDistribute(
+      String? currentDateTime, String? periodFilterType) async {
+    try {
+      final Response response = await super
+          .fetchData(url: '/App/Admin/Diet/Statistic/distribute', params: {
+        'currentDateTime': currentDateTime,
+        'periodFilterType': periodFilterType,
+        'takeAll': 'true'
+      });
+      if (response.statusCode == 200) {
+        return FoodDistributeModel.fromJson(response.data['data']);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  // ============================================================
+  // Other endpoints (kept as-is)
+  // ============================================================
 
   Future<List<ExerciseIntensityModel>> fetchIntensity() async {
     try {
@@ -508,6 +733,50 @@ class FoodClient extends FetchClient {
         throw response.reasonPhrase!;
       }
     } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  Future<List<NutritionLesson>?> fetchNutritionLessons() async {
+    final Response response =
+        await super.fetchData(url: '/App/Lesson/LessonSupport', params: {});
+
+    if (response.statusCode == 200) {
+      final listResponse = ListResponse.fromJson(
+        response.data as Map<String, dynamic>,
+        NutritionLesson.fromJson,
+      );
+      final data = listResponse.data;
+      if (data == null) return null;
+      // Filter out inactive lessons (status == 2)
+      return data.where((e) => e.status != 2).toList();
+    }
+    return null;
+  }
+
+  // Lấy AI analysis cho dinh dưỡng
+  Future<String?> fetchDietAnalysis(int periodFilterType) async {
+    try {
+      print(
+          '🔍 Fetching Diet AI Analysis with periodFilterType: $periodFilterType');
+      final Response response = await super.fetchData(
+        url: '/App/Diet/Analysis/HealthTrend',
+        params: {
+          'periodFilterType': periodFilterType.toString(),
+        },
+      );
+      print('✅ API Response Status: ${response.statusCode}');
+      print('📦 API Response Data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final result = response.data['data'] as String?;
+        print('✨ AI Analysis Result: $result');
+        return result;
+      }
+      print('⚠️ Non-200 status code');
+      return null;
+    } catch (e) {
+      print('❌ fetchDietAnalysis Error: $e');
       throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
     }
   }

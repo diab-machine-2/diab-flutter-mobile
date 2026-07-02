@@ -7,10 +7,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_observer/Observable.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/repo/food/food_client.dart';
-import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/BloodSugar/widget/section_add_note.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
@@ -18,16 +18,21 @@ import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker.dart';
 
+import 'package:medical/src/app_setting/app_setting.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/home/home_client.dart';
 import 'package:medical/src/widget/my_plan_screens/activity_tab/activity_tab/models/schedule_type.dart';
-import 'food_detail_tabbar.dart';
+import 'food_result.dto.dart';
 import 'search_food_controller.dart';
+import 'widget/food_edit_popup.dart';
 
 class ConfirmGeneratedFood extends StatefulWidget {
   final List<FoodModel> generatedFoods;
   final String timeframe;
   final String timeframeId;
   final List<String> files;
+  final Map<String, dynamic>? mealScoreData;
+  final bool isManualInput;
   final String? goalId;
 
   const ConfirmGeneratedFood({
@@ -36,6 +41,8 @@ class ConfirmGeneratedFood extends StatefulWidget {
     required this.timeframe,
     required this.timeframeId,
     required this.files,
+    this.mealScoreData,
+    this.isManualInput = false,
     this.goalId,
   }) : super(key: key);
 
@@ -47,12 +54,34 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   final TextEditingController _controllerNote = TextEditingController();
   final List<FoodModel> _selectedFoods = [];
   List<dynamic> files = [];
+  final List<String> _displayImagePaths = [];
+  int _currentImageIndex = 0;
+  late PageController _pageController;
   int maxMedia = 5;
   DateTime selectedDate = DateTime.now();
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<SectionAddNoteState> _sectionAddNoteKey =
       GlobalKey<SectionAddNoteState>();
   final List<dynamic> _files = [];
+
+  /// Carousel sources: local images (from capture) + food network thumbnails
+  /// from _selectedFoods (AI-generated + manually added via SearchFoodController).
+  List<String> get _carouselImagePaths {
+    final paths = <String>[];
+    // 1. Local device images (captured/selected by user)
+    if (_displayImagePaths.isNotEmpty) {
+      paths.addAll(_displayImagePaths);
+    }
+    // 2. Food network thumbnails from _selectedFoods (deduped against local)
+    for (final food in _selectedFoods) {
+      if (food.image?.url != null && food.image!.url!.isNotEmpty) {
+        if (!paths.contains(food.image!.url)) {
+          paths.add(food.image!.url!);
+        }
+      }
+    }
+    return paths;
+  }
 
   bool get _haveFood => _selectedFoods.isNotEmpty;
 
@@ -64,7 +93,9 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     _selectedFoods.addAll(widget.generatedFoods);
+    _displayImagePaths.addAll(widget.files); // local device paths only
     _files.addAll(widget.files.map((e) => File(e)).toList());
     try {
       developer.log(
@@ -79,6 +110,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
   @override
   void dispose() {
     _controllerNote.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -126,25 +158,79 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                   height: 298,
                                   child: Stack(
                                     children: [
-                                      Positioned.fill(
-                                        child: widget.files.length > 0
-                                            ? Image.file(
-                                                File(widget.files.first),
-                                                fit: BoxFit.cover,
-                                              )
-                                            : SizedBox(),
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.black.withOpacity(0.3),
-                                              Colors.transparent,
-                                            ],
+                                      // Image carousel (local paths or food network URLs)
+                                      if (_carouselImagePaths.isNotEmpty)
+                                        Positioned.fill(
+                                          child: PageView.builder(
+                                            controller: _pageController,
+                                            onPageChanged: (index) {
+                                              setState(() {
+                                                _currentImageIndex = index;
+                                              });
+                                            },
+                                            itemCount:
+                                                _carouselImagePaths.length,
+                                            itemBuilder: (context, index) {
+                                              final path =
+                                                  _carouselImagePaths[index];
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      context,
+                                                      '/photo_view',
+                                                      arguments: {
+                                                        'files':
+                                                            _carouselImagePaths,
+                                                        'index': index,
+                                                      });
+                                                },
+                                                child: (path.startsWith(
+                                                            'http://') ||
+                                                        path.startsWith(
+                                                            'https://'))
+                                                    ? Image.network(
+                                                        path,
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          color: R.color
+                                                              .glucose_bg_color,
+                                                        ),
+                                                      )
+                                                    : Image.file(
+                                                        File(path),
+                                                        fit: BoxFit.cover,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            Container(
+                                                          color: R.color
+                                                              .glucose_bg_color,
+                                                        ),
+                                                      ),
+                                              );
+                                            },
+                                          ),
+                                        )
+                                      else
+                                        Positioned.fill(
+                                          child: SizedBox(),
+                                        ),
+                                      IgnorePointer(
+                                        child: Container(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                              colors: [
+                                                Colors.black.withOpacity(0.3),
+                                                Colors.transparent,
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -156,6 +242,56 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                                         child: Center(
                                             child: _dateTimePickerOverlay()),
                                       ),
+                                      // Image counter (1/n) - góc trái dưới
+                                      if (_carouselImagePaths.isNotEmpty)
+                                        Positioned(
+                                          left: 16,
+                                          bottom: 86,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.black.withOpacity(0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              '${_currentImageIndex + 1}/${_carouselImagePaths.length}',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      // Nút "Đổi ảnh" - góc phải dưới (ẩn khi manual input)
+                                      if (!widget.isManualInput)
+                                        Positioned(
+                                          right: 16,
+                                          bottom: 86,
+                                          child: GestureDetector(
+                                            onTap: _changeImage,
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12, vertical: 6),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              child: Text(
+                                                R.string.change_image.tr(),
+                                                style: TextStyle(
+                                                  color: R.color.textDark,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -249,10 +385,7 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              convertToUTC(
-                selectedDate.millisecondsSinceEpoch ~/ 1000,
-                'HH:mm - dd/MM/yyyy',
-              ),
+              DateFormat('HH:mm - dd/MM/yyyy').format(selectedDate),
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
@@ -324,74 +457,72 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                 .map(
                   (index, food) => MapEntry(
                     index,
-                    Container(
-                      margin: EdgeInsets.only(bottom: 12),
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: R.color.color0xffF7F8F8,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  food.name ?? '',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: R.color.textDark,
+                    GestureDetector(
+                      onTap: () {
+                        _showEditFoodPopup(food, index);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: R.color.color0xffF7F8F8,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    food.name ?? '',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.textDark,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '${food.unit ?? ''}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: R.color.color0xff636A6B,
+                                  SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '${food.portion?.toStringAsFixed(food.portion! % 1 == 0 ? 0 : 1) ?? "1"} ${food.unit ?? ""}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: R.color.color0xff636A6B,
+                                        ),
                                       ),
-                                    ),
-                                    Container(
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 10),
-                                      width: 6,
-                                      height: 6,
-                                      decoration: BoxDecoration(
-                                        color: R.color.color0xffD6D8E0,
-                                        shape: BoxShape.circle,
+                                      Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          color: R.color.color0xffD6D8E0,
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      '${formatNumber((food.calorie ?? 0) * (food.portion ?? 0))} ${R.string.kcal.tr()}',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: R.color.color0xff636A6B,
+                                      Text(
+                                        '${formatNumber((food.calorie ?? 0) * (food.portion ?? 0))} ${R.string.kcal.tr()}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: R.color.color0xff636A6B,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedFoods.removeAt(index);
-                              });
-                            },
-                            child: Image.asset(
-                              R.drawable.ic_food_delete,
+                            Image.asset(
+                              R.drawable.ic_food_edit,
                               width: 32,
                               height: 32,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -463,29 +594,31 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       height: 44,
       width: double.infinity,
-      constraints: BoxConstraints(
-        minHeight: 44,
-        maxHeight: 44,
-        maxWidth: 351,
-      ),
-      child: GestureDetector(
-        onTap: _haveFood ? _submitData : null,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(200),
-            color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
-          ),
-          child: Center(
-            child: Text(
-              R.string.confirm.tr(),
-              style: TextStyle(
-                color: R.color.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: _haveFood ? _submitData : null,
+              child: Container(
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  color: _haveFood ? Color(0xFF008479) : R.color.grayBorder,
+                ),
+                child: Center(
+                  child: Text(
+                    R.string.confirm.tr(),
+                    style: TextStyle(
+                      color: R.color.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -510,7 +643,51 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
     );
   }
 
+  /// Hiển thị popup chỉnh sửa món ăn
+  void _showEditFoodPopup(FoodModel food, int index) {
+    FoodEditPopup.show(
+      context: context,
+      food: food,
+      index: index,
+      onSave: (updatedFood, idx) {
+        setState(() {
+          _selectedFoods[idx] = updatedFood;
+        });
+      },
+      onDelete: (idx) {
+        setState(() {
+          _selectedFoods.removeAt(idx);
+        });
+      },
+    );
+  }
+
+  /// Quay về thư viện để đổi ảnh
+  Future<void> _changeImage() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image == null || image.path.isEmpty) {
+        return;
+      }
+
+      if (!mounted) return;
+      setState(() {
+        if (_displayImagePaths.isEmpty) {
+          _displayImagePaths.add(image.path);
+        } else {
+          _displayImagePaths[0] = image.path;
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      Message.showToastMessage(context, e.toString());
+    }
+  }
+
   // Logic lib/src/widget/Food/add_food.dart function [_submitData]
+  // Updated to use new /App/Nutrition/Input API with MealScore data
   void _submitData() async {
     BotToast.showLoading();
 
@@ -518,7 +695,8 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       List<String> paths = [];
 
       // Step 1: Get note data with error handling
-      developer.log('[CAPTURE] Starting _submitData', name: '[CAPTURE]');
+      developer.log('[CAPTURE] Starting _submitData (new Nutrition API)',
+          name: '[CAPTURE]');
 
       if (_sectionAddNoteKey.currentState == null) {
         throw Exception('SectionAddNoteState is null. Cannot get note data.');
@@ -533,25 +711,22 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       if (data.files.isEmpty) {
         developer.log('[CAPTURE] WARNING: data.files is empty',
             name: '[CAPTURE]');
-        // Use widget.files as fallback
-        for (var filePath in widget.files) {
+        for (var filePath in _displayImagePaths) {
           if (filePath.isNotEmpty) {
             paths.add(filePath);
           }
         }
         developer.log(
-            '[CAPTURE] Using widget.files fallback, paths count: ${paths.length}',
+            '[CAPTURE] Using display image fallback, paths count: ${paths.length}',
             name: '[CAPTURE]');
       } else {
         for (var file in data.files) {
           try {
             if (file is String) {
-              // If the file is a path, add it directly
               if (file.isNotEmpty) {
                 paths.add(file);
               }
             } else if (file is File) {
-              // If the file is a File object, convert it to a path
               if (await file.exists()) {
                 paths.add(file.path);
               } else {
@@ -567,7 +742,23 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           } catch (e) {
             developer.log('[CAPTURE] Error processing file: $e',
                 name: '[CAPTURE]');
-            // Continue with other files
+          }
+        }
+      }
+
+      if (_displayImagePaths.isNotEmpty) {
+        final String currentPrimaryImage = _displayImagePaths.first;
+        final int indexOfCurrentPrimary = paths.indexOf(currentPrimaryImage);
+        if (indexOfCurrentPrimary == -1) {
+          final String? originalPrimaryImage =
+              widget.files.isNotEmpty ? widget.files.first : null;
+          final int indexOfOriginalPrimary = originalPrimaryImage == null
+              ? -1
+              : paths.indexOf(originalPrimaryImage);
+          if (indexOfOriginalPrimary != -1) {
+            paths[indexOfOriginalPrimary] = currentPrimaryImage;
+          } else {
+            paths.insert(0, currentPrimaryImage);
           }
         }
       }
@@ -576,19 +767,16 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           '[CAPTURE] Prepared paths count: ${paths.length}, paths: ${paths.join(", ")}',
           name: '[CAPTURE]');
 
-      if (paths.isEmpty) {
-        throw Exception(
-            'No valid file paths found. Please select at least one image.');
-      }
-
-      // Step 3: Validate file existence
-      for (String path in paths) {
-        final file = File(path);
-        if (!await file.exists()) {
-          developer.log('[CAPTURE] ERROR: File does not exist: $path',
-              name: '[CAPTURE]');
-          throw Exception(
-              'Image file not found: $path. Please select images again.');
+      // Step 3: Validate file existence (chỉ khi có ảnh)
+      if (paths.isNotEmpty) {
+        for (String path in paths) {
+          final file = File(path);
+          if (!await file.exists()) {
+            developer.log('[CAPTURE] ERROR: File does not exist: $path',
+                name: '[CAPTURE]');
+            throw Exception(
+                'Image file not found: $path. Please select images again.');
+          }
         }
       }
 
@@ -597,27 +785,203 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
           '[CAPTURE] Calling API with note length: ${note.length}, foods: ${_selectedFoods.length}, paths: ${paths.length}',
           name: '[CAPTURE]');
 
-      // Step 4: Call API
-      final result = await FoodClient().postIndexFoodAI(
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
-          widget.timeframeId,
-          note,
-          _selectedFoods,
-          paths);
+      // Step 4: Use the MealScore data passed from image capture
+      Map<String, dynamic>? mealScoreData = widget.mealScoreData;
 
-      developer.log('[CAPTURE] API call completed, result: $result',
+      final client = FoodClient();
+      // Manual flow should save with postIndexFood, AI flow keeps postIndexFoodAI.
+      final dynamic result = widget.isManualInput
+          ? await client.postIndexFood(
+              selectedDate.millisecondsSinceEpoch ~/ 1000,
+              widget.timeframeId,
+              _controllerNote.text,
+              _selectedFoods,
+              paths,
+            )
+          : await client.postIndexFoodAI(
+              selectedDate.millisecondsSinceEpoch ~/ 1000,
+              widget.timeframeId,
+              _controllerNote.text,
+              _selectedFoods,
+              paths,
+              mealScoreData: mealScoreData,
+            );
+
+      if (widget.isManualInput && result is Map<String, dynamic>) {
+        mealScoreData = result;
+      }
+
+      developer.log(
+          '[CAPTURE] ${widget.isManualInput ? "postIndexFood" : "postIndexFoodAI"} result: $result',
           name: '[CAPTURE]');
-
-      if (result == true) {
+      final bool isSubmitSuccess = widget.isManualInput
+          ? (result == true || result is Map<String, dynamic>)
+          : (result is String && result.isNotEmpty);
+      if (isSubmitSuccess) {
         if (widget.goalId != null && widget.goalId!.isNotEmpty) {
-          await HomeClient().completeSmartGoal(selectedDate, widget.goalId ?? '',
-              1, ScheduleType.food.typeIndex);
+          await HomeClient().completeSmartGoal(selectedDate,
+              widget.goalId ?? '', 1, ScheduleType.food.typeIndex);
         }
-        // Clean up temporary files created on iOS after successful API submission
-        await _cleanupTempFiles(paths);
+        // Clean up temporary files
+        if (paths.isNotEmpty) {
+          await _cleanupTempFiles(paths);
+        }
+
+        // Parse MealScore response for result screen
+        int? apiScore;
+        String? apiMessage;
+        String? apiRange;
+        Map<String, int>? nutritionPercent;
+        Map<String, String>? nutritionColors;
+
+        if (mealScoreData != null) {
+          apiScore = (mealScoreData['totalMealScore'] as num?)?.toInt();
+          // New API uses 'aiAdvice' instead of 'messageResult'
+          apiMessage = (mealScoreData['aiAdvice'] ??
+              mealScoreData['messageResult']) as String?;
+          // New API uses 'scoreRange' instead of 'totalMealRange'
+          apiRange = (mealScoreData['scoreRange'] ??
+              mealScoreData['totalMealRange']) as String?;
+
+          // Parse nutrition percent from new fields
+          nutritionPercent = {
+            'carb': (mealScoreData['carbPercent'] as num?)?.toInt() ?? 0,
+            'protein': (mealScoreData['proteinPercent'] as num?)?.toInt() ?? 0,
+            'vegetable':
+                (mealScoreData['vegetablePercent'] as num?)?.toInt() ?? 0,
+            'fruit': (mealScoreData['fruitPercent'] as num?)?.toInt() ?? 0,
+            'fat': (mealScoreData['fatPercent'] as num?)?.toInt() ?? 0,
+          };
+
+          // Fallback to old nutritionPercent format
+          final npData = mealScoreData['nutritionPercent'];
+          if (npData != null) {
+            nutritionPercent = {
+              'carb': (npData['carb'] as num?)?.toInt() ??
+                  nutritionPercent['carb'] ??
+                  0,
+              'protein': (npData['protein'] as num?)?.toInt() ??
+                  nutritionPercent['protein'] ??
+                  0,
+              'vegetable': (npData['vegetable'] as num?)?.toInt() ??
+                  nutritionPercent['vegetable'] ??
+                  0,
+              'fruit': (npData['fruit'] as num?)?.toInt() ??
+                  nutritionPercent['fruit'] ??
+                  0,
+              'fat': (npData['fat'] as num?)?.toInt() ??
+                  nutritionPercent['fat'] ??
+                  0,
+            };
+            final colorsData = npData['colors'];
+            if (colorsData != null) {
+              nutritionColors = {
+                'carb': colorsData['carb']?.toString() ?? '#FFCD57',
+                'protein': colorsData['protein']?.toString() ?? '#FFCD57',
+                'vegetable': colorsData['vegetable']?.toString() ?? '#FFCD57',
+                'fruit': colorsData['fruit']?.toString() ?? '#FFCD57',
+                'fat': colorsData['fat']?.toString() ?? '#FFCD57',
+              };
+            }
+          }
+        }
+
+        // Get balance status from API range
+        String? balanceStatus;
+        if (apiRange != null) {
+          switch (apiRange) {
+            case 'excellent':
+              balanceStatus = 'Cân bằng';
+              break;
+            case 'balanced':
+              balanceStatus = 'Cân bằng';
+              break;
+            case 'good':
+              balanceStatus = 'Khá cân bằng';
+              break;
+            case 'fair':
+              balanceStatus = 'Trung bình';
+              break;
+            case 'poor':
+              balanceStatus = 'Chưa cân bằng';
+              break;
+            default:
+              balanceStatus = 'Chưa cân bằng';
+          }
+        }
+
+        // Create FoodResultDto for result screen
+        // Update _selectedFoods with nutrition data from mealScoreData items
+        if (mealScoreData != null && mealScoreData['items'] != null) {
+          final items = mealScoreData['items'] as List;
+          for (final item in items) {
+            final name = item['name'] as String?;
+            if (name == null) continue;
+            final index = _selectedFoods.indexWhere((f) => f.name == name);
+            if (index != -1) {
+              final food = _selectedFoods[index];
+              _selectedFoods[index] = food.copyWith(
+                id: item['foodId'] as String?,
+                calorie: (item['calorie'] as num?)?.toDouble(),
+                glucose: (item['glucose'] as num?)?.toDouble(),
+                lipid: (item['lipid'] as num?)?.toDouble(),
+                protein: (item['protein'] as num?)?.toDouble(),
+                fibre: (item['fibre'] as num?)?.toDouble(),
+              );
+            }
+          }
+        }
+
+        double totalCarbs = _calculateTotalCarbs();
+        double totalProtein = _calculateTotalProtein();
+        double totalFat = _calculateTotalFat();
+
+        double finalTotalKcal = totalKcal;
+        if (finalTotalKcal == 0.0 &&
+            mealScoreData != null &&
+            mealScoreData['items'] != null) {
+          final items = mealScoreData!['items'] as List;
+          finalTotalKcal = items.fold<double>(
+            0,
+            (sum, item) => sum + ((item['calorie'] as num?)?.toDouble() ?? 0),
+          );
+        }
+
+        final foodResult = FoodResultDto(
+          id: '',
+          dateTime: selectedDate,
+          timeFrame: widget.timeframe,
+          timeFrameId: widget.timeframeId,
+          totalCalories: finalTotalKcal,
+          goalCalories: (AppSettings.userInfo?.energyGoal ?? 2000).toDouble(),
+          carbs: totalCarbs,
+          protein: totalProtein,
+          fat: totalFat,
+          vegetables: nutritionPercent?['vegetable']?.toDouble(),
+          fruits: nutritionPercent?['fruit']?.toDouble(),
+          foods: _selectedFoods,
+          note: note,
+          images: [],
+          healthRecommendation: apiMessage,
+          isFetchAnalysis: false,
+          score: apiScore,
+          balanceStatus: balanceStatus,
+          nutritionPercent: nutritionPercent,
+          nutritionColors: nutritionColors,
+          references: mealScoreData?['references'] != null
+              ? (mealScoreData!['references'] as List)
+                  .map((e) => AiReference.fromJson(e as Map<String, dynamic>))
+                  .toList()
+              : null,
+        );
+
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
         Navigator.pop(context);
-        // NavigationUtil.navigatePage(context, FoodDetailTabbarController(initialTabIndex: 1));
+        Navigator.pushNamed(
+          context,
+          NavigatorName.add_food_result,
+          arguments: foodResult,
+        );
       }
       print("[KPI] close all loading.");
       BotToast.closeAllLoading();
@@ -638,7 +1002,6 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
         errorMessage = e.toString();
       }
 
-      // Show user-friendly error message
       Message.showToastMessage(context, errorMessage);
     }
   }
@@ -669,6 +1032,30 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
       developer.log('[CAPTURE] Error in cleanup process: $e',
           name: '[CAPTURE]');
     }
+  }
+
+  double _calculateTotalCarbs() {
+    double total = 0;
+    _selectedFoods.forEach((element) {
+      total += (element.glucose ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalProtein() {
+    double total = 0;
+    _selectedFoods.forEach((element) {
+      total += (element.protein ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalFat() {
+    double total = 0;
+    _selectedFoods.forEach((element) {
+      total += (element.lipid ?? 0) * (element.portion ?? 0);
+    });
+    return total;
   }
 
   void _showDialogSave() {
@@ -756,12 +1143,12 @@ class _ConfirmGeneratedFoodState extends State<ConfirmGeneratedFood> {
                               Navigator.pop(context); // Close dialog
                               Navigator.pop(context); // Close confirm_gen_food
                               // Navigate back to food image capture screen
-                              Navigator.pushNamed(
-                                  context, NavigatorName.food_image_capture,
-                                  arguments: {
-                                    'timeframe': widget.timeframe,
-                                    'timeframeId': widget.timeframeId,
-                                  });
+                              // Navigator.pushNamed(
+                              //     context, NavigatorName.food_image_capture,
+                              //     arguments: {
+                              //       'timeframe': widget.timeframe,
+                              //       'timeframeId': widget.timeframeId,
+                              //     });
                             },
                             child: Container(
                               height: 43,

@@ -1,5 +1,5 @@
 class Const {
-  static const String ENVIRONMENT_DEFAULT = "dev"; //product or staging or dev
+  static const String ENVIRONMENT_DEFAULT = "product"; //product or staging or dev
 
   static const String IS_DOMAIN = "is.diab.com.vn";
   static const String IS_DOMAIN_STAGING = "is.staging.diab.com.vn";
@@ -92,6 +92,7 @@ class Const {
   static const String TIME = "hh:mm aa";
   static const String NIPRO_DEVICES = "nipro_devices";
 
+  static const String CHAT_MODEL = "gemini";
   static const String key_app_language = "AppLanguage";
 
   static const String HIDE_OVERLAY_KEY = "HideOverlayKey";

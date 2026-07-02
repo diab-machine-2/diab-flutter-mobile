@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -17,6 +17,8 @@ import 'package:medical/src/widget/BloodSugar/widget/action_list_filter_trend.da
 import 'package:medical/src/widget/Exercrises/widget/dash_line_horizontal.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_tabble.dart';
 import 'package:medical/src/widget/helper/helper.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
+import 'package:medical/src/widget/components/ai_references_widget.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -25,7 +27,7 @@ import 'ai_loading_text_widget.dart';
 import 'aihelp_butotn.dart';
 
 typedef BloodSugarChartCallback = void Function(
-    BloodSugarRangeType? rangeType, String? aiSuggestion);
+    BloodSugarRangeType? rangeType, AiRecommendationResult? aiSuggestion);
 
 class BloodSugarChart extends StatefulWidget {
   BloodSugarChart({
@@ -250,7 +252,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
           if (state is GlucoseError) {
             Message.showToastMessage(context, state.message);
           }
-          String? aiSuggestion;
+          AiRecommendationResult? aiSuggestion;
           String? mostAppearType;
           String? mostAppearTypeColor;
           BloodSugarRangeType? rangeType;
@@ -661,7 +663,8 @@ class BloodSugarChartState extends State<BloodSugarChart>
     );
   }
 
-  Widget _sectionAIHelp(String? aiSuggestion, BloodSugarRangeType? rangeType) {
+  Widget _sectionAIHelp(
+      AiRecommendationResult? aiSuggestion, BloodSugarRangeType? rangeType) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -673,6 +676,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // AI result
           Row(
@@ -689,19 +693,15 @@ class BloodSugarChartState extends State<BloodSugarChart>
               ),
               const SizedBox(width: 6),
               Image.asset(R.drawable.ic_info, width: 18, height: 18),
-              // InkWell(
-              //   onTap: () {},
-              //   child: Image.asset(R.drawable.ic_speak_text, width: 24, height: 24),
-              // ),
             ],
           ),
           const SizedBox(height: 8),
           if (aiSuggestion == null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: const AILoadingTextWidget(),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: AILoadingTextWidget(),
             )
-          else if (aiSuggestion.isEmpty)
+          else if (aiSuggestion.recommendation.isEmpty)
             Text(
               'CÃ³ lá»—i xáº£y ra',
               style: TextStyle(
@@ -712,7 +712,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
             )
           else ...[
             Text(
-              aiSuggestion,
+              aiSuggestion.recommendation,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -720,6 +720,7 @@ class BloodSugarChartState extends State<BloodSugarChart>
                 height: 16 / 12,
               ),
             ),
+            AiReferencesWidget(references: aiSuggestion.references),
             const SizedBox(height: 16),
             AIHelpButton(rangeType: rangeType),
           ],
@@ -916,12 +917,13 @@ class BloodSugarChartState extends State<BloodSugarChart>
             );
           }).toList(),
           touchTooltipData: LineTouchTooltipData(
-            showOnTopOfTheChartBoxArea: true,
+            showOnTopOfTheChartBoxArea: false,
             fitInsideHorizontally: true,
-            fitInsideVertically: true,
+            fitInsideVertically: false,
             getTooltipColor: (LineBarSpot touchedSpot) => R.color.transparent,
             tooltipRoundedRadius: 8,
-            tooltipPadding: const EdgeInsets.only(bottom: 50),
+            tooltipMargin: 18,
+            tooltipPadding: const EdgeInsets.symmetric(horizontal: 4),
             getTooltipItems: (lineBarsSpot) {
               return lineBarsSpot.map((spot) {
                 return LineTooltipItem(
@@ -1075,3 +1077,4 @@ class BloodSugarChartState extends State<BloodSugarChart>
         page: '1'));
   }
 }
+

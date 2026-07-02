@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -743,12 +743,13 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
             );
           }).toList(),
           touchTooltipData: LineTouchTooltipData(
-            showOnTopOfTheChartBoxArea: true,
+            showOnTopOfTheChartBoxArea: false,
             fitInsideHorizontally: true,
-            fitInsideVertically: true,
+            fitInsideVertically: false,
             getTooltipColor: (LineBarSpot touchedSpot) => R.color.transparent,
             tooltipRoundedRadius: 8,
-            tooltipPadding: const EdgeInsets.only(bottom: 50),
+            tooltipMargin: 18,
+            tooltipPadding: const EdgeInsets.symmetric(horizontal: 4),
             getTooltipItems: (lineBarsSpot) {
               return lineBarsSpot.map((spot) {
                 return LineTooltipItem(
@@ -964,3 +965,4 @@ class ExercrisesTrendTimeChartState extends State<ExercrisesTrendTimeChart>
     // ];
   }
 }
+

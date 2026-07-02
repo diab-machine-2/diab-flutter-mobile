@@ -25,17 +25,16 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../my_plan/my_plan.dart';
 import '../lesson_detail/lesson_detail.dart';
 import 'lesson_tab.dart';
-import 'module_lessons_page.dart';
 
-/// Recommendation filter chip: type index -> label.
-const Map<int, String> _recommendationChipLabels = {
-  0: 'Tất cả',
-  1: 'Theo dõi chỉ số',
-  2: 'Tinh thần',
-  3: 'Tâm lý hành vi',
-  4: 'Dinh dưỡng',
-  5: 'Bệnh lý',
-  6: 'Vận động',
+/// Recommendation filter chip: type index -> localized label lambda.
+final Map<int, String Function()> _recommendationChipLabels = {
+  0: () => R.string.all.tr(),
+  1: () => R.string.recommendation_track_index.tr(),
+  2: () => R.string.recommendation_spirit.tr(),
+  3: () => R.string.recommendation_behavioral_psychology.tr(),
+  4: () => R.string.dinh_duong.tr(),
+  5: () => R.string.recommendation_pathology.tr(),
+  6: () => R.string.van_dong.tr(),
 };
 
 class LessonTabPage extends StatefulWidget {
@@ -638,7 +637,7 @@ class _LessonTabPageState extends State<LessonTabPage>
               separatorBuilder: (_, __) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final isActive = _cubit.recommendationType == index;
-                final label = _recommendationChipLabels[index] ?? '';
+                final label = _recommendationChipLabels[index]?.call() ?? '';
                 return Material(
                   color: Colors.transparent,
                   child: InkWell(

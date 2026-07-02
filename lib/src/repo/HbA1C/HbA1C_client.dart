@@ -9,6 +9,7 @@ import 'package:medical/src/modal/HbA1C/HbA1C_trend.dart';
 import 'package:medical/src/modal/HbA1C/short_gui.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/modal/learning/learning_post_model.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/response/base/response.dart';
 import 'package:medical/src/model/response/config/hba1c_color_config.dart';
 import 'package:medical/src/widget/helper/http_helper.dart';
@@ -126,7 +127,8 @@ class HbA1CClient extends FetchClient {
         'description': description
       };
       log('HbA1C input params: $params');
-      final response = await super.postHttp(path: '/App/HbA1C/Input', params: params, files: files);
+      final response = await super
+          .postHttp(path: '/App/HbA1C/Input', params: params, files: files);
 
       if (response.statusCode == 200) {
         return true;
@@ -215,7 +217,7 @@ class HbA1CClient extends FetchClient {
     }
   }
 
-  Future<String?> fetchHbA1CInputAnalysis({
+  Future<AiRecommendationResult?> fetchHbA1CInputAnalysis({
     String? id,
     required String hba1cValue,
     required int date,
@@ -229,10 +231,11 @@ class HbA1CClient extends FetchClient {
           'hba1cValue': hba1cValue,
           'date': date.toString(),
           'note': note ?? '',
+          'includeReferences': 'true',
         },
       );
       if (response.statusCode == 200) {
-        return response.data['data'] as String?;
+        return AiRecommendationResult.fromDynamic(response.data['data']);
       } else {
         final error = Error.fromJson(response);
         throw error;
@@ -242,10 +245,11 @@ class HbA1CClient extends FetchClient {
     }
   }
 
-  Future<String?> fetchHbA1CTrendAnalysis(int periodFilterType,
+  Future<AiRecommendationResult?> fetchHbA1CTrendAnalysis(int periodFilterType,
       {bool takeAll = false}) async {
     try {
       Map<String, String> params = {
+        'includeReferences': 'true',
         'currentDateTime':
             (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
         'page': '1',
@@ -265,10 +269,9 @@ class HbA1CClient extends FetchClient {
       );
 
       if (response.statusCode == 200) {
-        final singleResponse = SingleResponse.fromJsonTypeString(
-          response.data as Map<String, dynamic>,
+        return AiRecommendationResult.fromDynamic(
+          (response.data as Map<String, dynamic>)['data'],
         );
-        return singleResponse.data;
       }
       return null;
     } catch (e) {

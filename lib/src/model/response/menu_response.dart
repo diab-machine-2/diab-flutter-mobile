@@ -223,6 +223,9 @@ class MenuResponseListdayfoodTimeGroups {
   }
 
   String? get mealName {
+    if (timeCode == 1) return R.string.meal_breakfast.tr();
+    if (timeCode == 2) return R.string.meal_lunch.tr();
+    if (timeCode == 3) return R.string.meal_dinner.tr();
     if (timeCode == 4) return R.string.breakfast_sub_meal.tr();
     if (timeCode == 5) return R.string.lunch_sub_meal.tr();
     if (timeCode == 6) return R.string.dinner_sub_meal.tr();

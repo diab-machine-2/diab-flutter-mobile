@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -1281,12 +1281,15 @@ class BloodPressureChartState extends State<BloodPressureChart>
                                   }).toList();
                                 },
                                 touchTooltipData: LineTouchTooltipData(
-                                  showOnTopOfTheChartBoxArea: true,
-                                  fitInsideVertically: true,
+                                  showOnTopOfTheChartBoxArea: false,
+                                  fitInsideVertically: false,
                                   fitInsideHorizontally: true,
                                   getTooltipColor: (LineBarSpot touchedSpot) =>
                                       Colors.transparent,
                                   tooltipRoundedRadius: 8,
+                                  tooltipMargin: 18,
+                                  tooltipPadding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
                                   getTooltipItems:
                                       (List<LineBarSpot> lineBarsSpot) {
                                     return lineBarsSpot.map((lineBarSpot) {
@@ -1573,3 +1576,4 @@ class BloodPressureChartState extends State<BloodPressureChart>
     ];
   }
 }
+
