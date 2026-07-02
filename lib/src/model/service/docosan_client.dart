@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:medical/src/model/preference/app_preference.dart';
@@ -12,6 +14,7 @@ const _defaultReceiveTimeout = Duration(minutes: 1);
 
 class DocosanClient {
   late DocosanApi docosanClient;
+  late Dio dio;
 
   DocosanClient._() {
     _setupClient();
@@ -20,7 +23,7 @@ class DocosanClient {
   DocosanApi getDocosanClient() {
     _setupClient();
     return docosanClient;
-}
+  }
 
   static final DocosanClient _instance = DocosanClient._();
 
@@ -28,6 +31,7 @@ class DocosanClient {
 
   void _setupClient() {
     final Dio _dio = Dio();
+    dio = _dio;
     // final user_agent = await userAgent();
     _dio
       ..options.connectTimeout = _defaultConnectTimeout

@@ -197,4 +197,10 @@ class NavigatorName {
   static const String view_test_result = '/bcb-campaign/view-test-result';
   static const String campaign_test_result_detail =
       '/bcb-campaign/test-result-detail';
+
+  // BENEFIT FLOW
+  static const String benefit_page = '/benefit_page';
+  static const String benefit_clinic_list = '/benefit_clinic_list';
+  static const String benefit_branch = '/benefit_branch';
 }
+

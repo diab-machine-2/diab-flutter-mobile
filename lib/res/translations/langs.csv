@@ -1648,3 +1648,20 @@ gallery_permission_denied_body_android,"Vui lòng cấp quyền truy cập thư 
 gallery_permission_denied_body,"Vui lòng cấp quyền truy cập thư viện ảnh để sử dụng tính năng này.\n\nBạn có thể cấp quyền trong phần Cài đặt của thiết bị.","Please grant photo library access to use this feature.\n\nYou can grant access in your device Settings.",
 gallery_permission_denied_body_ios,"Vui lòng cấp quyền truy cập thư viện ảnh\ntrong Cài đặt để sử dụng tính năng này.\n\nTrên iOS, bạn có thể quản lý quyền truy cập ảnh\ntrong Cài đặt > Quyền riêng tư > Ảnh.","Please grant photo library access\nin Settings to use this feature.\n\nOn iOS, you can manage photo access\nin Settings > Privacy > Photos.",
 go_to_settings,Đi tới Cài đặt,Go to Settings,
+benefit_title,Quyền lợi,Benefits,
+benefit_at_clinic,Đặt khám,At Clinic,
+benefit_telemedicine,Khám từ xa,Telemedicine,
+booking_note_text_hint,"Lý do khám, nhu cầu tư vấn...","Reason for examination, consultation needs..."
+specialty_tien_dai_thao_duong,Tiền Đái Tháo Đường,Pre-diabetes
+specialty_dai_thao_duong,Đái Tháo Đường,Diabetes
+specialty_dinh_duong,Dinh Dưỡng,Nutrition
+specialty_tang_huyet_ap,Tăng Huyết Áp,Hypertension
+specialty_thua_can_beo_phi,Thừa Cân Béo Phì,Overweight Obesity
+specialty_dai_thao_duong_thai_ky,Đái Tháo Đường Thai Kỳ,Gestational Diabetes
+specialty_tim_mach,Tim Mạch,Cardiology
+specialty_roi_loan_chuyen_hoa,Rối Loạn Chuyển Hóa,Metabolic Disorder
+specialty_than_man_tinh,Thận Mạn Tính,Chronic Kidney
+specialty_tinh_than,Tinh Thần,Mental Health
+benefit_select_branch,Chọn cơ sở,Select facility
+benefit_no_branch_data,Không có cơ sở nào,No facility available,
+thoi_gian_kham,Thời gian khám,Visit time

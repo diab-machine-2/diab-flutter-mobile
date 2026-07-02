@@ -265,4 +265,8 @@ class Const {
   static const hasWeightRecord = "has_weight_record";
   static const shouldTutorial = "shouldTutorial";
   static const hasNewWeightRecordInFirst = "has_new_weight_record_in_first";
+
+  // Benefit section booking flow types
+  static const String BENEFIT_BOOKING_AT_CLINIC = 'benefit_at_clinic';
+  static const String BENEFIT_BOOKING_TELEMEDICINE = 'benefit_telemedicine';
 }

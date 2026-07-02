@@ -66,6 +66,7 @@ import 'widget/home_activity.dart';
 import 'widget/home_measurement_summary.dart';
 import 'widget/home_news.dart';
 import 'widget/sync_modal.dart';
+import 'widget/home_benefit.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({super.key, this.sharedCode});
@@ -1052,6 +1053,13 @@ class _HomeControllerState extends State<HomeController>
                                 ),
                               ),
                             ),
+
+                          const SizedBox(height: 16.0),
+
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 12.0),
+                            child: HomeBenefitSection(),
+                          ),
 
                           const SizedBox(height: 16.0),
 

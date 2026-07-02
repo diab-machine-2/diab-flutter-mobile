@@ -1718,4 +1718,21 @@ class Strings {
   String get gallery_permission_denied_body_ios =>
       'gallery_permission_denied_body_ios';
   String get go_to_settings => 'go_to_settings';
+  String get benefit_title => 'benefit_title';
+  String get benefit_at_clinic => 'benefit_at_clinic';
+  String get benefit_telemedicine => 'benefit_telemedicine';
+  String get booking_note_text_hint => 'booking_note_text_hint';
+  String get specialty_tien_dai_thao_duong => 'specialty_tien_dai_thao_duong';
+  String get specialty_dai_thao_duong => 'specialty_dai_thao_duong';
+  String get specialty_dinh_duong => 'specialty_dinh_duong';
+  String get specialty_tang_huyet_ap => 'specialty_tang_huyet_ap';
+  String get specialty_thua_can_beo_phi => 'specialty_thua_can_beo_phi';
+  String get specialty_dai_thao_duong_thai_ky => 'specialty_dai_thao_duong_thai_ky';
+  String get specialty_tim_mach => 'specialty_tim_mach';
+  String get specialty_roi_loan_chuyen_hoa => 'specialty_roi_loan_chuyen_hoa';
+  String get specialty_than_man_tinh => 'specialty_than_man_tinh';
+  String get specialty_tinh_than => 'specialty_tinh_than';
+  String get benefit_select_branch => 'benefit_select_branch';
+  String get benefit_no_branch_data => 'benefit_no_branch_data';
+  String get thoi_gian_kham => 'thoi_gian_kham';
 }

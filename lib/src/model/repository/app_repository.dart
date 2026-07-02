@@ -1242,6 +1242,16 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<ClinicSpecialtyListResponse>> getCLinicSpecialtyListDiab() async {
+    try {
+      final response =
+          await docosanClient.getCLinicSpecialtyListDiab(language: "vi");
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<GetCustomerReceivesUserResponse>> getCustomerReceivesUser(
       String phoneNumber) async {
     try {
@@ -1267,6 +1277,16 @@ class AppRepository {
       {required SearchBookingClinicListRequest request}) async {
     try {
       final response = await docosanClient.searchBookingClinicList(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<SearchListClinicResponse>> searchListBookingClinicDiab(
+      {required SearchBookingClinicListRequest request}) async {
+    try {
+      final response = await docosanClient.searchBookingClinicListDiab(request);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));

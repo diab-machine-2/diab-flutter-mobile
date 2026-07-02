@@ -659,6 +659,26 @@ class Drawables {
       "lib/res/drawables/clinic_specialty/tieu-duong.png";
   String get banner_benh_khac =>
       "lib/res/drawables/clinic_specialty/benh-khac.png";
+  String get banner_tien_dai_thao_duong =>
+      "lib/res/drawables/clinic_specialty/tien-dai-thao-duong.jpg";
+  String get banner_dai_thao_duong =>
+      "lib/res/drawables/clinic_specialty/dai-thao-duong.jpg";
+  String get banner_dinh_duong =>
+      "lib/res/drawables/clinic_specialty/dinh-duong.jpg";
+  String get banner_tang_huyet_ap =>
+      "lib/res/drawables/clinic_specialty/tang-huyet-ap.jpg";
+  String get banner_thua_can_beo_phi =>
+      "lib/res/drawables/clinic_specialty/thua-can-beo-phi.jpg";
+  String get banner_dai_thao_duong_thai_ky =>
+      "lib/res/drawables/clinic_specialty/dai-thao-duong-thai-ky.jpg";
+  String get banner_tim_mach =>
+      "lib/res/drawables/clinic_specialty/tim-mach.jpg";
+  String get banner_roi_loan_chuyen_hoa =>
+      "lib/res/drawables/clinic_specialty/roi-loan-chuyen-hoa.jpg";
+  String get banner_than_man_tinh =>
+      "lib/res/drawables/clinic_specialty/than-man-tinh.jpg";
+  String get banner_tinh_than =>
+      "lib/res/drawables/clinic_specialty/tinh-than.jpg";
   String get bg_empty_clinic => "lib/res/drawables/bg_empty_clinic.png";
   String get ic_money => "lib/res/drawables/ic_money.png";
   String get ic_dialog_fail => "lib/res/drawables/ic_dialog_fail.png";

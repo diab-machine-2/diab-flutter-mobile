@@ -12,26 +12,72 @@ class SearchListClinicResponse {
   });
 
   factory SearchListClinicResponse.fromJson(Map<String, dynamic> json) {
+    final rawData = json['data'];
+    final rawAttr = json['attr'];
     return SearchListClinicResponse(
-      code: json['code'],
-      data: BookingClinicData.fromJson(json['data']),
-      attr: Attr.fromJson(json['attr']),
+      code: json['code'] ?? 0,
+      data: (rawData is Map<String, dynamic>)
+          ? BookingClinicData.fromJson(rawData)
+          : BookingClinicData(providers: []),
+      attr: (rawAttr is Map<String, dynamic>)
+          ? Attr.fromJson(rawAttr)
+          : Attr(total: 0),
     );
   }
 }
 
 class BookingClinicData {
   final List<BookingClinicProvider> providers;
+  final List<ClinicCluster> clusters;
 
-  BookingClinicData({required this.providers});
+  BookingClinicData({required this.providers, this.clusters = const []});
 
   factory BookingClinicData.fromJson(Map<String, dynamic> json) {
+    final rawProviders = json['providers'];
+    final rawClusters = json['clusters'];
     return BookingClinicData(
-      providers: (json['providers'] as List)
-          .map((e) => BookingClinicProvider.fromJson(e))
-          .toList(),
+      providers: (rawProviders is List)
+          ? rawProviders
+              .map((e) => BookingClinicProvider.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
+      clusters: (rawClusters is List)
+          ? rawClusters
+              .map((e) => ClinicCluster.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
     );
   }
+}
+
+class ClinicCluster {
+  final int clinicId;
+  final String name;
+  final List<BranchItem> branches;
+
+  ClinicCluster({required this.clinicId, required this.name, required this.branches});
+
+  factory ClinicCluster.fromJson(Map<String, dynamic> json) => ClinicCluster(
+    clinicId: json['clinic_id'] ?? 0,
+    name: json['name'] ?? '',
+    branches: (json['branches'] as List?)
+        ?.map((e) => BranchItem.fromJson(e as Map<String, dynamic>))
+        .toList() ?? [],
+  );
+}
+
+class BranchItem {
+  final int clinicId;
+  final String name;
+  final String address;
+
+  BranchItem({required this.clinicId, required this.name, required this.address});
+
+  factory BranchItem.fromJson(Map<String, dynamic> json) => BranchItem(
+    clinicId: json['clinic_id'] ?? 0,
+    name: json['name'] ?? '',
+    address: json['address'] ?? '',
+  );
 }
 
 class Attr {
@@ -41,13 +87,13 @@ class Attr {
 
   Attr({
     required this.total,
-     this.totalPage,
-     this.currentPage,
+    this.totalPage,
+    this.currentPage,
   });
 
   factory Attr.fromJson(Map<String, dynamic> json) {
     return Attr(
-      total: json['total'],
+      total: json['total'] ?? 0,
       totalPage: json['total_page'] ?? 0,
       currentPage: json['current_page'] ?? 0,
     );

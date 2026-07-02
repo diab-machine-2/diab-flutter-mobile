@@ -48,6 +48,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   late List<ClinicReview> listClinicReview = [];
   late List<ClinicSpecialty> listSpecialty = [];
   late List<BookingClinicProvider> listBookingClinicProvider = [];
+  List<ClinicCluster> listClinicClusters = [];
+  List<BranchItem>? selectedClinicBranches;
 
   DsmesClinicModel? selectedClinic;
   DsmesAppointment? currentDsmesAppointment;
@@ -58,6 +60,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
   // Examination flow state
   bool isExamination = false;
+  bool isBenefitFlow = false;
   String? examinationType;
   String? examinationLocation; // Const.EXAMINATION_LOCATION_HOME or Const.EXAMINATION_LOCATION_CLINIC
   String? smartGoalId;
@@ -150,6 +153,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
   void clearClinicProviders() {
     listBookingClinicProvider.clear();
+    listClinicClusters.clear();
+    selectedClinicBranches = null;
     clinicProviderCurrentPage = 1;
     clinicProviderHasMore = true;
   }
@@ -365,8 +370,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
   Future<List<ClinicSpecialty>> getCLinicSpecialtyList({String? top}) async {
     List<ClinicSpecialty> specialties = [];
     emit(DsmesAppointmentLoading());
-    ApiResult<ClinicSpecialtyListResponse> apiResult =
-        await appRepository.getCLinicSpecialtyList();
+    ApiResult<ClinicSpecialtyListResponse> apiResult = isBenefitFlow
+        ? await appRepository.getCLinicSpecialtyListDiab()
+        : await appRepository.getCLinicSpecialtyList();
     apiResult.when(success: (ClinicSpecialtyListResponse response) {
       listSpecialty = response.data;
       specialties = listSpecialty;
@@ -397,7 +403,9 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
     ApiResult<SearchListClinicResponse> apiResult =
         bookingType == Const.BOOKING_TYPE_CLINIC
-            ? await appRepository.searchListBookingClinic(request: request)
+            ? (isBenefitFlow
+                ? await appRepository.searchListBookingClinicDiab(request: request)
+                : await appRepository.searchListBookingClinic(request: request))
             : await appRepository.searchListBookingDoctor(request: request);
 
     apiResult.when(success: (SearchListClinicResponse response) {
@@ -411,6 +419,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
 
       if (isRefresh) {
         listBookingClinicProvider = providers;
+        listClinicClusters = response.data.clusters;
       } else {
         listBookingClinicProvider.addAll(providers);
       }
@@ -730,7 +739,10 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       String lat = '',
       String lng = '',
       String kind = 'clinic',
-      String name = ''}) {
+      String name = '',
+      int isFilterDistance = 1,
+      String clinicId = '',
+      }) {
     searchBookingClinicListRequest = SearchBookingClinicListRequest(
       page: page.toString(),
       urlKeywords: [],
@@ -739,6 +751,8 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       lat: lat,
       lng: lng,
       kind: kind,
+      isFilterDistance: isFilterDistance,
+      clinicId: clinicId,
     );
   }
 

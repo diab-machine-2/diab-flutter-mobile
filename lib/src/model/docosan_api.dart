@@ -76,8 +76,17 @@ abstract class DocosanApi {
     @Query('version') String? version,
   });
 
+  @GET("api/diseases-configuration-diab")
+  Future<ClinicSpecialtyListResponse> getCLinicSpecialtyListDiab({
+    @Query('language') String? language,
+  });
+
   @POST("api/seo-static-link-multi")
   Future<SearchListClinicResponse> searchBookingClinicList(
+      @Body() SearchBookingClinicListRequest request);
+
+  @POST("api/seo-static-link-multi-diab")
+  Future<SearchListClinicResponse> searchBookingClinicListDiab(
       @Body() SearchBookingClinicListRequest request);
 
   @GET("api/partner-doctor")
