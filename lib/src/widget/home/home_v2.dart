@@ -901,10 +901,12 @@ class _HomeControllerState extends State<HomeController>
                                     .blood_pressure_intro_1st_page);
                                 return;
                               }
-                              // check first time open dinh duong
-                              if (routeName == NavigatorName.add_food &&
-                                  !_haveInputFoodAlready) {
-                                FoodActionPopup.show(context);
+                              // Nutrition: same source as KPI ("dinh dưỡng" row)
+                              if (routeName == NavigatorName.add_food ||
+                                  routeName == NavigatorName.detail_food ||
+                                  routeName ==
+                                      NavigatorName.nutrient_intro_1st_page) {
+                                _pushNutritionEntry(context);
                                 return;
                               }
                               // case input exercise
@@ -1392,9 +1394,9 @@ class _HomeControllerState extends State<HomeController>
         if (await _showGlucoseAddBottomSheet(item.navigatorName) == false) {
           return;
         }
-        // case dinh duong
+        // case dinh duong — uses home measurement state (see _haveInputFoodAlready)
         if (item.navigatorName == NavigatorName.add_food) {
-          FoodActionPopup.show(context);
+          _pushNutritionEntry(context);
           return;
         }
         // case HbA1C - check if user has data
@@ -1755,6 +1757,15 @@ class _HomeControllerState extends State<HomeController>
     } catch (e) {
       // In case of error, assume no data
       return false;
+    }
+  }
+
+  /// Opens nutrition detail or first-time intro from home KPI state.
+  void _pushNutritionEntry(BuildContext context) {
+    if (_haveInputFoodAlready) {
+      Navigator.pushNamed(context, NavigatorName.detail_food);
+    } else {
+      Navigator.pushNamed(context, NavigatorName.nutrient_intro_1st_page);
     }
   }
 }

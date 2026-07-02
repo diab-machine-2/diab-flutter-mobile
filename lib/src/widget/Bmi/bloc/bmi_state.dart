@@ -1,3 +1,4 @@
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/response/bmi_get_weight_lessons_response.dart';
 import 'package:medical/src/model/response/bmi_get_weight_list_response.dart';
 import 'package:medical/src/model/response/bmi_statistical_response.dart';
@@ -75,13 +76,13 @@ class BmiGetWeightLessonsState extends BmiState {
 class BmiGetAIAnalysicState extends BmiState {
   const BmiGetAIAnalysicState(this.data);
 
-  final Resource<String> data;
+  final Resource<AiRecommendationResult> data;
 }
 
 class BmiGetAIIndexAnalysicState extends BmiState {
   const BmiGetAIIndexAnalysicState(this.data);
 
-  final Resource<String> data;
+  final Resource<AiRecommendationResult> data;
 }
 
 class BmiUpdatedWeightGoalState extends BmiState {

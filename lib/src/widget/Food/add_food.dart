@@ -15,6 +15,7 @@ import 'package:medical/src/modal/base/images.dart';
 import 'package:medical/src/modal/food/food_input_model.dart';
 import 'package:medical/src/modal/food/food_model.dart';
 import 'package:medical/src/modal/glucose/glucose_timeFrame.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/repo/HbA1C/HbA1C_client.dart';
 import 'package:medical/src/repo/food/food_client.dart';
 import 'package:medical/src/utils/navigation_util.dart';
@@ -33,6 +34,9 @@ import 'package:medical/src/widget/subscription/phone_validation_manager.dart';
 import 'package:medical/src/widgets/btn_add_photo.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'food_result.dto.dart';
+import 'package:medical/src/utils/navigator_name.dart';
 
 class AddFoodController extends StatefulWidget {
   final String type;
@@ -101,12 +105,16 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     BotToast.showLoading();
     model = await FoodClient().fetchDetailInput(widget.id);
     BotToast.closeAllLoading();
-    selectedDate =
-        DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
+    final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+    selectedDate = DateTime.fromMillisecondsSinceEpoch(
+        ((model!.date ?? 0) - timezoneOffset) * 1000);
     _controllerNote.text = model?.note ?? "";
     files.addAll(model?.images ?? []);
-    selectedTimeFrame =
-        TimeFrameModel(id: model?.mealId, code: '', name: model?.mealText);
+    // Support both old (mealId/mealText) and new (timeFrameId/timeFrameName)
+    selectedTimeFrame = TimeFrameModel(
+        id: model?.timeFrameId ?? model?.mealId,
+        code: '',
+        name: model?.timeFrameName ?? model?.mealText);
     final index =
         model!.foods.indexWhere((element) => element.id == otherFoodId);
     if (index == -1) {
@@ -880,6 +888,33 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
     }
   }
 
+  double _calculateTotalCarbs() {
+    if (addTotalCalo) return 0;
+    double total = 0;
+    selectedFoods.forEach((element) {
+      total += (element.glucose ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalProtein() {
+    if (addTotalCalo) return 0;
+    double total = 0;
+    selectedFoods.forEach((element) {
+      total += (element.protein ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
+  double _calculateTotalFat() {
+    if (addTotalCalo) return 0;
+    double total = 0;
+    selectedFoods.forEach((element) {
+      total += (element.lipid ?? 0) * (element.portion ?? 0);
+    });
+    return total;
+  }
+
   deleteData() async {
     try {
       BotToast.showLoading();
@@ -945,7 +980,7 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
       }
       final result = await FoodClient().updateIndexFood(
           widget.id,
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame?.id,
           note,
           addTotalCalo
@@ -1014,29 +1049,110 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
         }
       }
       final result = await FoodClient().postIndexFood(
-          (selectedDate.millisecondsSinceEpoch ~/ 1000).toInt(),
+          selectedDate.millisecondsSinceEpoch ~/ 1000,
           selectedTimeFrame?.id,
           note,
           addTotalCalo
               ? [FoodModel(id: otherFoodId, portion: totalKcal)]
               : selectedFoods,
           paths);
-      if (result == true) {
-        // await TrackingManager.logEvent(
-        //   name: 'kpi_add_success',
-        //   parameters: {
-        //     "screen_name": 'kpi_nutrition_add',
-        //     'object_type': 'kpi_nutrition',
-        //     'object_title': 'Chỉ số dinh dưỡng'
-        //   },
-        // );
+      if (result == true || result is Map<String, dynamic>) {
+        // Call MealScore API to get nutrition analysis
+        Map<String, dynamic>? mealScoreData;
+        try {
+          mealScoreData = result is Map<String, dynamic>
+              ? result
+              : await FoodClient().postMealScore(paths);
+        } catch (e) {
+          print('MealScore API error (non-blocking): $e');
+        }
+
+        // Parse MealScore response
+        int? apiScore;
+        String? apiMessage;
+        String? apiRange;
+        Map<String, int>? nutritionPercent;
+        Map<String, String>? nutritionColors;
+
+        if (mealScoreData != null) {
+          apiScore = mealScoreData['totalMealScore'] as int?;
+          apiMessage = mealScoreData['messageResult'] as String?;
+          apiRange = mealScoreData['totalMealRange'] as String?;
+
+          final npData = mealScoreData['nutritionPercent'];
+          if (npData != null) {
+            nutritionPercent = {
+              'carb': (npData['carb'] as num?)?.toInt() ?? 0,
+              'protein': (npData['protein'] as num?)?.toInt() ?? 0,
+              'vegetable': (npData['vegetable'] as num?)?.toInt() ?? 0,
+              'fruit': (npData['fruit'] as num?)?.toInt() ?? 0,
+              'fat': (npData['fat'] as num?)?.toInt() ?? 0,
+            };
+            final colorsData = npData['colors'];
+            if (colorsData != null) {
+              nutritionColors = {
+                'carb': colorsData['carb']?.toString() ?? '#FFCD57',
+                'protein': colorsData['protein']?.toString() ?? '#FFCD57',
+                'vegetable': colorsData['vegetable']?.toString() ?? '#FFCD57',
+                'fruit': colorsData['fruit']?.toString() ?? '#FFCD57',
+                'fat': colorsData['fat']?.toString() ?? '#FFCD57',
+              };
+            }
+          }
+        }
+
+        String? balanceStatus;
+        if (apiRange != null) {
+          switch (apiRange) {
+            case 'excellent':
+              balanceStatus = 'Cân bằng';
+              break;
+            case 'good':
+              balanceStatus = 'Khá cân bằng';
+              break;
+            default:
+              balanceStatus = 'Chưa cân bằng';
+          }
+        }
+
+        // Create FoodResultDto for result screen
+        final foodResult = FoodResultDto(
+          id: '',
+          dateTime: selectedDate,
+          timeFrame: selectedTimeFrame?.name ?? '',
+          timeFrameId: selectedTimeFrame?.id ?? '',
+          totalCalories: totalKcal,
+          goalCalories: (AppSettings.userInfo?.energyGoal ?? 2000).toDouble(),
+          carbs: _calculateTotalCarbs(),
+          protein: _calculateTotalProtein(),
+          fat: _calculateTotalFat(),
+          vegetables: nutritionPercent?['vegetable']?.toDouble(),
+          fruits: nutritionPercent?['fruit']?.toDouble(),
+          foods: selectedFoods,
+          note: note,
+          images: [],
+          healthRecommendation: apiMessage,
+          isFetchAnalysis: false,
+          score: apiScore,
+          balanceStatus: balanceStatus,
+          nutritionPercent: nutritionPercent,
+          nutritionColors: nutritionColors,
+          references: mealScoreData?['references'] != null
+              ? (mealScoreData!['references'] as List)
+                  .map((e) => AiReference.fromJson(e as Map<String, dynamic>))
+                  .toList()
+              : null,
+        );
+
         Observable.instance.notifyObservers([], notifyName: "food_change_data");
-        // DartNotificationCenter.post(channel: 'food_change_data');
         PhoneValidationManager.setShouldShowPhoneValidation();
         Navigator.pop(context);
         if (widget.type == 'input') {
-          NavigationUtil.navigatePage(
-              context, FoodDetailTabbarController(initialTabIndex: 1));
+          Navigator.pushNamed(
+            context,
+            NavigatorName.add_food_result,
+            arguments: foodResult,
+          );
         }
       }
       print("[KPI] close all loading.");
@@ -1153,8 +1269,9 @@ class _AddFoodControllerState extends BaseState<AddFoodController> {
 
     if (model != null) {
       final noteText = model?.note ?? '';
-      final date =
-          DateTime.fromMillisecondsSinceEpoch((model!.date ?? 0) * 1000);
+      final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+      final date = DateTime.fromMillisecondsSinceEpoch(
+          ((model!.date ?? 0) - timezoneOffset) * 1000);
       if (note == noteText &&
           selectedFoods.length == model!.foods.length &&
           files.length == model!.images.length &&

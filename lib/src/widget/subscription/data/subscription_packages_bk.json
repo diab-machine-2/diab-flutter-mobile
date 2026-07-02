@@ -1,0 +1,240 @@
+{
+    "packages": [
+      {
+        "id": "co_ban",
+        "title": "Nâng cao",
+        "subtitle": "Kiến thức chăm sóc sức khoẻ",
+        "price": "199.000đ",
+        "duration": "12 tháng",
+        "backgroundImagePath": "assets/images/bg_co_ban.png",
+        "isRecommended": true,
+        "features": [
+          {
+            "text": "Lộ trình sống khoẻ theo thể trạng, mục tiêu cá nhân",
+            "richText": [
+              {
+                "text": "Lộ trình sống khoẻ ",
+                "isBold": true
+              },
+              {
+                "text": "theo thể trạng, mục tiêu cá nhân",
+                "isBold": false
+              }
+            ]
+          },
+          {
+            "text": "Kho tàng kiến thức bệnh lý, dinh dưỡng, vận động, tâm lý đa dạng",
+            "richText": [
+              {
+                "text": "Kho tàng kiến thức ",
+                "isBold": true
+              },
+              {
+                "text": "bệnh lý, dinh dưỡng, vận động, tâm lý đa dạng",
+                "isBold": false
+              }
+            ]
+          },
+          {
+            "text": "Sử dụng toàn bộ tính năng cao cấp của ứng dụng DiaB",
+            "richText": [
+              {
+                "text": "Sử dụng toàn bộ tính năng cao cấp ",
+                "isBold": true
+              },
+              {
+                "text": "của ứng dụng DiaB",
+                "isBold": false
+              }
+            ]
+          },
+          {
+            "text": "Hỗ trợ 24/7 bởi trợ lý sức khoẻ DiaB",
+            "richText": [
+              {
+                "text": "Hỗ trợ 24/7 ",
+                "isBold": true
+              },
+              {
+                "text": "bởi trợ lý sức khoẻ DiaB",
+                "isBold": false
+              }
+            ]
+          },
+          {
+            "text": "Giảm 10% khi mua sản phẩm tại cửa hàng DiaB",
+            "richText": [
+              {
+                "text": "Giảm 10% ",
+                "isBold": true
+              },
+              {
+                "text": "khi mua sản phẩm tại cửa hàng DiaB",
+                "isBold": false
+              }
+            ]
+          },
+          {
+            "text": "Ưu tiên khi đặt lịch khám, tư vấn sức khoẻ tại ứng dụng DiaB",
+            "richText": [
+              {
+                "text": "Ưu tiên ",
+                "isBold": true
+              },
+              {
+                "text": "khi đặt lịch khám, tư vấn sức khoẻ tại ứng dụng DiaB",
+                "isBold": false
+              }
+            ]
+          },
+          {
+            "text": "12 buổi cung cấp kiến thức, hướng dẫn thực hành",
+            "richText": [
+              {
+                "text": "12 buổi",
+                "isBold": true
+              },
+              {
+                "text": " cung cấp kiến thức, hướng dẫn thực hành",
+                "isBold": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "dong_hanh",
+        "title": "Đồng hành",
+        "subtitle": "Kiểm soát vững vàng, chẳng màng biến chứng",
+        "price": "4.100.000đ",
+        "duration": "3 tháng",
+        "backgroundImagePath": "assets/images/bg_dong_hanh.png",
+        "isRecommended": false,
+        "features": [
+          {
+            "text": "6 buổi tư vấn bởi chuyên gia đầu ngành",
+            "richText": [
+              {"text": "6 buổi tư vấn ", "isBold": true},
+              {"text": "bởi chuyên gia đầu ngành", "isBold": false}
+            ]
+          },
+          {
+            "text": "3 tháng thay đổi lối sống lành mạnh, bền vững cùng chuyên gia",
+            "richText": [
+              {"text": "3 tháng ", "isBold": true},
+              {"text": "thay đổi lối sống lành mạnh, bền vững cùng chuyên gia", "isBold": false}
+            ]
+          },
+          {
+            "text": "Chuyên gia DiaB hỗ trợ, giải đáp thắc mắc 24/07",
+            "richText": [
+              {"text": "Chuyên gia DiaB ", "isBold": true},
+              {"text": "hỗ trợ, giải đáp thắc mắc 24/07", "isBold": false}
+            ]
+          },
+          {
+            "text": "12 buổi cung cấp kiến thức, hướng dẫn thực hành",
+            "richText": [
+              {"text": "12 buổi ", "isBold": true},
+              {"text": "cung cấp kiến thức, hướng dẫn thực hành", "isBold": false}
+            ]
+          },
+          {
+            "text": "Chuyên gia hỗ trợ đặt mục tiêu, xây dựng lộ trình thay đổi lối sống phù hợp",
+            "richText": [
+              {"text": "Chuyên gia hỗ trợ ", "isBold": true},
+              {"text": "đặt mục tiêu, xây dựng lộ trình thay đổi lối sống phù hợp", "isBold": false}
+            ]
+          },
+          {
+            "text": "Báo cáo, đánh giá sức khoẻ toàn diện",
+            "richText": [
+              {"text": "Báo cáo, đánh giá", "isBold": true},
+              {"text": " sức khoẻ toàn diện", "isBold": false}
+            ]
+          },
+          {
+            "text": "Kho tàng kiến thức bệnh lý, dinh dưỡng, vận động, tâm lý dễ dàng",
+            "richText": [
+              {"text": "Kho tàng kiến thức", "isBold": true},
+              {"text": " bệnh lý, dinh dưỡng, vận động, tâm lý dễ dàng", "isBold": false}
+            ]
+          },
+          {
+            "text": "Sử dụng toàn bộ tính năng cao cấp của ứng dụng DiaB",
+            "richText": [
+              {"text": "Sử dụng toàn bộ tính năng cao cấp", "isBold": true},
+              {"text": " của ứng dụng DiaB", "isBold": false}
+            ]
+          }
+        ]
+      },
+      {
+        "id": "thau_cam",
+        "title": "Thấu cảm",
+        "subtitle": "Giải pháp cá nhân hoá tối ưu, toàn diện",
+        "price": "10.200.000đ",
+        "duration": "12 tháng",
+        "backgroundImagePath": "assets/images/bg_thau_cam.png",
+        "isRecommended": false,
+        "features": [
+          {
+            "text": "15 buổi tư vấn cá nhân cùng chuyên gia",
+            "richText": [
+              {"text": "15 buổi", "isBold": true},
+              {"text": " tư vấn cá nhân cùng chuyên gia", "isBold": false}
+            ]
+          },
+          {
+            "text": "12 tháng thay đổi, duy trì lối sống lành mạnh, bền vững cùng chuyên gia",
+            "richText": [
+              {"text": "12 tháng ", "isBold": true},
+              {"text": "thay đổi, duy trì lối sống lành mạnh, bền vững cùng chuyên gia", "isBold": false}
+            ]
+          },
+          {
+            "text": "Chuyên gia DiaB hỗ trợ, giải đáp thắc mắc 24/07",
+            "richText": [
+              {"text": "Chuyên gia DiaB ", "isBold": true},
+              {"text": "hỗ trợ, giải đáp thắc mắc 24/07", "isBold": false}
+            ]
+          },
+          {
+            "text": "12 buổi cung cấp kiến thức, hướng dẫn thực hành",
+            "richText": [
+              {"text": "12 buổi ", "isBold": true},
+              {"text": "cung cấp kiến thức, hướng dẫn thực hành", "isBold": false}
+            ]
+          },
+          {
+            "text": "Chuyên gia hỗ trợ đặt mục tiêu, xây dựng lộ trình thay đổi lối sống phù hợp",
+            "richText": [
+              {"text": "Chuyên gia hỗ trợ ", "isBold": true},
+              {"text": "đặt mục tiêu, xây dựng lộ trình thay đổi lối sống phù hợp", "isBold": false}
+            ]
+          },
+          {
+            "text": "Báo cáo, đánh giá sức khoẻ toàn diện",
+            "richText": [
+              {"text": "Báo cáo, đánh giá", "isBold": true},
+              {"text": " sức khoẻ toàn diện", "isBold": false}
+            ]
+          },
+          {
+            "text": "Kho tàng kiến thức bệnh lý, dinh dưỡng, vận động, tâm lý dễ dàng",
+            "richText": [
+              {"text": "Kho tàng kiến thức", "isBold": true},
+              {"text": " bệnh lý, dinh dưỡng, vận động, tâm lý dễ dàng", "isBold": false}
+            ]
+          },
+          {
+            "text": "Sử dụng toàn bộ tính năng cao cấp của ứng dụng DiaB",
+            "richText": [
+              {"text": "Sử dụng toàn bộ tính năng cao cấp", "isBold": true},
+              {"text": " của ứng dụng DiaB", "isBold": false}
+            ]
+          }
+        ]
+      }
+    ]
+  }

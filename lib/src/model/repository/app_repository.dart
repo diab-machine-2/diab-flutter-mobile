@@ -26,6 +26,7 @@ import 'package:medical/src/model/request/mark_share_request.dart';
 import 'package:medical/src/model/request/notify_subscription_request.dart';
 import 'package:medical/src/model/request/post_survey_request.dart';
 import 'package:medical/src/model/request/register_docosan_user_request.dart';
+import 'package:medical/src/model/ai_recommendation_result.dart';
 import 'package:medical/src/model/request/save_vnpay_transaction_request.dart';
 import 'package:medical/src/model/request/send_feedback_course_request.dart';
 import 'package:medical/src/model/request/send_interest_request.dart';
@@ -947,10 +948,11 @@ class AppRepository {
   Future<ApiResult<MessageResponse>> sendMessageById(
     String conversationId,
     String messageId,
+    String model,
   ) async {
     try {
       final response =
-          await appClient.sendMessageById(conversationId, messageId);
+          await appClient.sendMessageById(conversationId, messageId, model);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -958,9 +960,9 @@ class AppRepository {
   }
 
   Future<ApiResult<MessageResponse>> regenerateMessage(
-      String conversationId) async {
+      String conversationId, String model) async {
     try {
-      final response = await appClient.regenerateMessage(conversationId);
+      final response = await appClient.regenerateMessage(conversationId, model);
       return ApiResult.success(data: response);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
@@ -1331,11 +1333,26 @@ class AppRepository {
     }
   }
 
-  Future<ApiResult<ExerciseAnalysis>> getExerciseAnalysis(
-      String exerciseId) async {
+  Future<ApiResult<AiRecommendationResult>> getExerciseAnalysis(
+      String exerciseId,
+      {String includeReferences = 'true'}) async {
     try {
-      final response = await appClient.getExerciseAnalysis(exerciseId);
+      final response = await appClient.getExerciseAnalysis(
+          exerciseId, includeReferences: includeReferences);
       return ApiResult.success(data: response.data!);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  Future<ApiResult<AiRecommendationResult?>> getExerciseHealthTrend(
+      String currentDateTime, int periodFilterType,
+      {String includeReferences = 'true'}) async {
+    try {
+      final response = await appClient.getExerciseHealthTrend(
+          currentDateTime, periodFilterType,
+          includeReferences: includeReferences);
+      return ApiResult.success(data: response.data);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
@@ -1356,17 +1373,6 @@ class AppRepository {
     try {
       final response = await appClient.getSupportExercises();
       return ApiResult.success(data: response.data ?? []);
-    } catch (e) {
-      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
-    }
-  }
-
-  Future<ApiResult<String>> getExerciseHealthTrend(
-      String currentDateTime, int periodFilterType) async {
-    try {
-      final response = await appClient.getExerciseHealthTrend(
-          currentDateTime, periodFilterType);
-      return ApiResult.success(data: response.data);
     } catch (e) {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }

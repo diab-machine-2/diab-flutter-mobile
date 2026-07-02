@@ -11,11 +11,12 @@ import 'package:medical/src/widget/components/load_more.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
-import '../../widgets/network_image_widget.dart';
 import 'daily_nutrition/daily_nutrition.dart';
+import 'daily_nutrition/update_meal_page_ai.dart';
 
 class FoodDetailController extends StatefulWidget {
-  FoodDetailController({Key? key}) : super(key: key);
+  final int? periodFilterType;
+  FoodDetailController({Key? key, this.periodFilterType}) : super(key: key);
   @override
   FoodDetailControllerState createState() => FoodDetailControllerState();
 }
@@ -37,7 +38,15 @@ class FoodDetailControllerState extends State<FoodDetailController>
 
   @override
   void initState() {
-    periodFilterType = FoodDetailTabbarController.of(context)!.periodFilterType;
+    // Use passed periodFilterType or get from parent controller
+    if (widget.periodFilterType != null) {
+      periodFilterType = widget.periodFilterType!;
+    } else {
+      final controller = FoodDetailTabbarController.of(context);
+      if (controller != null) {
+        periodFilterType = controller.periodFilterType;
+      }
+    }
     super.initState();
   }
 
@@ -101,17 +110,12 @@ class FoodDetailControllerState extends State<FoodDetailController>
           return RefreshIndicator(
               onRefresh: refresh,
               child: Scaffold(
-                backgroundColor: R.color.backgroundColor,
+                backgroundColor: R.color.backgroundColorNew,
                 body: model == null
                     ? Center(child: CircularProgressIndicator())
-                    : Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image:
-                              AssetImage(R.drawable.bg_detail),
-                          fit: BoxFit.cover,
-                        )),
-                        child: LoadMore(
+                    : model.isEmpty
+                        ? _buildEmptyState()
+                        : LoadMore(
                             onLoadMore: _loadMore,
                             isFinish: !hasMore,
                             whenEmptyLoad: false,
@@ -124,216 +128,262 @@ class FoodDetailControllerState extends State<FoodDetailController>
                               padding: EdgeInsets.only(bottom: 100),
                               itemBuilder: (BuildContext context, int index) {
                                 final element = model![index];
-
-                                return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            top: 16,
-                                            left: 16,
-                                            right: 16,
-                                            bottom: 0),
-                                        child: Text(
-                                          convertCustomDate(element.date!),
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
-                                      ListView.builder(
-                                          padding: EdgeInsets.all(0),
-                                          shrinkWrap: true,
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
-                                          itemCount: element.mealItems.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            final mealItem =
-                                                element.mealItems[index];
-                                            return Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 16, left: 16, right: 16),
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16),
-                                                      color: R.color.white),
-                                                  padding: EdgeInsets.only(
-                                                      bottom: 8),
-                                                  child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  top: 12,
-                                                                  bottom: 0,
-                                                                  left: 16,
-                                                                  right: 16),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                  mealItem.text!,
-                                                                  style: TextStyle(
-                                                                      color: R.color
-                                                                          .black,
-                                                                      fontSize:
-                                                                          16,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600)),
-                                                              Row(
-                                                                children: [
-                                                                  Text(
-                                                                      mealItem
-                                                                          .caloValue!
-                                                                          .round()
-                                                                          .toString(),
-                                                                      style: TextStyle(
-                                                                          fontFamily:
-                                                                              'Viga',
-                                                                          color: R.color.green,
-                                                                          fontSize:
-                                                                              24,
-                                                                          fontWeight:
-                                                                              FontWeight.w400)),
-                                                                  SizedBox(
-                                                                      width: 4),
-                                                                  Text(R.string.kcal.tr(),
-                                                                      style: TextStyle(
-                                                                          color: R.color
-                                                                              .black,
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight:
-                                                                              FontWeight.w400))
-                                                                ],
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        ListView.builder(
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    0),
-                                                            physics:
-                                                                NeverScrollableScrollPhysics(),
-                                                            shrinkWrap: true,
-                                                            itemCount: mealItem
-                                                                .inputs.length,
-                                                            itemBuilder:
-                                                                (BuildContext
-                                                                        context,
-                                                                    int index) {
-                                                              final inputModel =
-                                                                  mealItem.inputs[
-                                                                      index];
-                                                              return GestureDetector(
-                                                                onTap: () {
-                                                                  NavigationUtil
-                                                                      .navigatePage(
-                                                                    context,
-                                                                    DailyNutritionPage(
-                                                                      type:
-                                                                          'update',
-                                                                      id: inputModel
-                                                                          .id,
-                                                                    ),
-                                                                  );
-                                                                },
-                                                                child:
-                                                                    Container(
-                                                                  color: R.color
-                                                                      .transparent,
-                                                                  child: Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      Padding(
-                                                                        padding: EdgeInsets.only(
-                                                                            top:
-                                                                                8,
-                                                                            bottom:
-                                                                                8,
-                                                                            left:
-                                                                                16),
-                                                                        child: Text(
-                                                                            '${R.string.when.tr()} ' +
-                                                                                convertToUTC(inputModel.date!, 'HH:mm'),
-                                                                            style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal)),
-                                                                      ),
-                                                                      ListView.separated(
-                                                                          physics: NeverScrollableScrollPhysics(),
-                                                                          padding: EdgeInsets.all(0),
-                                                                          shrinkWrap: true,
-                                                                          itemCount: inputModel.foods.length,
-                                                                          separatorBuilder: (BuildContext context, int index) {
-                                                                            return Container(
-                                                                              height: 1,
-                                                                              color: R.color.grayBorder,
-                                                                            );
-                                                                          },
-                                                                          itemBuilder: (BuildContext context, int index) {
-                                                                            final food =
-                                                                                inputModel.foods[index];
-                                                                            return Container(
-                                                                                padding: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-                                                                                child: Row(
-                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                  children: [
-                                                                                    Expanded(
-                                                                                      child: Row(children: [
-                                                                                        Container(
-                                                                                          width: 50,
-                                                                                          height: 50,
-                                                                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(6)),
-                                                                                          child: NetWorkImageWidget(imageUrl: food.image!.url ?? ''),
-                                                                                        ),
-                                                                                        SizedBox(width: 12),
-                                                                                        Expanded(
-                                                                                          child: Column(
-                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                            children: [
-                                                                                              Text(food.name!, style: TextStyle(color: R.color.black, fontSize: 16, fontWeight: FontWeight.w500)),
-                                                                                              const SizedBox(height: 4),
-                                                                                              if (food.code == 'OtherUneditable') const SizedBox() else Text(food.text!, style: TextStyle(color: R.color.textDark, fontSize: 16, fontWeight: FontWeight.normal))
-                                                                                            ],
-                                                                                          ),
-                                                                                        )
-                                                                                      ]),
-                                                                                    ),
-                                                                                    Row(
-                                                                                      children: [
-                                                                                        Text(food.calorie!.round().toString(), style: TextStyle(fontFamily: 'Viga', color: R.color.black, fontSize: 20, fontWeight: FontWeight.w400)),
-                                                                                        SizedBox(width: 4),
-                                                                                        Text(R.string.kcal.tr(), style: TextStyle(color: R.color.black, fontSize: 14, fontWeight: FontWeight.w400))
-                                                                                      ],
-                                                                                    )
-                                                                                  ],
-                                                                                ));
-                                                                          }),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            })
-                                                      ])),
-                                            );
-                                          })
-                                    ]);
+                                return _buildDayGroup(element);
                               },
-                            ))),
+                            )),
               ));
         }));
+  }
+
+  /// Empty state when no data
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.restaurant_menu, size: 64, color: R.color.color0xffBFC6C6),
+          const SizedBox(height: 16),
+          Text(
+            R.string.chua_co_du_lieu_dinh_duong.tr(),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: R.color.color0xff636A6B,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build one day group (date header + list of meal items)
+  Widget _buildDayGroup(MealDayItemModel element) {
+    // Flatten all inputs from all meal groups into a single list
+    final List<FoodInputModel> allInputs = [];
+    for (final mealItem in element.mealItems) {
+      allInputs.addAll(mealItem.inputs);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Date header — Figma: fontSize 20, Bold, #111515
+        Padding(
+          padding: EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 12),
+          child: Row(
+            children: [
+              MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: MediaQuery.of(context)
+                      .textScaler
+                      .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                ),
+                child: Text(
+                  convertCustomDate(element.date!),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF111515),
+                    letterSpacing: 0.04,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // List of individual meal input cards
+        ...allInputs
+            .map((inputModel) => _buildMealInputCard(inputModel))
+            .toList(),
+      ],
+    );
+  }
+
+  /// Build a single meal input card matching the Figma design
+  Widget _buildMealInputCard(FoodInputModel inputModel) {
+    // Extract data with fallbacks
+    final int score = inputModel.totalMealScore ?? 0;
+    final double totalKcal =
+        inputModel.totalCalories ?? inputModel.calorie ?? 0;
+    // Đồng bộ: điểm >= 6 được tính là Cân bằng (giống biểu đồ trend)
+    final bool isBalanced = inputModel.isBalanced ?? (score >= 6);
+    final String balanceText =
+        isBalanced ? R.string.can_bang.tr() : R.string.chua_can_bang.tr();
+    // Figma: Cân bằng = #23C559, Chưa cân bằng = #FFCD57
+    final Color balanceColor =
+        isBalanced ? Color(0xFF23C559) : Color(0xFFFFCD57);
+
+    // Meal type text (Bữa sáng, Bữa trưa, etc.)
+    String mealText = inputModel.timeFrameName ?? inputModel.mealText ?? '';
+    if (mealText.isNotEmpty) {
+      String lower = mealText.toLowerCase();
+      if (lower.contains('sáng') || lower.contains('breakfast'))
+        mealText = R.string.meal_breakfast.tr();
+      else if (lower.contains('trưa') || lower.contains('lunch'))
+        mealText = R.string.meal_lunch.tr();
+      else if (lower.contains('tối') || lower.contains('dinner'))
+        mealText = R.string.meal_dinner.tr();
+      else if (lower.contains('nhẹ') || lower.contains('snack'))
+        mealText = R.string.meal_snack.tr();
+      else if (lower.contains('khuya') || lower.contains('late'))
+        mealText = R.string.meal_late.tr();
+      else if (!lower.startsWith('bữa'))
+        mealText = '${R.string.meal.tr()} $lower';
+    }
+
+    // Time string
+    String timeStr = '';
+    if (inputModel.date != null) {
+      final timezoneOffset = DateTime.now().timeZoneOffset.inSeconds;
+      final localDate = DateTime.fromMillisecondsSinceEpoch(
+          (inputModel.date! - timezoneOffset) * 1000);
+      timeStr = DateFormat('HH:mm').format(localDate);
+    }
+
+    return GestureDetector(
+      onTap: () {
+        NavigationUtil.navigatePage(
+          context,
+          UpdateMealPageAI(updateMealId: inputModel.id ?? ''),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x14016961), // rgba(1,105,97,0.08)
+              blurRadius: 8,
+              offset: Offset(1, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Row 1: Score · Kcal | Balance status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left: Score · Kcal
+                Row(
+                  children: [
+                    // Score: number bold + "điểm" regular
+                    RichText(
+                      textScaler: MediaQuery.textScalerOf(context),
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$score',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF111515),
+                              height: 1.46,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' ${R.string.point.tr()}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF111515),
+                              height: 1.46,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _dotSeparator(),
+                    // Kcal: number bold + "Kcal" regular
+                    RichText(
+                      textScaler: MediaQuery.textScalerOf(context),
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${totalKcal.round()}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF111515),
+                              height: 1.46,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' Kcal',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF111515),
+                              height: 1.46,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                // Right: Balance status
+                Text(
+                  balanceText,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: balanceColor,
+                    height: 1.46,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            // Row 2: Meal type | Time — Figma: fontSize 13, Regular, #5E6566
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  mealText,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF5E6566),
+                    letterSpacing: 0.4,
+                    height: 1.5,
+                  ),
+                ),
+                Text(
+                  timeStr,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF5E6566),
+                    letterSpacing: 0.4,
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Small dot separator — Figma: 6x6
+  Widget _dotSeparator() {
+    return Container(
+      width: 6,
+      height: 6,
+      margin: EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFFBFC6C6),
+      ),
+    );
   }
 }

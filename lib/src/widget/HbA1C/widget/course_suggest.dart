@@ -56,23 +56,21 @@ class CourseSuggestState extends State<CourseSuggest>
                       style:
                           TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 ),
-                Container(
-                  height: 190,
-                  alignment: Alignment.center,
-                  child: CarouselSlider.builder(
-                    options: CarouselOptions(
-                      autoPlay: true,
-                      aspectRatio: 2.16,
-                      autoPlayInterval: Duration(seconds: 3),
-                      viewportFraction: 0.6,
-                      initialPage: 0,
-                    ),
-                    itemCount: models.length,
-                    itemBuilder:
-                        (BuildContext context, int index, int pageViewIndex) =>
-                            _newsItem(models[index]),
+                // Removed fixed height - let content determine size
+                CarouselSlider.builder(
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    aspectRatio: 2.16,
+                    autoPlayInterval: Duration(seconds: 3),
+                    viewportFraction: 0.6,
+                    initialPage: 0,
+                    height: 200, // Set directly on CarouselOptions
                   ),
-                )
+                  itemCount: models.length,
+                  itemBuilder:
+                      (BuildContext context, int index, int pageViewIndex) =>
+                          _newsItem(models[index]),
+                ),
               ],
             ),
           );

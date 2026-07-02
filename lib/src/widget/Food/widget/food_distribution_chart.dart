@@ -8,7 +8,6 @@ import 'package:medical/src/modal/food/food_statistic_distribute_model.dart';
 import 'package:medical/src/utils/navigation_util.dart';
 import 'package:medical/src/widget/Food/daily_nutrition/daily_nutrition.dart';
 import 'package:medical/src/widget/Food/food_detail_tabbar.dart';
-import 'package:medical/src/widget/components/samples/pie_chart/samples/indicator.dart';
 import 'package:medical/src/widget/helper/helper.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/empty_data_box.dart';
@@ -23,9 +22,7 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
     with AutomaticKeepAliveClientMixin<FoodDistributionChart> {
   @override
   bool get wantKeepAlive => true;
-  late BuildContext currentContext;
   int periodFilterType = 1;
-  bool isEnergyTab = true;
   int? touchIndex;
 
   @override
@@ -36,263 +33,246 @@ class FoodDistributionChartState extends State<FoodDistributionChart>
 
   reloadData(int periodFilter) {
     periodFilterType = periodFilter;
-    _refresh();
-  }
-
-  Future<bool> _refresh() async {
-    BlocProvider.of<FoodBloc>(currentContext).add(FetchStatisticDistribute(
-      currentDateTime:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-      periodFilterType: periodFilterType.toString(),
-    ));
-    return true;
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final width = MediaQuery.of(context).size.width;
-    return BlocProvider<FoodBloc>(
-        create: (context) => FoodBloc(),
-        child: BlocBuilder<FoodBloc, FoodState>(
-            builder: (BuildContext context, FoodState state) {
-          currentContext = context;
-          FoodDistributeModel? model;
-          double total = 0;
-          if (state is FoodInitial) {
-            BlocProvider.of<FoodBloc>(context).add(FetchStatisticDistribute(
-              currentDateTime:
-                  (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString(),
-              periodFilterType: periodFilterType.toString(),
-            ));
-          }
-          if (state is FoodError) {
-            Message.showToastMessage(context, state.message);
-          }
+    return BlocBuilder<FoodBloc, FoodState>(
+        builder: (BuildContext context, FoodState state) {
+      FoodDistributeModel? model;
+      double total = 0;
+      if (state is FoodError) {
+        Message.showToastMessage(context, state.message);
+      }
 
-          if (state is FoodStatisticDistributeLoaded) {
-            model = state.model;
-            final data = isEnergyTab ? model!.energyChart : model!.carbChart;
-            data.forEach((element) {
-              total += element.percentValue!;
-            });
+      if (state is FoodNutritionOverviewLoaded) {
+        model = state.distributeModel;
+        for (final element in state.distributeModel.energyChart) {
+          total += element.percentValue!;
+        }
+      } else if (state is FoodStatisticDistributeLoaded) {
+        model = state.model;
+        if (model != null) {
+          for (final element in model.energyChart) {
+            total += element.percentValue!;
           }
-          return model == null
-              ? Container(
-                  height: 491.5,
-                  child: Center(child: CircularProgressIndicator()))
-              : Padding(
-                  padding:
-                      EdgeInsets.only(bottom: 16, left: 16, right: 16, top: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(R.string.nang_luong_phan_bo.tr(),
-                          style: TextStyle(
-                              color: R.color.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600)),
-                      SizedBox(height: 16),
-                      total == 0
-                          ? EmptyDataBox(
-                              text: "chỉ số Dinh dưỡng",
-                              onTap: () {
-                                NavigationUtil.navigatePage(
-                                  context,
-                                  DailyNutritionPage(
-                                    type: 'input',
-                                    id: null,
-                                  ),
-                                );
-                              },
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: R.color.grey.withOpacity(0.5),
-                                      spreadRadius: 1,
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                  borderRadius: BorderRadius.circular(14),
-                                  color: R.color.white),
-                              child: Column(
+        }
+      }
+      return model == null
+          ? Container(
+              height: 491.5, child: Center(child: CircularProgressIndicator()))
+          : Padding(
+              padding:
+                  EdgeInsets.only(bottom: 16, left: 16, right: 16, top: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  total == 0
+                      ? EmptyDataBox(
+                          text: "chỉ số Dinh dưỡng",
+                          onTap: () {
+                            NavigationUtil.navigatePage(
+                              context,
+                              DailyNutritionPage(
+                                type: 'input',
+                                id: null,
+                              ),
+                            );
+                          },
+                        )
+                      : Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color.fromRGBO(1, 105, 97, 0.08),
+                                  offset: const Offset(1, 2),
+                                  blurRadius: 8,
+                                ),
+                              ]),
+                          child: Column(
+                            children: [
+                              // Header with title and arrow
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  SizedBox(
-                                    height: 32,
+                                  Text(
+                                    R.string.nang_luong_phan_bo.tr(),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: R.color.black,
+                                    ),
                                   ),
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              isEnergyTab = true;
-                                            });
-                                          },
-                                          child: Container(
-                                              height: 32,
-                                              width: 135,
-                                              padding: EdgeInsets.only(
-                                                  left: 18, right: 18),
-                                              decoration: BoxDecoration(
-                                                  color: isEnergyTab
-                                                      ? R.color.mainColor
-                                                      : R.color.transparent,
-                                                  border: Border.all(
-                                                      color: isEnergyTab
-                                                          ? R.color.mainColor
-                                                          : R.color
-                                                              .primaryGreyColor,
-                                                      width: 0.5),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16)),
-                                              child: Center(
-                                                child: Text(
-                                                    R.string.nang_luong.tr(),
-                                                    style: TextStyle(
-                                                        color: isEnergyTab
-                                                            ? R.color.white
-                                                            : R.color
-                                                                .primaryGreyColor,
-                                                        fontSize: 14,
-                                                        fontWeight: isEnergyTab
-                                                            ? FontWeight.w700
-                                                            : FontWeight.w400)),
-                                              )),
-                                        ),
-                                        SizedBox(width: 16),
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              isEnergyTab = false;
-                                            });
-                                          },
-                                          child: Container(
-                                              height: 32,
-                                              width: 135,
-                                              decoration: BoxDecoration(
-                                                  color: isEnergyTab
-                                                      ? R.color.transparent
-                                                      : R.color.mainColor,
-                                                  border: Border.all(
-                                                      color: isEnergyTab
-                                                          ? R.color
-                                                              .primaryGreyColor
-                                                          : R.color.white,
-                                                      width: 0.5),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          16)),
-                                              child: Center(
-                                                child: Text(
-                                                    R.string.chat_bot_duong
-                                                        .tr(),
-                                                    style: TextStyle(
-                                                        color: isEnergyTab
-                                                            ? R.color
-                                                                .primaryGreyColor
-                                                            : R.color.white,
-                                                        fontSize: 14,
-                                                        fontWeight: isEnergyTab
-                                                            ? FontWeight.w400
-                                                            : FontWeight.w700)),
-                                              )),
-                                        )
-                                      ]),
-                                  Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: AspectRatio(
-                                          aspectRatio: 1,
-                                          child: PieChart(
-                                            PieChartData(
+                                  Icon(
+                                    Icons.chevron_right,
+                                    color: R.color.black,
+                                    size: 24,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 24),
+                              // Donut chart and legend
+                              Builder(builder: (context) {
+                                // Count only meals with actual data
+                                int actualMealCount = model!.energyChart
+                                    .where((item) => (item.value ?? 0) > 0)
+                                    .length;
+
+                                return Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: AspectRatio(
+                                        aspectRatio: 1,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            PieChart(
+                                              PieChartData(
                                                 startDegreeOffset: 270,
                                                 borderData: FlBorderData(
                                                   show: false,
                                                 ),
                                                 sectionsSpace: 0,
-                                                centerSpaceRadius: 60,
+                                                centerSpaceRadius:
+                                                    44, // 2*(44+40) = 168px (Figma size)
                                                 sections: List.generate(
-                                                    isEnergyTab
-                                                        ? model
-                                                            .energyChart.length
-                                                        : model.carbChart
-                                                            .length, (i) {
-                                                  final double radius = 35;
-                                                  final item = isEnergyTab
-                                                      ? model!.energyChart[i]
-                                                      : model!.carbChart[i];
+                                                    model.energyChart.length,
+                                                    (i) {
+                                                  final double radius = 40;
+                                                  final item =
+                                                      model!.energyChart[i];
+                                                  final percent =
+                                                      (item.percentValue ?? 0)
+                                                          .round();
+
                                                   return PieChartSectionData(
                                                     color:
                                                         toColor(item.colorCode),
                                                     value: item.percentValue,
-                                                    showTitle: false,
+                                                    title: percent > 0
+                                                        ? '$percent%'
+                                                        : '',
+                                                    titleStyle: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Colors.white,
+                                                    ),
                                                     radius: radius,
                                                   );
-                                                })),
-                                          ),
+                                                }),
+                                              ),
+                                            ),
+                                            // Center content - meal count only
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                MediaQuery(
+                                                  data: MediaQuery.of(context)
+                                                      .copyWith(
+                                                    textScaler:
+                                                        MediaQuery.of(context)
+                                                            .textScaler
+                                                            .clamp(
+                                                                minScaleFactor:
+                                                                    1.0,
+                                                                maxScaleFactor:
+                                                                    1.3),
+                                                  ),
+                                                  child: Text(
+                                                    '$actualMealCount',
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Color(0xFF111515),
+                                                      letterSpacing: 0.04,
+                                                    ),
+                                                  ),
+                                                ),
+                                                MediaQuery(
+                                                  data: MediaQuery.of(context)
+                                                      .copyWith(
+                                                    textScaler:
+                                                        MediaQuery.of(context)
+                                                            .textScaler
+                                                            .clamp(
+                                                                minScaleFactor:
+                                                                    1.0,
+                                                                maxScaleFactor:
+                                                                    1.3),
+                                                  ),
+                                                  child: Text(
+                                                    R.string.meal.tr(),
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: Color(0xFF111515),
+                                                      letterSpacing: 0.4,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 2.0, bottom: 8),
-                                            child: Text(
-                                              R.string.chu_thich.tr(),
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: R.color.textDark),
-                                            ),
+                                    ),
+                                    SizedBox(width: 32),
+                                    // Legend
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: List.generate(
+                                          model.energyChart.length, (i) {
+                                        final item = model!.energyChart[i];
+                                        return Padding(
+                                          padding: EdgeInsets.only(bottom: 12),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 12,
+                                                height: 12,
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      toColor(item.colorCode),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                item.text ?? '',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: R.color.black,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: List.generate(
-                                                  isEnergyTab
-                                                      ? model.energyChart.length
-                                                      : model.carbChart.length,
-                                                  (i) {
-                                                final item = isEnergyTab
-                                                    ? model!.energyChart[i]
-                                                    : model!.carbChart[i];
-                                                return Padding(
-                                                  padding: EdgeInsets.only(
-                                                      bottom: 4),
-                                                  child: Indicator(
-                                                    color:
-                                                        toColor(item.colorCode),
-                                                    number: roundNumber(item
-                                                            .percentValue!) +
-                                                        '%',
-                                                    text: item.text,
-                                                    textColor: R.color.white,
-                                                    isSquare: true,
-                                                  ),
-                                                );
-                                              })),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        width: 28,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                    ],
-                  ),
-                );
-        }));
+                                        );
+                                      }),
+                                    ),
+                                    SizedBox(width: 16),
+                                  ],
+                                );
+                              }),
+                            ],
+                          ),
+                        ),
+                ],
+              ),
+            );
+    });
   }
 }

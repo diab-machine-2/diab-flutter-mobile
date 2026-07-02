@@ -99,37 +99,55 @@ class _NearFoodState extends State<NearFood>
               ? Center(child: CircularProgressIndicator())
               : RefreshIndicator(
                   onRefresh: refresh,
-                  child: ListView.separated(
-                      padding: EdgeInsets.all(0),
-                      itemCount: model.length == 0 ? 1 : model.length,
-                      separatorBuilder: (BuildContext context, int index) {
-                        return Container(height: 1, color: R.color.color0xffE5E5E5);
-                      },
-                      itemBuilder: (BuildContext context, int index) {
-                        if (model!.length == 0) {
-                          return Padding(
-                            padding:
-                                EdgeInsets.only(left: 84, right: 84, top: 100),
-                            child: Image.asset(
-                                R.drawable.img_near_food_empty),
-                          );
-                        } else {
-                          final selectedIndex = selectedFoods.lastIndexWhere(
-                              (element) => element.id == model![index].id);
-                          final FoodModel? selectedModel = selectedIndex != -1
-                                ? selectedFoods[selectedIndex]
-                                : null;
-                          return FoodItem(
-                            model: model[index],
-                            selectedModel: selectedModel,
-                            index: index,
-                            callback: (model, index) {
-                              likeFood(model, index);
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (model.isNotEmpty) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                            child: Text('Gần đây', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: R.color.black)),
+                          ),
+                        ],
+                        ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.all(0),
+                            itemCount: model.length == 0 ? 1 : model.length,
+                            separatorBuilder: (BuildContext context, int index) {
+                              return Container(height: 1, color: R.color.color0xffE5E5E5);
                             },
-                            kcalLeft: getKcalLeft(selectedModel),
-                          );
-                        }
-                      }));
+                            itemBuilder: (BuildContext context, int index) {
+                              if (model!.length == 0) {
+                                return Padding(
+                                  padding:
+                                      EdgeInsets.only(left: 84, right: 84, top: 100),
+                                  child: Image.asset(
+                                      R.drawable.img_near_food_empty),
+                                );
+                              } else {
+                                final selectedIndex = selectedFoods.lastIndexWhere(
+                                    (element) => element.id == model![index].id);
+                                final FoodModel? selectedModel = selectedIndex != -1
+                                      ? selectedFoods[selectedIndex]
+                                      : null;
+                                return FoodItem(
+                                  model: model[index],
+                                  selectedModel: selectedModel,
+                                  index: index,
+                                  isSearch: true,
+                                  callback: (model, index) {
+                                    likeFood(model, index);
+                                  },
+                                  kcalLeft: getKcalLeft(selectedModel),
+                                );
+                              }
+                            }),
+                      ],
+                    ),
+                  ),
+                );
         }));
   }
 }

@@ -140,7 +140,7 @@ class _KcalParameterPageState extends State<KcalParameterPage> {
                     ],
                     style: TextStyle(
                         color: R.color.textDark,
-                        fontSize: 50,
+                        fontSize: 40,
                         fontWeight: FontWeight.bold),
                     placeholder: '--',
                     placeholderStyle: TextStyle(

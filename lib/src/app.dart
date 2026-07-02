@@ -48,6 +48,7 @@ import 'package:medical/src/widget/HbA1C/hba1c_detail_page.dart';
 import 'package:medical/src/widget/HbA1C/intro/hba1c_intro_1st_page.dart';
 import 'package:medical/src/widget/HbA1C/intro/hba1c_intro_2nd_page.dart';
 import 'package:medical/src/widget/HbA1C/hba1c_result.dto.dart';
+import 'package:medical/src/widget/Food/intro/nutrient_intro_1st_page.dart';
 import 'package:medical/src/widget/base/base_state.dart';
 import 'package:medical/src/widget/calendar/calendar_booking_page.dart';
 import 'package:medical/src/widget/calendar/calendar_page.dart';
@@ -301,6 +302,10 @@ class App extends StatelessWidget {
                         settings, HbA1cIntro1stPage(goalId: data?['goalId']));
                   case NavigatorName.hba1c_intro_2nd_page:
                     return _buildRoute(settings, HbA1cIntro2ndPage());
+                  case NavigatorName.nutrient_intro_1st_page:
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(settings,
+                        NutrientIntro1stPage(goalId: data?['goalId']));
                   case NavigatorName.hba1c_detail_page:
                     final data = settings.arguments as Map<String, dynamic>?;
                     return _buildRoute(
@@ -516,7 +521,15 @@ class App extends StatelessWidget {
                             id: data?['id'],
                             communicationId: data?['communicationId']));
                   case NavigatorName.detail_food:
-                    return _buildRoute(settings, FoodDetailTabbarController(),
+                    final data = settings.arguments as Map<String, dynamic>?;
+                    return _buildRoute(
+                        settings,
+                        FoodDetailTabbarController(
+                          nutritionPercent:
+                              data?['nutritionPercent'] as Map<String, int>?,
+                          nutritionColors:
+                              data?['nutritionColors'] as Map<String, String>?,
+                        ),
                         isPresent: false);
                   case NavigatorName.add_food:
                     final data = settings.arguments as Map<String, dynamic>?;
@@ -683,7 +696,8 @@ class App extends StatelessWidget {
                           interviewType:
                               arguments?['interviewType'] as int? ?? 30,
                           smartGoal: arguments?['smartGoal'],
-                          fromActivityTab: arguments?['fromActivityTab'] as bool? ?? false,
+                          fromActivityTab:
+                              arguments?['fromActivityTab'] as bool? ?? false,
                         ),
                       );
                     }
@@ -700,7 +714,8 @@ class App extends StatelessWidget {
                             args["endTime"],
                             args["bookingQuantity"],
                             args["interviewType"],
-                            fromActivityTab: args["fromActivityTab"] as bool? ?? false,
+                            fromActivityTab:
+                                args["fromActivityTab"] as bool? ?? false,
                           ));
                     }
 
@@ -752,7 +767,7 @@ class App extends StatelessWidget {
                       ),
                     );
                   case NavigatorName.paywall_screen:
-                    final args = settings.arguments as Map<String, dynamic>;
+                    final _ = settings.arguments as Map<String, dynamic>;
                     return _buildRoute(
                       settings,
                       PaywallScreen(),
