@@ -1653,15 +1653,16 @@ benefit_at_clinic,Đặt khám,At Clinic,
 benefit_telemedicine,Khám từ xa,Telemedicine,
 booking_note_text_hint,"Lý do khám, nhu cầu tư vấn...","Reason for examination, consultation needs..."
 specialty_tien_dai_thao_duong,Tiền Đái Tháo Đường,Pre-diabetes
-specialty_dai_thao_duong,Đái Tháo Đường,Diabetes
-specialty_dinh_duong,Dinh Dưỡng,Nutrition
-specialty_tang_huyet_ap,Tăng Huyết Áp,Hypertension
-specialty_thua_can_beo_phi,Thừa Cân Béo Phì,Overweight Obesity
-specialty_dai_thao_duong_thai_ky,Đái Tháo Đường Thai Kỳ,Gestational Diabetes
-specialty_tim_mach,Tim Mạch,Cardiology
-specialty_roi_loan_chuyen_hoa,Rối Loạn Chuyển Hóa,Metabolic Disorder
-specialty_than_man_tinh,Thận Mạn Tính,Chronic Kidney
-specialty_tinh_than,Tinh Thần,Mental Health
-benefit_select_branch,Chọn cơ sở,Select facility
+specialty_dai_thao_duong,Đái Tháo Đường,Diabetes,
+specialty_dinh_duong,Dinh Dưỡng,Nutrition,
+specialty_tang_huyet_ap,Tăng Huyết Áp,Hypertension,
+specialty_thua_can_beo_phi,Thừa Cân Béo Phì,Overweight Obesity,
+specialty_dai_thao_duong_thai_ky,Đái Tháo Đường Thai Kỳ,Gestational Diabetes,
+specialty_tim_mach,Tim Mạch,Cardiology,
+specialty_roi_loan_chuyen_hoa,Rối Loạn Chuyển Hóa,Metabolic Disorder,
+specialty_than_man_tinh,Thận Mạn Tính,Chronic Kidney,
+specialty_tinh_than,Tinh Thần,Mental Health,
+benefit_select_branch,Chọn cơ sở,Select facility,
 benefit_no_branch_data,Không có cơ sở nào,No facility available,
-thoi_gian_kham,Thời gian khám,Visit time
+thoi_gian_kham,Thời gian khám,Visit time,
+favorite,Yêu thích,Favorite

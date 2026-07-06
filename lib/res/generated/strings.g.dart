@@ -377,6 +377,8 @@ class Strings {
   String get nang_luong_phan_bo => 'nang_luong_phan_bo';
   String get phan_bo_dinh_duong => 'phan_bo_dinh_duong';
   String get an_bao_nhieu_la_du => 'an_bao_nhieu_la_du';
+  String get phan_bo_dinh_duong => 'phan_bo_dinh_duong';
+  String get an_bao_nhieu_la_du => 'an_bao_nhieu_la_du';
   String get chon_mon => 'chon_mon';
   String get xu_huong_dinh_duong => 'xu_huong_dinh_duong';
   String get nhap_mon_an => 'nhap_mon_an';
@@ -1735,4 +1737,5 @@ class Strings {
   String get benefit_select_branch => 'benefit_select_branch';
   String get benefit_no_branch_data => 'benefit_no_branch_data';
   String get thoi_gian_kham => 'thoi_gian_kham';
+  String get favorite => 'favorite';
 }

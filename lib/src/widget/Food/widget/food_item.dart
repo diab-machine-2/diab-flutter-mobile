@@ -11,6 +11,7 @@ import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
 
 typedef FoodItemCallback = Function(FoodModel, int);
+typedef FoodSelectionCallback = Function(FoodModel, bool); // food, isSelected
 
 class FoodItem extends StatelessWidget {
   const FoodItem({
@@ -22,6 +23,7 @@ class FoodItem extends StatelessWidget {
     this.categoryId,
     required this.callback,
     required this.kcalLeft,
+    this.onSelectionChanged, // Optional: for local selection handling (e.g., search mode)
   });
 
   final FoodModel model;
@@ -32,6 +34,7 @@ class FoodItem extends StatelessWidget {
   final String? categoryId;
   final FoodItemCallback callback;
   final double? kcalLeft;
+  final FoodSelectionCallback? onSelectionChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +48,10 @@ class FoodItem extends StatelessWidget {
           Navigator.pop(context);
         }
 
-        if (isSelected) {
+        // Use local callback if provided (e.g., search mode), otherwise use observer
+        if (onSelectionChanged != null) {
+          onSelectionChanged!(model, !isSelected);
+        } else if (isSelected) {
           _removeFoodDirectly();
         } else {
           _addFoodDirectly();
@@ -113,18 +119,25 @@ class FoodItem extends StatelessWidget {
             SizedBox(width: 8),
             // Checkbox or Heart icon
             isSearch 
-              ? Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder, 
-                      width: 1.5
+              ? GestureDetector(
+                  onTap: () {
+                    if (onSelectionChanged != null) {
+                      onSelectionChanged!(model, !isSelected);
+                    }
+                  },
+                  child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: isSelected ? R.color.greenGradientBottom : R.color.grayBorder, 
+                          width: 1.5
+                        ),
+                        color: isSelected ? R.color.greenGradientBottom : R.color.transparent,
+                      ),
+                      child: isSelected ? Icon(Icons.check, color: R.color.white, size: 18) : null,
                     ),
-                    color: isSelected ? R.color.greenGradientBottom : R.color.transparent,
-                  ),
-                  child: isSelected ? Icon(Icons.check, color: R.color.white, size: 18) : null,
                 )
               : GestureDetector(
                   onTap: () {

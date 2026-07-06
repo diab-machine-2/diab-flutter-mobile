@@ -21,10 +21,7 @@ class AllFoodTab extends StatefulWidget {
   _AllFoodTabState createState() => _AllFoodTabState();
 }
 
-class _AllFoodTabState extends State<AllFoodTab>
-    with AutomaticKeepAliveClientMixin<AllFoodTab>, Observer {
-  @override
-  bool get wantKeepAlive => true;
+class _AllFoodTabState extends State<AllFoodTab> with Observer {
 
   List<FoodModel> recentFoods = [];
   List<FoodModel> allFoods = [];
@@ -37,6 +34,18 @@ class _AllFoodTabState extends State<AllFoodTab>
     selectedFoods = [...widget.foods];
     Observable.instance.addObserver(this);
     loadData();
+  }
+
+  @override
+  void didUpdateWidget(AllFoodTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Sync selectedFoods when the parent rebuilds with a new list
+    // (e.g. after returning from SearchFood with updated selections).
+    if (widget.foods != oldWidget.foods) {
+      setState(() {
+        selectedFoods = [...widget.foods];
+      });
+    }
   }
 
   @override
@@ -107,7 +116,6 @@ class _AllFoodTabState extends State<AllFoodTab>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     if (isLoading) {
       return Center(child: CircularProgressIndicator());
     }

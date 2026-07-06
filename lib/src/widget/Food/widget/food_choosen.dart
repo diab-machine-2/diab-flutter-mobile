@@ -13,7 +13,8 @@ typedef FoodCallback = Function(List<FoodModel>);
 class FoodChoosen extends StatefulWidget {
   final List<FoodModel>? foods;
   final FoodCallback? callback;
-  FoodChoosen({this.foods, this.callback});
+  final String? title;
+  FoodChoosen({this.foods, this.callback, this.title});
   @override
   _FoodChoosenState createState() => _FoodChoosenState();
 }
@@ -29,6 +30,19 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
     foods = [...(widget.foods ?? [])];
     calculatorCalo();
     Observable.instance.addObserver(this);
+  }
+
+  @override
+  void didUpdateWidget(FoodChoosen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When parent rebuilds with a new foods list (e.g. after _toggleFood in SearchFood),
+    // sync our internal list so the bottom panel stays consistent with the checkboxes.
+    if (widget.foods != oldWidget.foods) {
+      setState(() {
+        foods = [...(widget.foods ?? [])];
+        calculatorCalo();
+      });
+    }
   }
 
   @override
@@ -293,7 +307,7 @@ class _FoodChoosenState extends State<FoodChoosen> with Observer {
                             ),
                             child: Center(
                               child: Text(
-                                R.string.tiep_tuc.tr(),
+                                widget.title ?? R.string.tiep_tuc.tr(),
                                 style: TextStyle(
                                   color: foods.isEmpty ? R.color.color0xff636A6B : R.color.white,
                                   fontWeight: FontWeight.w600,

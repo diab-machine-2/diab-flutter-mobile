@@ -209,18 +209,20 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                         final result = await Navigator.push<List<FoodModel>>(
                             context,
                             CupertinoPageRoute(
-                                fullscreenDialog: true,
+                                fullscreenDialog: false,
                                 builder: (BuildContext context) {
                                   return SearchFood(
                                     foods: selectedFoods,
                                     suggestKcal: widget.suggestKcal,
                                   );
                                 }));
-                        if (result != null && result.isNotEmpty) {
-                          selectedFoods = result;
-                          setState(() {});
-                          Navigator.pop(context);
-                          widget.callback?.call(result);
+                        if (result != null) {
+                          // Sync selections back from SearchFood — works for both back-navigation
+                          // and any other dismissal. FoodChoosen's "Tiếp tục" callback handles
+                          // the final pop + widget.callback chain independently.
+                          setState(() {
+                            selectedFoods = result;
+                          });
                         }
                       },
                       child: Container(
@@ -265,7 +267,7 @@ class _SearchFoodControllerState extends State<SearchFoodController>
                                   onTap: () => jumpToCategory(0)),
                               SizedBox(width: 16),
                               _buildCategoryBubble(
-                                  title: 'Yêu thích',
+                                  title: R.string.favorite.tr(),
                                   iconData: Icons.favorite_border,
                                   isSelected: selectedIndex == 1,
                                   onTap: () => jumpToCategory(1)),
