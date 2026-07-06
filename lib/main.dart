@@ -129,12 +129,11 @@ Future<void> main() async {
     debugPrint('FlutterBranchSdk.init failed: $e');
   }
 
-  //// TODO: Temporarily disable RevenueCat initialization due to remove feature subscription.
-  // try {
-  //   await RevenueCatService.initialize();
-  // } catch (e) {
-  //   debugPrint('RevenueCatService.initialize failed: $e');
-  // }
+  try {
+    await RevenueCatService.initialize();
+  } catch (e) {
+    debugPrint('RevenueCatService.initialize failed: $e');
+  }
 
   // tz.initializeTimeZones();
   // final timeZoneName = await FlutterTimezone.getLocalTimezone();
