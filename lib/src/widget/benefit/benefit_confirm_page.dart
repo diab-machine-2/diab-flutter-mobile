@@ -28,6 +28,8 @@ import 'package:medical/src/widgets/gap_widget.dart';
 /// When [isBypassPayment] is true (telemedicine benefit), the VNPay flow is
 /// skipped and the booking is created directly via `createDsmesBookingOnline`.
 /// [branchName] and [branchAddress] are appended to the booking note at confirm time.
+/// For at-clinic benefit flow, [branchId] is sent to
+/// `api/doctors/patient-appointments-partner-diab`.
 class BenefitConfirmPage extends StatefulWidget {
   final String serviceType;
   final String action;
@@ -36,6 +38,8 @@ class BenefitConfirmPage extends StatefulWidget {
   final bool isBypassPayment;
   final String? branchName;
   final String? branchAddress;
+  final int? branchId;
+  final String? specialtyName;
 
   const BenefitConfirmPage({
     Key? key,
@@ -46,6 +50,8 @@ class BenefitConfirmPage extends StatefulWidget {
     this.isBypassPayment = false,
     this.branchName,
     this.branchAddress,
+    this.branchId,
+    this.specialtyName,
   }) : super(key: key);
 
   @override
@@ -229,15 +235,20 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     final data = _sectionAddSymptomKey.currentState?.getNote();
     String symptom = data?.note ?? '';
 
+    // Append specialty name
+    if (widget.specialtyName != null && widget.specialtyName!.isNotEmpty) {
+      symptom +=
+          '${symptom.isNotEmpty ? '\n' : ''} - ${R.string.chuyen_khoa.tr()}: ${widget.specialtyName}';
+    }
+
     // Append branch info for at-clinic benefit flow
     if (widget.branchName != null || widget.branchAddress != null) {
-      final branchInfo = StringBuffer();
-      if (symptom.isNotEmpty) branchInfo.write('$symptom');
-      if (widget.branchName != null) branchInfo.write('\n${widget.branchName}');
-      if (widget.branchAddress != null) {
-        branchInfo.write(' - ${widget.branchAddress}');
+      if (widget.branchName != null) {
+        symptom += '\n${widget.branchName}';
       }
-      symptom = branchInfo.toString();
+      if (widget.branchAddress != null) {
+        symptom += ' - ${widget.branchAddress}';
+      }
     }
 
     _cubit.updateCreateDsmesBookingRequestSymptom(symptom: symptom);
@@ -255,6 +266,14 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
     DsmesAppointment? resp;
 
+    // For at-clinic benefit flow, set branchId on the request
+    if (widget.branchId != null) {
+      _cubit.createDsmesBookingRequest =
+          _cubit.createDsmesBookingRequest?.copyWith(
+        branchId: widget.branchId,
+      );
+    }
+
     if (widget.isBypassPayment) {
       // ── Telemedicine bypass: skip VNPay, call createDsmesBookingOnline directly ──
       _cubit.updateCreateDsmesBookingRequestServiceList(
@@ -266,7 +285,11 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     } else {
       // ── At-clinic: standard offline booking ──
       if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
-        resp = await _cubit.createDsmesBooking();
+        if (widget.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC) {
+          resp = await _cubit.createDsmesPartnerDiabBooking();
+        } else {
+          resp = await _cubit.createDsmesBooking();
+        }
       } else {
         resp = await _cubit.createDsmesBookingOnline();
       }
@@ -530,7 +553,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
               ),
             ],
           ),
-          // Show address only for at-clinic
+          // Show address for at-clinic / service name for telemedicine
           if (widget.serviceType ==
               DsmesAppointmentMode.atClinic.toString()) ...[
             GapH(8),
@@ -553,6 +576,47 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                   flex: 7,
                   child: Text(
                     _cubit.selectedClinic?.address ?? '',
+                    maxLines: 2,
+                    textAlign: TextAlign.end,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff111515,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (widget.serviceType ==
+              DsmesAppointmentMode.telemedicine.toString()) ...[
+            GapH(8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  flex: 3,
+                  child: Text(
+                    R.string.service.tr(),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      color: R.color.color0xff636A6B,
+                    ),
+                  ),
+                ),
+                Flexible(
+                  flex: 7,
+                  child: Text(
+                    _cubit.selectedClinic?.serviceList.categories.isNotEmpty ==
+                                true &&
+                            _cubit.selectedClinic!.serviceList.categories.first
+                                .data.isNotEmpty
+                        ? _cubit.selectedClinic!.serviceList.categories.first
+                            .data.first.name
+                        : '',
                     maxLines: 2,
                     textAlign: TextAlign.end,
                     overflow: TextOverflow.ellipsis,

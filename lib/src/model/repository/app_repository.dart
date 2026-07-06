@@ -1181,6 +1181,18 @@ class AppRepository {
     }
   }
 
+  Future<ApiResult<CreateDsmesOfflineBookingResponse>>
+      createDsmesPartnerDiabBooking(
+          {required CreateDsmesBookingRequest request}) async {
+    try {
+      final response =
+          await docosanClient.createDsmesPartnerDiabBooking(request);
+      return ApiResult.success(data: response);
+    } catch (e) {
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   Future<ApiResult<CreateDsmesOfflineBookingResponse>> createDsmesOnlineBooking(
       {required CreateDsmesBookingRequest request}) async {
     try {

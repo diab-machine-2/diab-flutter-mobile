@@ -202,5 +202,6 @@ class NavigatorName {
   static const String benefit_page = '/benefit_page';
   static const String benefit_clinic_list = '/benefit_clinic_list';
   static const String benefit_branch = '/benefit_branch';
+  static const String benefit_calendar = '/benefit_calendar';
 }
 

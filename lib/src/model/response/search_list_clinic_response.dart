@@ -67,13 +67,15 @@ class ClinicCluster {
 }
 
 class BranchItem {
+  final int id;
   final int clinicId;
   final String name;
   final String address;
 
-  BranchItem({required this.clinicId, required this.name, required this.address});
+  BranchItem({required this.id, required this.clinicId, required this.name, required this.address});
 
   factory BranchItem.fromJson(Map<String, dynamic> json) => BranchItem(
+    id: json['id'] ?? 0,
     clinicId: json['clinic_id'] ?? 0,
     name: json['name'] ?? '',
     address: json['address'] ?? '',

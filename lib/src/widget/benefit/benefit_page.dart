@@ -8,6 +8,7 @@ import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/benefit/benefit_branch_page.dart';
+import 'package:medical/src/widget/benefit/benefit_calendar_section.dart';
 import 'package:medical/src/widget/benefit/benefit_clinic_list_page.dart';
 import 'package:medical/src/widget/benefit/benefit_confirm_page.dart';
 import 'package:medical/src/widget/benefit/benefit_specialty_page.dart';
@@ -128,7 +129,23 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                         settings,
                         BenefitClinicListPage(
                           bookingType: args!['bookingType'] ?? widget.bookingType,
-                          clinicId: args['clinicId'] as String,
+                          clinicIds: (args['clinicIds'] as List<dynamic>?)?.cast<String>() ?? [],
+                          specialtyName: args['specialtyName'] as String?,
+                        ),
+                      );
+                    }
+
+                  case NavigatorName.benefit_calendar:
+                    {
+                      final args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        BenefitCalendarSection(
+                          serviceType: args!['serviceType'],
+                          action: args['action'],
+                          appointmentId: args['appointmentId'],
+                          bookingType: args['bookingType'],
                           specialtyName: args['specialtyName'] as String?,
                         ),
                       );
@@ -169,6 +186,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                             bookingType: args['bookingType'] ??
                                 Const.BOOKING_TYPE_CLINIC,
                             isBypassPayment: false,
+                            specialtyName:
+                                args['specialtyName'] as String?,
                           ),
                         );
                       }
@@ -186,6 +205,9 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                               Const.BENEFIT_BOOKING_TELEMEDICINE,
                           branchName: args['branchName'] as String?,
                           branchAddress: args['branchAddress'] as String?,
+                          branchId: args['branchId'] as int?,
+                          specialtyName:
+                              args['specialtyName'] as String?,
                         ),
                       );
                     }
@@ -230,6 +252,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           bookingType: args['bookingType'] ??
                               Const.BOOKING_TYPE_CLINIC,
                           isBypassPayment: false,
+                          specialtyName:
+                              args['specialtyName'] as String?,
                         ),
                       );
                     }

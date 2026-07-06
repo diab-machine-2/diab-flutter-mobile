@@ -15,7 +15,7 @@ class SearchBookingClinicListRequest {
   final List<String> timeframes; // cuoituan, trongtuan, ngoaigio
   final List<String> clinicTypes; // clinic, hospital, public_hospital, lab
   final int isFilterDistance;
-  final String clinicId; // filter by clinic ID for benefit flow
+  final List<String> clinicIds; // filter by clinic IDs for benefit flow
 
   SearchBookingClinicListRequest({
     this.type = 'location',
@@ -34,7 +34,7 @@ class SearchBookingClinicListRequest {
     this.timeframes = const [],
     this.clinicTypes = const [],
     this.isFilterDistance = 1,
-    this.clinicId = '',
+    this.clinicIds = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -54,7 +54,7 @@ class SearchBookingClinicListRequest {
         'timeframes': timeframes,
         'clinic_types': clinicTypes,
         'is_filter_distance': isFilterDistance,
-        'clinic_id': clinicId,
+        'clinic_ids': clinicIds,
       };
 
   SearchBookingClinicListRequest copyWith({
@@ -74,7 +74,7 @@ class SearchBookingClinicListRequest {
     List<String>? timeframes,
     List<String>? clinicTypes,
     int? isFilterDistance,
-    String? clinicId,
+    List<String>? clinicIds,
   }) {
     return SearchBookingClinicListRequest(
       type: type ?? this.type,
@@ -93,7 +93,7 @@ class SearchBookingClinicListRequest {
       timeframes: timeframes ?? this.timeframes,
       clinicTypes: clinicTypes ?? this.clinicTypes,
       isFilterDistance: isFilterDistance ?? this.isFilterDistance,
-      clinicId: clinicId ?? this.clinicId,
+      clinicIds: clinicIds ?? this.clinicIds,
     );
   }
 }

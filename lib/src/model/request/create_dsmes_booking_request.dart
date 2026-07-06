@@ -16,6 +16,7 @@ class CreateDsmesBookingRequest {
   final PaymentInfo? paymentInfo;
   final bool? isTest;
   final String? homeAddress;
+  final int? branchId;
 
   CreateDsmesBookingRequest({
     required this.startTime,
@@ -35,6 +36,7 @@ class CreateDsmesBookingRequest {
     this.paymentInfo,
     this.isTest,
     this.homeAddress,
+    this.branchId,
   });
 
   factory CreateDsmesBookingRequest.fromJson(Map<String, dynamic> json) {
@@ -56,6 +58,7 @@ class CreateDsmesBookingRequest {
       paymentInfo: PaymentInfo.fromJson(json['payment_info']),
       isTest: json['isTest'] as bool?,
       homeAddress: json['homeAddress'] as String?,
+      branchId: json['branch_id'] as int?,
     );
   }
 
@@ -78,6 +81,7 @@ class CreateDsmesBookingRequest {
       'payment_info': paymentInfo?.toJson() ?? {},
       if (isTest != null) 'isTest': isTest,
       if (homeAddress != null) 'homeAddress': homeAddress,
+      if (branchId != null) 'branch_id': branchId,
     };
   }
 
@@ -99,6 +103,7 @@ class CreateDsmesBookingRequest {
     PaymentInfo? paymentInfo,
     bool? isTest,
     String? homeAddress,
+    int? branchId,
   }) {
     return CreateDsmesBookingRequest(
       startTime: startTime ?? this.startTime,
@@ -118,6 +123,7 @@ class CreateDsmesBookingRequest {
       paymentInfo: paymentInfo ?? this.paymentInfo,
       isTest: isTest ?? this.isTest,
       homeAddress: homeAddress ?? this.homeAddress,
+      branchId: branchId ?? this.branchId,
     );
   }
 }

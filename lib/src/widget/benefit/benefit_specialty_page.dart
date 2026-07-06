@@ -1,4 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/firebase_remote_config.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -123,19 +125,21 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
   }
 
   Future<void> _onSelectAtClinic(ClinicSpecialty specialty) async {
-    final clinicId = specialty.clinic_ids.firstOrNull;
+    final clinicIds = specialty.clinic_ids.map((e) => e.toString()).toList();
     DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
       NavigatorName.benefit_clinic_list,
       arguments: {
         'bookingType': widget.bookingType,
-        'clinicId': clinicId?.toString() ?? '',
+        'clinicIds': clinicIds,
         'specialtyName': specialty.name,
       },
     );
   }
 
   Future<void> _onSelectTelemedicine(ClinicSpecialty specialty) async {
-    final clinicId = specialty.telemedicine_clinic_ids.firstOrNull;
+    final clinicIds = specialty.telemedicine_clinic_ids
+        .map((e) => e.toString())
+        .toList();
 
     // 1. Call search API with clinic_ids filter for telemedicine
     _cubit.initSearchBookingClinicListRequest(
@@ -143,7 +147,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       specialtyId: '',
       kind: Const.BOOKING_TYPE_CLINIC,
       isFilterDistance: 0,
-      clinicId: clinicId?.toString() ?? '',
+      clinicIds: clinicIds,
     );
 
     _cubit.searchBookingClinicListRequest =
@@ -190,13 +194,12 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
 
       if (!mounted) return;
       DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
-        NavigatorName.dsmes_booking_select_date,
+        NavigatorName.benefit_calendar,
         arguments: {
           'serviceType': serviceType,
           'action': 'create',
-          'bookingType': Const.BOOKING_TYPE_CLINIC,
-          'isMergedSchedule': false,
-          'isBenefitFlow': true,
+          'bookingType': Const.BENEFIT_BOOKING_TELEMEDICINE,
+          'specialtyName': specialty.name,
         },
       );
     } catch (_) {
@@ -320,8 +323,16 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                bannerAsset,
+              child: CachedNetworkImage(
+                imageUrl: "${Utils.getHostDocosanUrl()}${specialty.image}",
+                errorWidget: (context, url, error) {
+                  return Image.asset(
+                    R.drawable.banner_tien_dai_thao_duong,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  );
+                },
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,

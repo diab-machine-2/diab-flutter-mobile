@@ -267,6 +267,22 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
     return dsmesAppointment;
   }
 
+  Future<DsmesAppointment?> createDsmesPartnerDiabBooking() async {
+    emit(DsmesAppointmentLoading());
+    DsmesAppointment? dsmesAppointment;
+    ApiResult<CreateDsmesOfflineBookingResponse> apiResult = await appRepository
+        .createDsmesPartnerDiabBooking(request: createDsmesBookingRequest!);
+    apiResult.when(success: (CreateDsmesOfflineBookingResponse response) {
+      print('createDsmesPartnerDiabBooking: ${response.data.toString()}');
+      dsmesAppointment = response.data;
+      emit(DsmesAppointmentLoaded());
+    }, failure: (NetworkExceptions error) {
+      dsmesAppointment = null;
+      emit(DsmesAppointmentFailure(NetworkExceptions.getErrorMessage(error)));
+    });
+    return dsmesAppointment;
+  }
+
   String ensureTimeWithSeconds(String dateTime) {
     // Check if datetime matches yyyy-MM-dd HH:mm format
     final dateTimeFormat = RegExp(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$');
@@ -741,7 +757,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       String kind = 'clinic',
       String name = '',
       int isFilterDistance = 1,
-      String clinicId = '',
+      List<String> clinicIds = const [],
       }) {
     searchBookingClinicListRequest = SearchBookingClinicListRequest(
       page: page.toString(),
@@ -752,7 +768,7 @@ class DsmesAppointmentCubit extends Cubit<DsmesAppointmentState> {
       lng: lng,
       kind: kind,
       isFilterDistance: isFilterDistance,
-      clinicId: clinicId,
+      clinicIds: clinicIds,
     );
   }
 

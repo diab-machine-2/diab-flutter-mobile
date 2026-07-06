@@ -26,17 +26,17 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 ///
 /// [bookingType] is either [Const.BENEFIT_BOOKING_AT_CLINIC] or
 /// [Const.BENEFIT_BOOKING_TELEMEDICINE].
-/// [clinicId] filters the clinics to show only those matching the selected specialty.
+/// [clinicIds] filters the clinics to show only those matching the selected specialty.
 /// [specialtyName] is the name of the selected specialty.
 class BenefitClinicListPage extends StatefulWidget {
   final String bookingType;
-  final String clinicId;
+  final List<String> clinicIds;
   final String? specialtyName;
 
   const BenefitClinicListPage({
     Key? key,
     required this.bookingType,
-    required this.clinicId,
+    required this.clinicIds,
     this.specialtyName,
   }) : super(key: key);
 
@@ -111,7 +111,7 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
         // lng: lng,
         kind: Const.BOOKING_TYPE_CLINIC,
         isFilterDistance: 0,
-        clinicId: widget.clinicId,
+        clinicIds: widget.clinicIds,
       );
 
       // For telemedicine, restrict to clinics that support it
@@ -182,12 +182,11 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
 
       await DsmesNavigationMixin.getNavigationKey()
           .currentState
-          ?.pushNamed(NavigatorName.dsmes_booking_select_date, arguments: {
+          ?.pushNamed(NavigatorName.benefit_calendar, arguments: {
         'serviceType': serviceType,
         'action': 'create',
         'bookingType': Const.BENEFIT_BOOKING_AT_CLINIC,
-        'isMergedSchedule': false,
-        'isBenefitFlow': true,
+        'specialtyName': widget.specialtyName,
       });
     } finally {
       BotToast.closeAllLoading();

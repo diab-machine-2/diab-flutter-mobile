@@ -294,9 +294,7 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
   _handleActionButton() {
     if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
       return _buildBookingDsmesActionButtons();
-    } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC ||
-        widget.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC ||
-        widget.bookingType == Const.BENEFIT_BOOKING_TELEMEDICINE) {
+    } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
       return _buildBookingClinicActionButtons();
     } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
       return _buildBookingDoctorActionButtons();
@@ -324,63 +322,11 @@ class _DsmesCalendarSectionState extends State<DsmesCalendarSection> {
     final args = route?.arguments as Map<String, dynamic>?;
     final isEditing = args?['isEditing'] ?? false;
     final isExamination = _cubit.isExamination;
-    final isBenefitFlow = args?['isBenefitFlow'] ?? false;
 
     if (widget.action == 'reschedule' || isEditing) {
       return _buildButton(R.string.tiep_tuc.tr(), () {
         _handleClinicContinueButton();
       }, isDisabled: !isAllowReschedule);
-    }
-
-    if (isBenefitFlow) {
-      final isTelemedicine =
-          widget.serviceType == DsmesAppointmentMode.telemedicine.toString();
-      final title = R.string.confirm.tr();
-      final isEnabled = selectedBookingSchedule != null;
-      return Container(
-        color: R.color.white,
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-        child: GestureDetector(
-          onTap: isEnabled
-              ? () {
-                  isTelemedicine
-                      ? _handleBookingClinicTelemedicine()
-                      : _handleBookingClinicAtClinic();
-                }
-              : null,
-          child: Container(
-            height: 44,
-            decoration: isEnabled
-                ? BoxDecoration(
-                    color: R.color.mainColor,
-                    borderRadius: BorderRadius.circular(200),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        R.color.greenGradientTop,
-                        R.color.greenGradientMid,
-                        R.color.greenGradientBottom,
-                      ],
-                    ),
-                  )
-                : BoxDecoration(
-                    borderRadius: BorderRadius.circular(200),
-                    color: R.color.color0xffC2C2C2,
-                  ),
-            child: Center(
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: isEnabled ? R.color.white : R.color.grey200,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
     }
 
     // Examination flow: single button that behaves like telemedicine booking

@@ -44,6 +44,10 @@ abstract class DocosanApi {
   Future<CreateDsmesOfflineBookingResponse> createDsmesOfflineBooking(
       @Body() CreateDsmesBookingRequest request);
 
+  @POST("api/doctors/patient-appointments-partner-diab")
+  Future<CreateDsmesOfflineBookingResponse> createDsmesPartnerDiabBooking(
+      @Body() CreateDsmesBookingRequest request);
+
   @GET("api/patients/my-appointment-detail")
   Future<GetDsmesAppointmentDetailResponse> getDsmesAppointmentDetail(
     @Query('appointment_id') int? appointmentId,
