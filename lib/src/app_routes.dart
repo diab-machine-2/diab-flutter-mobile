@@ -30,6 +30,7 @@ import 'package:medical/src/widget/phone_update/update_phone_number_page.dart';
 import 'package:medical/src/widget/phone_update/confirm_phone_verify_otp_page.dart';
 import 'package:medical/src/widget/profile/cancellation_refund_policy.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_campaign_confirmation_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_select_partner_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_detail_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_screen.dart';
@@ -385,6 +386,18 @@ class AppRoutes {
       // ~ END: Lịch dùng thuốc ~
 
       // BCB Bundle Campaign
+      case NavigatorName.bcb_select_partner:
+        {
+          final data = settings.arguments as Map<String, dynamic>?;
+          final id = data?['bcbCampaignId'] as String?;
+          if (id == null || id.isEmpty) break;
+          final name = data?['bcbCampaignName'] as String?;
+          page = BcbSelectPartnerScreen(
+            bcbCampaignId: id,
+            bcbCampaignName: name,
+          );
+          break;
+        }
       case NavigatorName.bcb_form:
         {
           final data = settings.arguments as Map<String, dynamic>?;
