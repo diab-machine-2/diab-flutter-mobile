@@ -21,6 +21,7 @@ class HomeModel {
   final String? tranServicePackageName;
   final String? roadMapName;
   final bool bcbStatus;
+  final bool hasBundle;
 
   List<HomeMeasurementInlineData>? inlineMeasurements;
   List<HomeMeasurementData>? measurements;
@@ -48,6 +49,7 @@ class HomeModel {
     this.reminders,
     this.roadMapName,
     this.bcbStatus = false,
+    this.hasBundle = false,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -112,6 +114,7 @@ class HomeModel {
               .toList(),
       roadMapName: json['roadMapName'] ?? '',
       bcbStatus: json['bcbStatus'] ?? false,
+      hasBundle: json['hasBundle'] ?? false,
     );
   }
 
@@ -136,6 +139,7 @@ class HomeModel {
       'reminders': reminders?.map((e) => e.toJson()).toList(),
       'roadMapName': roadMapName,
       'bcbStatus': bcbStatus,
+      'hasBundle': hasBundle,
     };
   }
 

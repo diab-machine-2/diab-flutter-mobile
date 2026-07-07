@@ -199,6 +199,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
           'isMergedSchedule': false,
           'bookingType': widget.bookingType,
           'specialtyName': widget.specialtyName,
+          'branchName': _cubit.selectedClinic?.name ?? '',
         },
       );
     } finally {

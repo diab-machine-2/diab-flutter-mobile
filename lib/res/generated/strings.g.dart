@@ -1737,4 +1737,12 @@ class Strings {
   String get thoi_gian_kham => 'thoi_gian_kham';
   String get favorite => 'favorite';
   String get chuyen_khoa => 'chuyen_khoa';
+  String get benefit_calendar => 'benefit_calendar';
+  String get benefit_medicine => 'benefit_medicine';
+  String get benefit_lab_testing => 'benefit_lab_testing';
+  String get benefit_other => 'benefit_other';
+  String get benefit_at_home => 'benefit_at_home';
+  String get health_profile => 'health_profile';
 }
+
+

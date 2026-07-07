@@ -1666,4 +1666,10 @@ benefit_select_branch,Chọn cơ sở,Select facility,
 benefit_no_branch_data,Không có cơ sở nào,No facility available,
 thoi_gian_kham,Thời gian khám,Visit time,
 favorite,Yêu thích,Favorite,
-chuyen_khoa,Chuyên khoa,Specialty
+chuyen_khoa,Chuyên khoa,Specialty,
+benefit_calendar,Lịch hẹn,Appointment,
+benefit_medicine,Mua thuốc,Buy Medicine,
+benefit_lab_testing,Đặt xét nghiệm,Lab Testing,
+benefit_other,Khác,Other,
+benefit_at_home,Khám tại nhà,Home Visit,
+health_profile,Hồ sơ sức khoẻ,Health Profile

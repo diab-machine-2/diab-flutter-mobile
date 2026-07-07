@@ -67,6 +67,7 @@ import 'widget/home_measurement_summary.dart';
 import 'widget/home_news.dart';
 import 'widget/sync_modal.dart';
 import 'widget/home_benefit.dart';
+import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 
 class HomeController extends StatefulWidget {
   const HomeController({super.key, this.sharedCode});
@@ -107,6 +108,7 @@ class _HomeControllerState extends State<HomeController>
   bool _isReloadLesson = false;
 
   bool _hasExerciseData = false;
+  int _examResultCount = 0;
 
   @override
   bool get wantKeepAlive => true;
@@ -130,6 +132,7 @@ class _HomeControllerState extends State<HomeController>
       log('[HOME_DEBUG] postFrame init check started - will call checkExerciseData/checkMedicineSchedule');
       await checkExerciseData();
       await checkMedicineSchedule();
+      await _fetchExamResults();
     });
 
     SmartGoalNavigationUtil.setConfig(SmartGoalConfig(
@@ -250,6 +253,18 @@ class _HomeControllerState extends State<HomeController>
     AppSettings.targetDuration = model.dailyTargetDuration ?? 0.0;
     AppSettings.targetBurnedCalorie = model.dailyTargetBurnedCalorie ?? 0.0;
     AppSettings.weightGoal = model.goalWeight ?? 0;
+  }
+
+  Future<void> _fetchExamResults() async {
+    try {
+      final results = await BcbCampaignClient().fetchExamResult();
+      if (!mounted) return;
+      setState(() {
+        _examResultCount = results.length;
+      });
+    } catch (_) {
+      // Silently ignore — count stays 0
+    }
   }
 
   Future<void> checkExerciseData() async {
@@ -790,7 +805,9 @@ class _HomeControllerState extends State<HomeController>
                 // case show all utilities
                 if (routeName == NavigatorName.utilities) {
                   final utilities = BlocProvider.of<HomeBloc>(context)
-                      .getAllUtilities(full: true, bcbStatus: stateLoaded?.model.bcbStatus ?? false);
+                      .getAllUtilities(
+                          full: true,
+                          bcbStatus: stateLoaded?.model.bcbStatus ?? false);
                   Navigator.pushNamed(context, routeName, arguments: utilities);
                   return;
                 }
@@ -873,7 +890,14 @@ class _HomeControllerState extends State<HomeController>
                             measurements: model?.measurements ?? [],
                             onAddMeasurement: () =>
                                 _showAddMeasurement(context),
-                            onHealthProfile: () {},
+                            onHealthProfile: () {
+                              if (model?.hasBundle == true) {
+                                Navigator.pushNamed(
+                                  context,
+                                  NavigatorName.view_test_result,
+                                );
+                              }
+                            },
                             onHbA1cTap:
                                 MeasurementSummary.createHbA1cCallback(context),
                             onMeasurement: (routeName, args, title) async {
@@ -951,6 +975,8 @@ class _HomeControllerState extends State<HomeController>
                               }
                             },
                             loading: stateLoaded?.measurementLoading ?? true,
+                            hasBundle: model?.hasBundle ?? false,
+                            examResultCount: _examResultCount,
                           ),
 
                           const SizedBox(height: 16.0),
@@ -1053,13 +1079,6 @@ class _HomeControllerState extends State<HomeController>
                                 ),
                               ),
                             ),
-
-                          const SizedBox(height: 16.0),
-
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.0),
-                            child: HomeBenefitSection(),
-                          ),
 
                           const SizedBox(height: 16.0),
 
@@ -1233,6 +1252,15 @@ class _HomeControllerState extends State<HomeController>
                               ),
                             ),
                           ),
+
+                          if (model?.hasBundle == true) ...
+                            [
+                              const SizedBox(height: 16.0),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                                child: HomeBenefitSection(),
+                              ),
+                            ],
 
                           const SizedBox(height: 16.0),
 

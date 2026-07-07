@@ -35,6 +35,7 @@ import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dar
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_detail_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_detail_appointment_screen.dart';
+import 'package:medical/src/widget/benefit/benefit_appointment_history_page.dart';
 import 'package:medical/src/widget/benefit/benefit_page.dart';
 
 import 'modal/food/food_model.dart';
@@ -446,6 +447,10 @@ class AppRoutes {
           page = BenefitPage(bookingType: bookingType);
           break;
         }
+
+      case NavigatorName.benefit_appointment_history:
+        page = const BenefitAppointmentHistoryPage();
+        break;
 
       default:
         break;

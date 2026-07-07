@@ -177,4 +177,13 @@ class AppColors {
   static const color0xffF3F4F6 = Color(0xffF3F4F6);
   static const color0xffF4F7F7 = Color(0xffF4F7F7);
   static const color0xff126B56 = Color(0xff126B56);
+  static const benefitArrowButtonBg = Color(0xFF088078);
+  static const benefitDividerColor = Color(0xFF01645A);
+  static const benefitIconGradientStart = Color(0xFF3CB38D);
+  static const benefitIconGradientEnd = Color(0xFF01635A);
+  static const benefitIconBorder = Color(0xFFE5B542);
+  static const benefitTextColor = Color(0xFF01645A);
+  static const benefitTitleColor = Color(0xFF088078);
+  static const benefitBgGradientStart = Color(0xFFCAE9DF);
+  static const benefitBgGradientEnd = Color(0xFFF8FEFD);
 }
