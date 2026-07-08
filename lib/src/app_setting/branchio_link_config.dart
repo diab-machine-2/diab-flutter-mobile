@@ -233,7 +233,7 @@ class BranchioLinkConfig {
                   final status = response.data?.status;
                   if (status != null && status >= 2 && status <= 4) {
                     navigatorKey.currentState?.pushNamed(
-                      NavigatorName.bcb_form,
+                      NavigatorName.bcb_select_partner,
                       arguments: <String, dynamic>{
                         'bcbCampaignId': campaignId,
                         if (campaignName != null) 'bcbCampaignName': campaignName,
@@ -253,7 +253,7 @@ class BranchioLinkConfig {
                 },
                 failure: (_) {
                   navigatorKey.currentState?.pushNamed(
-                    NavigatorName.bcb_form,
+                    NavigatorName.bcb_select_partner,
                     arguments: <String, dynamic>{
                       'bcbCampaignId': campaignId,
                       if (campaignName != null) 'bcbCampaignName': campaignName,
@@ -265,7 +265,7 @@ class BranchioLinkConfig {
           } else {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               navigatorKey.currentState?.pushNamed(
-                NavigatorName.bcb_form,
+                NavigatorName.bcb_select_partner,
                 arguments: <String, dynamic>{
                   'bcbCampaignId': campaignId,
                   if (campaignName != null) 'bcbCampaignName': campaignName,
@@ -1142,7 +1142,7 @@ class BranchioLinkConfig {
               final status = response.data?.status;
               if (status != null && status >= 2 && status <= 4) {
                 navigatorKey.currentState?.pushNamed(
-                  NavigatorName.bcb_form,
+                  NavigatorName.bcb_select_partner,
                   arguments: {
                     'bcbCampaignId': bid,
                     if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
@@ -1162,7 +1162,7 @@ class BranchioLinkConfig {
             },
             failure: (_) {
               navigatorKey.currentState?.pushNamed(
-                NavigatorName.bcb_form,
+                NavigatorName.bcb_select_partner,
                 arguments: {
                   'bcbCampaignId': bid,
                   if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
@@ -1174,7 +1174,7 @@ class BranchioLinkConfig {
       } else {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           navigatorKey.currentState?.pushNamed(
-            NavigatorName.bcb_form,
+            NavigatorName.bcb_select_partner,
             arguments: {
               'bcbCampaignId': bid,
               if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
