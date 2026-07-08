@@ -3,6 +3,7 @@ import 'package:medical/src/widget/helper/http_helper.dart';
 import 'package:medical/src/modal/error/error_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_campaign_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_exam_result_model.dart';
+import 'package:medical/src/model/bcb_campaign/bcb_partner_info_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_partner_schedule_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_registration_model.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_customer_appointment_model.dart';
@@ -26,6 +27,27 @@ class BcbCampaignClient extends FetchClient {
           return [];
         }
         return BcbCampaignModel.toList(response.data['data'] as List<dynamic>);
+      } else {
+        final error = Error.fromJson(response);
+        throw error;
+      }
+    } catch (e) {
+      throw e is Error ? e : R.string.error_can_not_connect_to_server.tr();
+    }
+  }
+
+  /// GET App/BcbPartnerScheduleDay/BcBCampaignId?bcbCampaignId={uuid}
+  /// Returns partners grouped with nested slots (new API shape).
+  Future<List<BcbPartnerInfo>> fetchPartnerInfos(String bcbCampaignId) async {
+    try {
+      final Response response = await super.fetchData(
+        url: '/App/BcbPartnerScheduleDay/BcBCampaignId',
+        params: {'bcbCampaignId': bcbCampaignId},
+      );
+      if (response.statusCode == 200) {
+        final body = response.data;
+        final raw = body is Map<String, dynamic> ? body['data'] : body;
+        return BcbPartnerInfo.listFrom(raw);
       } else {
         final error = Error.fromJson(response);
         throw error;

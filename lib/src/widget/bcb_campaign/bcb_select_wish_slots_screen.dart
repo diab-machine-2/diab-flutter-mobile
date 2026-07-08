@@ -47,10 +47,6 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     _selectedWishSlot = widget.selectedWishSlot;
     if (widget.scheduleDays != null && widget.scheduleDays!.isNotEmpty) {
       _applySchedule(widget.scheduleDays!, preserveSelection: true);
-      // Only refetch if we don't have a pre-selected slot (i.e., fresh entry)
-      if (widget.selectedWishSlot == null) {
-        _fetchScheduleDays();
-      }
     } else {
       _fetchScheduleDays();
     }
