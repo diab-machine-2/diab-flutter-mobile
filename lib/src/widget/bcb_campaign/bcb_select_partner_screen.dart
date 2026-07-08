@@ -152,7 +152,7 @@ class _BcbSelectPartnerScreenState extends State<BcbSelectPartnerScreen> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: R.color.color0xff111515,
               ),
@@ -165,17 +165,17 @@ class _BcbSelectPartnerScreenState extends State<BcbSelectPartnerScreen> {
                 children: [
                   Image.asset(
                     R.drawable.ic_map_marker,
-                    width: 14,
-                    height: 14,
+                    width: 18,
+                    height: 18,
                   ),
                   const SizedBox(width: 5),
                   Flexible(
                     child: Text(
                       partner.partnerAddress!,
-                      maxLines: 2,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: R.color.color0xff777E90,
                       ),
