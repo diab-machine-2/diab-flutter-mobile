@@ -126,6 +126,16 @@ class _BcbCampaignConfirmationScreenState
   }
 
   void _showSuccessAndGoHome() {
+    final startTime = widget.selectedWishSlot.slot.startTime ?? '';
+    final timeParts = startTime.split(':');
+    final timeStr =
+        timeParts.length >= 2 ? '${timeParts[0]}:${timeParts[1]}' : startTime;
+    final dateTimestamp =
+        int.tryParse(widget.selectedWishSlot.slot.examDate ?? '');
+    final date = dateTimestamp != null
+        ? DateTime.fromMillisecondsSinceEpoch(dateTimestamp * 1000)
+        : null;
+    final dateStr = date != null ? DateFormat('dd/MM/yyyy').format(date) : '';
     showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -191,7 +201,10 @@ class _BcbCampaignConfirmationScreenState
                 Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: Text(
-                    R.string.bcb_success_contact_subtitle.tr(),
+                    R.string.bcb_success_contact_subtitle.tr(namedArgs: {
+                      'time': timeStr,
+                      'date': dateStr,
+                    }),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: R.color.color0xff777E90,

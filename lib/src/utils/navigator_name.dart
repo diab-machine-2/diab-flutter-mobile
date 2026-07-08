@@ -190,6 +190,7 @@ class NavigatorName {
       '/cancellation_refund_policy';
 
   // BCB Bundle Campaign
+  static const String bcb_select_partner = '/bcb-campaign/select-partner';
   static const String bcb_form = '/bcb-campaign/form';
   static const String bcb_campaign_confirmation = '/bcb-campaign/confirmation';
   static const String bcb_result = '/bcb-campaign/result';
