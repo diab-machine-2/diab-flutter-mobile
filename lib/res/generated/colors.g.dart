@@ -228,4 +228,5 @@ class Colors {
   Color get benefitTitleColor => Color(0xFF088078);
   Color get benefitBgGradientStart => Color(0xFFCAE9DF);
   Color get benefitBgGradientEnd => Color(0xFFF8FEFD);
+  Color get serviceCardShadow => Color(0x19000000);
 }

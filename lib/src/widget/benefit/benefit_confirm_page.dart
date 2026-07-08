@@ -14,8 +14,10 @@ import 'package:medical/src/utils/length_limit_text_field.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/booking_clinic/helper/vnpay_payment_service.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
@@ -274,25 +276,45 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
       );
     }
 
-    if (widget.isBypassPayment) {
-      // ── Telemedicine bypass: skip VNPay, call createDsmesBookingOnline directly ──
-      _cubit.updateCreateDsmesBookingRequestServiceList(
-        paymentType: 'local_banking',
-        selectedServices:
-            _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? [],
-      );
-      resp = await _cubit.createDsmesBookingOnline();
+    if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
+      // ── At-clinic: book directly ──
+      resp = await _cubit.createDsmesBooking();
     } else {
-      // ── At-clinic: standard offline booking ──
-      if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
-        if (widget.bookingType == Const.BENEFIT_BOOKING_AT_CLINIC) {
-          resp = await _cubit.createDsmesPartnerDiabBooking();
-        } else {
-          resp = await _cubit.createDsmesBooking();
+      // ── Telemedicine: smart payment routing ────────────────────────────
+      // Determine if all selected services are free (benefit-covered) or paid.
+      final selectedServiceItems =
+          _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? [];
+
+      final hasPrice = selectedServiceItems.any((item) {
+        final service = _findSelectedClinicServiceById(item.id);
+        if (service == null) return false;
+        return !_isServiceFree(service);
+      });
+
+      if (hasPrice) {
+        // ── Paid service: open VNPay SDK ──
+        final totalPrice = _calculateTotalPrice();
+        final paymentService = VNPayService(
+          context: context,
+          totalPrice: totalPrice,
+          bookingType: widget.bookingType,
+          serviceType: widget.serviceType,
+          cubit: _cubit,
+        );
+        final initialized = await paymentService.initializePayment();
+        if (initialized) {
+          await paymentService.openVNPaySDK();
         }
-      } else {
-        resp = await _cubit.createDsmesBookingOnline();
+        return; // VNPayService handles success/failure navigation
       }
+
+      // ── Free / benefit-covered: book directly with empty paymentType ──
+      _cubit.updateCreateDsmesBookingRequestServiceList(
+        paymentType: '',
+        selectedServices: selectedServiceItems,
+      );
+
+      resp = await _cubit.createDsmesBookingOnline();
     }
 
     if (resp == null) return;
@@ -647,6 +669,39 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
       isDisplayTextField: true,
       hintText: R.string.booking_note_text_hint.tr(),
     );
+  }
+
+  // ─── Payment helpers ──────────────────────────────────────────────────────
+
+  /// Returns true when a service is free: priceType == 'free' OR both prices are zero.
+  bool _isServiceFree(ServiceData service) {
+    return service.priceType == 'free' ||
+        (service.fromPrice == 0 && service.toPrice == 0);
+  }
+
+  /// Sums up fromPrice for all selected services.
+  int _calculateTotalPrice() {
+    final services =
+        _cubit.createDsmesBookingRequest!.paymentInfo!.services;
+    int total = 0;
+    for (final item in services) {
+      final service = _findSelectedClinicServiceById(item.id);
+      total += ((service?.fromPrice ?? 0) as num).toInt();
+    }
+    return total;
+  }
+
+  /// Finds a [ServiceData] by ID from the currently selected clinic.
+  ServiceData? _findSelectedClinicServiceById(dynamic id) {
+    if (id == null) return null;
+    final allServices = _cubit.selectedClinic?.serviceList.categories
+            .expand((c) => c.data)
+            .toList() ??
+        [];
+    for (final service in allServices) {
+      if (service.id == id) return service;
+    }
+    return null;
   }
 
   // ─── Dialogs ──────────────────────────────────────────────────────────────

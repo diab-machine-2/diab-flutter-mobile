@@ -54,8 +54,6 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
   late List<DateTime> activeDates = [];
   late List<BookingSchedule> fullSchedule = [];
 
-  bool get _isTelemedicine =>
-      widget.serviceType == DsmesAppointmentMode.telemedicine.toString();
 
   @override
   void initState() {
@@ -162,46 +160,63 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
           startTime: selectedBookingSchedule!.startTime,
           endTime: selectedBookingSchedule!.endTime);
 
-      if (_isTelemedicine) {
-        // Auto-select telemedicine service from the first matching category.
-        // Prefer a free service if available, otherwise use the first service
-        // found — this covers edge cases where price data may be absent,
-        // null, or non-zero for benefit-covered telemedicine bookings.
-        final clinic = _cubit.selectedClinic;
-        if (clinic != null) {
-          final telemedicineServices = clinic.serviceList.categories
-              .where(
-                  (c) => c.type == DsmesAppointmentMode.telemedicine.toString())
-              .expand((c) => c.data)
-              .toList();
+      final clinic = _cubit.selectedClinic;
+      if (clinic == null) return;
 
-          if (telemedicineServices.isNotEmpty) {
-            final selectedService = telemedicineServices.firstWhere(
-              (s) => s.fromPrice == 0 && s.toPrice == 0,
-              orElse: () => telemedicineServices.first,
-            );
+      if (widget.serviceType == DsmesAppointmentMode.telemedicine.toString()) {
+        // ── Telemedicine: select service(s) ──
+        final allServices =
+            clinic.serviceList.categories.expand((c) => c.data).toList();
 
-            _cubit.updateCreateDsmesBookingRequestServiceList(
-              selectedServices: [
-                ServiceItem(id: selectedService.id, quantity: 1),
-              ],
-            );
-          }
+        if (allServices.length == 1) {
+          // Single service: auto-select and go straight to confirm
+          _cubit.updateCreateDsmesBookingRequestServiceList(
+            selectedServices: [
+              ServiceItem(id: allServices.first.id, quantity: 1),
+            ],
+          );
+
+          DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+            NavigatorName.dsmes_confirm_information,
+            arguments: {
+              'serviceType': widget.serviceType,
+              'action': widget.action,
+              'appointmentId': widget.appointmentId,
+              'isMergedSchedule': false,
+              'bookingType': widget.bookingType,
+              'specialtyName': widget.specialtyName,
+              'branchName': _cubit.selectedClinic?.name ?? '',
+            },
+          );
+        } else {
+          // Multiple services: let the user pick
+          DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+            NavigatorName.benefit_select_service,
+            arguments: {
+              'serviceType': widget.serviceType,
+              'action': widget.action,
+              'appointmentId': widget.appointmentId,
+              'bookingType': widget.bookingType,
+              'specialtyName': widget.specialtyName,
+              'branchName': _cubit.selectedClinic?.name ?? '',
+            },
+          );
         }
+      } else {
+        // ── At-clinic: go directly to confirm (no service selection) ──
+        DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+          NavigatorName.dsmes_confirm_information,
+          arguments: {
+            'serviceType': widget.serviceType,
+            'action': widget.action,
+            'appointmentId': widget.appointmentId,
+            'isMergedSchedule': false,
+            'bookingType': widget.bookingType,
+            'specialtyName': widget.specialtyName,
+            'branchName': _cubit.selectedClinic?.name ?? '',
+          },
+        );
       }
-
-      DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
-        NavigatorName.dsmes_confirm_information,
-        arguments: {
-          'serviceType': widget.serviceType,
-          'action': widget.action,
-          'appointmentId': widget.appointmentId,
-          'isMergedSchedule': false,
-          'bookingType': widget.bookingType,
-          'specialtyName': widget.specialtyName,
-          'branchName': _cubit.selectedClinic?.name ?? '',
-        },
-      );
     } finally {
       setState(() => _isProcessing = false);
     }

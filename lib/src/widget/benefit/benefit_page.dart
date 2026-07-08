@@ -11,6 +11,7 @@ import 'package:medical/src/widget/benefit/benefit_branch_page.dart';
 import 'package:medical/src/widget/benefit/benefit_calendar_section.dart';
 import 'package:medical/src/widget/benefit/benefit_clinic_list_page.dart';
 import 'package:medical/src/widget/benefit/benefit_confirm_page.dart';
+import 'package:medical/src/widget/benefit/benefit_select_service_page.dart';
 import 'package:medical/src/widget/benefit/benefit_specialty_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_page.dart';
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_select_service.dart';
@@ -254,6 +255,26 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           isBypassPayment: false,
                           specialtyName:
                               args['specialtyName'] as String?,
+                        ),
+                      );
+                    }
+
+                  case NavigatorName.benefit_select_service:
+                    {
+                      final args =
+                          settings.arguments as Map<String, dynamic>?;
+                      return _buildRoute(
+                        settings,
+                        BenefitSelectServicePage(
+                          serviceType: args!['serviceType'],
+                          action: args['action'] ?? 'create',
+                          appointmentId: args['appointmentId'] as int?,
+                          bookingType: args['bookingType'] ??
+                              Const.BOOKING_TYPE_CLINIC,
+                          specialtyName: args['specialtyName'] as String?,
+                          branchName: args['branchName'] as String?,
+                          branchAddress: args['branchAddress'] as String?,
+                          branchId: args['branchId'] as int?,
                         ),
                       );
                     }
