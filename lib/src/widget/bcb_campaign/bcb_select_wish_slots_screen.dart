@@ -20,6 +20,7 @@ class BcbSelectWishSlotsScreen extends StatefulWidget {
   final String? initialDoctorNote;
   final bool isReschedule;
   final String? appointmentId;
+  final String? currentSlotId;
 
   const BcbSelectWishSlotsScreen({
     Key? key,
@@ -30,6 +31,7 @@ class BcbSelectWishSlotsScreen extends StatefulWidget {
     this.initialDoctorNote,
     this.isReschedule = false,
     this.appointmentId,
+    this.currentSlotId,
   }) : super(key: key);
 
   @override
@@ -96,8 +98,22 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
     final activeDays = list;
     activeDays
         .sort((a, b) => (a.examDateUnix ?? 0).compareTo(b.examDateUnix ?? 0));
-    final selected =
+    var selected =
         preserveSelection ? _findSelectionInDays(activeDays) : null;
+    // For reschedule: find the previously-booked slot by ID and pre-select it
+    if (selected == null &&
+        widget.currentSlotId != null &&
+        widget.currentSlotId!.isNotEmpty) {
+      outer:
+      for (final day in activeDays) {
+        for (final slot in day.slots) {
+          if (slot.id == widget.currentSlotId) {
+            selected = BcbSelectedWishSlot(day: day, slot: slot);
+            break outer;
+          }
+        }
+      }
+    }
     final selectedDay =
         selected?.day ?? (activeDays.isNotEmpty ? activeDays.first : null);
     setState(() {

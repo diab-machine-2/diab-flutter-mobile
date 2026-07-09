@@ -289,6 +289,7 @@ class _BcbDetailAppointmentScreenState
           bcbCampaignId: widget.campaignId,
           isReschedule: true,
           appointmentId: appt.appointmentId,
+          currentSlotId: appt.slotId,
         ),
       ),
     );

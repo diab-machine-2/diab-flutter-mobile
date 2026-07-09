@@ -10,6 +10,7 @@ class BcbSelectPartnerScreen extends StatefulWidget {
   final String? bcbCampaignName;
   final bool isReschedule;
   final String? appointmentId;
+  final String? currentSlotId;
 
   const BcbSelectPartnerScreen({
     Key? key,
@@ -17,6 +18,7 @@ class BcbSelectPartnerScreen extends StatefulWidget {
     this.bcbCampaignName,
     this.isReschedule = false,
     this.appointmentId,
+    this.currentSlotId,
   }) : super(key: key);
 
   @override
@@ -60,6 +62,7 @@ class _BcbSelectPartnerScreenState extends State<BcbSelectPartnerScreen> {
           scheduleDays: scheduleDays,
           isReschedule: widget.isReschedule,
           appointmentId: widget.appointmentId,
+          currentSlotId: widget.currentSlotId,
         ),
       ),
     );
