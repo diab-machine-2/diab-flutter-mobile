@@ -8,7 +8,7 @@ import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 /// Branch selection page for the Benefit booking flow.
@@ -89,11 +89,7 @@ class _BenefitBranchPageState extends State<BenefitBranchPage> {
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   icon: Icon(Icons.arrow_back, color: R.color.white),
-                  onPressed: () {
-                    DsmesNavigationMixin.getNavigationKey()
-                        .currentState
-                        ?.pop(context);
-                  },
+                  onPressed: () => BenefitNavigatorScope.popOrRoot(context),
                 ),
               ),
             ),
@@ -261,7 +257,7 @@ class _BenefitBranchPageState extends State<BenefitBranchPage> {
     // Clear branches so the confirm route handler doesn't redirect to branch page again
     context.read<DsmesAppointmentCubit>().selectedClinicBranches = null;
 
-    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+    BenefitNavigatorScope.of(context).currentState?.pushNamed(
       NavigatorName.benefit_confirm_information,
       arguments: {
         'serviceType': widget.serviceType,

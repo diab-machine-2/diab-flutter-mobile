@@ -10,7 +10,7 @@ import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
 /// Service selection screen for the Benefit booking flow.
@@ -150,9 +150,7 @@ class _BenefitSelectServicePageState extends State<BenefitSelectServicePage> {
           splashColor: R.color.transparent,
           highlightColor: R.color.transparent,
           icon: Icon(Icons.arrow_back, color: R.color.white),
-          onPressed: () => DsmesNavigationMixin.getNavigationKey()
-              .currentState
-              ?.pop(context),
+          onPressed: () => BenefitNavigatorScope.popOrRoot(context),
         ),
       ),
     );
@@ -366,7 +364,7 @@ class _BenefitSelectServicePageState extends State<BenefitSelectServicePage> {
           selectedServices: serviceItems);
     }
 
-    await DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+    await BenefitNavigatorScope.of(context).currentState?.pushNamed(
       NavigatorName.benefit_confirm_information,
       arguments: {
         'serviceType': widget.serviceType,

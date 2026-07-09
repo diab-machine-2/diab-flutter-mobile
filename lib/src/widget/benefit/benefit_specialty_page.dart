@@ -13,7 +13,7 @@ import 'package:medical/src/widget/booking_clinic/model/clinic_specialty_model.d
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 
 /// Specialty selection page for the Benefit booking flow.
 ///
@@ -126,7 +126,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
 
   Future<void> _onSelectAtClinic(ClinicSpecialty specialty) async {
     final clinicIds = specialty.clinic_ids.map((e) => e.toString()).toList();
-    DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+    BenefitNavigatorScope.of(context).currentState?.pushNamed(
       NavigatorName.benefit_clinic_list,
       arguments: {
         'bookingType': widget.bookingType,
@@ -193,7 +193,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
       final serviceType = DsmesAppointmentMode.telemedicine.toString();
 
       if (!mounted) return;
-      DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+      BenefitNavigatorScope.of(context).currentState?.pushNamed(
         NavigatorName.benefit_calendar,
         arguments: {
           'serviceType': serviceType,
@@ -211,7 +211,7 @@ class _BenefitSpecialtyPageState extends State<BenefitSpecialtyPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
+        BenefitNavigatorScope.popOrRoot(context);
         return false;
       },
       child: Scaffold(

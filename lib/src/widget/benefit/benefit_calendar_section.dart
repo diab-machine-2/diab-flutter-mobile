@@ -12,7 +12,7 @@ import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/dsmes_empty_widget.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widgets/CalendarPicker/custom_date_picker_horizontal.dart';
@@ -29,9 +29,6 @@ class BenefitCalendarSection extends StatefulWidget {
   final int? appointmentId;
   final String bookingType;
   final String? specialtyName;
-  /// When provided, overrides the default DsmesNavigationMixin back behaviour.
-  /// Used by [BenefitRescheduleFlow] to pop the root route instead.
-  final VoidCallback? onBack;
 
   const BenefitCalendarSection({
     Key? key,
@@ -40,7 +37,6 @@ class BenefitCalendarSection extends StatefulWidget {
     this.appointmentId,
     required this.bookingType,
     this.specialtyName,
-    this.onBack,
   }) : super(key: key);
 
   @override
@@ -200,7 +196,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
             );
           }
 
-          DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+          BenefitNavigatorScope.of(context).currentState?.pushNamed(
             NavigatorName.benefit_confirm_information,
             arguments: {
               'serviceType': widget.serviceType,
@@ -214,7 +210,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
           );
         } else {
           // Multiple services: let the user pick
-          DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+          BenefitNavigatorScope.of(context).currentState?.pushNamed(
             NavigatorName.benefit_select_service,
             arguments: {
               'serviceType': widget.serviceType,
@@ -244,7 +240,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
           );
         }
 
-        DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
+        BenefitNavigatorScope.of(context).currentState?.pushNamed(
           NavigatorName.benefit_confirm_information,
           arguments: {
             'serviceType': widget.serviceType,
@@ -299,15 +295,8 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
                       splashColor: R.color.transparent,
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
-                      onPressed: () {
-                        if (widget.onBack != null) {
-                          widget.onBack!();
-                        } else {
-                          DsmesNavigationMixin.getNavigationKey()
-                              .currentState
-                              ?.pop();
-                        }
-                      },
+                      onPressed: () =>
+                          BenefitNavigatorScope.popOrRoot(context),
                     ),
                   ),
                 ),

@@ -16,7 +16,7 @@ import 'package:medical/src/widget/booking_doctor/widgets/rating_heart_widget.da
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 import 'package:medical/src/widgets/network_image_widget.dart';
@@ -144,7 +144,7 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
     final detailSuccess = await _cubit.getClinicDetail(id: data.id);
     final rateSuccess = await _cubit.getClinicRate(id: data.id);
     if (detailSuccess && rateSuccess) {
-      DsmesNavigationMixin.getNavigationKey()
+      BenefitNavigatorScope.of(context)
           .currentState
           ?.pushNamed(NavigatorName.dsmes_clinic_detail, arguments: {
         'clinicId': data.id,
@@ -180,7 +180,7 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
           ? DsmesAppointmentMode.telemedicine.toString()
           : DsmesAppointmentMode.atClinic.toString();
 
-      await DsmesNavigationMixin.getNavigationKey()
+      await BenefitNavigatorScope.of(context)
           .currentState
           ?.pushNamed(NavigatorName.benefit_calendar, arguments: {
         'serviceType': serviceType,
@@ -198,7 +198,7 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        DsmesNavigationMixin.getNavigationKey().currentState?.pop(context);
+        BenefitNavigatorScope.popOrRoot(context);
         return false;
       },
       child: Scaffold(
@@ -239,12 +239,7 @@ class _BenefitClinicListPageState extends State<BenefitClinicListPage> {
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               icon: Icon(Icons.arrow_back, color: R.color.white),
-              onPressed: () {
-                // Navigator.of(context, rootNavigator: true).pop();
-                DsmesNavigationMixin.getNavigationKey()
-                    .currentState
-                    ?.pop(context);
-              },
+              onPressed: () => BenefitNavigatorScope.popOrRoot(context),
             ),
           ),
         ),

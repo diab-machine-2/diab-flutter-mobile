@@ -20,7 +20,7 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dar
 import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_datetime.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_clinic_detail_page.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
+import 'package:medical/src/widget/benefit/benefit_navigator_scope.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 
 /// Entry-point wrapper for the "Quyền lợi" booking flows.
@@ -43,7 +43,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
   late DsmesAppointmentCubit _cubit;
   String _currentRoute = '/';
 
-  final _navigatorKey = DsmesNavigationMixin.createNavigatorKey();
+  final _navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
@@ -52,7 +52,6 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
     final AppRepository repository = AppRepository();
     _cubit = DsmesAppointmentCubit(repository);
     _cubit.isBenefitFlow = true;
-    DsmesNavigationMixin.setActiveNavigator(_navigatorKey);
     // Pre-call to register docosan user & get token (no appointments needed)
     _cubit.initDsmesBooking(isLoadAppointments: false);
   }
@@ -94,11 +93,8 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
           backgroundColor: R.color.backgroundColorNew,
           body: WillPopScope(
             onWillPop: () async {
-              if (DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.canPop() ??
-                  false) {
-                DsmesNavigationMixin.getNavigationKey().currentState?.pop();
+              if (_navigatorKey.currentState?.canPop() ?? false) {
+                _navigatorKey.currentState?.pop();
                 return false;
               } else {
                 BotToast.closeAllLoading();
@@ -106,8 +102,10 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
               }
               return true;
             },
-            child: Navigator(
-              key: DsmesNavigationMixin.getNavigationKey(),
+            child: BenefitNavigatorScope(
+              navigatorKey: _navigatorKey,
+              child: Navigator(
+                key: _navigatorKey,
               onGenerateRoute: (settings) {
                 _currentRoute = settings.name ?? '/';
                 switch (settings.name) {
@@ -313,6 +311,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                 }
               },
             ),
+            ),  // BenefitNavigatorScope
           ),
         ),
       ),
