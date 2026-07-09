@@ -1,6 +1,7 @@
 class BcbPartnerScheduleSlot {
   final String? id;
   final String? scheduleDayId;
+  final String? examDate;
   final String? startTime;
   final String? endTime;
   final int? maxCapacity;
@@ -11,6 +12,7 @@ class BcbPartnerScheduleSlot {
   BcbPartnerScheduleSlot({
     this.id,
     this.scheduleDayId,
+    this.examDate,
     this.startTime,
     this.endTime,
     this.maxCapacity,
@@ -21,8 +23,9 @@ class BcbPartnerScheduleSlot {
 
   factory BcbPartnerScheduleSlot.fromJson(Map<String, dynamic> json) {
     return BcbPartnerScheduleSlot(
-      id: json['id'] as String?,
+      id: (json['slotId'] ?? json['id']) as String?,
       scheduleDayId: json['scheduleDayId'] as String?,
+      examDate: json['examDate']?.toString(),
       startTime: json['startTime']?.toString(),
       endTime: json['endTime']?.toString(),
       maxCapacity: json['maxCapacity'] as int?,
