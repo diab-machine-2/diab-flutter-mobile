@@ -169,12 +169,32 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
             clinic.serviceList.categories.expand((c) => c.data).toList();
 
         if (allServices.length == 1) {
-          // Single service: auto-select and go straight to confirm
-          _cubit.updateCreateDsmesBookingRequestServiceList(
-            selectedServices: [
-              ServiceItem(id: allServices.first.id, quantity: 1),
-            ],
-          );
+          // Single service: auto-select and go straight to confirm.
+          // If clinic has a voucher for this service, use sale_services payload.
+          final serviceId = allServices.first.id;
+          final saleItem = clinic.saleServiceList?.findByServiceId(serviceId);
+
+          if (saleItem != null) {
+            // Voucher flow: use saleServices
+            _cubit.createDsmesBookingRequest =
+                _cubit.createDsmesBookingRequest?.copyWith(
+              paymentInfo: PaymentInfo(
+                paymentType: 'local_banking',
+                services: [],
+                saleServices: [
+                  ServiceItem(id: saleItem.serviceItemId, quantity: 1),
+                ],
+              ),
+              voucherCode: saleItem.voucherCode,
+            );
+          } else {
+            // No voucher: use regular services
+            _cubit.updateCreateDsmesBookingRequestServiceList(
+              selectedServices: [
+                ServiceItem(id: serviceId, quantity: 1),
+              ],
+            );
+          }
 
           DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
             NavigatorName.dsmes_confirm_information,
@@ -203,7 +223,23 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
           );
         }
       } else {
-        // ── At-clinic: go directly to confirm (no service selection) ──
+        // ── At-clinic: pick up voucher from saleServiceList if present ──
+        final saleServiceList = clinic.saleServiceList;
+        if (saleServiceList != null && saleServiceList.services.isNotEmpty) {
+          final saleItem = saleServiceList.services.first;
+          _cubit.createDsmesBookingRequest =
+              _cubit.createDsmesBookingRequest?.copyWith(
+            paymentInfo: PaymentInfo(
+              paymentType: 'local_banking',
+              services: [],
+              saleServices: [
+                ServiceItem(id: saleItem.serviceItemId, quantity: 1),
+              ],
+            ),
+            voucherCode: saleItem.voucherCode,
+          );
+        }
+
         DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
           NavigatorName.dsmes_confirm_information,
           arguments: {

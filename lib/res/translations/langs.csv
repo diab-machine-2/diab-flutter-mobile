@@ -1673,3 +1673,7 @@ benefit_lab_testing,Đặt xét nghiệm,Lab Testing,
 benefit_other,Khác,Other,
 benefit_at_home,Khám tại nhà,Home Visit,
 health_profile,Hồ sơ sức khoẻ,Health Profile
+promotion,Ưu đãi,Promotion,
+promotion_percent,"Ưu đãi ({percent}%)","Promotion ({percent}%)",
+payment_detail,Chi tiết thanh toán,Payment details,
+total_payment,Tổng thanh toán,Total payment,

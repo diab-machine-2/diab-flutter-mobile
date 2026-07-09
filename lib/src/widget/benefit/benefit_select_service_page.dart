@@ -329,11 +329,42 @@ class _BenefitSelectServicePageState extends State<BenefitSelectServicePage> {
     if (selectedServices.isEmpty || selectedServices.length > maxServices)
       return;
 
-    final serviceItems =
-        selectedServices.map((id) => ServiceItem(id: id, quantity: 1)).toList();
+    final clinic = _cubit.selectedClinic;
+    final saleServiceList = clinic?.saleServiceList;
 
-    _cubit.updateCreateDsmesBookingRequestServiceList(
-        selectedServices: serviceItems);
+    if (saleServiceList != null) {
+      // ── Voucher flow: build saleServices from matched sale items ──
+      final saleItems = <ServiceItem>[];
+      String? voucherCode;
+
+      for (final serviceId in selectedServices) {
+        final saleItem = saleServiceList.findByServiceId(serviceId);
+        if (saleItem != null) {
+          saleItems.add(ServiceItem(id: saleItem.serviceItemId, quantity: 1));
+          voucherCode ??= saleItem.voucherCode;
+        } else {
+          // Service not in sale list — send as regular service
+          saleItems.add(ServiceItem(id: serviceId, quantity: 1));
+        }
+      }
+
+      _cubit.createDsmesBookingRequest =
+          _cubit.createDsmesBookingRequest?.copyWith(
+        paymentInfo: PaymentInfo(
+          paymentType: 'local_banking',
+          services: [],
+          saleServices: saleItems,
+        ),
+        voucherCode: voucherCode,
+      );
+    } else {
+      // ── Normal flow: regular services ──
+      final serviceItems =
+          selectedServices.map((id) => ServiceItem(id: id, quantity: 1)).toList();
+
+      _cubit.updateCreateDsmesBookingRequestServiceList(
+          selectedServices: serviceItems);
+    }
 
     await DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
       NavigatorName.dsmes_confirm_information,

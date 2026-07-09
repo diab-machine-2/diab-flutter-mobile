@@ -1743,6 +1743,10 @@ class Strings {
   String get benefit_other => 'benefit_other';
   String get benefit_at_home => 'benefit_at_home';
   String get health_profile => 'health_profile';
+  String get promotion => 'promotion';
+  String get promotion_percent => 'promotion_percent';
+  String get payment_detail => 'payment_detail';
+  String get total_payment => 'total_payment';
 }
 
 

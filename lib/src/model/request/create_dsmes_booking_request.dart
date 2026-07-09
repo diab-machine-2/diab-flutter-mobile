@@ -17,6 +17,7 @@ class CreateDsmesBookingRequest {
   final bool? isTest;
   final String? homeAddress;
   final int? branchId;
+  final String? voucherCode;
 
   CreateDsmesBookingRequest({
     required this.startTime,
@@ -37,6 +38,7 @@ class CreateDsmesBookingRequest {
     this.isTest,
     this.homeAddress,
     this.branchId,
+    this.voucherCode,
   });
 
   factory CreateDsmesBookingRequest.fromJson(Map<String, dynamic> json) {
@@ -82,6 +84,8 @@ class CreateDsmesBookingRequest {
       if (isTest != null) 'isTest': isTest,
       if (homeAddress != null) 'homeAddress': homeAddress,
       if (branchId != null) 'branch_id': branchId,
+      if (voucherCode != null && voucherCode!.isNotEmpty)
+        'voucher_code': voucherCode,
     };
   }
 
@@ -104,6 +108,7 @@ class CreateDsmesBookingRequest {
     bool? isTest,
     String? homeAddress,
     int? branchId,
+    String? voucherCode,
   }) {
     return CreateDsmesBookingRequest(
       startTime: startTime ?? this.startTime,
@@ -124,32 +129,52 @@ class CreateDsmesBookingRequest {
       isTest: isTest ?? this.isTest,
       homeAddress: homeAddress ?? this.homeAddress,
       branchId: branchId ?? this.branchId,
+      voucherCode: voucherCode ?? this.voucherCode,
     );
   }
 }
 
 class PaymentInfo {
   final String? paymentType;
+  /// Regular services — used when no voucher applies.
   final List<ServiceItem> services;
+  /// Sale/voucher services — when non-null, serialized as `sale_services`
+  /// and `services` is omitted from the payload.
+  final List<ServiceItem>? saleServices;
 
   PaymentInfo({
     this.paymentType,
     required this.services,
+    this.saleServices,
   });
 
   factory PaymentInfo.fromJson(Map<String, dynamic> json) {
     return PaymentInfo(
       paymentType: json['payment_type'],
-      services: (json['services'] as List)
+      services: (json['services'] as List? ?? [])
           .map((service) => ServiceItem.fromJson(service))
+          .toList(),
+      saleServices: (json['sale_services'] as List?)
+          ?.map((service) => ServiceItem.fromJson(service))
           .toList(),
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() {
+    if (saleServices != null) {
+      // Voucher flow: use sale_services key
+      return {
         'payment_type': paymentType,
-        'services': services.map((service) => service.toJson()).toList(),
+        'sale_services':
+            saleServices!.map((service) => service.toJson()).toList(),
       };
+    }
+    // Normal flow: use services key
+    return {
+      'payment_type': paymentType,
+      'services': services.map((service) => service.toJson()).toList(),
+    };
+  }
 }
 
 class ServiceItem {

@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
+import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/modal/user/user_model.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
@@ -181,7 +182,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                           _buildPatientInformation(),
                           GapH(12),
                           _buildConsultingInformation(),
-                          GapH(12),
+                          _buildVoucherAndPaymentSection(),
                           _selectImageSection(),
                         ],
                       ),
@@ -278,14 +279,23 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
     if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
       // ── At-clinic: book directly ──
-      resp = await _cubit.createDsmesBooking();
+      resp = await _cubit.createDsmesPartnerDiabBooking();
     } else {
-      // ── Telemedicine: smart payment routing ────────────────────────────
-      // Determine if all selected services are free (benefit-covered) or paid.
+      // ── Telemedicine: smart payment routing ──────────────────────────────────
+      // Check whether any selected service has a non-zero price_discount
+      // (from saleServiceList) or a non-zero fromPrice (normal flow).
+      // price_discount == 0 (voucher covers 100%) => free, skip VNPay.
+      final saleServiceList = _cubit.selectedClinic?.saleServiceList;
       final selectedServiceItems =
           _cubit.createDsmesBookingRequest?.paymentInfo?.services ?? [];
 
       final hasPrice = selectedServiceItems.any((item) {
+        if (saleServiceList != null) {
+          // Voucher flow: check priceDiscount
+          final saleItem = saleServiceList.findByServiceId(item.id);
+          if (saleItem != null) return saleItem.priceDiscount > 0;
+        }
+        // Normal flow: check fromPrice
         final service = _findSelectedClinicServiceById(item.id);
         if (service == null) return false;
         return !_isServiceFree(service);
@@ -308,11 +318,27 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
         return; // VNPayService handles success/failure navigation
       }
 
-      // ── Free / benefit-covered: book directly with empty paymentType ──
-      _cubit.updateCreateDsmesBookingRequestServiceList(
-        paymentType: '',
-        selectedServices: selectedServiceItems,
-      );
+      // ── Free / benefit-covered: book directly ──
+      // If there are saleServices in paymentInfo (voucher flow), they are
+      // already set; just ensure paymentType is 'local_banking'.
+      final paymentInfo = _cubit.createDsmesBookingRequest?.paymentInfo;
+      if (paymentInfo?.saleServices != null) {
+        // Voucher flow: saleServices already populated in calendar step
+        _cubit.createDsmesBookingRequest =
+            _cubit.createDsmesBookingRequest?.copyWith(
+          paymentInfo: PaymentInfo(
+            paymentType: 'local_banking',
+            services: [],
+            saleServices: paymentInfo!.saleServices,
+          ),
+        );
+      } else {
+        // Normal flow
+        _cubit.updateCreateDsmesBookingRequestServiceList(
+          paymentType: 'local_banking',
+          selectedServices: selectedServiceItems,
+        );
+      }
 
       resp = await _cubit.createDsmesBookingOnline();
     }
@@ -614,43 +640,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
           if (widget.serviceType ==
               DsmesAppointmentMode.telemedicine.toString()) ...[
             GapH(8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: Text(
-                    R.string.service.tr(),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff636A6B,
-                    ),
-                  ),
-                ),
-                Flexible(
-                  flex: 7,
-                  child: Text(
-                    _cubit.selectedClinic?.serviceList.categories.isNotEmpty ==
-                                true &&
-                            _cubit.selectedClinic!.serviceList.categories.first
-                                .data.isNotEmpty
-                        ? _cubit.selectedClinic!.serviceList.categories.first
-                            .data.first.name
-                        : '',
-                    maxLines: 2,
-                    textAlign: TextAlign.end,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff111515,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            _buildTelemedicineServiceRow(),
           ],
         ],
       ),
@@ -704,7 +694,356 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     return null;
   }
 
-  // ─── Dialogs ──────────────────────────────────────────────────────────────
+  /// Builds the telemedicine service row: service name label + value.
+  Widget _buildTelemedicineServiceRow() {
+    final clinic = _cubit.selectedClinic;
+    final paymentInfo = _cubit.createDsmesBookingRequest?.paymentInfo;
+
+    final allServices = clinic?.serviceList.categories
+            .expand((c) => c.data)
+            .toList() ??
+        [];
+
+    ServiceData? serviceData;
+
+    // Try regular services first
+    final regularItems = paymentInfo?.services ?? [];
+    if (regularItems.isNotEmpty) {
+      serviceData = _findSelectedClinicServiceById(regularItems.first.id);
+    }
+
+    // Try saleServices fallback
+    if (serviceData == null) {
+      final saleItems = paymentInfo?.saleServices ?? [];
+      if (saleItems.isNotEmpty && clinic?.saleServiceList != null) {
+        final matched = clinic!.saleServiceList!.services
+            .where((s) => s.serviceItemId == saleItems.first.id)
+            .toList();
+        if (matched.isNotEmpty) {
+          serviceData = _findSelectedClinicServiceById(matched.first.serviceItemId);
+          serviceData ??= allServices.isNotEmpty ? allServices.first : null;
+        }
+      }
+    }
+
+    serviceData ??= allServices.isNotEmpty ? allServices.first : null;
+    final serviceName = serviceData?.name ?? '';
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Flexible(
+          flex: 3,
+          child: Text(
+            R.string.service.tr(),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: R.color.color0xff636A6B,
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 7,
+          child: Text(
+            serviceName,
+            maxLines: 2,
+            textAlign: TextAlign.end,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: R.color.color0xff111515,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Combined voucher + payment section. Returns empty when no voucher applies
+  /// (no GapH spacers left behind).
+  Widget _buildVoucherAndPaymentSection() {
+    final hasVoucher = _resolveSaleItem() != null;
+    if (!hasVoucher) return const SizedBox.shrink();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GapH(12),
+        _buildVoucherSection(),
+        GapH(12),
+        _buildPaymentDetailSection(),
+        GapH(12),
+      ],
+    );
+  }
+
+  /// Builds the "Ưu đãi" section: title + white card with voucher code in gold.
+  Widget _buildVoucherSection() {
+    final voucherCode = _resolveSaleItem()?.voucherCode;
+    if (voucherCode == null || voucherCode.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      spacing: 12,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            R.string.promotion.tr(),
+            style: TextStyle(
+              color: R.color.color0xff111515,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              height: 1.32,
+              letterSpacing: 0.04,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.only(
+              top: 16, left: 10, right: 4, bottom: 16),
+          decoration: ShapeDecoration(
+            color: R.color.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            shadows: [Utils.getBoxShadowDropCard()],
+          ),
+          child: Text(
+            voucherCode,
+            style: TextStyle(
+              color: R.color.color0xffB4802D,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              height: 1.46,
+              letterSpacing: 0.40,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Builds the "Chi tiết thanh toán" section: title + white card with
+  /// service price, discount, and total rows.
+  Widget _buildPaymentDetailSection() {
+    final saleItem = _resolveSaleItem();
+    if (saleItem == null) return const SizedBox.shrink();
+
+    final serviceName = _resolveServiceName() ?? '';
+    final originalPrice = saleItem.price;
+    final discountPercent = saleItem.discount;
+    final discountAmount = originalPrice - saleItem.priceDiscount;
+    final totalAmount = saleItem.priceDiscount;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      spacing: 12,
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            R.string.payment_detail.tr(),
+            style: TextStyle(
+              color: R.color.color0xff111515,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              height: 1.32,
+              letterSpacing: 0.04,
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          decoration: ShapeDecoration(
+            color: R.color.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            shadows: [Utils.getBoxShadowDropCard()],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            spacing: 12,
+            children: [
+              // Service name → original price
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    serviceName,
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      height: 1.46,
+                      letterSpacing: 0.40,
+                    ),
+                  ),
+                  Text(
+                    _formatPrice(originalPrice),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      height: 1.46,
+                      letterSpacing: 0.40,
+                    ),
+                  ),
+                ],
+              ),
+              // Ưu đãi (X%) → discount amount in gold
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    R.string.promotion_percent.tr(namedArgs: {
+                      'percent': discountPercent.toString(),
+                    }),
+                    style: TextStyle(
+                      color: R.color.color0xffB4802D,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      height: 1.46,
+                      letterSpacing: 0.40,
+                    ),
+                  ),
+                  Text(
+                    _formatPrice(discountAmount),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: R.color.color0xffB4802D,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      height: 1.46,
+                      letterSpacing: 0.40,
+                    ),
+                  ),
+                ],
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Divider(height: 2, color: R.color.color0xffDFE4E4),
+              ),
+
+              // Tổng thanh toán → final price (bold)
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    R.string.total_payment.tr(),
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      height: 1.46,
+                      letterSpacing: 0.40,
+                    ),
+                  ),
+                  Text(
+                    _formatPrice(totalAmount),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: R.color.color0xff111515,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      height: 1.46,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Resolves the [SaleServiceItem] if a voucher applies to the current booking.
+  SaleServiceItem? _resolveSaleItem() {
+    final clinic = _cubit.selectedClinic;
+    final saleServiceList = clinic?.saleServiceList;
+    if (saleServiceList == null) return null;
+
+    final paymentInfo = _cubit.createDsmesBookingRequest?.paymentInfo;
+    if (paymentInfo == null) return null;
+
+    // Try saleServices first (voucher flow)
+    final saleItems = paymentInfo.saleServices ?? [];
+    if (saleItems.isNotEmpty) {
+      try {
+        return saleServiceList.services
+            .firstWhere((s) => s.serviceItemId == saleItems.first.id);
+      } catch (_) {}
+    }
+
+    // Try regular services
+    if (paymentInfo.services.isNotEmpty) {
+      return saleServiceList.findByServiceId(paymentInfo.services.first.id);
+    }
+
+    return null;
+  }
+
+  /// Resolves the service display name for the current booking.
+  String? _resolveServiceName() {
+    final clinic = _cubit.selectedClinic;
+    final paymentInfo = _cubit.createDsmesBookingRequest?.paymentInfo;
+    if (paymentInfo == null || clinic == null) return null;
+
+    // Try regular services first
+    if (paymentInfo.services.isNotEmpty) {
+      final service =
+          _findSelectedClinicServiceById(paymentInfo.services.first.id);
+      if (service != null) return service.name;
+    }
+
+    // Try saleServices (find via serviceItemId → SaleServiceItem → then use its nameVi)
+    final saleItems = paymentInfo.saleServices;
+    if (saleItems != null && saleItems.isNotEmpty && clinic.saleServiceList != null) {
+      try {
+        final matched = clinic.saleServiceList!.services
+            .firstWhere((s) => s.serviceItemId == saleItems.first.id);
+        if (matched.nameVi.isNotEmpty) return matched.nameVi;
+      } catch (_) {}
+    }
+
+    // Fallback: first available service
+    final allServices = clinic.serviceList.categories
+        .expand((c) => c.data)
+        .toList();
+    return allServices.isNotEmpty ? allServices.first.name : null;
+  }
+
+  static String _formatPrice(int price) {
+    // if (price == 0) return 'Miễn phí';
+    final buffer = StringBuffer();
+    final s = price.toString();
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) buffer.write('.');
+      buffer.write(s[i]);
+    }
+    return '${buffer}đ';
+  }
+
 
   void _showPopupBookingSuccess({
     required Function onNavigateHome,
