@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_customer_appointment_model.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/const.dart';
@@ -135,12 +136,13 @@ class _BcbDetailAppointmentScreenState
 
   Widget _buildCustomerInformation() {
     final a = _appointment!;
+    final user = AppSettings.userInfo;
     return _buildCard(
       child: Column(
         children: [
           _buildSectionHeader(R.string.customer_information.tr()),
           GapH(16),
-          _buildInfoRow(R.string.name.tr(), a.fullName ?? ''),
+          _buildInfoRow(R.string.name.tr(), user?.fullName ?? ''),
           GapH(4),
           _buildInfoRow(R.string.so_dien_thoai.tr(), a.phone ?? ''),
           if (a.email != null && a.email!.trim().isNotEmpty) ...[
