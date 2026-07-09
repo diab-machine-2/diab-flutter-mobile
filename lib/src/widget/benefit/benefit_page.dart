@@ -222,6 +222,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           serviceType: args!['serviceType'],
                           appointment: args['appointment'],
                           bookingType: args['bookingType'],
+                          previousRoute: args['previousRoute'] as String?,
                         ),
                       );
                     }

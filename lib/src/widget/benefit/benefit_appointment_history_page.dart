@@ -265,8 +265,9 @@ class _BenefitAppointmentHistoryPageState
                                                         .getDsmesAppointmentDetail(
                                                             appointmentId:
                                                                 data.id);
-                                                Navigator.pushNamed(
-                                                  context,
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pushNamed(
                                                   NavigatorName
                                                       .benefit_booking_detail,
                                                   arguments: {

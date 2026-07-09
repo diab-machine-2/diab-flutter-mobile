@@ -29,6 +29,9 @@ class BenefitCalendarSection extends StatefulWidget {
   final int? appointmentId;
   final String bookingType;
   final String? specialtyName;
+  /// When provided, overrides the default DsmesNavigationMixin back behaviour.
+  /// Used by [BenefitRescheduleFlow] to pop the root route instead.
+  final VoidCallback? onBack;
 
   const BenefitCalendarSection({
     Key? key,
@@ -37,6 +40,7 @@ class BenefitCalendarSection extends StatefulWidget {
     this.appointmentId,
     required this.bookingType,
     this.specialtyName,
+    this.onBack,
   }) : super(key: key);
 
   @override
@@ -296,9 +300,13 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
                       highlightColor: R.color.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.getNavigationKey()
-                            .currentState
-                            ?.pop();
+                        if (widget.onBack != null) {
+                          widget.onBack!();
+                        } else {
+                          DsmesNavigationMixin.getNavigationKey()
+                              .currentState
+                              ?.pop();
+                        }
                       },
                     ),
                   ),

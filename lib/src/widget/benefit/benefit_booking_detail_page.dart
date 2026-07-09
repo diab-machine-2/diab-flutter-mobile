@@ -11,6 +11,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/benefit/benefit_reschedule_flow.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
@@ -27,12 +28,16 @@ class BenefitBookingDetailPage extends StatefulWidget {
   final String serviceType;
   final DsmesAppointment appointment;
   final String bookingType;
+  /// The route that navigated here. When non-null, back pops instead of
+  /// clearing the stack to tabbar (supports the history-entry back flow).
+  final String? previousRoute;
 
   const BenefitBookingDetailPage({
     Key? key,
     required this.serviceType,
     required this.appointment,
     this.bookingType = Const.BENEFIT_BOOKING_AT_CLINIC,
+    this.previousRoute,
   }) : super(key: key);
 
   @override
@@ -53,6 +58,17 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
     _cubit = context.read<DsmesAppointmentCubit>();
     symptomController =
         TextEditingController(text: widget.appointment.symptom);
+  }
+
+  void _navigateBack() {
+    if (widget.previousRoute != null) {
+      Navigator.of(context, rootNavigator: true).pop();
+    } else {
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+        NavigatorName.tabbar,
+        (route) => false,
+      );
+    }
   }
 
   bool _isExamination() => widget.appointment.isExaminationAtHome;
@@ -88,10 +104,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
     return WillPopScope(
       onWillPop: () async {
         FocusScope.of(context).unfocus();
-        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-          NavigatorName.tabbar,
-          (route) => false,
-        );
+        _navigateBack();
         return false;
       },
       child: Scaffold(
@@ -193,11 +206,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                   ),
                   onPressed: () {
                     FocusScope.of(context).unfocus();
-                    Navigator.of(context, rootNavigator: true)
-                        .pushNamedAndRemoveUntil(
-                      NavigatorName.tabbar,
-                      (route) => false,
-                    );
+                    _navigateBack();
                   },
                 ),
               ),
@@ -759,8 +768,6 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                         .tr(),
                     hasGradient: true,
                     onConfirm: () async {
-                      // Call getClinicDetail FIRST so selectedClinic is populated
-                      // before initCreateDsmesBookingRequest accesses selectedClinic!.id
                       await _cubit.getClinicDetail(
                           id: widget.appointment.clinicId);
 
@@ -804,16 +811,17 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                       _cubit.updateCreateDsmesBookingRequest(
                           request: rescheduleRequest);
 
-                      Navigator.of(context,
-                              rootNavigator: true)
-                          .pushNamed(
-                        NavigatorName.benefit_calendar,
-                        arguments: {
-                          'serviceType': widget.serviceType,
-                          'action': 'reschedule',
-                          'appointmentId': widget.appointment.id,
-                          'bookingType': widget.bookingType,
-                        },
+                      if (!mounted) return;
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => BenefitRescheduleFlow(
+                            cubit: _cubit,
+                            serviceType: widget.serviceType,
+                            appointmentId: widget.appointment.id,
+                            bookingType: widget.bookingType,
+                            previousRoute: widget.previousRoute,
+                          ),
+                        ),
                       );
                     });
               },
@@ -1085,6 +1093,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                           InkWell(
                             onTap: () {
                               Navigator.of(context).pop(true);
+                              onConfirm();
                             },
                             child: Container(
                               height: 43,

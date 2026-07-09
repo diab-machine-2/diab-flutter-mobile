@@ -497,6 +497,7 @@ class AppRoutes {
               serviceType: args['serviceType'] as String? ?? '',
               appointment: args['appointment'] as DsmesAppointment,
               bookingType: args['bookingType'] as String? ?? '',
+              previousRoute: args['previousRoute'] as String?,
             ),
           );
           break;

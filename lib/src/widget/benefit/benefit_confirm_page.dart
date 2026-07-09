@@ -42,6 +42,9 @@ class BenefitConfirmPage extends StatefulWidget {
   final String? branchAddress;
   final int? branchId;
   final String? specialtyName;
+  /// Carries the originating route so reschedule success can restore the
+  /// correct navigation stack (history vs. tabbar).
+  final String? previousRoute;
 
   const BenefitConfirmPage({
     Key? key,
@@ -54,6 +57,7 @@ class BenefitConfirmPage extends StatefulWidget {
     this.branchAddress,
     this.branchId,
     this.specialtyName,
+    this.previousRoute,
   }) : super(key: key);
 
   @override
@@ -1062,12 +1066,20 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
 
     if (myAppointment == null) return;
 
-    Navigator.of(context, rootNavigator: true).pushNamed(
+    // Clear calendar + confirm (+ old detail + any intermediate pages) from
+    // the root stack, keeping only the appropriate ancestor route.
+    final isFromHistory =
+        widget.previousRoute == NavigatorName.benefit_appointment_history;
+    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
       NavigatorName.benefit_booking_detail,
+      isFromHistory
+          ? (r) => r.settings.name == NavigatorName.benefit_appointment_history
+          : (r) => r.isFirst,
       arguments: {
         'serviceType': widget.serviceType,
         'appointment': myAppointment,
         'bookingType': widget.bookingType,
+        'previousRoute': widget.previousRoute,
       },
     );
   }
