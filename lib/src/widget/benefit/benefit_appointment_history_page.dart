@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
+import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
@@ -174,8 +175,8 @@ class _BenefitAppointmentHistoryPageState
                                               .parse(b.startTime)
                                               .compareTo(
                                                   DateFormat(
-                                                          'yyyy-MM-dd HH:mm:ss')
-                                                      .parse(a.startTime)));
+                                                      'yyyy-MM-dd HH:mm:ss')
+                                                  .parse(a.startTime)));
 
                                 final isExpanded = ValueNotifier<bool>(true);
 
@@ -191,8 +192,8 @@ class _BenefitAppointmentHistoryPageState
                                         children: [
                                           Text(
                                             sectionIndex == 0
-                                                ? 'Sắp diễn ra'
-                                                : 'Lịch trước đó',
+                                                ? R.string.benefit_upcoming.tr()
+                                                : R.string.benefit_past_schedule.tr(),
                                             style: const TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w700,
@@ -236,6 +237,9 @@ class _BenefitAppointmentHistoryPageState
                                             const SizedBox(height: 16),
                                         itemBuilder: (context, index) {
                                           final data = appointments[index];
+                                          final benefitBookingType = data.mode == DsmesAppointmentMode.telemedicine.toString()
+                                              ? Const.BENEFIT_BOOKING_TELEMEDICINE
+                                              : Const.BENEFIT_BOOKING_AT_CLINIC;
                                           return DsmesAppointmentItem(
                                             data: data,
                                             displayActionButtons: false,
@@ -264,14 +268,14 @@ class _BenefitAppointmentHistoryPageState
                                                 Navigator.pushNamed(
                                                   context,
                                                   NavigatorName
-                                                      .dsmes_booking_detail,
+                                                      .benefit_booking_detail,
                                                   arguments: {
                                                     'serviceType':
                                                         appointment?.mode,
                                                     'appointment': appointment,
                                                     'previousRoute': NavigatorName
                                                         .benefit_appointment_history,
-                                                    'bookingType': '',
+                                                    'bookingType': benefitBookingType,
                                                   },
                                                 );
                                               } finally {

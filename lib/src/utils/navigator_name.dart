@@ -206,5 +206,7 @@ class NavigatorName {
   static const String benefit_calendar = '/benefit_calendar';
   static const String benefit_appointment_history = '/benefit_appointment_history';
   static const String benefit_select_service = '/benefit_select_service';
+  static const String benefit_confirm_information = '/benefit_confirm_information';
+  static const String benefit_booking_detail = '/benefit_booking_detail';
 }
 

@@ -1747,6 +1747,8 @@ class Strings {
   String get promotion_percent => 'promotion_percent';
   String get payment_detail => 'payment_detail';
   String get total_payment => 'total_payment';
+  String get benefit_upcoming => 'benefit_upcoming';
+  String get benefit_past_schedule => 'benefit_past_schedule';
 }
 
 

@@ -17,8 +17,7 @@ import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_payment_p
 import 'package:medical/src/widget/booking_clinic/pages/booking_clinic_select_service.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_state.dart';
-import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
+import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_select_datetime.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_clinic_detail_page.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
@@ -168,7 +167,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                       );
                     }
 
-                  case NavigatorName.dsmes_confirm_information:
+                  case NavigatorName.benefit_confirm_information:
                     {
                       final args =
                           settings.arguments as Map<String, dynamic>?;
@@ -213,13 +212,13 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                       );
                     }
 
-                  case NavigatorName.dsmes_booking_detail:
+                  case NavigatorName.benefit_booking_detail:
                     {
                       final args =
                           settings.arguments as Map<String, dynamic>?;
                       return _buildRoute(
                         settings,
-                        DsmesBookingDetail(
+                        BenefitBookingDetailPage(
                           serviceType: args!['serviceType'],
                           appointment: args['appointment'],
                           bookingType: args['bookingType'],

@@ -17,7 +17,7 @@ import 'package:medical/src/widgets/gap_widget.dart';
 ///
 /// Shown when the selected clinic exposes more than one service.
 /// On "Tiếp tục" the cubit request is updated with the chosen service(s) and
-/// the flow continues to [NavigatorName.dsmes_confirm_information] which
+/// the flow continues to [NavigatorName.benefit_confirm_information] which
 /// BenefitPage routes to [BenefitConfirmPage].
 class BenefitSelectServicePage extends StatefulWidget {
   final String serviceType;
@@ -367,7 +367,7 @@ class _BenefitSelectServicePageState extends State<BenefitSelectServicePage> {
     }
 
     await DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
-      NavigatorName.dsmes_confirm_information,
+      NavigatorName.benefit_confirm_information,
       arguments: {
         'serviceType': widget.serviceType,
         'action': widget.action,

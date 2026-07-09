@@ -1677,3 +1677,5 @@ promotion,Ưu đãi,Promotion,
 promotion_percent,"Ưu đãi ({percent}%)","Promotion ({percent}%)",
 payment_detail,Chi tiết thanh toán,Payment details,
 total_payment,Tổng thanh toán,Total payment
+benefit_upcoming,Sắp diễn ra,Upcoming,
+benefit_past_schedule,Lịch trước đó,Past schedule,

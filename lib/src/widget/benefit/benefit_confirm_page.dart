@@ -8,7 +8,7 @@ import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
-import 'package:medical/src/modal/user/user_model.dart';
+import 'package:medical/src/model/request/dsmes_reschedule_request.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/length_limit_text_field.dart';
@@ -19,7 +19,6 @@ import 'package:medical/src/widget/booking_clinic/helper/vnpay_payment_service.d
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_clinic_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/helper/show_message.dart';
 import 'package:medical/src/widget/subscription/phone_validation_helper.dart';
@@ -166,9 +165,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                       highlightColor: Colors.transparent,
                       icon: Icon(Icons.arrow_back, color: R.color.white),
                       onPressed: () {
-                        DsmesNavigationMixin.getNavigationKey()
-                            .currentState
-                            ?.pop(context);
+                        Navigator.pop(context);
                       },
                     ),
                   ),
@@ -235,6 +232,12 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
   // ─── Booking ──────────────────────────────────────────────────────────────
 
   Future<void> _handleCreateBooking() async {
+    // Handle reschedule case
+    if (widget.action == 'reschedule' && widget.appointmentId != null) {
+      await _handleRescheduleBooking();
+      return;
+    }
+
     final data = _sectionAddSymptomKey.currentState?.getNote();
     String symptom = data?.note ?? '';
 
@@ -372,8 +375,8 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
             await _cubit.getDsmesAppointmentDetail(appointmentId: resp!.id);
         if (myAppointment == null) return;
         await PhoneValidationManager.setShouldShowPhoneValidation();
-        DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
-          NavigatorName.dsmes_booking_detail,
+        Navigator.of(context, rootNavigator: true).pushNamed(
+          NavigatorName.benefit_booking_detail,
           arguments: {
             'serviceType': widget.serviceType,
             'appointment': myAppointment,
@@ -507,15 +510,14 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                   if (isProcessing['editConsultInfo']!) return;
                   setState(() => isProcessing['editConsultInfo'] = true);
                   try {
-                    await DsmesNavigationMixin.getNavigationKey()
-                        .currentState
-                        ?.pushNamed(NavigatorName.dsmes_booking_select_date,
+                    await Navigator.of(context, rootNavigator: true)
+                        .pushNamed(NavigatorName.dsmes_booking_select_date,
                             arguments: {
                           'serviceType': widget.serviceType,
                           'action': widget.action,
                           'isEditing': true,
                           'previousRoute':
-                              NavigatorName.dsmes_confirm_information,
+                              NavigatorName.benefit_confirm_information,
                           'isMergedSchedule': false,
                           'bookingType': widget.bookingType,
                         });
@@ -1044,6 +1046,31 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
     return '${buffer}đ';
   }
 
+
+  Future<void> _handleRescheduleBooking() async {
+    final resp = await _cubit.rescheduleDsmesBooking(
+      request: RescheduleDsmesBookingRequest(
+        appointmentId: AppointmentId(id: widget.appointmentId!),
+        startTime: _cubit.ensureTimeWithSeconds(
+            _cubit.createDsmesBookingRequest!.startTime),
+      ),
+    );
+    if (resp == null) return;
+
+    final myAppointment =
+        await _cubit.getDsmesAppointmentDetail(appointmentId: resp.id);
+
+    if (myAppointment == null) return;
+
+    Navigator.of(context, rootNavigator: true).pushNamed(
+      NavigatorName.benefit_booking_detail,
+      arguments: {
+        'serviceType': widget.serviceType,
+        'appointment': myAppointment,
+        'bookingType': widget.bookingType,
+      },
+    );
+  }
 
   void _showPopupBookingSuccess({
     required Function onNavigateHome,

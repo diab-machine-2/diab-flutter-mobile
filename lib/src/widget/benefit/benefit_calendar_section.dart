@@ -197,7 +197,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
           }
 
           DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
-            NavigatorName.dsmes_confirm_information,
+            NavigatorName.benefit_confirm_information,
             arguments: {
               'serviceType': widget.serviceType,
               'action': widget.action,
@@ -241,7 +241,7 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
         }
 
         DsmesNavigationMixin.getNavigationKey().currentState?.pushNamed(
-          NavigatorName.dsmes_confirm_information,
+          NavigatorName.benefit_confirm_information,
           arguments: {
             'serviceType': widget.serviceType,
             'action': widget.action,

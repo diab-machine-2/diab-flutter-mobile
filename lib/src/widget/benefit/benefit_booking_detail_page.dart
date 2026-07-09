@@ -1,11 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_observer/Observable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app_setting/app_setting.dart';
-import 'package:medical/src/app_setting/branchio_link_config.dart';
 import 'package:medical/src/model/request/create_dsmes_booking_request.dart';
 import 'package:medical/src/model/request/dsmes_cancel_booking_request.dart';
 import 'package:medical/src/utils/const.dart';
@@ -15,28 +13,34 @@ import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
-import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_navigation_mixin.dart';
 import 'package:medical/src/widget/dsmes_appointment/widgets/section_add_symptom.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
-class DsmesBookingDetail extends StatefulWidget {
+/// Benefit-flow booking detail page.
+///
+/// Cloned from [DsmesBookingDetail] but stripped of all DSMES-specific
+/// navigation (Observable, BranchioLinkConfig, DsmesNavigationMixin,
+/// bookingType center/doctor distinction) and wired to the benefit
+/// navigator stack instead.
+class BenefitBookingDetailPage extends StatefulWidget {
   final String serviceType;
   final DsmesAppointment appointment;
-  final String bookingType; // 'clinic' or 'center' or 'doctor'
+  final String bookingType;
 
-  const DsmesBookingDetail({
+  const BenefitBookingDetailPage({
     Key? key,
     required this.serviceType,
     required this.appointment,
-    this.bookingType = Const.BOOKING_TYPE_CENTER,
+    this.bookingType = Const.BENEFIT_BOOKING_AT_CLINIC,
   }) : super(key: key);
 
   @override
-  _DsmesBookingDetailState createState() => _DsmesBookingDetailState();
+  _BenefitBookingDetailPageState createState() =>
+      _BenefitBookingDetailPageState();
 }
 
-class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
+class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
   late DsmesAppointmentCubit _cubit;
   FocusNode symptomFocusNode = FocusNode();
   late TextEditingController symptomController;
@@ -47,7 +51,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   void initState() {
     super.initState();
     _cubit = context.read<DsmesAppointmentCubit>();
-    symptomController = TextEditingController(text: widget.appointment.symptom);
+    symptomController =
+        TextEditingController(text: widget.appointment.symptom);
   }
 
   bool _isExamination() => widget.appointment.isExaminationAtHome;
@@ -64,8 +69,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     final now = DateTime.now();
 
     // 10 minutes before and after start time window
-    final windowStart = appointmentStart.subtract(Duration(minutes: 10));
-    final windowEnd = appointmentStart.add(Duration(minutes: 10));
+    final windowStart = appointmentStart.subtract(const Duration(minutes: 10));
+    final windowEnd = appointmentStart.add(const Duration(minutes: 10));
 
     return now.isAfter(windowStart) && now.isBefore(windowEnd);
   }
@@ -83,22 +88,10 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
     return WillPopScope(
       onWillPop: () async {
         FocusScope.of(context).unfocus();
-
-        // Reset page tracking when returning to root
-        BranchioLinkConfig.instance.resetPageTracking();
-        DsmesNavigationMixin.getNavigationKey()
-            .currentState
-            ?.popUntil((route) => route.isFirst);
-        if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
-          Observable.instance
-              .notifyObservers([], notifyName: "refresh_dsmes_appointment");
-        } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
-          Observable.instance
-              .notifyObservers([], notifyName: "refresh_booking_clinic");
-        } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
-          Observable.instance
-              .notifyObservers([], notifyName: "refresh_booking_doctor");
-        }
+        Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+          NavigatorName.tabbar,
+          (route) => false,
+        );
         return false;
       },
       child: Scaffold(
@@ -137,7 +130,6 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
-                      // fontFamily: 'sfpro',
                       color: R.color.white),
                 ),
                 actions: [
@@ -147,7 +139,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                     },
                     child: Container(
                       height: 36,
-                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                       margin: EdgeInsets.fromLTRB(0, 12, 16, 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
@@ -173,7 +166,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                               textScaler: MediaQuery.of(context)
                                   .textScaler
                                   .clamp(
-                                      minScaleFactor: 1.0, maxScaleFactor: 1.3),
+                                      minScaleFactor: 1.0,
+                                      maxScaleFactor: 1.3),
                             ),
                             child: Text(
                               R.string.contact.tr(),
@@ -199,38 +193,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   ),
                   onPressed: () {
                     FocusScope.of(context).unfocus();
-
-                    final route = ModalRoute.of(context)?.settings;
-                    final args = route?.arguments as Map<String, dynamic>?;
-                    final previousRoute = args?['previousRoute'] as String?;
-
-                    if (previousRoute == NavigatorName.dsmes_booking_history ||
-                        previousRoute == NavigatorName.dsmes_clinic_detail) {
-                      DsmesNavigationMixin.getNavigationKey()
-                          .currentState
-                          ?.pop();
-                      return;
-                    }
-
-                    // Reset page tracking when returning to root
-                    BranchioLinkConfig.instance.resetPageTracking();
-                    DsmesNavigationMixin.getNavigationKey()
-                        .currentState
-                        ?.popUntil((route) => route.isFirst);
-
-                    if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
-                      Observable.instance.notifyObservers([],
-                          notifyName: "refresh_dsmes_appointment");
-                    } else if (widget.bookingType ==
-                        Const.BOOKING_TYPE_CLINIC) {
-                      Observable.instance.notifyObservers([],
-                          notifyName: "refresh_booking_clinic");
-                    } else if (widget.bookingType ==
-                        Const.BOOKING_TYPE_DOCTOR) {
-                      Observable.instance.notifyObservers([],
-                          notifyName: "refresh_booking_doctor");
-                    }
-                    return;
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamedAndRemoveUntil(
+                      NavigatorName.tabbar,
+                      (route) => false,
+                    );
                   },
                 ),
               ),
@@ -249,14 +216,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         GapH(12),
                       if (widget.serviceType ==
                           DsmesAppointmentMode.telemedicine.toString())
-                        widget.bookingType == Const.BOOKING_TYPE_CENTER
-                            ? _buildSelectedServiceInformation()
-                            : _buildBookingClinicSelectedServicesInformation(),
+                        _buildSelectedServiceInformation(),
                       if (widget.appointment.symptom.isNotEmpty) GapH(12),
                       if (widget.appointment.symptom.isNotEmpty ||
                           widget.appointment.symptomAttachment.isNotEmpty)
                         _selectImageSection(),
-                      // _buildNoticeSymptom(),
                       GapH(12),
                       if (isCompletedAppointment() == false &&
                           widget.appointment.status != DSMES_STATUS_REJECT)
@@ -302,11 +266,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   }
 
   _handleJoinRoom() async {
-    await DsmesNavigationMixin.getNavigationKey()
-        .currentState
-        ?.pushNamed(NavigatorName.dsmes_booking_online_join_room, arguments: {
-      'telemedicineId': widget.appointment.teleMedicine?.id,
-    });
+    // Benefit flow uses the root navigator for all routes.
+    // Telemedicine room joining would need its own route registration.
   }
 
   String getTimeRange(String startTime, String endTime) {
@@ -402,9 +363,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
   }
 
   _buildConsultingInformation() {
-    final endDateTime =
+    final endDate =
         DateFormat('yyyy-MM-dd HH:mm:ss').parse(widget.appointment.endTime);
-    final isPast = endDateTime.isBefore(DateTime.now());
+    final isPast = endDate.isBefore(DateTime.now());
 
     final isExaminationAtHome = widget.appointment.isExaminationAtHome;
 
@@ -413,13 +374,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
         return R.string.xet_nghiem_tai_nha.tr();
       }
 
-      return widget.bookingType == Const.BOOKING_TYPE_CENTER
-          ? widget.serviceType == DsmesAppointmentMode.atClinic.toString()
-              ? R.string.consult_at_clinic.tr()
-              : R.string.consult_online.tr()
-          : widget.serviceType == DsmesAppointmentMode.atClinic.toString()
-              ? R.string.kham_tai_phong_kham.tr()
-              : R.string.kham_tu_xa.tr();
+      return widget.serviceType == DsmesAppointmentMode.atClinic.toString()
+          ? R.string.consult_at_clinic.tr()
+          : R.string.consult_online.tr();
     }
 
     return Container(
@@ -473,9 +430,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       color: _cubit.getItemStatusContainerColor(
                           widget.appointment.status, isPast),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 2, horizontal: 6),
                     child: Text(
-                      _cubit.getItemStatus(widget.appointment.status, isPast),
+                      _cubit.getItemStatus(
+                          widget.appointment.status, isPast),
                       maxLines: 2,
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
@@ -634,39 +593,6 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   ),
                 ],
               ),
-            if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) GapH(4),
-            if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Flexible(
-                    flex: 3,
-                    child: Text(
-                      R.string.doctor_name.tr(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: R.color.color0xff777E90,
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 7,
-                    child: Text(
-                      widget.appointment.doctor?.name ?? '',
-                      maxLines: 2,
-                      textAlign: TextAlign.end,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: R.color.color0xff111515,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
           ],
         ),
       ),
@@ -711,7 +637,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       .expand((category) => category.data)
                       .firstWhere((service) => service.id == e.id);
 
-                  final isLastItem = e == widget.appointment.services.last;
+                  final isLastItem =
+                      e == widget.appointment.services.last;
 
                   return Column(
                     children: [
@@ -719,7 +646,8 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                         children: [
                           Flexible(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10),
                               child: Text(
                                 service?.name ?? '',
                                 style: TextStyle(
@@ -732,189 +660,12 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                           ),
                         ],
                       ),
-                      if (!isLastItem) Divider(color: R.color.color0xffE6E8EC)
+                      if (!isLastItem)
+                        Divider(color: R.color.color0xffE6E8EC)
                     ],
                   );
                 }),
               ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  _buildBookingClinicSelectedServicesInformation() {
-    if (widget.appointment.services.isEmpty) return SizedBox.shrink();
-
-    int totalPrice = 0;
-
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: R.color.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          Utils.getBoxShadowDropCard(),
-        ],
-      ),
-      child: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  R.string.service_type.tr(),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.color0xff141416,
-                  ),
-                ),
-              ],
-            ),
-            GapH(12),
-            ...widget.appointment.services.map((e) {
-              final service = _cubit.selectedClinic?.serviceList.categories
-                  .expand((category) => category.data)
-                  .firstWhere((service) => service.id == e.id);
-
-              totalPrice += service?.fromPrice ?? 0;
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        service?.name ?? '',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.color0xff636A6B,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 8),
-                      child: Text(
-                        Utils.formatMoney(totalPrice) ?? '',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          color: R.color.color0xff111515,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-            Divider(color: R.color.color0xffE6E8EC),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    R.string.total_price.tr(),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: R.color.color0xff636A6B,
-                    ),
-                  ),
-                  Text(
-                    Utils.formatMoney(totalPrice) ?? '',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: R.color.color0xff111515,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  _buildNoticeSymptom() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: R.color.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          Utils.getBoxShadowDropCard(),
-        ],
-      ),
-      child: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  R.string.notice_symptom.tr(),
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: R.color.color0xff111515,
-                  ),
-                ),
-              ],
-            ),
-            GapH(12),
-            Container(
-              child: TextFormField(
-                initialValue: widget.appointment.symptom,
-                minLines: 2,
-                maxLines: null, // Allows auto-expansion
-                maxLength: 250,
-                obscureText: false,
-                readOnly: true,
-                buildCounter: (context,
-                        {required currentLength,
-                        required isFocused,
-                        maxLength}) =>
-                    null,
-                decoration: InputDecoration(
-                  counterText: null,
-                  fillColor: R.color.textDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: R.color.color0xffDFE4E4,
-                      width: 1.0,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: R.color.color0xffDFE4E4,
-                      width: 1.0,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(
-                      color: R.color.color0xffDFE4E4,
-                      width: 1.0,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.all(12),
-                  hintText: R.string.symptom.tr(),
-                ),
-              ),
             )
           ],
         ),
@@ -928,8 +679,9 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
       controllerNote: symptomController,
       maxMedia: 5,
       key: _sectionAddSymptomKey,
-      initialFiles:
-          widget.appointment.symptomAttachment.map((e) => e.filePath).toList(),
+      initialFiles: widget.appointment.symptomAttachment
+          .map((e) => e.filePath)
+          .toList(),
       isDisplayRemove: false,
       readOnly: true,
       isDisplayTextField: widget.appointment.symptom.isNotEmpty,
@@ -960,30 +712,20 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   );
 
                   Navigator.of(context).pop();
-                  if (_cubit.isExamination) {
+                  if (_isExamination()) {
                     Navigator.of(context, rootNavigator: true).pop();
                   } else {
-                    DsmesNavigationMixin.getNavigationKey()
-                        .currentState
-                        ?.popUntil((route) => route.isFirst);
-                  }
-
-                  if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
-                    Observable.instance.notifyObservers([],
-                        notifyName: "refresh_dsmes_appointment");
-                  } else if (widget.bookingType == Const.BOOKING_TYPE_CLINIC) {
-                    Observable.instance.notifyObservers([],
-                        notifyName: "refresh_booking_clinic");
-                  } else if (widget.bookingType == Const.BOOKING_TYPE_DOCTOR) {
-                    Observable.instance.notifyObservers([],
-                        notifyName: "refresh_booking_doctor");
+                    Navigator.of(context, rootNavigator: true)
+                        .pushNamedAndRemoveUntil(
+                      NavigatorName.tabbar,
+                      (route) => false,
+                    );
                   }
                 },
               );
             },
             child: Container(
               height: 42,
-              // width: 170,
               decoration: BoxDecoration(
                 color: R.color.color0xffFFE9E9,
                 borderRadius: BorderRadius.circular(200),
@@ -1012,60 +754,71 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
               onTap: () {
                 _showPopupBookingAction(
                     title: R.string.confirm_change_schedule.tr(),
-                    subtitle: R.string.confirm_change_booking_content.tr(),
+                    subtitle: R.string
+                        .confirm_change_booking_content
+                        .tr(),
                     hasGradient: true,
                     onConfirm: () async {
-                      // Navigator.of(context).pop(); // Close dialog
+                      // Call getClinicDetail FIRST so selectedClinic is populated
+                      // before initCreateDsmesBookingRequest accesses selectedClinic!.id
+                      await _cubit.getClinicDetail(
+                          id: widget.appointment.clinicId);
 
                       _cubit.initCreateDsmesBookingRequest(
                           locale: context.locale.languageCode);
-                      final rescheduleRequest = CreateDsmesBookingRequest(
+                      final rescheduleRequest =
+                          CreateDsmesBookingRequest(
                         startTime: widget.appointment.startTime,
                         endTime: widget.appointment.endTime,
                         clinicId: widget.appointment.clinicId,
                         doctorId: widget.appointment.doctorId,
                         patientPhoneNumber:
                             widget.appointment.patientInfo.phone,
-                        patientName: widget.appointment.patientInfo.displayName,
-                        birthday: widget.appointment.patientInfo.birthday,
+                        patientName:
+                            widget.appointment.patientInfo.displayName,
+                        birthday:
+                            widget.appointment.patientInfo.birthday,
                         patientGender:
-                            widget.appointment.patientInfo.gender == 'Nam' ||
-                                    widget.appointment.patientInfo.gender ==
+                            widget.appointment.patientInfo.gender ==
+                                        'Nam' ||
+                                    widget.appointment.patientInfo
+                                            .gender ==
                                         'Male' ||
-                                    widget.appointment.patientInfo.gender == '1'
+                                    widget.appointment.patientInfo
+                                            .gender ==
+                                        '1'
                                 ? 1
                                 : 2,
-                        patientEmail: widget.appointment.patientInfo.email,
+                        patientEmail:
+                            widget.appointment.patientInfo.email,
                         bookingForClinic: 1,
                         language: context.locale.languageCode,
                         symptom: widget.appointment.symptom,
-                        symptomAttachment: widget.appointment.symptomAttachment
-                            .map((e) => e.filePath)
-                            .toList(),
-                        paymentInfo:
-                            PaymentInfo(services: widget.appointment.services),
+                        symptomAttachment:
+                            widget.appointment.symptomAttachment
+                                .map((e) => e.filePath)
+                                .toList(),
+                        paymentInfo: PaymentInfo(
+                            services: widget.appointment.services),
                       );
                       _cubit.updateCreateDsmesBookingRequest(
                           request: rescheduleRequest);
-                      await _cubit.getClinicDetail(
-                          id: widget.appointment.clinicId);
 
-                      final navigator = DsmesNavigationMixin
-                          .getNavigationKey()
-                          .currentState;
-                      navigator?.pushNamed(
-                          NavigatorName.dsmes_booking_select_date,
-                          arguments: {
-                            'serviceType': widget.serviceType,
-                            'action': 'reschedule',
-                            'appointmentId': widget.appointment.id,
-                            'bookingType': widget.bookingType,
-                          });
+                      Navigator.of(context,
+                              rootNavigator: true)
+                          .pushNamed(
+                        NavigatorName.benefit_calendar,
+                        arguments: {
+                          'serviceType': widget.serviceType,
+                          'action': 'reschedule',
+                          'appointmentId': widget.appointment.id,
+                          'bookingType': widget.bookingType,
+                        },
+                      );
                     });
               },
               child: Container(
                 height: 42,
-                // width: 170,
                 decoration: BoxDecoration(
                   color: R.color.white,
                   borderRadius: BorderRadius.circular(200),
@@ -1105,12 +858,11 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                 Navigator.of(context, rootNavigator: true)
                     .pushNamedAndRemoveUntil(
                   NavigatorName.tabbar,
-                  (route) => false, // This removes all routes from stack
+                  (route) => false,
                 );
               },
               child: Container(
                 height: 42,
-                // width: 170,
                 decoration: BoxDecoration(
                   color: R.color.color0xffE7FDFB,
                   borderRadius: BorderRadius.circular(200),
@@ -1141,20 +893,26 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                       endTime: "",
                       clinicId: widget.appointment.clinic.id,
                       doctorId: widget.appointment.doctorId,
-                      patientPhoneNumber: widget.appointment.patientInfo.phone,
-                      patientName: widget.appointment.patientInfo.displayName,
-                      birthday: widget.appointment.patientInfo.birthday,
-                      patientGender:
-                          int.tryParse(widget.appointment.patientInfo.gender) ??
-                              (AppSettings.userInfo?.gender == 'Male' ? 1 : 0),
-                      patientEmail: widget.appointment.patientInfo.email,
-                      bookingForClinic:
-                          1, // 1: Booking phòng khám, 2: Booking bác sĩ
+                      patientPhoneNumber:
+                          widget.appointment.patientInfo.phone,
+                      patientName:
+                          widget.appointment.patientInfo.displayName,
+                      birthday:
+                          widget.appointment.patientInfo.birthday,
+                      patientGender: int.tryParse(
+                              widget.appointment.patientInfo.gender) ??
+                          (AppSettings.userInfo?.gender == 'Male'
+                              ? 1
+                              : 0),
+                      patientEmail:
+                          widget.appointment.patientInfo.email,
+                      bookingForClinic: 1,
                       language: locale,
                       symptom: widget.appointment.symptom,
-                      symptomAttachment: widget.appointment.symptomAttachment
-                          .map((e) => e.filePath)
-                          .toList(),
+                      symptomAttachment:
+                          widget.appointment.symptomAttachment
+                              .map((e) => e.filePath)
+                              .toList(),
                       paymentInfo: PaymentInfo(
                         paymentType: null,
                         services: widget.appointment.services,
@@ -1162,49 +920,25 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                   _cubit.updateCreateDsmesBookingRequest(
                       request: rebookingRequest);
 
-                  // Pop until dsmes_booking
-                  DsmesNavigationMixin.getNavigationKey()
-                      .currentState
-                      ?.popUntil((route) => route.isFirst);
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamedAndRemoveUntil(
+                    NavigatorName.tabbar,
+                    (route) => false,
+                  );
 
-                  // Handle rebooking for booking dsmes center
-                  if (widget.bookingType == Const.BOOKING_TYPE_CENTER) {
-                    // Then push to select date
-                    if (widget.appointment.mode ==
-                        DsmesAppointmentMode.atClinic.toString()) {
-                      await DsmesNavigationMixin.getNavigationKey()
-                          .currentState
-                          ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                              arguments: {
-                            'serviceType': widget.appointment.mode,
-                            'action': 'create',
-                          });
-                    } else {
-                      DsmesNavigationMixin.getNavigationKey()
-                          .currentState
-                          ?.pushNamed(NavigatorName.dsmes_select_service,
-                              arguments: {
-                            'action': 'create',
-                            'clinic': _cubit.selectedClinic,
-                            'serviceType': widget.appointment.mode,
-                            'bookingType': widget.bookingType,
-                          });
-                    }
-                  } else {
-                    // Handle rebooking for booking clinic
-                    DsmesNavigationMixin.getNavigationKey()
-                        .currentState
-                        ?.pushNamed(NavigatorName.dsmes_booking_select_date,
-                            arguments: {
-                          'serviceType': widget.appointment.mode,
-                          'action': 'create',
-                          'bookingType': widget.bookingType,
-                        });
-                  }
+                  // Push select date for rebooking
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamed(
+                    NavigatorName.dsmes_booking_select_date,
+                    arguments: {
+                      'serviceType': widget.appointment.mode,
+                      'action': 'create',
+                      'bookingType': widget.bookingType,
+                    },
+                  );
                 },
                 child: Container(
                   height: 42,
-                  // width: 170,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -1354,35 +1088,44 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
                             },
                             child: Container(
                               height: 43,
-                              width: 163,
                               decoration: BoxDecoration(
-                                color: R.color.attentionText,
-                                borderRadius: BorderRadius.circular(200),
+                                borderRadius:
+                                    BorderRadius.circular(200),
+                                color: hasGradient ? null : R.color.white,
                                 gradient: hasGradient
                                     ? LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.centerRight,
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
                                         colors: [
-                                          R.color.greenGradientTop,
+                                          R.color.greenGradientTop02,
                                           R.color.greenGradientBottom,
                                         ],
                                       )
                                     : null,
+                                border: Border.all(
+                                  color: hasGradient
+                                      ? Colors.transparent
+                                      : R.color.greenGradientBottom,
+                                ),
                               ),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 40),
                               child: Center(
                                 child: Text(
                                   primaryButtonTitle,
                                   style: TextStyle(
-                                    color: R.color.white,
+                                    color: hasGradient
+                                        ? R.color.white
+                                        : R.color.greenGradientBottom,
                                     fontSize: 15,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ),
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -1391,6 +1134,6 @@ class _DsmesBookingDetailState extends State<DsmesBookingDetail> {
           ),
         );
       },
-    ).then((confirmed) => confirmed == true ? onConfirm() : null);
+    );
   }
 }

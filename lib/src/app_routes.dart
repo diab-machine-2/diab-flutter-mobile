@@ -37,7 +37,12 @@ import 'package:medical/src/widget/bcb_campaign/campaign_test_result_detail_scre
 import 'package:medical/src/widget/bcb_campaign/campaign_test_result_screen.dart';
 import 'package:medical/src/widget/bcb_campaign/bcb_detail_appointment_screen.dart';
 import 'package:medical/src/widget/benefit/benefit_appointment_history_page.dart';
+import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
 import 'package:medical/src/widget/benefit/benefit_page.dart';
+import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
+import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
+import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
+import 'package:medical/src/model/repository/app_repository.dart';
 
 import 'modal/food/food_model.dart';
 import 'utils/navigator_name.dart';
@@ -461,9 +466,41 @@ class AppRoutes {
           break;
         }
 
+      case NavigatorName.dsmes_booking_detail:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          if (args == null) break;
+          final bookingCubit = DsmesAppointmentCubit(AppRepository());
+          page = BlocProvider<DsmesAppointmentCubit>.value(
+            value: bookingCubit,
+            child: DsmesBookingDetail(
+              serviceType: args['serviceType'] as String? ?? '',
+              appointment: args['appointment'] as DsmesAppointment,
+              bookingType: args['bookingType'] as String? ?? '',
+            ),
+          );
+          break;
+        }
+
       case NavigatorName.benefit_appointment_history:
         page = const BenefitAppointmentHistoryPage();
         break;
+
+      case NavigatorName.benefit_booking_detail:
+        {
+          final args = settings.arguments as Map<String, dynamic>?;
+          if (args == null) break;
+          final bookingCubit = DsmesAppointmentCubit(AppRepository());
+          page = BlocProvider<DsmesAppointmentCubit>.value(
+            value: bookingCubit,
+            child: BenefitBookingDetailPage(
+              serviceType: args['serviceType'] as String? ?? '',
+              appointment: args['appointment'] as DsmesAppointment,
+              bookingType: args['bookingType'] as String? ?? '',
+            ),
+          );
+          break;
+        }
 
       default:
         break;
