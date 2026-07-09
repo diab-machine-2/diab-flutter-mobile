@@ -4,15 +4,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_customer_appointment_model.dart';
-import 'package:medical/src/model/bcb_campaign/bcb_partner_info_model.dart';
-import 'package:medical/src/model/bcb_campaign/bcb_selected_wish_slot.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
-import 'package:medical/src/widget/bcb_campaign/bcb_select_wish_slots_screen.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_select_partner_screen.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
@@ -33,7 +31,6 @@ class _BcbDetailAppointmentScreenState
     extends State<BcbDetailAppointmentScreen> {
   BcbCustomerAppointmentModel? _appointment;
   bool _loading = true;
-  bool _reschedulingLoading = false;
   String? _errorMessage;
 
   @override
@@ -263,9 +260,7 @@ class _BcbDetailAppointmentScreenState
           Expanded(
             child: _buildOutlineButton(
               R.string.bcb_doi_lich.tr(),
-              _reschedulingLoading || _appointment == null
-                  ? null
-                  : _onRescheduleTap,
+              _appointment == null ? null : _onRescheduleTap,
             ),
           ),
           const SizedBox(width: 8),
@@ -285,54 +280,18 @@ class _BcbDetailAppointmentScreenState
     );
   }
 
-  Future<void> _onRescheduleTap() async {
+  void _onRescheduleTap() {
     final appt = _appointment;
     if (appt == null) return;
-    setState(() => _reschedulingLoading = true);
-    try {
-      final partners =
-          await BcbCampaignClient().fetchPartnerInfos(widget.campaignId);
-      BcbPartnerInfo? partner;
-      if (appt.partnerId != null) {
-        try {
-          partner =
-              partners.firstWhere((p) => p.partnerId == appt.partnerId);
-        } catch (_) {}
-      }
-      final scheduleDays =
-          (partner ?? (partners.isNotEmpty ? partners.first : null))
-                  ?.toScheduleDays() ??
-              [];
-      BcbSelectedWishSlot? currentSelection;
-      for (final day in scheduleDays) {
-        for (final slot in day.slots) {
-          if (slot.id == appt.slotId) {
-            currentSelection = BcbSelectedWishSlot(day: day, slot: slot);
-            break;
-          }
-        }
-        if (currentSelection != null) break;
-      }
-      if (!mounted) return;
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => BcbSelectWishSlotsScreen(
-            bcbCampaignId: widget.campaignId,
-            scheduleDays: scheduleDays,
-            selectedWishSlot: currentSelection,
-            isReschedule: true,
-            appointmentId: appt.appointmentId,
-          ),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => BcbSelectPartnerScreen(
+          bcbCampaignId: widget.campaignId,
+          isReschedule: true,
+          appointmentId: appt.appointmentId,
         ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    } finally {
-      if (mounted) setState(() => _reschedulingLoading = false);
-    }
+      ),
+    );
   }
 
   // ─── Shared Widgets ─────────────────────────────────────────────────
@@ -416,23 +375,14 @@ class _BcbDetailAppointmentScreenState
             border: Border.all(color: R.color.greenGradientBottom),
           ),
           child: Center(
-            child: _reschedulingLoading
-                ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: R.color.greenGradientBottom,
-                    ),
-                  )
-                : Text(
-                    text,
-                    style: TextStyle(
-                      color: R.color.greenGradientBottom,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
-                  ),
+            child: Text(
+              text,
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
+            ),
           ),
         ),
       ),
