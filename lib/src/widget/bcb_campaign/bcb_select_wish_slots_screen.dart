@@ -18,6 +18,8 @@ class BcbSelectWishSlotsScreen extends StatefulWidget {
   final List<BcbPartnerScheduleDay>? scheduleDays;
   final BcbSelectedWishSlot? selectedWishSlot;
   final String? initialDoctorNote;
+  final bool isReschedule;
+  final String? appointmentId;
 
   const BcbSelectWishSlotsScreen({
     Key? key,
@@ -26,6 +28,8 @@ class BcbSelectWishSlotsScreen extends StatefulWidget {
     this.scheduleDays,
     this.selectedWishSlot,
     this.initialDoctorNote,
+    this.isReschedule = false,
+    this.appointmentId,
   }) : super(key: key);
 
   @override
@@ -232,6 +236,8 @@ class _BcbSelectWishSlotsScreenState extends State<BcbSelectWishSlotsScreen> {
           scheduleDays: _days,
           selectedWishSlot: selected,
           initialDoctorNote: widget.initialDoctorNote,
+          isReschedule: widget.isReschedule,
+          appointmentId: widget.appointmentId,
         ),
       ),
     );
