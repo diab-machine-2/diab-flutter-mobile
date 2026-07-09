@@ -78,9 +78,11 @@ class _BcbCampaignConfirmationScreenState
     return '${short(slot.startTime)}-${short(slot.endTime)}';
   }
 
-  String _formattedDate(BcbPartnerScheduleDay day) {
-    final date = day.examDateLocal;
-    if (date == null) return '';
+  String _formattedDate(BcbPartnerScheduleSlot slot) {
+    final dateTimestamp = int.tryParse(slot.examDate ?? '');
+    if (dateTimestamp == null) return '';
+    final date =
+        DateTime.fromMillisecondsSinceEpoch(dateTimestamp * 1000);
     final weekDay = DateUtil.weekDayToString(date, isDisplayfull: true);
     return '$weekDay, ${DateFormat('dd/MM/yyyy').format(date)}';
   }
@@ -546,7 +548,7 @@ class _BcbCampaignConfirmationScreenState
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              _formattedDate(widget.selectedWishSlot.day),
+              _formattedDate(widget.selectedWishSlot.slot),
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontSize: 15,
