@@ -225,36 +225,16 @@ class BranchioLinkConfig {
         if (AppSettings.splashScreenInitDone && AppSettings.userInfo != null) {
           final phone = AppSettings.userInfo!.phoneNumber;
           if (phone != null && phone.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
+            // Use Future.microtask so navigation fires immediately without
+            // waiting for the next widget frame (addPostFrameCallback would
+            // stall indefinitely when the app is idle in the foreground).
+            Future.microtask(() async {
               final result = await AppRepository()
                   .getBcbCampaignCustomer(campaignId: campaignId);
               result.when(
                 success: (response) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    final status = response.data?.status;
-                    if (status != null && status >= 2 && status <= 4) {
-                      navigatorKey.currentState?.pushNamed(
-                        NavigatorName.bcb_select_partner,
-                        arguments: <String, dynamic>{
-                          'bcbCampaignId': campaignId,
-                          if (campaignName != null) 'bcbCampaignName': campaignName,
-                        },
-                      );
-                    } else if (status != null && status >= 5 && status <= 7) {
-                      navigatorKey.currentState?.pushNamed(
-                        NavigatorName.bcb_detail_appointment,
-                        arguments: {'campaignId': campaignId},
-                      );
-                    } else if (status != null && status >= 9 && status <= 10) {
-                      navigatorKey.currentState?.pushNamed(
-                        NavigatorName.view_test_result,
-                        arguments: {'campaignId': campaignId},
-                      );
-                    }
-                  });
-                },
-                failure: (_) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final status = response.data?.status;
+                  if (status != null && status >= 2 && status <= 4) {
                     navigatorKey.currentState?.pushNamed(
                       NavigatorName.bcb_select_partner,
                       arguments: <String, dynamic>{
@@ -262,12 +242,31 @@ class BranchioLinkConfig {
                         if (campaignName != null) 'bcbCampaignName': campaignName,
                       },
                     );
-                  });
+                  } else if (status != null && status >= 5 && status <= 7) {
+                    navigatorKey.currentState?.pushNamed(
+                      NavigatorName.bcb_detail_appointment,
+                      arguments: {'campaignId': campaignId},
+                    );
+                  } else if (status != null && status >= 9 && status <= 10) {
+                    navigatorKey.currentState?.pushNamed(
+                      NavigatorName.view_test_result,
+                      arguments: {'campaignId': campaignId},
+                    );
+                  }
+                },
+                failure: (_) {
+                  navigatorKey.currentState?.pushNamed(
+                    NavigatorName.bcb_select_partner,
+                    arguments: <String, dynamic>{
+                      'bcbCampaignId': campaignId,
+                      if (campaignName != null) 'bcbCampaignName': campaignName,
+                    },
+                  );
                 },
               );
             });
           } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            Future.microtask(() {
               navigatorKey.currentState?.pushNamed(
                 NavigatorName.bcb_select_partner,
                 arguments: <String, dynamic>{
@@ -1138,36 +1137,17 @@ class BranchioLinkConfig {
       print('[ROUTE] Executing pending BCB registration deeplink: $bid');
       final phone = AppSettings.userInfo!.phoneNumber;
       if (phone != null && phone.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
+        // Use Future.microtask so navigation fires immediately without waiting
+        // for the next widget frame. The inner addPostFrameCallback after the
+        // async API call could stall if the app goes idle during the network
+        // round trip.
+        Future.microtask(() async {
           final result = await AppRepository()
               .getBcbCampaignCustomer(campaignId: bid);
           result.when(
             success: (response) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                final status = response.data?.status;
-                if (status != null && status >= 2 && status <= 4) {
-                  navigatorKey.currentState?.pushNamed(
-                    NavigatorName.bcb_select_partner,
-                    arguments: {
-                      'bcbCampaignId': bid,
-                      if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
-                    },
-                  );
-                } else if (status != null && status >= 5 && status <= 7) {
-                  navigatorKey.currentState?.pushNamed(
-                    NavigatorName.bcb_detail_appointment,
-                    arguments: {'campaignId': bid},
-                  );
-                } else if (status != null && status >= 9 && status <= 10) {
-                  navigatorKey.currentState?.pushNamed(
-                    NavigatorName.view_test_result,
-                    arguments: {'campaignId': bid},
-                  );
-                }
-              });
-            },
-            failure: (_) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              final status = response.data?.status;
+              if (status != null && status >= 2 && status <= 4) {
                 navigatorKey.currentState?.pushNamed(
                   NavigatorName.bcb_select_partner,
                   arguments: {
@@ -1175,12 +1155,31 @@ class BranchioLinkConfig {
                     if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
                   },
                 );
-              });
+              } else if (status != null && status >= 5 && status <= 7) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.bcb_detail_appointment,
+                  arguments: {'campaignId': bid},
+                );
+              } else if (status != null && status >= 9 && status <= 10) {
+                navigatorKey.currentState?.pushNamed(
+                  NavigatorName.view_test_result,
+                  arguments: {'campaignId': bid},
+                );
+              }
+            },
+            failure: (_) {
+              navigatorKey.currentState?.pushNamed(
+                NavigatorName.bcb_select_partner,
+                arguments: {
+                  'bcbCampaignId': bid,
+                  if (bName != null && bName.isNotEmpty) 'bcbCampaignName': bName,
+                },
+              );
             },
           );
         });
       } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.microtask(() {
           navigatorKey.currentState?.pushNamed(
             NavigatorName.bcb_select_partner,
             arguments: {
