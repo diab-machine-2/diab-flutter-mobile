@@ -39,6 +39,8 @@ import 'package:medical/src/widget/bcb_campaign/bcb_detail_appointment_screen.da
 import 'package:medical/src/widget/benefit/benefit_appointment_history_page.dart';
 import 'package:medical/src/widget/benefit/benefit_booking_detail_page.dart';
 import 'package:medical/src/widget/benefit/benefit_page.dart';
+import 'package:medical/src/widget/benefit/benefit_service_intro_page.dart';
+import 'package:medical/src/widget/benefit/benefit_service_request_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
 import 'package:medical/src/widget/dsmes_appointment/pages/dsmes_booking_detail.dart';
@@ -481,6 +483,16 @@ class AppRoutes {
           );
           break;
         }
+
+      case NavigatorName.benefit_medicine_intro:
+        page = const BenefitServiceIntroPage(
+            serviceType: BenefitServiceType.medicine);
+        break;
+
+      case NavigatorName.benefit_lab_test_intro:
+        page = const BenefitServiceIntroPage(
+            serviceType: BenefitServiceType.labTest);
+        break;
 
       case NavigatorName.benefit_appointment_history:
         page = const BenefitAppointmentHistoryPage();

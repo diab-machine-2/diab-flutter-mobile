@@ -145,12 +145,18 @@ class HomeBenefitSection extends StatelessWidget {
               _BenefitItem(
                 icon: R.icons.ic_benefit_medicine,
                 label: R.string.benefit_medicine.tr(),
-                onTap: null,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  NavigatorName.benefit_medicine_intro,
+                ),
               ),
               _BenefitItem(
                 icon: R.icons.ic_benefit_lab_testing,
                 label: R.string.benefit_lab_testing.tr(),
-                onTap: null,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  NavigatorName.benefit_lab_test_intro,
+                ),
               ),
               _BenefitItem(
                 icon: R.icons.ic_benefit_other,

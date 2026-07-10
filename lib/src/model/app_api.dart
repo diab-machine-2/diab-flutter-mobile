@@ -696,4 +696,10 @@ abstract class AppApi {
     @Path("appointmentId") String appointmentId,
     @Body() Map<String, dynamic> body,
   );
+
+  // Benefit Service Request (medicine + lab test)
+  @POST("/App/MedicationRequest")
+  Future<CommonResponse> submitMedicationRequest(
+    @Body() Map<String, dynamic> body,
+  );
 }

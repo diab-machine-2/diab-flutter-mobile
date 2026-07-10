@@ -1751,6 +1751,47 @@ class Strings {
   String get total_payment => 'total_payment';
   String get benefit_upcoming => 'benefit_upcoming';
   String get benefit_past_schedule => 'benefit_past_schedule';
+  String get benefit_medicine_service_title => 'benefit_medicine_service_title';
+  String get benefit_medicine_service_desc => 'benefit_medicine_service_desc';
+  String get benefit_lab_service_title => 'benefit_lab_service_title';
+  String get benefit_lab_service_desc => 'benefit_lab_service_desc';
+  String get benefit_have_prescription => 'benefit_have_prescription';
+  String get benefit_yes_have_prescription => 'benefit_yes_have_prescription';
+  String get benefit_yes_take_photo => 'benefit_yes_take_photo';
+  String get benefit_no_need_consult => 'benefit_no_need_consult';
+  String get benefit_no_contact_diab => 'benefit_no_contact_diab';
+  String get benefit_have_lab_order => 'benefit_have_lab_order';
+  String get benefit_yes_have_lab_order => 'benefit_yes_have_lab_order';
+  String get benefit_yes_lab_take_photo => 'benefit_yes_lab_take_photo';
+  String get benefit_no_contact_lab => 'benefit_no_contact_lab';
+  String get benefit_fast_delivery => 'benefit_fast_delivery';
+  String get benefit_fast_delivery_desc => 'benefit_fast_delivery_desc';
+  String get benefit_genuine_medicine => 'benefit_genuine_medicine';
+  String get benefit_genuine_medicine_desc => 'benefit_genuine_medicine_desc';
+  String get benefit_affordable_price => 'benefit_affordable_price';
+  String get benefit_affordable_price_desc => 'benefit_affordable_price_desc';
+  String get benefit_info_security => 'benefit_info_security';
+  String get benefit_info_security_desc => 'benefit_info_security_desc';
+  String get benefit_capture_title_medicine => 'benefit_capture_title_medicine';
+  String get benefit_capture_title_lab => 'benefit_capture_title_lab';
+  String get benefit_capture_hint => 'benefit_capture_hint';
+  String get benefit_capture_btn_camera => 'benefit_capture_btn_camera';
+  String get benefit_capture_btn_gallery => 'benefit_capture_btn_gallery';
+  String get benefit_scan_medicine_found => 'benefit_scan_medicine_found';
+  String get benefit_scan_lab_found => 'benefit_scan_lab_found';
+  String get benefit_scan_check_hint => 'benefit_scan_check_hint';
+  String get benefit_scan_lab_check_hint => 'benefit_scan_lab_check_hint';
+  String get benefit_send_medicine_request => 'benefit_send_medicine_request';
+  String get benefit_send_lab_request => 'benefit_send_lab_request';
+  String get benefit_request_success_title => 'benefit_request_success_title';
+  String get benefit_request_success_medicine_desc => 'benefit_request_success_medicine_desc';
+  String get benefit_request_success_lab_desc => 'benefit_request_success_lab_desc';
+  String get benefit_request_received_medicine => 'benefit_request_received_medicine';
+  String get benefit_request_received_lab => 'benefit_request_received_lab';
+  String get benefit_request_confirm_sample => 'benefit_request_confirm_sample';
+  String get benefit_back_to_home => 'benefit_back_to_home';
+  String get benefit_scan_diagnose => 'benefit_scan_diagnose';
+  String get benefit_scan_prescription_name => 'benefit_scan_prescription_name';
 }
 
 
