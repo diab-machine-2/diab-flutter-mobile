@@ -6,6 +6,7 @@ import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/repository/app_repository.dart';
 import 'package:medical/src/utils/const.dart';
 import 'package:medical/src/utils/navigator_name.dart';
+import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
 import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dart';
 import 'package:medical/src/widget/dsmes_appointment/model/dsmes_appointment_model.dart';
@@ -50,17 +51,29 @@ class _BenefitAppointmentHistoryPageState
     super.dispose();
   }
 
-  Future<void> _initData() async {
-    setState(() => isLoading = true);
+  Future<void> _initData({bool showLoadingIndicator = true}) async {
+    if (showLoadingIndicator) {
+      setState(() => isLoading = true);
+    }
     final docosanToken = await AppSettings.getDocosanToken();
     if (docosanToken == null || docosanToken.isEmpty) {
-      setState(() => isLoading = false);
-    } else {
-      await _cubit.getDsmesAppointmentList(
-          page: 1, isRefresh: true, showLoading: true);
-      sortedMyAppointments = _cubit.getSortedAppointments();
-      setState(() => isLoading = false);
+      final isExist = await _cubit.isExistDocosanUser();
+      if (!isExist) {
+        setState(() => isLoading = false);
+        return;
+      }
+      final phoneNumber = AppSettings.userInfo?.phoneNumber;
+      if (phoneNumber == null) {
+        setState(() => isLoading = false);
+        return;
+      }
+      await _cubit.registerDocosanUser(
+          phoneNumber: Utils.formatPhoneNumber(phoneNumber));
     }
+    await _cubit.getDsmesAppointmentList(
+        page: 1, isRefresh: true, showLoading: true);
+    sortedMyAppointments = _cubit.getSortedAppointments();
+    setState(() => isLoading = false);
   }
 
   @override
@@ -108,7 +121,8 @@ class _BenefitAppointmentHistoryPageState
               // Content
               Expanded(
                 child: isLoading
-                    ? const SizedBox.shrink()
+                    ? const Center(
+                        child: CircularProgressIndicator())
                     : sortedMyAppointments.isEmpty
                         ? DsmesEmptyWidget(
                             imagePath: R.drawable.dsmes_empty,
@@ -254,7 +268,7 @@ class _BenefitAppointmentHistoryPageState
                                               try {
                                                 final detailSuccess =
                                                     await _cubit.getClinicDetail(
-                                                        id: data.clinicId);
+                                                        id: data.branchId ?? data.clinicId);
                                                 if (!detailSuccess ||
                                                     _cubit.selectedClinic ==
                                                         null) {
@@ -265,7 +279,8 @@ class _BenefitAppointmentHistoryPageState
                                                         .getDsmesAppointmentDetail(
                                                             appointmentId:
                                                                 data.id);
-                                                Navigator.of(context,
+                                                final result = await Navigator
+                                                    .of(context,
                                                         rootNavigator: true)
                                                     .pushNamed(
                                                   NavigatorName
@@ -276,9 +291,16 @@ class _BenefitAppointmentHistoryPageState
                                                     'appointment': appointment,
                                                     'previousRoute': NavigatorName
                                                         .benefit_appointment_history,
-                                                    'bookingType': benefitBookingType,
+                                                    'bookingType':
+                                                        benefitBookingType,
+                                                    'branchAddress': _cubit.selectedClinic?.address,
                                                   },
                                                 );
+                                                if (result == true) {
+                                                  await _initData(
+                                                      showLoadingIndicator:
+                                                          false);
+                                                }
                                               } finally {
                                                 isProcessing['chooseService'] =
                                                     false;

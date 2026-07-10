@@ -182,7 +182,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                             action: args['action'] ?? 'create',
                             appointmentId: args['appointmentId'],
                             bookingType: args['bookingType'] ??
-                                Const.BOOKING_TYPE_CLINIC,
+                                Const.BENEFIT_BOOKING_AT_CLINIC,
                             isBypassPayment: false,
                             specialtyName:
                                 args['specialtyName'] as String?,
@@ -198,7 +198,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           action: args['action'] ?? 'create',
                           appointmentId: args['appointmentId'],
                           bookingType: args['bookingType'] ??
-                              Const.BOOKING_TYPE_CLINIC,
+                              Const.BENEFIT_BOOKING_AT_CLINIC,
                           isBypassPayment: widget.bookingType ==
                               Const.BENEFIT_BOOKING_TELEMEDICINE,
                           branchName: args['branchName'] as String?,
@@ -249,7 +249,7 @@ class _BenefitPageState extends State<BenefitPage> with Observer {
                           action: args['action'] ?? 'create',
                           appointmentId: args['appointmentId'],
                           bookingType: args['bookingType'] ??
-                              Const.BOOKING_TYPE_CLINIC,
+                              Const.BENEFIT_BOOKING_AT_CLINIC,
                           isBypassPayment: false,
                           specialtyName:
                               args['specialtyName'] as String?,

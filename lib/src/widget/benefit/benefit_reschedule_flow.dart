@@ -13,12 +13,16 @@ import 'package:medical/src/widget/dsmes_appointment/dsmes_appointment_cubit.dar
 /// touching any shared static navigator state.
 /// [previousRoute] is passed through to [BenefitConfirmPage] so the success
 /// navigation can restore the correct stack (history vs. tabbar).
+/// [branchAddress] is the specific branch address (not origin clinic) for the
+/// appointment, forwarded from the booking detail page through to the confirm page.
 class BenefitRescheduleFlow extends StatefulWidget {
   final DsmesAppointmentCubit cubit;
   final String serviceType;
   final int appointmentId;
   final String bookingType;
   final String? previousRoute;
+  final String? branchName;
+  final String? branchAddress;
 
   const BenefitRescheduleFlow({
     Key? key,
@@ -27,6 +31,8 @@ class BenefitRescheduleFlow extends StatefulWidget {
     required this.appointmentId,
     required this.bookingType,
     this.previousRoute,
+    this.branchName,
+    this.branchAddress,
   }) : super(key: key);
 
   @override
@@ -67,6 +73,8 @@ class _BenefitRescheduleFlowState extends State<BenefitRescheduleFlow> {
                     action: 'reschedule',
                     appointmentId: widget.appointmentId,
                     bookingType: widget.bookingType,
+                    branchName: widget.branchName,
+                    branchAddress: widget.branchAddress,
                   ),
                 );
 

@@ -51,7 +51,7 @@ class BenefitConfirmPage extends StatefulWidget {
     required this.serviceType,
     this.action = 'create',
     this.appointmentId,
-    this.bookingType = Const.BOOKING_TYPE_CLINIC,
+    this.bookingType = Const.BENEFIT_BOOKING_AT_CLINIC,
     this.isBypassPayment = false,
     this.branchName,
     this.branchAddress,
@@ -183,6 +183,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                           _buildPatientInformation(),
                           GapH(12),
                           _buildConsultingInformation(),
+                          GapH(12),
                           _buildVoucherAndPaymentSection(),
                           _selectImageSection(),
                         ],
@@ -385,6 +386,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
             'serviceType': widget.serviceType,
             'appointment': myAppointment,
             'bookingType': widget.bookingType,
+            'branchAddress': widget.branchAddress,
           },
         );
       },
@@ -400,7 +402,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
         color: R.color.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [Utils.getBoxShadowDropCard()],
-      ),
+    ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -629,7 +631,7 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
                 Flexible(
                   flex: 7,
                   child: Text(
-                    _cubit.selectedClinic?.address ?? '',
+                    widget.branchAddress ?? '',
                     maxLines: 2,
                     textAlign: TextAlign.end,
                     overflow: TextOverflow.ellipsis,
@@ -769,8 +771,12 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
   }
 
   /// Combined voucher + payment section. Returns empty when no voucher applies
-  /// (no GapH spacers left behind).
+  /// (no GapH spacers left behind), or for at-clinic bookings.
   Widget _buildVoucherAndPaymentSection() {
+    // At-clinic benefit flow: hide voucher/payment sections
+    if (widget.serviceType == DsmesAppointmentMode.atClinic.toString()) {
+      return const SizedBox.shrink();
+    }
     final hasVoucher = _resolveSaleItem() != null;
     if (!hasVoucher) return const SizedBox.shrink();
     return Column(
@@ -1060,28 +1066,50 @@ class _BenefitConfirmPageState extends State<BenefitConfirmPage> {
       ),
     );
     if (resp == null) return;
+    if (!mounted) return;
 
     final myAppointment =
         await _cubit.getDsmesAppointmentDetail(appointmentId: resp.id);
 
     if (myAppointment == null) return;
+    if (!mounted) return;
 
-    // Clear calendar + confirm (+ old detail + any intermediate pages) from
-    // the root stack, keeping only the appropriate ancestor route.
     final isFromHistory =
         widget.previousRoute == NavigatorName.benefit_appointment_history;
-    Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
-      NavigatorName.benefit_booking_detail,
-      isFromHistory
-          ? (r) => r.settings.name == NavigatorName.benefit_appointment_history
-          : (r) => r.isFirst,
-      arguments: {
-        'serviceType': widget.serviceType,
-        'appointment': myAppointment,
-        'bookingType': widget.bookingType,
-        'previousRoute': widget.previousRoute,
-      },
-    );
+
+    if (isFromHistory) {
+      // Pop back through the stack so the history page receives result == true
+      // and triggers _initData to refresh the list.
+      final rootNav = Navigator.of(context, rootNavigator: true);
+      // Pop RescheduleFlow → back to the booking detail page
+      rootNav.pop();
+      // Pop the booking detail page with true → back to history, triggers _initData
+      rootNav.pop(true);
+      // Push the updated booking detail page on top of the refreshed history
+      rootNav.pushNamed(
+        NavigatorName.benefit_booking_detail,
+        arguments: {
+          'serviceType': widget.serviceType,
+          'appointment': myAppointment,
+          'bookingType': widget.bookingType,
+          'previousRoute': widget.previousRoute,
+          'branchAddress': widget.branchAddress,
+        },
+      );
+    } else {
+      // Not from history: keep the existing clear-to-root behavior.
+      Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
+        NavigatorName.benefit_booking_detail,
+        (r) => r.isFirst,
+        arguments: {
+          'serviceType': widget.serviceType,
+          'appointment': myAppointment,
+          'bookingType': widget.bookingType,
+          'previousRoute': widget.previousRoute,
+          'branchAddress': widget.branchAddress,
+        },
+      );
+    }
   }
 
   void _showPopupBookingSuccess({

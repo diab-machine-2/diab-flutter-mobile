@@ -29,6 +29,8 @@ class BenefitCalendarSection extends StatefulWidget {
   final int? appointmentId;
   final String bookingType;
   final String? specialtyName;
+  final String? branchName;
+  final String? branchAddress;
 
   const BenefitCalendarSection({
     Key? key,
@@ -37,6 +39,8 @@ class BenefitCalendarSection extends StatefulWidget {
     this.appointmentId,
     required this.bookingType,
     this.specialtyName,
+    this.branchName,
+    this.branchAddress,
   }) : super(key: key);
 
   @override
@@ -205,7 +209,8 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
               'isMergedSchedule': false,
               'bookingType': widget.bookingType,
               'specialtyName': widget.specialtyName,
-              'branchName': _cubit.selectedClinic?.name ?? '',
+              'branchName': widget.branchName ?? _cubit.selectedClinic?.name ?? '',
+              'branchAddress': widget.branchAddress ?? _cubit.selectedClinic?.address ?? '',
             },
           );
         } else {
@@ -218,7 +223,8 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
               'appointmentId': widget.appointmentId,
               'bookingType': widget.bookingType,
               'specialtyName': widget.specialtyName,
-              'branchName': _cubit.selectedClinic?.name ?? '',
+              'branchName': widget.branchName ?? _cubit.selectedClinic?.name ?? '',
+              'branchAddress': widget.branchAddress ?? _cubit.selectedClinic?.address ?? '',
             },
           );
         }
@@ -249,7 +255,8 @@ class _BenefitCalendarSectionState extends State<BenefitCalendarSection> {
             'isMergedSchedule': false,
             'bookingType': widget.bookingType,
             'specialtyName': widget.specialtyName,
-            'branchName': _cubit.selectedClinic?.name ?? '',
+            'branchName': widget.branchName ?? _cubit.selectedClinic?.name ?? '',
+            'branchAddress': widget.branchAddress ?? _cubit.selectedClinic?.address ?? '',
           },
         );
       }

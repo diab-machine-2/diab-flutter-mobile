@@ -31,6 +31,7 @@ class BenefitBookingDetailPage extends StatefulWidget {
   /// The route that navigated here. When non-null, back pops instead of
   /// clearing the stack to tabbar (supports the history-entry back flow).
   final String? previousRoute;
+  final String? branchAddress;
 
   const BenefitBookingDetailPage({
     Key? key,
@@ -38,6 +39,7 @@ class BenefitBookingDetailPage extends StatefulWidget {
     required this.appointment,
     this.bookingType = Const.BENEFIT_BOOKING_AT_CLINIC,
     this.previousRoute,
+    this.branchAddress,
   }) : super(key: key);
 
   @override
@@ -62,7 +64,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
 
   void _navigateBack() {
     if (widget.previousRoute != null) {
-      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context, rootNavigator: true).pop(true);
     } else {
       Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil(
         NavigatorName.tabbar,
@@ -554,7 +556,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                     flex: 7,
                     child: Text(
                       widget.appointment.clinic.name,
-                      maxLines: 2,
+                      maxLines: 3,
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -589,7 +591,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                   Flexible(
                     flex: 7,
                     child: Text(
-                      widget.appointment.clinic.address,
+                      widget.branchAddress ?? widget.appointment.clinic.address,
                       maxLines: 2,
                       textAlign: TextAlign.end,
                       overflow: TextOverflow.ellipsis,
@@ -820,6 +822,7 @@ class _BenefitBookingDetailPageState extends State<BenefitBookingDetailPage> {
                             appointmentId: widget.appointment.id,
                             bookingType: widget.bookingType,
                             previousRoute: widget.previousRoute,
+                            branchAddress: widget.branchAddress,
                           ),
                         ),
                       );
