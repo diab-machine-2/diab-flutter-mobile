@@ -53,8 +53,10 @@ class BcbPartnerInfo {
       final examDate = firstSlot.examDate;
       if (examDate != null) {
         try {
-          final dt = DateTime.parse(examDate);
-          examDateUnix = dt.millisecondsSinceEpoch ~/ 1000;
+          final timestamp = int.tryParse(examDate);
+          if (timestamp != null) {
+            examDateUnix = timestamp;
+          }
         } catch (_) {}
       }
       return BcbPartnerScheduleDay(

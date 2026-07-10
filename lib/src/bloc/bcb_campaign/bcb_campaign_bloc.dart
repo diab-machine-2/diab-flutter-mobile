@@ -18,6 +18,8 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
   Stream<BcbCampaignState> mapEventToState(BcbCampaignEvent event) async* {
     if (event is SubmitBcbRegistrationEvent) {
       yield* _submitRegistration(event);
+    } else if (event is RescheduleBcbAppointmentEvent) {
+      yield* _rescheduleAppointment(event);
     } else if (event is LoadBcbExamResultEvent) {
       yield* _loadExamResult(event);
     } else if (event is MarkResultViewedEvent) {
@@ -38,6 +40,26 @@ class BcbCampaignBloc extends Bloc<BcbCampaignEvent, BcbCampaignState> {
         ),
       );
       yield BcbRegistrationSubmitted();
+    } catch (e, _) {
+      if (e is Error) {
+        yield BcbCampaignError(message: e.message ?? '');
+      } else {
+        yield BcbCampaignError(
+            message: R.string.error_can_not_connect_to_server.tr());
+      }
+    }
+  }
+
+  Stream<BcbCampaignState> _rescheduleAppointment(
+      RescheduleBcbAppointmentEvent event) async* {
+    try {
+      yield BcbCampaignLoading();
+      final client = BcbCampaignClient();
+      await client.rescheduleAppointment(
+        appointmentId: event.appointmentId,
+        slotId: event.slotId,
+      );
+      yield BcbAppointmentRescheduled();
     } catch (e, _) {
       if (e is Error) {
         yield BcbCampaignError(message: e.message ?? '');
