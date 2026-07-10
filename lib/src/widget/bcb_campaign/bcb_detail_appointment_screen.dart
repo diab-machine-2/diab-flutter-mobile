@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:medical/res/R.dart';
 import 'package:medical/src/app.dart';
+import 'package:medical/src/app_setting/app_setting.dart';
 import 'package:medical/src/model/bcb_campaign/bcb_customer_appointment_model.dart';
 import 'package:medical/src/repo/bcb_campaign/bcb_campaign_client.dart';
 import 'package:medical/src/utils/const.dart';
@@ -10,6 +11,7 @@ import 'package:medical/src/utils/date_utils.dart';
 import 'package:medical/src/utils/navigator_name.dart';
 import 'package:medical/src/utils/utils.dart';
 import 'package:medical/src/widget/base/custom_appbar.dart';
+import 'package:medical/src/widget/bcb_campaign/bcb_select_partner_screen.dart';
 import 'package:medical/src/widget/home/widget/home_support_functions.dart';
 import 'package:medical/src/widgets/gap_widget.dart';
 
@@ -134,12 +136,13 @@ class _BcbDetailAppointmentScreenState
 
   Widget _buildCustomerInformation() {
     final a = _appointment!;
+    final user = AppSettings.userInfo;
     return _buildCard(
       child: Column(
         children: [
           _buildSectionHeader(R.string.customer_information.tr()),
           GapH(16),
-          _buildInfoRow(R.string.name.tr(), a.fullName ?? ''),
+          _buildInfoRow(R.string.name.tr(), user?.fullName ?? ''),
           GapH(4),
           _buildInfoRow(R.string.so_dien_thoai.tr(), a.phone ?? ''),
           if (a.email != null && a.email!.trim().isNotEmpty) ...[
@@ -257,6 +260,13 @@ class _BcbDetailAppointmentScreenState
       child: Row(
         children: [
           Expanded(
+            child: _buildOutlineButton(
+              R.string.bcb_doi_lich.tr(),
+              _appointment == null ? null : _onRescheduleTap,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
             child: _buildGradientButton(
               R.string.back_home_page.tr(),
               () {
@@ -268,6 +278,21 @@ class _BcbDetailAppointmentScreenState
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _onRescheduleTap() {
+    final appt = _appointment;
+    if (appt == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => BcbSelectPartnerScreen(
+          bcbCampaignId: widget.campaignId,
+          isReschedule: true,
+          appointmentId: appt.appointmentId,
+          currentSlotId: appt.slotId,
+        ),
       ),
     );
   }
@@ -337,6 +362,33 @@ class _BcbDetailAppointmentScreenState
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildOutlineButton(String text, VoidCallback? onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Opacity(
+        opacity: onTap == null ? 0.5 : 1.0,
+        child: Container(
+          height: 44,
+          decoration: BoxDecoration(
+            color: R.color.white,
+            borderRadius: BorderRadius.circular(200),
+            border: Border.all(color: R.color.greenGradientBottom),
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: R.color.greenGradientBottom,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
